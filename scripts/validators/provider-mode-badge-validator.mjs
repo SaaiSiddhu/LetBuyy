@@ -350,7 +350,12 @@ reporter.assert(storefrontCartRoutes.includes("letbuyy-local-sandbox-checkout-ha
 reporter.assert(!mediaRoute.includes("letbuyy-local-sandbox-media-upload-secret"), "media route must not reintroduce the deleted local upload secret");
 reporter.assert(!shippingRoute.includes("mock-standard"), "shipping route local fallback rate must be sandbox-labelled");
 reporter.assert(!shippingRoute.includes("sandbox-standard"), "shipping must not fabricate a fallback rate when stored rates are unavailable");
-reporter.assert(shippingRoute.includes("SHIPPING_CONFIGURATION_UNAVAILABLE") && shippingRoute.includes(".from('shipping_rates')"), "shipping must read configured rates and report unavailable configuration");
+const shippingQuoteAuthority = readFile("services/api-gateway/src/lib/storefront-shipping.ts");
+reporter.assert(shippingRoute.includes("SHIPPING_CONFIGURATION_UNAVAILABLE")
+  && shippingRoute.includes("listStorefrontShippingRates(")
+  && shippingQuoteAuthority.includes(".rpc('list_storefront_shipping_options'")
+  && shippingQuoteAuthority.includes("SHIPPING_CONFIGURATION_UNAVAILABLE"),
+  "shipping must use the canonical stored-rate authority and report unavailable configuration");
 reporter.assert(logisticsAdapter.includes("LOGISTICS_LIVE_PROVIDER_UNAVAILABLE"), "logistics adapter live mode must fail closed while real carrier clients are absent");
 reporter.assert(logisticsAdapter.includes("assertSandboxMode"), "logistics adapter must restrict non-live labels to sandbox mode");
 for (const [label, source] of [

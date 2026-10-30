@@ -11,6 +11,16 @@ const product = (stock = 4) => normalizeProductSnapshot({ name: 'Bound book', pr
         { id: second, title: 'Hindi', option1: 'Hindi', price: 420, inventory_qty: stock }] })
 const owns = (value: object, field: string) => Object.hasOwn(value, field)
 
+test('shipping profile survives product edits and a legacy recovery draft does not clear it', () => {
+    const profile='77777777-7777-4777-8777-777777777777'
+    const draft=normalizeProductSnapshot({name:'Profile-bound book',price:100,stock:2,shipping_profile_id:profile})
+    assert.equal(draft.shippingProfileId,profile)
+    assert.equal(buildProductFormFields(draft,{},true).shipping_profile_id,profile)
+    assert.equal(buildProductFormFields({...draft,shippingProfileId:''},{},true).shipping_profile_id,null)
+    const {shippingProfileId:_missing,...legacy}=draft
+    assert.equal(owns(buildProductFormFields(legacy,{},true),'shipping_profile_id'),false)
+});
+
 test('metadata-only EDIT loaded at four omits stock and preserves server-consumed two', () => {
     const draft = { ...product(), title: 'Later title', price: '690', nicheFacts: '{"books":{"kind":"book"}}' }
     const body = buildProductFormFields(draft, { books: { kind: 'book' } }, true)

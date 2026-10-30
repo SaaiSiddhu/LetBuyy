@@ -46,7 +46,7 @@ test('cursor browsing covers every eligible collection, supports previous pages,
  const ids=Array.from({length:53},(_,i)=>collection(a.siteId,'Synthetic browse '+String(i).padStart(2,'0'))).sort();
  collection(a.siteId,'Synthetic hidden',{active:false});collection(a.siteId,'Synthetic deleted',{deleted:true});const foreign=collection(b.siteId,'Synthetic foreign browse');
  const browse=(query='')=>gateway.request(`/v1/storefront/${a.subdomain}/collections?browse=1${query}`);
- const before=tap!.calls.length,first=await browse();assert.equal(first.status,200);const firstPage=first.json!.data;
+ const before=tap!.calls.length,first=await browse();assert.equal(first.status,200,first.text);const firstPage=first.json!.data;
  assert.deepEqual(firstPage.items.map((x:{id:string})=>x.id),ids.slice(0,24));assert.equal(firstPage.previousCursor,null);assert.equal(firstPage.nextCursor,ids[23]);
  const second=await browse('&after='+firstPage.nextCursor);assert.equal(second.status,200);const secondPage=second.json!.data;
  assert.deepEqual(secondPage.items.map((x:{id:string})=>x.id),ids.slice(24,48));assert.equal(secondPage.previousCursor,ids[24]);

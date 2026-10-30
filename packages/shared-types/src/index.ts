@@ -2643,6 +2643,8 @@ export const CouponSchema = AuditedEntitySchema.extend({
 });
 
 export const ShippingZoneSchema = z.object({
+  profile_id: UuidSchema.optional().nullable(),
+  cod_enabled: z.boolean().default(true),
   id: UuidSchema,
   store_id: UuidSchema,
   name: z.string().min(1).max(100),
@@ -2655,6 +2657,7 @@ export const ShippingZoneSchema = z.object({
 }).passthrough();
 
 export const ShippingRateSchema = z.object({
+  cod_enabled: z.boolean().default(true),
   id: UuidSchema,
   zone_id: UuidSchema,
   name: z.string().min(1).max(100),
@@ -5266,3 +5269,4 @@ export { calculateGstAmounts } from './gst-amounts';
 
 export * from './personalization-contracts';
 export * from './storefront-discovery-contracts';
+export * from './checkout-totals-quote';

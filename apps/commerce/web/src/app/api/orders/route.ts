@@ -148,6 +148,7 @@ export async function POST(request: NextRequest) {
             giftCardCode: orderInput.giftCardCode,
             shippingRateId: orderInput.shippingRateId || null,
             shippingAmountMinor: orderInput.shippingAmountMinor ?? null,
+            expectedQuoteFingerprint: orderInput.expectedQuoteFingerprint,
             idempotencyKey,
         }, buyerSession ? { headers: { [LETBUYY_STOREFRONT_SESSION_HEADER]: buyerSession.token } } : undefined);
         const order = payload.order;

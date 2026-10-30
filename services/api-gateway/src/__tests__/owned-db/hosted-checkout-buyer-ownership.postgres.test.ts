@@ -101,9 +101,7 @@ async function completeCodCheckout(cart: { id: string; token: string }, checkout
     const parsed = new URL(checkoutUrl);
     const handoff = parsed.searchParams.toString();
     const base = `/v1/checkout/${cart.id}`;
-    const post = (step: string, body: Record<string, unknown>) => gateway.request(`${base}/${step}?${handoff}`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
-    });
+    const post = (step: string, body: Record<string, unknown>) => hostedCheckoutPost(cart, checkoutUrl, step, body);
     const started = await post('contact', { idempotency_key: `hosted-contact-${cart.id}`, email: 'syn-hosted@example.invalid', name: 'Synthetic Hosted Buyer' });
     assert.equal(started.status, 200, started.text);
     const delivery = await post('delivery', {
@@ -119,8 +117,17 @@ async function completeCodCheckout(cart: { id: string; token: string }, checkout
     return confirmed.json?.data?.order?.id as string;
 }
 
-async function hostedCheckoutPost(cart: { id: string; token: string }, checkoutUrl: string, step: string, body: Record<string, unknown>, target = gateway) {
+async function hostedCheckoutPost(cart: { id: string; token: string }, checkoutUrl: string, step: string, body: Record<string, unknown>, target = gateway): ReturnType<Gateway['request']> {
     const handoff = new URL(checkoutUrl).searchParams.toString();
+    if (step === 'delivery' && !body.expected_quote_fingerprint) {
+        const address = body.shipping_address as Record<string, unknown>;
+        const quote = await hostedCheckoutPost(cart, checkoutUrl, 'quote', {
+            shipping_address: { country: address.country, state: address.state, state_code: address.state_code, zip: address.zip },
+            shipping_rate_id: (body.shipping_quote as Record<string, unknown>).shipping_rate_id,
+        }, target);
+        assert.equal(quote.status, 200, quote.text);
+        body = { ...body, expected_quote_fingerprint: quote.json?.data?.quote?.fingerprint };
+    }
     return target.request(`/v1/checkout/${cart.id}/${step}?${handoff}`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
     });
@@ -644,7 +651,7 @@ test('current offline policy refuses every new hosted step before claims while p
  for(const[step,payload]of [['contact',contact],['delivery',delivery],['payment-intent',intent]] as const){const result=await hostedCheckoutPost(cart,url,step,{...payload,idempotency_key:crypto.randomUUID()});assert.ok(result.status===200||result.status===201,result.text);}
  const counts=()=>psql(`SELECT jsonb_build_object('claims',(SELECT count(*) FROM idempotency_keys WHERE site_id='${site.siteId}'),'orders',(SELECT count(*) FROM orders WHERE store_id='${site.siteId}'),'sessions',(SELECT count(*) FROM checkout_sessions WHERE site_id='${site.siteId}'))::text;`);
  const before=counts(),confirmKey=crypto.randomUUID();psql(`UPDATE sites SET access_mode='offline' WHERE id='${site.siteId}';`);
- for(const[step,payload]of [['contact',contact],['delivery',delivery],['payment-intent',intent],['confirm',{}]] as const){const result=await hostedCheckoutPost(cart,url,step,{...payload,idempotency_key:step==='confirm'?confirmKey:crypto.randomUUID()});assert.equal(result.status,503,result.text);}
+ for(const[step,payload]of [['contact',contact],['delivery',delivery],['payment-intent',intent],['confirm',{}]] as const){const result=await hostedCheckoutPost(cart,url,step,{...payload,...(step==='delivery'?{expected_quote_fingerprint:'0'.repeat(64)}:{}),idempotency_key:step==='confirm'?confirmKey:crypto.randomUUID()});assert.equal(result.status,503,result.text);}
  assert.equal(counts(),before);assert.equal(psql(`SELECT checkout_state FROM checkout_sessions WHERE cart_id='${cart.id}';`),'payment_intent');
  psql(`UPDATE sites SET access_mode='public' WHERE id='${site.siteId}';`);const recovered=await hostedCheckoutPost(cart,url,'confirm',{idempotency_key:confirmKey});assert.equal(recovered.status,200,recovered.text);
 });

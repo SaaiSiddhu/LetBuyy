@@ -33,6 +33,7 @@ export const GATEWAY_DB_SUITE_DIR = 'services/api-gateway/src/__tests__/owned-db
 // These suites intentionally qualify an exact predecessor and then apply/retire
 // its next migration. Newer current-stack journeys stay on the full chain.
 export const HISTORICAL_GATEWAY_MIGRATION_CEILINGS = Object.freeze({
+    'services/api-gateway/src/__tests__/owned-db/cart-order-fact-retirement388.postgres.test.ts': 388,
     // These retire/reapply the exact captured schema/role profiles. Current-stack
     // mounted-browser counterparts below retain the complete migration chain.
     'services/api-gateway/src/__tests__/owned-db/console-oncall-schedules.postgres.test.ts': 362,

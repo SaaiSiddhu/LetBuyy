@@ -6,8 +6,10 @@ import {
     CheckoutDeliverySchema,
     CheckoutPaymentIntentSchema,
     CheckoutConfirmSchema,
+    CheckoutQuoteSchema,
     LETBUYY_CHECKOUT_ORIGIN_HEADER,
 } from '@letbuyy/checkout-core';
+import { CheckoutTotalsQuoteSchema } from '@letbuyy/shared-types';
 import { storefrontApiFetch } from '@/lib/api/client';
 import { isSameOriginRequest } from '@/lib/buyer-auth/flow';
 import { checkoutRequestBinding } from '@/lib/checkout-host';
@@ -16,6 +18,7 @@ const NO_STORE = { 'Cache-Control': 'no-store' };
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const HANDOFF_KEYS = ['site_id', 'cart_token', 'expires_at', 'cart_digest', 'signature', 'channel'] as const;
 const STEP_SCHEMAS = {
+    quote: CheckoutQuoteSchema,
     contact: CheckoutContactSchema,
     delivery: CheckoutDeliverySchema,
     'payment-intent': CheckoutPaymentIntentSchema,
@@ -97,6 +100,10 @@ function projectSuccess(step: CheckoutStep, payload: unknown): unknown | null {
     const data = (payload as { data?: unknown }).data;
     if (!data || typeof data !== 'object' || Array.isArray(data)) return null;
     const record = data as Record<string, unknown>;
+    if (step === 'quote') {
+        const quote = CheckoutTotalsQuoteSchema.safeParse(record.quote);
+        return quote.success ? { success: true, data: { quote: quote.data } } : null;
+    }
     const checkout = record.checkout;
     if (!checkout || typeof checkout !== 'object' || Array.isArray(checkout)) return null;
     const session = checkout as Record<string, unknown>;
@@ -151,11 +158,13 @@ function projectFailure(status: number, payload: unknown) {
         CHECKOUT_DISCOUNT_INVALID: 'This coupon is no longer eligible. Remove it or choose another code.',
         CHECKOUT_DISCOUNT_CHANGED: 'The coupon discount changed. Review it again before paying.',
         CHECKOUT_SHIPPING_CHANGED: 'The delivery price changed. Review the updated delivery option and try again.',
+        CHECKOUT_QUOTE_CHANGED: 'The order total changed. Review the current total before paying.',
+        CHECKOUT_TAX_SETUP_REQUIRED: 'Tax setup for this order needs attention. Please contact the store before paying.',
         CHECKOUT_PROVIDER_PAYMENT_REQUIRED: 'Payment confirmation is required to complete checkout.',
         CHECKOUT_PROVIDER_SIGNATURE_INVALID: 'Payment could not be verified. Please try again or contact support.',
         CHECKOUT_PROVIDER_PAYMENT_REPLAYED: 'This payment cannot be used for this checkout.',
     };
-    if (status >= 500 && (status !== 503 || code !== 'PAYMENT_SETUP_REQUIRED')) return jsonError(503, 'CHECKOUT_UNAVAILABLE', 'Checkout is temporarily unavailable. Please try again.');
+    if (status >= 500 && (status !== 503 || !['PAYMENT_SETUP_REQUIRED', 'CHECKOUT_TAX_SETUP_REQUIRED'].includes(code))) return jsonError(503, 'CHECKOUT_UNAVAILABLE', 'Checkout is temporarily unavailable. Please try again.');
     const message = safeMessages[code] || 'Checkout could not continue.';
     return jsonError(status, code, message);
 }

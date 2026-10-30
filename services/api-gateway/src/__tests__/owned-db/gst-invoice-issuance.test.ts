@@ -34,7 +34,8 @@ const STORE_ID = tenant.siteId;
 const LOCATION_ID = tenant.locationId;
 
 before(() => {
-    seedSyntheticTenant(psql, tenant, { gst: true });
+    seedSyntheticTenant(psql, tenant, { gst: true, taxRates: true });
+    psql(`UPDATE sites SET tax_inclusive=false WHERE id='${STORE_ID}';`);
 });
 
 test(
@@ -55,39 +56,17 @@ test(
             VALUES (gen_random_uuid(), '${STORE_ID}', '${productId}', NULL, '${LOCATION_ID}', 10, 0, 0, 10, 0, 10, now(), now());
         `);
 
-        // Two orders, for the concurrency proof.
-        const orderAId = psql(`
-            SELECT create_checkout_order(
-                '${STORE_ID}'::uuid, 'Autotest A', 't14-autotest-invoice-a-${suffix}@example.invalid', '9000000050',
-                '{"line1":"Test","city":"Test","state":"Karnataka","state_code":"29"}'::jsonb,
-                '[{"product_id":"${productId}","quantity":1}]'::jsonb,
-                'cod', NULL, NULL, NULL, 'standard',
-                't14-autotest-invoice-a-idem-${suffix}', NULL, 't14-autotest-invoice-a-req-${suffix}',
-                NULL, 180.00, '29',
-                '[{"title":"CGST","rate":9,"amount":90,"jurisdiction":{"supply_type":"intra_state"}},{"title":"SGST","rate":9,"amount":90,"jurisdiction":{"supply_type":"intra_state"}}]'::jsonb
-            ) ->> 'id';
-        `);
-        const orderBId = psql(`
-            SELECT create_checkout_order(
-                '${STORE_ID}'::uuid, 'Autotest B', 't14-autotest-invoice-b-${suffix}@example.invalid', '9000000051',
-                '{"line1":"Test","city":"Test","state":"Karnataka","state_code":"29"}'::jsonb,
-                '[{"product_id":"${productId}","quantity":1}]'::jsonb,
-                'cod', NULL, NULL, NULL, 'standard',
-                't14-autotest-invoice-b-idem-${suffix}', NULL, 't14-autotest-invoice-b-req-${suffix}',
-                NULL, 180.00, '29',
-                '[{"title":"CGST","rate":9,"amount":90,"jurisdiction":{"supply_type":"intra_state"}},{"title":"SGST","rate":9,"amount":90,"jurisdiction":{"supply_type":"intra_state"}}]'::jsonb
-            ) ->> 'id';
-        `);
-
-        // Genuinely parallel invoice issuance -- two real, concurrent OS processes launched via
-        // spawn (never sequential awaits), racing the SAME site-row FOR UPDATE lock inside
-        // Postgres. Promise.all does not serialize them; both `docker exec` processes are live
-        // at once.
+        // Concurrent canonical orders contend on the same store and stock. Invoice
+        // allocation is now atomic with each order; retrying issuance is idempotent.
+        const orderSql = (key: string) => `SELECT create_checkout_order('${STORE_ID}', 'Synthetic buyer',
+            'syn-${key}@example.invalid', '9000000050',
+            '{"line1":"Synthetic Road","city":"Bengaluru","state":"Karnataka","state_code":"29"}',
+            '[{"product_id":"${productId}","quantity":1}]', 'cod',NULL,NULL,NULL,'standard','${key}')->>'id';`;
+        const [orderAId,orderBId] = await Promise.all([psqlAsync(orderSql(randomUUID())),psqlAsync(orderSql(randomUUID()))]);
         const results = await Promise.all([
-            psqlAsync(`SELECT issue_gst_invoice('${orderAId}'::uuid, NULL, 't14-autotest-concurrent-a') ->> 'invoice_number';`),
-            psqlAsync(`SELECT issue_gst_invoice('${orderBId}'::uuid, NULL, 't14-autotest-concurrent-b') ->> 'invoice_number';`),
+            psqlAsync(`SELECT issue_gst_invoice('${orderAId}',NULL,'syn-invoice-retry-a')->>'invoice_number';`),
+            psqlAsync(`SELECT issue_gst_invoice('${orderBId}',NULL,'syn-invoice-retry-b')->>'invoice_number';`),
         ]);
-
         assert.notEqual(results[0], results[1], 'two orders must never receive the same invoice number');
         assert.ok(results[0] && results[1], 'both invoice numbers must be non-empty');
 

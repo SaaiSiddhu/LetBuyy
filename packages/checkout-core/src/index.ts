@@ -101,6 +101,7 @@ export const CreateOrderSchema = z.object({
 });
 
 export const StorefrontCreateOrderSchema = z.object({
+  expectedQuoteFingerprint: z.string().regex(/^[a-f0-9]{64}$/).optional(),
   customer: z.object({
     name: z.string().min(1).max(200).trim(),
     email: EmailSchema,
@@ -183,8 +184,33 @@ export const CheckoutDeliverySchema = z.object({
   // Coupon choice is saved at delivery; prices and eligibility remain server-owned.
   discount_codes: z.array(z.string().trim().min(1).max(50).transform(code => code.toUpperCase())).max(1).optional(),
   expected_discount_amount_minor: z.number().int().nonnegative().safe().optional(),
+  expected_quote_fingerprint: z.string().regex(/^[a-f0-9]{64}$/).optional(),
   shipping_quote: z.record(z.string(), z.unknown()).default({}),
 }).strict();
+
+export const CheckoutQuoteSchema = z.object({
+  shipping_address: z.object({
+    country: z.enum(['IN', 'India']).default('IN'),
+    state: z.string().trim().min(1).max(100),
+    state_code: z.string().max(3).optional(),
+    zip: z.string().regex(/^[1-9][0-9]{5}$/),
+  }).strict(),
+  shipping_rate_id: UuidSchema,
+  coupon_code: z.string().trim().min(1).max(50).optional().nullable(),
+  customer_email: EmailSchema.optional().nullable(),
+}).strict();
+
+export const StorefrontCheckoutQuoteSchema = CheckoutQuoteSchema.extend({
+  items: z.array(z.object({
+    product_id: UuidSchema,
+    variant_id: UuidSchema.optional().nullable(),
+    quantity: z.number().int().min(1).max(1000),
+  }).strict()).min(1).max(100),
+});
+export const StorefrontDeliveryOptionsSchema = StorefrontCheckoutQuoteSchema.omit({ shipping_rate_id: true, coupon_code: true, customer_email: true });
+export type StorefrontDeliveryOptionsInput = z.infer<typeof StorefrontDeliveryOptionsSchema>;
+export type StorefrontCheckoutQuoteInput = z.infer<typeof StorefrontCheckoutQuoteSchema>;
+export type CheckoutQuoteInput = z.infer<typeof CheckoutQuoteSchema>;
 
 export const CheckoutPaymentIntentSchema = z.object({
   idempotency_key: z.string().min(8).max(200),
@@ -1101,15 +1127,22 @@ export const RazorpayOrderSchema = z.object({
   amount_minor_units: z.number().int().positive().optional(),
 });
 
+export const ShippingTaxSettingsListSchema = PaginationQuery.extend({ store_id: UuidSchema,
+  sort: z.literal('name').optional(), order: z.enum(['asc','desc']).default('asc') });
+export type ShippingTaxSettingsListInput = z.infer<typeof ShippingTaxSettingsListSchema>;
+
 export const CreateShippingZoneSchema = z.object({
   store_id: UuidSchema,
   name: z.string().min(1).max(100).trim(),
-  countries: z.array(z.string().min(2).max(100).trim()).min(1).max(250),
+  countries: z.array(z.enum(['IN', 'India'])).min(1).max(1),
+  cod_enabled: z.boolean().default(true),
+  profile_id: UuidSchema.nullable().optional(),
   states: z.array(z.string().max(100)).max(100).optional(),
-  zip_codes: z.array(z.string().max(20)).max(500).optional(),
+  zip_codes: z.array(z.string().regex(/^[1-9][0-9]{5}$/, 'Use a six-digit Indian PIN code')).max(500).optional(),
 });
 
-export const CreateShippingRateSchema = z.object({
+
+const ShippingRateSettingsSchema = z.object({
   zone_id: UuidSchema,
   name: z.string().min(1).max(100).trim(),
   type: z.enum(['flat', 'weight_based', 'price_based', 'free']),
@@ -1121,6 +1154,25 @@ export const CreateShippingRateSchema = z.object({
   estimated_days_min: z.number().int().min(0).optional(),
   estimated_days_max: z.number().int().min(0).optional(),
   is_active: z.boolean().default(true),
+  cod_enabled: z.boolean().default(true),
+});
+
+/** Validate ranges both on creation and against the merged saved row on PATCH. */
+export function shippingRateRangeError(value: Record<string, unknown>): string | null {
+  for (const [min, max, label] of [
+    ['min_weight_grams', 'max_weight_grams', 'Weight'],
+    ['min_order_amount', 'max_order_amount', 'Order amount'],
+    ['estimated_days_min', 'estimated_days_max', 'Delivery time'],
+  ]) {
+    if (value[min] != null && value[max] != null && Number(value[min]) > Number(value[max])) {
+      return `${label} minimum must not exceed its maximum.`;
+    }
+  }
+  return null;
+}
+export const CreateShippingRateSchema = ShippingRateSettingsSchema.superRefine((value, ctx) => {
+  const message = shippingRateRangeError(value);
+  if (message) ctx.addIssue({ code: z.ZodIssueCode.custom, message });
 });
 
 export const ShippingServiceabilityQuerySchema = z.object({
@@ -1135,11 +1187,11 @@ export const CreateTaxRateSchema = z.object({
   store_id: UuidSchema,
   name: z.string().min(1).max(100).trim(),
   rate: z.number().min(0).max(100),
-  country: z.string().length(2).toUpperCase().default('IN'),
-  state: z.string().max(100).optional(),
+  country: z.literal('IN').default('IN'),
+  state: IndianStateCodeSchema.optional(),
   hsn_code: z.string().max(20).optional(),
   applies_to: z.enum(['all', 'shipping', 'products']).default('all'),
-  is_compound: z.boolean().default(false),
+  is_compound: z.literal(false).default(false),
   is_shipping: z.boolean().default(false),
   priority: z.number().int().min(0).default(0),
   is_active: z.boolean().default(true),
@@ -1148,12 +1200,12 @@ export const CreateTaxRateSchema = z.object({
 // PATCH contracts deliberately carry no create defaults: an omitted field must
 // preserve the saved value. Nullable bounds/state let merchants clear settings.
 export const UpdateShippingZoneSchema = CreateShippingZoneSchema.omit({ store_id: true })
-  .partial().refine((patch) => Object.keys(patch).length > 0, 'At least one setting is required');
+  .partial().extend({ cod_enabled: z.boolean().optional() }).refine((patch) => Object.keys(patch).length > 0, 'At least one setting is required');
 
 export const UpdateShippingRateSchema = z.object({
-  name: CreateShippingRateSchema.shape.name.optional(),
+  name: ShippingRateSettingsSchema.shape.name.optional(),
   description: z.string().max(1000).nullable().optional(),
-  type: CreateShippingRateSchema.shape.type.optional(),
+  type: ShippingRateSettingsSchema.shape.type.optional(),
   price: MoneySchema.optional(),
   min_weight_grams: z.number().int().min(0).nullable().optional(),
   max_weight_grams: z.number().int().min(0).nullable().optional(),
@@ -1162,16 +1214,21 @@ export const UpdateShippingRateSchema = z.object({
   estimated_days_min: z.number().int().min(0).nullable().optional(),
   estimated_days_max: z.number().int().min(0).nullable().optional(),
   is_active: z.boolean().optional(),
-}).refine((patch) => Object.keys(patch).length > 0, 'At least one setting is required');
+  cod_enabled: z.boolean().optional(),
+}).refine((patch) => Object.keys(patch).length > 0, 'At least one setting is required')
+  .superRefine((value, ctx) => {
+    const message = shippingRateRangeError(value);
+    if (message) ctx.addIssue({ code: z.ZodIssueCode.custom, message });
+  });
 
 export const UpdateTaxRateSchema = z.object({
   name: CreateTaxRateSchema.shape.name.optional(),
   rate: CreateTaxRateSchema.shape.rate.optional(),
-  country: z.string().length(2).toUpperCase().optional(),
-  state: z.string().max(100).nullable().optional(),
+  country: z.literal('IN').optional(),
+  state: IndianStateCodeSchema.nullable().optional(),
   hsn_code: z.string().max(20).nullable().optional(),
   applies_to: z.enum(['all', 'shipping', 'products']).optional(),
-  is_compound: z.boolean().optional(),
+  is_compound: z.literal(false).optional(),
   is_shipping: z.boolean().optional(),
   priority: z.number().int().min(0).optional(),
   is_active: z.boolean().optional(),
@@ -1268,6 +1325,14 @@ export type CouponValidationFailureCode =
 
 export type DiscountClass = 'product' | 'order' | 'shipping';
 export type DiscountSourceType = 'code' | 'automatic';
+/** Merchant decimal input -> exact paise. Never round away an invalid sub-paise charge. */
+export function parseShippingHandlingFeeMinor(input: string): number | null {
+  if (!/^(0|[1-9]\d{0,6})(\.\d{1,2})?$/.test(input)) return null;
+  const [whole, fraction = ''] = input.split('.');
+  const minor = Number(whole) * 100 + Number(fraction.padEnd(2, '0'));
+  return Number.isSafeInteger(minor) && minor <= 100_000_000 ? minor : null;
+}
+
 export type DiscountRejectionReason = 'combine_blocked' | 'amount_exhausted';
 
 export interface DiscountCombinesWith {
@@ -2031,7 +2096,7 @@ export interface TaxRateUpdatePlan {
   updates: Record<string, unknown>;
 }
 
-const SHIPPING_ZONE_UPDATE_FIELDS = ['name', 'countries', 'states', 'zip_codes'] as const;
+const SHIPPING_ZONE_UPDATE_FIELDS = ['name', 'countries', 'states', 'zip_codes', 'cod_enabled', 'profile_id'] as const;
 const SHIPPING_RATE_UPDATE_FIELDS = [
   'name',
   'description',
@@ -2044,6 +2109,7 @@ const SHIPPING_RATE_UPDATE_FIELDS = [
   'estimated_days_max',
   'type',
   'is_active',
+  'cod_enabled',
 ] as const;
 const TAX_RATE_UPDATE_FIELDS = ['name', 'rate', 'country', 'state', 'hsn_code', 'applies_to', 'is_compound', 'is_shipping', 'priority', 'is_active'] as const;
 
@@ -2054,6 +2120,8 @@ export function planShippingZoneCreate(input: CreateShippingZoneInput): Shipping
       site_id: input.store_id,
       name: input.name,
       countries: input.countries,
+      profile_id: input.profile_id ?? null,
+      cod_enabled: input.cod_enabled,
       states: input.states || [],
       zip_codes: input.zip_codes || [],
     },
@@ -2082,6 +2150,7 @@ export function planShippingRateCreate(input: CreateShippingRateInput): Shipping
       estimated_days_max: input.estimated_days_max ?? null,
       type: input.type,
       is_active: input.is_active ?? true,
+      cod_enabled: input.cod_enabled ?? true,
     },
   };
 }
@@ -2147,8 +2216,8 @@ export function planShippingServiceability(
     serviceable: true,
     cod_available: codAvailable,
     provider: matchingRule.provider,
-    estimated_days_min: matchingRule.estimated_days_min || 3,
-    estimated_days_max: matchingRule.estimated_days_max || 7,
+    estimated_days_min: matchingRule.estimated_days_min ?? 3,
+    estimated_days_max: matchingRule.estimated_days_max ?? 7,
     reason,
   };
 }
@@ -2199,3 +2268,5 @@ export function canonicalCheckoutDomainProbePayload(direction: 'request'|'respon
   const proof=CheckoutDomainProbeSchema.parse(input);
   return JSON.stringify({purpose:'letbuyy.checkout-domain-probe.v1',direction,...proof});
 }
+
+export { CreateShippingProfileSchema, UpdateShippingProfileSchema, type CreateShippingProfileInput, type UpdateShippingProfileInput } from '@letbuyy/shared-types';

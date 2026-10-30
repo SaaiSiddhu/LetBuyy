@@ -21,6 +21,13 @@ after(() => { document.body.replaceChildren(); dom.window.close(); });
 let registered: Promise<void> | undefined;
 const ready = () => registered ??= import('./liquid-hydration-islands').then(module => module.registerLiquidHydrationIslands());
 const flush = async () => { for (let i = 0; i < 4; i++) await new Promise(resolve => setTimeout(resolve, 0)); };
+// Native review/cart receipts include WebCrypto work. A fixed number of timer turns
+// is not a completion signal under the full browser/database qualification load.
+async function waitForReceipt(predicate: () => boolean, description: string) {
+  const deadline = Date.now() + 5000;
+  while (!predicate() && Date.now() < deadline) await new Promise(resolve => setTimeout(resolve, 10));
+  assert.ok(predicate(), description);
+}
 type Model = ProductModel & { personalization: PersonalizationFacts };
 const model = (index = 0): Model => structuredClone(MADEYOURS_DEMO_PRODUCTS[index]);
 const response = (data: unknown, status = 200) => new Response(JSON.stringify({ success: status === 200, ...(status === 200 ? { data } : { error: data }) }), { status });
@@ -91,19 +98,27 @@ test('actual MadeYours mapper/Liquid/native review retains separate configuratio
     q<HTMLButtonElement>(section, 'review').click(); assert.equal(purchase(section).disabled, false);
     purchase(section).click(); purchase(section).click(); await flush();
     assert.equal(api.writes.length, 1); assert.equal(cached().length, 1);
+    await waitForReceipt(() => typeof cached()[0]?.serverLineId === 'string' && !purchase(section).disabled, 'the first cart receipt must be applied');
     const ashaId = cached()[0].serverLineId; assert.equal(typeof ashaId, 'string');
-    review(section, 'Kabir'); purchase(section).click(); await flush();
+    review(section, 'Kabir'); purchase(section).click();
+    await waitForReceipt(() => api.writes.length === 2 && cached().every(line => typeof line.serverLineId === 'string') && !purchase(section).disabled, 'both configurations must receive their saved identities');
     assert.deepEqual(cached().map(line => (line.personalization as { text: string }).text), ['Asha', 'Kabir']);
     assert.equal(new Set(cached().map(line => line.serverLineId)).size, 2);
     assert.equal(new Set(cached().map(line => line.configurationFingerprint)).size, 2);
-    review(section, 'Asha'); purchase(section).click(); await flush();
+    review(section, 'Asha'); purchase(section).click();
+    await waitForReceipt(() => api.writes.length === 3 && cached()[0]?.quantity === 2 && !purchase(section).disabled, 'the repeated configuration must receive quantity two');
     assert.deepEqual(cached().map(line => line.quantity), [2, 1]); assert.equal(cached()[0].serverLineId, ashaId);
     const page = document.createElement('lb-cart'), drawer = document.createElement('lb-cart-drawer'); document.body.append(page, drawer); await flush();
     assert.match(page.textContent!, /Asha/); assert.match(page.textContent!, /Kabir/); assert.match(page.textContent!, /Front engraving/);
     assert.match(page.textContent!, /<img src=x onerror=attack\(\)>/); assert.equal(page.querySelector('img,[onerror]'), null);
-    const up = [...page.querySelectorAll<HTMLButtonElement>('[data-lb-cart-step="up"]')].find(button => button.dataset.cartLineKey === ashaId)!; up.click(); await flush();
+    const up = [...page.querySelectorAll<HTMLButtonElement>('[data-lb-cart-step="up"]')].find(button => button.dataset.cartLineKey === ashaId)!; up.click();
+    await waitForReceipt(() => api.writes.length === 4 && cached()[0]?.quantity === 3
+      && page.querySelector('[data-lb-cart-status]') === null,
+    'quantity change must receive its saved receipt before the next command');
     assert.deepEqual(api.writes.at(-1)!.map(line => [line.personalization?.text, line.quantity]), [['Asha', 3], ['Kabir', 1]]);
-    const remove = [...drawer.querySelectorAll<HTMLButtonElement>('[data-lb-cart-remove]')].find(button => button.dataset.cartLineKey !== ashaId)!; remove.click(); await flush();
+    const remove = [...drawer.querySelectorAll<HTMLButtonElement>('[data-lb-cart-remove]')].find(button => button.dataset.cartLineKey !== ashaId)!; remove.click();
+    await waitForReceipt(() => api.writes.length === 5 && cached().length === 1
+      && page.querySelector('[data-lb-cart-status]') === null, 'removal must reach the canonical cart');
     assert.deepEqual(api.writes.at(-1)!.map(line => [line.personalization?.text, line.quantity]), [['Asha', 3]]);
     assert.equal(cached()[0].serverLineId, ashaId); assert.ok(cached()[0].snapshotFingerprint); assert.ok(cached()[0].nicheSnapshot);
     for (const line of api.writes.flat()) { assert.deepEqual(line.properties, { Wood: 'Walnut' }); assert.equal(Object.hasOwn(line, 'id'), false); assert.equal(Object.hasOwn(line, 'unit_price'), false); }
@@ -231,9 +246,9 @@ test('two concurrent PDP intents keep both configurations while an older receipt
   try {
     document.body.innerHTML = (await render(a, 'one')).html + (await render(b, 'two')).html;
     choose(root('one'), 'Walnut'); choose(root('two'), 'Ivory linen / Indigo spine'); await flush(); review(root('one'), 'Asha'); review(root('two'), 'Kabir');
-    purchase(root('one')).click(); await flush(); assert.ok(release); assert.equal(api.writes.length, 1);
+    purchase(root('one')).click(); await waitForReceipt(() => Boolean(release), 'the first mutation must reach the held response'); assert.ok(release); assert.equal(api.writes.length, 1);
     purchase(root('two')).click(); await flush(); assert.equal(cached().length, 2); assert.equal(api.writes.length, 1);
-    release(); await flush();
+    release(); await waitForReceipt(() => api.writes.length === 2, 'the queued mutation must use the first receipt'); await flush();
     assert.equal(api.writes.length, 2); assert.equal(mutations[0].method, 'POST'); assert.equal(mutations[1].method, 'PATCH'); assert.match(mutations[1].path, /\/cart\/madeyours-test-receipt$/);
     assert.deepEqual(cached().map(line => [(line.personalization as { text: string }).text, line.quantity]), [['Asha', 1], ['Kabir', 1]]);
     assert.equal(new Set(cached().map(line => line.serverLineId)).size, 2);
@@ -261,7 +276,9 @@ test('real native normalization needs consent and review; hostile text never rea
     review(section, '<img src=x onerror=attack()>'); purchase(section).click(); await flush(); assert.equal(api.writes.length, 0); assert.equal(section.querySelector('[onerror]'), null);
     review(section, 'Jose\u0301'); assert.equal(purchase(section).disabled, true); assert.equal(q<HTMLInputElement>(section, 'text').value, 'Jose\u0301');
     q<HTMLButtonElement>(section, 'normalize').click(); assert.equal(q<HTMLInputElement>(section, 'text').value, 'José'); assert.equal(purchase(section).disabled, true);
-    q<HTMLButtonElement>(section, 'review').click(); purchase(section).click(); await flush(); assert.equal(api.writes[0][0].personalization?.text, 'José');
+    q<HTMLButtonElement>(section, 'review').click(); purchase(section).click();
+    await waitForReceipt(() => api.writes.length === 1, 'normalized review must reach the cart');
+    assert.equal(api.writes[0][0].personalization?.text, 'José');
   } finally { clear(); globalThis.fetch = original; }
 });
 

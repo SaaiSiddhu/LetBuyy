@@ -1,5 +1,7 @@
 'use client'
 
+import { CheckoutTotalsQuoteSchema, type CheckoutTotalsQuote } from '@letbuyy/shared-types'
+
 import { NicheOrderFacts } from '@/components/orders/niche-order-facts'
 import { readOrderLineItems as readLineItems } from '@/components/orders/order-line-items'
 import { useReadRequest } from '@/lib/api/use-read-request'
@@ -50,6 +52,7 @@ interface OrderAddress {
 }
 
 interface OrderDetail {
+    totals_quote: CheckoutTotalsQuote | null
     id: string
     store_id: string
     order_number: string
@@ -136,6 +139,7 @@ function mapOrderDetail(raw: Record<string, unknown>): OrderDetail {
         subtotal: readNumber(raw, 'subtotal'),
         shipping_cost: readNumber(raw, 'shipping_cost'),
         tax: readNumber(raw, 'tax'),
+        totals_quote: (() => { const quote = CheckoutTotalsQuoteSchema.safeParse(raw.tax_snapshot); return quote.success ? quote.data : null })(),
         discount: readNumber(raw, 'discount'),
         coupon_code: readNullableString(raw, 'coupon_code'),
         coupon_discount: readNumber(raw, 'coupon_discount'),
@@ -505,7 +509,7 @@ function PaymentSummaryCard({ order }: { order: OrderDetail }) {
                                 value={`-${formatInrCurrency(order.discount) ?? '—'}`}
                             />
                         )}
-                        <AmountLine label="Tax (GST)" value={formatInrCurrency(order.tax) ?? '—'} />
+                        <AmountLine label={order.totals_quote?.included_tax_minor ? "GST (includes tax already in prices)" : "Tax (GST)"} value={formatInrCurrency(order.tax) ?? '—'} />
                         <div className="flex justify-between border-t border-[var(--lb-color-border)] pt-[var(--lb-space-2)] font-[var(--lb-font-weight-semibold)] text-[var(--lb-color-text)]">
                             <span>Total</span>
                             <span>{formatInrCurrency(order.total) ?? '—'}</span>

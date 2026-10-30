@@ -1,3 +1,4 @@
+import { validateMerchantMutationRequest } from '@/lib/api/request-origin'
 import { NextRequest, NextResponse } from 'next/server'
 import type { CreateShippingRateInput } from '@letbuyy/api-client'
 import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
@@ -7,6 +8,8 @@ export async function POST(
     request: NextRequest,
     { params }: { params: Promise<{ store: string }> }
 ) {
+    const denied = validateMerchantMutationRequest(request, { requireKey: false })
+    if (denied) return denied
     try {
         const { store } = await params
         const resolved = await resolveOwnedStoreId(decodeURIComponent(store))

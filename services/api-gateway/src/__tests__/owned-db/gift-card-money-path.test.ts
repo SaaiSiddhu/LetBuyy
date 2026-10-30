@@ -38,7 +38,8 @@ const OTHER_STORE_ID = otherTenant.siteId;
 const LOCATION_ID = tenant.locationId;
 
 before(() => {
-    seedSyntheticTenant(psql, tenant, { gst: true });
+    seedSyntheticTenant(psql, tenant, { gst: true, taxRates: true });
+    psql(`UPDATE sites SET tax_inclusive=false WHERE id='${STORE_ID}';`);
     seedSyntheticTenant(psql, otherTenant);
 });
 
@@ -176,6 +177,7 @@ test(
         psql(`
             INSERT INTO products (id, store_id, name, price, sku, is_active, created_at, updated_at)
             VALUES ('${productId}', '${STORE_ID}', 'T15 Autotest Product B ${suffix}', 200.00, 'T15-AUTOTEST-B-${suffix}', true, now(), now());
+            UPDATE products SET charge_tax=false WHERE id='${productId}';
         `);
         psql(`
             INSERT INTO inventory_levels (id, store_id, product_id, variant_id, location_id, available, reserved, committed_quantity, available_quantity, reserved_quantity, on_hand_quantity, created_at, updated_at)
@@ -278,6 +280,7 @@ test(
             psql(`
                 INSERT INTO products (id, store_id, name, price, sku, is_active, created_at, updated_at)
                 VALUES ('${pid}', '${STORE_ID}', 'T15 Race ${label} ${suffix}', 150.00, 'T15-RACE-${label}-${suffix}', true, now(), now());
+                UPDATE products SET charge_tax=false WHERE id='${pid}';
             `);
             psql(`
                 INSERT INTO inventory_levels (id, store_id, product_id, variant_id, location_id, available, reserved, committed_quantity, available_quantity, reserved_quantity, on_hand_quantity, created_at, updated_at)

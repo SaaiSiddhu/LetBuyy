@@ -55,6 +55,36 @@ ApiClient client(
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   test(
+    'catalog cursor transport trims input, preserves the returned cursor and retires it on a failed different page',
+    () async {
+      final queries = <Map<String, dynamic>>[];
+      final api = client((r, h) {
+        queries.add(Map<String, dynamic>.from(r.queryParameters));
+        respond(
+          r,
+          h,
+          r.queryParameters['cursor'] == 'unavailable'
+              ? {}
+              : [product('a', 'Current cursor page')],
+          status: r.queryParameters['cursor'] == 'unavailable' ? 503 : 200,
+          more: true,
+        );
+      });
+      final service = ProductService(api: api, cache: CacheService.memory());
+      await service.fetchProducts('a', cursor: '  opaque-current-cursor  ');
+      expect(queries.single['cursor'], 'opaque-current-cursor');
+      expect(service.productsNextCursor, 'synthetic-next');
+      await expectLater(
+        service.fetchProducts('a', cursor: 'unavailable'),
+        throwsA(isA<ApiException>()),
+      );
+      expect(service.productsNextCursor, isNull);
+      expect(service.products, isEmpty);
+      await service.fetchProducts('a', cursor: '   ');
+      expect(queries.last.containsKey('cursor'), isFalse);
+    },
+  );
+  test(
     'new queries and pages never reuse another loaded page on failure',
     () async {
       final api = client(

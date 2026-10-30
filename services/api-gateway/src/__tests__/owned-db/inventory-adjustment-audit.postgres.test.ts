@@ -30,7 +30,7 @@ let proxy: OwnedPooledSqlProxy;
 before(async () => {
     // Isolate the pinned 346/356 BEFORE witnesses from later 385/388 replacements.
     // Current behavior suites reapply both successors after the historical proofs.
-    for(const name of ['388_cart_order_fact_snapshots','385_product_variant_facts']) owned.script(readFileSync(new URL('../../../../../database/supabase/rollback/'+name+'.rollback.sql',import.meta.url),'utf8'));
+    for(const name of ['412_invoice_checkout_fact_parity','411_authoritative_checkout_gst','388_cart_order_fact_snapshots','385_product_variant_facts']) owned.script(readFileSync(new URL('../../../../../database/supabase/rollback/'+name+'.rollback.sql',import.meta.url),'utf8'));
     keys = await newIdentityKeys();
     seedSyntheticTenant(psql, tenant);
     psql(`
@@ -279,7 +279,7 @@ test('BEFORE defect witness: original356 retires unreviewed provenance and colum
 });
 
 test('empty356 rollback verifies family/body/owner/ACL/provenance/shape and refuses concurrent writers before a clean reapply and command race',async()=>{
-    for(const name of ['385_product_variant_facts','388_cart_order_fact_snapshots']) owned.script(readFileSync(new URL('../../../../../database/supabase/migrations/'+name+'.sql',import.meta.url),'utf8'));
+    for(const name of ['385_product_variant_facts','388_cart_order_fact_snapshots','411_authoritative_checkout_gst','412_invoice_checkout_fact_parity']) owned.script(readFileSync(new URL('../../../../../database/supabase/migrations/'+name+'.sql',import.meta.url),'utf8'));
     const original=stockOwnerDefinitions();assert.equal(psql('SELECT count(*) FROM inventory_adjustment_receipts;'),'0');
     assert.equal(psql(`SELECT EXISTS(SELECT 1 FROM pg_depend d JOIN pg_attrdef a ON d.classid='pg_attrdef'::regclass AND d.objid=a.oid WHERE a.adrelid='public.inventory_adjustment_receipts'::regclass AND d.refclassid='pg_proc'::regclass AND d.refobjid='public.assert_product_edit_actor_v1(uuid,uuid,text)'::regprocedure);`),'t');
     assert.match(owned.psqlExpectError('BEGIN;DROP FUNCTION public.assert_product_edit_actor_v1(uuid,uuid,text) RESTRICT;ROLLBACK;'),/depend|cannot drop/);
