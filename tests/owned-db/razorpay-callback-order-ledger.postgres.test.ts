@@ -223,6 +223,24 @@ test('merchant callback verifies its exact secret and provider account before on
         INSERT INTO checkout_sessions(id,site_id,cart_id,order_id,idempotency_key,status,checkout_state,payment_intent)
             VALUES('${failedCheckoutId}','${tenant.siteId}','${failedCartId}','${failedOrder}','syn-${failedCheckoutId}',
                 'payment_intent','payment_intent','${JSON.stringify(failedIntent)}'::jsonb);`);
+    // Rotate the merchant's selected account before either older signed event
+    // arrives. The checkout snapshots still name the first immutable version.
+    const replacementId = randomUUID(), replacementKeyId = `rzp_test_${randomUUID().replaceAll('-', '')}`;
+    const replacementContext = { siteId: tenant.siteId, keyId: replacementKeyId,
+        environment: 'sandbox' as const, credentialId: replacementId };
+    const replacementEncrypted = {
+        key_secret_ciphertext: await encryptPaymentSecret(randomUUID(), wrappingKey, replacementContext),
+        webhook_secret_ciphertext: await encryptPaymentWebhookSecret(randomUUID(), wrappingKey, replacementContext),
+    };
+    owned.psql(`UPDATE payment_credentials SET selected_for_checkout=false WHERE id='${credentialId}' AND site_id='${tenant.siteId}';
+        INSERT INTO payment_credentials(id,site_id,provider,mode,status,provider_key_id,last_verified_at,encrypted_credentials)
+            VALUES('${replacementId}','${tenant.siteId}','razorpay','sandbox','active','${replacementKeyId}',now(),
+                '${JSON.stringify(replacementEncrypted)}'::jsonb);
+        UPDATE payment_credentials SET selected_for_checkout=true WHERE id='${replacementId}' AND site_id='${tenant.siteId}';
+        UPDATE sites SET payment_settings='${JSON.stringify({mode:'ownAccount',gateways:['razorpay'],
+            razorpay:{credential_id:replacementId,key_id:replacementKeyId,test_mode:true,verified:true}})}'::jsonb
+            WHERE id='${tenant.siteId}';`);
+    assert.equal(owned.psql(`SELECT id FROM payment_credentials WHERE site_id='${tenant.siteId}' AND selected_for_checkout;`), replacementId);
     const originalFetch = globalThis.fetch;
     t.mock.method(globalThis, 'fetch', async (input: RequestInfo | URL, init?: RequestInit) => {
         const url = new URL(input instanceof Request ? input.url : String(input));
@@ -260,6 +278,9 @@ test('merchant callback verifies its exact secret and provider account before on
     const wrong = await deliver(webhookSecret); assert.equal(wrong.status, 400, wrong.text);
     const forged = await deliver(ownWebhookSecret, `http://127.0.0.1/razorpay/merchant/${randomUUID()}/${credentialId}`);
     assert.notEqual(forged.status, 200); assert.equal(journalCount(), '0');
+    const wrongVersion = await deliver(ownWebhookSecret,
+        `http://127.0.0.1/razorpay/merchant/${tenant.siteId}/${replacementId}`);
+    assert.notEqual(wrongVersion.status, 200); assert.equal(journalCount(), '0');
     const first = await deliver(ownWebhookSecret); assert.equal(first.status, 200, first.text);
     const retry = await deliver(ownWebhookSecret); assert.equal(retry.status, 200, retry.text);
     assert.equal(journalCount(), '1');
