@@ -200,3 +200,65 @@ test('a receive key cannot be moved to a second owned parent',async t=>{
  const other=await f.request('/purchase-orders/'+two.json?.data.purchase_order.id+'/receive',{idempotency_key:key,lines:[{purchase_order_line_id:two.json?.data.lines[0].id,quantity:1}]},key);
  assert.equal(other.status,409,other.text);assert.equal(other.json?.error.code,'WAREHOUSE_KEY_CONFLICT');assert.deepEqual(stock(f.site.siteId),before);
 });
+
+function stopCreate(f:Awaited<ReturnType<typeof fixture>>,key:string,quantity=3) {
+ return {store_id:f.site.siteId,idempotency_key:key,operation:'purchase_order.create',target_id:null,
+  command:{supplier_id:null,location_id:f.site.locationId,expected_at:null,notes:null,
+   lines:[{product_id:f.product,variant_id:null,quantity,unit_cost:12.25}]}};
+}
+test('stopping an unapplied request retains a cancellation that prevents every delayed apply',async t=>{
+ const f=await fixture(t),control=randomUUID();assert.equal((await f.request('/purchase-orders',f.create(control,1),control)).status,201);
+ const key=randomUUID(),before=stock(f.site.siteId),body=stopCreate(f,key),stopped=await f.request('/commands/stop',body,key);
+ assert.equal(stopped.status,200,stopped.text);assert.equal(stopped.json?.data.command_receipt.outcome,'cancelled');
+ assert.equal(stopped.json?.data.command_receipt.target_id,null);assert.deepEqual(stopped.json?.data.lines,[]);
+ const late=await f.request('/purchase-orders',f.create(key),key);assert.equal(late.status,409,late.text);assert.equal(late.json?.error.code,'WAREHOUSE_REQUEST_STOPPED');
+ const again=await f.request('/commands/stop',body,key);assert.equal(again.status,200,again.text);assert.deepEqual(again.json?.data,stopped.json?.data);
+ assert.deepEqual(stock(f.site.siteId),before);
+ assert.equal(owned.psql("SELECT count(*)FROM purchase_orders WHERE idempotency_key="+quote(key)+";"),'0');
+ assert.equal(owned.psql("SELECT count(*)FROM warehouse_command_receipts WHERE idempotency_key="+quote(key)+";"),'1');
+});
+test('stop after a committed lost reply recovers the applied acknowledgement rather than claiming it was undone',async t=>{
+ const f=await fixture(t),key=randomUUID(),made=await f.request('/purchase-orders',f.create(key),key);assert.equal(made.status,201,made.text);
+ const before=stock(f.site.siteId),recovered=await f.request('/commands/stop',stopCreate(f,key),key);
+ assert.equal(recovered.status,200,recovered.text);assert.equal(recovered.json?.data.command_receipt.outcome,'applied');
+ assert.deepEqual(recovered.json?.data,made.json?.data);assert.deepEqual(stock(f.site.siteId),before);
+ const changed=await f.request('/commands/stop',stopCreate(f,key,4),key);assert.equal(changed.status,409,changed.text);
+ assert.equal(changed.json?.error.code,'WAREHOUSE_KEY_CONFLICT');assert.deepEqual(stock(f.site.siteId),before);
+});
+test('racing stop and apply produces one immutable outcome and at most one stock effect',async t=>{
+ const f=await fixture(t);
+ for(let n=0;n<5;n++){
+  const key=randomUUID(),[apply,stop]=await Promise.all([f.request('/purchase-orders',f.create(key),key),f.request('/commands/stop',stopCreate(f,key),key)]);
+  assert.equal(stop.status,200,stop.text);const outcome=stop.json?.data.command_receipt.outcome;
+  assert.ok(['applied','cancelled'].includes(outcome),stop.text);
+  assert.equal(apply.status,outcome==='applied'?201:409,apply.text);
+  assert.equal(owned.psql("SELECT count(*)FROM purchase_orders WHERE idempotency_key="+quote(key)+";"),outcome==='applied'?'1':'0');
+  assert.equal(owned.psql("SELECT count(*)FROM warehouse_command_receipts WHERE idempotency_key="+quote(key)+";"),'1');
+  if(outcome==='cancelled')assert.equal(apply.json?.error.code,'WAREHOUSE_REQUEST_STOPPED');
+  else assert.deepEqual(apply.json?.data,stop.json?.data);
+ }
+});
+test('an inapplicable terminal receive can be stopped without ever clearing its key for future reapplication',async t=>{
+ const f=await fixture(t),key=randomUUID(),made=await f.request('/purchase-orders',f.create(key),key);assert.equal(made.status,201,made.text);
+ const id=made.json?.data.purchase_order.id as string,line=made.json?.data.lines[0].id as string,receivedKey=randomUUID();
+ const done=await f.request('/purchase-orders/'+id+'/receive',{idempotency_key:receivedKey},receivedKey);assert.equal(done.status,200,done.text);
+ const pending=randomUUID(),command={lines:[{purchase_order_line_id:line,quantity:3}]},body={...command,idempotency_key:pending};
+ const rejected=await f.request('/purchase-orders/'+id+'/receive',body,pending);assert.equal(rejected.status,409,rejected.text);
+ const before=stock(f.site.siteId),stopped=await f.request('/commands/stop',{store_id:f.site.siteId,idempotency_key:pending,operation:'purchase_order.receive',target_id:id,command},pending);
+ assert.equal(stopped.status,200,stopped.text);assert.equal(stopped.json?.data.command_receipt.outcome,'cancelled');
+ const late=await f.request('/purchase-orders/'+id+'/receive',body,pending);assert.equal(late.status,409,late.text);
+ assert.equal(late.json?.error.code,'WAREHOUSE_REQUEST_STOPPED');assert.deepEqual(stock(f.site.siteId),before);
+});
+test('stop validates the complete original normalized intent before writing any acknowledgement',async t=>{
+ const f=await fixture(t),control=randomUUID();assert.equal((await f.request('/purchase-orders',f.create(control),control)).status,201);
+ for(const fault of ['missing-notes','missing-cost','unknown-field','wrong-target']){
+  const key=randomUUID(),body=stopCreate(f,key);
+  const bad=JSON.parse(JSON.stringify(body)) as Record<string,unknown>,command=bad.command as Record<string,unknown>;
+  if(fault==='missing-notes')delete command.notes;
+  if(fault==='missing-cost')delete (command.lines as Array<Record<string,unknown>>)[0].unit_cost;
+  if(fault==='unknown-field')command.extra='synthetic';
+  if(fault==='wrong-target')bad.target_id=randomUUID();
+  const result=await f.request('/commands/stop',bad,key);assert.equal(result.status,400,result.text);
+  assert.equal(owned.psql("SELECT count(*)FROM warehouse_command_receipts WHERE idempotency_key="+quote(key)+";"),'0');
+ }
+});

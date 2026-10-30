@@ -20,7 +20,7 @@ export { SportsFactsSchema, SportsVariantFactsSchema, readSportsFacts, resolveSp
 export { BooksFactsSchema, BooksVariantFactsSchema, readBooksFacts, mergeBooksVariantFacts, type BooksFacts, type BooksVariantFacts } from './marginalia-facts';
 export { ReplaceCollectionMembershipSchema, type ReplaceCollectionMembershipInput } from '@letbuyy/shared-types';
 export { CollectionListPaginationSchema, CollectionListQuerySchema, type CollectionListPagination, type CollectionListQuery, type CollectionListQueryInput } from '@letbuyy/shared-types';
-import { CustomerSegmentRulesSchema, ProductStatusSchema, EmailSchema, HsnCodeSchema, MoneySchema, PaginationQuery, QueryBooleanSchema, SlugSchema, UrlSchema, UuidSchema, InventoryReservationStatusSchema } from '@letbuyy/shared-types';
+import { StopWarehouseCommandInputSchema, CustomerSegmentRulesSchema, ProductStatusSchema, EmailSchema, HsnCodeSchema, MoneySchema, PaginationQuery, QueryBooleanSchema, SlugSchema, UrlSchema, UuidSchema, InventoryReservationStatusSchema } from '@letbuyy/shared-types';
 
 export type ProductStatus = 'draft' | 'active' | 'archived';
 
@@ -460,6 +460,32 @@ export const ReceiveTransferSchema = z.object({
 export const ShipTransferSchema = z.object({
   idempotency_key: z.string().min(8).max(200),
 });
+
+// The original normalized intent is also the authority for stopping an uncertain command.
+const NormalizedWarehouseCommands = {
+  'purchase_order.create': CreatePurchaseOrderSchema.omit({store_id:true,idempotency_key:true}).extend({
+    supplier_id:UuidSchema.nullable(), expected_at:z.string().datetime({offset:true}).nullable(),
+    notes:CreatePurchaseOrderSchema.shape.notes.unwrap().nullable(),
+    lines:z.array(PurchaseOrderLineSchema.extend({variant_id:UuidSchema.nullable()}).strict()).min(1).max(200),
+  }).strict(),
+  'transfer.create': CreateTransferSchema.omit({store_id:true,idempotency_key:true}).extend({
+    notes:CreateTransferSchema.shape.notes.unwrap().nullable(),
+    lines:z.array(TransferLineSchema.extend({variant_id:UuidSchema.nullable()}).strict()).min(1).max(200),
+  }).strict(),
+  'purchase_order.receive':z.object({lines:z.array(ReceivePurchaseOrderLineSchema.strict()).min(1).max(200).nullable()}).strict(),
+  'transfer.receive':z.object({lines:z.array(ReceiveTransferLineSchema.strict()).min(1).max(200).nullable()}).strict(),
+  'transfer.ship':z.object({}).strict(),
+};
+export const StopWarehouseCommandSchema=StopWarehouseCommandInputSchema.superRefine((value,ctx)=>{
+  const create=value.operation==='purchase_order.create'||value.operation==='transfer.create';
+  const parsed=NormalizedWarehouseCommands[value.operation].safeParse(value.command);
+  const missingCost=value.operation==='purchase_order.create'&&Array.isArray(value.command.lines)&&
+    value.command.lines.some(line=>!line||typeof line!=='object'||!Object.prototype.hasOwnProperty.call(line,'unit_cost'));
+  if(create!==(value.target_id===null)||!parsed.success||missingCost)ctx.addIssue({
+    code:z.ZodIssueCode.custom,path:['command'],message:'Supply the complete original normalized warehouse request.',
+  });
+});
+export type {StopWarehouseCommandInput} from '@letbuyy/shared-types';
 
 export const ReserveInventorySchema = z.object({
   store_id: UuidSchema,

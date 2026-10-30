@@ -10,7 +10,7 @@ CREATE TABLE public.warehouse_command_receipts (
  site_id uuid NOT NULL REFERENCES public.sites(id) ON DELETE RESTRICT,
  actor_id uuid NOT NULL REFERENCES public.users_custom(id) ON DELETE RESTRICT,
  operation text NOT NULL CHECK(operation IN('purchase_order.create','purchase_order.receive','transfer.create','transfer.ship','transfer.receive')),
- target_id uuid NOT NULL,
+ target_id uuid,
  authority_guard regprocedure NOT NULL DEFAULT 'public.assert_product_edit_actor_v1(uuid,uuid,text)'::regprocedure,
  command jsonb NOT NULL CHECK(jsonb_typeof(command)='object'),
  response jsonb NOT NULL CHECK(jsonb_typeof(response)='object'),
@@ -20,6 +20,7 @@ CREATE TABLE public.warehouse_command_receipts (
  deleted_at timestamptz CHECK(deleted_at IS NULL),
  created_by uuid NOT NULL REFERENCES public.users_custom(id) ON DELETE RESTRICT,
  updated_by uuid NOT NULL REFERENCES public.users_custom(id) ON DELETE RESTRICT,
+ CHECK((target_id IS NOT NULL OR(operation IN('purchase_order.create','transfer.create') AND response #>> '{command_receipt,outcome}'='cancelled')) IS TRUE),
  CHECK(created_by=actor_id AND updated_by=actor_id AND updated_at=created_at)
 );
 CREATE INDEX warehouse_command_receipts_target_idx ON public.warehouse_command_receipts(site_id,target_id,created_at);
@@ -43,12 +44,14 @@ DECLARE
  line_key text; result jsonb; response jsonb; receipt_id uuid:=gen_random_uuid();
  row_po public.purchase_orders%ROWTYPE; row_transfer public.inventory_transfers%ROWTYPE;
  item record; product uuid; variant uuid; location uuid; quantity integer;
+ operation text:=CASE WHEN left(p_operation,7)='cancel:' THEN substr(p_operation,8) ELSE p_operation END;
+ cancelling boolean:=left(p_operation,7)='cancel:';
 BEGIN
  IF current_setting('role',true) IS DISTINCT FROM 'app_tenant' THEN
   RAISE EXCEPTION 'WAREHOUSE_FORBIDDEN' USING ERRCODE='42501';END IF;
  PERFORM pg_advisory_xact_lock_shared(hashtextextended('letbuyy:migration:414:warehouse-commands',0));
  IF p_site_id IS NULL OR p_actor_id IS NULL OR p_key IS NULL OR length(p_key) NOT BETWEEN 8 AND 200 OR p_key<>btrim(p_key)
-  OR p_operation IS NULL OR p_operation NOT IN('purchase_order.create','purchase_order.receive','transfer.create','transfer.ship','transfer.receive')
+  OR operation IS NULL OR operation NOT IN('purchase_order.create','purchase_order.receive','transfer.create','transfer.ship','transfer.receive')
   OR jsonb_typeof(p_command) IS DISTINCT FROM 'object' OR octet_length(p_command::text)>131072
   OR p_request_id IS NULL OR length(p_request_id) NOT BETWEEN 1 AND 200 THEN RAISE EXCEPTION 'WAREHOUSE_INVALID';END IF;
  -- Check current authority before reading any previous private acknowledgement.
@@ -64,18 +67,18 @@ BEGIN
  SELECT * INTO receipt FROM public.warehouse_command_receipts WHERE idempotency_key=p_key;
  has_receipt:=FOUND;
  IF has_receipt AND(receipt.site_id IS DISTINCT FROM p_site_id OR receipt.actor_id IS DISTINCT FROM p_actor_id
-  OR receipt.operation IS DISTINCT FROM p_operation OR receipt.command IS DISTINCT FROM p_command
-  OR(p_operation NOT IN('purchase_order.create','transfer.create') AND receipt.target_id IS DISTINCT FROM p_target_id)) THEN
+  OR receipt.operation IS DISTINCT FROM operation OR receipt.command IS DISTINCT FROM p_command
+  OR(operation NOT IN('purchase_order.create','transfer.create') AND receipt.target_id IS DISTINCT FROM p_target_id)) THEN
   RAISE EXCEPTION 'WAREHOUSE_KEY_CONFLICT';END IF;
- IF (p_operation IN('purchase_order.create','transfer.create')) IS DISTINCT FROM (p_target_id IS NULL) THEN
+ IF (operation IN('purchase_order.create','transfer.create')) IS DISTINCT FROM (p_target_id IS NULL) THEN
   RAISE EXCEPTION 'WAREHOUSE_INVALID';END IF;
  target:=CASE WHEN has_receipt THEN receipt.target_id ELSE p_target_id END;
  IF target IS NOT NULL THEN
-  IF p_operation LIKE 'purchase_order.%' THEN
-   SELECT * INTO row_po FROM public.purchase_orders WHERE id=target AND site_id=p_site_id AND deleted_at IS NULL FOR UPDATE;
+  IF operation LIKE 'purchase_order.%' THEN
+   SELECT * INTO row_po FROM public.purchase_orders WHERE id=target AND site_id=p_site_id AND(deleted_at IS NULL OR cancelling) FOR UPDATE;
    IF NOT FOUND THEN RAISE EXCEPTION 'WAREHOUSE_NOT_FOUND';END IF;
   ELSE
-   SELECT * INTO row_transfer FROM public.inventory_transfers WHERE id=target AND site_id=p_site_id AND deleted_at IS NULL FOR UPDATE;
+   SELECT * INTO row_transfer FROM public.inventory_transfers WHERE id=target AND site_id=p_site_id AND(deleted_at IS NULL OR cancelling) FOR UPDATE;
    IF NOT FOUND THEN RAISE EXCEPTION 'WAREHOUSE_NOT_FOUND';END IF;
   END IF;
  END IF;
@@ -89,7 +92,7 @@ BEGIN
   OR EXISTS(SELECT 1 FROM public.purchase_order_receipts WHERE site_id=p_site_id AND left(idempotency_key,length(p_key)+6)=p_key||':line:')
   OR EXISTS(SELECT 1 FROM public.inventory_transfer_receipts WHERE site_id=p_site_id AND left(idempotency_key,length(p_key)+6)=p_key||':line:') THEN
   RAISE EXCEPTION 'WAREHOUSE_LEGACY_KEY';END IF;
- allowed:=CASE p_operation
+ allowed:=CASE operation
   WHEN 'purchase_order.create' THEN ARRAY['supplier_id','location_id','expected_at','notes','lines']
   WHEN 'transfer.create' THEN ARRAY['source_location_id','destination_location_id','notes','lines']
   WHEN 'transfer.ship' THEN ARRAY[]::text[] ELSE ARRAY['lines'] END;
@@ -97,18 +100,25 @@ BEGIN
   RAISE EXCEPTION 'WAREHOUSE_INVALID';END IF;
  IF p_command ? 'notes' AND(jsonb_typeof(p_command->'notes') NOT IN('null','string') OR length(p_command->>'notes')>1000) THEN
   RAISE EXCEPTION 'WAREHOUSE_INVALID';END IF;
+ IF cancelling THEN
+  response:=jsonb_build_object('lines','[]'::jsonb,'command_receipt',jsonb_build_object('id',receipt_id,'key',p_key,'site_id',p_site_id,
+   'actor_id',p_actor_id,'operation',operation,'target_id',p_target_id,'command',p_command,'effective_lines',NULL,'outcome','cancelled'));
+  INSERT INTO public.warehouse_command_receipts(id,idempotency_key,site_id,actor_id,operation,target_id,command,response,request_id,created_by,updated_by)
+   VALUES(receipt_id,p_key,p_site_id,p_actor_id,operation,p_target_id,p_command,response,p_request_id,p_actor_id,p_actor_id);
+  RETURN response;
+ END IF;
  lines:=p_command->'lines';
- IF p_operation IN('purchase_order.create','transfer.create') THEN
+ IF operation IN('purchase_order.create','transfer.create') THEN
   IF jsonb_typeof(lines) IS DISTINCT FROM 'array' OR jsonb_array_length(lines) NOT BETWEEN 1 AND 200 THEN RAISE EXCEPTION 'WAREHOUSE_INVALID';END IF;
   FOR line IN SELECT value FROM jsonb_array_elements(lines) LOOP
-   allowed:=CASE WHEN p_operation='purchase_order.create' THEN ARRAY['product_id','variant_id','quantity','unit_cost'] ELSE ARRAY['product_id','variant_id','quantity'] END;
+   allowed:=CASE WHEN operation='purchase_order.create' THEN ARRAY['product_id','variant_id','quantity','unit_cost'] ELSE ARRAY['product_id','variant_id','quantity'] END;
    IF jsonb_typeof(line) IS DISTINCT FROM 'object' OR NOT(line ?& allowed)
     OR EXISTS(SELECT 1 FROM jsonb_object_keys(line) k WHERE NOT(k=ANY(allowed)))
     OR jsonb_typeof(line->'product_id') IS DISTINCT FROM 'string'
     OR jsonb_typeof(line->'variant_id') NOT IN('null','string')
     OR jsonb_typeof(line->'quantity') IS DISTINCT FROM 'number' OR line->>'quantity' !~ '^[0-9]+$'
     OR (line->>'quantity')::numeric NOT BETWEEN 1 AND 999999
-    OR(p_operation='purchase_order.create' AND(jsonb_typeof(line->'unit_cost') IS DISTINCT FROM 'number'
+    OR(operation='purchase_order.create' AND(jsonb_typeof(line->'unit_cost') IS DISTINCT FROM 'number'
       OR (line->>'unit_cost')::numeric NOT BETWEEN 0 AND 999999)) THEN RAISE EXCEPTION 'WAREHOUSE_INVALID';END IF;
    product:=(line->>'product_id')::uuid;variant:=(line->>'variant_id')::uuid;
    PERFORM id FROM public.products WHERE id=product AND store_id=p_site_id AND deleted_at IS NULL FOR SHARE;
@@ -118,7 +128,7 @@ BEGIN
     IF NOT FOUND THEN RAISE EXCEPTION 'WAREHOUSE_NOT_FOUND';END IF;
    END IF;
   END LOOP;
-  IF p_operation='purchase_order.create' THEN
+  IF operation='purchase_order.create' THEN
    IF jsonb_typeof(p_command->'location_id') IS DISTINCT FROM 'string'
     OR jsonb_typeof(p_command->'supplier_id') NOT IN('null','string')
     OR jsonb_typeof(p_command->'expected_at') NOT IN('null','string') THEN RAISE EXCEPTION 'WAREHOUSE_INVALID';END IF;
@@ -143,18 +153,18 @@ BEGIN
     lines,p_command->>'notes',p_actor_id,p_request_id,p_key);
    target:=(result->'transfer'->>'id')::uuid;
   END IF;
- ELSIF p_operation='transfer.ship' THEN
+ ELSIF operation='transfer.ship' THEN
   IF row_transfer.status<>'reserved' THEN RAISE EXCEPTION 'WAREHOUSE_STATE_CONFLICT';END IF;
   result:=public.ship_inventory_transfer(target,p_actor_id,p_request_id,p_key);
  ELSE
-  IF(p_operation='purchase_order.receive' AND row_po.status IN('received','cancelled','closed'))
-   OR(p_operation='transfer.receive' AND row_transfer.status NOT IN('reserved','shipped','partially_received')) THEN
+  IF(operation='purchase_order.receive' AND row_po.status IN('received','cancelled','closed'))
+   OR(operation='transfer.receive' AND row_transfer.status NOT IN('reserved','shipped','partially_received')) THEN
    RAISE EXCEPTION 'WAREHOUSE_STATE_CONFLICT';END IF;
   -- Legacy receive-all remains compatible but its exact line quantities are
   -- frozen inside this first accepted transaction and retained in the receipt.
   effective_lines:='[]'::jsonb;
   IF lines='null'::jsonb THEN
-   IF p_operation='purchase_order.receive' THEN
+   IF operation='purchase_order.receive' THEN
     FOR item IN SELECT * FROM public.purchase_order_lines WHERE purchase_order_id=target AND site_id=p_site_id AND deleted_at IS NULL ORDER BY id FOR UPDATE LOOP
      quantity:=item.quantity_ordered-item.quantity_received;
      IF quantity>0 THEN effective_lines:=effective_lines||jsonb_build_array(jsonb_build_object('purchase_order_line_id',item.id,'quantity',quantity));END IF;
@@ -167,7 +177,7 @@ BEGIN
    END IF;
   ELSE effective_lines:=lines;END IF;
   IF jsonb_typeof(effective_lines) IS DISTINCT FROM 'array' OR jsonb_array_length(effective_lines) NOT BETWEEN 1 AND 200 THEN RAISE EXCEPTION 'WAREHOUSE_INVALID';END IF;
-  line_key:=CASE WHEN p_operation='purchase_order.receive' THEN 'purchase_order_line_id' ELSE 'transfer_line_id' END;
+  line_key:=CASE WHEN operation='purchase_order.receive' THEN 'purchase_order_line_id' ELSE 'transfer_line_id' END;
   IF(SELECT count(DISTINCT value->>line_key) FROM jsonb_array_elements(effective_lines))<>jsonb_array_length(effective_lines) THEN RAISE EXCEPTION 'WAREHOUSE_INVALID';END IF;
   FOR line IN SELECT value FROM jsonb_array_elements(effective_lines) LOOP
    IF jsonb_typeof(line) IS DISTINCT FROM 'object' OR NOT(line ?& ARRAY[line_key,'quantity'])
@@ -175,19 +185,19 @@ BEGIN
     OR jsonb_typeof(line->line_key) IS DISTINCT FROM 'string'
     OR jsonb_typeof(line->'quantity') IS DISTINCT FROM 'number' OR line->>'quantity' !~ '^[0-9]+$'
     OR (line->>'quantity')::numeric NOT BETWEEN 1 AND 999999 THEN RAISE EXCEPTION 'WAREHOUSE_INVALID';END IF;
-   IF p_operation='purchase_order.receive' THEN
+   IF operation='purchase_order.receive' THEN
     SELECT * INTO item FROM public.purchase_order_lines WHERE id=(line->>line_key)::uuid AND purchase_order_id=target AND site_id=p_site_id AND deleted_at IS NULL FOR UPDATE;
    ELSE
     SELECT * INTO item FROM public.inventory_transfer_lines WHERE id=(line->>line_key)::uuid AND transfer_id=target AND site_id=p_site_id AND deleted_at IS NULL FOR UPDATE;
    END IF;
    IF NOT FOUND THEN RAISE EXCEPTION 'WAREHOUSE_NOT_FOUND';END IF;
   END LOOP;
-  IF p_operation='purchase_order.receive' THEN result:=public.receive_purchase_order(target,effective_lines,p_actor_id,p_request_id,p_key);
+  IF operation='purchase_order.receive' THEN result:=public.receive_purchase_order(target,effective_lines,p_actor_id,p_request_id,p_key);
   ELSE result:=public.receive_inventory_transfer(target,effective_lines,p_actor_id,p_request_id,p_key);END IF;
  END IF;
  IF target IS NULL THEN RAISE EXCEPTION 'WAREHOUSE_ACK_UNAVAILABLE';END IF;
  -- Canonical stable snapshots, including lines on ship and exact replay.
- IF p_operation LIKE 'purchase_order.%' THEN
+ IF operation LIKE 'purchase_order.%' THEN
   SELECT jsonb_build_object('purchase_order',to_jsonb(po),'lines',(SELECT coalesce(jsonb_agg(to_jsonb(l) ORDER BY l.id),'[]'::jsonb)
     FROM public.purchase_order_lines l WHERE l.purchase_order_id=target AND l.site_id=p_site_id AND l.deleted_at IS NULL))
    INTO result FROM public.purchase_orders po WHERE po.id=target AND po.site_id=p_site_id AND po.deleted_at IS NULL;
@@ -198,9 +208,9 @@ BEGIN
  END IF;
  IF result IS NULL THEN RAISE EXCEPTION 'WAREHOUSE_ACK_UNAVAILABLE';END IF;
  response:=result||jsonb_build_object('command_receipt',jsonb_build_object('id',receipt_id,'key',p_key,'site_id',p_site_id,
-  'actor_id',p_actor_id,'operation',p_operation,'target_id',target,'command',p_command,'effective_lines',effective_lines));
+  'actor_id',p_actor_id,'operation',operation,'target_id',target,'command',p_command,'effective_lines',effective_lines,'outcome','applied'));
  INSERT INTO public.warehouse_command_receipts(id,idempotency_key,site_id,actor_id,operation,target_id,command,response,request_id,created_by,updated_by)
-  VALUES(receipt_id,p_key,p_site_id,p_actor_id,p_operation,target,p_command,response,p_request_id,p_actor_id,p_actor_id);
+  VALUES(receipt_id,p_key,p_site_id,p_actor_id,operation,target,p_command,response,p_request_id,p_actor_id,p_actor_id);
  RETURN response;
 END $fn$;
 REVOKE ALL ON FUNCTION public.guard_warehouse_command_receipt_v1() FROM PUBLIC,anon,authenticated,app_tenant,service_role;

@@ -9,13 +9,13 @@ export const APPLY_WAREHOUSE_COMMAND_SQL='SELECT public.apply_warehouse_command_
 
 /** One database transaction owns existing stock effects and their mandatory receipt. */
 export async function executeWarehouseCommand(env:Env,siteId:string,actorId:string,key:string,
- operation:WarehouseCommandOperation,targetId:string|null,command:Record<string,unknown>,requestId:string|null):Promise<WarehouseCommandResult> {
+ operation:WarehouseCommandOperation,targetId:string|null,command:Record<string,unknown>,requestId:string|null,stop=false):Promise<WarehouseCommandResult> {
  const normalizedKey=IdempotencyExecutionAdapter.normalizeKey(key), traceId=requestId||crypto.randomUUID();
  try {
   return await withTenantTx(env,{siteId,requestId:traceId},async sql=>{
    await sql.unsafe('SELECT set_config($1,$2,true),set_config($3,$4,true)',
     ['app.actor_id',actorId,'request.jwt.claim.sub',actorId]);
-   const rows=await sql.unsafe(APPLY_WAREHOUSE_COMMAND_SQL,[siteId,actorId,normalizedKey,operation,targetId,JSON.stringify(command),traceId]);
+   const rows=await sql.unsafe(APPLY_WAREHOUSE_COMMAND_SQL,[siteId,actorId,normalizedKey,stop?'cancel:'+operation:operation,targetId,JSON.stringify(command),traceId]);
    const parsed=WarehouseCommandResultSchema.safeParse(rows[0]?.result);
    if(!parsed.success||parsed.data.command_receipt.key!==normalizedKey||
     parsed.data.command_receipt.site_id!==siteId||parsed.data.command_receipt.actor_id!==actorId||
@@ -24,6 +24,7 @@ export async function executeWarehouseCommand(env:Env,siteId:string,actorId:stri
     canonicalizeExecutionPayload(parsed.data.command_receipt.command)!==canonicalizeExecutionPayload(command)) {
     throw new AppError('The warehouse acknowledgement could not be confirmed. Retry the original request.',503,'WAREHOUSE_ACK_UNVERIFIED');
    }
+   if(!stop&&parsed.data.command_receipt.outcome==='cancelled') throw new AppError('This request was stopped before it was saved.',409,'WAREHOUSE_REQUEST_STOPPED');
    return parsed.data;
   });
  } catch(error) {

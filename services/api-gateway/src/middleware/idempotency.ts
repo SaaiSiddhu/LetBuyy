@@ -200,8 +200,8 @@ export const protectedMutationIdempotency = createMiddleware<{ Bindings: Env }>(
         && ['/payments/subscription/order', '/payments/subscription/recover', '/payments/subscription/verify'].includes(orderPath);
     // Product PATCH owns an atomic actor/payload/version-bound receipt after live access checks.
     const routeOwnedInventoryAdjustment = method === 'POST' && orderPath === '/inventory/adjust';
-    // These exact five warehouse commands own stock and immutable receipts in one transaction.
-    const routeOwnedWarehouseCommand = method === 'POST' && (/^\/inventory\/(?:purchase-orders|transfers)$/.test(orderPath)
+    // These warehouse commands and their stop protocol own immutable receipts in one transaction.
+    const routeOwnedWarehouseCommand = method === 'POST' && (orderPath === '/inventory/commands/stop' || /^\/inventory\/(?:purchase-orders|transfers)$/.test(orderPath)
         || /^\/inventory\/purchase-orders\/[^/]+\/receive$/.test(orderPath)
         || /^\/inventory\/transfers\/[^/]+\/(?:ship|receive)$/.test(orderPath));
     // Membership commands own live-owner/version/payload-bound SQL receipts.

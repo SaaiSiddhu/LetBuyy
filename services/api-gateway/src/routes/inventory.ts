@@ -24,6 +24,8 @@ import {
     ReceiveTransferSchema,
     ReserveInventorySchema,
     ShipTransferSchema,
+    StopWarehouseCommandSchema,
+    type StopWarehouseCommandInput,
     mapInventoryAdjustmentReason,
     mapInventoryLevelRecord,
     mapProductStockInventoryRecord,
@@ -413,6 +415,21 @@ router.get('/purchase-orders', async (c) => {
     if (error) return c.json(dbFailureBody(), 500);
 
     return c.json(success(data || []));
+});
+
+// Stop the logical request, not the business PO/transfer. An already applied
+// acknowledgement is recovered instead of pretending its stock effect was undone.
+router.post('/commands/stop', validate('json', StopWarehouseCommandSchema), async c => {
+    const body=c.get('validatedBody') as StopWarehouseCommandInput;
+    const db=getSupabaseAdmin(c),auth=c.get('auth');
+    const actor=await resolveCustomUser(db,auth.user);
+    if(!actor||!await verifySiteOwnership(db,body.store_id,actor.id,auth.user.storeId)) {
+        return c.json(failureBody('FORBIDDEN','Your access to this store changed.'),403);
+    }
+    const blocked=await assertStaffPermission(c,body.store_id,actor.id,'products:write');if(blocked)return blocked;
+    const data=await executeWarehouseCommand(c.env,body.store_id,actor.id,body.idempotency_key,
+        body.operation,body.target_id,body.command,requestId(c),true);
+    return c.json(success(data));
 });
 
 // POST /inventory/purchase-orders — Create ordered PO and incoming inventory

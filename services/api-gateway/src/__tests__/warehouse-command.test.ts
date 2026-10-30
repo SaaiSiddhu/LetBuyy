@@ -6,7 +6,7 @@ function result(transfer=false) {
  const line:Record<string,unknown>={id:uuid(5),site_id:uuid(1),product_id:uuid(6),variant_id:null,quantity_received:2,
   ...(transfer?{transfer_id:uuid(4),quantity_requested:5,quantity_shipped:3}:{purchase_order_id:uuid(4),quantity_ordered:5,unit_cost:12.25})};
  return {command_receipt:{id:uuid(7),key:'synthetic-command-key',site_id:uuid(1),actor_id:uuid(2),
-  operation:transfer?'transfer.receive':'purchase_order.receive',target_id:uuid(4),command:{lines:null},
+  operation:transfer?'transfer.receive':'purchase_order.receive',outcome:'applied',target_id:uuid(4),command:{lines:null},
   effective_lines:[{[transfer?'transfer_line_id':'purchase_order_line_id']:uuid(5),quantity:2}]},
   [transfer?'transfer':'purchase_order']:{id:uuid(4),site_id:uuid(1),status:'partially_received'},lines:[line]};
 }
