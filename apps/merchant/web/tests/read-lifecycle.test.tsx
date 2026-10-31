@@ -7,6 +7,14 @@ const requireUI = createRequire(new URL('../../../../packages/typescript/ui/pack
 const { JSDOM } = requireUI('jsdom')
 Object.assign(globalThis, { React, IS_REACT_ACT_ENVIRONMENT: true })
 const json = (data: unknown, status = 200) => Response.json({ data }, { status })
+function warehouseResponse(url:string,data:unknown,status=200) {
+    if(!/\/(purchase-orders|transfers)\?/.test(url))return json(data,status);
+    const query=new URL(url,'http://localhost').searchParams;
+    return Response.json({data,meta:{store_id:url.includes('/alpha/')?historySite:'22222222-2222-4222-8222-222222222222',
+        page:Number(query.get('page')),per_page:Number(query.get('limit')),total:Array.isArray(data)?data.length:0,
+        has_next:false,total_is_exact:true}},{status});
+}
+
 function deferred<T>() { let resolve!: (value: T) => void; const promise = new Promise<T>(done => { resolve = done }); return { promise, resolve } }
 const contentPages = {
     categories: () => import('../src/app/[store]/categories/page'),
@@ -519,10 +527,10 @@ for(const kind of ['purchasing','transfers'] as const) {
                 const body=JSON.parse(String(init.body)) as Record<string,unknown>,headers=new Headers(init.headers),key=headers.get('X-Idempotency-Key')!;
                 assert.equal(headers.get('X-LetBuyy-Merchant-Context'),historySite);assert.equal(key,body.idempotency_key);
                 writes.push({body,key});if(!receipt){effects++;receipt=warehouseAck(key,po);failed=true;throw new Error('Synthetic lost committed reply');}
-                return json(receipt);
+                return warehouseResponse(url,receipt);
             }
-            if(url.includes('inventory-locations'))return json([{id:'location-a',name:'A'},{id:'location-b',name:'B'}]);
-            return failed?json(null,503):json([warehouseRow(po)]);
+            if(url.includes('inventory-locations'))return warehouseResponse(url,[{id:'location-a',name:'A'},{id:'location-b',name:'B'}]);
+            return failed?warehouseResponse(url,null,503):warehouseResponse(url,[warehouseRow(po)]);
         });
         try {
             await h.click(po?'Receive':'Ship');await h.click(po?'Mark as received':'Mark as shipped');
@@ -539,11 +547,11 @@ test('a lost stop reply retains its original key and retry recovers the authorit
     const h=await mount('transfers',async(url,init)=>{
         if(init?.method==='POST') {
             const key=new Headers(init.headers).get('X-Idempotency-Key')!;writes.push({url,key});
-            if(url.includes('/commands/stop')){if(!cancelled){cancelled=warehouseAck(key,false,true);throw new Error('Synthetic lost stop reply');}return json(cancelled);}
+            if(url.includes('/commands/stop')){if(!cancelled){cancelled=warehouseAck(key,false,true);throw new Error('Synthetic lost stop reply');}return warehouseResponse(url,cancelled);}
             if(cancelled)return Response.json({error:{code:'WAREHOUSE_REQUEST_STOPPED'}},{status:409});
             throw new Error('Synthetic failure before apply');
         }
-        return json(url.includes('inventory-locations')?[{id:'location-a',name:'A'},{id:'location-b',name:'B'}]:[warehouseRow()]);
+        return warehouseResponse(url,url.includes('inventory-locations')?[{id:'location-a',name:'A'},{id:'location-b',name:'B'}]:[warehouseRow()]);
     });
     try {
         await h.click('Ship');await h.click('Mark as shipped');await h.click('Cancel');
@@ -567,9 +575,9 @@ for(const fault of ['actor','site','key','intent','target','state','quantity','m
                     case 'quantity':(ack.lines as Array<Record<string,unknown>>)[0].quantity_received=9;break;
                     case 'missing-receipt':delete ack.command_receipt;break;
                 }
-                return json(ack);
+                return warehouseResponse(url,ack);
             }
-            return json(url.includes('inventory-locations')?[{id:'location-a',name:'A'},{id:'location-b',name:'B'}]:[warehouseRow()]);
+            return warehouseResponse(url,url.includes('inventory-locations')?[{id:'location-a',name:'A'},{id:'location-b',name:'B'}]:[warehouseRow()]);
         });
         try {
             await h.click('Ship');await h.click('Mark as shipped');assert.equal(h.storage.length,1);assert.doesNotMatch(h.text(),/Transfer marked as shipped/);
@@ -581,7 +589,7 @@ test('an open warehouse stop confirmation retires on store A-B-A without dispatc
     let writes=0;
     const h=await mount('transfers',async(url,init)=>{
         if(init?.method==='POST'){writes++;throw new Error('Synthetic uncertain outcome');}
-        return json(url.includes('inventory-locations')?[{id:'location-a',name:'A'},{id:'location-b',name:'B'}]:[warehouseRow()]);
+        return warehouseResponse(url,url.includes('inventory-locations')?[{id:'location-a',name:'A'},{id:'location-b',name:'B'}]:[warehouseRow()]);
     });
     try {
         await h.click('Ship');await h.click('Mark as shipped');await h.click('Cancel');await h.click('Stop original');
@@ -593,7 +601,7 @@ test('unreadable browser warehouse recovery disables new mutations and preserves
     let writes=0;
     const slot=`letbuyy.warehouse-command.v1:${historySite}:${historySite}`;
     const h=await mount('transfers',async(url,init)=>{if(init?.method==='POST')writes++;
-        return json(url.includes('inventory-locations')?[{id:'location-a',name:'A'},{id:'location-b',name:'B'}]:[warehouseRow()]);
+        return warehouseResponse(url,url.includes('inventory-locations')?[{id:'location-a',name:'A'},{id:'location-b',name:'B'}]:[warehouseRow()]);
     },storage=>storage.setItem(slot,'{corrupt'));
     try {
         assert.match(h.text(),/Warehouse actions unavailable/);await h.click('Ship');assert.doesNotMatch(h.text(),/Ship transfer —/);
@@ -603,7 +611,7 @@ test('unreadable browser warehouse recovery disables new mutations and preserves
 test('fractional receiving input is a local validation error, with no dispatch or saved pending request',async()=>{
     let writes=0;
     const h=await mount('purchasing',async(url,init)=>{if(init?.method==='POST')writes++;
-        return json(url.includes('inventory-locations')?[{id:'location-a',name:'A'}]:[warehouseRow(true)]);
+        return warehouseResponse(url,url.includes('inventory-locations')?[{id:'location-a',name:'A'}]:[warehouseRow(true)]);
     });
     try {
         await h.click('Receive');await h.setField('input','1.5');await h.click('Mark as received');
@@ -615,7 +623,7 @@ for(const kind of ['purchasing','transfers'] as const) {
     test(`${kind} does not enable warehouse mutations against an older BFF/server`,async()=>{
         let writes=0;
         const h=await mount(kind,async(url,init)=>{if(init?.method==='POST')writes++;
-            return json(url.includes('inventory-locations')?[{id:'location-a',name:'A'},{id:'location-b',name:'B'}]:[warehouseRow(kind==='purchasing')]);
+            return warehouseResponse(url,url.includes('inventory-locations')?[{id:'location-a',name:'A'},{id:'location-b',name:'B'}]:[warehouseRow(kind==='purchasing')]);
         },undefined,false);
         try {
             assert.match(h.text(),/Warehouse actions unavailable/);await h.click(kind==='purchasing'?'Receive':'Ship');
@@ -628,8 +636,8 @@ test('browser recovery retains the original request through server unavailabilit
     let writes=0,key='';
     const h=await mount('transfers',async(url,init)=>{
         if(init?.method==='POST'){writes++;key=new Headers(init.headers).get('X-Idempotency-Key')!;
-            if(writes===1)throw new Error('Synthetic lost reply');return json(warehouseAck(key));}
-        return json(url.includes('inventory-locations')?[{id:'location-a',name:'A'},{id:'location-b',name:'B'}]:[warehouseRow()]);
+            if(writes===1)throw new Error('Synthetic lost reply');return warehouseResponse(url,warehouseAck(key));}
+        return warehouseResponse(url,url.includes('inventory-locations')?[{id:'location-a',name:'A'},{id:'location-b',name:'B'}]:[warehouseRow()]);
     });
     try {
         await h.click('Ship');await h.click('Mark as shipped');await h.click('Cancel');h.protocol(false);await h.remount();
@@ -651,10 +659,10 @@ for (const kind of ['purchasing','transfers'] as const) {
                 quantity_shipped:3,quantity_received:2,unit_cost:0.29,created_at:'2026-10-31T00:00:00Z'}]};
         const writes:Record<string,unknown>[]=[];
         const h=await mount(kind,async(url,init)=>{
-            if(init?.method==='POST'){writes.push(JSON.parse(String(init.body)));return json({});}
-            if(url.includes('inventory-locations'))return json([{id:'location-a',name:'A'},{id:'location-b',name:'B'}]);
-            if(url.includes('/suppliers'))return json([]);
-            return json([row]);
+            if(init?.method==='POST'){writes.push(JSON.parse(String(init.body)));return warehouseResponse(url,{});}
+            if(url.includes('inventory-locations'))return warehouseResponse(url,[{id:'location-a',name:'A'},{id:'location-b',name:'B'}]);
+            if(url.includes('/suppliers'))return warehouseResponse(url,[]);
+            return warehouseResponse(url,[row]);
         });
         try {
             assert.match(h.text(),/Partially received/);
@@ -666,8 +674,37 @@ for (const kind of ['purchasing','transfers'] as const) {
         }finally{await h.close();}
     });
 }
+for(const kind of ['purchasing','transfers'] as const) {
+    test(`${kind} shows matching counts, navigates past the first page and recovers a denied page`,async()=>{
+        const calls:number[]=[];let deny=false;
+        const h=await mount(kind,async(url,init)=>{
+            if(url.includes('inventory-locations'))return json([]);
+            assert.equal(new Headers(init?.headers).get('X-LetBuyy-Merchant-Context'),historySite);
+            const page=Number(new URL(url,'http://localhost').searchParams.get('page'));calls.push(page);
+            if(page===2&&deny)return json(null,403);
+            const data=Array.from({length:page===1?20:1},(_,index)=>({...warehouseRow(kind==='purchasing'),id:`synthetic-${page}-${index}`,
+                po_number:`PO-PAGE-${page}-${index}`,transfer_number:`TR-PAGE-${page}-${index}`}));
+            return Response.json({data,meta:{store_id:historySite,page,per_page:20,total:21,has_next:page===1,total_is_exact:true}});
+        });
+        try {
+            assert.match(h.text(),/21 matching records · Page 1/);await h.click('Next');
+            assert.equal(calls.at(-1),2);assert.match(h.text(),/21 matching records · Page 2/);
+            assert.doesNotMatch(h.text(),/PAGE-1-0/);assert.match(h.text(),/PAGE-2-0/);
+            await h.click('Previous');deny=true;await h.click('Next');
+            assert.match(h.text(),/Page 2 · Count unavailable/);assert.match(h.text(),/records are unavailable/);assert.doesNotMatch(h.text(),/PAGE-1-0/);
+            await h.click('Previous');assert.match(h.text(),/21 matching records · Page 1/);
+            await h.render('beta');assert.equal(calls.at(-1),1);assert.doesNotMatch(h.text(),/21 matching records/);
+        }finally{await h.close();}
+    });
+    test(`${kind} refuses an older unpaged response without displaying false empty or a count`,async()=>{
+        const h=await mount(kind,async()=>json([]));
+        try{assert.match(h.text(),/records are unavailable/);assert.match(h.text(),/Count unavailable/);
+            assert.doesNotMatch(h.text(),/No purchase orders yet|No transfers yet|0 matching records/);
+        }finally{await h.close();}
+    });
+}
 test('a reserved transfer can open its shipping confirmation using the actual server status',async()=>{
-    const h=await mount('transfers',async url=>url.includes('inventory-locations')?json([{id:'a',name:'A'},{id:'b',name:'B'}]):json([
+    const h=await mount('transfers',async url=>url.includes('inventory-locations')?warehouseResponse(url,[{id:'a',name:'A'},{id:'b',name:'B'}]):warehouseResponse(url,[
         {id:'synthetic-transfer',transfer_number:'TR-SYN-RESERVED',status:'reserved',source_location_id:'a',destination_location_id:'b',
             created_at:'2026-10-31T00:00:00Z',lines:[]} ]));
     try{await h.click('Ship');assert.match(h.text(),/Ship transfer — TR-SYN-RESERVED/);}finally{await h.close();}
@@ -678,12 +715,12 @@ for (const [kind, label] of [['purchasing', 'Create purchase order'], ['transfer
         const calls: string[] = []
         const h = await mount(kind, async url => {
             calls.push(url)
-            if (url.includes('inventory-locations')) return json([{ id: 'location-a', name: 'A' }, { id: 'location-b', name: 'B' }])
+            if (url.includes('inventory-locations')) return warehouseResponse(url,[{ id: 'location-a', name: 'A' }, { id: 'location-b', name: 'B' }])
             if (url.includes('/products?')) {
                 const page = new URL(url, 'http://localhost').searchParams.get('page')
                 return Response.json({ data: [{ id: `product-${page}`, name: `Product ${page}`, variants: [] }], meta: { has_next: page === '1' } })
             }
-            return json([])
+            return warehouseResponse(url,[])
         })
         try {
             assert.equal(calls.filter(url => url.includes('/products?')).length, 0, 'a closed form must not preload the catalogue')
@@ -735,7 +772,7 @@ for (const kind of Object.keys(contentPages) as ContentPage[]) {
 for (const kind of ['purchasing', 'transfers'] as const) {
     test(`${kind} primary records settle when optional location reads stall or fail`, async () => {
         const locations = deferred<Response>()
-        const h = await mount(kind, async url => url.includes('inventory-locations') ? locations.promise : json([]))
+        const h = await mount(kind, async url => url.includes('inventory-locations') ? locations.promise : warehouseResponse(url,[]))
         try {
             assert.match(h.text(), kind === 'purchasing' ? /No purchase orders yet/ : /No transfers yet/)
             await act(async () => locations.resolve(json(null,503)))

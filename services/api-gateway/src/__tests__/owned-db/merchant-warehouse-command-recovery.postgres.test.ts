@@ -311,13 +311,13 @@ test('the real SDK reads canonical partial PO and transfer counters from committ
    assert.equal(url.hostname,'owned-gateway.example.invalid');const response=await f.gateway.request(url.pathname+url.search,init);
    return new Response(response.text,{status:response.status,headers:response.headers});}});
  const pos=await api.inventory.purchaseOrders.list({store_id:f.site.siteId}),transfers=await api.inventory.transfers.list({store_id:f.site.siteId});
- assert.equal(pos.length,1);assert.equal(pos[0].status,'partially_received');assert.equal(pos[0].lines[0].quantity_ordered,3);
- assert.equal(pos[0].lines[0].quantity_received,2);assert.equal(pos[0].total,36.75);assert.equal(pos[0].subtotal,36.75);
- assert.equal(transfers.length,1);assert.equal(transfers[0].status,'partially_received');assert.equal(transfers[0].lines[0].quantity_requested,4);
- assert.equal(transfers[0].lines[0].quantity_shipped,4);assert.equal(transfers[0].lines[0].quantity_received,1);
+ assert.equal(pos.data.length,1);assert.equal(pos.data[0].status,'partially_received');assert.equal(pos.data[0].lines[0].quantity_ordered,3);
+ assert.equal(pos.data[0].lines[0].quantity_received,2);assert.equal(pos.data[0].total,36.75);assert.equal(pos.data[0].subtotal,36.75);
+ assert.equal(transfers.data.length,1);assert.equal(transfers.data[0].status,'partially_received');assert.equal(transfers.data[0].lines[0].quantity_requested,4);
+ assert.equal(transfers.data[0].lines[0].quantity_shipped,4);assert.equal(transfers.data[0].lines[0].quantity_received,1);
  owned.psql("INSERT INTO purchase_order_lines(site_id,purchase_order_id,product_id,quantity_ordered,unit_cost,deleted_at)VALUES("+
   quote(f.site.siteId)+","+quote(po)+","+quote(f.product)+",1,0.29,now());");
- assert.equal((await api.inventory.purchaseOrders.list({store_id:f.site.siteId}))[0].lines.length,1,'soft-deleted lines do not enter receive forms');
+ assert.equal((await api.inventory.purchaseOrders.list({store_id:f.site.siteId})).data[0].lines.length,1,'soft-deleted lines do not enter receive forms');
  const b=await fixture(t),supplier=randomUUID();owned.psql("INSERT INTO suppliers(id,site_id,name)VALUES("+quote(supplier)+","+quote(b.site.siteId)+",'SYN_PRIVATE_FOREIGN_SUPPLIER');UPDATE purchase_orders SET supplier_id="+quote(supplier)+" WHERE id="+quote(po)+";");
  await assert.rejects(()=>api.inventory.purchaseOrders.list({store_id:f.site.siteId}),e=>e instanceof LetbuyyApiError&&e.code==='WAREHOUSE_DOCUMENTS_UNVERIFIED');
  owned.psql("UPDATE purchase_orders SET supplier_id=NULL WHERE id="+quote(po)+";UPDATE inventory_transfer_lines SET site_id="+quote(b.site.siteId)+" WHERE id="+quote(transferLine)+";");
@@ -427,4 +427,29 @@ test('a supported guarded protocol still fails closed when atomic execution bind
  await assert.rejects(()=>api.inventory.purchaseOrders.create(f.create(randomUUID())),e=>e instanceof LetbuyyApiError&&e.status===503);
  assert.equal(owned.psql("SELECT count(*)FROM purchase_orders WHERE site_id="+quote(f.site.siteId)+";"),'0');
  assert.equal(owned.psql("SELECT count(*)FROM warehouse_command_receipts WHERE site_id="+quote(f.site.siteId)+";"),'0');
+});
+
+for(const transfer of [false,true])test((transfer?'transfer':'purchase order')+' pages reach beyond 1000 with exact filters, stable ties and current scope',async t=>{
+ const f=await fixture(t),table=transfer?'inventory_transfers':'purchase_orders',lines=transfer?'inventory_transfer_lines':'purchase_order_lines',
+  parent=transfer?'transfer_id':'purchase_order_id',number=transfer?'transfer_number':'po_number',route=transfer?'transfers':'purchase-orders';
+ // Synthetic read fixtures deliberately exceed PostgREST's former implicit row cap.
+ const columns=transfer?'source_location_id,destination_location_id':'location_id,status,subtotal,total';
+ const values=transfer?quote(f.site.locationId)+','+quote(f.destination):quote(f.site.locationId)+",'ordered',0.29,0.29";
+ owned.psql("WITH headers AS(INSERT INTO "+table+"(site_id,"+number+",idempotency_key,created_at,"+columns+") SELECT "+quote(f.site.siteId)+",'SYN_PAGE_'||n,gen_random_uuid()::text,'2026-10-31T00:00:00Z',"+values+" FROM generate_series(1,1005)n RETURNING id,site_id) INSERT INTO "+lines+"(site_id,"+parent+",product_id,"+(transfer?'quantity_requested':'quantity_ordered,unit_cost')+") SELECT site_id,id,"+quote(f.product)+","+(transfer?'1':'1,0.29')+" FROM headers;");
+ const get=async(query:string)=>f.gateway.request('/v1/inventory/'+route+'?store_id='+f.site.siteId+'&'+query,{headers:await signedIdentityHeaders(f.actor,'syn-wms-'+f.actor+'@example.invalid',f.site.siteId)});
+ const first=await get('page=1&limit=100&search=SYN_PAGE_&sort=oldest');assert.equal(first.status,200,first.text);
+ assert.equal(first.json?.data.length,100);assert.equal(first.json?.meta.total,1005);assert.equal(first.json?.meta.total_is_exact,true);assert.equal(first.json?.meta.has_next,true);
+ assert.equal(new Headers(first.headers).get('Cache-Control'),'private, no-store');
+ const last=await get('page=11&limit=100&search=SYN_PAGE_&sort=oldest');assert.equal(last.status,200,last.text);
+ assert.equal(last.json?.data.length,5);assert.equal(last.json?.meta.total,1005);assert.equal(last.json?.meta.has_next,false);
+ const expected=JSON.parse(owned.psql("SELECT jsonb_agg(id ORDER BY id)::text FROM(SELECT id FROM "+table+" WHERE site_id="+quote(f.site.siteId)+" ORDER BY created_at,id OFFSET 1000 LIMIT 100)t;"));
+ assert.deepEqual(last.json?.data.map((row:{id:string})=>row.id),expected);
+ const next=await get('page=12&limit=100');assert.equal(next.status,200,next.text);assert.deepEqual(next.json?.data,[]);assert.equal(next.json?.meta.total,1005);
+ for(const query of ['limit=101','page=0','page=1.5','sort=random','status=partial'])assert.equal((await get(query)).status,400,query);
+ const filter=await get('status=received');assert.equal(filter.status,200,filter.text);assert.equal(filter.json?.meta.total,0);assert.deepEqual(filter.json?.data,[]);
+ owned.psql("UPDATE "+table+" SET "+number+"='SYN%literal' WHERE id="+quote(first.json?.data[0].id)+";UPDATE "+table+" SET "+number+"='SYNxliteral' WHERE id="+quote(first.json?.data[1].id)+";UPDATE "+table+" SET deleted_at=now() WHERE id="+quote(first.json?.data[2].id)+";");
+ const literal=await get('search='+encodeURIComponent('%literal'));assert.equal(literal.status,200,literal.text);assert.equal(literal.json?.meta.total,1);assert.equal(literal.json?.data[0][number],'SYN%literal');
+ const remaining=await get('limit=100');assert.equal(remaining.json?.meta.total,1004);
+ owned.psql("UPDATE sites SET custom_user_id=NULL,user_id=NULL WHERE id="+quote(f.site.siteId)+";");
+ const denied=await get('page=11&limit=100');assert.equal(denied.status,403);assert.equal(denied.json?.data,undefined);
 });

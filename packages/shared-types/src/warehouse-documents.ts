@@ -51,3 +51,29 @@ export type WarehousePurchaseOrder=z.infer<typeof WarehousePurchaseOrderSchema>;
 export type WarehousePurchaseOrderLine=z.infer<typeof WarehousePurchaseOrderLineSchema>;
 export type WarehouseTransfer=z.infer<typeof WarehouseTransferSchema>;
 export type WarehouseTransferLine=z.infer<typeof WarehouseTransferLineSchema>;
+
+const warehouseListQuery=z.object({
+ store_id:id,page:z.coerce.number().int().min(1).max(1000000).default(1),
+ limit:z.coerce.number().int().min(1).max(100).default(20),
+ search:z.string().trim().max(80).optional(),sort:z.enum(['newest','oldest']).default('newest'),
+});
+export const WarehousePurchaseOrderListQuerySchema=warehouseListQuery.extend({status:WarehousePurchaseOrderSchema.shape.status.optional()}).strict();
+export const WarehouseTransferListQuerySchema=warehouseListQuery.extend({status:WarehouseTransferSchema.shape.status.optional()}).strict();
+export type WarehousePurchaseOrderListQuery=z.input<typeof WarehousePurchaseOrderListQuerySchema>;
+export type WarehouseTransferListQuery=z.input<typeof WarehouseTransferListQuerySchema>;
+export const WarehouseDocumentPageMetaSchema=z.object({
+ store_id:id,page:z.number().int().positive(),per_page:z.number().int().min(1).max(100),
+ total:z.number().int().nonnegative().safe(),total_is_exact:z.literal(true),has_next:z.boolean(),
+}).passthrough();
+/** One current page and its matching population. It is not a cross-page snapshot. */
+export function warehouseDocumentPageSchema<T extends z.ZodTypeAny>(document:T) {
+ return z.object({data:document.array(),meta:WarehouseDocumentPageMetaSchema}).passthrough().superRefine((value,ctx)=>{
+  const {total,page,per_page:limit,has_next:more,store_id:site}=value.meta;
+  const expected=Math.min(limit,Math.max(0,total-(page-1)*limit));
+  const rows=value.data as Array<{id:string;site_id:string}>;
+  if(rows.length!==expected||more!==(page*limit<total)||new Set(rows.map(row=>row.id)).size!==rows.length||rows.some(row=>row.site_id!==site))
+   ctx.addIssue({code:z.ZodIssueCode.custom,message:'Warehouse page population could not be confirmed.'});
+ });
+}
+export const WarehousePurchaseOrderPageSchema=warehouseDocumentPageSchema(WarehousePurchaseOrderSchema);
+export const WarehouseTransferPageSchema=warehouseDocumentPageSchema(WarehouseTransferSchema);

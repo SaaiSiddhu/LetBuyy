@@ -4756,9 +4756,8 @@ void main() {
       final createdRow=WarehouseCommandAcknowledgement.fromJson(createdAck).purchaseOrder!;
       final receiveIntent=WarehouseCommandIntent.receivePurchaseOrder(createdRow);
       final receivedAck=w.warehouseAck(receiveIntent,'po-receive-123',received:4);
-      final api=_FakeApiClient(json:{'/inventory/purchase-orders':[{
-        ...createdAck['purchase_order'] as Map<String,dynamic>,'lines':createdAck['lines']}],
-        '/inventory/purchase-orders/${w.warehouseTarget}/receive':receivedAck},
+      final api=_FakeApiClient(paginated:{'/inventory/purchase-orders':[{...createdAck['purchase_order'] as Map<String,dynamic>,'lines':createdAck['lines']}]},
+        paginatedMeta:{'/inventory/purchase-orders':{'store_id':w.warehouseSite,'page':1,'per_page':20,'total':1,'has_next':false,'total_is_exact':true}},json:{'/inventory/purchase-orders/${w.warehouseTarget}/receive':receivedAck},
         methodJson:{'GET /inventory/command-capabilities':w.warehouseCapabilities(),'POST /inventory/purchase-orders':createdAck});
       final service=InventoryService(api:api,actorIdProvider:()=>w.warehouseActor,
         storeIdProvider:()=>w.warehouseSite,commands:SecurityCommandStore(storage:MemoryStorage()));
@@ -4782,9 +4781,8 @@ void main() {
       final shippedRow=WarehouseCommandAcknowledgement.fromJson(shippedAck).transfer!;
       final receiveIntent=WarehouseCommandIntent.receiveTransfer(shippedRow);
       final receivedAck=w.warehouseAck(receiveIntent,'transfer-receive-123',received:4,shipped:4);
-      final api=_FakeApiClient(json:{'/inventory/transfers':[{
-        ...createdAck['transfer'] as Map<String,dynamic>,'lines':createdAck['lines']}],
-        '/inventory/transfers/${w.warehouseTarget}/ship':shippedAck,
+      final api=_FakeApiClient(paginated:{'/inventory/transfers':[{...createdAck['transfer'] as Map<String,dynamic>,'lines':createdAck['lines']}]},
+        paginatedMeta:{'/inventory/transfers':{'store_id':w.warehouseSite,'page':1,'per_page':20,'total':1,'has_next':false,'total_is_exact':true}},json:{'/inventory/transfers/${w.warehouseTarget}/ship':shippedAck,
         '/inventory/transfers/${w.warehouseTarget}/receive':receivedAck},
         methodJson:{'GET /inventory/command-capabilities':w.warehouseCapabilities(),'POST /inventory/transfers':createdAck});
       final service=InventoryService(api:api,actorIdProvider:()=>w.warehouseActor,
@@ -7219,10 +7217,9 @@ void main() {
     final api = _FakeApiClient(
       paginated: {
         '/stores': [_storeJson()],
-      },
-      json: {
         '/inventory/purchase-orders': [_purchaseOrderJson()],
       },
+      paginatedMeta: {'/inventory/purchase-orders':{'store_id':_storeJson()['id'],'page':1,'per_page':20,'total':1,'has_next':false,'total_is_exact':true}},
     );
 
     await tester.pumpWidget(
@@ -7247,10 +7244,9 @@ void main() {
     final api = _FakeApiClient(
       paginated: {
         '/stores': [_storeJson()],
-      },
-      json: {
         '/inventory/transfers': [_transferJson()],
       },
+      paginatedMeta: {'/inventory/transfers':{'store_id':_storeJson()['id'],'page':1,'per_page':20,'total':1,'has_next':false,'total_is_exact':true}},
     );
 
     await tester.pumpWidget(

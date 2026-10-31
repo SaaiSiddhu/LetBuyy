@@ -6,6 +6,7 @@ import {useMerchantSecurityContext} from '@/components/security/MerchantSecurity
 import {useWarehouseCommands,WarehouseRequestStoppedError,WarehouseCommandValidationError,type WarehouseSubmit} from '@/lib/inventory/use-warehouse-commands'
 import {WarehouseCommandRecovery} from '@/components/products/WarehouseCommandRecovery'
 import { useReadRequest } from '@/lib/api/use-read-request'
+import {WarehouseDocumentPageMetaSchema} from '@letbuyy/shared-types'
 import { useProductPicker } from '@/lib/api/use-product-picker'
 import { useInventoryLocations } from '@/lib/api/use-inventory-locations'
 import { formatIndiaDate as formatDate } from '@letbuyy/ui/formatting'
@@ -552,6 +553,9 @@ function WarehouseWorkspace({store}:{store:string}) {
     const locations = locationRead.items
     const productPicker = useProductPicker<TransferProductItem>(store)
     const beginRead = useReadRequest(store)
+    const {actorId:warehouseActor,siteId:warehouseSite}=useMerchantSecurityContext(store)
+    const [page,setPage]=useState(1)
+    const [population,setPopulation]=useState<{total:number;more:boolean}|null>(null)
     const [loading, setLoading] = useState(true)
     const [loadError, setLoadError] = useState<string | null>(null)
 
@@ -565,9 +569,10 @@ function WarehouseWorkspace({store}:{store:string}) {
         setLoading(true)
         setLoadError(null)
         setTransfers([])
+        setPopulation(null)
         try {
-            const transferRes = await fetch(`/api/stores/${encodeURIComponent(store)}/transfers`, { cache: 'no-store', signal: request.signal })
-            const transferBody = await transferRes.json() as { data?: TransferWithLines[]; error?: unknown }
+            const transferRes = await fetch(`/api/stores/${encodeURIComponent(store)}/transfers?page=${page}&limit=20`, { headers:{'X-LetBuyy-Merchant-Context':warehouseActor}, cache: 'no-store', signal: request.signal })
+            const transferBody = await transferRes.json() as { data?: TransferWithLines[]; meta?:unknown; error?: unknown }
             if (!request.isCurrent()) return
 
             if (!transferRes.ok) {
@@ -579,13 +584,18 @@ function WarehouseWorkspace({store}:{store:string}) {
                 return
             }
 
-            setTransfers(transferBody.data ?? [])
+            const metadata=WarehouseDocumentPageMetaSchema.safeParse(transferBody.meta)
+            if(!metadata.success||metadata.data.store_id!==warehouseSite||metadata.data.page!==page||metadata.data.per_page!==20||
+                !Array.isArray(transferBody.data)||transferBody.data.length!==Math.min(20,Math.max(0,metadata.data.total-(page-1)*20))||
+                metadata.data.has_next!==(page*20<metadata.data.total))throw new Error('Warehouse page could not be confirmed')
+            setTransfers(transferBody.data)
+            setPopulation({total:metadata.data.total,more:metadata.data.has_next})
         } catch {
             if (request.isCurrent()) setLoadError('Unable to load transfers — check your connection.')
         } finally {
             if (request.isCurrent()) setLoading(false)
         }
-    }, [store, beginRead])
+    }, [store, beginRead, page, warehouseSite, warehouseActor])
 
     useEffect(() => { void loadAll() }, [loadAll])
 
@@ -664,6 +674,12 @@ function WarehouseWorkspace({store}:{store:string}) {
 
             {locationRead.error && <Banner variant="warning" title="Inventory locations could not be loaded" action={<Button variant="secondary" onClick={() => { void locationRead.load() }}>Retry locations</Button>}>Existing records remain available. Reload locations before creating a new record.</Banner>}
 
+            <div className="flex flex-wrap items-center gap-[var(--lb-space-3)]" aria-label="Warehouse pages">
+                <Button variant="secondary" disabled={loading||page===1} onClick={()=>setPage(value=>value-1)}>Previous</Button>
+                <span>{population?`${population.total} matching records · Page ${page}`:`Page ${page} · Count unavailable`}</span>
+                <Button variant="secondary" disabled={loading||!population?.more} onClick={()=>setPage(value=>value+1)}>Next</Button>
+            </div>
+
             <WarehouseCommandRecovery commands={commands} onResolved={()=>void loadAll()} />
 
             <Card>
@@ -688,7 +704,7 @@ function WarehouseWorkspace({store}:{store:string}) {
                                     aria-hidden="true"
                                 />
                             }
-                            title="No transfers yet"
+                            title={page===1?"No transfers yet":"No records on this page"}
                             body="Create a transfer to move stock between locations. Transferred inventory is reserved at the source until received at the destination."
                             primaryAction={
                                 <Button

@@ -1,4 +1,4 @@
-import {WarehousePurchaseOrderSchema,WarehouseTransferSchema,type WarehousePurchaseOrder,type WarehousePurchaseOrderLine,type WarehouseTransfer,type WarehouseTransferLine} from '@letbuyy/shared-types';
+import {WarehousePurchaseOrderPageSchema,WarehouseTransferPageSchema,WarehousePurchaseOrderListQuerySchema,WarehouseTransferListQuerySchema,type WarehousePurchaseOrderListQuery,type WarehouseTransferListQuery,type WarehousePurchaseOrder,type WarehousePurchaseOrderLine,type WarehouseTransfer,type WarehouseTransferLine} from '@letbuyy/shared-types';
 import {WarehouseCommandResultSchema,WarehouseCommandCapabilitiesSchema,WAREHOUSE_COMMAND_PROTOCOL_HEADER,WAREHOUSE_COMMAND_PROTOCOL_VERSION,type WarehouseCommandOperation,type WarehouseCommandResult,type StopWarehouseCommandInput,type WarehouseCommandCapabilities} from '@letbuyy/shared-types';
 export type {WarehouseCommandIntent,WarehouseCommandResult,StopWarehouseCommandInput} from '@letbuyy/shared-types';
 import type { ShippingCapabilities, ShippingProfile, CreateShippingProfileInput, UpdateShippingProfileInput } from '@letbuyy/shared-types';
@@ -2353,7 +2353,7 @@ export interface ReceivePurchaseOrderInput {
 export type PurchaseOrderLine=WarehousePurchaseOrderLine;
 export type PurchaseOrder=WarehousePurchaseOrder;
 
-export interface PurchaseOrderListQuery extends StoreScopedQuery {}
+export type PurchaseOrderListQuery=WarehousePurchaseOrderListQuery;
 
 // ── Suppliers ────────────────────────────────────────────────────
 export interface CreateSupplierInput {
@@ -2428,9 +2428,7 @@ export interface ReceiveInventoryTransferInput {
 export type InventoryTransfer=WarehouseTransfer;
 export type InventoryTransferLine=WarehouseTransferLine;
 
-export interface InventoryTransferListQuery extends StoreScopedQuery {
-  status?: string;
-}
+export type InventoryTransferListQuery=WarehouseTransferListQuery;
 
 export interface ReserveInventoryInput {
   store_id: string;
@@ -4947,7 +4945,7 @@ export class LetbuyyApiClient {
       this.requestData<JsonRecord>('/inventory/adjust', { ...options, method: 'POST', body: input }),
     purchaseOrders: {
       list: (query: PurchaseOrderListQuery, options?: LetbuyyRequestOptions) =>
-        this.requestWarehouseDocuments('/inventory/purchase-orders',query,WarehousePurchaseOrderSchema,options),
+        this.requestWarehouseDocuments('/inventory/purchase-orders',WarehousePurchaseOrderListQuerySchema.parse(query),WarehousePurchaseOrderPageSchema,options),
       create: (input: CreatePurchaseOrderInput, options?: LetbuyyRequestOptions) =>
         this.requestWarehouseAcknowledgement('/inventory/purchase-orders',input,'purchase_order.create',null,{...options,storeId:input.store_id}),
       receive: (id: string, input: ReceivePurchaseOrderInput, options?: LetbuyyRequestOptions) =>
@@ -4990,7 +4988,7 @@ export class LetbuyyApiClient {
       this.requestData<JsonRecord>('/inventory/release', { ...options, method: 'POST', body: input }),
     transfers: {
       list: (query: InventoryTransferListQuery, options?: LetbuyyRequestOptions) =>
-        this.requestWarehouseDocuments('/inventory/transfers',query,WarehouseTransferSchema,options),
+        this.requestWarehouseDocuments('/inventory/transfers',WarehouseTransferListQuerySchema.parse(query),WarehouseTransferPageSchema,options),
       create: (input: CreateInventoryTransferInput, options?: LetbuyyRequestOptions) =>
         this.requestWarehouseAcknowledgement('/inventory/transfers',input,'transfer.create',null,{...options,storeId:input.store_id}),
       ship: (id: string, input: ShipInventoryTransferInput, options?: LetbuyyRequestOptions) =>
@@ -5741,14 +5739,16 @@ export class LetbuyyApiClient {
     return parsed.data;
   }
 
-  private async requestWarehouseDocuments<T extends {site_id:string}>(path:string,query:StoreScopedQuery,
-    schema:{array():{safeParse(value:unknown):{success:true;data:T[]}|{success:false}}},options?:LetbuyyRequestOptions):Promise<T[]> {
-    const store=query.store_id??options?.storeId??this.defaultStoreId;
-    if(!store)throw new LetbuyyApiError({status:400,code:'STORE_REQUIRED',message:'Select a store before loading warehouse records.'});
-    const parsed=schema.array().safeParse(await this.requestData<unknown>(path,{...options,storeId:store,query:{...query,store_id:store}}));
-    if(!parsed.success||parsed.data.some(row=>row.site_id!==store))throw new LetbuyyApiError({status:503,
-      code:'WAREHOUSE_DOCUMENTS_UNVERIFIED',message:'These warehouse records could not be confirmed. Reload the current store.'});
-    return parsed.data;
+  private async requestWarehouseDocuments<T extends {id:string;site_id:string;status:string}>(path:string,
+    query:{store_id:string;page:number;limit:number;status?:string},
+    schema:{safeParse(value:unknown):{success:true;data:{data:T[];meta:{store_id:string;page:number;per_page:number;total:number;has_next:boolean}}}|{success:false}},
+    options?:LetbuyyRequestOptions):Promise<PaginatedResponse<T>> {
+    const parsed=schema.safeParse(await this.request<unknown>(path,{...options,storeId:query.store_id,query,cache:'no-store'}));
+    if(!parsed.success||parsed.data.meta.store_id!==query.store_id||parsed.data.meta.page!==query.page||
+      parsed.data.meta.per_page!==query.limit||parsed.data.data.some(row=>query.status&&row.status!==query.status))
+      throw new LetbuyyApiError({status:503,code:'WAREHOUSE_DOCUMENTS_UNVERIFIED',message:'These warehouse records could not be confirmed. Reload the current store.'});
+    return {data:parsed.data.data,total:parsed.data.meta.total,page:query.page,limit:query.limit,
+      has_more:parsed.data.meta.has_next,next_cursor:null,total_is_exact:true};
   }
 
   async requestData<T>(path: string, options?: LetbuyyRequestOptions): Promise<T> {

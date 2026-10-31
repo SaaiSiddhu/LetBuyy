@@ -111,6 +111,14 @@ class InventoryService extends ChangeNotifier {
   List<InventoryTransferContract> get transfers => List.unmodifiable(
     _current('transfers') ? _transfers : <InventoryTransferContract>[],
   );
+  int? get purchaseOrdersTotal =>
+      _current('orders') ? _recordPages['orders']?.total : null;
+  int? get transfersTotal =>
+      _current('transfers') ? _recordPages['transfers']?.total : null;
+  bool get purchaseOrdersHasMore =>
+      _current('orders') && (_recordPages['orders']?.more ?? false);
+  bool get transfersHasMore =>
+      _current('transfers') && (_recordPages['transfers']?.more ?? false);
   bool get isLoading => _loading.any(_current);
   bool get levelsHasMore => _current('levels') && _levelsHasMore;
 
@@ -460,8 +468,9 @@ class InventoryService extends ChangeNotifier {
     Future<PaginatedResponse<JsonMap>> Function(ApiRequestOptions) load,
     T Function(JsonMap) parse,
     void Function(List<T>) publish,
-    bool Function(T) matches,
-  ) async {
+    bool Function(T) matches, {
+    bool warehouse = false,
+  }) async {
     final view = _begin(resource, storeId);
     try {
       final result = await load(_options(view.version, storeId));
@@ -479,6 +488,20 @@ class InventoryService extends ChangeNotifier {
               'These inventory records are not available for the selected store yet. Try again later.',
           statusCode: 503,
           code: 'INVENTORY_${resource.toUpperCase()}_SCOPE_UNSUPPORTED',
+        );
+      }
+      if (warehouse &&
+          (result.meta['total_is_exact'] != true ||
+              result.data.length !=
+                  (result.total - (page - 1) * limit).clamp(0, limit) ||
+              result.hasMore != (page * limit < result.total) ||
+              result.data.map((row) => row['id']).toSet().length !=
+                  result.data.length)) {
+        throw const ApiException(
+          message:
+              'These warehouse records could not be confirmed. Reload the current store.',
+          statusCode: 503,
+          code: 'WAREHOUSE_DOCUMENTS_UNVERIFIED',
         );
       }
       final rows = result.data
@@ -1049,15 +1072,27 @@ class InventoryService extends ChangeNotifier {
     (row) =>
         _suppliers = [row, ..._suppliers.where((item) => item.id != row.id)],
   );
-  Future<List<PurchaseOrderContract>> fetchPurchaseOrders(String storeId) =>
-      _read(
-        'orders',
-        storeId,
-        (options) =>
-            _api.inventory.purchaseOrders(storeId: storeId, options: options),
-        PurchaseOrderContract.fromJson,
-        (rows) => _purchaseOrders = rows,
-      );
+  Future<List<PurchaseOrderContract>> fetchPurchaseOrders(
+    String storeId, {
+    int page = 1,
+    int limit = 20,
+  }) => _readRecords(
+    'orders',
+    storeId,
+    page,
+    limit,
+    (options) => _api.inventory.purchaseOrders(
+      storeId: storeId,
+      page: page,
+      limit: limit,
+      options: options,
+    ),
+    PurchaseOrderContract.fromJson,
+    (rows) => _purchaseOrders = rows,
+    (row) => row.storeId == storeId,
+    warehouse: true,
+  );
+
   Future<PurchaseOrderContract> createPurchaseOrder(
     PurchaseOrderInput input,
   ) async {
@@ -1085,15 +1120,27 @@ class InventoryService extends ChangeNotifier {
     return _appliedWarehouse(ack, ack.purchaseOrder);
   }
 
-  Future<List<InventoryTransferContract>> fetchTransfers(String storeId) =>
-      _read(
-        'transfers',
-        storeId,
-        (options) =>
-            _api.inventory.transfers(storeId: storeId, options: options),
-        InventoryTransferContract.fromJson,
-        (rows) => _transfers = rows,
-      );
+  Future<List<InventoryTransferContract>> fetchTransfers(
+    String storeId, {
+    int page = 1,
+    int limit = 20,
+  }) => _readRecords(
+    'transfers',
+    storeId,
+    page,
+    limit,
+    (options) => _api.inventory.transfers(
+      storeId: storeId,
+      page: page,
+      limit: limit,
+      options: options,
+    ),
+    InventoryTransferContract.fromJson,
+    (rows) => _transfers = rows,
+    (row) => row.storeId == storeId,
+    warehouse: true,
+  );
+
   Future<InventoryTransferContract> createTransfer(
     InventoryTransferInput input,
   ) async {

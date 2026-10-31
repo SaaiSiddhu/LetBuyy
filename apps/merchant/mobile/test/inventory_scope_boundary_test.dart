@@ -51,7 +51,21 @@ void respond(
     statusCode: status,
     data: {
       'data': value,
-      'meta': {'has_next': more, 'next_cursor': null, ...meta},
+      'meta': {
+        'has_next': more,
+        'next_cursor': null,
+        if (RegExp(
+              r'/inventory/(purchase-orders|transfers)$',
+            ).hasMatch(r.path) &&
+            value is List) ...{
+          'store_id': r.queryParameters['store_id'],
+          'page': r.queryParameters['page'] ?? 1,
+          'per_page': r.queryParameters['limit'] ?? 20,
+          'total': value.length,
+          'total_is_exact': true,
+        },
+        ...meta,
+      },
     },
   ),
 );
@@ -116,6 +130,80 @@ final resources = <ReadResource>[
 ];
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  for (final purchaseOrder in [false, true])
+    test(
+      '${purchaseOrder ? 'purchase order' : 'transfer'} page refuses missing or mismatched metadata and retires prior records',
+      () async {
+        String? fault;
+        final api = client((r, h) {
+          final row = <String, dynamic>{
+            'id': w.warehouseTarget,
+            'site_id': a,
+            'status': purchaseOrder ? 'ordered' : 'reserved',
+            'lines': [
+              {
+                'id': w.warehouseLine,
+                'site_id': a,
+                'purchase_order_id': w.warehouseTarget,
+                'transfer_id': w.warehouseTarget,
+                'product_id': w.warehouseProduct,
+                'variant_id': null,
+                'quantity_ordered': 4,
+                'quantity_requested': 4,
+                'quantity_shipped': 0,
+                'quantity_received': 0,
+                'unit_cost': 0,
+              },
+            ],
+          };
+          final metadata = <String, dynamic>{
+            'store_id': a,
+            'page': 1,
+            'per_page': 20,
+            'total': 1,
+            'has_next': false,
+            'total_is_exact': true,
+          };
+          if (fault == 'store') metadata['store_id'] = b;
+          if (fault == 'page') metadata['page'] = 2;
+          if (fault == 'limit') metadata['per_page'] = 100;
+          if (fault == 'total') metadata['total'] = 2;
+          if (fault == 'inexact') metadata['total_is_exact'] = false;
+          if (fault == 'continuation') metadata['has_next'] = true;
+          h.resolve(
+            Response(
+              requestOptions: r,
+              statusCode: 200,
+              data: {
+                'data': [row],
+                if (fault != 'missing') 'meta': metadata,
+              },
+            ),
+          );
+        });
+        final service = InventoryService(api: api);
+        Future<List<Object>> read() => purchaseOrder
+            ? service.fetchPurchaseOrders(a)
+            : service.fetchTransfers(a);
+        List<Object> values() =>
+            purchaseOrder ? service.purchaseOrders : service.transfers;
+        for (final next in [
+          'missing',
+          'store',
+          'page',
+          'limit',
+          'total',
+          'inexact',
+          'continuation',
+        ]) {
+          fault = null;
+          expect(await read(), hasLength(1));
+          fault = next;
+          await expectLater(read(), throwsA(isA<ApiException>()));
+          expect(values(), isEmpty);
+        }
+      },
+    );
   test(
     'history requires the explicit server store acknowledgement and observed count',
     () async {

@@ -27,6 +27,9 @@ class _InventoryTransfersScreenState extends State<InventoryTransfersScreen> {
   String? _error;
   Object? _viewKey;
   int _readGeneration = 0;
+  int _page = 1;
+  int? _total;
+  bool _more = false;
   MerchantStoreView? get _view =>
       _storeId == null ? null : (key: _viewKey, storeId: _storeId!);
   bool _matches(MerchantStoreView? view) =>
@@ -47,6 +50,8 @@ class _InventoryTransfersScreenState extends State<InventoryTransfersScreen> {
     setState(() {
       _isLoading = true;
       _error = null;
+      _total = null;
+      _more = false;
       _transfers = [];
     });
     final stores = context.read<StoreContext>();
@@ -63,12 +68,13 @@ class _InventoryTransfersScreenState extends State<InventoryTransfersScreen> {
         });
         return;
       }
-      final rows = await context.read<InventoryService>().fetchTransfers(
-        view.storeId,
-      );
+      final service = context.read<InventoryService>();
+      final rows = await service.fetchTransfers(view.storeId, page: _page);
       if (!_matches(view) || generation != _readGeneration) return;
       setState(() {
         _transfers = rows;
+        _total = service.transfersTotal;
+        _more = service.transfersHasMore;
         _isLoading = false;
       });
     } catch (error) {
@@ -99,6 +105,9 @@ class _InventoryTransfersScreenState extends State<InventoryTransfersScreen> {
       _viewKey = stores.requestContextKey;
       ++_readGeneration;
       _storeId = null;
+      _page = 1;
+      _total = null;
+      _more = false;
       _warehouseReady = false;
       _warehouseBusy = false;
       _transfers = [];
@@ -139,6 +148,44 @@ class _InventoryTransfersScreenState extends State<InventoryTransfersScreen> {
                   },
                   onResolved: _load,
                 ),
+              SafeArea(
+                top: false,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    children: [
+                      IconButton(
+                        tooltip: 'Previous page',
+                        onPressed: _isLoading || _page == 1
+                            ? null
+                            : () {
+                                setState(() => _page--);
+                                _load();
+                              },
+                        icon: const Icon(Icons.chevron_left),
+                      ),
+                      Expanded(
+                        child: Text(
+                          _total == null
+                              ? 'Page $_page · Count unavailable'
+                              : '$_total matching records · Page $_page',
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      IconButton(
+                        tooltip: 'Next page',
+                        onPressed: _isLoading || !_more
+                            ? null
+                            : () {
+                                setState(() => _page++);
+                                _load();
+                              },
+                        icon: const Icon(Icons.chevron_right),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
               Expanded(child: _isLoading ? _loading() : _body()),
             ],
           ),
@@ -197,7 +244,7 @@ class _InventoryTransfersScreenState extends State<InventoryTransfersScreen> {
     if (_transfers.isEmpty) {
       return _centerState(
         Icons.swap_horiz_outlined,
-        'No transfers',
+        _page == 1 ? 'No transfers' : 'No records on this page',
         'Move stock between locations when inventory needs balancing.',
       );
     }

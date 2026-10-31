@@ -20,7 +20,7 @@ export { SportsFactsSchema, SportsVariantFactsSchema, readSportsFacts, resolveSp
 export { BooksFactsSchema, BooksVariantFactsSchema, readBooksFacts, mergeBooksVariantFacts, type BooksFacts, type BooksVariantFacts } from './marginalia-facts';
 export { ReplaceCollectionMembershipSchema, type ReplaceCollectionMembershipInput } from '@letbuyy/shared-types';
 export { CollectionListPaginationSchema, CollectionListQuerySchema, type CollectionListPagination, type CollectionListQuery, type CollectionListQueryInput } from '@letbuyy/shared-types';
-export {WarehouseCommandCapabilitiesQuerySchema,type WarehouseCommandCapabilitiesQuery} from '@letbuyy/shared-types';
+export {WarehousePurchaseOrderListQuerySchema,WarehouseTransferListQuerySchema,WarehouseCommandCapabilitiesQuerySchema,type WarehouseCommandCapabilitiesQuery} from '@letbuyy/shared-types';
 import { StopWarehouseCommandInputSchema, CustomerSegmentRulesSchema, ProductStatusSchema, EmailSchema, HsnCodeSchema, MoneySchema, PaginationQuery, QueryBooleanSchema, SlugSchema, UrlSchema, UuidSchema, InventoryReservationStatusSchema } from '@letbuyy/shared-types';
 
 export type ProductStatus = 'draft' | 'active' | 'archived';

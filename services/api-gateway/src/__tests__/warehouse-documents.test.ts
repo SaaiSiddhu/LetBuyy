@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import {WarehousePurchaseOrderSchema,WarehouseTransferSchema} from '@letbuyy/shared-types';
+import {WarehousePurchaseOrderSchema,WarehouseTransferSchema,WarehousePurchaseOrderListQuerySchema,WarehouseTransferListQuerySchema} from '@letbuyy/shared-types';
 import {createLetbuyyApiClient,LetbuyyApiError} from '@letbuyy/api-client';
 const uuid=(n:number)=>'00000000-0000-4000-8000-'+String(n).padStart(12,'0');
 function record(transfer:boolean) {
@@ -11,6 +11,29 @@ function record(transfer:boolean) {
   ...(transfer?{transfer_number:'TR-SYN',source_location_id:uuid(7),destination_location_id:uuid(8),shipped_at:date,received_at:null}
    :{po_number:'PO-SYN',supplier_id:uuid(9),location_id:uuid(7),supplier:{id:uuid(9),site_id:uuid(1),name:'Synthetic supplier'},
      expected_at:null,subtotal:1.16,total:1.16,currency:'INR'})};
+}
+for(const transfer of [false,true]) {
+ for(const fault of ['missing','store','page','limit','count','inexact','continuation','duplicate'])test((transfer?'transfer':'PO')+' SDK refuses unverified page '+fault,async()=>{
+  const data=[record(transfer)],meta:Record<string,unknown>={store_id:uuid(1),page:2,per_page:2,total:3,has_next:false,total_is_exact:true};
+  if(fault==='store')meta.store_id=uuid(2);
+  if(fault==='page')meta.page=1;
+  if(fault==='limit')meta.per_page=20;
+  if(fault==='count')meta.total=4;
+  if(fault==='inexact')meta.total_is_exact=false;
+  if(fault==='continuation')meta.has_next=true;
+  if(fault==='duplicate'){data.push(record(transfer));meta.total=4;}
+  const api=createLetbuyyApiClient({baseUrl:'https://gateway.test',fetch:async()=>Response.json({data,...(fault==='missing'?{}:{meta})})});
+  const query={store_id:uuid(1),page:2,limit:2};
+  await assert.rejects(()=>transfer?api.inventory.transfers.list(query):api.inventory.purchaseOrders.list(query),
+   e=>e instanceof LetbuyyApiError&&e.code==='WAREHOUSE_DOCUMENTS_UNVERIFIED');
+ });
+ const schema=transfer?WarehouseTransferListQuerySchema:WarehousePurchaseOrderListQuerySchema;
+ test((transfer?'transfer':'PO')+' list accepts bounded pages and validates status, search and sorting',()=>{
+  assert.deepEqual(schema.parse({store_id:uuid(1),page:'2',limit:'50',search:' SYN ',sort:'oldest'}),
+   {store_id:uuid(1),page:2,limit:50,search:'SYN',sort:'oldest'});
+  for(const patch of [{page:0},{page:1.5},{limit:101},{store_id:'foreign'},{status:'partial'},{sort:'random'},{search:'x'.repeat(81)},{extra:true}])
+   assert.equal(schema.safeParse({store_id:uuid(1),...patch}).success,false);
+ });
 }
 for(const transfer of [false,true]) {
  const name=transfer?'transfer':'PO',schema=transfer?WarehouseTransferSchema:WarehousePurchaseOrderSchema;
@@ -37,11 +60,11 @@ for(const transfer of [false,true]) {
    const api=createLetbuyyApiClient({baseUrl:'https://gateway.test',storeId:uuid(2),fetch:async(input,init)=>{
     const url=new URL(String(input));assert.equal(url.searchParams.get('store_id'),uuid(1));
     assert.equal(new Headers(init?.headers).get('X-Store-ID'),uuid(1));
-    const row=record(transfer);if(foreign)row.site_id=uuid(2);return Response.json({data:[row]});
+    const row=record(transfer);if(foreign)row.site_id=uuid(2);return Response.json({data:[row],meta:{store_id:uuid(1),page:1,per_page:20,total:1,has_next:false,total_is_exact:true}});
    }});
    const read=()=>transfer?api.inventory.transfers.list({store_id:uuid(1)}):api.inventory.purchaseOrders.list({store_id:uuid(1)});
    if(foreign)await assert.rejects(read,e=>e instanceof LetbuyyApiError&&e.code==='WAREHOUSE_DOCUMENTS_UNVERIFIED');
-   else assert.equal((await read())[0].lines[0].quantity_received,2);
+   else assert.equal((await read()).data[0].lines[0].quantity_received,2);
   }
  });
 }

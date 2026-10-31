@@ -106,7 +106,20 @@ void respond(
     statusCode: status,
     data: {
       'data': data,
-      'meta': {'has_next': more, ...meta},
+      'meta': {
+        'has_next': more,
+        if (RegExp(
+              r'/inventory/(purchase-orders|transfers)$',
+            ).hasMatch(r.path) &&
+            data is List) ...{
+          'store_id': r.queryParameters['store_id'],
+          'page': r.queryParameters['page'] ?? 1,
+          'per_page': r.queryParameters['limit'] ?? 20,
+          'total': data.length,
+          'total_is_exact': true,
+        },
+        ...meta,
+      },
     },
   ),
 );
@@ -486,6 +499,55 @@ void main() {
       },
     );
   }
+  for (final surface in [
+    (name: 'purchase orders', screen: const PurchaseOrdersScreen()),
+    (name: 'transfers', screen: const InventoryTransfersScreen()),
+  ])
+    testWidgets(
+      '${surface.name} pages show exact counts and retain a previous-page recovery after denial',
+      (tester) async {
+        final pages = <int>[];
+        final stores = await mount(tester, surface.screen, (r, h) {
+          final page = r.queryParameters['page'] as int? ?? 1;
+          pages.add(page);
+          if (page == 2) {
+            respond(r, h, [], status: 403);
+            return;
+          }
+          respond(
+            r,
+            h,
+            List.generate(
+              20,
+              (index) => {
+                ...record(
+                  r.queryParameters['store_id'].toString(),
+                  name: 'SYN page one $index',
+                ),
+                'id': 'synthetic-$index',
+              },
+            ),
+            more: true,
+            meta: {'total': 21},
+          );
+        });
+        expect(find.text('21 matching records · Page 1'), findsOneWidget);
+        await tester.tap(find.byTooltip('Next page'));
+        await tester.pumpAndSettle();
+        expect(pages.last, 2);
+        expect(find.text('Page 2 · Count unavailable'), findsOneWidget);
+        expect(find.textContaining('SYN page one'), findsNothing);
+        await tester.tap(find.byTooltip('Previous page'));
+        await tester.pumpAndSettle();
+        expect(pages.last, 1);
+        expect(find.text('21 matching records · Page 1'), findsOneWidget);
+        final change = stores.selectStore(stores.stores.last);
+        await tester.pumpAndSettle();
+        await change;
+        expect(pages.last, 1);
+        expect(tester.takeException(), isNull);
+      },
+    );
   final surfaces = <({String name, Widget screen, String? form, String? save})>[
     (name: 'levels', screen: const InventoryScreen(), form: null, save: null),
     (

@@ -26,6 +26,9 @@ class _PurchaseOrdersScreenState extends State<PurchaseOrdersScreen> {
   String? _error;
   Object? _viewKey;
   int _readGeneration = 0;
+  int _page = 1;
+  int? _total;
+  bool _more = false;
   MerchantStoreView? get _view =>
       _storeId == null ? null : (key: _viewKey, storeId: _storeId!);
   bool _matches(MerchantStoreView? view) =>
@@ -46,6 +49,8 @@ class _PurchaseOrdersScreenState extends State<PurchaseOrdersScreen> {
     setState(() {
       _isLoading = true;
       _error = null;
+      _total = null;
+      _more = false;
       _orders = [];
     });
     final stores = context.read<StoreContext>();
@@ -62,12 +67,13 @@ class _PurchaseOrdersScreenState extends State<PurchaseOrdersScreen> {
         });
         return;
       }
-      final rows = await context.read<InventoryService>().fetchPurchaseOrders(
-        view.storeId,
-      );
+      final service = context.read<InventoryService>();
+      final rows = await service.fetchPurchaseOrders(view.storeId, page: _page);
       if (!_matches(view) || generation != _readGeneration) return;
       setState(() {
         _orders = rows;
+        _total = service.purchaseOrdersTotal;
+        _more = service.purchaseOrdersHasMore;
         _isLoading = false;
       });
     } catch (error) {
@@ -98,6 +104,9 @@ class _PurchaseOrdersScreenState extends State<PurchaseOrdersScreen> {
       _viewKey = stores.requestContextKey;
       ++_readGeneration;
       _storeId = null;
+      _page = 1;
+      _total = null;
+      _more = false;
       _warehouseReady = false;
       _warehouseBusy = false;
       _orders = [];
@@ -138,6 +147,44 @@ class _PurchaseOrdersScreenState extends State<PurchaseOrdersScreen> {
                   },
                   onResolved: _load,
                 ),
+              SafeArea(
+                top: false,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    children: [
+                      IconButton(
+                        tooltip: 'Previous page',
+                        onPressed: _isLoading || _page == 1
+                            ? null
+                            : () {
+                                setState(() => _page--);
+                                _load();
+                              },
+                        icon: const Icon(Icons.chevron_left),
+                      ),
+                      Expanded(
+                        child: Text(
+                          _total == null
+                              ? 'Page $_page · Count unavailable'
+                              : '$_total matching records · Page $_page',
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      IconButton(
+                        tooltip: 'Next page',
+                        onPressed: _isLoading || !_more
+                            ? null
+                            : () {
+                                setState(() => _page++);
+                                _load();
+                              },
+                        icon: const Icon(Icons.chevron_right),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
               Expanded(child: _isLoading ? _loading() : _body()),
             ],
           ),
@@ -196,7 +243,7 @@ class _PurchaseOrdersScreenState extends State<PurchaseOrdersScreen> {
     if (_orders.isEmpty) {
       return _centerState(
         Icons.add_box_outlined,
-        'No purchase orders',
+        _page == 1 ? 'No purchase orders' : 'No records on this page',
         'Create an inbound order to track supplier replenishment.',
       );
     }
