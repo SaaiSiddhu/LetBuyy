@@ -196,7 +196,7 @@ corrected. No existing project was removed.
 Typechecks and standalone production builds are recorded separately. Browser
 screenshots are synthetic-fixture UI evidence, not production activation.
 
-## Release state and remaining work
+## Historical release preparation state (30 October)
 
 Staging promotion, schema deployment and byte-verified API activation are complete
 as recorded above. Production `main` remains
@@ -215,3 +215,89 @@ implement the first-party connector or LetBuyy carrier execution. Their missing
 account/agreement is an external acceptance dependency, not permission to claim
 that pending implementation is complete. Manual shipping and the core GST repair
 can be qualified independently while that provider integration is prepared.
+
+## Production activation — 1 November 2026 (Asia/Kolkata)
+
+The owner continued the candidate-specific reviewed release and its stated TEST-R8
+limitations. The final integration revision is
+`77584d19dc3dc557f29f9e2fbc7a967fe38e132c`; the final test/evidence source is
+`c305df10bd3e71df55a75824ae2be039dfe986b5`. Its runtime, SQL, dependencies and
+deployment tooling match qualified `d0afb90600b2c60c296220cdd8e53e757bdb2bf1`.
+Hosted develop and staging were verified at the integration revision before main
+was fast-forwarded to it. The primary checkout's older local environment refs
+were preserved. This section supersedes the historical not-yet-activated state
+above; it does not relabel the retained red raw test runs.
+
+Before production mutation, a new encrypted production export was taken and
+verified by decrypt/hash round trip. Its isolated, network-disabled exact-role
+UP/DOWN/UP rehearsal preserved all 523 original public/auth/storage tables and
+rows, all five migration-history aliases, theme defaults and private command ACLs.
+Two missing temporary transport helpers were recovered from their original
+same-conversation source, not replaced with a weaker transport. The public
+Supabase CA was recovered from its official dashboard download location.
+Certificate/hostname verification, one-backend batch acknowledgement, an expected
+SQL refusal and connection-lock release were requalified before use.
+
+Migrations 411–413 then committed once in production. The migration journal now
+contains 341 entries. Existing history and order/item/invoice/catalog/domain
+hashes were preserved. Both tax snapshot columns and the profile command exist;
+private quote/order/profile commands remain denied to ordinary client roles;
+all ten included catalog themes remain eligible.
+
+The first API activation stopped at a local missing approval-environment flag,
+before provider mutation. Readback confirmed the old Worker was still active.
+The second script supplied the already recorded scoped approval and retained the
+first failure receipt. Production API version
+`f5d20b78-e4ba-4c26-95f7-65d5ffc17bfa` is active. All three module hashes match
+the qualified production bundle; existing bindings and secrets are preserved.
+
+The exact production-target builds were promoted without rebuilding:
+
+- Merchant: `dpl_F9XK6HGGssAodfUDA7xeFPStAvbm`, serving `admin.letbuyy.com`.
+- Commerce: `dpl_6vAjA1PL6jDdbCr5ugYJXG9nu2TT`, serving the discovery domain,
+  wildcard stores, connected custom domain and existing checkout domains.
+
+Provider readback verifies both exact revisions and all eight Commerce production
+domain aliases. Two staging aliases retain their staging deployment. Initial
+inspection assertions mistakenly included those staging aliases and expected a
+checkout home page; both failed inspection records are retained. The corrected
+readback checks the documented checkout-only root refusal separately from a
+positive signed-cart journey. Nine public HTTP checks pass: Merchant routes
+preserve the signed-out Accounts redirects, storefronts render, Snaz redirects to
+its connected custom domain, and checkout roots deny requests without the
+required checkout path/handoff. HTTP status alone is not checkout acceptance.
+
+Six production API checks passed across Snaz and the QA store: public products,
+saved delivery options and authoritative quotes. Both stores' actual current tax
+collection status is `not_collecting`; zero tax in these quotes reflects those
+settings. No merchant GST registration or rate was inferred or changed. The
+registered-GST positive/negative cases remain separately evidenced by the owned
+database journeys and nine hosted staging checks, not a real production taxable
+payment.
+
+In the current Chrome profile, the existing QA cart opened
+`checkout.qa-wildcard-20261027.letbuyy.store` through its real signed handoff.
+Tamil Nadu / PIN 600001 loaded the saved free-delivery choice. Selecting it showed
+subtotal ₹1, free delivery, tax added ₹0 and final total ₹1, with explicit
+not-collecting-GST and unconfirmed-carrier messages. Changing to an incomplete
+five-digit PIN cleared the prior quote and disabled continuation; restoring the
+valid PIN recovered choices and the same quote. Back to Cart preserved the one
+item and ₹1 total. No address, payment or order was submitted. Signed URLs and
+their tokens are excluded from retained evidence.
+
+**Still unobserved/open:** the production Merchant session expired and requires
+the owner's private sign-in before final signed-in Shipping/Taxes UI readback.
+GitHub CI remains billing-blocked, full hosted staging sign-in is unconfigured,
+and real Razorpay sandbox capture/refund with the new tax quote is unobserved.
+Shiprocket connector/platform execution, carrier billing/pickup/booking/tracking
+and F18 GST credit notes/reporting remain unimplemented. These are not described
+as completed or as a production carrier launch. No Queue, DNS, provider
+credential, paid-plan, live payment or shipment-booking change occurred.
+
+The sanitized activation receipt is
+[PRODUCTION-2026-11-01.json](PRODUCTION-2026-11-01.json). Exact private raw receipts,
+guard/inspection failures and recovery evidence remain under
+`/private/tmp/letbuyy-shipping-tax-implementation-20261030/` and the dated private
+recovery directory. Previous Worker/web versions and encrypted exports remain
+available. Do not blindly run DOWN after new immutable financial facts are used;
+use a preserving forward repair if required.

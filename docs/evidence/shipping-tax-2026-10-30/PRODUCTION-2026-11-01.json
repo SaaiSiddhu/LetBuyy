@@ -1,0 +1,437 @@
+{
+  "status": "production-manual-shipping-gst-activated-with-open-acceptance-items",
+  "clientDate": "2026-11-01",
+  "clientTimezone": "Asia/Kolkata",
+  "recordedUtc": "2026-10-31T20:03:34.910386+00:00",
+  "releaseRevision": "77584d19dc3dc557f29f9e2fbc7a967fe38e132c",
+  "qualifiedRuntimeRevision": "d0afb90600b2c60c296220cdd8e53e757bdb2bf1",
+  "testEvidenceRevision": "c305df10bd3e71df55a75824ae2be039dfe986b5",
+  "userAuthorization": "Candidate-specific Continue after reviewed manual shipping/GST release and its stated TEST-R8 gaps",
+  "migrations": {
+    "versions": [
+      411,
+      412,
+      413
+    ],
+    "historyCount": 341,
+    "artifactSha256": "779722c2f7b377edf04bc2e09b64b79f7222a17ba6f878a574d4503a4ddd4046",
+    "existingFactsPreserved": true,
+    "checks": {
+      "includedThemes": 10,
+      "profileCommand": true,
+      "snapshotColumns": 2,
+      "privateCommandsDenied": true
+    }
+  },
+  "apiWorker": {
+    "worker": "letbuyy-api",
+    "previousVersion": "c019c298-aa8d-4b34-8c0a-46d8f2743a02",
+    "activeVersion": "f5d20b78-e4ba-4c26-95f7-65d5ffc17bfa",
+    "activeBytesMatchQualifiedBuild": true,
+    "moduleHashes": [
+      "79d87b6dcd6cdc5047d1f5f00f2f8f9300ea0f38aace0e8134067241c67fccf0",
+      "83b5829d20b4312aca1a56819f95eef20492e058c70f282c9ed6929f579b20ed",
+      "b478c0d889d97d7a8db4d10501457ad78dd406d02dcb4c892c0d844805ef05bb"
+    ],
+    "allBindingsPreserved": true,
+    "allSecretNamesPreserved": true,
+    "secretValuesChanged": false
+  },
+  "web": [
+    {
+      "project": "merchant",
+      "deployment": "dpl_F9XK6HGGssAodfUDA7xeFPStAvbm",
+      "liveAlias": "admin.letbuyy.com",
+      "actualDeployment": "dpl_F9XK6HGGssAodfUDA7xeFPStAvbm",
+      "sourceRevision": "77584d19dc3dc557f29f9e2fbc7a967fe38e132c",
+      "ready": true,
+      "target": "production",
+      "pass": true
+    },
+    {
+      "project": "storefront-runtime",
+      "deployment": "dpl_6vAjA1PL6jDdbCr5ugYJXG9nu2TT",
+      "liveAlias": "storefront.letbuyy.com",
+      "actualDeployment": "dpl_6vAjA1PL6jDdbCr5ugYJXG9nu2TT",
+      "sourceRevision": "77584d19dc3dc557f29f9e2fbc7a967fe38e132c",
+      "ready": true,
+      "target": "production",
+      "pass": true,
+      "domainAliases": [
+        {
+          "alias": "checkout.store.pixlnova.com",
+          "deployment": "dpl_6vAjA1PL6jDdbCr5ugYJXG9nu2TT",
+          "matches": true,
+          "environment": "production"
+        },
+        {
+          "alias": "checkout.elaxora.letbuyy.store",
+          "deployment": "dpl_6vAjA1PL6jDdbCr5ugYJXG9nu2TT",
+          "matches": true,
+          "environment": "production"
+        },
+        {
+          "alias": "store.pixlnova.com",
+          "deployment": "dpl_6vAjA1PL6jDdbCr5ugYJXG9nu2TT",
+          "matches": true,
+          "environment": "production"
+        },
+        {
+          "alias": "checkout.qa-wildcard-20261027.letbuyy.store",
+          "deployment": "dpl_6vAjA1PL6jDdbCr5ugYJXG9nu2TT",
+          "matches": true,
+          "environment": "production"
+        },
+        {
+          "alias": "storefront.letbuyy.com",
+          "deployment": "dpl_6vAjA1PL6jDdbCr5ugYJXG9nu2TT",
+          "matches": true,
+          "environment": "production"
+        },
+        {
+          "alias": "*.letbuyy.store",
+          "deployment": "dpl_6vAjA1PL6jDdbCr5ugYJXG9nu2TT",
+          "matches": true,
+          "environment": "production"
+        },
+        {
+          "alias": "checkout.letbuyy.com",
+          "deployment": "dpl_6vAjA1PL6jDdbCr5ugYJXG9nu2TT",
+          "matches": true,
+          "environment": "production"
+        },
+        {
+          "alias": "checkout-staging.letbuyy.com",
+          "deployment": "dpl_FWboJXpGBeyTGLxmBEdgqNm8rTMk",
+          "matches": false,
+          "environment": "staging"
+        },
+        {
+          "alias": "storefront-staging.letbuyy.store",
+          "deployment": "dpl_FWboJXpGBeyTGLxmBEdgqNm8rTMk",
+          "matches": false,
+          "environment": "staging"
+        },
+        {
+          "alias": "storefront.letbuyy.store",
+          "deployment": "dpl_6vAjA1PL6jDdbCr5ugYJXG9nu2TT",
+          "matches": true,
+          "environment": "production"
+        }
+      ]
+    }
+  ],
+  "http": [
+    {
+      "url": "https://admin.letbuyy.com/snaz/settings/shipping",
+      "status": 307,
+      "redirectHost": "accounts.letbuyy.com",
+      "redirectPath": "/lookup",
+      "bytes": 15,
+      "pass": true,
+      "signedInUiObserved": false
+    },
+    {
+      "url": "https://admin.letbuyy.com/snaz/settings/taxes",
+      "status": 307,
+      "redirectHost": "accounts.letbuyy.com",
+      "redirectPath": "/lookup",
+      "bytes": 15,
+      "pass": true,
+      "signedInUiObserved": false
+    },
+    {
+      "url": "https://storefront.letbuyy.com",
+      "status": 200,
+      "redirectHost": null,
+      "redirectPath": null,
+      "bytes": 218624,
+      "pass": true,
+      "signedInUiObserved": false
+    },
+    {
+      "url": "https://snaz.letbuyy.store",
+      "status": 301,
+      "redirectHost": "store.pixlnova.com",
+      "redirectPath": "/",
+      "bytes": 15,
+      "pass": true,
+      "signedInUiObserved": false
+    },
+    {
+      "url": "https://qa-wildcard-20261027.letbuyy.store",
+      "status": 200,
+      "redirectHost": null,
+      "redirectPath": null,
+      "bytes": 299457,
+      "pass": true,
+      "signedInUiObserved": false
+    },
+    {
+      "url": "https://store.pixlnova.com",
+      "status": 200,
+      "redirectHost": null,
+      "redirectPath": null,
+      "bytes": 300000,
+      "pass": true,
+      "signedInUiObserved": false
+    },
+    {
+      "url": "https://checkout.store.pixlnova.com",
+      "status": 404,
+      "redirectHost": null,
+      "redirectPath": null,
+      "bytes": 15,
+      "pass": true,
+      "signedInUiObserved": false
+    },
+    {
+      "url": "https://checkout.letbuyy.com",
+      "status": 404,
+      "redirectHost": null,
+      "redirectPath": null,
+      "bytes": 203770,
+      "pass": true,
+      "signedInUiObserved": false
+    },
+    {
+      "url": "https://checkout.qa-wildcard-20261027.letbuyy.store",
+      "status": 404,
+      "redirectHost": null,
+      "redirectPath": null,
+      "bytes": 15,
+      "pass": true,
+      "signedInUiObserved": false
+    }
+  ],
+  "publicApi": [
+    {
+      "store": "qa-wildcard-20261027",
+      "check": "public-product-list",
+      "status": 200,
+      "productCountInPage": 1,
+      "milliseconds": 3049,
+      "pass": true,
+      "errorCode": null
+    },
+    {
+      "store": "qa-wildcard-20261027",
+      "check": "saved-delivery-options",
+      "status": 200,
+      "rateCount": 1,
+      "rates": [
+        {
+          "amount_minor": 0,
+          "carrier_confirmed": false,
+          "estimated_days_min": null,
+          "estimated_days_max": null
+        }
+      ],
+      "milliseconds": 3539,
+      "pass": true,
+      "errorCode": null
+    },
+    {
+      "store": "qa-wildcard-20261027",
+      "check": "authoritative-checkout-quote",
+      "status": 200,
+      "totals": {
+        "subtotal_minor": 100,
+        "discount_minor": 0,
+        "shipping_minor": 0,
+        "tax_minor": 0,
+        "included_tax_minor": 0,
+        "added_tax_minor": 0,
+        "total_minor": 100,
+        "collection_status": "not_collecting"
+      },
+      "components": [],
+      "milliseconds": 819,
+      "pass": true,
+      "errorCode": null
+    },
+    {
+      "store": "snaz",
+      "check": "public-product-list",
+      "status": 200,
+      "productCountInPage": 1,
+      "milliseconds": 2887,
+      "pass": true,
+      "errorCode": null
+    },
+    {
+      "store": "snaz",
+      "check": "saved-delivery-options",
+      "status": 200,
+      "rateCount": 2,
+      "rates": [
+        {
+          "amount_minor": 4900,
+          "carrier_confirmed": false,
+          "estimated_days_min": null,
+          "estimated_days_max": null
+        },
+        {
+          "amount_minor": 0,
+          "carrier_confirmed": false,
+          "estimated_days_min": null,
+          "estimated_days_max": null
+        }
+      ],
+      "milliseconds": 2817,
+      "pass": true,
+      "errorCode": null
+    },
+    {
+      "store": "snaz",
+      "check": "authoritative-checkout-quote",
+      "status": 200,
+      "totals": {
+        "subtotal_minor": 200,
+        "discount_minor": 0,
+        "shipping_minor": 4900,
+        "tax_minor": 0,
+        "included_tax_minor": 0,
+        "added_tax_minor": 0,
+        "total_minor": 5100,
+        "collection_status": "not_collecting"
+      },
+      "components": [],
+      "milliseconds": 2074,
+      "pass": true,
+      "errorCode": null
+    }
+  ],
+  "productionBrowser": {
+    "checkedUtc": "2026-10-31T20:03:34.910386+00:00",
+    "method": "current Saai Chrome profile, native CUA accessibility observations",
+    "store": "qa-wildcard-20261027",
+    "checkoutHost": "checkout.qa-wildcard-20261027.letbuyy.store",
+    "checks": [
+      {
+        "name": "signed cart reaches the exact QA branded HTTPS checkout",
+        "pass": true
+      },
+      {
+        "name": "saved free delivery choice after state and PIN",
+        "pass": true
+      },
+      {
+        "name": "authoritative INR1 quote and explicit not-collecting GST",
+        "pass": true
+      },
+      {
+        "name": "unconfirmed carrier message for manual seller estimate",
+        "pass": true
+      },
+      {
+        "name": "incomplete PIN clears prior quote and disables continuation",
+        "pass": true
+      },
+      {
+        "name": "valid PIN recovers choices and recalculated quote",
+        "pass": true
+      },
+      {
+        "name": "Back to Cart preserves one item and INR1",
+        "pass": true
+      }
+    ],
+    "allPassed": true,
+    "paymentOrOrderSubmitted": false,
+    "personalAddressEntered": false,
+    "signedQueryValuesRetained": false,
+    "merchantSettingsSignedInObserved": false
+  },
+  "freshRecovery": {
+    "encrypted": true,
+    "isolatedNetwork": "none",
+    "originalTablesPreserved": 523,
+    "originalRowsPreserved": true,
+    "exactManagedRole": true,
+    "rollbackExact": true,
+    "hostedWrite": false
+  },
+  "qualification": {
+    "governancePassed": 114,
+    "typecheckTasksPassed": 81,
+    "gatewayUnitsPassed": 1847,
+    "contractsPassed": 362,
+    "gatewayComposedSuites": 206,
+    "gatewayComposedAssertions": 1860,
+    "gatewayRawBroadFailuresRetained": 3,
+    "nativeSuites": 63,
+    "nativeAssertions": 320,
+    "stagingBackendChecks": 9,
+    "normalHostedStagingSignInObserved": false,
+    "realPspCaptureRefundObserved": false
+  },
+  "retainedFailureDispositions": [
+    "Original API deployment omitted the approval environment flag and stopped before provider mutation; reconciled unchanged version/settings before the second attempt.",
+    "First domain inspection wrongly included intentional staging aliases; second expected a checkout root home page. Original failures retained; exact checkout-only root denial is checked separately from the positive signed-cart browser journey.",
+    "Development support-client pre-Gateway 404 remains unexplained; production-built canonical recovery clients passed complete assertions. Raw broad run remains red."
+  ],
+  "openItems": [
+    "Owner private login required for final production Merchant Shipping/Taxes settings readback",
+    "GitHub CI billing block",
+    "Full hosted staging sign-in unconfigured",
+    "Real PSP sandbox capture/refund with new quote unobserved",
+    "F15/F16 merchant-owned connector and LetBuyy carrier execution not implemented; provider account/agreement absent",
+    "F18 GST credit-note policy decision, issuance, tax reporting and reconciliation unimplemented"
+  ],
+  "scopeExclusions": [
+    "Queue deployment",
+    "DNS modification",
+    "new provider credentials",
+    "paid upgrade",
+    "payment or order submission",
+    "carrier booking"
+  ],
+  "privateEvidenceDirectory": "/private/tmp/letbuyy-shipping-tax-implementation-20261030",
+  "evidenceHashes": [
+    {
+      "file": "shipping411-production-approval.json",
+      "sha256": "754f7b43edb63610c502c6bcabc6264de331d7cabc8b248ab3e370de5179cf2c"
+    },
+    {
+      "file": "shipping411-composed-qualification.json",
+      "sha256": "e45588755265dd9815454e60833e8667126f21405d748315f79a77ecbe6f1a93"
+    },
+    {
+      "file": "shipping411-production-release-review.md",
+      "sha256": "8c9ac89b14a7699634f665e7f12cd9af909aaacb9e4c848145a5457dcb429b41"
+    },
+    {
+      "file": "shipping411-production-result.json",
+      "sha256": "441bf9e646d09eae32ea524d5d14f3df4a23d9e2b1b7c84a9df8b565f4d74cd1"
+    },
+    {
+      "file": "shipping411-production-worker-result.json",
+      "sha256": "3e13a77b2bc5424d354f307c9e2058a58ddb1b93c38a6aeb5c81ce5028ae89d7"
+    },
+    {
+      "file": "shipping411-production-worker-result-02.json",
+      "sha256": "554a656b62ad34b78c5aef51addca5f821e1be062c36f2fb109ec99bb91db322"
+    },
+    {
+      "file": "shipping411-production-web-activation-readback-02.json",
+      "sha256": "508b7cfe144f50bfe8ff8a538cd2e65afd61cbcd4bf3b0ad1b9b577d8c35e3be"
+    },
+    {
+      "file": "shipping411-production-web-activation-readback-03.json",
+      "sha256": "cf696c6df499560531c210f2f641a6b44676ee5bcc3c81827270bbc39b317a3e"
+    },
+    {
+      "file": "shipping411-production-public-api-smoke.json",
+      "sha256": "99853aee328ac366cc32494fa41aa15948068e31df3a7c042dbe63ee9c87b385"
+    },
+    {
+      "file": "shipping411-production-browser-smoke.json",
+      "sha256": "cae2b96df074429ffb797097967edf13f9f5819ac41d171225f60421adbd5cad"
+    },
+    {
+      "file": "restored-native-transport-proof-20261031.json",
+      "sha256": "ddcbe21981e9789cf69078d0207d9606fc451fae4223c0f7c22456a4a145b012"
+    }
+  ]
+}
