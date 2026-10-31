@@ -19,6 +19,7 @@ import '../../services/theme_provider.dart';
 import '../../theme/app_theme_colors.dart';
 import '../../config/app_config.dart';
 import '../../app/routes.dart';
+import '../../widgets/shared/merchant_turnstile_attempt.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Brand colours (kept local so the file is self-contained)
@@ -65,10 +66,11 @@ class _LoginScreenState extends State<LoginScreen>
 
   // Inline Turnstile
   WebViewController? _turnstileController;
-  String? _turnstileToken;
-  bool _turnstileWidgetReady = false;
-  bool _turnstileError = false;
-  bool _turnstileExpired = false;
+  final _turnstileAttempt = MerchantTurnstileAttempt();
+  String? get _turnstileToken => _turnstileAttempt.token;
+  bool get _turnstileWidgetReady => _turnstileAttempt.ready;
+  bool get _turnstileError => _turnstileAttempt.error;
+  bool get _turnstileExpired => _turnstileAttempt.expired;
 
   // Auth subscription
   StreamSubscription<AuthState>? _authSub;
@@ -142,9 +144,19 @@ class _LoginScreenState extends State<LoginScreen>
     }
   }
 
+  void _restartTurnstile() {
+    if (!mounted) return;
+    setState(_initTurnstile);
+  }
+
   void _initTurnstile() {
     if (!AppConfig.hasTurnstileSiteKey) return;
-    final isDark = AppThemeColors.of(context).isDark;
+    final generation = _turnstileAttempt.begin(),
+        isDark = AppThemeColors.of(context).isDark;
+    bool active() => mounted && _turnstileAttempt.current(generation);
+    void failed() {
+      if (active()) setState(() => _turnstileAttempt.fail(generation));
+    }
 
     _turnstileController = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
@@ -152,50 +164,55 @@ class _LoginScreenState extends State<LoginScreen>
       ..setNavigationDelegate(
         NavigationDelegate(
           onPageFinished: (_) {
-            if (mounted) setState(() => _turnstileWidgetReady = true);
+            if (active())
+              setState(() => _turnstileAttempt.pageReady(generation));
           },
-          onWebResourceError: (_) {
-            if (mounted) setState(() => _turnstileError = true);
+          onWebResourceError: (error) {
+            if (active() && error.isForMainFrame != false)
+              setState(
+                () => _turnstileAttempt.resourceFailure(
+                  generation,
+                  isForMainFrame: error.isForMainFrame,
+                ),
+              );
           },
         ),
       )
       ..addJavaScriptChannel(
         'TurnstileToken',
-        onMessageReceived: (msg) {
-          final token = msg.message.trim();
-          if (token.isNotEmpty && mounted) {
-            setState(() {
-              _turnstileToken = token;
-              _turnstileExpired = false;
-            });
-          }
+        onMessageReceived: (message) {
+          if (active())
+            setState(
+              () => _turnstileAttempt.succeed(generation, message.message),
+            );
         },
       )
       ..addJavaScriptChannel(
         'TurnstileError',
-        onMessageReceived: (_) {
-          if (mounted) setState(() => _turnstileError = true);
-        },
+        onMessageReceived: (_) => failed(),
       )
       ..addJavaScriptChannel(
         'TurnstileExpired',
         onMessageReceived: (_) {
-          if (mounted) {
-            setState(() {
-              _turnstileToken = null;
-              _turnstileExpired = true;
-            });
-          }
+          if (active()) setState(() => _turnstileAttempt.expire(generation));
         },
-      )
-      ..loadHtmlString(
-        _turnstileHtml(AppConfig.turnstileSiteKey, isDark: isDark),
-        baseUrl: AppConfig.identityBaseUrl,
       );
+    unawaited(
+      _turnstileController!
+          .loadHtmlString(
+            merchantTurnstileDocument(
+              AppConfig.turnstileSiteKey,
+              isDark: isDark,
+            ),
+            baseUrl: AppConfig.identityBaseUrl,
+          )
+          .catchError((Object _) => failed()),
+    );
   }
 
   @override
   void dispose() {
+    _turnstileAttempt.invalidate();
     _authSub?.cancel();
     _emailController.dispose();
     _passwordController.dispose();
@@ -298,8 +315,7 @@ class _LoginScreenState extends State<LoginScreen>
         _mfaEmail = email.toLowerCase();
         _mfaController.clear();
         _errorMessage = 'Enter your current authenticator code to sign in.';
-        _turnstileToken = null;
-        _turnstileExpired = true;
+        _turnstileAttempt.invalidate();
       });
       // The first password attempt consumed its bot challenge. Recreate the
       // existing widget so the MFA retry carries a fresh proof.
@@ -334,8 +350,7 @@ class _LoginScreenState extends State<LoginScreen>
           } finally {
             if (mounted)
               setState(() {
-                _turnstileToken = null;
-                _turnstileExpired = true;
+                _turnstileAttempt.invalidate();
               });
           }
         },
@@ -347,13 +362,17 @@ class _LoginScreenState extends State<LoginScreen>
     // 1. Compile-time bypass token (local dev)
     if (AppConfig.hasTurnstileToken) return AppConfig.turnstileToken.trim();
     // 2. Token already solved inline
-    if (_turnstileToken != null) return _turnstileToken;
+    final inline = _turnstileAttempt.takeToken();
+    if (inline != null) {
+      setState(() {});
+      return inline;
+    }
     // 3. Fallback to dedicated challenge screen
     final token = await Navigator.pushNamed(
       context,
       AppRoutes.turnstileChallenge,
     );
-    return token as String?;
+    return token is String && token.trim().isNotEmpty ? token.trim() : null;
   }
 
   bool _navigatingAfterAuth = false;
@@ -1047,7 +1066,11 @@ class _LoginScreenState extends State<LoginScreen>
 
     // Error state → subtle inline message
     if (_turnstileError) {
-      return _TurnstileErrorChip(isDark: isDark, colors: colors);
+      return _TurnstileErrorChip(
+        isDark: isDark,
+        colors: colors,
+        onRetry: _isLoading ? null : _restartTurnstile,
+      );
     }
 
     // Expired state
@@ -1055,15 +1078,7 @@ class _LoginScreenState extends State<LoginScreen>
       return _TurnstileExpiredChip(
         isDark: isDark,
         colors: colors,
-        onRetry: () {
-          setState(() {
-            _turnstileExpired = false;
-            _turnstileToken = null;
-            _turnstileController = null;
-            _turnstileWidgetReady = false;
-          });
-          _initTurnstile();
-        },
+        onRetry: _restartTurnstile,
       );
     }
 
@@ -1447,9 +1462,14 @@ class _TurnstileSuccessChip extends StatelessWidget {
 }
 
 class _TurnstileErrorChip extends StatelessWidget {
-  const _TurnstileErrorChip({required this.isDark, required this.colors});
+  const _TurnstileErrorChip({
+    required this.isDark,
+    required this.colors,
+    required this.onRetry,
+  });
   final bool isDark;
   final AppThemeColors colors;
+  final VoidCallback? onRetry;
 
   @override
   Widget build(BuildContext context) {
@@ -1466,7 +1486,7 @@ class _TurnstileErrorChip extends StatelessWidget {
           const SizedBox(width: 8),
           Expanded(
             child: Text(
-              'Security check unavailable — tap Continue to proceed',
+              'Security check could not be completed. Check your connection and retry.',
               style: TextStyle(
                 color: colors.error,
                 fontSize: 12,
@@ -1474,6 +1494,7 @@ class _TurnstileErrorChip extends StatelessWidget {
               ),
             ),
           ),
+          TextButton(onPressed: onRetry, child: const Text('Retry check')),
         ],
       ),
     );
@@ -1533,45 +1554,6 @@ class _TurnstileExpiredChip extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────────────────────
 // Turnstile HTML (inline widget, compact)
 // ─────────────────────────────────────────────────────────────────────────────
-
-String _turnstileHtml(String siteKey, {required bool isDark}) {
-  return '''
-<!doctype html>
-<html>
-<head>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"></script>
-  <style>
-    html, body {
-      margin: 0; padding: 0;
-      background: transparent;
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-    }
-    #ts { display: inline-block; }
-  </style>
-</head>
-<body>
-  <div id="ts"></div>
-  <script>
-    function go() {
-      if (!window.turnstile) { setTimeout(go, 80); return; }
-      window.turnstile.render('#ts', {
-        sitekey: '$siteKey',
-        theme: '${isDark ? 'dark' : 'light'}',
-        size: 'normal',
-        callback: function(t) { TurnstileToken.postMessage(t); },
-        'error-callback': function(c) { TurnstileError.postMessage('err:'+c); },
-        'expired-callback': function() { TurnstileExpired.postMessage('expired'); }
-      });
-    }
-    go();
-  </script>
-</body>
-</html>
-''';
-}
 
 /// Uses the canonical Identity reset flow and reports success only after its reply.
 class PasswordResetDialog extends StatefulWidget {
