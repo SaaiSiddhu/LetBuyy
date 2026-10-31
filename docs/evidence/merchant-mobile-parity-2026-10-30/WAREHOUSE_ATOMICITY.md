@@ -19,6 +19,10 @@ The five domain functions and two receiving-line helpers are already present in 
 7. Prove dropped response recovery, same-key races, changed-body conflict, receipt-write failure rolling back all stock/audit/outbox effects, revoked access before replay, and terminal/partial receive behavior. Include database privilege/RLS, regression and rollback tests. A populated immutable receipt must prevent a destructive DOWN.
 8. Qualify source, native/widget/API/database/browser journeys and current APK identity separately. No all-122, provider, hosted write or release-ready claim follows from these local checks.
 
+## Latest continuation — 31 October 2026
+
+Fresh preflight and exact parent pages are now qualified at `a45d68282`: **623 Flutter / 1,958 Gateway / 200 web / 32 owned / 114 governance passes**. Shared models 29, BFF 22; analysis/types and cleanup pass. See [the current protocol/page checkpoint](WAREHOUSE_PROTOCOL_AND_PAGES.md) for the preserved failures, exact sources, debug APK and remaining detail/forms/selectors and acceptance gates. The sections below retain their earlier source-specific evidence.
+
 ## Current source qualification — 31 October 2026
 
 Implementation **`96153cd20bc3db3dd2c7539e3a77bd159820fb05`**, composed with technical route registration **`3ed8c6078139680b1902273169f5f11cdc17a1e9`**. Registration changes only the maintained route inventory, its matching lint baseline and ownership rationale; application/service/package code is unchanged. Draft migration **414** and its paired rollback remain source/local only.
@@ -50,10 +54,10 @@ Source `96153cd20` arm64 debug APK: **148,974,620 bytes**, SHA-256 `36a15b03b23b
 
 Accepted develop/staging were re-fetched on 31 October at `77584d19`; their maximum migration remains **413**. Primary checkout remains at `a72196c6e` with **153 dirty paths**, untouched. Its unaccepted draft migration `411_gift_card_issue_replay_integrity.sql` must be reconciled separately before promotion; it is not accepted shipping/GST source and must not overwrite this task's accepted baseline.
 
-There was no hosted migration, deployment, release signing, publication, provider operation or all-122 acceptance. Release signing currently requires the already-named production keystore environment; no substitute release identity was created. A client marker alone cannot prove that an older Gateway/BFF has the guarded owner. **Fresh protocol-capability preflight is the next source task**, before dispatching from a new client into an older deployment. Rollout must retain the atomic owner/schema and test mixed versions; the populated receipt journal intentionally blocks destructive DOWN.
+There was no hosted migration, deployment, release signing, publication, provider operation or all-122 acceptance. Release signing currently requires the already-named production keystore environment; no substitute release identity was created. A client marker alone cannot prove that an older Gateway/BFF has the guarded owner. Fresh protocol-capability preflight is now qualified locally; see the linked continuation for its exact boundaries. Rollout must retain the atomic owner/schema and test mixed versions; the populated receipt journal intentionally blocks destructive DOWN.
 
 ## Next required work
 
-1. Add a scoped, no-store server protocol descriptor and require fresh matching protocol/actor/site in clients/SDK before dispatch. On an older or unavailable Gateway/BFF, preserve existing pending intent and send no warehouse mutation.
-2. Complete authorized parent/detail pagination, exact counts, search/filter/sort, selectors and native partial-line editing. Current parent lists are still unpaged; they must not be accepted as complete inventories. Canonical location/supplier creation recovery also remains open.
+1. Keep the now-qualified scoped preflight and original-intent recovery while completing the remaining detail/form paths.
+2. Parent pagination/exact counts are locally qualified. Complete fresh detail reads, application search/filter/sort, selectors and native partial-line editing. Canonical location/supplier creation recovery remains open.
 3. Verify real web↔mobile fixture writes/conflicts and browser/device journeys, then remaining catalogue/orders/settings/features, provider/money/buyer effects, performance, signed artifacts, staging/source/schema compatibility and rollback. All 122 ledger rows remain in progress.
