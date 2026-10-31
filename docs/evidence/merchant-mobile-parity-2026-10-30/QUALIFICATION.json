@@ -1,15 +1,14 @@
 {
   "date": "2026-10-30",
-  "source_commit": "a45d682829744b8ce4e8bf010fd62b7c5b13a25d",
+  "source_commit": "9bc3b34fcafb3171c6485ca16ad2f624470871cf",
   "branch": "codex/merchant-mobile-parity",
   "scope": "source checkpoint; full 122-item acceptance remains in progress",
   "flutter": {
-    "source_commit": "dcff47de1d7e0d985906200c2909bb480ac9d820",
-    "tests": 623,
-    "pass": 623,
+    "source_commit": "9bc3b34fcafb3171c6485ca16ad2f624470871cf",
+    "tests": 630,
+    "pass": 630,
     "fail": 0,
-    "analysis": "pass",
-    "unchanged_at_backend_commit": "a45d682829744b8ce4e8bf010fd62b7c5b13a25d"
+    "analysis": "pass"
   },
   "shared_dart_transport_context_tests": {
     "pass": 12,
@@ -29,7 +28,7 @@
     },
     "ok": true,
     "exitCode": 0,
-    "source_commit": "a45d682829744b8ce4e8bf010fd62b7c5b13a25d"
+    "source_commit": "9bc3b34fcafb3171c6485ca16ad2f624470871cf"
   },
   "owned_database_runs": [
     {
@@ -990,6 +989,40 @@
         }
       ],
       "provider_evidence": "synthetic owned PostgreSQL/PostgREST fixtures; no hosted or real-provider acceptance"
+    },
+    {
+      "run_id": "a933a87029ed",
+      "source_commit": "9bc3b34fcafb3171c6485ca16ad2f624470871cf",
+      "tests": 34,
+      "pass": 34,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-recovery.postgres.test.ts",
+          "tests": 31,
+          "pass": 31,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        },
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-rollback.postgres.test.ts",
+          "tests": 3,
+          "pass": 3,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        }
+      ],
+      "provider_evidence": "owned synthetic PostgreSQL/PostgREST; no hosted/provider acceptance"
     }
   ],
   "ios_simulator_build": {
@@ -1040,7 +1073,7 @@
   "production_account_used": true,
   "deployment_performed": false,
   "full_122_acceptance": "in_progress",
-  "previous_source_commit": "3ed8c6078139680b1902273169f5f11cdc17a1e9",
+  "previous_source_commit": "a45d682829744b8ce4e8bf010fd62b7c5b13a25d",
   "customer_scope_tests": {
     "pass": 17,
     "fail": 0
@@ -1063,9 +1096,9 @@
     "restored_service_sha256": "8331a55932bbca8dcf8f950fcb3294b153f5fee57037be9842d55b4ebf3aa657"
   },
   "android_debug_build": {
-    "source_commit": "dcff47de1d7e0d985906200c2909bb480ac9d820",
-    "bytes": 148982797,
-    "sha256": "537b0d76c0fcda523ef187b575b008c90a4cc63d827520c0947b42e1c9a81bd0",
+    "source_commit": "9bc3b34fcafb3171c6485ca16ad2f624470871cf",
+    "bytes": 148998801,
+    "sha256": "ad390df0fb34ec779a374aa6f2f8b1d85dbc90234226eba4c9ab179012a5d11a",
     "serial": "emulator-5580",
     "avd": "LetBuyy_Merchant_Parity",
     "signing": "debug",
@@ -1075,16 +1108,16 @@
     "adb_port": 15038,
     "adb_serial": "127.0.0.1:5581",
     "read_only_acceptance": {
-      "source_commit": "dcff47de1d7e0d985906200c2909bb480ac9d820",
-      "observed_at": "2026-10-31T23:15:35.303495+05:30",
+      "source_commit": "9bc3b34fcafb3171c6485ca16ad2f624470871cf",
       "merchant_surface_visible": true,
       "sign_in_visible": true,
       "security_check_unavailable": true,
-      "warehouse_observed": false,
+      "warehouse_workspace_observed": false,
       "authenticated_warehouse_acceptance": false,
-      "intentional_production_business_writes": false
+      "intentional_production_business_writes": false,
+      "observed_at": "2026-10-31T23:44:50.533819+05:30"
     },
-    "observed": "Installed hash matches; sign-in/security-check unavailable; authenticated warehouse acceptance remains open."
+    "observed": "Current hash matches; sign-in/security-check unavailable; authenticated latest warehouse journey remains open."
   },
   "production_business_mutations_performed": false,
   "catalog_continuation": "committed and local/database/governance qualified; final hash-verified Android read/recovery observed; full web/mobile feature acceptance remains in progress",
@@ -1125,19 +1158,11 @@
     "production_business_mutations": false
   },
   "shared_dart_models_tests": {
-    "source_commit": "b1563d2b165feb4fb78556b46d826113296dda2f",
-    "pass": 29,
+    "source_commit": "9bc3b34fcafb3171c6485ca16ad2f624470871cf",
+    "pass": 60,
     "fail": 0,
-    "focused_warehouse_before": {
-      "pass": 0,
-      "fail": 4
-    },
-    "focused_warehouse_after": {
-      "pass": 4,
-      "fail": 0
-    },
     "analysis": "pass",
-    "warehouse_intent_acknowledgement_tests": 8
+    "strict_warehouse_document_read_checks": 31
   },
   "inventory_scope_journal_tests": {
     "pass": 49,
@@ -1168,14 +1193,14 @@
     },
     "ok": true,
     "exitCode": 0,
-    "source_commit": "863f556b131db3f945f3489d3023a6b14ed3bb1a"
+    "source_commit": "a45d682829744b8ce4e8bf010fd62b7c5b13a25d"
   },
   "shared_dart_api_suite": {
     "pass": 97,
     "skipped": 6,
     "fail": 0,
     "skip_scope": "existing buyer sign-in tests require the local-stack environment; skipped cases are not acceptance evidence",
-    "source_commit": "dcff47de1d7e0d985906200c2909bb480ac9d820"
+    "source_commit": "9bc3b34fcafb3171c6485ca16ad2f624470871cf"
   },
   "history_types": {
     "gateway_typecheck": "pass",
@@ -1552,6 +1577,30 @@
         "scope": "allowlisted accessibility-state check after debug install; no private text captured in evidence"
       },
       "observed": "Installed hash verified; current UI is sign-in/security-check unavailable. No authenticated latest-build warehouse journey or intentional production business write."
+    },
+    {
+      "source_commit": "dcff47de1d7e0d985906200c2909bb480ac9d820",
+      "bytes": 148982797,
+      "sha256": "537b0d76c0fcda523ef187b575b008c90a4cc63d827520c0947b42e1c9a81bd0",
+      "serial": "emulator-5580",
+      "avd": "LetBuyy_Merchant_Parity",
+      "signing": "debug",
+      "configuration": "dart-defines/production.json",
+      "target_platform": "android-arm64",
+      "installed_hash_matches": true,
+      "adb_port": 15038,
+      "adb_serial": "127.0.0.1:5581",
+      "read_only_acceptance": {
+        "source_commit": "dcff47de1d7e0d985906200c2909bb480ac9d820",
+        "observed_at": "2026-10-31T23:15:35.303495+05:30",
+        "merchant_surface_visible": true,
+        "sign_in_visible": true,
+        "security_check_unavailable": true,
+        "warehouse_observed": false,
+        "authenticated_warehouse_acceptance": false,
+        "intentional_production_business_writes": false
+      },
+      "observed": "Installed hash matches; sign-in/security-check unavailable; authenticated warehouse acceptance remains open."
     }
   ],
   "source_reconciliation": {
@@ -1600,20 +1649,20 @@
     "scope": "source/local qualification only, paired rollback required",
     "next_number_if_unused": 414,
     "accepted_refs_rechecked": true,
-    "implementation": "414 guarded apply/stop owner, original-request web/native recovery, fresh protocol preflight and exact parent pages qualified locally; detail/selectors/partial forms and hosted/release gates remain open",
+    "implementation": "414 atomic owner, retained recovery, fresh protocol, exact parent pages, fresh details and reviewed native receipt/shipment flows qualified locally; selectors/creation recovery and hosted/release gates remain open",
     "evidence": "WAREHOUSE_ATOMICITY.md"
   },
   "warehouse_checkpoint": {
-    "backend_source_commit": "a45d682829744b8ce4e8bf010fd62b7c5b13a25d",
-    "native_model_source_commit": "b1563d2b165feb4fb78556b46d826113296dda2f",
+    "backend_source_commit": "9bc3b34fcafb3171c6485ca16ad2f624470871cf",
+    "native_model_source_commit": "9bc3b34fcafb3171c6485ca16ad2f624470871cf",
     "migration": 414,
     "owner_authorized_source_and_local_only": true,
-    "owned_final_run": "f4fe172c783a",
-    "owned_final_pass": 32,
+    "owned_final_run": "a933a87029ed",
+    "owned_final_pass": 34,
     "owned_final_fail": 0,
     "raw_access_and_tenant_run": "228fb0ceff59",
     "raw_access_and_tenant_pass": 8,
-    "gateway_units_and_contracts": 1958,
+    "gateway_units_and_contracts": 1970,
     "gateway_typecheck": "pass",
     "web_typecheck": "pass",
     "sdk_typecheck": "pass",
@@ -1621,27 +1670,25 @@
     "safe_abandon_of_unapplied_pending_request": "implemented on server and both clients; applied/cancelled outcomes remain distinct",
     "hosted_migration": false,
     "deployed": false,
-    "evidence": "WAREHOUSE_PROTOCOL_AND_PAGES.md",
+    "evidence": "WAREHOUSE_RECEIPT_REVIEW.md",
     "native_model_fields": [
       "quantity_ordered",
       "quantity_requested",
       "quantity_shipped",
       "quantity_received"
     ],
-    "installed_android_source": "dcff47de1d7e0d985906200c2909bb480ac9d820",
+    "installed_android_source": "9bc3b34fcafb3171c6485ca16ad2f624470871cf",
     "web_client_recovery": "implemented; actor/stable-site-bound localStorage, browser lock interface, remount recovery, current-context proxy guards and matched receipt before clearing",
-    "native_tests": 623,
-    "shared_model_tests": 29,
-    "native_journal_focused_tests": 17,
-    "native_workspace_tests": 18,
+    "native_tests": 630,
+    "shared_model_tests": 60,
     "authenticated_latest_device_warehouse_acceptance": false,
-    "web_source_commit": "dcff47de1d7e0d985906200c2909bb480ac9d820",
-    "qualified_source_commit": "a45d682829744b8ce4e8bf010fd62b7c5b13a25d",
-    "web_composed_checks": 200,
-    "web_proxy_checks": 73,
+    "web_source_commit": "9bc3b34fcafb3171c6485ca16ad2f624470871cf",
+    "qualified_source_commit": "9bc3b34fcafb3171c6485ca16ad2f624470871cf",
+    "web_composed_checks": 218,
+    "web_proxy_checks": 83,
     "web_browser_journal_checks": 9,
     "sdk_acknowledgement_checks": 42,
-    "bff_tests": 22,
+    "bff_tests": 24,
     "bff_typecheck": "pass",
     "route_registration_tests": 6,
     "normalization_owner": "packages/commerce-core/src/index.ts:prepareWarehouseCommand",
@@ -1695,10 +1742,21 @@
           "NOT_APPLICABLE": 1
         },
         "ok": true
+      },
+      {
+        "source_commit": "9bc3b34fcafb3171c6485ca16ad2f624470871cf",
+        "counts": {
+          "PASS": 114,
+          "FAIL": 0,
+          "BLOCKED": 0,
+          "SKIP": 0,
+          "NOT_APPLICABLE": 1
+        },
+        "ok": true
       }
     ],
-    "native_source_commit": "dcff47de1d7e0d985906200c2909bb480ac9d820",
-    "sdk_document_page_checks": 39,
+    "native_source_commit": "9bc3b34fcafb3171c6485ca16ad2f624470871cf",
+    "sdk_document_page_checks": 51,
     "warehouse_parent_pages": "implemented across Gateway, SDK, Dart, web and native; exact scoped counts, stable ordering, partial/far pages, older-server refusal and Previous recovery; filter/search/sort UI and detail/selectors still open",
     "pagination_failed_reproduction": {
       "source_commit": "dcff47de1d7e0d985906200c2909bb480ac9d820",
@@ -1715,10 +1773,21 @@
           "volumes": []
         }
       }
+    },
+    "fresh_details": "implemented across shared contracts, Gateway, SDK, actual web proxies and native verified DTOs; current actor/site/target and complete lines required",
+    "native_partial_receipts": "implemented; fresh document, explicit whole-unit review, skipped zero lines, SKU/variant and document identity; same frozen intent/key through lost reply",
+    "native_ship_precondition": "fresh reserved transfer and explicit confirmation; receiving requires shipped or partially-received state",
+    "app_api_route_inventory": 235,
+    "native_failed_layout_reproduction": {
+      "pass": 629,
+      "fail": 1,
+      "scope": "pre-fix source patch before 9bc3b34fc; full canonical IDs/status pushed transfer action off screen",
+      "corrected_full_native_pass": 630,
+      "receipt": "/private/tmp/letbuyy-warehouse-detail-mobile-tests-complete.log"
     }
   },
   "last_qualified_date": "2026-10-31",
-  "implementation_commit": "a45d682829744b8ce4e8bf010fd62b7c5b13a25d",
+  "implementation_commit": "9bc3b34fcafb3171c6485ca16ad2f624470871cf",
   "warehouse_previous_checkpoints": [
     {
       "backend_source_commit": "96153cd20bc3db3dd2c7539e3a77bd159820fb05",
@@ -1792,6 +1861,137 @@
           "reason": "exact route registered in existing gateway-proxy class, paired lint baseline and documented rationale; unchanged boundary tests 6/6"
         }
       ]
+    },
+    {
+      "backend_source_commit": "a45d682829744b8ce4e8bf010fd62b7c5b13a25d",
+      "native_model_source_commit": "b1563d2b165feb4fb78556b46d826113296dda2f",
+      "migration": 414,
+      "owner_authorized_source_and_local_only": true,
+      "owned_final_run": "f4fe172c783a",
+      "owned_final_pass": 32,
+      "owned_final_fail": 0,
+      "raw_access_and_tenant_run": "228fb0ceff59",
+      "raw_access_and_tenant_pass": 8,
+      "gateway_units_and_contracts": 1958,
+      "gateway_typecheck": "pass",
+      "web_typecheck": "pass",
+      "sdk_typecheck": "pass",
+      "native_client_recovery": "implemented; encrypted original intent/key, strict acknowledgement, retry/stop and protocol marker locally verified",
+      "safe_abandon_of_unapplied_pending_request": "implemented on server and both clients; applied/cancelled outcomes remain distinct",
+      "hosted_migration": false,
+      "deployed": false,
+      "evidence": "WAREHOUSE_PROTOCOL_AND_PAGES.md",
+      "native_model_fields": [
+        "quantity_ordered",
+        "quantity_requested",
+        "quantity_shipped",
+        "quantity_received"
+      ],
+      "installed_android_source": "dcff47de1d7e0d985906200c2909bb480ac9d820",
+      "web_client_recovery": "implemented; actor/stable-site-bound localStorage, browser lock interface, remount recovery, current-context proxy guards and matched receipt before clearing",
+      "native_tests": 623,
+      "shared_model_tests": 29,
+      "native_journal_focused_tests": 17,
+      "native_workspace_tests": 18,
+      "authenticated_latest_device_warehouse_acceptance": false,
+      "web_source_commit": "dcff47de1d7e0d985906200c2909bb480ac9d820",
+      "qualified_source_commit": "a45d682829744b8ce4e8bf010fd62b7c5b13a25d",
+      "web_composed_checks": 200,
+      "web_proxy_checks": 73,
+      "web_browser_journal_checks": 9,
+      "sdk_acknowledgement_checks": 42,
+      "bff_tests": 22,
+      "bff_typecheck": "pass",
+      "route_registration_tests": 6,
+      "normalization_owner": "packages/commerce-core/src/index.ts:prepareWarehouseCommand",
+      "old_client_gate": "X-LetBuyy-Warehouse-Protocol: 1 required on the exact six warehouse POST paths; unsupported/missing version returns 426 before effects/private replay",
+      "server_protocol_preflight": "implemented; fresh private descriptor matching actor/site/protocol/atomic-or-unavailable/stop; unavailable or downlevel server receives no POST; original pending intent/key retained",
+      "headed_browser_acceptance": false,
+      "all_122_accepted": false,
+      "governance_attempts": [
+        {
+          "source_commit": "96153cd20bc3db3dd2c7539e3a77bd159820fb05",
+          "counts": {
+            "PASS": 113,
+            "FAIL": 1,
+            "BLOCKED": 0,
+            "SKIP": 0,
+            "NOT_APPLICABLE": 1
+          },
+          "ok": false,
+          "reason": "new thin stop proxy was missing from maintained route count/baseline; freeze guard retained"
+        },
+        {
+          "source_commit": "3ed8c6078139680b1902273169f5f11cdc17a1e9",
+          "counts": {
+            "PASS": 114,
+            "FAIL": 0,
+            "BLOCKED": 0,
+            "SKIP": 0,
+            "NOT_APPLICABLE": 1
+          },
+          "ok": true,
+          "reason": "exact route registered in existing gateway-proxy class, paired lint baseline and documented rationale; unchanged boundary tests 6/6"
+        },
+        {
+          "source_commit": "b1563d2b165feb4fb78556b46d826113296dda2f",
+          "counts": {
+            "PASS": 114,
+            "FAIL": 0,
+            "BLOCKED": 0,
+            "SKIP": 0,
+            "NOT_APPLICABLE": 1
+          },
+          "ok": true
+        },
+        {
+          "source_commit": "a45d682829744b8ce4e8bf010fd62b7c5b13a25d",
+          "counts": {
+            "PASS": 114,
+            "FAIL": 0,
+            "BLOCKED": 0,
+            "SKIP": 0,
+            "NOT_APPLICABLE": 1
+          },
+          "ok": true
+        }
+      ],
+      "native_source_commit": "dcff47de1d7e0d985906200c2909bb480ac9d820",
+      "sdk_document_page_checks": 39,
+      "warehouse_parent_pages": "implemented across Gateway, SDK, Dart, web and native; exact scoped counts, stable ordering, partial/far pages, older-server refusal and Previous recovery; filter/search/sort UI and detail/selectors still open",
+      "pagination_failed_reproduction": {
+        "source_commit": "dcff47de1d7e0d985906200c2909bb480ac9d820",
+        "run_id": "0844909ec1c8",
+        "tests": 32,
+        "pass": 30,
+        "fail": 2,
+        "reason": "far page past matching population returned DB range error; repaired with exact same-filter count recovery",
+        "cleanup": {
+          "failures": [],
+          "remaining": {
+            "containers": [],
+            "networks": [],
+            "volumes": []
+          }
+        }
+      }
+    }
+  ],
+  "previous_shared_dart_models_tests": [
+    {
+      "source_commit": "b1563d2b165feb4fb78556b46d826113296dda2f",
+      "pass": 29,
+      "fail": 0,
+      "focused_warehouse_before": {
+        "pass": 0,
+        "fail": 4
+      },
+      "focused_warehouse_after": {
+        "pass": 4,
+        "fail": 0
+      },
+      "analysis": "pass",
+      "warehouse_intent_acknowledgement_tests": 8
     }
   ]
 }

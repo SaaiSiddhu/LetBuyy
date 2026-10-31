@@ -21,7 +21,7 @@ The five domain functions and two receiving-line helpers are already present in 
 
 ## Latest continuation — 31 October 2026
 
-Fresh preflight and exact parent pages are now qualified at `a45d68282`: **623 Flutter / 1,958 Gateway / 200 web / 32 owned / 114 governance passes**. Shared models 29, BFF 22; analysis/types and cleanup pass. See [the current protocol/page checkpoint](WAREHOUSE_PROTOCOL_AND_PAGES.md) for the preserved failures, exact sources, debug APK and remaining detail/forms/selectors and acceptance gates. The sections below retain their earlier source-specific evidence.
+Fresh details and reviewed native partial receipts/shipments now extend the qualified protocol/pages at `9bc3b34fc`: **630 Flutter / 60 shared-model / 1,970 Gateway / 218 web / 24 BFF / 34 owned / 114 governance passes**. Analysis/types and owned cleanup pass. See [the current receipt-review checkpoint](WAREHOUSE_RECEIPT_REVIEW.md) for exact sources, failures, installed debug APK and remaining selectors/creation recovery and acceptance gates. Earlier sections retain their source-specific evidence.
 
 ## Current source qualification — 31 October 2026
 
@@ -59,5 +59,5 @@ There was no hosted migration, deployment, release signing, publication, provide
 ## Next required work
 
 1. Keep the now-qualified scoped preflight and original-intent recovery while completing the remaining detail/form paths.
-2. Parent pagination/exact counts are locally qualified. Complete fresh detail reads, application search/filter/sort, selectors and native partial-line editing. Canonical location/supplier creation recovery remains open.
+2. Parent pagination/exact counts are locally qualified. Fresh details and native partial-line review are locally qualified. Complete application search/filter/sort, authorized selectors and multi-line creation. Canonical location/supplier creation recovery remains open.
 3. Verify real web↔mobile fixture writes/conflicts and browser/device journeys, then remaining catalogue/orders/settings/features, provider/money/buyer effects, performance, signed artifacts, staging/source/schema compatibility and rollback. All 122 ledger rows remain in progress.

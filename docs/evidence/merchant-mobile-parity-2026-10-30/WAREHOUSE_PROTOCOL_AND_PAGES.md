@@ -1,5 +1,7 @@
 # Warehouse protocol and parent pages — 31 October 2026
 
+Latest continuation: fresh details and reviewed native receipts/shipments are now qualified at `9bc3b34fc`; see [the current review checkpoint](WAREHOUSE_RECEIPT_REVIEW.md). This file retains the exact earlier protocol/page evidence.
+
 ## Qualified source
 
 Server preflight: `b1563d2b165feb4fb78556b46d826113296dda2f`. Connected parent pages: `dcff47de1d7e0d985906200c2909bb480ac9d820`. Verified far-page recovery: `a45d682829744b8ce4e8bf010fd62b7c5b13a25d`. All are local commits on `codex/merchant-mobile-parity`; no push, hosted migration, deployment, provider operation, release signing or publication occurred.
