@@ -180,7 +180,13 @@ void main() {
                 ),
               ]);
             } else {
-              workspace.respond(r, h, [workspace.record(fixtures.siteA)]);
+              workspace.respond(r, h, [
+                workspace.warehouseRecord(
+                  r.path,
+                  fixtures.siteA,
+                  id: 'cccccccc-cccc-4ccc-8ccc-cccccccccccc',
+                ),
+              ]);
             }
           },
         );
@@ -217,7 +223,13 @@ void main() {
           queries.add(Map<String, dynamic>.from(r.queryParameters));
           fixtures.respond(r, h, [fixtures.reservation()]);
         } else {
-          workspace.respond(r, h, [workspace.record(fixtures.siteA)]);
+          workspace.respond(r, h, [
+            workspace.warehouseRecord(
+              r.path,
+              fixtures.siteA,
+              id: 'cccccccc-cccc-4ccc-8ccc-cccccccccccc',
+            ),
+          ]);
         }
       });
       await tester.tap(find.byTooltip('View reservations'));

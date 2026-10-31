@@ -2604,14 +2604,27 @@ class InventoryApi {
     options: _mergeOptions(options, method: HttpMethod.post, body: input),
   );
 
-  Future<List<JsonMap>> locations({
+  Future<PaginatedResponse<JsonMap>> locations({
     required String storeId,
+    int page = 1,
+    int limit = 20,
+    String? search,
+    String status = 'all',
+    String sort = 'name_asc',
     ApiRequestOptions? options,
-  }) => _client.requestData(
+  }) => _client.requestPaginatedJson(
     '/inventory/locations',
-    options: _mergeOptions(options, query: {'store_id': storeId}),
-    decoder: (value) =>
-        asJsonList(value).map(asJsonMap).toList(growable: false),
+    options: _mergeOptions(
+      (options ?? const ApiRequestOptions()).copyWith(storeId: storeId),
+      query: {
+        'store_id': storeId,
+        'page': page,
+        'limit': limit,
+        'status': status,
+        'sort': sort,
+        if (search != null && search.trim().isNotEmpty) 'search': search.trim(),
+      },
+    ),
   );
 
   Future<JsonMap> createLocation(JsonMap input, {ApiRequestOptions? options}) =>
@@ -2620,14 +2633,27 @@ class InventoryApi {
         options: _mergeOptions(options, method: HttpMethod.post, body: input),
       );
 
-  Future<List<JsonMap>> suppliers({
+  Future<PaginatedResponse<JsonMap>> suppliers({
     required String storeId,
+    int page = 1,
+    int limit = 20,
+    String? search,
+    String status = 'all',
+    String sort = 'name_asc',
     ApiRequestOptions? options,
-  }) => _client.requestData(
+  }) => _client.requestPaginatedJson(
     '/inventory/suppliers',
-    options: _mergeOptions(options, query: {'store_id': storeId}),
-    decoder: (value) =>
-        asJsonList(value).map(asJsonMap).toList(growable: false),
+    options: _mergeOptions(
+      (options ?? const ApiRequestOptions()).copyWith(storeId: storeId),
+      query: {
+        'store_id': storeId,
+        'page': page,
+        'limit': limit,
+        'status': status,
+        'sort': sort,
+        if (search != null && search.trim().isNotEmpty) 'search': search.trim(),
+      },
+    ),
   );
 
   Future<JsonMap> createSupplier(JsonMap input, {ApiRequestOptions? options}) =>
@@ -2637,17 +2663,40 @@ class InventoryApi {
       );
 
   Future<PaginatedResponse<JsonMap>> purchaseOrders({
-    required String storeId,int page=1,int limit=20,String? status,String? search,String sort='newest',
+    required String storeId,
+    int page = 1,
+    int limit = 20,
+    String? status,
+    String? search,
+    String sort = 'newest',
     ApiRequestOptions? options,
   }) => _client.requestPaginatedJson(
     '/inventory/purchase-orders',
-    options: _mergeOptions((options??const ApiRequestOptions()).copyWith(storeId:storeId),
-      query: {'store_id':storeId,'page':page,'limit':limit,'sort':sort,if(status!=null)'status':status,if(search!=null)'search':search}),
+    options: _mergeOptions(
+      (options ?? const ApiRequestOptions()).copyWith(storeId: storeId),
+      query: {
+        'store_id': storeId,
+        'page': page,
+        'limit': limit,
+        'sort': sort,
+        if (status != null) 'status': status,
+        if (search != null) 'search': search,
+      },
+    ),
   );
 
-  Future<JsonMap> purchaseOrder(String id,{required String storeId,ApiRequestOptions? options})=>_client.requestJson(
-    '/inventory/purchase-orders/${_encodePathSegment(id)}',options:_mergeOptions(
-      (options??const ApiRequestOptions()).copyWith(storeId:storeId),method:HttpMethod.get,query:{'store_id':storeId}));
+  Future<JsonMap> purchaseOrder(
+    String id, {
+    required String storeId,
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/inventory/purchase-orders/${_encodePathSegment(id)}',
+    options: _mergeOptions(
+      (options ?? const ApiRequestOptions()).copyWith(storeId: storeId),
+      method: HttpMethod.get,
+      query: {'store_id': storeId},
+    ),
+  );
 
   Future<JsonMap> createPurchaseOrder(
     JsonMap input, {
@@ -2667,17 +2716,40 @@ class InventoryApi {
   );
 
   Future<PaginatedResponse<JsonMap>> transfers({
-    required String storeId,int page=1,int limit=20,String? status,String? search,String sort='newest',
+    required String storeId,
+    int page = 1,
+    int limit = 20,
+    String? status,
+    String? search,
+    String sort = 'newest',
     ApiRequestOptions? options,
   }) => _client.requestPaginatedJson(
     '/inventory/transfers',
-    options: _mergeOptions((options??const ApiRequestOptions()).copyWith(storeId:storeId),
-      query: {'store_id':storeId,'page':page,'limit':limit,'sort':sort,if(status!=null)'status':status,if(search!=null)'search':search}),
+    options: _mergeOptions(
+      (options ?? const ApiRequestOptions()).copyWith(storeId: storeId),
+      query: {
+        'store_id': storeId,
+        'page': page,
+        'limit': limit,
+        'sort': sort,
+        if (status != null) 'status': status,
+        if (search != null) 'search': search,
+      },
+    ),
   );
 
-  Future<JsonMap> transfer(String id,{required String storeId,ApiRequestOptions? options})=>_client.requestJson(
-    '/inventory/transfers/${_encodePathSegment(id)}',options:_mergeOptions(
-      (options??const ApiRequestOptions()).copyWith(storeId:storeId),method:HttpMethod.get,query:{'store_id':storeId}));
+  Future<JsonMap> transfer(
+    String id, {
+    required String storeId,
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/inventory/transfers/${_encodePathSegment(id)}',
+    options: _mergeOptions(
+      (options ?? const ApiRequestOptions()).copyWith(storeId: storeId),
+      method: HttpMethod.get,
+      query: {'store_id': storeId},
+    ),
+  );
 
   Future<JsonMap> createTransfer(JsonMap input, {ApiRequestOptions? options}) =>
       _client.requestJson(

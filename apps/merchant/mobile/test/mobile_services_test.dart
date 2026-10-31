@@ -4714,27 +4714,26 @@ void main() {
 
     test('InventoryService manages WMS locations and suppliers', () async {
       final api = _FakeApiClient(
-        json: {
-          '/inventory/locations': [_locationJson()],
-          '/inventory/suppliers': [_supplierJson()],
-        },
+        paginated: {'/inventory/locations':[_locationJson()],'/inventory/suppliers':[_supplierJson()]},
+        paginatedMeta:{for(final path in ['/inventory/locations','/inventory/suppliers'])path:w.warehousePageMeta()},
+        methodJson:{'POST /inventory/locations':_locationJson(),'POST /inventory/suppliers':_supplierJson()},
       );
       final service = InventoryService(api: api);
 
-      final locations = await service.fetchLocations('store_1');
+      final locations = await service.fetchLocations(w.warehouseSite);
       final createdLocation = await service.createLocation(
         const InventoryLocationInput(
-          storeId: 'store_1',
+          storeId: w.warehouseSite,
           name: 'North warehouse',
           city: 'Delhi',
           state: 'Delhi',
           isDefault: true,
         ),
       );
-      final suppliers = await service.fetchSuppliers('store_1');
+      final suppliers = await service.fetchSuppliers(w.warehouseSite);
       final createdSupplier = await service.createSupplier(
         const InventorySupplierInput(
-          storeId: 'store_1',
+          storeId: w.warehouseSite,
           name: 'Acme Textiles',
           contactName: 'Riya',
           email: 'riya@example.com',
@@ -4756,7 +4755,7 @@ void main() {
       final createdRow=WarehouseCommandAcknowledgement.fromJson(createdAck).purchaseOrder!;
       final receiveIntent=WarehouseCommandIntent.receivePurchaseOrder(createdRow);
       final receivedAck=w.warehouseAck(receiveIntent,'po-receive-123',received:4);
-      final api=_FakeApiClient(paginated:{'/inventory/purchase-orders':[{...createdAck['purchase_order'] as Map<String,dynamic>,'lines':createdAck['lines']}]},
+      final api=_FakeApiClient(paginated:{'/inventory/purchase-orders':[w.warehouseDocument()]},
         paginatedMeta:{'/inventory/purchase-orders':{'store_id':w.warehouseSite,'page':1,'per_page':20,'total':1,'has_next':false,'total_is_exact':true}},json:{'/inventory/purchase-orders/${w.warehouseTarget}/receive':receivedAck},
         methodJson:{'GET /inventory/command-capabilities':w.warehouseCapabilities(),'POST /inventory/purchase-orders':createdAck});
       final service=InventoryService(api:api,actorIdProvider:()=>w.warehouseActor,
@@ -4781,7 +4780,7 @@ void main() {
       final shippedRow=WarehouseCommandAcknowledgement.fromJson(shippedAck).transfer!;
       final receiveIntent=WarehouseCommandIntent.receiveTransfer(shippedRow);
       final receivedAck=w.warehouseAck(receiveIntent,'transfer-receive-123',received:4,shipped:4);
-      final api=_FakeApiClient(paginated:{'/inventory/transfers':[{...createdAck['transfer'] as Map<String,dynamic>,'lines':createdAck['lines']}]},
+      final api=_FakeApiClient(paginated:{'/inventory/transfers':[w.warehouseDocument(transfer:true,status:'reserved',shipped:0)]},
         paginatedMeta:{'/inventory/transfers':{'store_id':w.warehouseSite,'page':1,'per_page':20,'total':1,'has_next':false,'total_is_exact':true}},json:{'/inventory/transfers/${w.warehouseTarget}/ship':shippedAck,
         '/inventory/transfers/${w.warehouseTarget}/receive':receivedAck},
         methodJson:{'GET /inventory/command-capabilities':w.warehouseCapabilities(),'POST /inventory/transfers':createdAck});
@@ -7162,11 +7161,10 @@ void main() {
   testWidgets('InventoryLocationsScreen renders WMS locations', (tester) async {
     final api = _FakeApiClient(
       paginated: {
-        '/stores': [_storeJson()],
-      },
-      json: {
+        '/stores': [{..._storeJson(),'id':w.warehouseSite}],
         '/inventory/locations': [_locationJson()],
       },
+      paginatedMeta:{'/inventory/locations':w.warehousePageMeta()},
     );
 
     await tester.pumpWidget(
@@ -7190,11 +7188,10 @@ void main() {
   ) async {
     final api = _FakeApiClient(
       paginated: {
-        '/stores': [_storeJson()],
+        '/stores': [{..._storeJson(),'id':w.warehouseSite}],
+        '/inventory/suppliers':[_supplierJson()],
       },
-      json: {
-        '/inventory/suppliers': [_supplierJson()],
-      },
+      paginatedMeta:{'/inventory/suppliers':w.warehousePageMeta()},
     );
 
     await tester.pumpWidget(
@@ -7216,10 +7213,10 @@ void main() {
   testWidgets('PurchaseOrdersScreen renders receive workflow', (tester) async {
     final api = _FakeApiClient(
       paginated: {
-        '/stores': [_storeJson()],
+        '/stores': [{..._storeJson(),'id':w.warehouseSite}],
         '/inventory/purchase-orders': [_purchaseOrderJson()],
       },
-      paginatedMeta: {'/inventory/purchase-orders':{'store_id':_storeJson()['id'],'page':1,'per_page':20,'total':1,'has_next':false,'total_is_exact':true}},
+      paginatedMeta: {'/inventory/purchase-orders':{'store_id':w.warehouseSite,'page':1,'per_page':20,'total':1,'has_next':false,'total_is_exact':true}},
     );
 
     await tester.pumpWidget(
@@ -7243,10 +7240,10 @@ void main() {
   ) async {
     final api = _FakeApiClient(
       paginated: {
-        '/stores': [_storeJson()],
+        '/stores': [{..._storeJson(),'id':w.warehouseSite}],
         '/inventory/transfers': [_transferJson()],
       },
-      paginatedMeta: {'/inventory/transfers':{'store_id':_storeJson()['id'],'page':1,'per_page':20,'total':1,'has_next':false,'total_is_exact':true}},
+      paginatedMeta: {'/inventory/transfers':{'store_id':w.warehouseSite,'page':1,'per_page':20,'total':1,'has_next':false,'total_is_exact':true}},
     );
 
     await tester.pumpWidget(
@@ -7261,7 +7258,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Transfers'), findsOneWidget);
-    expect(find.text('loc_1 -> loc_2'), findsOneWidget);
+    expect(find.text('${w.warehouseLocation} -> ${w.warehouseDestination}'), findsOneWidget);
     expect(find.text('Ship'), findsOneWidget);
     expect(find.text('Receive'), findsOneWidget);
   });
@@ -10697,77 +10694,14 @@ Map<String, dynamic> _inventoryJson({int available = 10}) => {
   'on_hand': available + 3,
 };
 
-Map<String, dynamic> _locationJson() => {
-  'id': 'loc_1',
-  'store_id': 'store_1',
-  'name': 'North warehouse',
-  'address': '12 Industrial Road',
-  'city': 'Delhi',
-  'state': 'Delhi',
-  'country': 'IN',
-  'is_default': true,
-  'status': 'active',
+Map<String,dynamic> _locationJson()=>{...w.warehouseLocationRecord(name:'North warehouse'),'is_default':true};
+Map<String,dynamic> _supplierJson()=>{...w.warehouseSupplierRecord(name:'Acme Textiles'),'contact_name':'Riya','email':'riya@example.com','phone':'+911111111111'};
+Map<String,dynamic> _purchaseOrderJson({String status='ordered',int receivedQuantity=0})=>{
+ ...w.warehouseDocument(status:status,received:receivedQuantity),'supplier_id':w.warehouseDestination,
+ 'supplier':{..._supplierJson()},
 };
-
-Map<String, dynamic> _supplierJson() => {
-  'id': 'supplier_1',
-  'site_id': 'store_1',
-  'name': 'Acme Textiles',
-  'contact_name': 'Riya',
-  'email': 'riya@example.com',
-  'phone': '+911111111111',
-  'address': {'line1': 'Supplier lane'},
-};
-
-Map<String, dynamic> _purchaseOrderJson({
-  String status = 'ordered',
-  int receivedQuantity = 0,
-}) => {
-  'id': 'po_1',
-  'site_id': 'store_1',
-  'supplier_id': 'supplier_1',
-  'supplier': {'name': 'Acme Textiles'},
-  'location_id': 'loc_1',
-  'status': status,
-  'expected_at': '2026-06-15T10:00:00.000Z',
-  'notes': 'Restock cotton tee',
-  'lines': [
-    {
-      'id': 'po_line_1',
-      'product_id': 'prod_1',
-      'variant_id': 'variant_1',
-      'sku': 'TEE-001',
-      'product_name': 'Cotton Tee',
-      'quantity_ordered': 4,
-      'quantity_received': receivedQuantity,
-      'unit_cost': 299,
-    },
-  ],
-};
-
-Map<String, dynamic> _transferJson({
-  String status = 'reserved',
-  int receivedQuantity = 0,
-}) => {
-  'id': 'transfer_1',
-  'site_id': 'store_1',
-  'source_location_id': 'loc_1',
-  'destination_location_id': 'loc_2',
-  'status': status,
-  'notes': 'Balance stock',
-  'lines': [
-    {
-      'id': 'transfer_line_1',
-      'product_id': 'prod_1',
-      'variant_id': 'variant_1',
-      'sku': 'TEE-001',
-      'product_name': 'Cotton Tee',
-      'quantity_requested': 3,
-      'quantity_shipped': status == 'reserved' ? 0 : 3,
-      'quantity_received': receivedQuantity,
-    },
-  ],
-};
+Map<String,dynamic> _transferJson({String status='reserved',int receivedQuantity=0})=>w.warehouseDocument(
+ transfer:true,status:status,quantity:3,received:receivedQuantity,shipped:status=='reserved'?0:3);
 
 Map<String, dynamic> _couponJson({
   String id = 'coupon_1',

@@ -23,6 +23,9 @@ class _InventoryLocationsScreenState extends State<InventoryLocationsScreen> {
   String? _error;
   Object? _viewKey;
   int _readGeneration = 0;
+  int _page = 1;
+  int? _total;
+  bool _more = false;
   MerchantStoreView? get _view =>
       _storeId == null ? null : (key: _viewKey, storeId: _storeId!);
   bool _matches(MerchantStoreView? view) =>
@@ -43,6 +46,8 @@ class _InventoryLocationsScreenState extends State<InventoryLocationsScreen> {
     setState(() {
       _isLoading = true;
       _error = null;
+      _total = null;
+      _more = false;
       _locations = [];
     });
     final stores = context.read<StoreContext>();
@@ -59,12 +64,13 @@ class _InventoryLocationsScreenState extends State<InventoryLocationsScreen> {
         });
         return;
       }
-      final rows = await context.read<InventoryService>().fetchLocations(
-        view.storeId,
-      );
+      final service = context.read<InventoryService>();
+      final rows = await service.fetchLocations(view.storeId, page: _page);
       if (!_matches(view) || generation != _readGeneration) return;
       setState(() {
         _locations = rows;
+        _total = service.locationsTotal;
+        _more = service.locationsHasMore;
         _isLoading = false;
       });
     } catch (error) {
@@ -95,6 +101,9 @@ class _InventoryLocationsScreenState extends State<InventoryLocationsScreen> {
       _viewKey = stores.requestContextKey;
       ++_readGeneration;
       _storeId = null;
+      _page = 1;
+      _total = null;
+      _more = false;
       _locations = [];
       _error = null;
       _isLoading = true;
@@ -120,6 +129,41 @@ class _InventoryLocationsScreenState extends State<InventoryLocationsScreen> {
           child: Column(
             children: [
               _header(),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  children: [
+                    IconButton(
+                      tooltip: 'Previous page',
+                      onPressed: _isLoading || _page == 1
+                          ? null
+                          : () {
+                              setState(() => _page--);
+                              _load();
+                            },
+                      icon: const Icon(Icons.chevron_left),
+                    ),
+                    Expanded(
+                      child: Text(
+                        _total == null
+                            ? 'Page $_page · Count unavailable'
+                            : '$_total matching records · Page $_page',
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    IconButton(
+                      tooltip: 'Next page',
+                      onPressed: _isLoading || !_more
+                          ? null
+                          : () {
+                              setState(() => _page++);
+                              _load();
+                            },
+                      icon: const Icon(Icons.chevron_right),
+                    ),
+                  ],
+                ),
+              ),
               Expanded(child: _isLoading ? _loading() : _body()),
             ],
           ),

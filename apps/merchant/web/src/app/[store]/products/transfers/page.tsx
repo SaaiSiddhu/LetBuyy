@@ -10,6 +10,8 @@ import {WarehouseDocumentPageMetaSchema,WarehouseTransferSchema} from '@letbuyy/
 import {useWarehouseDocument} from '@/lib/inventory/use-warehouse-document'
 import { useProductPicker } from '@/lib/api/use-product-picker'
 import { useInventoryLocations } from '@/lib/api/use-inventory-locations'
+import type { WarehouseOptionControls } from '@/lib/api/use-warehouse-options'
+import { WarehouseOptionSearch } from '@/components/products/WarehouseOptionSearch'
 import { formatIndiaDate as formatDate } from '@letbuyy/ui/formatting'
 import {
     Badge,
@@ -88,6 +90,7 @@ interface CreateTransferModalProps {
     blocked:boolean
     open: boolean
     locations: InventoryLocation[]
+    locationRead: WarehouseOptionControls
     products: TransferProductItem[]
     hasMoreProducts: boolean
     loadingProducts: boolean
@@ -100,6 +103,7 @@ interface CreateTransferModalProps {
 function CreateTransferModal({ submitCommand, blocked,
     open,
     locations,
+    locationRead,
     products,
     hasMoreProducts,
     loadingProducts,
@@ -120,18 +124,18 @@ function CreateTransferModal({ submitCommand, blocked,
 
     useEffect(() => {
         if (open) {
-            setSourceLocationId(locations[0]?.id ?? '')
-            setDestLocationId(locations[1]?.id ?? locations[0]?.id ?? '')
+            setSourceLocationId('')
+            setDestLocationId('')
             setNotes('')
             setLines([{ id: '1', product_id: '', variant_id: '', quantity: 1 }])
             setError(null)
         }
-    }, [open, locations])
+    }, [open])
 
-    const locationOptions: SelectOption[] = locations.map((l) => ({
+    const locationOptions: SelectOption[] = [{ value: '', label: 'Select location…' }, ...locations.map((l) => ({
         value: l.id,
         label: l.name + (l.is_default ? ' (default)' : ''),
-    }))
+    }))]
 
     const productOptions = (): SelectOption[] => [
         { value: '', label: 'Select product…' },
@@ -164,6 +168,7 @@ function CreateTransferModal({ submitCommand, blocked,
 
     async function handleSubmit() {
         setError(null)
+        if (locationRead.loading || locationRead.error || !locations.some(row => row.id === sourceLocationId) || !locations.some(row => row.id === destLocationId)) { setError('Select both locations from the current verified choices.'); return }
         if (!sourceLocationId) { setError('Select a source location.'); return }
         if (!destLocationId) { setError('Select a destination location.'); return }
         if (sourceLocationId === destLocationId) {
@@ -205,7 +210,7 @@ function CreateTransferModal({ submitCommand, blocked,
                     <Button variant="secondary" onClick={onClose} disabled={submitting}>
                         Cancel
                     </Button>
-                    <Button onClick={handleSubmit} disabled={submitting || blocked}>
+                    <Button onClick={handleSubmit} disabled={submitting || blocked || locationRead.loading || locationRead.error}>
                         {submitting ? <Spinner size="sm" /> : null}
                         {submitting ? 'Creating…' : 'Create transfer'}
                     </Button>
@@ -222,6 +227,7 @@ function CreateTransferModal({ submitCommand, blocked,
                 {productLoadError && <Banner variant="warning" title="More products could not be loaded">Try loading the next products again.</Banner>}
                 {hasMoreProducts && <Button variant="secondary" onClick={loadMoreProducts} disabled={loadingProducts}>{loadingProducts ? 'Loading products…' : 'Load more products'}</Button>}
 
+                <WarehouseOptionSearch label="locations" read={locationRead} />
                 <div className="grid grid-cols-1 gap-[var(--lb-space-3)] sm:grid-cols-2">
                     <Select
                         label="Source location"
@@ -832,6 +838,7 @@ function WarehouseWorkspace({store}:{store:string}) {
                 blocked={commands.blocked}
                 open={showCreate}
                 locations={locations}
+                locationRead={locationRead}
                 products={productPicker.items}
                 hasMoreProducts={productPicker.hasMore}
                 loadingProducts={productPicker.loading}

@@ -78,6 +78,32 @@ JsonMap record(String site, {String? name}) {
   };
 }
 
+JsonMap warehouseRecord(String path, String site, {String? name, String? id}) {
+  final label = name ?? (site == siteA ? 'Private A' : 'Private B');
+  if (path.endsWith('/locations'))
+    return w.warehouseLocationRecord(
+      site: site,
+      name: label,
+      id: id ?? w.warehouseLocation,
+    );
+  if (path.endsWith('/suppliers'))
+    return w.warehouseSupplierRecord(
+      site: site,
+      name: label,
+      id: id ?? w.warehouseDestination,
+    );
+  if (path.endsWith('/purchase-orders') || path.endsWith('/transfers'))
+    return {
+      ...w.warehouseDocument(
+        site: site,
+        transfer: path.endsWith('/transfers'),
+        targetId: id ?? w.warehouseTarget,
+      ),
+      path.endsWith('/transfers') ? 'transfer_number' : 'po_number': label,
+    };
+  return record(site, name: name);
+}
+
 JsonMap historyRecord(String site) => {
   'id': 'cccccccc-cccc-4ccc-8ccc-cccccccccccc',
   'store_id': site,
@@ -109,7 +135,7 @@ void respond(
       'meta': {
         'has_next': more,
         if (RegExp(
-              r'/inventory/(purchase-orders|transfers)$',
+              r'/inventory/(purchase-orders|transfers|locations|suppliers)$',
             ).hasMatch(r.path) &&
             data is List) ...{
           'store_id': r.queryParameters['store_id'],
@@ -519,13 +545,12 @@ void main() {
             h,
             List.generate(
               20,
-              (index) => {
-                ...record(
-                  r.queryParameters['store_id'].toString(),
-                  name: 'SYN page one $index',
-                ),
-                'id': 'synthetic-$index',
-              },
+              (index) => warehouseRecord(
+                r.path,
+                r.queryParameters['store_id'].toString(),
+                name: 'SYN page one $index',
+                id: 'cccccccc-cccc-4ccc-8ccc-${index.toString().padLeft(12, '0')}',
+              ),
             ),
             more: true,
             meta: {'total': 21},
@@ -878,7 +903,9 @@ void main() {
         final writes = <RequestOptions>[];
         final stores = await mount(tester, surface.screen, (r, h) {
           if (r.method != 'GET') writes.add(r);
-          respond(r, h, [record(r.queryParameters['store_id'].toString())]);
+          respond(r, h, [
+            warehouseRecord(r.path, r.queryParameters['store_id'].toString()),
+          ]);
         });
         expect(find.textContaining('Private A'), findsWidgets);
         if (surface.form != null) {
@@ -954,7 +981,9 @@ void main() {
     final writes = <RequestOptions>[];
     final stores = await mount(tester, const InventoryScreen(), (r, h) {
       if (r.method == 'POST') writes.add(r);
-      respond(r, h, [record(r.queryParameters['store_id'].toString())]);
+      respond(r, h, [
+        warehouseRecord(r.path, r.queryParameters['store_id'].toString()),
+      ]);
     });
     await tester.tap(find.text('Adjust'));
     await tester.pumpAndSettle();

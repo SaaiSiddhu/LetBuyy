@@ -119,6 +119,14 @@ class InventoryService extends ChangeNotifier {
       _current('orders') && (_recordPages['orders']?.more ?? false);
   bool get transfersHasMore =>
       _current('transfers') && (_recordPages['transfers']?.more ?? false);
+  int? get locationsTotal =>
+      _current('locations') ? _recordPages['locations']?.total : null;
+  bool get locationsHasMore =>
+      _current('locations') && (_recordPages['locations']?.more ?? false);
+  int? get suppliersTotal =>
+      _current('suppliers') ? _recordPages['suppliers']?.total : null;
+  bool get suppliersHasMore =>
+      _current('suppliers') && (_recordPages['suppliers']?.more ?? false);
   bool get isLoading => _loading.any(_current);
   bool get levelsHasMore => _current('levels') && _levelsHasMore;
 
@@ -257,7 +265,14 @@ class InventoryService extends ChangeNotifier {
     try {
       final row = await send(_options(version, site, key: key));
       _check(version);
-      final value = parse(_scoped(row, site));
+      if (row['store_id'] != site && row['site_id'] != site)
+        throw const ApiException(
+          message: 'This warehouse record could not be confirmed.',
+          statusCode: 503,
+          code: 'WAREHOUSE_OPTION_OUTCOME_UNVERIFIED',
+        );
+      _scoped(row, site);
+      final value = parse(row);
       // A newer read wins over an older mutation receipt. The caller reloads
       // after confirmation; a receipt never grants authority for another store.
       if (_views[resource] == before) {
@@ -490,22 +505,36 @@ class InventoryService extends ChangeNotifier {
           code: 'INVENTORY_${resource.toUpperCase()}_SCOPE_UNSUPPORTED',
         );
       }
-      if (warehouse &&
-          (result.meta['total_is_exact'] != true ||
-              result.data.length !=
-                  (result.total - (page - 1) * limit).clamp(0, limit) ||
-              result.hasMore != (page * limit < result.total) ||
-              result.data.map((row) => row['id']).toSet().length !=
-                  result.data.length)) {
-        throw const ApiException(
-          message:
-              'These warehouse records could not be confirmed. Reload the current store.',
-          statusCode: 503,
-          code: 'WAREHOUSE_DOCUMENTS_UNVERIFIED',
-        );
+      if (warehouse) {
+        try {
+          WarehousePageContract.fromJson(
+            result.meta,
+            storeId: storeId,
+            page: page,
+            limit: limit,
+            rowCount: result.data.length,
+          );
+        } on FormatException {
+          throw const ApiException(
+            message:
+                'These warehouse records could not be confirmed. Reload the current store.',
+            statusCode: 503,
+            code: 'WAREHOUSE_DOCUMENTS_UNVERIFIED',
+          );
+        }
+        if (result.data.map((row) => row['id']).toSet().length !=
+            result.data.length)
+          throw const ApiException(
+            message: 'Warehouse records contain duplicate identities.',
+            statusCode: 503,
+            code: 'WAREHOUSE_DOCUMENTS_UNVERIFIED',
+          );
       }
       final rows = result.data
-          .map((row) => parse(_scoped(row, storeId)))
+          .map((row) {
+            final scoped = _scoped(row, storeId);
+            return parse(warehouse ? row : scoped);
+          })
           .toList(growable: false);
       if (rows.any((row) => !matches(row)))
         throw const ApiException(
@@ -516,6 +545,13 @@ class InventoryService extends ChangeNotifier {
       publish(rows);
       _recordPages[resource] = (total: result.total, more: result.hasMore);
       return rows;
+    } on FormatException {
+      throw const ApiException(
+        message:
+            'These warehouse records could not be confirmed. Reload the current store.',
+        statusCode: 503,
+        code: 'WAREHOUSE_DOCUMENTS_UNVERIFIED',
+      );
     } finally {
       if (_views[resource] == view &&
           _api.captureRequestContext() == view.version) {
@@ -1032,15 +1068,135 @@ class InventoryService extends ChangeNotifier {
     }
   }
 
-  Future<List<InventoryLocationContract>> fetchLocations(String storeId) =>
-      _read(
-        'locations',
-        storeId,
-        (options) =>
-            _api.inventory.locations(storeId: storeId, options: options),
-        InventoryLocationContract.fromJson,
-        (rows) => _locations = rows,
+  Future<PaginatedResponse<T>> _optionPage<T>(
+    String site,
+    int page,
+    int limit,
+    String status,
+    String column,
+    Future<PaginatedResponse<JsonMap>> Function(ApiRequestOptions) load,
+    T Function(JsonMap) parse,
+  ) async {
+    final version = _api.captureRequestContext();
+    final result = await load(_options(version, site));
+    _check(version);
+    try {
+      final facts = WarehousePageContract.fromJson(
+            result.meta,
+            storeId: site,
+            page: page,
+            limit: limit,
+            rowCount: result.data.length,
+          ),
+          ids = <String>{};
+      final rows = result.data
+          .map((raw) {
+            if (raw[column] != site ||
+                (status != 'all' && raw['status'] != status))
+              throw const FormatException();
+            final row = parse(raw);
+            if (!ids.add(raw['id'] as String)) throw const FormatException();
+            return row;
+          })
+          .toList(growable: false);
+      return PaginatedResponse<T>(
+        data: rows,
+        total: facts.total,
+        page: page,
+        limit: limit,
+        hasMore: facts.hasMore,
+        hasNext: facts.hasMore,
+        hasPrev: page > 1,
+        totalPages: (facts.total / limit).ceil(),
+        meta: Map.unmodifiable(result.meta),
       );
+    } on FormatException {
+      throw const ApiException(
+        message:
+            'These warehouse choices could not be confirmed. Reload the current store.',
+        statusCode: 503,
+        code: 'WAREHOUSE_OPTIONS_UNVERIFIED',
+      );
+    }
+  }
+
+  Future<PaginatedResponse<InventoryLocationContract>> readLocationsPage(
+    String site, {
+    int page = 1,
+    int limit = 20,
+    String? search,
+    String status = 'active',
+    String sort = 'name_asc',
+  }) => _optionPage(
+    site,
+    page,
+    limit,
+    status,
+    'store_id',
+    (options) => _api.inventory.locations(
+      storeId: site,
+      page: page,
+      limit: limit,
+      search: search,
+      status: status,
+      sort: sort,
+      options: options,
+    ),
+    InventoryLocationContract.fromVerifiedJson,
+  );
+  Future<PaginatedResponse<InventorySupplierContract>> readSuppliersPage(
+    String site, {
+    int page = 1,
+    int limit = 20,
+    String? search,
+    String status = 'active',
+    String sort = 'name_asc',
+  }) => _optionPage(
+    site,
+    page,
+    limit,
+    status,
+    'site_id',
+    (options) => _api.inventory.suppliers(
+      storeId: site,
+      page: page,
+      limit: limit,
+      search: search,
+      status: status,
+      sort: sort,
+      options: options,
+    ),
+    InventorySupplierContract.fromVerifiedJson,
+  );
+
+  Future<List<InventoryLocationContract>> fetchLocations(
+    String storeId, {
+    int page = 1,
+    int limit = 20,
+    String? search,
+    String status = 'all',
+    String sort = 'name_asc',
+  }) => _readRecords(
+    'locations',
+    storeId,
+    page,
+    limit,
+    (options) => _api.inventory.locations(
+      storeId: storeId,
+      page: page,
+      limit: limit,
+      search: search,
+      status: status,
+      sort: sort,
+      options: options,
+    ),
+    InventoryLocationContract.fromVerifiedJson,
+    (rows) => _locations = rows,
+    (row) =>
+        row.storeId == storeId && (status == 'all' || row.status == status),
+    warehouse: true,
+  );
+
   Future<InventoryLocationContract> createLocation(
     InventoryLocationInput input,
   ) => _command(
@@ -1048,19 +1204,38 @@ class InventoryService extends ChangeNotifier {
     input.storeId,
     (options) =>
         _api.inventory.createLocation(input.toJson(), options: options),
-    InventoryLocationContract.fromJson,
+    InventoryLocationContract.fromVerifiedJson,
     (row) =>
         _locations = [row, ..._locations.where((item) => item.id != row.id)],
   );
-  Future<List<InventorySupplierContract>> fetchSuppliers(String storeId) =>
-      _read(
-        'suppliers',
-        storeId,
-        (options) =>
-            _api.inventory.suppliers(storeId: storeId, options: options),
-        InventorySupplierContract.fromJson,
-        (rows) => _suppliers = rows,
-      );
+  Future<List<InventorySupplierContract>> fetchSuppliers(
+    String storeId, {
+    int page = 1,
+    int limit = 20,
+    String? search,
+    String status = 'all',
+    String sort = 'name_asc',
+  }) => _readRecords(
+    'suppliers',
+    storeId,
+    page,
+    limit,
+    (options) => _api.inventory.suppliers(
+      storeId: storeId,
+      page: page,
+      limit: limit,
+      search: search,
+      status: status,
+      sort: sort,
+      options: options,
+    ),
+    InventorySupplierContract.fromVerifiedJson,
+    (rows) => _suppliers = rows,
+    (row) =>
+        row.storeId == storeId && (status == 'all' || row.status == status),
+    warehouse: true,
+  );
+
   Future<InventorySupplierContract> createSupplier(
     InventorySupplierInput input,
   ) => _command(
@@ -1068,7 +1243,7 @@ class InventoryService extends ChangeNotifier {
     input.storeId,
     (options) =>
         _api.inventory.createSupplier(input.toJson(), options: options),
-    InventorySupplierContract.fromJson,
+    InventorySupplierContract.fromVerifiedJson,
     (row) =>
         _suppliers = [row, ..._suppliers.where((item) => item.id != row.id)],
   );
@@ -1127,7 +1302,7 @@ class InventoryService extends ChangeNotifier {
       limit: limit,
       options: options,
     ),
-    PurchaseOrderContract.fromJson,
+    PurchaseOrderContract.fromVerifiedJson,
     (rows) => _purchaseOrders = rows,
     (row) => row.storeId == storeId,
     warehouse: true,
@@ -1175,7 +1350,7 @@ class InventoryService extends ChangeNotifier {
       limit: limit,
       options: options,
     ),
-    InventoryTransferContract.fromJson,
+    InventoryTransferContract.fromVerifiedJson,
     (rows) => _transfers = rows,
     (row) => row.storeId == storeId,
     warehouse: true,

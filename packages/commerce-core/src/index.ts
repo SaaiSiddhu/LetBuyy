@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import {WarehouseLocationInputSchema} from '@letbuyy/shared-types';
 export * from './storefront-discovery';
 export { summarizeProductFacts, type ProductFactSummarySection, type ProductFactSummaryRow } from './product-facts-summary';
 export { ProductFactSnapshotSchema, PersonalizationCartDraftSchema, PersonalizationReviewQuerySchema, PersonalizationReviewContextSchema, prepareProductFactSnapshot, readProductFactSnapshot, personalizationReviewFingerprint, validatePersonalizationRevisionTransition, type ProductFactSnapshot, type PersonalizationCartDraft, type PersonalizationReviewContext, type ProductFactSnapshotSource, type PreparedProductFactSnapshot } from './product-fact-snapshot';
@@ -20,7 +21,7 @@ export { SportsFactsSchema, SportsVariantFactsSchema, readSportsFacts, resolveSp
 export { BooksFactsSchema, BooksVariantFactsSchema, readBooksFacts, mergeBooksVariantFacts, type BooksFacts, type BooksVariantFacts } from './marginalia-facts';
 export { ReplaceCollectionMembershipSchema, type ReplaceCollectionMembershipInput } from '@letbuyy/shared-types';
 export { CollectionListPaginationSchema, CollectionListQuerySchema, type CollectionListPagination, type CollectionListQuery, type CollectionListQueryInput } from '@letbuyy/shared-types';
-export {WarehouseDocumentScopeQuerySchema,WarehouseDocumentParamsSchema,WarehousePurchaseOrderListQuerySchema,WarehouseTransferListQuerySchema,WarehouseCommandCapabilitiesQuerySchema,type WarehouseCommandCapabilitiesQuery} from '@letbuyy/shared-types';
+export {WarehouseOptionListQuerySchema,WarehouseDocumentScopeQuerySchema,WarehouseDocumentParamsSchema,WarehousePurchaseOrderListQuerySchema,WarehouseTransferListQuerySchema,WarehouseCommandCapabilitiesQuerySchema,type WarehouseCommandCapabilitiesQuery} from '@letbuyy/shared-types';
 import { StopWarehouseCommandInputSchema, CustomerSegmentRulesSchema, ProductStatusSchema, EmailSchema, HsnCodeSchema, MoneySchema, PaginationQuery, QueryBooleanSchema, SlugSchema, UrlSchema, UuidSchema, InventoryReservationStatusSchema } from '@letbuyy/shared-types';
 
 export type ProductStatus = 'draft' | 'active' | 'archived';
@@ -362,15 +363,7 @@ export const CommerceMetricPageQuerySchema = PaginationQuery.pick({ page: true, 
 export type CommerceMetricStoreQuery = z.infer<typeof CommerceMetricStoreQuerySchema>;
 export type CommerceMetricPageQuery = z.infer<typeof CommerceMetricPageQuerySchema>;
 
-export const CreateLocationSchema = z.object({
-  store_id: UuidSchema,
-  name: z.string().min(1).max(200).trim(),
-  address: z.string().max(500).optional(),
-  city: z.string().max(100).optional(),
-  state: z.string().max(100).optional(),
-  country: z.string().length(2).toUpperCase().default('IN'),
-  is_default: z.boolean().default(false),
-});
+export const CreateLocationSchema=WarehouseLocationInputSchema;
 
 export const AdjustInventorySchema = z.object({
   product_id: UuidSchema,
@@ -399,7 +392,7 @@ export const BulkAdjustSchema = z.object({
 
 export const CreateSupplierSchema = z.object({
   store_id: UuidSchema,
-  name: z.string().min(1).max(200).trim(),
+  name: z.string().trim().min(1).max(200),
   contact_name: z.string().max(200).optional(),
   email: EmailSchema.optional(),
   phone: z.string().max(30).optional(),

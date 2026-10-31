@@ -1,3 +1,4 @@
+import {WarehouseOptionListQuerySchema,WarehouseLocationSchema,WarehouseSupplierSchema,WarehouseLocationPageSchema,WarehouseSupplierPageSchema,type WarehouseOptionListQuery,type WarehouseLocation,type WarehouseSupplier,type WarehouseLocationInput} from '@letbuyy/shared-types';
 import {WarehousePurchaseOrderSchema,WarehouseTransferSchema,WarehousePurchaseOrderPageSchema,WarehouseTransferPageSchema,WarehousePurchaseOrderListQuerySchema,WarehouseTransferListQuerySchema,type WarehousePurchaseOrderListQuery,type WarehouseTransferListQuery,type WarehousePurchaseOrder,type WarehousePurchaseOrderLine,type WarehouseTransfer,type WarehouseTransferLine} from '@letbuyy/shared-types';
 import {WarehouseCommandResultSchema,WarehouseCommandCapabilitiesSchema,WAREHOUSE_COMMAND_PROTOCOL_HEADER,WAREHOUSE_COMMAND_PROTOCOL_VERSION,type WarehouseCommandOperation,type WarehouseCommandResult,type StopWarehouseCommandInput,type WarehouseCommandCapabilities} from '@letbuyy/shared-types';
 export type {WarehouseCommandIntent,WarehouseCommandResult,StopWarehouseCommandInput} from '@letbuyy/shared-types';
@@ -2365,33 +2366,12 @@ export interface CreateSupplierInput {
   address?: Record<string, unknown>;
 }
 
-export interface Supplier extends JsonRecord {
-  id: string;
-  site_id: string;
-  name: string;
-  contact_name?: string | null;
-  email?: string | null;
-  phone?: string | null;
-  address?: Record<string, unknown> | null;
-  created_at: string;
-}
+export type Supplier=WarehouseSupplier;
 
 // ── Inventory locations ──────────────────────────────────────────
-export interface CreateInventoryLocationInput {
-  store_id: string;
-  name: string;
-  is_default?: boolean;
-  address?: Record<string, unknown>;
-}
+export type CreateInventoryLocationInput=WarehouseLocationInput;
 
-export interface InventoryLocation extends JsonRecord {
-  id: string;
-  store_id: string;
-  name: string;
-  is_default: boolean;
-  status: string;
-  created_at: string;
-}
+export type InventoryLocation=WarehouseLocation;
 
 // Phase 5.5 — typed exposure of the existing inventory transfer + reservation + history gateway routes.
 export interface InventoryTransferLineInput {
@@ -4947,23 +4927,23 @@ export class LetbuyyApiClient {
       get:(id:string,query:{store_id:string},options?:LetbuyyRequestOptions)=>
         this.requestWarehouseDocument(`/inventory/purchase-orders/${encodePathSegment(id)}`,id,query.store_id,WarehousePurchaseOrderSchema,options),
       list: (query: PurchaseOrderListQuery, options?: LetbuyyRequestOptions) =>
-        this.requestWarehouseDocuments('/inventory/purchase-orders',WarehousePurchaseOrderListQuerySchema.parse(query),WarehousePurchaseOrderPageSchema,options),
+        this.requestWarehouseCollection('/inventory/purchase-orders',WarehousePurchaseOrderListQuerySchema.parse(query),WarehousePurchaseOrderPageSchema,options),
       create: (input: CreatePurchaseOrderInput, options?: LetbuyyRequestOptions) =>
         this.requestWarehouseAcknowledgement('/inventory/purchase-orders',input,'purchase_order.create',null,{...options,storeId:input.store_id}),
       receive: (id: string, input: ReceivePurchaseOrderInput, options?: LetbuyyRequestOptions) =>
         this.requestWarehouseAcknowledgement(`/inventory/purchase-orders/${encodePathSegment(id)}/receive`,input,'purchase_order.receive',id,options),
     },
     suppliers: {
-      list: (query: { store_id: string }, options?: LetbuyyRequestOptions) =>
-        this.requestData<Supplier[]>('/inventory/suppliers', { ...options, query }),
+      list: (query: WarehouseOptionListQuery, options?: LetbuyyRequestOptions) =>
+        this.requestWarehouseCollection('/inventory/suppliers',WarehouseOptionListQuerySchema.parse(query),WarehouseSupplierPageSchema,options,'WAREHOUSE_OPTIONS_UNVERIFIED'),
       create: (input: CreateSupplierInput, options?: LetbuyyRequestOptions) =>
-        this.requestData<Supplier>('/inventory/suppliers', { ...options, method: 'POST', body: input }),
+        this.requestWarehouseOptionCreated('/inventory/suppliers',input,WarehouseSupplierSchema,options),
     },
     locations: {
-      list: (query: { store_id: string }, options?: LetbuyyRequestOptions) =>
-        this.requestData<InventoryLocation[]>('/inventory/locations', { ...options, query }),
+      list: (query: WarehouseOptionListQuery, options?: LetbuyyRequestOptions) =>
+        this.requestWarehouseCollection('/inventory/locations',WarehouseOptionListQuerySchema.parse(query),WarehouseLocationPageSchema,options,'WAREHOUSE_OPTIONS_UNVERIFIED'),
       create: (input: CreateInventoryLocationInput, options?: LetbuyyRequestOptions) =>
-        this.requestData<InventoryLocation>('/inventory/locations', { ...options, method: 'POST', body: input }),
+        this.requestWarehouseOptionCreated('/inventory/locations',input,WarehouseLocationSchema,options),
     },
     history: async (query?: InventoryHistoryQuery, options?: LetbuyyRequestOptions): Promise<PaginatedResponse<InventoryHistoryEntry>> => {
       const body = await this.request<GatewayResponse<unknown[]>>('/inventory/history', { ...options, storeId: query?.store_id ?? options?.storeId, query });
@@ -4992,7 +4972,7 @@ export class LetbuyyApiClient {
       get:(id:string,query:{store_id:string},options?:LetbuyyRequestOptions)=>
         this.requestWarehouseDocument(`/inventory/transfers/${encodePathSegment(id)}`,id,query.store_id,WarehouseTransferSchema,options),
       list: (query: InventoryTransferListQuery, options?: LetbuyyRequestOptions) =>
-        this.requestWarehouseDocuments('/inventory/transfers',WarehouseTransferListQuerySchema.parse(query),WarehouseTransferPageSchema,options),
+        this.requestWarehouseCollection('/inventory/transfers',WarehouseTransferListQuerySchema.parse(query),WarehouseTransferPageSchema,options),
       create: (input: CreateInventoryTransferInput, options?: LetbuyyRequestOptions) =>
         this.requestWarehouseAcknowledgement('/inventory/transfers',input,'transfer.create',null,{...options,storeId:input.store_id}),
       ship: (id: string, input: ShipInventoryTransferInput, options?: LetbuyyRequestOptions) =>
@@ -5751,14 +5731,22 @@ export class LetbuyyApiClient {
     return parsed.data;
   }
 
-  private async requestWarehouseDocuments<T extends {id:string;site_id:string;status:string}>(path:string,
+  private async requestWarehouseOptionCreated<T extends {id:string;name:string}>(path:string,input:{store_id:string;name:string},
+    schema:{safeParse(value:unknown):{success:true;data:T}|{success:false}},options?:LetbuyyRequestOptions):Promise<T> {
+    const parsed=schema.safeParse(await this.requestData<unknown>(path,{...options,storeId:input.store_id,method:'POST',body:input}));
+    if(!parsed.success||('store_id'in parsed.data?parsed.data.store_id:('site_id'in parsed.data?parsed.data.site_id:undefined))!==input.store_id||parsed.data.name!==input.name.trim())
+      throw new LetbuyyApiError({status:503,code:'WAREHOUSE_OPTION_OUTCOME_UNVERIFIED',message:'This warehouse record could not be confirmed. Reload the current store.'});
+    return parsed.data;
+  }
+
+  private async requestWarehouseCollection<T extends {id:string;status:string}>(path:string,
     query:{store_id:string;page:number;limit:number;status?:string},
     schema:{safeParse(value:unknown):{success:true;data:{data:T[];meta:{store_id:string;page:number;per_page:number;total:number;has_next:boolean}}}|{success:false}},
-    options?:LetbuyyRequestOptions):Promise<PaginatedResponse<T>> {
+    options?:LetbuyyRequestOptions,code='WAREHOUSE_DOCUMENTS_UNVERIFIED'):Promise<PaginatedResponse<T>> {
     const parsed=schema.safeParse(await this.request<unknown>(path,{...options,storeId:query.store_id,query,cache:'no-store'}));
     if(!parsed.success||parsed.data.meta.store_id!==query.store_id||parsed.data.meta.page!==query.page||
-      parsed.data.meta.per_page!==query.limit||parsed.data.data.some(row=>query.status&&row.status!==query.status))
-      throw new LetbuyyApiError({status:503,code:'WAREHOUSE_DOCUMENTS_UNVERIFIED',message:'These warehouse records could not be confirmed. Reload the current store.'});
+      parsed.data.meta.per_page!==query.limit||parsed.data.data.some(row=>query.status&&query.status!=='all'&&row.status!==query.status))
+      throw new LetbuyyApiError({status:503,code,message:'These warehouse records could not be confirmed. Reload the current store.'});
     return {data:parsed.data.data,total:parsed.data.meta.total,page:query.page,limit:query.limit,
       has_more:parsed.data.meta.has_next,next_cursor:null,total_is_exact:true};
   }

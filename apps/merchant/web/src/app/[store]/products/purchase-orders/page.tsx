@@ -10,6 +10,8 @@ import {WarehouseDocumentPageMetaSchema,WarehousePurchaseOrderSchema} from '@let
 import {useWarehouseDocument} from '@/lib/inventory/use-warehouse-document'
 import { useProductPicker } from '@/lib/api/use-product-picker'
 import { useInventoryLocations } from '@/lib/api/use-inventory-locations'
+import { useWarehouseSuppliers, type WarehouseOptionControls } from '@/lib/api/use-warehouse-options'
+import { WarehouseOptionSearch } from '@/components/products/WarehouseOptionSearch'
 import { formatIndiaDate as formatDate, formatInrCurrency } from '@letbuyy/ui/formatting'
 import {
     Badge,
@@ -88,6 +90,8 @@ interface CreatePOModalProps {
     blocked:boolean
     open: boolean
     suppliers: Supplier[]
+    supplierRead: WarehouseOptionControls
+    locationRead: WarehouseOptionControls
     locations: InventoryLocation[]
     products: PurchaseOrderProductItem[]
     hasMoreProducts: boolean
@@ -98,7 +102,7 @@ interface CreatePOModalProps {
     onCreated: () => void
 }
 
-function CreatePOModal({ submitCommand, blocked, open, suppliers, locations, products, hasMoreProducts, loadingProducts, loadMoreProducts, productLoadError, onClose, onCreated }: CreatePOModalProps) {
+function CreatePOModal({ submitCommand, blocked, open, suppliers, supplierRead, locationRead, locations, products, hasMoreProducts, loadingProducts, loadMoreProducts, productLoadError, onClose, onCreated }: CreatePOModalProps) {
     const { notify } = useToast()
     const [supplierId, setSupplierId] = useState('')
     const [locationId, setLocationId] = useState('')
@@ -114,25 +118,25 @@ function CreatePOModal({ submitCommand, blocked, open, suppliers, locations, pro
     useEffect(() => {
         if (open) {
             setSupplierId('')
-            setLocationId(locations[0]?.id ?? '')
+            setLocationId('')
             setExpectedAt('')
             setNotes('')
             setLines([{ id: '1', product_id: '', variant_id: '', quantity: 1, unit_cost: 0 }])
             setError(null)
         }
-    }, [open, locations])
+    }, [open])
 
     const supplierOptions: SelectOption[] = [
         { value: '', label: 'No supplier' },
         ...suppliers.map((s) => ({ value: s.id, label: s.name })),
     ]
 
-    const locationOptions: SelectOption[] = locations.map((l) => ({
+    const locationOptions: SelectOption[] = [{ value: '', label: 'Select location…' }, ...locations.map((l) => ({
         value: l.id,
         label: l.name + (l.is_default ? ' (default)' : ''),
-    }))
+    }))]
 
-    const productOptions = (lineIdx: number): SelectOption[] => [
+    const productOptions = (): SelectOption[] => [
         { value: '', label: 'Select product…' },
         ...products.map((p) => ({ value: p.id, label: p.name })),
     ]
@@ -165,7 +169,9 @@ function CreatePOModal({ submitCommand, blocked, open, suppliers, locations, pro
 
     async function handleSubmit() {
         setError(null)
-        if (!locationId) { setError('Select a destination location.'); return }
+        if (locationRead.loading || locationRead.error || supplierRead.loading || supplierRead.error) { setError('Reload the warehouse choices before creating this order.'); return }
+        if (!locations.some(row => row.id === locationId)) { setError('Select a destination from the current location choices.'); return }
+        if (supplierId && !suppliers.some(row => row.id === supplierId)) { setError('Select a supplier from the current choices, or choose No supplier.'); return }
         const validLines = lines.filter((l) => l.product_id)
         if (!validLines.length) { setError('Add at least one product line.'); return }
 
@@ -206,7 +212,7 @@ function CreatePOModal({ submitCommand, blocked, open, suppliers, locations, pro
                     <Button variant="secondary" onClick={onClose} disabled={submitting}>
                         Cancel
                     </Button>
-                    <Button onClick={handleSubmit} disabled={submitting || blocked}>
+                    <Button onClick={handleSubmit} disabled={submitting || blocked || locationRead.loading || locationRead.error || supplierRead.loading || supplierRead.error}>
                         {submitting ? <Spinner size="sm" /> : null}
                         {submitting ? 'Creating…' : 'Create purchase order'}
                     </Button>
@@ -223,6 +229,8 @@ function CreatePOModal({ submitCommand, blocked, open, suppliers, locations, pro
                 {productLoadError && <Banner variant="warning" title="More products could not be loaded">Try loading the next products again.</Banner>}
                 {hasMoreProducts && <Button variant="secondary" onClick={loadMoreProducts} disabled={loadingProducts}>{loadingProducts ? 'Loading products…' : 'Load more products'}</Button>}
 
+                <WarehouseOptionSearch label="locations" read={locationRead} />
+                <WarehouseOptionSearch label="suppliers" read={supplierRead} />
                 <div className="grid grid-cols-1 gap-[var(--lb-space-3)] sm:grid-cols-2">
                     <Select
                         label="Supplier (optional)"
@@ -284,7 +292,7 @@ function CreatePOModal({ submitCommand, blocked, open, suppliers, locations, pro
                                     <Select
                                         label="Product"
                                         value={line.product_id}
-                                        options={productOptions(idx)}
+                                        options={productOptions()}
                                         onChange={(e) =>
                                             updateLine(line.id, {
                                                 product_id: e.target.value,
@@ -496,21 +504,21 @@ function WarehouseWorkspace({store}:{store:string}) {
     const { notify } = useToast()
 
     const [pos, setPos] = useState<PurchaseOrder[]>([])
-    const [suppliers, setSuppliers] = useState<Supplier[]>([])
     const locationRead = useInventoryLocations(store)
     const locations = locationRead.items
     const productPicker = useProductPicker<PurchaseOrderProductItem>(store)
-    const [resourcesLoading, setResourcesLoading] = useState(false)
     const beginRead = useReadRequest(store)
     const {actorId:warehouseActor,siteId:warehouseSite}=useMerchantSecurityContext(store)
     const [page,setPage]=useState(1)
     const [population,setPopulation]=useState<{total:number;more:boolean}|null>(null)
-    const beginCreateRead = useReadRequest(store)
     const [loading, setLoading] = useState(true)
     const [loadError, setLoadError] = useState<string | null>(null)
     const [formError,setFormError]=useState<string|null>(null)
 
     const [showCreate, setShowCreate] = useState(false)
+    const supplierRead = useWarehouseSuppliers(store, showCreate)
+    const suppliers = supplierRead.items
+    const resourcesLoading = productPicker.loading
     const [receivingPo, setReceivingPo] = useState<PurchaseOrder | null>(null)
 
     const loadAll = useCallback(async () => {
@@ -547,26 +555,10 @@ function WarehouseWorkspace({store}:{store:string}) {
     useEffect(() => { void loadAll() }, [loadAll])
 
     async function openCreate() {
-        if(commands.blocked)return
-        if (resourcesLoading) return
-        const request = beginCreateRead()
-        setResourcesLoading(true)
+        if (commands.blocked || productPicker.loading) return
         setFormError(null)
-        try {
-            const [productsReady, response] = await Promise.all([
-                productPicker.load(),
-                fetch(`/api/stores/${encodeURIComponent(store)}/suppliers`, { cache: 'no-store', signal: request.signal }),
-            ])
-            const payload = await response.json()
-            if (!request.isCurrent()) return
-            if (!productsReady || !response.ok || !Array.isArray(payload.data)) throw new Error('Create form unavailable')
-            setSuppliers(payload.data)
-            setShowCreate(true)
-        } catch {
-            if (request.isCurrent()) setFormError('The purchase order form could not be loaded. Try opening it again.')
-        } finally {
-            if (request.isCurrent()) setResourcesLoading(false)
-        }
+        if (await productPicker.load()) setShowCreate(true)
+        else setFormError('The purchase order form could not be loaded. Try opening it again.')
     }
 
     async function openReceive(po: PurchaseOrder) {
@@ -739,6 +731,8 @@ function WarehouseWorkspace({store}:{store:string}) {
                 blocked={commands.blocked}
                 open={showCreate}
                 suppliers={suppliers}
+                supplierRead={supplierRead}
+                locationRead={locationRead}
                 locations={locations}
                 products={productPicker.items}
                 hasMoreProducts={productPicker.hasMore}

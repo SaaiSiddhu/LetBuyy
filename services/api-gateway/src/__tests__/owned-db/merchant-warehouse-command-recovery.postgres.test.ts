@@ -489,3 +489,36 @@ for(const transfer of [false,true])test((transfer?'transfer':'PO')+' fresh SDK d
  owned.psql("UPDATE "+(transfer?'inventory_transfers':'purchase_orders')+" SET deleted_at=now() WHERE id="+quote(target)+";");
  await assert.rejects(get,e=>e instanceof LetbuyyApiError&&e.status===404);
 });
+
+for(const supplier of [false,true])test((supplier?'supplier':'location')+' choices are exact bounded owner reads beyond 1000, with literal search and revoked access',async t=>{
+ const f=await fixture(t),other=await fixture(t),table=supplier?'suppliers':'inventory_locations',column=supplier?'site_id':'store_id',route=supplier?'suppliers':'locations';
+ owned.psql("INSERT INTO "+table+"("+column+",name,status)SELECT "+quote(f.site.siteId)+",'SYN_OPTION_'||lpad(n::text,4,'0'),'active' FROM generate_series(1,1005)n;");
+ const get=async(query:string,actor=f.actor,site=f.site.siteId)=>f.gateway.request('/v1/inventory/'+route+'?store_id='+site+'&'+query,{headers:await signedIdentityHeaders(actor,'syn-wms-'+actor+'@example.invalid',site)});
+ const first=await get('page=1&limit=100&search=SYN_OPTION_&status=active');assert.equal(first.status,200,first.text);
+ assert.equal(first.json?.data.length,100);assert.equal(first.json?.meta.total,1005);assert.equal(first.json?.meta.total_is_exact,true);
+ assert.equal(new Headers(first.headers).get('Cache-Control'),'private, no-store');
+ const last=await get('page=11&limit=100&search=SYN_OPTION_&status=active');assert.equal(last.status,200,last.text);assert.equal(last.json?.data.length,5);assert.equal(last.json?.meta.has_next,false);
+ const expected=JSON.parse(owned.psql("SELECT jsonb_agg(id ORDER BY name,id)::text FROM(SELECT id,name FROM "+table+" WHERE "+column+"="+quote(f.site.siteId)+" AND name LIKE 'SYN_OPTION_%' ORDER BY name,id OFFSET 1000 LIMIT 100)t;"));
+ assert.deepEqual(last.json?.data.map((row:{id:string})=>row.id),expected);
+ const far=await get('page=12&limit=100&search=SYN_OPTION_');assert.equal(far.status,200,far.text);assert.deepEqual(far.json?.data,[]);assert.equal(far.json?.meta.total,1005);
+ const blocked=tapRest(owned.restUrl,async(call,forward)=>call.resource===table&&call.method==='HEAD'?Response.json({code:'SYN_OPTION_COUNT_FAILED'},{status:503}):forward());
+ try {const result=await get('page=12&limit=100&search=SYN_OPTION_');assert.equal(result.status,503,result.text);assert.equal(result.json?.data,undefined);}finally{blocked.restore();}
+ const ids=first.json?.data.map((row:{id:string})=>row.id);
+ owned.psql("UPDATE "+table+" SET name='SYN%literal' WHERE id="+quote(ids[0])+";UPDATE "+table+" SET name='SYNxliteral' WHERE id="+quote(ids[1])+";UPDATE "+table+" SET status='inactive' WHERE id="+quote(ids[2])+";UPDATE "+table+" SET deleted_at=now() WHERE id="+quote(ids[3])+";");
+ const literal=await get('search='+encodeURIComponent('%literal'));assert.equal(literal.status,200,literal.text);assert.equal(literal.json?.meta.total,1);assert.equal(literal.json?.data[0].name,'SYN%literal');
+ const inactive=await get('search=SYN_OPTION_&status=inactive');assert.equal(inactive.json?.meta.total,1);
+ const current=await get('search=SYN_OPTION_&status=active&sort=name_desc');assert.equal(current.json?.meta.total,1001);
+ owned.psql("UPDATE "+table+" SET name='SYN_OPTION_TIE' WHERE id IN("+quote(ids[4])+","+quote(ids[5])+");"+(!supplier?"UPDATE inventory_locations SET is_default=true WHERE id="+quote(ids[5])+";":""));
+ const tied=await get('search=SYN_OPTION_TIE&limit=1');assert.equal(tied.status,200,tied.text);assert.equal(tied.json?.meta.total,2);
+ const tieFirst=owned.psql("SELECT id FROM "+table+" WHERE "+column+"="+quote(f.site.siteId)+" AND name='SYN_OPTION_TIE' ORDER BY "+(supplier?'':'is_default DESC,')+"name,id LIMIT 1;");assert.equal(tied.json?.data[0].id,tieFirst);
+ const noCount=tapRest(owned.restUrl,async(call,forward)=>{const response=await forward();if(call.resource!==table||call.method!=='GET'||!response.ok)return response;const headers=new Headers(response.headers);headers.delete('Content-Range');return new Response(await response.text(),{status:response.status,headers});});
+ try{const result=await get('');assert.equal(result.status,503,result.text);assert.equal(result.json?.data,undefined);}finally{noCount.restore();}
+
+ assert.equal((await get('',other.actor)).status,403);assert.equal((await get('',f.actor,other.site.siteId)).status,403);
+ const staff=randomUUID();owned.psql("INSERT INTO users_custom(id,email,email_verified)VALUES("+quote(staff)+","+quote('syn-wms-'+staff+'@example.invalid')+",true);INSERT INTO employees(user_id,email,store_id,role,status,is_active,permissions)VALUES("+quote(staff)+","+quote('syn-wms-'+staff+'@example.invalid')+","+quote(f.site.siteId)+",'editor','active',true,'{\"granted\":[\"products:write\"]}');");
+ assert.equal((await get('',staff)).status,403);
+ const malformed=tapRest(owned.restUrl,async(call,forward)=>call.resource===table?Response.json({code:'42P01',message:'SYN_SCHEMA_UNAVAILABLE'},{status:404}):forward());
+ try{const result=await get('');assert.ok(result.status>=500,result.text);assert.equal(result.json?.data,undefined);assert.ok(!result.text.includes('SYN_SCHEMA_UNAVAILABLE'));}finally{malformed.restore();}
+ for(const query of ['limit=101','page=0','page=1.5','sort=random','status=deleted'])assert.equal((await get(query)).status,400,query);
+ owned.psql("UPDATE sites SET custom_user_id=NULL,user_id=NULL WHERE id="+quote(f.site.siteId)+";");const denied=await get('page=11&limit=100');assert.equal(denied.status,403);assert.equal(denied.json?.data,undefined);
+});

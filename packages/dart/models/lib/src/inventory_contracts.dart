@@ -338,6 +338,85 @@ class InventoryBarcodeLookup {
       variantTitle.isEmpty ? productName : '$productName / $variantTitle';
 }
 
+/// Canonical mirror of the exact warehouse page metadata contract. A page is a
+/// current read; this does not claim a snapshot spanning separate page requests.
+class WarehousePageContract {
+  const WarehousePageContract({
+    required this.storeId,
+    required this.page,
+    required this.limit,
+    required this.total,
+    required this.hasMore,
+  });
+  final String storeId;
+  final int page, limit, total;
+  final bool hasMore;
+  factory WarehousePageContract.fromJson(
+    Map<String, dynamic> meta, {
+    required String storeId,
+    required int page,
+    required int limit,
+    required int rowCount,
+  }) {
+    final total = meta['total'], more = meta['has_next'];
+    if (!_recordId(meta['store_id']) ||
+        meta['store_id'] != storeId ||
+        meta['page'] != page ||
+        meta['per_page'] != limit ||
+        page < 1 ||
+        page > 1000000 ||
+        limit < 1 ||
+        limit > 100 ||
+        meta['total_is_exact'] != true ||
+        total is! int ||
+        total < 0 ||
+        total > 9007199254740991 ||
+        more is! bool ||
+        more != (page * limit < total) ||
+        rowCount != (total - (page - 1) * limit).clamp(0, limit)) {
+      throw const FormatException('The warehouse page could not be confirmed.');
+    }
+    return WarehousePageContract(
+      storeId: storeId,
+      page: page,
+      limit: limit,
+      total: total,
+      hasMore: more,
+    );
+  }
+}
+
+void _verifyWarehouseOption(
+  Map<String, dynamic> json, {
+  required bool supplier,
+}) {
+  final site = json[supplier ? 'site_id' : 'store_id'],
+      name = json['name'],
+      address = json['address'];
+  if (!_recordId(json['id']) ||
+      !_recordId(site) ||
+      name is! String ||
+      name.trim().isEmpty ||
+      name.trim().length > 200 ||
+      !const ['active', 'inactive'].contains(json['status']) ||
+      _recordDate(json['created_at']) == null ||
+      (json[supplier ? 'store_id' : 'site_id'] != null &&
+          json[supplier ? 'store_id' : 'site_id'] != site) ||
+      !json.containsKey('address') ||
+      json['deleted_at'] != null ||
+      (supplier ? address is! Map : address != null && address is! Map) ||
+      (!supplier && json['is_default'] is! bool)) {
+    throw const FormatException('The warehouse choice could not be confirmed.');
+  }
+  if (supplier)
+    for (final key in ['contact_name', 'email', 'phone']) {
+      if (!json.containsKey(key) || (json[key] != null && json[key] is! String))
+        throw const FormatException(
+          'The supplier contact could not be confirmed.',
+        );
+    }
+}
+
 class InventoryLocationContract {
   const InventoryLocationContract({
     required this.id,
@@ -351,6 +430,12 @@ class InventoryLocationContract {
     required this.status,
   });
 
+  factory InventoryLocationContract.fromVerifiedJson(
+    Map<String, dynamic> json,
+  ) {
+    _verifyWarehouseOption(json, supplier: false);
+    return InventoryLocationContract.fromJson(json);
+  }
   factory InventoryLocationContract.fromJson(Map<String, dynamic> json) {
     final address = _mapValue(json['address']);
     return InventoryLocationContract(
@@ -362,10 +447,7 @@ class InventoryLocationContract {
       ),
       city: _stringValue(json['city'] ?? address['city']),
       state: _stringValue(json['state'] ?? address['state']),
-      country: _stringValue(
-        json['country'] ?? address['country'],
-        fallback: 'IN',
-      ),
+      country: _stringValue(json['country'] ?? address['country']),
       isDefault: _boolValue(json['is_default']),
       status: _stringValue(json['status'], fallback: 'active'),
     );
@@ -420,6 +502,7 @@ class InventoryLocationInput {
 class InventorySupplierContract {
   const InventorySupplierContract({
     required this.id,
+    required this.status,
     required this.storeId,
     required this.name,
     required this.contactName,
@@ -428,19 +511,32 @@ class InventorySupplierContract {
     required this.address,
   });
 
+  factory InventorySupplierContract.fromVerifiedJson(
+    Map<String, dynamic> json,
+  ) {
+    _verifyWarehouseOption(json, supplier: true);
+    return InventorySupplierContract.fromJson(json);
+  }
   factory InventorySupplierContract.fromJson(Map<String, dynamic> json) {
     return InventorySupplierContract(
       id: _stringValue(json['id']),
+      status: _stringValue(json['status']),
       storeId: _stringValue(json['store_id'] ?? json['site_id']),
       name: _stringValue(json['name'], fallback: 'Supplier'),
       contactName: _stringValue(json['contact_name']),
       email: _stringValue(json['email']),
       phone: _stringValue(json['phone']),
-      address: _stringValue(json['address_text'] ?? json['address']),
+      address: _stringValue(
+        json['address_text'] ??
+            (json['address'] is Map
+                ? _mapValue(json['address'])['address']
+                : json['address']),
+      ),
     );
   }
 
   final String id;
+  final String status;
   final String storeId;
   final String name;
   final String contactName;

@@ -55,7 +55,7 @@ void respond(
         'has_next': more,
         'next_cursor': null,
         if (RegExp(
-              r'/inventory/(purchase-orders|transfers)$',
+              r'/inventory/(purchase-orders|transfers|locations|suppliers)$',
             ).hasMatch(r.path) &&
             value is List) ...{
           'store_id': r.queryParameters['store_id'],
@@ -136,26 +136,12 @@ void main() {
       () async {
         String? fault;
         final api = client((r, h) {
-          final row = <String, dynamic>{
-            'id': w.warehouseTarget,
-            'site_id': a,
-            'status': purchaseOrder ? 'ordered' : 'reserved',
-            'lines': [
-              {
-                'id': w.warehouseLine,
-                'site_id': a,
-                'purchase_order_id': w.warehouseTarget,
-                'transfer_id': w.warehouseTarget,
-                'product_id': w.warehouseProduct,
-                'variant_id': null,
-                'quantity_ordered': 4,
-                'quantity_requested': 4,
-                'quantity_shipped': 0,
-                'quantity_received': 0,
-                'unit_cost': 0,
-              },
-            ],
-          };
+          final row = w.warehouseDocument(
+            transfer: !purchaseOrder,
+            site: a,
+            status: purchaseOrder ? 'ordered' : 'reserved',
+            shipped: 0,
+          );
           final metadata = <String, dynamic>{
             'store_id': a,
             'page': 1,
@@ -543,7 +529,16 @@ void main() {
             fail
                 ? {}
                 : [
-                    {...level(), 'site_id': a, 'name': 'Synthetic record'},
+                    resource.path == 'locations'
+                        ? w.warehouseLocationRecord(site: a)
+                        : resource.path == 'suppliers'
+                        ? w.warehouseSupplierRecord(site: a)
+                        : resource.path == 'levels'
+                        ? level()
+                        : w.warehouseDocument(
+                            site: a,
+                            transfer: resource.path == 'transfers',
+                          ),
                   ],
             status: fail ? 503 : 200,
           ),
@@ -567,7 +562,16 @@ void main() {
       () async {
         final api = client(
           (r, h) => respond(r, h, [
-            {...level(site: b), 'site_id': b, 'name': 'Synthetic foreign'},
+            resource.path == 'locations'
+                ? w.warehouseLocationRecord(site: b)
+                : resource.path == 'suppliers'
+                ? w.warehouseSupplierRecord(site: b)
+                : resource.path == 'levels'
+                ? level(site: b)
+                : w.warehouseDocument(
+                    site: b,
+                    transfer: resource.path == 'transfers',
+                  ),
           ]),
         );
         final service = InventoryService(api: api);

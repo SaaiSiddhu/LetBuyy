@@ -119,6 +119,7 @@ JsonMap warehouseAck(
 
 JsonMap warehouseDocument({
   bool transfer = false,
+  String targetId = warehouseTarget,
   String site = warehouseSite,
   int quantity = 4,
   int received = 0,
@@ -128,7 +129,7 @@ JsonMap warehouseDocument({
 }) {
   const date = '2026-10-31T00:00:00Z';
   return {
-    'id': warehouseTarget,
+    'id': targetId,
     'site_id': site,
     'notes': null,
     'created_at': date,
@@ -165,7 +166,7 @@ JsonMap warehouseDocument({
             ? warehouseLine
             : "99999999-9999-4999-8999-${index.toString().padLeft(12, '0')}",
         'site_id': site,
-        transfer ? 'transfer_id' : 'purchase_order_id': warehouseTarget,
+        transfer ? 'transfer_id' : 'purchase_order_id': targetId,
         'product_id': warehouseProduct,
         'variant_id': index == 0
             ? null
@@ -185,3 +186,50 @@ JsonMap warehouseDocument({
     ),
   };
 }
+
+JsonMap warehouseLocationRecord({
+  String site = warehouseSite,
+  String id = warehouseLocation,
+  String name = 'Synthetic warehouse',
+}) => {
+  'id': id,
+  'store_id': site,
+  'name': name,
+  'status': 'active',
+  'is_default': false,
+  'created_at': '2026-10-31T00:00:00Z',
+  'address': {
+    'address': 'Synthetic address',
+    'city': 'Delhi',
+    'state': 'Delhi',
+    'country': 'IN',
+  },
+};
+JsonMap warehouseSupplierRecord({
+  String site = warehouseSite,
+  String id = warehouseDestination,
+  String name = 'Synthetic supplier',
+}) => {
+  'id': id,
+  'site_id': site,
+  'name': name,
+  'status': 'active',
+  'created_at': '2026-10-31T00:00:00Z',
+  'contact_name': 'Synthetic contact',
+  'email': 'synthetic@example.invalid',
+  'phone': null,
+  'address': <String, dynamic>{},
+};
+JsonMap warehousePageMeta({
+  String site = warehouseSite,
+  int page = 1,
+  int limit = 20,
+  int total = 1,
+}) => {
+  'store_id': site,
+  'page': page,
+  'per_page': limit,
+  'total': total,
+  'total_is_exact': true,
+  'has_next': page * limit < total,
+};

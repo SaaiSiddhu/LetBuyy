@@ -64,16 +64,16 @@ export const WarehouseTransferListQuerySchema=warehouseListQuery.extend({status:
 export type WarehousePurchaseOrderListQuery=z.input<typeof WarehousePurchaseOrderListQuerySchema>;
 export type WarehouseTransferListQuery=z.input<typeof WarehouseTransferListQuerySchema>;
 export const WarehouseDocumentPageMetaSchema=z.object({
- store_id:id,page:z.number().int().positive(),per_page:z.number().int().min(1).max(100),
+ store_id:id,page:z.number().int().positive().max(1000000),per_page:z.number().int().min(1).max(100),
  total:z.number().int().nonnegative().safe(),total_is_exact:z.literal(true),has_next:z.boolean(),
 }).passthrough();
 /** One current page and its matching population. It is not a cross-page snapshot. */
-export function warehouseDocumentPageSchema<T extends z.ZodTypeAny>(document:T) {
+export function warehouseDocumentPageSchema<T extends z.ZodTypeAny>(document:T,scopeColumn:'site_id'|'store_id'='site_id') {
  return z.object({data:document.array(),meta:WarehouseDocumentPageMetaSchema}).passthrough().superRefine((value,ctx)=>{
   const {total,page,per_page:limit,has_next:more,store_id:site}=value.meta;
   const expected=Math.min(limit,Math.max(0,total-(page-1)*limit));
-  const rows=value.data as Array<{id:string;site_id:string}>;
-  if(rows.length!==expected||more!==(page*limit<total)||new Set(rows.map(row=>row.id)).size!==rows.length||rows.some(row=>row.site_id!==site))
+  const rows=value.data as Array<{id:string;site_id?:string;store_id?:string}>;
+  if(rows.length!==expected||more!==(page*limit<total)||new Set(rows.map(row=>row.id)).size!==rows.length||rows.some(row=>row[scopeColumn]!==site))
    ctx.addIssue({code:z.ZodIssueCode.custom,message:'Warehouse page population could not be confirmed.'});
  });
 }

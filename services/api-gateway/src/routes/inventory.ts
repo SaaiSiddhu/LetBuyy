@@ -4,7 +4,7 @@ import { resolveMerchantResourceStoreIds } from '../lib/tenant-context';
 // ============================================================
 
 import { Hono } from 'hono';
-import { InventoryReservationSchema, InventoryReceiptSchema, WarehousePurchaseOrderSchema,WarehouseTransferSchema,WarehousePurchaseOrderPageSchema,WarehouseTransferPageSchema,
+import { InventoryReservationSchema, InventoryReceiptSchema, WarehouseLocationPageSchema,WarehouseSupplierPageSchema,WarehousePurchaseOrderSchema,WarehouseTransferSchema,WarehousePurchaseOrderPageSchema,WarehouseTransferPageSchema,
  WAREHOUSE_COMMAND_PROTOCOL_HEADER,WAREHOUSE_COMMAND_PROTOCOL_VERSION,isWarehouseCommandPath } from '@letbuyy/shared-types';
 import type { Env } from '../index';
 import { executeInventoryAdjustment } from '../execution/inventory-adjustment.adapter';
@@ -27,7 +27,7 @@ import {
     ShipTransferSchema,
     StopWarehouseCommandSchema,
     prepareWarehouseCommand,
-    WarehouseDocumentScopeQuerySchema,WarehouseDocumentParamsSchema,WarehousePurchaseOrderListQuerySchema,WarehouseTransferListQuerySchema,
+    WarehouseOptionListQuerySchema,WarehouseDocumentScopeQuerySchema,WarehouseDocumentParamsSchema,WarehousePurchaseOrderListQuerySchema,WarehouseTransferListQuerySchema,
     WarehouseCommandCapabilitiesQuerySchema,
     type WarehouseCommandCapabilitiesQuery,
     type StopWarehouseCommandInput,
@@ -263,42 +263,31 @@ async function emitInventoryEvent(
 // ── Routes ──────────────────────────────────────────────────
 
 // GET /inventory/locations — List inventory locations
-router.get('/locations', async (c) => {
-    const auth = c.get('auth');
-    const storeId = c.req.query('store_id');
-    const db = getSupabaseAdmin(c);
-    const customUser = await resolveCustomUser(db, auth.user);
-
-    if (!customUser) {
-        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+router.get('/locations',validate('query',WarehouseOptionListQuerySchema),async c=>{
+    c.header('Cache-Control','private, no-store');
+    const query=WarehouseOptionListQuerySchema.parse(c.get('validatedQuery'));
+    const db=getSupabaseAdmin(c),auth=c.get('auth'),actor=await resolveCustomUser(db,auth.user);
+    if(!actor||!await verifySiteOwnership(db,query.store_id,actor.id,auth.user.storeId))
+        return c.json(failureBody('FORBIDDEN','Your access to this store changed.'),403);
+    const buildRead=(head=false)=>{
+        let read=db.from('inventory_locations').select('*',{count:'exact',head}).eq('store_id',query.store_id).is('deleted_at',null);
+        if(query.status!=='all')read=read.eq('status',query.status);
+        if(query.search)read=read.ilike('name','%'+query.search.replace(/[\\%_]/g,'\\$&')+'%');
+        return read;
+    };
+    const offset=(query.page-1)*query.limit,ascending=query.sort==='name_asc';
+    let {data,error,count}=await buildRead().order('is_default',{ascending:false}).order('name',{ascending}).order('id',{ascending}).range(offset,offset+query.limit-1);
+    if(offset>0&&(error?.code==='PGRST103'||(!error&&Array.isArray(data)&&data.length===0&&count===null))){
+        const recovered=await buildRead(true);
+        if(recovered.error||recovered.count===null)return c.json(failureBody('WAREHOUSE_OPTIONS_UNVERIFIED','These warehouse choices could not be confirmed.'),503);
+        data=[];count=recovered.count;error=null;
     }
-
-    const ownedStoreIds = storeId
-        ? [storeId]
-        : await listOwnedStoreIds(db, customUser.id, auth.user.storeId);
-
-    if (storeId && !(await verifySiteOwnership(db, storeId, customUser.id, auth.user.storeId))) {
-        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
-    }
-
-    if (ownedStoreIds.length === 0) return c.json(success([]));
-
-    const query = db
-        .from('inventory_locations')
-        .select('*')
-        .in('store_id', ownedStoreIds);
-
-    const { data, error } = await query.order('is_default', { ascending: false });
-
-    if (isMissingTableError(error, 'inventory_locations')) {
-        return c.json(success([]));
-    }
-
-    if (error) {
-        return c.json(dbFailureBody(), 500);
-    }
-
-    return c.json(success(data || []));
+    if(error)return c.json(dbFailureBody(),500);
+    if(!Array.isArray(data)||count===null)return c.json(failureBody('WAREHOUSE_OPTIONS_UNVERIFIED','These warehouse choices could not be confirmed.'),503);
+    const body=scopedInventoryPage(data,count,query.page,query.limit,query.store_id);
+    const parsed=WarehouseLocationPageSchema.safeParse({...body,meta:{...body.meta,total_is_exact:true}});
+    if(!parsed.success)return c.json(failureBody('WAREHOUSE_OPTIONS_UNVERIFIED','These warehouse choices could not be confirmed.'),503);
+    return c.json(parsed.data);
 });
 
 // POST /inventory/locations — Create a new location
@@ -343,37 +332,31 @@ router.post('/locations', validate('json', CreateLocationSchema), async (c) => {
 });
 
 // GET /inventory/suppliers — List suppliers
-router.get('/suppliers', async (c) => {
-    const auth = c.get('auth');
-    const storeId = c.req.query('store_id');
-    const db = getSupabaseAdmin(c);
-    const customUser = await resolveCustomUser(db, auth.user);
-
-    if (!customUser) {
-        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+router.get('/suppliers',validate('query',WarehouseOptionListQuerySchema),async c=>{
+    c.header('Cache-Control','private, no-store');
+    const query=WarehouseOptionListQuerySchema.parse(c.get('validatedQuery'));
+    const db=getSupabaseAdmin(c),auth=c.get('auth'),actor=await resolveCustomUser(db,auth.user);
+    if(!actor||!await verifySiteOwnership(db,query.store_id,actor.id,auth.user.storeId))
+        return c.json(failureBody('FORBIDDEN','Your access to this store changed.'),403);
+    const buildRead=(head=false)=>{
+        let read=db.from('suppliers').select('*',{count:'exact',head}).eq('site_id',query.store_id).is('deleted_at',null);
+        if(query.status!=='all')read=read.eq('status',query.status);
+        if(query.search)read=read.ilike('name','%'+query.search.replace(/[\\%_]/g,'\\$&')+'%');
+        return read;
+    };
+    const offset=(query.page-1)*query.limit,ascending=query.sort==='name_asc';
+    let {data,error,count}=await buildRead().order('name',{ascending}).order('id',{ascending}).range(offset,offset+query.limit-1);
+    if(offset>0&&(error?.code==='PGRST103'||(!error&&Array.isArray(data)&&data.length===0&&count===null))){
+        const recovered=await buildRead(true);
+        if(recovered.error||recovered.count===null)return c.json(failureBody('WAREHOUSE_OPTIONS_UNVERIFIED','These warehouse choices could not be confirmed.'),503);
+        data=[];count=recovered.count;error=null;
     }
-
-    const ownedStoreIds = storeId
-        ? [storeId]
-        : await listOwnedStoreIds(db, customUser.id, auth.user.storeId);
-
-    if (storeId && !(await verifySiteOwnership(db, storeId, customUser.id, auth.user.storeId))) {
-        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
-    }
-
-    if (ownedStoreIds.length === 0) return c.json(success([]));
-
-    const { data, error } = await db
-        .from('suppliers')
-        .select('*')
-        .in('site_id', ownedStoreIds)
-        .is('deleted_at', null)
-        .order('name', { ascending: true });
-
-    if (isMissingTableError(error, 'suppliers')) return c.json(success([]));
-    if (error) return c.json(dbFailureBody(), 500);
-
-    return c.json(success(data || []));
+    if(error)return c.json(dbFailureBody(),500);
+    if(!Array.isArray(data)||count===null)return c.json(failureBody('WAREHOUSE_OPTIONS_UNVERIFIED','These warehouse choices could not be confirmed.'),503);
+    const body=scopedInventoryPage(data,count,query.page,query.limit,query.store_id);
+    const parsed=WarehouseSupplierPageSchema.safeParse({...body,meta:{...body.meta,total_is_exact:true}});
+    if(!parsed.success)return c.json(failureBody('WAREHOUSE_OPTIONS_UNVERIFIED','These warehouse choices could not be confirmed.'),503);
+    return c.json(parsed.data);
 });
 
 // POST /inventory/suppliers — Create supplier
