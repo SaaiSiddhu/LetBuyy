@@ -1,6 +1,9 @@
 // Native mirror of the canonical warehouse request/acknowledgement protocol.
 import 'inventory_contracts.dart';
 
+const warehouseCommandProtocolHeader = 'X-LetBuyy-Warehouse-Protocol';
+const warehouseCommandProtocolVersion = '1';
+
 const warehouseCommandOperations = [
   'purchase_order.create',
   'purchase_order.receive',

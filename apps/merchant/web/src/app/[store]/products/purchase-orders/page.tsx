@@ -2,6 +2,9 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
+import {useMerchantSecurityContext} from '@/components/security/MerchantSecurityContext'
+import {useWarehouseCommands,WarehouseRequestStoppedError,WarehouseCommandValidationError,type WarehouseSubmit} from '@/lib/inventory/use-warehouse-commands'
+import {WarehouseCommandRecovery} from '@/components/products/WarehouseCommandRecovery'
 import { useReadRequest } from '@/lib/api/use-read-request'
 import { useProductPicker } from '@/lib/api/use-product-picker'
 import { useInventoryLocations } from '@/lib/api/use-inventory-locations'
@@ -68,10 +71,6 @@ function poStatusLabel(status: PurchaseOrder['status']): string {
     }
 }
 
-function generateIdempotencyKey(): string {
-    return `po-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`
-}
-
 // ── CreatePOModal ─────────────────────────────────────────────────────────────
 
 interface CreateLineRow {
@@ -83,8 +82,9 @@ interface CreateLineRow {
 }
 
 interface CreatePOModalProps {
+    submitCommand:WarehouseSubmit
+    blocked:boolean
     open: boolean
-    store: string
     suppliers: Supplier[]
     locations: InventoryLocation[]
     products: PurchaseOrderProductItem[]
@@ -96,7 +96,7 @@ interface CreatePOModalProps {
     onCreated: () => void
 }
 
-function CreatePOModal({ open, store, suppliers, locations, products, hasMoreProducts, loadingProducts, loadMoreProducts, productLoadError, onClose, onCreated }: CreatePOModalProps) {
+function CreatePOModal({ submitCommand, blocked, open, suppliers, locations, products, hasMoreProducts, loadingProducts, loadMoreProducts, productLoadError, onClose, onCreated }: CreatePOModalProps) {
     const { notify } = useToast()
     const [supplierId, setSupplierId] = useState('')
     const [locationId, setLocationId] = useState('')
@@ -176,29 +176,14 @@ function CreatePOModal({ open, store, suppliers, locations, products, hasMorePro
 
         setSubmitting(true)
         try {
-            const res = await fetch(`/api/stores/${encodeURIComponent(store)}/purchase-orders`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    supplier_id: supplierId || null,
-                    location_id: locationId,
-                    expected_at: expectedAt || undefined,
-                    notes: notes || undefined,
-                    lines: payload,
-                    idempotency_key: generateIdempotencyKey(),
-                }),
-            })
-            if (!res.ok) {
-                const body = await res.json().catch(() => ({})) as { error?: unknown }
-                const msg = typeof body.error === 'string' ? body.error : 'Failed to create purchase order'
-                setError(msg)
-                return
-            }
+            await submitCommand('purchase_order.create',null,{supplier_id:supplierId||null,location_id:locationId,expected_at:expectedAt||undefined,notes:notes||undefined,lines:payload})
             notify({ title: 'Purchase order created', variant: 'success' })
             onCreated()
             onClose()
-        } catch {
-            setError('Network error — please try again.')
+        } catch (error) {
+            setError(error instanceof WarehouseCommandValidationError ? error.message : error instanceof WarehouseRequestStoppedError
+                ? 'The original request was stopped before it applied. Close this form to start a new request.'
+                : 'The outcome could not be confirmed. Close this form and use Retry original or Stop original in the workspace.')
         } finally {
             setSubmitting(false)
         }
@@ -219,7 +204,7 @@ function CreatePOModal({ open, store, suppliers, locations, products, hasMorePro
                     <Button variant="secondary" onClick={onClose} disabled={submitting}>
                         Cancel
                     </Button>
-                    <Button onClick={handleSubmit} disabled={submitting}>
+                    <Button onClick={handleSubmit} disabled={submitting || blocked}>
                         {submitting ? <Spinner size="sm" /> : null}
                         {submitting ? 'Creating…' : 'Create purchase order'}
                     </Button>
@@ -360,14 +345,15 @@ function CreatePOModal({ open, store, suppliers, locations, products, hasMorePro
 // ── ReceivePOModal ────────────────────────────────────────────────────────────
 
 interface ReceivePOModalProps {
+    submitCommand:WarehouseSubmit
+    blocked:boolean
     open: boolean
-    store: string
     po: PurchaseOrder | null
     onClose: () => void
     onReceived: () => void
 }
 
-function ReceivePOModal({ open, store, po, onClose, onReceived }: ReceivePOModalProps) {
+function ReceivePOModal({ submitCommand, blocked, open, po, onClose, onReceived }: ReceivePOModalProps) {
     const { notify } = useToast()
     const [lineQtys, setLineQtys] = useState<Record<string, number>>({})
     const [submitting, setSubmitting] = useState(false)
@@ -409,28 +395,14 @@ function ReceivePOModal({ open, store, po, onClose, onReceived }: ReceivePOModal
 
         setSubmitting(true)
         try {
-            const res = await fetch(
-                `/api/stores/${encodeURIComponent(store)}/purchase-orders/${encodeURIComponent(po.id)}/receive`,
-                {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        lines: receiveLines,
-                        idempotency_key: generateIdempotencyKey(),
-                    }),
-                },
-            )
-            if (!res.ok) {
-                const body = await res.json().catch(() => ({})) as { error?: unknown }
-                const msg = typeof body.error === 'string' ? body.error : 'Failed to receive stock'
-                setError(msg)
-                return
-            }
+            await submitCommand('purchase_order.receive',po.id,{lines:receiveLines})
             notify({ title: 'Stock received into inventory', variant: 'success' })
             onReceived()
             onClose()
-        } catch {
-            setError('Network error — please try again.')
+        } catch (error) {
+            setError(error instanceof WarehouseCommandValidationError ? error.message : error instanceof WarehouseRequestStoppedError
+                ? 'The original request was stopped before it applied. Close this form to start a new request.'
+                : 'The outcome could not be confirmed. Close this form and use Retry original or Stop original in the workspace.')
         } finally {
             setSubmitting(false)
         }
@@ -447,7 +419,7 @@ function ReceivePOModal({ open, store, po, onClose, onReceived }: ReceivePOModal
                     <Button variant="secondary" onClick={onClose} disabled={submitting}>
                         Cancel
                     </Button>
-                    <Button onClick={handleReceive} disabled={submitting}>
+                    <Button onClick={handleReceive} disabled={submitting || blocked}>
                         {submitting ? <Spinner size="sm" /> : null}
                         {submitting ? 'Receiving…' : 'Mark as received'}
                     </Button>
@@ -507,7 +479,12 @@ function ReceivePOModal({ open, store, po, onClose, onReceived }: ReceivePOModal
 // ── Main page ─────────────────────────────────────────────────────────────────
 
 export default function PurchaseOrdersPage() {
-    const { store } = useParams<{ store: string }>()
+    const {store}=useParams<{store:string}>()
+    const {actorId,siteId}=useMerchantSecurityContext(store)
+    return <WarehouseWorkspace key={`${actorId}:${siteId??'unavailable'}:${store}`} store={store} />
+}
+function WarehouseWorkspace({store}:{store:string}) {
+    const commands=useWarehouseCommands(store)
     const { notify } = useToast()
 
     const [pos, setPos] = useState<PurchaseOrder[]>([])
@@ -520,6 +497,7 @@ export default function PurchaseOrdersPage() {
     const beginCreateRead = useReadRequest(store)
     const [loading, setLoading] = useState(true)
     const [loadError, setLoadError] = useState<string | null>(null)
+    const [formError,setFormError]=useState<string|null>(null)
 
     const [showCreate, setShowCreate] = useState(false)
     const [receivingPo, setReceivingPo] = useState<PurchaseOrder | null>(null)
@@ -529,6 +507,7 @@ export default function PurchaseOrdersPage() {
         const request = beginRead()
         setLoading(true)
         setLoadError(null)
+        setPos([])
         try {
             const poRes = await fetch(`/api/stores/${encodeURIComponent(store)}/purchase-orders`, { cache: 'no-store', signal: request.signal })
             const poBody = await poRes.json() as { data?: PurchaseOrder[]; error?: unknown }
@@ -551,10 +530,11 @@ export default function PurchaseOrdersPage() {
     useEffect(() => { void loadAll() }, [loadAll])
 
     async function openCreate() {
+        if(commands.blocked)return
         if (resourcesLoading) return
         const request = beginCreateRead()
         setResourcesLoading(true)
-        setLoadError(null)
+        setFormError(null)
         try {
             const [productsReady, response] = await Promise.all([
                 productPicker.load(),
@@ -566,13 +546,14 @@ export default function PurchaseOrdersPage() {
             setSuppliers(payload.data)
             setShowCreate(true)
         } catch {
-            if (request.isCurrent()) setLoadError('The purchase order form could not be loaded. Try opening it again.')
+            if (request.isCurrent()) setFormError('The purchase order form could not be loaded. Try opening it again.')
         } finally {
             if (request.isCurrent()) setResourcesLoading(false)
         }
     }
 
     function openReceive(po: PurchaseOrder) {
+        if(commands.blocked)return
         if (po.status === 'received' || po.status === 'cancelled' || po.status === 'closed') {
             notify({ title: `Cannot receive a ${po.status} order`, variant: 'critical' })
             return
@@ -593,7 +574,7 @@ export default function PurchaseOrdersPage() {
                     label: resourcesLoading ? 'Loading purchase order form…' : 'Create purchase order',
                     icon: <MaterialIcon name="add" />,
                     onClick: () => void openCreate(),
-                    disabled: loading || resourcesLoading || locationRead.loading || locationRead.error || locations.length === 0,
+                    disabled: commands.blocked || loading || resourcesLoading || locationRead.loading || locationRead.error || locations.length === 0,
                 }}
             />
 
@@ -602,6 +583,7 @@ export default function PurchaseOrdersPage() {
                     {loadError}
                 </Banner>
             )}
+            {formError&&<Banner variant="critical" title="Purchase order form unavailable">{formError}</Banner>}
 
             {locations.length === 0 && !locationRead.loading && !locationRead.error && !loadError && (
                 <Banner variant="warning" title="No inventory locations">
@@ -610,6 +592,8 @@ export default function PurchaseOrdersPage() {
             )}
 
             {locationRead.error && <Banner variant="warning" title="Inventory locations could not be loaded" action={<Button variant="secondary" onClick={() => { void locationRead.load() }}>Retry locations</Button>}>Existing records remain available. Reload locations before creating a new record.</Banner>}
+
+            <WarehouseCommandRecovery commands={commands} onResolved={()=>void loadAll()} />
 
             <Card>
                 <Section
@@ -622,7 +606,7 @@ export default function PurchaseOrdersPage() {
                                 <Skeleton key={i} className="h-[var(--lb-space-10)] w-full rounded-[var(--lb-radius-md)]" />
                             ))}
                         </div>
-                    ) : pos.length === 0 ? (
+                    ) : loadError ? <p>Purchase order records are unavailable. Reload the workspace to try again.</p> : pos.length === 0 ? (
                         <EmptyState
                             title="No purchase orders yet"
                             body="Create a purchase order to track supplier commitments, expected arrivals, and inventory receiving."
@@ -706,7 +690,7 @@ export default function PurchaseOrdersPage() {
                                                     variant="secondary"
                                                     size="sm"
                                                     onClick={() => openReceive(po)}
-                                                    disabled={po.status === 'received' || po.status === 'cancelled' || po.status === 'closed'}
+                                                    disabled={commands.blocked || po.status === 'received' || po.status === 'cancelled' || po.status === 'closed'}
                                                 >
                                                     <Truck
                                                         className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]"
@@ -725,8 +709,9 @@ export default function PurchaseOrdersPage() {
             </Card>
 
             <CreatePOModal
+                submitCommand={commands.submit}
+                blocked={commands.blocked}
                 open={showCreate}
-                store={store}
                 suppliers={suppliers}
                 locations={locations}
                 products={productPicker.items}
@@ -739,8 +724,9 @@ export default function PurchaseOrdersPage() {
             />
 
             <ReceivePOModal
+                submitCommand={commands.submit}
+                blocked={commands.blocked}
                 open={receivingPo !== null}
-                store={store}
                 po={receivingPo}
                 onClose={() => setReceivingPo(null)}
                 onReceived={() => void loadAll()}

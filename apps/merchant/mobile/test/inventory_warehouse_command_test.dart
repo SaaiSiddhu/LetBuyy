@@ -207,6 +207,12 @@ void main() {
       expect(h.bodies[0], h.bodies[1]);
       expect(
         h.requests.every(
+          (r) => r.headers['X-LetBuyy-Warehouse-Protocol'] == '1',
+        ),
+        isTrue,
+      );
+      expect(
+        h.requests.every(
           (r) => r.headers['X-Idempotency-Key'] == 'original-po-create',
         ),
         isTrue,

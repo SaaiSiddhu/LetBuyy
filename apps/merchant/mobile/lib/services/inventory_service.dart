@@ -714,7 +714,11 @@ class InventoryService extends ChangeNotifier {
   }) async {
     _checkCommand(c);
     final intent = WarehouseCommandIntent.fromJson(pending.intent);
-    final options = _options(c.version, c.storeId, key: pending.key);
+    final options = _options(c.version, c.storeId, key: pending.key).copyWith(
+      headers: {
+        warehouseCommandProtocolHeader: warehouseCommandProtocolVersion,
+      },
+    );
     final body = <String, dynamic>{
       ...intent.command,
       'idempotency_key': pending.key,

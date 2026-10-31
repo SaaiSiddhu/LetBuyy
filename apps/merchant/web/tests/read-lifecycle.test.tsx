@@ -329,14 +329,17 @@ test('operations panels settle independently and page only the requested identit
 type ContentPage = keyof typeof readPages
 type Transport = (url: string, init?: RequestInit) => Promise<Response>
 
-async function mount(kind: ContentPage | 'orders' | 'customers' | 'analytics' | 'search' | 'notifications' | 'purchasing' | 'transfers' | 'assistant' | 'themeLibrary' | 'previewUpdate' | 'loyalty' | 'checkoutDomain' | 'connectDomain', transport: Transport) {
+async function mount(kind: ContentPage | 'orders' | 'customers' | 'analytics' | 'search' | 'notifications' | 'purchasing' | 'transfers' | 'assistant' | 'themeLibrary' | 'previewUpdate' | 'loyalty' | 'checkoutDomain' | 'connectDomain', transport: Transport,configureStorage?:(storage:Storage)=>void) {
     const dom = new JSDOM('<!doctype html><div id="root"></div>', { url: 'http://localhost/alpha/orders' })
+    const warehouse=kind==='purchasing'||kind==='transfers';
+    if(warehouse)Object.defineProperty(dom.window.navigator,'locks',{value:{request:async(_name:string,callback:()=>unknown)=>callback()}});
     const domGlobals = ['window', 'document', 'navigator', 'self', 'localStorage', 'MutationObserver', 'HTMLElement', 'Element']
     const previous = Object.fromEntries([...domGlobals, 'fetch'].map(name => [name, Object.getOwnPropertyDescriptor(globalThis, name)]))
     for (const name of domGlobals) Object.defineProperty(globalThis, name, {
         configurable: true, writable: true, value: name === 'window' || name === 'self' ? dom.window : dom.window[name],
     })
     globalThis.fetch = ((input: RequestInfo | URL, init?: RequestInit) => transport(String(input), init)) as typeof fetch
+    configureStorage?.(dom.window.localStorage);
     const { createRoot } = await import('react-dom/client')
     const { AppRouterContext } = await import('next/dist/shared/lib/app-router-context.shared-runtime.js')
     const { PathParamsContext } = await import('next/dist/shared/lib/hooks-client-context.shared-runtime.js')
@@ -359,10 +362,10 @@ async function mount(kind: ContentPage | 'orders' | 'customers' | 'analytics' | 
     let completions = 0
     const root = createRoot(dom.window.document.getElementById('root')!)
     const router = { back() {}, forward() {}, refresh() {}, hmrRefresh() {}, push() {}, replace() {}, prefetch() {} }
-    const render = async (store = 'alpha', actorId = 'actor-a') => {
+    const render = async (store = 'alpha', actorId = warehouse?'11111111-1111-4111-8111-111111111111':'actor-a') => {
         await act(async () => root.render(
             <AppRouterContext.Provider value={router}><PathParamsContext.Provider value={{ store }}>
-                <ToastProvider duration={0}><MerchantSecurityContext.Provider value={{ actorId, store }}>
+                <ToastProvider duration={0}><MerchantSecurityContext.Provider value={{ actorId, store,siteId:warehouse?(store==='alpha'?historySite:'22222222-2222-4222-8222-222222222222'):undefined }}>
                     <Component initialDomain="shop.example.invalid" onConnected={() => completions++} actorId={actorId} currentVersionId="current-version" availableVersionId="next-version" themeSlug="synthetic-theme" storeId={kind === 'previewUpdate' ? store : kind === 'themeLibrary' ? null : 'site-a'} store={store} storeName="Synthetic Store" siteType="store" onClose={() => {}} storeData={{ id: 'site-a', name: 'Synthetic Store', store_name: 'Synthetic Store', subdomain: store, site_type: 'store', status: 'draft', trial_ends_at: null, trial_status: null, theme_id: 'modern', theme_settings: null, custom_domain: null }} />
                 </MerchantSecurityContext.Provider></ToastProvider>
             </PathParamsContext.Provider></AppRouterContext.Provider>,
@@ -371,6 +374,8 @@ async function mount(kind: ContentPage | 'orders' | 'customers' | 'analytics' | 
     await render()
     return {
         render,
+        async remount(){await act(async()=>root.render(null));await render();},
+        storage:dom.window.localStorage,
         completions: () => completions,
         text: () => dom.window.document.body.textContent || '',
         controls: () => [...dom.window.document.querySelectorAll('input,textarea,select,[role="switch"]')].map((node: Element) => ({ value: (node as HTMLInputElement).value, checked: (node as HTMLInputElement).checked, ariaChecked: node.getAttribute('aria-checked') })),
@@ -476,6 +481,125 @@ test('notification results from a retired store cannot replace the current store
         assert.match(h.text(), /All caught up/)
     } finally { await h.close() }
 })
+
+const warehouseTarget='33333333-3333-4333-8333-333333333333',warehouseLine='77777777-7777-4777-8777-777777777777';
+function warehouseRow(po=false) {
+    return {id:warehouseTarget,site_id:historySite,po_number:'PO-SYN',transfer_number:'TR-SYN',status:po?'partially_received':'reserved',
+        source_location_id:'location-a',destination_location_id:'location-b',location_id:'location-a',notes:null,expected_at:null,
+        created_at:'2026-10-31T00:00:00Z',total:1.16,
+        lines:[{id:warehouseLine,site_id:historySite,purchase_order_id:warehouseTarget,transfer_id:warehouseTarget,
+            product_id:historyRecord().product_id,variant_id:null,quantity_ordered:4,quantity_requested:4,
+            quantity_shipped:0,quantity_received:po?2:0,unit_cost:0.29}]};
+}
+function warehouseAck(key:string,po=false,cancelled=false) {
+    const command:Record<string,unknown>=po?{lines:[{purchase_order_line_id:warehouseLine,quantity:2}]}:{};
+    return {command_receipt:{id:'88888888-8888-4888-8888-888888888888',key,site_id:historySite,
+        actor_id:historySite,operation:po?'purchase_order.receive':'transfer.ship',target_id:warehouseTarget,
+        command,effective_lines:!cancelled&&po?command.lines:null,outcome:cancelled?'cancelled':'applied'},
+        ...(!cancelled?{[po?'purchase_order':'transfer']:{id:warehouseTarget,site_id:historySite,status:po?'received':'shipped'}}:{}),
+        lines:cancelled?[]:[{...warehouseRow(po).lines[0],quantity_shipped:po?0:4,quantity_received:po?4:0}]};
+}
+for(const kind of ['purchasing','transfers'] as const) {
+    test(`${kind} lost committed reply survives remount and retries its original request even when the list fails`,async()=>{
+        const po=kind==='purchasing',writes:Array<{body:Record<string,unknown>;key:string}>=[];
+        let receipt:ReturnType<typeof warehouseAck>|undefined,effects=0,failed=false;
+        const h=await mount(kind,async(url,init)=>{
+            if(init?.method==='POST') {
+                const body=JSON.parse(String(init.body)) as Record<string,unknown>,headers=new Headers(init.headers),key=headers.get('X-Idempotency-Key')!;
+                assert.equal(headers.get('X-LetBuyy-Merchant-Context'),historySite);assert.equal(key,body.idempotency_key);
+                writes.push({body,key});if(!receipt){effects++;receipt=warehouseAck(key,po);failed=true;throw new Error('Synthetic lost committed reply');}
+                return json(receipt);
+            }
+            if(url.includes('inventory-locations'))return json([{id:'location-a',name:'A'},{id:'location-b',name:'B'}]);
+            return failed?json(null,503):json([warehouseRow(po)]);
+        });
+        try {
+            await h.click(po?'Receive':'Ship');await h.click(po?'Mark as received':'Mark as shipped');
+            assert.equal(effects,1);assert.equal(h.storage.length,1);assert.doesNotMatch(h.text(),po?/Stock received into inventory/:/Transfer marked as shipped/);
+            await h.click('Cancel');await h.remount();assert.match(h.text(),/Warehouse request awaiting confirmation/);
+            assert.match(h.text(),/records are unavailable/);assert.doesNotMatch(h.text(),/No transfers yet|No purchase orders yet/);
+            await h.click('Retry original');assert.equal(effects,1);assert.deepEqual(writes[1],writes[0]);assert.equal(h.storage.length,0);
+            assert.match(h.text(),/Original warehouse request confirmed/);
+        }finally{await h.close();}
+    });
+}
+test('a lost stop reply retains its original key and retry recovers the authoritative cancellation',async()=>{
+    const writes:Array<{url:string;key:string}>=[];let cancelled:ReturnType<typeof warehouseAck>|undefined;
+    const h=await mount('transfers',async(url,init)=>{
+        if(init?.method==='POST') {
+            const key=new Headers(init.headers).get('X-Idempotency-Key')!;writes.push({url,key});
+            if(url.includes('/commands/stop')){if(!cancelled){cancelled=warehouseAck(key,false,true);throw new Error('Synthetic lost stop reply');}return json(cancelled);}
+            if(cancelled)return Response.json({error:{code:'WAREHOUSE_REQUEST_STOPPED'}},{status:409});
+            throw new Error('Synthetic failure before apply');
+        }
+        return json(url.includes('inventory-locations')?[{id:'location-a',name:'A'},{id:'location-b',name:'B'}]:[warehouseRow()]);
+    });
+    try {
+        await h.click('Ship');await h.click('Mark as shipped');await h.click('Cancel');
+        await h.click('Stop original');await h.click('Confirm stop');assert.equal(h.storage.length,1);assert.match(h.text(),/outcome is still unconfirmed/);
+        await h.click('Back');await h.click('Retry original');assert.equal(h.storage.length,0);
+        assert.match(h.text(),/Original warehouse request stopped before it applied/);
+        assert.equal(new Set(writes.map(x=>x.key)).size,1);assert.match(writes.at(-1)!.url,/\/api\/v1\/stores\/alpha\/inventory\/commands\/stop$/);
+    }finally{await h.close();}
+});
+for(const fault of ['actor','site','key','intent','target','state','quantity','missing-receipt']) {
+    test(`warehouse ${fault} acknowledgement cannot clear saved recovery`,async()=>{
+        let corrupt=true,effects=0,receipt:ReturnType<typeof warehouseAck>|undefined;
+        const h=await mount('transfers',async(url,init)=>{
+            if(init?.method==='POST') {
+                const key=new Headers(init.headers).get('X-Idempotency-Key')!;if(!receipt){receipt=warehouseAck(key);effects++;}
+                const ack=JSON.parse(JSON.stringify(receipt)) as Record<string,unknown>,r=ack.command_receipt as Record<string,unknown>;
+                if(corrupt)switch(fault) {
+                    case 'actor':r.actor_id=warehouseTarget;break;case 'site':r.site_id=warehouseTarget;break;
+                    case 'key':r.key='wrong-original-request-key';break;case 'intent':r.command={extra:'changed'};break;
+                    case 'target':r.target_id=historySite;break;case 'state':(ack.transfer as Record<string,unknown>).status='invented';break;
+                    case 'quantity':(ack.lines as Array<Record<string,unknown>>)[0].quantity_received=9;break;
+                    case 'missing-receipt':delete ack.command_receipt;break;
+                }
+                return json(ack);
+            }
+            return json(url.includes('inventory-locations')?[{id:'location-a',name:'A'},{id:'location-b',name:'B'}]:[warehouseRow()]);
+        });
+        try {
+            await h.click('Ship');await h.click('Mark as shipped');assert.equal(h.storage.length,1);assert.doesNotMatch(h.text(),/Transfer marked as shipped/);
+            await h.click('Cancel');corrupt=false;await h.click('Retry original');assert.equal(h.storage.length,0);assert.equal(effects,1);
+        }finally{await h.close();}
+    });
+}
+test('an open warehouse stop confirmation retires on store A-B-A without dispatch',async()=>{
+    let writes=0;
+    const h=await mount('transfers',async(url,init)=>{
+        if(init?.method==='POST'){writes++;throw new Error('Synthetic uncertain outcome');}
+        return json(url.includes('inventory-locations')?[{id:'location-a',name:'A'},{id:'location-b',name:'B'}]:[warehouseRow()]);
+    });
+    try {
+        await h.click('Ship');await h.click('Mark as shipped');await h.click('Cancel');await h.click('Stop original');
+        assert.match(h.text(),/Stop the original request\?/);await h.render('beta');await h.render('alpha');
+        assert.doesNotMatch(h.text(),/Stop the original request\?/);assert.match(h.text(),/Warehouse request awaiting confirmation/);assert.equal(writes,1);
+    }finally{await h.close();}
+});
+test('unreadable browser warehouse recovery disables new mutations and preserves the record',async()=>{
+    let writes=0;
+    const slot=`letbuyy.warehouse-command.v1:${historySite}:${historySite}`;
+    const h=await mount('transfers',async(url,init)=>{if(init?.method==='POST')writes++;
+        return json(url.includes('inventory-locations')?[{id:'location-a',name:'A'},{id:'location-b',name:'B'}]:[warehouseRow()]);
+    },storage=>storage.setItem(slot,'{corrupt'));
+    try {
+        assert.match(h.text(),/Warehouse actions unavailable/);await h.click('Ship');assert.doesNotMatch(h.text(),/Ship transfer —/);
+        await h.click('Check saved requests');assert.equal(h.storage.getItem(slot),'{corrupt');assert.equal(writes,0);
+    }finally{await h.close();}
+});
+test('fractional receiving input is a local validation error, with no dispatch or saved pending request',async()=>{
+    let writes=0;
+    const h=await mount('purchasing',async(url,init)=>{if(init?.method==='POST')writes++;
+        return json(url.includes('inventory-locations')?[{id:'location-a',name:'A'}]:[warehouseRow(true)]);
+    });
+    try {
+        await h.click('Receive');await h.setField('input','1.5');await h.click('Mark as received');
+        assert.match(h.text(),/Enter whole receiving quantities/);assert.equal(writes,0);assert.equal(h.storage.length,0);
+        assert.doesNotMatch(h.text(),/Warehouse request awaiting confirmation/);
+    }finally{await h.close();}
+});
 
 for (const kind of ['purchasing','transfers'] as const) {
     test(`${kind} uses canonical partial quantities and sends the explicit remaining receipt`,async()=>{

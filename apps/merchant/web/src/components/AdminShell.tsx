@@ -158,7 +158,7 @@ export default function MerchantControlPlaneShell({ store, storeData, user, user
 
     // Full-screen flows bypass the admin shell entirely
     if (isFullScreenFlow) {
-        return <NavigationLinkProvider linkComponent={MerchantNavigationLink}><ToastProvider><MerchantSecurityContext.Provider key={`${user.id}:${store}`} value={{ actorId: user.id, store }}>
+        return <NavigationLinkProvider linkComponent={MerchantNavigationLink}><ToastProvider><MerchantSecurityContext.Provider key={`${user.id}:${store}`} value={{ actorId: user.id, store, siteId:storeData.id }}>
                                     {children}
                                 </MerchantSecurityContext.Provider></ToastProvider></NavigationLinkProvider>
     }
@@ -278,7 +278,7 @@ export default function MerchantControlPlaneShell({ store, storeData, user, user
                                 </div>
                             )}
 
-                            <MerchantSecurityContext.Provider key={`${user.id}:${store}`} value={{ actorId: user.id, store }}>
+                            <MerchantSecurityContext.Provider key={`${user.id}:${store}`} value={{ actorId: user.id, store, siteId:storeData.id }}>
                                     {children}
                                 </MerchantSecurityContext.Provider>
                         </div>
@@ -299,7 +299,7 @@ export default function MerchantControlPlaneShell({ store, storeData, user, user
                                     </div>
                                 )}
 
-                                <MerchantSecurityContext.Provider key={`${user.id}:${store}`} value={{ actorId: user.id, store }}>
+                                <MerchantSecurityContext.Provider key={`${user.id}:${store}`} value={{ actorId: user.id, store, siteId:storeData.id }}>
                                     {children}
                                 </MerchantSecurityContext.Provider>
 

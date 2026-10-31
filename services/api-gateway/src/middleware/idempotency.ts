@@ -6,6 +6,7 @@ import { IdempotencyExecutionAdapter } from '../execution/idempotency-execution.
 import { getSupabaseAdmin } from '../lib/supabase';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { assertStaffPermission } from './staff-permission';
+import {isWarehouseCommandPath} from '@letbuyy/shared-types';
 
 type JsonValue = null | boolean | number | string | JsonValue[] | { [key: string]: JsonValue };
 type GatewayContext = Context<{ Bindings: Env }>;
@@ -201,9 +202,7 @@ export const protectedMutationIdempotency = createMiddleware<{ Bindings: Env }>(
     // Product PATCH owns an atomic actor/payload/version-bound receipt after live access checks.
     const routeOwnedInventoryAdjustment = method === 'POST' && orderPath === '/inventory/adjust';
     // These warehouse commands and their stop protocol own immutable receipts in one transaction.
-    const routeOwnedWarehouseCommand = method === 'POST' && (orderPath === '/inventory/commands/stop' || /^\/inventory\/(?:purchase-orders|transfers)$/.test(orderPath)
-        || /^\/inventory\/purchase-orders\/[^/]+\/receive$/.test(orderPath)
-        || /^\/inventory\/transfers\/[^/]+\/(?:ship|receive)$/.test(orderPath));
+    const routeOwnedWarehouseCommand = method === 'POST' && isWarehouseCommandPath(orderPath);
     // Membership commands own live-owner/version/payload-bound SQL receipts.
     const routeOwnedCollectionMembership = method === 'PUT' && /^\/products\/collections\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/products$/i.test(orderPath);
     // Product PATCH owns an atomic actor/payload/version-bound receipt after live access checks.

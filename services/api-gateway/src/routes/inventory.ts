@@ -4,7 +4,8 @@ import { resolveMerchantResourceStoreIds } from '../lib/tenant-context';
 // ============================================================
 
 import { Hono } from 'hono';
-import { InventoryReservationSchema, InventoryReceiptSchema, WarehousePurchaseOrderSchema, WarehouseTransferSchema } from '@letbuyy/shared-types';
+import { InventoryReservationSchema, InventoryReceiptSchema, WarehousePurchaseOrderSchema, WarehouseTransferSchema,
+ WAREHOUSE_COMMAND_PROTOCOL_HEADER,WAREHOUSE_COMMAND_PROTOCOL_VERSION,isWarehouseCommandPath } from '@letbuyy/shared-types';
 import type { Env } from '../index';
 import { executeInventoryAdjustment } from '../execution/inventory-adjustment.adapter';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
@@ -25,6 +26,7 @@ import {
     ReserveInventorySchema,
     ShipTransferSchema,
     StopWarehouseCommandSchema,
+    prepareWarehouseCommand,
     type StopWarehouseCommandInput,
     mapInventoryAdjustmentReason,
     mapInventoryLevelRecord,
@@ -52,6 +54,11 @@ import {
 } from '@letbuyy/commerce-core';
 
 const router = new Hono<{ Bindings: Env }>();
+router.use('*',async(c,next)=>{
+ if(c.req.method==='POST'&&isWarehouseCommandPath(c.req.path)&&c.req.header(WAREHOUSE_COMMAND_PROTOCOL_HEADER)!==WAREHOUSE_COMMAND_PROTOCOL_VERSION)
+  return c.json(failureBody('WAREHOUSE_CLIENT_UPGRADE_REQUIRED','Update the Merchant app before changing warehouse stock.'),426);
+ await next();
+});
 function scopedInventoryPage<T>(rows: T[], total: number, page: number, limit: number, storeId?: string) {
     const body = paginated(rows, total, page, limit);
     return { ...body, meta: { ...body.meta, store_id: storeId ?? null } };
@@ -449,11 +456,7 @@ router.post('/purchase-orders', validate('json', CreatePurchaseOrderSchema), asy
     if (staffBlock) return staffBlock;
 
     const data = await executeWarehouseCommand(c.env, body.store_id, customUser.id, body.idempotency_key,
-        'purchase_order.create', null, {
-            supplier_id: body.supplier_id ?? null, location_id: body.location_id,
-            expected_at: body.expected_at?.toISOString() ?? null, notes: body.notes ?? null,
-            lines: body.lines.map(line => ({ ...line, variant_id: line.variant_id ?? null })),
-        }, requestId(c));
+        'purchase_order.create', null, prepareWarehouseCommand('purchase_order.create',null,body).command, requestId(c));
     return c.json(success(data), 201);
 });
 
@@ -474,7 +477,7 @@ router.post('/purchase-orders/:id/receive', validate('json', ReceivePurchaseOrde
     if (staffBlock) return staffBlock;
 
     const data = await executeWarehouseCommand(c.env, siteId, customUser.id, body.idempotency_key,
-        'purchase_order.receive', purchaseOrderId, { lines: body.lines ?? null }, requestId(c));
+        'purchase_order.receive', purchaseOrderId, prepareWarehouseCommand('purchase_order.receive',purchaseOrderId,body).command, requestId(c));
     return c.json(success(data));
 });
 
@@ -523,11 +526,7 @@ router.post('/transfers', validate('json', CreateTransferSchema), async (c) => {
     if (staffBlock) return staffBlock;
 
     const data = await executeWarehouseCommand(c.env, body.store_id, customUser.id, body.idempotency_key,
-        'transfer.create', null, {
-            source_location_id: body.source_location_id, destination_location_id: body.destination_location_id,
-            notes: body.notes ?? null,
-            lines: body.lines.map(line => ({ ...line, variant_id: line.variant_id ?? null })),
-        }, requestId(c));
+        'transfer.create', null, prepareWarehouseCommand('transfer.create',null,body).command, requestId(c));
     return c.json(success(data), 201);
 });
 
@@ -547,7 +546,7 @@ router.post('/transfers/:id/ship', validate('json', ShipTransferSchema), async (
     if (staffBlock) return staffBlock;
 
     const data = await executeWarehouseCommand(c.env, siteId, customUser.id, body.idempotency_key,
-        'transfer.ship', transferId, {}, requestId(c));
+        'transfer.ship', transferId, prepareWarehouseCommand('transfer.ship',transferId,body).command, requestId(c));
     return c.json(success(data));
 });
 
@@ -567,7 +566,7 @@ router.post('/transfers/:id/receive', validate('json', ReceiveTransferSchema), a
     if (staffBlock) return staffBlock;
 
     const data = await executeWarehouseCommand(c.env, siteId, customUser.id, body.idempotency_key,
-        'transfer.receive', transferId, { lines: body.lines ?? null }, requestId(c));
+        'transfer.receive', transferId, prepareWarehouseCommand('transfer.receive',transferId,body).command, requestId(c));
     return c.json(success(data));
 });
 

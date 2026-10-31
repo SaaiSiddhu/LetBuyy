@@ -1,4 +1,6 @@
 import {WarehousePurchaseOrderSchema,WarehouseTransferSchema,type WarehousePurchaseOrder,type WarehousePurchaseOrderLine,type WarehouseTransfer,type WarehouseTransferLine} from '@letbuyy/shared-types';
+import {WarehouseCommandResultSchema,WAREHOUSE_COMMAND_PROTOCOL_HEADER,WAREHOUSE_COMMAND_PROTOCOL_VERSION,type WarehouseCommandOperation,type WarehouseCommandResult,type StopWarehouseCommandInput} from '@letbuyy/shared-types';
+export type {WarehouseCommandIntent,WarehouseCommandResult,StopWarehouseCommandInput} from '@letbuyy/shared-types';
 import type { ShippingCapabilities, ShippingProfile, CreateShippingProfileInput, UpdateShippingProfileInput } from '@letbuyy/shared-types';
 import {CollectionListQuerySchema,type CollectionListQueryInput} from '@letbuyy/shared-types';
 import { StorefrontDirectoryPayloadSchema, type StorefrontDirectoryPayload } from '@letbuyy/shared-types';
@@ -4935,6 +4937,8 @@ export class LetbuyyApiClient {
   };
 
   readonly inventory = {
+    stopCommand:(input:StopWarehouseCommandInput,options?:LetbuyyRequestOptions)=>
+      this.requestWarehouseAcknowledgement('/inventory/commands/stop',input,input.operation,input.target_id,{...options,storeId:input.store_id}),
     levels: (query?: InventoryLevelQuery, options?: LetbuyyRequestOptions) =>
       this.requestPaginated<InventoryLevel>('/inventory/levels', { ...options, query }),
     adjust: (input: InventoryAdjustInput, options?: LetbuyyRequestOptions) =>
@@ -4943,9 +4947,9 @@ export class LetbuyyApiClient {
       list: (query: PurchaseOrderListQuery, options?: LetbuyyRequestOptions) =>
         this.requestWarehouseDocuments('/inventory/purchase-orders',query,WarehousePurchaseOrderSchema,options),
       create: (input: CreatePurchaseOrderInput, options?: LetbuyyRequestOptions) =>
-        this.requestData<JsonRecord>('/inventory/purchase-orders', { ...options, method: 'POST', body: input }),
+        this.requestWarehouseAcknowledgement('/inventory/purchase-orders',input,'purchase_order.create',null,{...options,storeId:input.store_id}),
       receive: (id: string, input: ReceivePurchaseOrderInput, options?: LetbuyyRequestOptions) =>
-        this.requestData<JsonRecord>(`/inventory/purchase-orders/${encodePathSegment(id)}/receive`, { ...options, method: 'POST', body: input }),
+        this.requestWarehouseAcknowledgement(`/inventory/purchase-orders/${encodePathSegment(id)}/receive`,input,'purchase_order.receive',id,options),
     },
     suppliers: {
       list: (query: { store_id: string }, options?: LetbuyyRequestOptions) =>
@@ -4986,11 +4990,11 @@ export class LetbuyyApiClient {
       list: (query: InventoryTransferListQuery, options?: LetbuyyRequestOptions) =>
         this.requestWarehouseDocuments('/inventory/transfers',query,WarehouseTransferSchema,options),
       create: (input: CreateInventoryTransferInput, options?: LetbuyyRequestOptions) =>
-        this.requestData<JsonRecord>('/inventory/transfers', { ...options, method: 'POST', body: input }),
+        this.requestWarehouseAcknowledgement('/inventory/transfers',input,'transfer.create',null,{...options,storeId:input.store_id}),
       ship: (id: string, input: ShipInventoryTransferInput, options?: LetbuyyRequestOptions) =>
-        this.requestData<JsonRecord>(`/inventory/transfers/${encodePathSegment(id)}/ship`, { ...options, method: 'POST', body: input }),
+        this.requestWarehouseAcknowledgement(`/inventory/transfers/${encodePathSegment(id)}/ship`,input,'transfer.ship',id,{...options,storeId:input.store_id}),
       receive: (id: string, input: ReceiveInventoryTransferInput, options?: LetbuyyRequestOptions) =>
-        this.requestData<JsonRecord>(`/inventory/transfers/${encodePathSegment(id)}/receive`, { ...options, method: 'POST', body: input }),
+        this.requestWarehouseAcknowledgement(`/inventory/transfers/${encodePathSegment(id)}/receive`,input,'transfer.receive',id,{...options,storeId:input.store_id}),
     },
     reservations: {
       list: (query: InventoryReservationListQuery, options?: LetbuyyRequestOptions) =>
@@ -5703,6 +5707,21 @@ export class LetbuyyApiClient {
       if (query.page!==undefined || !meta.has_next) return rows;
     }
     throw new LetbuyyApiError({status:409,code:'SETTINGS_LIMIT_REACHED',message:'This settings collection needs a paginated view.'});
+  }
+
+  private async requestWarehouseAcknowledgement(path:string,input:{idempotency_key:string},operation:WarehouseCommandOperation,
+    target:string|null,options?:LetbuyyRequestOptions):Promise<WarehouseCommandResult> {
+    const store=options?.storeId??this.defaultStoreId;
+    if(!store)throw new LetbuyyApiError({status:400,code:'STORE_REQUIRED',message:'Select a store before changing warehouse stock.'});
+    if(options?.idempotencyKey&&options.idempotencyKey!==input.idempotency_key)
+      throw new LetbuyyApiError({status:400,code:'WAREHOUSE_KEY_CONFLICT',message:'Retry the original warehouse request key.'});
+    const headers=new Headers(options?.headers);headers.set(WAREHOUSE_COMMAND_PROTOCOL_HEADER,WAREHOUSE_COMMAND_PROTOCOL_VERSION);
+    const parsed=WarehouseCommandResultSchema.safeParse(await this.requestData<unknown>(path,
+      {...options,headers,storeId:store,idempotencyKey:input.idempotency_key,method:'POST',body:input}));
+    if(!parsed.success||parsed.data.command_receipt.site_id!==store||parsed.data.command_receipt.operation!==operation||
+      parsed.data.command_receipt.key!==input.idempotency_key||(target!==null&&parsed.data.command_receipt.target_id!==target))
+      throw new LetbuyyApiError({status:502,code:'WAREHOUSE_ACKNOWLEDGEMENT_UNVERIFIED',message:'The warehouse outcome could not be confirmed. Keep the original request for recovery.'});
+    return parsed.data;
   }
 
   private async requestWarehouseDocuments<T extends {site_id:string}>(path:string,query:StoreScopedQuery,

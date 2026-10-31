@@ -3,7 +3,7 @@
 import { createContext, useContext } from 'react'
 
 /** Captured server-rendered identity; a stale-form refusal, never authority. */
-export const MerchantSecurityContext = createContext<{ actorId: string; store: string } | null>(null)
+export const MerchantSecurityContext = createContext<{ actorId: string; store: string; siteId?:string } | null>(null)
 
 export function useMerchantSecurityContext(store: string) {
     const context = useContext(MerchantSecurityContext)

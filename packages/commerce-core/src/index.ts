@@ -488,6 +488,32 @@ export const StopWarehouseCommandSchema=StopWarehouseCommandInputSchema.superRef
 });
 export type {StopWarehouseCommandInput} from '@letbuyy/shared-types';
 
+/** One normalization owner for Gateway execution and durable client recovery. */
+export function prepareWarehouseCommand(operation:import('@letbuyy/shared-types').WarehouseCommandOperation,
+ targetId:string|null,input:unknown):import('@letbuyy/shared-types').WarehouseCommandIntent {
+ let command:Record<string,unknown>;
+ switch(operation) {
+  case 'purchase_order.create': {
+   const body=CreatePurchaseOrderSchema.parse(input);
+   command={supplier_id:body.supplier_id??null,location_id:body.location_id,
+    expected_at:body.expected_at?.toISOString()??null,notes:body.notes??null,
+    lines:body.lines.map(line=>({...line,variant_id:line.variant_id??null}))};break;
+  }
+  case 'transfer.create': {
+   const body=CreateTransferSchema.parse(input);
+   command={source_location_id:body.source_location_id,destination_location_id:body.destination_location_id,
+    notes:body.notes??null,lines:body.lines.map(line=>({...line,variant_id:line.variant_id??null}))};break;
+  }
+  case 'purchase_order.receive': command={lines:ReceivePurchaseOrderSchema.parse(input).lines??null};break;
+  case 'transfer.receive': command={lines:ReceiveTransferSchema.parse(input).lines??null};break;
+  case 'transfer.ship': ShipTransferSchema.parse(input);command={};break;
+  default:throw new Error('The warehouse operation could not be confirmed.');
+ }
+ const create=operation==='purchase_order.create'||operation==='transfer.create';
+ if(create!==(targetId===null)||(!create&&!UuidSchema.safeParse(targetId).success))throw new Error('The warehouse target could not be confirmed.');
+ return {operation,target_id:targetId,command};
+}
+
 export const ReserveInventorySchema = z.object({
   store_id: UuidSchema,
   product_id: UuidSchema,

@@ -7,6 +7,7 @@ import {Gateway,gatewayEnv,newIdentityKeys,signedIdentityHeaders,tapRest} from '
 import {requireOwnedDatabase,startOwnedPooledSqlProxy} from './owned-db-support';
 import {closePooledSqlClients} from '@letbuyy/infrastructure/pooled-sql-adapter';
 import {createLetbuyyApiClient,LetbuyyApiError} from '@letbuyy/api-client';
+import {prepareWarehouseCommand} from '@letbuyy/commerce-core';
 import {newSyntheticTenant,seedSyntheticTenant} from './synthetic-tenant';
 const owned=requireOwnedDatabase();
 let fixtureOrdinal=0;
@@ -22,7 +23,7 @@ async function fixture(t:{after(fn:()=>Promise<void>):void}) {
  const gateway=new Gateway(gatewayEnv(owned,await newIdentityKeys(),proxy.env()));
  t.after(async()=>{await gateway.settle();await closePooledSqlClients();await proxy.stop();});
  const requestAs=async(who:string,selected:string,path:string,body:unknown,key:string)=>gateway.request('/v1/inventory'+path,{
-  method:'POST',headers:{...await signedIdentityHeaders(who,`syn-wms-${who}@example.invalid`,selected),'Idempotency-Key':key},body:JSON.stringify(body),
+  method:'POST',headers:{...await signedIdentityHeaders(who,`syn-wms-${who}@example.invalid`,selected),'Idempotency-Key':key,'X-LetBuyy-Warehouse-Protocol':'1'},body:JSON.stringify(body),
  });
  const request=(path:string,body:unknown,key:string)=>requestAs(actor,site.siteId,path,body,key);
  const create=(key:string,quantity=3)=>({store_id:site.siteId,location_id:site.locationId,lines:[{product_id:product,quantity,unit_cost:12.25}],idempotency_key:key});
@@ -321,4 +322,67 @@ test('the real SDK reads canonical partial PO and transfer counters from committ
  await assert.rejects(()=>api.inventory.purchaseOrders.list({store_id:f.site.siteId}),e=>e instanceof LetbuyyApiError&&e.code==='WAREHOUSE_DOCUMENTS_UNVERIFIED');
  owned.psql("UPDATE purchase_orders SET supplier_id=NULL WHERE id="+quote(po)+";UPDATE inventory_transfer_lines SET site_id="+quote(b.site.siteId)+" WHERE id="+quote(transferLine)+";");
  await assert.rejects(()=>api.inventory.transfers.list({store_id:f.site.siteId}),e=>e instanceof LetbuyyApiError&&e.code==='WAREHOUSE_DOCUMENTS_UNVERIFIED');
+});
+
+test('the actual typed SDK composes all five warehouse effects, exact replay and changed-intent refusal',async t=>{
+ const f=await fixture(t);
+ const api=createLetbuyyApiClient({baseUrl:'https://owned-gateway.example.invalid/v1',storeId:randomUUID(),
+  getHeaders:()=>signedIdentityHeaders(f.actor,'syn-wms-'+f.actor+'@example.invalid'),fetch:async(input,init)=>{
+   const url=new URL(typeof input==='string'?input:input instanceof URL?input.href:input.url);
+   const response=await f.gateway.request(url.pathname+url.search,init);return new Response(response.text,{status:response.status,headers:response.headers});}});
+ const key=randomUUID(),body=f.create(key),created=await api.inventory.purchaseOrders.create(body);
+ assert.deepEqual(await api.inventory.purchaseOrders.create(body),created);assert.equal(created.command_receipt.actor_id,f.actor);
+ const po=created.command_receipt.target_id!,line=String(created.lines[0].id),receiveKey=randomUUID();
+ const received=await api.inventory.purchaseOrders.receive(po,{lines:[{purchase_order_line_id:line,quantity:1}],idempotency_key:receiveKey},{storeId:f.site.siteId});
+ assert.equal(received.purchase_order?.status,'partially_received');
+ assert.deepEqual(await api.inventory.purchaseOrders.receive(po,{lines:[{purchase_order_line_id:line,quantity:1}],idempotency_key:receiveKey},{storeId:f.site.siteId}),received);
+ await assert.rejects(()=>api.inventory.purchaseOrders.receive(po,{lines:[{purchase_order_line_id:line,quantity:2}],idempotency_key:receiveKey},{storeId:f.site.siteId}),e=>e instanceof LetbuyyApiError&&e.code==='WAREHOUSE_KEY_CONFLICT');
+ const transferKey=randomUUID(),transfer=await api.inventory.transfers.create({store_id:f.site.siteId,source_location_id:f.site.locationId,
+  destination_location_id:f.destination,lines:[{product_id:f.product,quantity:4}],idempotency_key:transferKey});
+ const target=transfer.command_receipt.target_id!,shipKey=randomUUID();
+ const shipped=await api.inventory.transfers.ship(target,{store_id:f.site.siteId,idempotency_key:shipKey});
+ assert.equal(shipped.transfer?.status,'shipped');assert.deepEqual(await api.inventory.transfers.ship(target,{store_id:f.site.siteId,idempotency_key:shipKey}),shipped);
+ const transferReceiveKey=randomUUID(),transferLine=String(transfer.lines[0].id),transferBody={store_id:f.site.siteId,lines:[{transfer_line_id:transferLine,quantity:2}],idempotency_key:transferReceiveKey};
+ const moved=await api.inventory.transfers.receive(target,transferBody);assert.equal(moved.transfer?.status,'partially_received');
+ assert.deepEqual(await api.inventory.transfers.receive(target,transferBody),moved);
+ assert.equal(owned.psql("SELECT quantity_received FROM purchase_order_lines WHERE id="+quote(line)+";"),'1');
+ assert.equal(owned.psql("SELECT quantity_received FROM inventory_transfer_lines WHERE id="+quote(transferLine)+";"),'2');
+ assert.equal(owned.psql("SELECT count(*)FROM warehouse_command_receipts WHERE site_id="+quote(f.site.siteId)+";"),'5');
+});
+
+test('typed SDK recovery distinguishes committed lost replies from a stopped unapplied create',async t=>{
+ const f=await fixture(t);let lose=true;
+ const api=createLetbuyyApiClient({baseUrl:'https://owned-gateway.example.invalid/v1',
+  getHeaders:()=>signedIdentityHeaders(f.actor,'syn-wms-'+f.actor+'@example.invalid'),fetch:async(input,init)=>{
+   const url=new URL(typeof input==='string'?input:input instanceof URL?input.href:input.url),response=await f.gateway.request(url.pathname+url.search,init);
+   if(lose&&url.pathname.endsWith('/purchase-orders')&&response.status===201){lose=false;throw new Error('SYN_LOST_COMMITTED_REPLY');}
+   return new Response(response.text,{status:response.status,headers:response.headers});}});
+ const key=randomUUID(),body=f.create(key);await assert.rejects(()=>api.inventory.purchaseOrders.create(body));
+ const recovered=await api.inventory.stopCommand({store_id:f.site.siteId,idempotency_key:key,...prepareWarehouseCommand('purchase_order.create',null,body)});
+ assert.equal(recovered.command_receipt.outcome,'applied');assert.equal(owned.psql("SELECT count(*)FROM purchase_orders WHERE site_id="+quote(f.site.siteId)+";"),'1');
+ const stopKey=randomUUID(),unapplied=f.create(stopKey),stop={store_id:f.site.siteId,idempotency_key:stopKey,...prepareWarehouseCommand('purchase_order.create',null,unapplied)};
+ const cancelled=await api.inventory.stopCommand(stop);assert.equal(cancelled.command_receipt.outcome,'cancelled');assert.equal(cancelled.command_receipt.target_id,null);
+ assert.deepEqual(await api.inventory.stopCommand(stop),cancelled);
+ await assert.rejects(()=>api.inventory.purchaseOrders.create(unapplied),e=>e instanceof LetbuyyApiError&&e.code==='WAREHOUSE_REQUEST_STOPPED');
+ assert.equal(owned.psql("SELECT count(*)FROM purchase_orders WHERE site_id="+quote(f.site.siteId)+";"),'1');
+ assert.equal(owned.psql("SELECT count(*)FROM warehouse_command_receipts WHERE site_id="+quote(f.site.siteId)+";"),'2');
+});
+
+test('downlevel warehouse clients are refused before effects or private receipt replay',async t=>{
+ const f=await fixture(t),key=randomUUID(),body=f.create(key),positive=await f.request('/purchase-orders',body,key);assert.equal(positive.status,201,positive.text);
+ const before=stock(f.site.siteId);
+ const paths=['/purchase-orders','/purchase-orders/'+positive.json?.data.purchase_order.id+'/receive','/transfers',
+  '/transfers/'+randomUUID()+'/ship','/transfers/'+randomUUID()+'/receive','/commands/stop'];
+ for(const version of [null,'0','2'])for(const path of paths) {
+  const headers={...await signedIdentityHeaders(f.actor,'syn-wms-'+f.actor+'@example.invalid',f.site.siteId),
+   'Idempotency-Key':key,...(version===null?{}:{'X-LetBuyy-Warehouse-Protocol':version})};
+  const result=await f.gateway.request('/v1/inventory'+path,{
+   method:'POST',headers,body:JSON.stringify(path==='/commands/stop'?stopCreate(f,key):body)});
+  assert.equal(result.status,426,result.text);assert.equal(result.json?.error.code,'WAREHOUSE_CLIENT_UPGRADE_REQUIRED');
+  assert.equal(result.json?.data,undefined);assert.deepEqual(stock(f.site.siteId),before);
+ }
+ const read=await f.gateway.request('/v1/inventory/purchase-orders?store_id='+f.site.siteId,{
+  headers:await signedIdentityHeaders(f.actor,'syn-wms-'+f.actor+'@example.invalid',f.site.siteId)});
+ assert.equal(read.status,200,read.text);assert.equal(read.json?.data.length,1);
+ assert.equal(owned.psql("SELECT count(*)FROM warehouse_command_receipts WHERE site_id="+quote(f.site.siteId)+";"),'1');
 });

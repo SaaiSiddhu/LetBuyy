@@ -1,5 +1,13 @@
 import { z } from 'zod';
 
+export const WAREHOUSE_COMMAND_PROTOCOL_HEADER='X-LetBuyy-Warehouse-Protocol';
+export const WAREHOUSE_COMMAND_PROTOCOL_VERSION='1';
+export function isWarehouseCommandPath(path:string):boolean {
+ const value=path.startsWith('/v1/')?path.slice(3):path;
+ return value==='/inventory/commands/stop'||/^\/inventory\/(?:purchase-orders|transfers)$/.test(value)||
+  /^\/inventory\/purchase-orders\/[^/]+\/receive$/.test(value)||/^\/inventory\/transfers\/[^/]+\/(?:ship|receive)$/.test(value);
+}
+
 export const WarehouseCommandOperationSchema = z.enum([
   'purchase_order.create', 'purchase_order.receive', 'transfer.create', 'transfer.ship', 'transfer.receive',
 ]);
@@ -13,6 +21,7 @@ export const WarehouseCommandReceiptSchema = z.object({
   effective_lines: z.array(z.record(z.string(), z.unknown())).max(200).nullable(),
 }).strict();
 export type WarehouseCommandReceipt = z.infer<typeof WarehouseCommandReceiptSchema>;
+export type WarehouseCommandIntent = Pick<WarehouseCommandReceipt,'operation'|'target_id'|'command'>;
 
 /** Acknowledgement snapshots, not a replacement purchase-order or transfer model. */
 export const WarehouseCommandResultSchema = z.object({

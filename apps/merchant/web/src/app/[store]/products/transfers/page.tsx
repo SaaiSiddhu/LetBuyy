@@ -2,6 +2,9 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
+import {useMerchantSecurityContext} from '@/components/security/MerchantSecurityContext'
+import {useWarehouseCommands,WarehouseRequestStoppedError,WarehouseCommandValidationError,type WarehouseSubmit} from '@/lib/inventory/use-warehouse-commands'
+import {WarehouseCommandRecovery} from '@/components/products/WarehouseCommandRecovery'
 import { useReadRequest } from '@/lib/api/use-read-request'
 import { useProductPicker } from '@/lib/api/use-product-picker'
 import { useInventoryLocations } from '@/lib/api/use-inventory-locations'
@@ -60,20 +63,13 @@ function transferStatusVariant(status: string): StatusVariant {
 
 function transferStatusLabel(status: string): string {
     switch (status) {
-        case 'reserved': return 'Pending'
+        case 'reserved': return 'Reserved'
         case 'shipped': return 'Shipped'
         case 'partially_received': return 'Partially received'
         case 'received': return 'Received'
         case 'cancelled': return 'Cancelled'
         default: return status
     }
-}
-
-function generateIdempotencyKey(): string {
-    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
-        return crypto.randomUUID()
-    }
-    return `tr-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`
 }
 
 // ── CreateTransferModal ───────────────────────────────────────────────────────
@@ -86,8 +82,9 @@ interface CreateLineRow {
 }
 
 interface CreateTransferModalProps {
+    submitCommand:WarehouseSubmit
+    blocked:boolean
     open: boolean
-    store: string
     locations: InventoryLocation[]
     products: TransferProductItem[]
     hasMoreProducts: boolean
@@ -98,9 +95,8 @@ interface CreateTransferModalProps {
     onCreated: () => void
 }
 
-function CreateTransferModal({
+function CreateTransferModal({ submitCommand, blocked,
     open,
-    store,
     locations,
     products,
     hasMoreProducts,
@@ -183,28 +179,14 @@ function CreateTransferModal({
 
         setSubmitting(true)
         try {
-            const res = await fetch(`/api/stores/${encodeURIComponent(store)}/transfers`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    source_location_id: sourceLocationId,
-                    destination_location_id: destLocationId,
-                    notes: notes || null,
-                    lines: payload,
-                    idempotency_key: generateIdempotencyKey(),
-                }),
-            })
-            if (!res.ok) {
-                const body = await res.json().catch(() => ({})) as { error?: unknown }
-                const msg = typeof body.error === 'string' ? body.error : 'Failed to create transfer'
-                setError(msg)
-                return
-            }
+            await submitCommand('transfer.create',null,{source_location_id:sourceLocationId,destination_location_id:destLocationId,notes:notes||undefined,lines:payload})
             notify({ title: 'Transfer created', variant: 'success' })
             onCreated()
             onClose()
-        } catch {
-            setError('Network error — please try again.')
+        } catch (error) {
+            setError(error instanceof WarehouseCommandValidationError ? error.message : error instanceof WarehouseRequestStoppedError
+                ? 'The original request was stopped before it applied. Close this form to start a new request.'
+                : 'The outcome could not be confirmed. Close this form and use Retry original or Stop original in the workspace.')
         } finally {
             setSubmitting(false)
         }
@@ -221,7 +203,7 @@ function CreateTransferModal({
                     <Button variant="secondary" onClick={onClose} disabled={submitting}>
                         Cancel
                     </Button>
-                    <Button onClick={handleSubmit} disabled={submitting}>
+                    <Button onClick={handleSubmit} disabled={submitting || blocked}>
                         {submitting ? <Spinner size="sm" /> : null}
                         {submitting ? 'Creating…' : 'Create transfer'}
                     </Button>
@@ -337,14 +319,15 @@ function CreateTransferModal({
 // ── ShipConfirmModal ──────────────────────────────────────────────────────────
 
 interface ShipConfirmModalProps {
+    submitCommand:WarehouseSubmit
+    blocked:boolean
     open: boolean
-    store: string
     transfer: TransferWithLines | null
     onClose: () => void
     onShipped: () => void
 }
 
-function ShipConfirmModal({ open, store, transfer, onClose, onShipped }: ShipConfirmModalProps) {
+function ShipConfirmModal({ submitCommand, blocked, open, transfer, onClose, onShipped }: ShipConfirmModalProps) {
     const { notify } = useToast()
     const [submitting, setSubmitting] = useState(false)
     const [error, setError] = useState<string | null>(null)
@@ -360,25 +343,14 @@ function ShipConfirmModal({ open, store, transfer, onClose, onShipped }: ShipCon
         setError(null)
         setSubmitting(true)
         try {
-            const res = await fetch(
-                `/api/stores/${encodeURIComponent(store)}/transfers/${encodeURIComponent(transfer.id)}/ship`,
-                {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ idempotency_key: generateIdempotencyKey() }),
-                },
-            )
-            if (!res.ok) {
-                const body = await res.json().catch(() => ({})) as { error?: unknown }
-                const msg = typeof body.error === 'string' ? body.error : 'Failed to ship transfer'
-                setError(msg)
-                return
-            }
+            await submitCommand('transfer.ship',transfer.id,{})
             notify({ title: 'Transfer marked as shipped', variant: 'success' })
             onShipped()
             onClose()
-        } catch {
-            setError('Network error — please try again.')
+        } catch (error) {
+            setError(error instanceof WarehouseCommandValidationError ? error.message : error instanceof WarehouseRequestStoppedError
+                ? 'The original request was stopped before it applied. Close this form to start a new request.'
+                : 'The outcome could not be confirmed. Close this form and use Retry original or Stop original in the workspace.')
         } finally {
             setSubmitting(false)
         }
@@ -395,7 +367,7 @@ function ShipConfirmModal({ open, store, transfer, onClose, onShipped }: ShipCon
                     <Button variant="secondary" onClick={onClose} disabled={submitting}>
                         Cancel
                     </Button>
-                    <Button onClick={handleShip} disabled={submitting}>
+                    <Button onClick={handleShip} disabled={submitting || blocked}>
                         {submitting ? <Spinner size="sm" /> : null}
                         {submitting ? 'Shipping…' : 'Mark as shipped'}
                     </Button>
@@ -423,16 +395,16 @@ function ShipConfirmModal({ open, store, transfer, onClose, onShipped }: ShipCon
 // ── ReceiveTransferModal ──────────────────────────────────────────────────────
 
 interface ReceiveTransferModalProps {
+    submitCommand:WarehouseSubmit
+    blocked:boolean
     open: boolean
-    store: string
     transfer: TransferWithLines | null
     onClose: () => void
     onReceived: () => void
 }
 
-function ReceiveTransferModal({
+function ReceiveTransferModal({ submitCommand, blocked,
     open,
-    store,
     transfer,
     onClose,
     onReceived,
@@ -478,28 +450,14 @@ function ReceiveTransferModal({
 
         setSubmitting(true)
         try {
-            const res = await fetch(
-                `/api/stores/${encodeURIComponent(store)}/transfers/${encodeURIComponent(transfer.id)}/receive`,
-                {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        lines: receiveLines,
-                        idempotency_key: generateIdempotencyKey(),
-                    }),
-                },
-            )
-            if (!res.ok) {
-                const body = await res.json().catch(() => ({})) as { error?: unknown }
-                const msg = typeof body.error === 'string' ? body.error : 'Failed to receive transfer'
-                setError(msg)
-                return
-            }
+            await submitCommand('transfer.receive',transfer.id,{lines:receiveLines})
             notify({ title: 'Stock received into destination location', variant: 'success' })
             onReceived()
             onClose()
-        } catch {
-            setError('Network error — please try again.')
+        } catch (error) {
+            setError(error instanceof WarehouseCommandValidationError ? error.message : error instanceof WarehouseRequestStoppedError
+                ? 'The original request was stopped before it applied. Close this form to start a new request.'
+                : 'The outcome could not be confirmed. Close this form and use Retry original or Stop original in the workspace.')
         } finally {
             setSubmitting(false)
         }
@@ -516,7 +474,7 @@ function ReceiveTransferModal({
                     <Button variant="secondary" onClick={onClose} disabled={submitting}>
                         Cancel
                     </Button>
-                    <Button onClick={handleReceive} disabled={submitting}>
+                    <Button onClick={handleReceive} disabled={submitting || blocked}>
                         {submitting ? <Spinner size="sm" /> : null}
                         {submitting ? 'Receiving…' : 'Confirm receipt'}
                     </Button>
@@ -581,7 +539,12 @@ function ReceiveTransferModal({
 // ── Main page ─────────────────────────────────────────────────────────────────
 
 export default function TransfersPage() {
-    const { store } = useParams<{ store: string }>()
+    const {store}=useParams<{store:string}>()
+    const {actorId,siteId}=useMerchantSecurityContext(store)
+    return <WarehouseWorkspace key={`${actorId}:${siteId??'unavailable'}:${store}`} store={store} />
+}
+function WarehouseWorkspace({store}:{store:string}) {
+    const commands=useWarehouseCommands(store)
     const { notify } = useToast()
 
     const [transfers, setTransfers] = useState<TransferWithLines[]>([])
@@ -601,6 +564,7 @@ export default function TransfersPage() {
         const request = beginRead()
         setLoading(true)
         setLoadError(null)
+        setTransfers([])
         try {
             const transferRes = await fetch(`/api/stores/${encodeURIComponent(store)}/transfers`, { cache: 'no-store', signal: request.signal })
             const transferBody = await transferRes.json() as { data?: TransferWithLines[]; error?: unknown }
@@ -626,11 +590,13 @@ export default function TransfersPage() {
     useEffect(() => { void loadAll() }, [loadAll])
 
     async function openCreate() {
+        if(commands.blocked)return
         if (productPicker.loading) return
         if (await productPicker.load()) setShowCreate(true)
     }
 
     function openShip(transfer: TransferWithLines) {
+        if(commands.blocked)return
         if (transfer.status !== 'reserved') {
             notify({
                 title: `Cannot ship a transfer with status "${transferStatusLabel(transfer.status)}"`,
@@ -642,6 +608,7 @@ export default function TransfersPage() {
     }
 
     function openReceive(transfer: TransferWithLines) {
+        if(commands.blocked)return
         if (transfer.status === 'received' || transfer.status === 'cancelled') {
             notify({
                 title: `Cannot receive a ${transferStatusLabel(transfer.status).toLowerCase()} transfer`,
@@ -676,7 +643,7 @@ export default function TransfersPage() {
                     label: productPicker.loading && !showCreate ? 'Loading transfer form…' : 'Create transfer',
                     icon: <MaterialIcon name="add" />,
                     onClick: () => void openCreate(),
-                    disabled: loading || productPicker.loading || locationRead.loading || locationRead.error || locations.length < 2,
+                    disabled: commands.blocked || loading || productPicker.loading || locationRead.loading || locationRead.error || locations.length < 2,
                 }}
             />
 
@@ -697,6 +664,8 @@ export default function TransfersPage() {
 
             {locationRead.error && <Banner variant="warning" title="Inventory locations could not be loaded" action={<Button variant="secondary" onClick={() => { void locationRead.load() }}>Retry locations</Button>}>Existing records remain available. Reload locations before creating a new record.</Banner>}
 
+            <WarehouseCommandRecovery commands={commands} onResolved={()=>void loadAll()} />
+
             <Card>
                 <Section
                     title="Location transfers"
@@ -711,7 +680,7 @@ export default function TransfersPage() {
                                 />
                             ))}
                         </div>
-                    ) : transfers.length === 0 ? (
+                    ) : loadError ? <p>Transfer records are unavailable. Reload the workspace to try again.</p> : transfers.length === 0 ? (
                         <EmptyState
                             icon={
                                 <RefreshCw
@@ -798,7 +767,7 @@ export default function TransfersPage() {
                                                         variant="secondary"
                                                         size="sm"
                                                         onClick={() => openShip(transfer)}
-                                                        disabled={transfer.status !== 'reserved'}
+                                                        disabled={commands.blocked || transfer.status !== 'reserved'}
                                                     >
                                                         <Truck
                                                             className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]"
@@ -811,7 +780,7 @@ export default function TransfersPage() {
                                                         size="sm"
                                                         onClick={() => openReceive(transfer)}
                                                         disabled={
-                                                            transfer.status === 'received' ||
+                                                            commands.blocked || transfer.status === 'received' ||
                                                             transfer.status === 'cancelled' ||
                                                             transfer.status === 'reserved'
                                                         }
@@ -830,8 +799,9 @@ export default function TransfersPage() {
             </Card>
 
             <CreateTransferModal
+                submitCommand={commands.submit}
+                blocked={commands.blocked}
                 open={showCreate}
-                store={store}
                 locations={locations}
                 products={productPicker.items}
                 hasMoreProducts={productPicker.hasMore}
@@ -843,16 +813,18 @@ export default function TransfersPage() {
             />
 
             <ShipConfirmModal
+                submitCommand={commands.submit}
+                blocked={commands.blocked}
                 open={shippingTransfer !== null}
-                store={store}
                 transfer={shippingTransfer}
                 onClose={() => setShippingTransfer(null)}
                 onShipped={() => void loadAll()}
             />
 
             <ReceiveTransferModal
+                submitCommand={commands.submit}
+                blocked={commands.blocked}
                 open={receivingTransfer !== null}
-                store={store}
                 transfer={receivingTransfer}
                 onClose={() => setReceivingTransfer(null)}
                 onReceived={() => void loadAll()}
