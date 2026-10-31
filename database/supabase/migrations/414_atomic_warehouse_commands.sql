@@ -125,7 +125,10 @@ BEGIN
    PERFORM id FROM public.products WHERE id=product AND store_id=p_site_id AND deleted_at IS NULL FOR SHARE;
    IF NOT FOUND THEN RAISE EXCEPTION 'WAREHOUSE_NOT_FOUND';END IF;
    IF variant IS NOT NULL THEN
-    PERFORM id FROM public.product_variants WHERE id=variant AND product_id=product AND deleted_at IS NULL FOR SHARE;
+    -- Canonical variants are physically replaced/removed by the versioned product
+    -- owner; this table has no deleted_at column. The locked live product above
+    -- supplies site ownership, and this lock proves the variant still belongs to it.
+    PERFORM id FROM public.product_variants WHERE id=variant AND product_id=product FOR SHARE;
     IF NOT FOUND THEN RAISE EXCEPTION 'WAREHOUSE_NOT_FOUND';END IF;
    END IF;
   END LOOP;

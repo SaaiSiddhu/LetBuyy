@@ -534,6 +534,8 @@ for(const transfer of [false,true])test((transfer?'transfer':'PO')+' two-variant
  const lines=variants.map((variant,index)=>({product_id:f.product,variant_id:variant,quantity:index?3:2,...(!transfer?{unit_cost:index?12.25:0.29}:{})}));
  const input={store_id:f.site.siteId,idempotency_key:key,lines,...(transfer?{source_location_id:f.site.locationId,destination_location_id:f.destination}:{location_id:f.site.locationId})};
  const create=()=>transfer?api.inventory.transfers.create(input as Parameters<typeof api.inventory.transfers.create>[0]):api.inventory.purchaseOrders.create(input as Parameters<typeof api.inventory.purchaseOrders.create>[0]);
+ const other=await fixture(t),foreign=randomUUID();owned.psql("INSERT INTO product_variants(id,product_id,title,sku)VALUES("+quote(foreign)+","+quote(other.product)+",'Foreign variant',"+quote('SYN-'+foreign)+");");
+ for(const variant of [foreign,randomUUID()]){const bad=randomUUID(),before=stock(f.site.siteId);const denied=await f.request(transfer?'/transfers':'/purchase-orders',{...input,idempotency_key:bad,lines:[{...lines[0],variant_id:variant}]},bad);assert.equal(denied.status,404,denied.text);assert.deepEqual(stock(f.site.siteId),before);}
  const first=await create();assert.equal(first.lines.length,2);assert.deepEqual(first.lines.map(line=>line.variant_id).sort(),[...variants].sort());
  const before=stock(f.site.siteId),again=await create();assert.deepEqual(again,first);assert.deepEqual(stock(f.site.siteId),before);
  const target=first.command_receipt.target_id!;
