@@ -1,10 +1,10 @@
 {
   "date": "2026-10-30",
-  "source_commit": "31d17b437fbc9139b5015545579840419d798502",
+  "source_commit": "3ed8c6078139680b1902273169f5f11cdc17a1e9",
   "branch": "codex/merchant-mobile-parity",
   "scope": "source checkpoint; full 122-item acceptance remains in progress",
   "flutter": {
-    "source_commit": "31d17b437fbc9139b5015545579840419d798502",
+    "source_commit": "96153cd20bc3db3dd2c7539e3a77bd159820fb05",
     "tests": 613,
     "pass": 613,
     "fail": 0,
@@ -28,7 +28,7 @@
     },
     "ok": true,
     "exitCode": 0,
-    "source_commit": "31d17b437fbc9139b5015545579840419d798502"
+    "source_commit": "3ed8c6078139680b1902273169f5f11cdc17a1e9"
   },
   "owned_database_runs": [
     {
@@ -861,6 +861,66 @@
           "code": 0
         }
       ]
+    },
+    {
+      "run_id": "9d03afda6438",
+      "source_commit": "cb0f0993d365d76cf43a669274093a4f8210bb19",
+      "purpose": "canonical SDK/Gateway partial warehouse records, deleted children and foreign supplier/line refusal",
+      "tests": 21,
+      "pass": 21,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-recovery.postgres.test.ts",
+          "tests": 21,
+          "pass": 21,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        }
+      ]
+    },
+    {
+      "run_id": "f69cf06138f2",
+      "source_commit": "96153cd20bc3db3dd2c7539e3a77bd159820fb05",
+      "purpose": "connected typed SDK command replay, lost reply recovery, old-client refusal and paired rollback",
+      "tests": 27,
+      "pass": 27,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-recovery.postgres.test.ts",
+          "tests": 24,
+          "pass": 24,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        },
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-rollback.postgres.test.ts",
+          "tests": 3,
+          "pass": 3,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        }
+      ]
     }
   ],
   "ios_simulator_build": {
@@ -906,12 +966,12 @@
       "release signing"
     ],
     "captcha": "User authorized completion; app was already authenticated at next observation; no separate challenge click was issued or proven.",
-    "current_emulator_state": "Source 31d17b437 installed and hash verified on the recovered task AVD. Its earlier session has expired; current screen is sign-in. Earlier bounded read-only proofs are historical, not current build acceptance."
+    "current_emulator_state": "Protocol-aware source 96153cd20 arm64 debug APK is installed/hash-verified on the task AVD. Current accessibility check observes sign-in/security-check unavailable; historical authenticated reads do not certify this build."
   },
   "production_account_used": true,
   "deployment_performed": false,
   "full_122_acceptance": "in_progress",
-  "previous_source_commit": "f44bc93af6fbaab3034aca30567d29fd3e2883a6",
+  "previous_source_commit": "31d17b437fbc9139b5015545579840419d798502",
   "customer_scope_tests": {
     "pass": 17,
     "fail": 0
@@ -934,17 +994,27 @@
     "restored_service_sha256": "8331a55932bbca8dcf8f950fcb3294b153f5fee57037be9842d55b4ebf3aa657"
   },
   "android_debug_build": {
-    "source_commit": "31d17b437fbc9139b5015545579840419d798502",
-    "bytes": 219779455,
-    "sha256": "0ffb0b96792516a329738615deb1d201f3a639cd1a42b2a767995fd44f79af8d",
+    "source_commit": "96153cd20bc3db3dd2c7539e3a77bd159820fb05",
+    "bytes": 148974620,
+    "sha256": "36a15b03b23b5677edef2104544413bd023aa7dfb0821e24a245e94e35e7ee54",
     "serial": "emulator-5580",
     "avd": "LetBuyy_Merchant_Parity",
     "signing": "debug",
     "configuration": "dart-defines/production.json",
+    "target_platform": "android-arm64",
     "installed_hash_matches": true,
     "adb_port": 15038,
     "adb_serial": "127.0.0.1:5581",
-    "observed": "Installed hash-verified debug artifact. Restored task emulator has returned to sign-in with security-check-unavailable state. No authenticated warehouse journey or production write was performed on this build."
+    "read_only_acceptance": {
+      "source_commit": "96153cd20bc3db3dd2c7539e3a77bd159820fb05",
+      "sign_in_visible": true,
+      "security_check_unavailable": true,
+      "warehouse_workspace_observed": false,
+      "authenticated_warehouse_acceptance": false,
+      "production_business_mutations": false,
+      "scope": "allowlisted accessibility-state check after debug install; no private text captured in evidence"
+    },
+    "observed": "Installed hash verified; current UI is sign-in/security-check unavailable. No authenticated latest-build warehouse journey or intentional production business write."
   },
   "production_business_mutations_performed": false,
   "catalog_continuation": "committed and local/database/governance qualified; final hash-verified Android read/recovery observed; full web/mobile feature acceptance remains in progress",
@@ -985,7 +1055,7 @@
     "production_business_mutations": false
   },
   "shared_dart_models_tests": {
-    "source_commit": "31d17b437fbc9139b5015545579840419d798502",
+    "source_commit": "96153cd20bc3db3dd2c7539e3a77bd159820fb05",
     "pass": 28,
     "fail": 0,
     "focused_warehouse_before": {
@@ -1017,7 +1087,7 @@
     "fail": 0,
     "source_commit": "fff025100c2ced7bcbc2fa0c18b99f0cfc7e800a"
   },
-  "inventory_continuation": "Native encrypted WMS retry/stop and atomic backend qualification now pass. Continue canonical web warehouse record/recovery repair, complete authorized reads/selectors/pagination and remaining feature ledger. All 122 parity remains in progress.",
+  "inventory_continuation": "Web/native original-request recovery and atomic apply/stop are locally qualified. Next add fresh server/BFF protocol preflight before new client dispatch, then complete warehouse pagination/counts/detail/selectors and partial native line editing; continue the remaining ledger. All 122 end-to-end acceptance remains open.",
   "previous_governance": {
     "counts": {
       "PASS": 114,
@@ -1375,6 +1445,19 @@
       "avd": "LetBuyy_Merchant_Parity",
       "signing": "debug",
       "configuration": "dart-defines/production.json"
+    },
+    {
+      "source_commit": "31d17b437fbc9139b5015545579840419d798502",
+      "bytes": 219779455,
+      "sha256": "0ffb0b96792516a329738615deb1d201f3a639cd1a42b2a767995fd44f79af8d",
+      "serial": "emulator-5580",
+      "avd": "LetBuyy_Merchant_Parity",
+      "signing": "debug",
+      "configuration": "dart-defines/production.json",
+      "installed_hash_matches": true,
+      "adb_port": 15038,
+      "adb_serial": "127.0.0.1:5581",
+      "observed": "Installed hash-verified debug artifact. Restored task emulator has returned to sign-in with security-check-unavailable state. No authenticated warehouse journey or production write was performed on this build."
     }
   ],
   "source_reconciliation": {
@@ -1382,7 +1465,18 @@
     "local_merge": "4197b81fc0cf25eea918b0be9fc556013d9689e3",
     "hosted_deployment": false,
     "primary_untouched_head": "a72196c6ea9cd86b07d6d8414da2b8176c41046a",
-    "primary_dirty_paths_observed": 139
+    "primary_dirty_paths_observed": 139,
+    "latest_primary_observation": {
+      "head": "a72196c6ea9cd86b07d6d8414da2b8176c41046a",
+      "dirty_paths": 153,
+      "modified_by_this_task": false,
+      "note": "Primary still includes an unaccepted draft 411_gift_card_issue_replay_integrity.sql; do not copy or overwrite it. Reconcile separately before promotion."
+    },
+    "accepted_refs_rechecked_2026_10_31": {
+      "develop": "77584d19dc3dc557f29f9e2fbc7a967fe38e132c",
+      "staging": "77584d19dc3dc557f29f9e2fbc7a967fe38e132c",
+      "max_migration": 413
+    }
   },
   "shipping_tax_checkpoint": {
     "source_commit": "863f556b131db3f945f3489d3023a6b14ed3bb1a",
@@ -1416,21 +1510,21 @@
     "evidence": "WAREHOUSE_ATOMICITY.md"
   },
   "warehouse_checkpoint": {
-    "backend_source_commit": "31d17b437fbc9139b5015545579840419d798502",
-    "native_model_source_commit": "31d17b437fbc9139b5015545579840419d798502",
+    "backend_source_commit": "96153cd20bc3db3dd2c7539e3a77bd159820fb05",
+    "native_model_source_commit": "96153cd20bc3db3dd2c7539e3a77bd159820fb05",
     "migration": 414,
     "owner_authorized_source_and_local_only": true,
-    "owned_final_run": "1f67a5b3afd0",
-    "owned_final_pass": 23,
+    "owned_final_run": "f69cf06138f2",
+    "owned_final_pass": 27,
     "owned_final_fail": 0,
     "raw_access_and_tenant_run": "228fb0ceff59",
     "raw_access_and_tenant_pass": 8,
-    "gateway_units_and_contracts": 1877,
+    "gateway_units_and_contracts": 1929,
     "gateway_typecheck": "pass",
     "web_typecheck": "pass",
     "sdk_typecheck": "pass",
-    "native_client_recovery": "implemented; 17 real transport/encrypted journal regressions and 4 rendered recovery-control cases pass locally",
-    "safe_abandon_of_unapplied_pending_request": "implemented as server-authoritative same-key stop; applied/cancelled outcomes distinguished",
+    "native_client_recovery": "implemented; encrypted original intent/key, strict acknowledgement, retry/stop and protocol marker locally verified",
+    "safe_abandon_of_unapplied_pending_request": "implemented on server and both clients; applied/cancelled outcomes remain distinct",
     "hosted_migration": false,
     "deployed": false,
     "evidence": "WAREHOUSE_ATOMICITY.md",
@@ -1440,13 +1534,54 @@
       "quantity_shipped",
       "quantity_received"
     ],
-    "installed_android_source": "31d17b437fbc9139b5015545579840419d798502",
-    "web_client_recovery": "not implemented; canonical web record drift repair in progress",
+    "installed_android_source": "96153cd20bc3db3dd2c7539e3a77bd159820fb05",
+    "web_client_recovery": "implemented; actor/stable-site-bound localStorage, browser lock interface, remount recovery, current-context proxy guards and matched receipt before clearing",
     "native_tests": 613,
     "shared_model_tests": 28,
     "native_journal_focused_tests": 17,
     "native_workspace_tests": 18,
-    "authenticated_latest_device_warehouse_acceptance": false
+    "authenticated_latest_device_warehouse_acceptance": false,
+    "web_source_commit": "96153cd20bc3db3dd2c7539e3a77bd159820fb05",
+    "qualified_source_commit": "3ed8c6078139680b1902273169f5f11cdc17a1e9",
+    "web_composed_checks": 175,
+    "web_proxy_checks": 55,
+    "web_browser_journal_checks": 9,
+    "sdk_acknowledgement_checks": 31,
+    "bff_tests": 21,
+    "bff_typecheck": "pass",
+    "route_registration_tests": 6,
+    "normalization_owner": "packages/commerce-core/src/index.ts:prepareWarehouseCommand",
+    "old_client_gate": "X-LetBuyy-Warehouse-Protocol: 1 required on the exact six warehouse POST paths; unsupported/missing version returns 426 before effects/private replay",
+    "server_protocol_preflight": "not yet implemented; required before a new client sends to an older Gateway/BFF deployment",
+    "headed_browser_acceptance": false,
+    "all_122_accepted": false,
+    "governance_attempts": [
+      {
+        "source_commit": "96153cd20bc3db3dd2c7539e3a77bd159820fb05",
+        "counts": {
+          "PASS": 113,
+          "FAIL": 1,
+          "BLOCKED": 0,
+          "SKIP": 0,
+          "NOT_APPLICABLE": 1
+        },
+        "ok": false,
+        "reason": "new thin stop proxy was missing from maintained route count/baseline; freeze guard retained"
+      },
+      {
+        "source_commit": "3ed8c6078139680b1902273169f5f11cdc17a1e9",
+        "counts": {
+          "PASS": 114,
+          "FAIL": 0,
+          "BLOCKED": 0,
+          "SKIP": 0,
+          "NOT_APPLICABLE": 1
+        },
+        "ok": true,
+        "reason": "exact route registered in existing gateway-proxy class, paired lint baseline and documented rationale; unchanged boundary tests 6/6"
+      }
+    ]
   },
-  "last_qualified_date": "2026-10-31"
+  "last_qualified_date": "2026-10-31",
+  "implementation_commit": "96153cd20bc3db3dd2c7539e3a77bd159820fb05"
 }
