@@ -1,12 +1,12 @@
 {
   "date": "2026-10-30",
-  "source_commit": "9bc3b34fcafb3171c6485ca16ad2f624470871cf",
+  "source_commit": "8be82e4afb63c388c02bfd9f8392c259e7711fd9",
   "branch": "codex/merchant-mobile-parity",
   "scope": "source checkpoint; full 122-item acceptance remains in progress",
   "flutter": {
-    "source_commit": "9bc3b34fcafb3171c6485ca16ad2f624470871cf",
-    "tests": 630,
-    "pass": 630,
+    "source_commit": "8be82e4afb63c388c02bfd9f8392c259e7711fd9",
+    "tests": 641,
+    "pass": 641,
     "fail": 0,
     "analysis": "pass"
   },
@@ -19,6 +19,7 @@
     "fail": 0
   },
   "governance": {
+    "ok": true,
     "counts": {
       "PASS": 114,
       "FAIL": 0,
@@ -26,9 +27,8 @@
       "SKIP": 0,
       "NOT_APPLICABLE": 1
     },
-    "ok": true,
     "exitCode": 0,
-    "source_commit": "9bc3b34fcafb3171c6485ca16ad2f624470871cf"
+    "source_commit": "8be82e4afb63c388c02bfd9f8392c259e7711fd9"
   },
   "owned_database_runs": [
     {
@@ -1073,7 +1073,7 @@
   "production_account_used": true,
   "deployment_performed": false,
   "full_122_acceptance": "in_progress",
-  "previous_source_commit": "a45d682829744b8ce4e8bf010fd62b7c5b13a25d",
+  "previous_source_commit": "9bc3b34fcafb3171c6485ca16ad2f624470871cf",
   "customer_scope_tests": {
     "pass": 17,
     "fail": 0
@@ -1096,9 +1096,9 @@
     "restored_service_sha256": "8331a55932bbca8dcf8f950fcb3294b153f5fee57037be9842d55b4ebf3aa657"
   },
   "android_debug_build": {
-    "source_commit": "9bc3b34fcafb3171c6485ca16ad2f624470871cf",
-    "bytes": 148998801,
-    "sha256": "ad390df0fb34ec779a374aa6f2f8b1d85dbc90234226eba4c9ab179012a5d11a",
+    "source_commit": "8be82e4afb63c388c02bfd9f8392c259e7711fd9",
+    "bytes": 148988532,
+    "sha256": "86051ec64636eb76bf535e26f4f672331447d039793b8446858fe53fdb69b236",
     "serial": "emulator-5580",
     "avd": "LetBuyy_Merchant_Parity",
     "signing": "debug",
@@ -1108,16 +1108,47 @@
     "adb_port": 15038,
     "adb_serial": "127.0.0.1:5581",
     "read_only_acceptance": {
-      "source_commit": "9bc3b34fcafb3171c6485ca16ad2f624470871cf",
-      "merchant_surface_visible": true,
-      "sign_in_visible": true,
-      "security_check_unavailable": true,
-      "warehouse_workspace_observed": false,
+      "source_commit": "8be82e4afb63c388c02bfd9f8392c259e7711fd9",
+      "installed_hash_verified": true,
+      "before": {
+        "merchant_surface_visible": true,
+        "sign_in_visible": true,
+        "retry_control_visible": true,
+        "security_passed_visible": false,
+        "security_unavailable_visible": true
+      },
+      "retry_tapped_once": true,
+      "after_immediate": {
+        "merchant_surface_visible": true,
+        "sign_in_visible": true,
+        "retry_control_visible": false,
+        "security_passed_visible": false,
+        "security_unavailable_visible": false
+      },
+      "credentials_entered": false,
+      "auth_requests_intentionally_submitted": false,
       "authenticated_warehouse_acceptance": false,
       "intentional_production_business_writes": false,
-      "observed_at": "2026-10-31T23:44:50.533819+05:30"
+      "observed_at": "2026-11-01T00:14:26.997987+05:30",
+      "after_settled": {
+        "sign_in_visible": true,
+        "retry_control_visible": false,
+        "security_passed_visible": false,
+        "security_unavailable_visible": false,
+        "human_verification_control_offered": true,
+        "observed_at": "2026-11-01T00:15:23.711983+05:30"
+      },
+      "human_control_attempt": {
+        "human_control_candidates": 1,
+        "human_control_tapped_once": true,
+        "security_passed_visible": true,
+        "retry_control_visible": false,
+        "security_unavailable_visible": false,
+        "sign_in_visible": true,
+        "observed_at": "2026-11-01T00:16:48.208864+05:30"
+      }
     },
-    "observed": "Current hash matches; sign-in/security-check unavailable; authenticated latest warehouse journey remains open."
+    "observed": "Exact APK hash matches; Retry and user-authorized real checkbox completed, frontend Security check passed. No credentials/auth submission; Mac locked blocks secure input. Owned AVD subsequently reopened visibly with data preserved; proof is not retained across restart."
   },
   "production_business_mutations_performed": false,
   "catalog_continuation": "committed and local/database/governance qualified; final hash-verified Android read/recovery observed; full web/mobile feature acceptance remains in progress",
@@ -1193,7 +1224,7 @@
     },
     "ok": true,
     "exitCode": 0,
-    "source_commit": "a45d682829744b8ce4e8bf010fd62b7c5b13a25d"
+    "source_commit": "9bc3b34fcafb3171c6485ca16ad2f624470871cf"
   },
   "shared_dart_api_suite": {
     "pass": 97,
@@ -1601,6 +1632,30 @@
         "intentional_production_business_writes": false
       },
       "observed": "Installed hash matches; sign-in/security-check unavailable; authenticated warehouse acceptance remains open."
+    },
+    {
+      "source_commit": "9bc3b34fcafb3171c6485ca16ad2f624470871cf",
+      "bytes": 148998801,
+      "sha256": "ad390df0fb34ec779a374aa6f2f8b1d85dbc90234226eba4c9ab179012a5d11a",
+      "serial": "emulator-5580",
+      "avd": "LetBuyy_Merchant_Parity",
+      "signing": "debug",
+      "configuration": "dart-defines/production.json",
+      "target_platform": "android-arm64",
+      "installed_hash_matches": true,
+      "adb_port": 15038,
+      "adb_serial": "127.0.0.1:5581",
+      "read_only_acceptance": {
+        "source_commit": "9bc3b34fcafb3171c6485ca16ad2f624470871cf",
+        "merchant_surface_visible": true,
+        "sign_in_visible": true,
+        "security_check_unavailable": true,
+        "warehouse_workspace_observed": false,
+        "authenticated_warehouse_acceptance": false,
+        "intentional_production_business_writes": false,
+        "observed_at": "2026-10-31T23:44:50.533819+05:30"
+      },
+      "observed": "Current hash matches; sign-in/security-check unavailable; authenticated latest warehouse journey remains open."
     }
   ],
   "source_reconciliation": {
@@ -1786,8 +1841,8 @@
       "receipt": "/private/tmp/letbuyy-warehouse-detail-mobile-tests-complete.log"
     }
   },
-  "last_qualified_date": "2026-10-31",
-  "implementation_commit": "9bc3b34fcafb3171c6485ca16ad2f624470871cf",
+  "last_qualified_date": "2026-11-01",
+  "implementation_commit": "8be82e4afb63c388c02bfd9f8392c259e7711fd9",
   "warehouse_previous_checkpoints": [
     {
       "backend_source_commit": "96153cd20bc3db3dd2c7539e3a77bd159820fb05",
@@ -1993,5 +2048,50 @@
       "analysis": "pass",
       "warehouse_intent_acknowledgement_tests": 8
     }
-  ]
+  ],
+  "native_verification_checkpoint": {
+    "source_commit": "8be82e4afb63c388c02bfd9f8392c259e7711fd9",
+    "date": "2026-11-01",
+    "native_pass": 641,
+    "new_lifetime_and_document_checks": 11,
+    "native_analysis": "pass",
+    "governance": {
+      "ok": true,
+      "counts": {
+        "PASS": 114,
+        "FAIL": 0,
+        "BLOCKED": 0,
+        "SKIP": 0,
+        "NOT_APPLICABLE": 1
+      },
+      "exitCode": 0,
+      "source_commit": "8be82e4afb63c388c02bfd9f8392c259e7711fd9"
+    },
+    "backend_packages_database_web_unchanged_from": "9bc3b34fcafb3171c6485ca16ad2f624470871cf",
+    "single_use_inline_proof": true,
+    "old_callback_fencing": true,
+    "independent_retry_control": true,
+    "single_route_completion": true,
+    "nonfatal_subframe_probe_handling": true,
+    "actual_main_frame_and_widget_failures_remain_closed": true,
+    "server_verification_unchanged": true,
+    "frontend_widget_completed_in_emulator": true,
+    "server_siteverify_acceptance": "not attempted",
+    "credential_submission": "not attempted",
+    "authenticated_merchant_session": "not attempted",
+    "current_secure_input_gate": "Computer-control surface reports Mac locked; user manual unlock requested; source work continues",
+    "visible_avd_restart_data_preserved": true,
+    "previous_public_provider_error_code": "600010",
+    "observed_webview_version": "124.0.6367.219",
+    "clock_skew_seconds": 0,
+    "root_cause_not_asserted": true,
+    "password_reset_declaration_preserved": true,
+    "password_reset_declaration_sha256": "877a6b826879ce8bd8b63988c290ddbffeeb1f1267fd2ed73008e4ddde21b419",
+    "public_bff_health_read": {
+      "http_status": 403,
+      "configuration_flags": "unobserved"
+    },
+    "evidence": "NATIVE_VERIFICATION_RECOVERY.md",
+    "full_122_accepted": false
+  }
 }
