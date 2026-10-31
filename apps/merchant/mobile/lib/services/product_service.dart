@@ -238,6 +238,118 @@ class ProductService extends ChangeNotifier {
     return product;
   }
 
+  /// Online option reads never replace the main catalog or consult its cache.
+  Future<PaginatedResponse<ProductContract>> readWarehouseProducts(
+    String storeId, {
+    int page = 1,
+    int limit = 20,
+    String search = '',
+  }) async {
+    final captured = _api.captureRequestContext();
+    final result = await _api.products.list(
+      query: {
+        'store_id': storeId,
+        'page': page,
+        'limit': limit,
+        'search': search.trim(),
+        'status': 'all',
+        'sort': 'name',
+        'order': 'asc',
+      },
+      options: ApiRequestOptions(
+        storeId: storeId,
+        expectedContextVersion: captured,
+        headers: const {'Cache-Control': 'no-store'},
+      ),
+    );
+    _checkContext(captured);
+    if (page < 1 ||
+        page > 1000000 ||
+        limit < 1 ||
+        limit > 100 ||
+        result.meta['page'] != page ||
+        result.meta['per_page'] != limit ||
+        result.meta['has_next'] is! bool ||
+        result.data.length > limit ||
+        (result.meta['has_next'] == true && result.data.length != limit)) {
+      throw const ApiException(
+        message: 'Product choices could not be confirmed.',
+        statusCode: 503,
+        code: 'WAREHOUSE_PRODUCTS_UNVERIFIED',
+      );
+    }
+    final rows = result.data
+        .map((row) => _warehouseProduct(_product(row, storeId)))
+        .toList(growable: false);
+    if (rows.map((row) => row.id).toSet().length != rows.length) {
+      throw const ApiException(
+        message: 'Product choices changed. Search again.',
+        statusCode: 503,
+        code: 'WAREHOUSE_PRODUCTS_UNVERIFIED',
+      );
+    }
+    return PaginatedResponse(
+      data: rows,
+      total: result.total,
+      page: page,
+      limit: limit,
+      hasMore: result.meta['has_next'] == true,
+      hasNext: result.meta['has_next'] == true,
+      meta: Map.unmodifiable(result.meta),
+    );
+  }
+
+  ProductContract _warehouseProduct(ProductContract product) {
+    if (!RegExp(
+          r'^[0-9a-fA-F]{8}-(?:[0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$',
+        ).hasMatch(product.id) ||
+        product['name'] is! String ||
+        product.name.trim().isEmpty ||
+        product['deleted_at'] != null ||
+        (product['site_id'] != null && product['site_id'] != product.storeId)) {
+      throw const ApiException(
+        message: 'Product choices could not be confirmed.',
+        statusCode: 503,
+        code: 'WAREHOUSE_PRODUCTS_UNVERIFIED',
+      );
+    }
+    return product;
+  }
+
+  /// Selecting a product obtains its fresh version and complete variant owner.
+  Future<ProductContract> readWarehouseProduct(
+    String id,
+    String storeId,
+  ) async {
+    final product = _warehouseProduct(await fetchProductForEdit(id, storeId));
+    final raw = product['variants'];
+    final ids = <String>{};
+    if (raw is! List ||
+        raw.any(
+          (row) =>
+              row is! Map ||
+              row['product_id'] != id ||
+              row['title'] is! String ||
+              (row['title'] as String).trim().isEmpty ||
+              row['id'] is! String ||
+              !RegExp(
+                r'^[0-9a-fA-F]{8}-(?:[0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$',
+              ).hasMatch(row['id'] as String) ||
+              !ids.add(row['id'] as String) ||
+              row['deleted_at'] != null ||
+              (row['store_id'] != null && row['store_id'] != storeId) ||
+              (row['site_id'] != null && row['site_id'] != storeId),
+        )) {
+      throw const ApiException(
+        message:
+            'Current product variants could not be confirmed. Select the product again.',
+        statusCode: 503,
+        code: 'WAREHOUSE_PRODUCTS_UNVERIFIED',
+      );
+    }
+    return product;
+  }
+
   // ── Create ───────────────────────────────────────────────
 
   /// Create a new product.

@@ -522,3 +522,29 @@ for(const supplier of [false,true])test((supplier?'supplier':'location')+' choic
  for(const query of ['limit=101','page=0','page=1.5','sort=random','status=deleted'])assert.equal((await get(query)).status,400,query);
  owned.psql("UPDATE sites SET custom_user_id=NULL,user_id=NULL WHERE id="+quote(f.site.siteId)+";");const denied=await get('page=11&limit=100');assert.equal(denied.status,403);assert.equal(denied.json?.data,undefined);
 });
+
+for(const transfer of [false,true])test((transfer?'transfer':'PO')+' two-variant creation and full receipt preserve every line and effect exactly once',async t=>{
+ const f=await fixture(t),variants=[randomUUID(),randomUUID()],key=randomUUID();
+ for(const [index,variant]of variants.entries())owned.psql("INSERT INTO product_variants(id,product_id,title,sku,price)VALUES("+quote(variant)+","+quote(f.product)+","+quote(index?'Large':'Small')+","+quote('SYN-'+variant)+",12.25);INSERT INTO inventory_levels(id,store_id,product_id,variant_id,location_id,available,reserved,incoming,available_quantity,reserved_quantity,on_hand_quantity)VALUES(gen_random_uuid(),"+quote(f.site.siteId)+","+quote(f.product)+","+quote(variant)+","+quote(f.site.locationId)+",20,0,0,20,0,20);");
+ const api=createLetbuyyApiClient({baseUrl:'https://owned.synthetic.invalid/v1',storeId:f.site.siteId,fetch:async(input,init)=>{
+  const request=new Request(input,init),url=new URL(request.url),headers=new Headers(request.headers);
+  for(const[name,value]of Object.entries(await signedIdentityHeaders(f.actor,'syn-wms-'+f.actor+'@example.invalid',f.site.siteId)))headers.set(name,value);
+  const result=await f.gateway.request(url.pathname+url.search,{method:request.method,headers,body:request.method==='GET'?undefined:await request.text()});return new Response(result.text,{status:result.status,headers:result.headers});
+ }});
+ const lines=variants.map((variant,index)=>({product_id:f.product,variant_id:variant,quantity:index?3:2,...(!transfer?{unit_cost:index?12.25:0.29}:{})}));
+ const input={store_id:f.site.siteId,idempotency_key:key,lines,...(transfer?{source_location_id:f.site.locationId,destination_location_id:f.destination}:{location_id:f.site.locationId})};
+ const create=()=>transfer?api.inventory.transfers.create(input as Parameters<typeof api.inventory.transfers.create>[0]):api.inventory.purchaseOrders.create(input as Parameters<typeof api.inventory.purchaseOrders.create>[0]);
+ const first=await create();assert.equal(first.lines.length,2);assert.deepEqual(first.lines.map(line=>line.variant_id).sort(),[...variants].sort());
+ const before=stock(f.site.siteId),again=await create();assert.deepEqual(again,first);assert.deepEqual(stock(f.site.siteId),before);
+ const target=first.command_receipt.target_id!;
+ if(transfer){const shipKey=randomUUID();await api.inventory.transfers.ship(target,{store_id:f.site.siteId,idempotency_key:shipKey},{storeId:f.site.siteId});}
+ const receiveKey=randomUUID(),transferReceipt={store_id:f.site.siteId,idempotency_key:receiveKey,lines:first.lines.map(line=>{assert.ok(typeof line.id==='string');return {transfer_line_id:line.id,quantity:lines.find(input=>input.variant_id===line.variant_id)!.quantity};})};
+ const received=transfer?await api.inventory.transfers.receive(target,transferReceipt,{storeId:f.site.siteId}):await api.inventory.purchaseOrders.receive(target,{idempotency_key:receiveKey},{storeId:f.site.siteId});
+ assert.equal(received.lines.length,2);assert.deepEqual(received.lines.map(line=>line.quantity_received).sort(),[2,3]);
+ const after=stock(f.site.siteId),replay=transfer?await api.inventory.transfers.receive(target,transferReceipt,{storeId:f.site.siteId}):await api.inventory.purchaseOrders.receive(target,{idempotency_key:receiveKey},{storeId:f.site.siteId});assert.deepEqual(replay,received);assert.deepEqual(stock(f.site.siteId),after);
+ if(!transfer){const detail=await api.inventory.purchaseOrders.get(target,{store_id:f.site.siteId});assert.equal(detail.subtotal,37.33);assert.equal(detail.total,37.33);}
+ for(const [index,variant]of variants.entries()){
+  const values=owned.psql("SELECT available||'|'||reserved||'|'||incoming FROM inventory_levels WHERE store_id="+quote(f.site.siteId)+" AND variant_id="+quote(variant)+" AND location_id="+quote(transfer?f.destination:f.site.locationId)+";");
+  assert.equal(values,transfer?(index?'3|0|0':'2|0|0'):(index?'23|0|0':'22|0|0'));
+ }
+});

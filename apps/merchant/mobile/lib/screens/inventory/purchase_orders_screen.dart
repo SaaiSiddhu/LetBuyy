@@ -10,7 +10,7 @@ import '../../app/store_context.dart';
 import '../../services/inventory_service.dart';
 import '../../theme/app_theme_colors.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' as mobile_tokens;
-import '../../widgets/shared/barcode_scanner_sheet.dart';
+import '../../widgets/shared/warehouse_create_form.dart';
 
 class PurchaseOrdersScreen extends StatefulWidget {
   const PurchaseOrdersScreen({super.key});
@@ -404,11 +404,7 @@ class _PurchaseOrdersScreenState extends State<PurchaseOrdersScreen> {
       ),
       builder: (_) => guardMerchantStoreView(
         view,
-        _PurchaseOrderForm(
-          storeId: view!.storeId,
-          colors: colors,
-          service: service,
-        ),
+        WarehouseCreateForm(view: view!, service: service, transfer: false),
       ),
     );
     if (input == null || !_matches(view) || input.storeId != view!.storeId)
@@ -520,169 +516,6 @@ class _PurchaseOrdersScreenState extends State<PurchaseOrdersScreen> {
         content: Text(message),
         backgroundColor: isError ? colors.error : colors.success,
         behavior: SnackBarBehavior.floating,
-      ),
-    );
-  }
-}
-
-class _PurchaseOrderForm extends StatefulWidget {
-  const _PurchaseOrderForm({
-    required this.storeId,
-    required this.colors,
-    required this.service,
-  });
-
-  final String storeId;
-  final AppThemeColors colors;
-  final InventoryService service;
-
-  @override
-  State<_PurchaseOrderForm> createState() => _PurchaseOrderFormState();
-}
-
-class _PurchaseOrderFormState extends State<_PurchaseOrderForm> {
-  final _supplierId = TextEditingController();
-  final _locationId = TextEditingController();
-  final _productId = TextEditingController();
-  final _variantId = TextEditingController();
-  final _quantity = TextEditingController(text: '1');
-  final _unitCost = TextEditingController(text: '0');
-  final _notes = TextEditingController();
-
-  @override
-  void dispose() {
-    _supplierId.dispose();
-    _locationId.dispose();
-    _productId.dispose();
-    _variantId.dispose();
-    _quantity.dispose();
-    _unitCost.dispose();
-    _notes.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = widget.colors;
-    return Padding(
-      padding: EdgeInsets.fromLTRB(
-        18,
-        18,
-        18,
-        MediaQuery.of(context).viewInsets.bottom + 18,
-      ),
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'New purchase order',
-              style: TextStyle(
-                color: colors.textPrimary,
-                fontSize: 18,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-            const SizedBox(height: 14),
-            _field(_supplierId, 'Supplier ID (optional)'),
-            _field(_locationId, 'Receiving location ID'),
-            _field(
-              _productId,
-              'Product ID or scanned barcode',
-              suffix: IconButton(
-                tooltip: 'Scan barcode',
-                icon: const Icon(Icons.qr_code_scanner_rounded),
-                onPressed: _scanBarcode,
-              ),
-            ),
-            _field(_variantId, 'Variant ID (optional)'),
-            Row(
-              children: [
-                Expanded(child: _field(_quantity, 'Quantity')),
-                const SizedBox(width: 10),
-                Expanded(child: _field(_unitCost, 'Unit cost')),
-              ],
-            ),
-            _field(_notes, 'Notes'),
-            const SizedBox(height: 10),
-            FilledButton.icon(
-              onPressed: _submit,
-              icon: const Icon(Icons.save_outlined),
-              label: const Text('Create purchase order'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _field(
-    TextEditingController controller,
-    String label, {
-    Widget? suffix,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: TextField(
-        controller: controller,
-        style: TextStyle(color: widget.colors.textPrimary),
-        decoration: InputDecoration(labelText: label, suffixIcon: suffix),
-      ),
-    );
-  }
-
-  Future<void> _scanBarcode() async {
-    try {
-      final barcode = await showBarcodeScannerSheet(context);
-      if (!mounted || barcode == null || barcode.trim().isEmpty) return;
-      final lookup = await widget.service.lookupBarcode(
-        storeId: widget.storeId,
-        barcode: barcode,
-      );
-      if (!mounted) return;
-      if (lookup == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No product found for that barcode.')),
-        );
-        return;
-      }
-      _productId.text = lookup.productId;
-      if (lookup.variantId.isNotEmpty) _variantId.text = lookup.variantId;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Matched ${lookup.label}')));
-    } catch (error) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Barcode lookup failed.')));
-    }
-  }
-
-  void _submit() {
-    final quantity = int.tryParse(_quantity.text.trim()) ?? 0;
-    final unitCost = num.tryParse(_unitCost.text.trim()) ?? 0;
-    if (_locationId.text.trim().isEmpty ||
-        _productId.text.trim().isEmpty ||
-        quantity <= 0) {
-      return;
-    }
-    Navigator.pop(
-      context,
-      PurchaseOrderInput(
-        storeId: widget.storeId,
-        supplierId: _supplierId.text,
-        locationId: _locationId.text,
-        notes: _notes.text,
-        idempotencyKey: widget.service.makeIdempotencyKey('po-create'),
-        lines: [
-          InventoryLineInput(
-            productId: _productId.text,
-            variantId: _variantId.text,
-            quantity: quantity,
-            unitCost: unitCost,
-          ),
-        ],
       ),
     );
   }
