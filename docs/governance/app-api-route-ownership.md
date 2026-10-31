@@ -188,3 +188,23 @@ and forwards only actual product references and the destination. PostgreSQL in
 the Gateway remains the sole authority for prices, GST, eligibility, profile
 mutations and immutable order/invoice facts. No local database or tax writer,
 provider call, account issuer or additional runtime is introduced.
+
+
+### Merchant warehouse request recovery — 31 October 2026
+
+The maintained route inventory and lint baseline advance together from **231 to
+232** for `apps/merchant/web/src/app/api/v1/stores/[store]/inventory/commands/stop/route.ts`.
+The existing Merchant `gateway-proxy` classification applies. The versioned route
+checks the browser Origin, current account, owned site and matching original
+body/header key, validates the canonical normalized request, and calls the typed
+Gateway SDK. It returns a private acknowledgement bound to the current actor/site.
+It has no database access, token issuance, provider call or local stock writer.
+
+The canonical `/v1/inventory/commands/stop` owner serializes with the original
+warehouse key: it returns an already-applied acknowledgement or stores a cancelled
+request acknowledgement that prevents delayed application. It does not undo an
+applied business stock movement. Those decisions and immutable receipts stay in
+Gateway/SQL. The six actual Next proxy/SDK paths have 55 local positive and
+Origin/account/site/key/receipt refusal tests; source qualification is distinct
+from hosted or device acceptance. The route freeze and inventory/baseline equality
+tests remain enforced for every class; no new exception or runtime is introduced.

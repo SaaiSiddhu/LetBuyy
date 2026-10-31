@@ -203,6 +203,7 @@
     "apps/merchant/web/src/app/api/themes/library/route.ts",
     "apps/merchant/web/src/app/api/themes/publish/route.ts",
     "apps/merchant/web/src/app/api/themes/route.ts",
+    "apps/merchant/web/src/app/api/v1/stores/[store]/inventory/commands/stop/route.ts",
     "apps/platform/identity/src/app/api/auth/accounts/route.ts",
     "apps/platform/identity/src/app/api/auth/create-store/route.ts",
     "apps/platform/identity/src/app/api/auth/login/route.ts",

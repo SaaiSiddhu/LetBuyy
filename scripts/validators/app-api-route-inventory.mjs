@@ -126,7 +126,10 @@ export function classifyAppApiRoute(file) {
 // generation, current job access, expiry and R2 writes remain Gateway-owned.
 // Approved branded checkout: one owned-store, origin/key-guarded readiness proxy.
 // DNS/provider ownership, derivation, TLS and lifecycle remain in the Gateway.
-export const APP_API_ROUTE_RATCHET = 231;
+// MERCHANT-WAREHOUSE-RECOVERY (2026-10-31): one versioned, current-actor/site/key
+// guarded stop proxy. Existing gateway-proxy class; effects and receipts stay in
+// Gateway/SQL. Its exact path is also registered in the lint baseline.
+export const APP_API_ROUTE_RATCHET = 232;
 
 export function ownershipCounts(routes) {
   const counts = new Map();
