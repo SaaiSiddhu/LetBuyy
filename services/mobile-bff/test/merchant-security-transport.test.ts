@@ -50,3 +50,19 @@ test('warehouse preflight stays a scoped authenticated GET through the actual BF
   headers:{Authorization:'Bearer '+'a'.repeat(32),'X-Store-ID':'site-a'}}),env as never);
  assert.equal(response.status,200);assert.equal(response.headers.get('Cache-Control'),'private, no-store');assert.equal(calls,1);
 });
+
+for(const resource of ['purchase-orders','transfers'])test(resource+' pages and fresh details preserve scoped queries, private data and denial through the actual BFF',async()=>{
+ for(const detail of [false,true])for(const status of [200,403,503]){
+  let calls=0;const path='/v1/inventory/'+resource+(detail?'/record-a':''),query=detail?'store_id=site-a':'store_id=site-a&page=2&limit=20&search=SYN%25_LITERAL&status=partially_received&sort=oldest';
+  const body=status===200?{data:detail?{id:'record-a',site_id:'site-a'}:[],meta:{store_id:'site-a',total:0}}:{error:{code:'SYN_UNAVAILABLE'}};
+  const env={INTERNAL_API_SECRET:'synthetic-warehouse-bff-secret',API_GATEWAY_SERVICE:{fetch:async(request:Request)=>{
+   calls++;assert.equal(request.method,'GET');const url=new URL(request.url);assert.equal(url.pathname,path);assert.equal(url.search, '?'+query);
+   assert.equal(request.headers.get('X-Store-ID'),'site-a');assert.equal(request.headers.get('Authorization'),null);assert.equal(request.headers.get('Cookie'),null);
+   assert.equal(request.headers.get('X-LetBuyy-Internal-Session-Token'),'a'.repeat(32));
+   return Response.json(body,{status,headers:{'Cache-Control':'private, no-store'}});
+  }}};
+  const request=new Request('https://mobile-bff.test'+path+'?'+query,{headers:{Authorization:'Bearer '+'a'.repeat(32),Cookie:'synthetic=private','X-Store-ID':'site-a'}});
+  const response=await app.fetch(request,env as never);assert.equal(response.status,status);assert.equal(response.headers.get('Cache-Control'),'private, no-store');assert.deepEqual(await response.json(),body);assert.equal(calls,1);
+  assert.equal((await app.fetch(new Request('https://mobile-bff.test'+path+'?'+query),env as never)).status,401);assert.equal(calls,1);
+ }
+});

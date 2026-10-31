@@ -569,9 +569,107 @@ class PurchaseOrderLineContract {
   int get remainingQuantity => (quantity - receivedQuantity).clamp(0, quantity);
 }
 
+// Strict read boundary for the canonical warehouse document DTO. Command receipts
+// retain their separate acknowledgement validator and do not supply read authority.
+void _verifyWarehouseDocument(
+  Map<String, dynamic> json, {
+  required bool transfer,
+}) {
+  Never invalid() => throw const FormatException(
+    'The warehouse document could not be confirmed.',
+  );
+  bool nullableId(Object? value) => value == null || _recordId(value);
+  bool money(Object? value) =>
+      value is num &&
+      value.isFinite &&
+      value >= 0 &&
+      (value * 100).round() / 100 == value;
+  bool dateField(String key) =>
+      json.containsKey(key) &&
+      (json[key] == null || _recordDate(json[key]) != null);
+  final site = json['site_id'], target = json['id'], lines = json['lines'];
+  if (!_recordId(site) ||
+      !_recordId(target) ||
+      _recordDate(json['created_at']) == null ||
+      (json['store_id'] != null && json['store_id'] != site) ||
+      !json.containsKey('notes') ||
+      (json['notes'] != null && json['notes'] is! String) ||
+      (json['updated_at'] != null && _recordDate(json['updated_at']) == null) ||
+      lines is! List ||
+      lines.isEmpty ||
+      lines.length > 200)
+    invalid();
+  if (transfer) {
+    if (!const [
+          'reserved',
+          'shipped',
+          'partially_received',
+          'received',
+          'cancelled',
+        ].contains(json['status']) ||
+        json['transfer_number'] is! String ||
+        (json['transfer_number'] as String).isEmpty ||
+        !_recordId(json['source_location_id']) ||
+        !_recordId(json['destination_location_id']) ||
+        json['source_location_id'] == json['destination_location_id'] ||
+        !dateField('shipped_at') ||
+        !dateField('received_at'))
+      invalid();
+  } else {
+    if (!const [
+          'draft',
+          'ordered',
+          'partially_received',
+          'received',
+          'cancelled',
+          'closed',
+        ].contains(json['status']) ||
+        json['po_number'] is! String ||
+        (json['po_number'] as String).isEmpty ||
+        !json.containsKey('supplier_id') ||
+        !nullableId(json['supplier_id']) ||
+        !json.containsKey('location_id') ||
+        !nullableId(json['location_id']) ||
+        !dateField('expected_at') ||
+        json['currency'] != 'INR' ||
+        !money(json['subtotal']) ||
+        !money(json['total']))
+      invalid();
+    final supplier = json['supplier'];
+    if (supplier != null &&
+        (supplier is! Map ||
+            supplier['id'] != json['supplier_id'] ||
+            supplier['site_id'] != site ||
+            supplier['name'] is! String))
+      invalid();
+  }
+  final ids = <String>{};
+  for (final raw in lines) {
+    if (raw is! Map) invalid();
+    final line = Map<String, dynamic>.from(raw);
+    if (!_recordId(line['id']) ||
+        !ids.add(line['id'] as String) ||
+        line['site_id'] != site ||
+        line[transfer ? 'transfer_id' : 'purchase_order_id'] != target ||
+        !_recordId(line['product_id']) ||
+        !line.containsKey('variant_id') ||
+        !nullableId(line['variant_id']) ||
+        _recordDate(line['created_at']) == null ||
+        (line['updated_at'] != null && _recordDate(line['updated_at']) == null))
+      invalid();
+    if (transfer) {
+      InventoryTransferLineContract.fromJson(line);
+    } else {
+      if (!money(line['unit_cost'])) invalid();
+      PurchaseOrderLineContract.fromJson(line);
+    }
+  }
+}
+
 class PurchaseOrderContract {
   const PurchaseOrderContract({
     required this.id,
+    this.poNumber = '',
     required this.storeId,
     required this.supplierId,
     required this.supplierName,
@@ -582,6 +680,10 @@ class PurchaseOrderContract {
     required this.lines,
   });
 
+  factory PurchaseOrderContract.fromVerifiedJson(Map<String, dynamic> json) {
+    _verifyWarehouseDocument(json, transfer: false);
+    return PurchaseOrderContract.fromJson(json);
+  }
   factory PurchaseOrderContract.fromJson(Map<String, dynamic> json) {
     final command = json;
     if (command['purchase_order'] is Map) {
@@ -594,6 +696,7 @@ class PurchaseOrderContract {
     final rawLines = json['lines'];
     return PurchaseOrderContract(
       id: _stringValue(json['id']),
+      poNumber: _stringValue(json['po_number']),
       storeId: _stringValue(json['store_id'] ?? json['site_id']),
       supplierId: _stringValue(json['supplier_id']),
       supplierName: _stringValue(
@@ -618,6 +721,7 @@ class PurchaseOrderContract {
   }
 
   final String id;
+  final String poNumber;
   final String storeId;
   final String supplierId;
   final String supplierName;
@@ -719,6 +823,7 @@ class InventoryTransferLineContract {
 class InventoryTransferContract {
   const InventoryTransferContract({
     required this.id,
+    this.transferNumber = '',
     required this.storeId,
     required this.sourceLocationId,
     required this.destinationLocationId,
@@ -727,6 +832,12 @@ class InventoryTransferContract {
     required this.lines,
   });
 
+  factory InventoryTransferContract.fromVerifiedJson(
+    Map<String, dynamic> json,
+  ) {
+    _verifyWarehouseDocument(json, transfer: true);
+    return InventoryTransferContract.fromJson(json);
+  }
   factory InventoryTransferContract.fromJson(Map<String, dynamic> json) {
     final command = json;
     if (command['transfer'] is Map) {
@@ -735,6 +846,7 @@ class InventoryTransferContract {
     final rawLines = json['lines'];
     return InventoryTransferContract(
       id: _stringValue(json['id']),
+      transferNumber: _stringValue(json['transfer_number']),
       storeId: _stringValue(json['store_id'] ?? json['site_id']),
       sourceLocationId: _stringValue(json['source_location_id']),
       destinationLocationId: _stringValue(json['destination_location_id']),
@@ -754,6 +866,7 @@ class InventoryTransferContract {
   }
 
   final String id;
+  final String transferNumber;
   final String storeId;
   final String sourceLocationId;
   final String destinationLocationId;

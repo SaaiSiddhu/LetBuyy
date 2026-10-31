@@ -8,6 +8,8 @@ const { JSDOM } = requireUI('jsdom')
 Object.assign(globalThis, { React, IS_REACT_ACT_ENVIRONMENT: true })
 const json = (data: unknown, status = 200) => Response.json({ data }, { status })
 function warehouseResponse(url:string,data:unknown,status=200) {
+    const detail=/\/(?:purchase-orders|transfers)\/([^/?]+)$/.exec(url);
+    if(detail&&Array.isArray(data))return json(data.find(row=>row&&typeof row==='object'&&'id'in row&&row.id===decodeURIComponent(detail[1])),status);
     if(!/\/(purchase-orders|transfers)\?/.test(url))return json(data,status);
     const query=new URL(url,'http://localhost').searchParams;
     return Response.json({data,meta:{store_id:url.includes('/alpha/')?historySite:'22222222-2222-4222-8222-222222222222',
@@ -503,12 +505,14 @@ test('notification results from a retired store cannot replace the current store
 
 const warehouseTarget='33333333-3333-4333-8333-333333333333',warehouseLine='77777777-7777-4777-8777-777777777777';
 function warehouseRow(po=false) {
+    const date='2026-10-31T00:00:00Z';
     return {id:warehouseTarget,site_id:historySite,po_number:'PO-SYN',transfer_number:'TR-SYN',status:po?'partially_received':'reserved',
-        source_location_id:'location-a',destination_location_id:'location-b',location_id:'location-a',notes:null,expected_at:null,
-        created_at:'2026-10-31T00:00:00Z',total:1.16,
+        source_location_id:'55555555-5555-4555-8555-555555555555',destination_location_id:'66666666-6666-4666-8666-666666666666',
+        location_id:'55555555-5555-4555-8555-555555555555',notes:null,expected_at:null,supplier_id:null,supplier:null,
+        created_at:date,total:1.16,subtotal:1.16,currency:'INR',shipped_at:null,received_at:null,
         lines:[{id:warehouseLine,site_id:historySite,purchase_order_id:warehouseTarget,transfer_id:warehouseTarget,
             product_id:historyRecord().product_id,variant_id:null,quantity_ordered:4,quantity_requested:4,
-            quantity_shipped:0,quantity_received:po?2:0,unit_cost:0.29}]};
+            quantity_shipped:0,quantity_received:po?2:0,unit_cost:0.29,created_at:date}]};
 }
 function warehouseAck(key:string,po=false,cancelled=false) {
     const command:Record<string,unknown>=po?{lines:[{purchase_order_line_id:warehouseLine,quantity:2}]}:{};
@@ -651,8 +655,8 @@ for (const kind of ['purchasing','transfers'] as const) {
     test(`${kind} uses canonical partial quantities and sends the explicit remaining receipt`,async()=>{
         const transfer=kind==='transfers',id='33333333-3333-4333-8333-333333333333',lineId='77777777-7777-4777-8777-777777777777';
         const row={id,site_id:historySite,po_number:'PO-SYN',transfer_number:'TR-SYN',status:'partially_received',
-            created_at:'2026-10-31T00:00:00Z',supplier:null,supplier_id:null,location_id:'location-a',
-            source_location_id:'location-a',destination_location_id:'location-b',total:1.16,subtotal:1.16,currency:'INR',
+            created_at:'2026-10-31T00:00:00Z',supplier:null,supplier_id:null,location_id:'55555555-5555-4555-8555-555555555555',
+            source_location_id:'55555555-5555-4555-8555-555555555555',destination_location_id:'66666666-6666-4666-8666-666666666666',total:1.16,subtotal:1.16,currency:'INR',
             notes:null,expected_at:null,shipped_at:null,received_at:null,
             lines:[{id:lineId,site_id:historySite,purchase_order_id:id,transfer_id:id,
                 product_id:historyRecord().product_id,variant_id:null,quantity_ordered:4,quantity_requested:4,
@@ -703,10 +707,52 @@ for(const kind of ['purchasing','transfers'] as const) {
         }finally{await h.close();}
     });
 }
+for(const kind of ['purchasing','transfers'] as const){
+ test(`${kind} prepares receipt quantities from a fresh detail rather than the list snapshot`,async()=>{
+  const po=kind==='purchasing',base=warehouseRow(po),writes:Record<string,unknown>[]=[];let detailReads=0;
+  const stale={...base,status:po?'ordered':'shipped',lines:[{...base.lines[0],quantity_shipped:4,quantity_received:0}]};
+  const fresh={...base,status:'partially_received',lines:[{...base.lines[0],quantity_shipped:3,quantity_received:2}]};
+  const h=await mount(kind,async(url,init)=>{
+   if(init?.method==='POST'){writes.push(JSON.parse(String(init.body)));return json({});}
+   if(url.includes('inventory-locations'))return json([]);
+   if(url.endsWith('/'+warehouseTarget)){detailReads++;assert.equal(new Headers(init?.headers).get('X-LetBuyy-Merchant-Context'),historySite);return json(fresh);}
+   return warehouseResponse(url,[stale]);
+  });
+  try{await h.click('Receive');assert.equal(detailReads,1);assert.match(h.text(),po?/Remaining: 2/:/Remaining: 1/);
+   await h.click(po?'Mark as received':'Confirm receipt');assert.deepEqual(writes[0].lines,[{[po?'purchase_order_line_id':'transfer_line_id']:warehouseLine,quantity:po?2:1}]);
+  }finally{await h.close();}
+ });
+ for(const fault of ['denied','foreign'])test(`${kind} cannot open a receipt from an unavailable or unverified ${fault} detail`,async()=>{
+  const po=kind==='purchasing';let writes=0;
+  const row={...warehouseRow(po),status:po?'ordered':'shipped',lines:[{...warehouseRow(po).lines[0],quantity_shipped:4}]};
+  const h=await mount(kind,async(url,init)=>{
+   if(init?.method==='POST')writes++;
+   if(url.includes('inventory-locations'))return json([]);
+   if(url.endsWith('/'+warehouseTarget))return fault==='denied'?json(null,403):json({...row,site_id:warehouseTarget});
+   return warehouseResponse(url,[row]);
+  });
+  try{await h.click('Receive');assert.match(h.text(),/current warehouse record could not be loaded/);assert.equal(writes,0);assert.equal(h.storage.length,0);
+   assert.doesNotMatch(h.text(),po?/Receive stock —/:/Receive transfer —/);
+  }finally{await h.close();}
+ });
+ test(`${kind} retires a delayed action detail across store A-B-A`,async()=>{
+  const po=kind==='purchasing',pending=deferred<Response>();let writes=0;
+  const row={...warehouseRow(po),status:po?'ordered':'shipped',lines:[{...warehouseRow(po).lines[0],quantity_shipped:4}]};
+  const h=await mount(kind,async(url,init)=>{
+   if(init?.method==='POST')writes++;
+   if(url.includes('inventory-locations'))return json([]);
+   if(url.endsWith('/'+warehouseTarget))return pending.promise;
+   return warehouseResponse(url,[row]);
+  });
+  try{await h.click('Receive');await h.render('beta');await h.render('alpha');
+   await act(async()=>pending.resolve(json(row)));assert.equal(writes,0);assert.equal(h.storage.length,0);
+   assert.doesNotMatch(h.text(),po?/Receive stock —/:/Receive transfer —/);
+  }finally{await h.close();}
+ });
+}
 test('a reserved transfer can open its shipping confirmation using the actual server status',async()=>{
     const h=await mount('transfers',async url=>url.includes('inventory-locations')?warehouseResponse(url,[{id:'a',name:'A'},{id:'b',name:'B'}]):warehouseResponse(url,[
-        {id:'synthetic-transfer',transfer_number:'TR-SYN-RESERVED',status:'reserved',source_location_id:'a',destination_location_id:'b',
-            created_at:'2026-10-31T00:00:00Z',lines:[]} ]));
+        {...warehouseRow(),transfer_number:'TR-SYN-RESERVED'} ]));
     try{await h.click('Ship');assert.match(h.text(),/Ship transfer — TR-SYN-RESERVED/);}finally{await h.close();}
 });
 

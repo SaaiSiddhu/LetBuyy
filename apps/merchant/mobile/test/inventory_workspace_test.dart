@@ -548,6 +548,302 @@ void main() {
         expect(tester.takeException(), isNull);
       },
     );
+  for (final transfer in [false, true]) {
+    testWidgets(
+      '${transfer ? 'transfer' : 'PO'} reviews fresh partial lines and recovers a committed lost reply with the original key',
+      (tester) async {
+        final writes = <JsonMap>[], storage = MemoryStorage();
+        JsonMap? receipt;
+        var effects = 0, detailReads = 0;
+        final fresh = w.warehouseDocument(
+          transfer: transfer,
+          site: siteA,
+          received: 2,
+          shipped: 3,
+          lineCount: 2,
+        );
+        await mount(
+          tester,
+          transfer
+              ? const InventoryTransfersScreen()
+              : const PurchaseOrdersScreen(),
+          (r, h) {
+            if (r.method == 'GET') {
+              if (r.path.endsWith('/${w.warehouseTarget}')) {
+                detailReads++;
+                respond(r, h, fresh);
+              } else {
+                final row = w.warehouseDocument(
+                  transfer: transfer,
+                  site: siteA,
+                  received: effects == 0 ? 0 : 2,
+                  shipped: 3,
+                  lineCount: 2,
+                );
+                if (effects > 0)
+                  (row['lines'] as List)[0]['quantity_received'] = 3;
+                respond(r, h, [row]);
+              }
+              return;
+            }
+            final body = Map<String, dynamic>.from(r.data as Map);
+            writes.add(body);
+            if (receipt == null) {
+              effects++;
+              final intent = transfer
+                  ? WarehouseCommandIntent.receiveTransfer(
+                      InventoryTransferContract.fromVerifiedJson(fresh),
+                      quantities: {w.warehouseLine: 1},
+                    )
+                  : WarehouseCommandIntent.receivePurchaseOrder(
+                      PurchaseOrderContract.fromVerifiedJson(fresh),
+                      quantities: {w.warehouseLine: 1},
+                    );
+              receipt = w.warehouseAck(
+                intent,
+                body['idempotency_key'],
+                site: siteA,
+                received: 3,
+                shipped: 3,
+              );
+              (receipt!['lines'] as List).add((fresh['lines'] as List)[1]);
+              h.reject(
+                DioException(
+                  requestOptions: r,
+                  type: DioExceptionType.connectionError,
+                ),
+              );
+              return;
+            }
+            respond(r, h, receipt!);
+          },
+          storage: storage,
+        );
+        await tester.tap(find.text('Receive'));
+        await tester.pumpAndSettle();
+        expect(detailReads, 1);
+        expect(find.text('Review stock receipt'), findsOneWidget);
+        expect(find.textContaining('SYN-2'), findsOneWidget);
+        expect(
+          find.textContaining('Variant aaaaaaaa-aaaa-4aaa-8aaa-000000000001'),
+          findsOneWidget,
+        );
+        expect(
+          find.textContaining(transfer ? 'Remaining: 1' : 'Remaining: 2'),
+          findsWidgets,
+        );
+        final first = find.byKey(
+          const ValueKey('warehouse-receive-${w.warehouseLine}'),
+        );
+        final second = find.byKey(
+          const ValueKey(
+            'warehouse-receive-99999999-9999-4999-8999-000000000001',
+          ),
+        );
+        await tester.enterText(first, '0');
+        await tester.enterText(second, '0');
+        await tester.tap(find.text('Confirm receipt'));
+        await tester.pumpAndSettle();
+        expect(
+          find.text('Choose at least one unit to receive.'),
+          findsOneWidget,
+        );
+        expect(writes, isEmpty);
+        await tester.enterText(first, '1.5');
+        await tester.tap(find.text('Confirm receipt'));
+        await tester.pumpAndSettle();
+        expect(
+          find.textContaining('Enter whole units between'),
+          findsOneWidget,
+        );
+        expect(writes, isEmpty);
+        await tester.enterText(first, '1');
+        await tester.tap(find.text('Confirm receipt'));
+        await tester.pumpAndSettle();
+        expect(effects, 1);
+        expect(writes.single['lines'], [
+          {
+            transfer ? 'transfer_line_id' : 'purchase_order_line_id':
+                w.warehouseLine,
+            'quantity': 1,
+          },
+        ]);
+        expect(
+          find.text('Warehouse request awaiting confirmation'),
+          findsOneWidget,
+        );
+        await tester.tap(find.text('Retry original'));
+        await tester.pumpAndSettle();
+        expect(effects, 1);
+        expect(writes, hasLength(2));
+        expect(writes[1], writes[0]);
+        expect(
+          find.text('Warehouse request awaiting confirmation'),
+          findsNothing,
+        );
+        expect(tester.takeException(), isNull);
+      },
+    );
+    testWidgets(
+      '${transfer ? 'transfer' : 'PO'} fresh detail denial cannot dispatch a receipt',
+      (tester) async {
+        var writes = 0;
+        await mount(
+          tester,
+          transfer
+              ? const InventoryTransfersScreen()
+              : const PurchaseOrdersScreen(),
+          (r, h) {
+            if (r.method != 'GET') {
+              writes++;
+              respond(r, h, {}, status: 503);
+              return;
+            }
+            if (r.path.endsWith('/${w.warehouseTarget}')) {
+              respond(r, h, {}, status: 403);
+              return;
+            }
+            respond(r, h, [
+              w.warehouseDocument(transfer: transfer, site: siteA),
+            ]);
+          },
+        );
+        await tester.tap(find.text('Receive'));
+        await tester.pumpAndSettle();
+        expect(
+          find.textContaining('current warehouse record could not be loaded'),
+          findsOneWidget,
+        );
+        expect(find.text('Review stock receipt'), findsNothing);
+        expect(writes, 0);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+  testWidgets(
+    'reserved transfers require a fresh reviewed shipment before receiving',
+    (tester) async {
+      var writes = 0, details = 0;
+      final row = w.warehouseDocument(
+        transfer: true,
+        site: siteA,
+        status: 'reserved',
+        shipped: 0,
+      );
+      await mount(tester, const InventoryTransfersScreen(), (r, h) {
+        if (r.method != 'GET') {
+          writes++;
+          respond(r, h, {}, status: 503);
+          return;
+        }
+        if (r.path.endsWith('/${w.warehouseTarget}')) {
+          details++;
+          respond(r, h, row);
+        } else {
+          respond(r, h, [row]);
+        }
+      });
+      expect(
+        tester
+            .widget<FilledButton>(find.widgetWithText(FilledButton, 'Receive'))
+            .onPressed,
+        isNull,
+      );
+      await tester.tap(find.text('Ship'));
+      await tester.pumpAndSettle();
+      expect(details, 1);
+      expect(find.text('Review stock shipment'), findsOneWidget);
+      expect(writes, 0);
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      expect(writes, 0);
+      expect(tester.takeException(), isNull);
+    },
+  );
+  for (final transfer in [false, true])
+    testWidgets(
+      '${transfer ? 'transfer' : 'PO'} receipt review retires across store A-B-A without saving or dispatching',
+      (tester) async {
+        var writes = 0, details = 0;
+        final storage = MemoryStorage();
+        final stores = await mount(
+          tester,
+          transfer
+              ? const InventoryTransfersScreen()
+              : const PurchaseOrdersScreen(),
+          (r, h) {
+            final site = r.queryParameters['store_id'].toString(),
+                row = w.warehouseDocument(
+                  transfer: transfer,
+                  site: site,
+                  received: 1,
+                );
+            if (r.method != 'GET') {
+              writes++;
+              respond(r, h, {}, status: 503);
+              return;
+            }
+            if (r.path.endsWith('/${w.warehouseTarget}')) details++;
+            respond(
+              r,
+              h,
+              r.path.endsWith('/${w.warehouseTarget}') ? row : [row],
+            );
+          },
+          storage: storage,
+        );
+        if (transfer) {
+          final service = tester
+              .element(find.byType(InventoryTransfersScreen))
+              .read<InventoryService>();
+          expect(service.transfers.single.lines.single.shippedQuantity, 4);
+          expect(
+            tester
+                .widget<FilledButton>(
+                  find.widgetWithText(FilledButton, 'Receive'),
+                )
+                .onPressed,
+            isNotNull,
+          );
+        }
+        await tester.tap(find.text('Receive'));
+        await tester.pumpAndSettle();
+        expect(
+          details,
+          1,
+          reason: tester.allWidgets
+              .whereType<Text>()
+              .map((text) => text.data ?? '')
+              .join(' | '),
+        );
+        expect(
+          find.text('Review stock receipt'),
+          findsOneWidget,
+          reason: tester.allWidgets
+              .whereType<Text>()
+              .map((text) => text.data ?? '')
+              .join(' | '),
+        );
+        await tester.enterText(
+          find.byKey(const ValueKey('warehouse-receive-${w.warehouseLine}')),
+          '1',
+        );
+        final toB = stores.selectStore(stores.stores.last);
+        await tester.pumpAndSettle();
+        await toB;
+        expect(find.text('Store access changed'), findsOneWidget);
+        expect(find.text('Confirm receipt'), findsNothing);
+        final toA = stores.selectStore(stores.stores.first);
+        await tester.pumpAndSettle();
+        await toA;
+        expect(find.text('Store access changed'), findsOneWidget);
+        await tester.tap(find.text('Close'));
+        await tester.pumpAndSettle();
+        expect(writes, 0);
+        expect(storage.data, isEmpty);
+        expect(tester.takeException(), isNull);
+      },
+    );
   final surfaces = <({String name, Widget screen, String? form, String? save})>[
     (name: 'levels', screen: const InventoryScreen(), form: null, save: null),
     (

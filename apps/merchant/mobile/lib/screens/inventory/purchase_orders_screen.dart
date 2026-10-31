@@ -1,6 +1,7 @@
 import '../../services/api_client.dart' show ApiException;
 import '../../widgets/shared/merchant_store_view.dart';
 import '../../widgets/shared/warehouse_command_recovery.dart';
+import '../../widgets/shared/warehouse_receipt_review.dart';
 import '../../app/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -280,14 +281,15 @@ class _PurchaseOrdersScreenState extends State<PurchaseOrdersScreen> {
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  order.supplierName,
+                  order.poNumber.isEmpty ? 'Purchase order' : order.poNumber,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     color: colors.textPrimary,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
               ),
-              _statusChip(order.status),
               IconButton(
                 tooltip: 'View receipts',
                 icon: const Icon(Icons.receipt_long_outlined),
@@ -301,6 +303,14 @@ class _PurchaseOrdersScreenState extends State<PurchaseOrdersScreen> {
                 },
               ),
             ],
+          ),
+          const SizedBox(height: 8),
+          _statusChip(order.status),
+          const SizedBox(height: 8),
+          Text(
+            order.supplierName,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: 8),
           Text(
@@ -323,7 +333,8 @@ class _PurchaseOrdersScreenState extends State<PurchaseOrdersScreen> {
               onPressed:
                   !_warehouseReady ||
                       _warehouseBusy ||
-                      order.remainingQuantity == 0
+                      order.remainingQuantity == 0 ||
+                      !['ordered', 'partially_received'].contains(order.status)
                   ? null
                   : () => _receive(order),
               icon: const Icon(Icons.move_to_inbox_outlined, size: 18),
@@ -360,7 +371,17 @@ class _PurchaseOrdersScreenState extends State<PurchaseOrdersScreen> {
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
-        label,
+        const {
+              'draft': 'Draft',
+              'ordered': 'Ordered',
+              'reserved': 'Reserved',
+              'shipped': 'Shipped',
+              'partially_received': 'Partially received',
+              'received': 'Received',
+              'cancelled': 'Cancelled',
+              'closed': 'Closed',
+            }[label] ??
+            label,
         style: TextStyle(
           color: colors.success,
           fontSize: 12,
@@ -420,20 +441,36 @@ class _PurchaseOrdersScreenState extends State<PurchaseOrdersScreen> {
         _warehouseBusy)
       return;
     setState(() => _warehouseBusy = true);
+    var dispatched = false;
     try {
       final service = context.read<InventoryService>();
+      final fresh = await service.fetchPurchaseOrder(view.storeId, order.id);
+      if (!_matches(view)) return;
+      if (!['ordered', 'partially_received'].contains(fresh.status) ||
+          fresh.remainingQuantity == 0) {
+        _showSnackBar(
+          'No stock is available to receive on this record. Refresh the workspace.',
+        );
+        return;
+      }
+      final quantities = await reviewPurchaseOrderReceipt(context, view, fresh);
+      if (quantities == null || !_matches(view)) return;
+      dispatched = true;
       await service.receivePurchaseOrder(
-        order,
-        idempotencyKey: service.makeIdempotencyKey('po-receive'),
+        fresh,
+        quantities: quantities,
+        idempotencyKey: service.makeIdempotencyKey('warehouse-receive'),
       );
       if (_matches(view)) {
-        _showSnackBar('Purchase order received');
+        _showSnackBar('Stock receipt confirmed');
         _load();
       }
     } catch (error) {
       if (_matches(view))
         _showSnackBar(
-          'The outcome could not be confirmed. Check the saved warehouse request before trying again.',
+          dispatched
+              ? 'The outcome could not be confirmed. Check the saved warehouse request before trying again.'
+              : 'The current warehouse record could not be loaded. Refresh and check your access before receiving.',
           isError: true,
         );
     } finally {

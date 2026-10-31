@@ -6,7 +6,8 @@ import {useMerchantSecurityContext} from '@/components/security/MerchantSecurity
 import {useWarehouseCommands,WarehouseRequestStoppedError,WarehouseCommandValidationError,type WarehouseSubmit} from '@/lib/inventory/use-warehouse-commands'
 import {WarehouseCommandRecovery} from '@/components/products/WarehouseCommandRecovery'
 import { useReadRequest } from '@/lib/api/use-read-request'
-import {WarehouseDocumentPageMetaSchema} from '@letbuyy/shared-types'
+import {WarehouseDocumentPageMetaSchema,WarehouseTransferSchema} from '@letbuyy/shared-types'
+import {useWarehouseDocument} from '@/lib/inventory/use-warehouse-document'
 import { useProductPicker } from '@/lib/api/use-product-picker'
 import { useInventoryLocations } from '@/lib/api/use-inventory-locations'
 import { formatIndiaDate as formatDate } from '@letbuyy/ui/formatting'
@@ -437,6 +438,11 @@ function ReceiveTransferModal({ submitCommand, blocked,
         if (!transfer) return
         setError(null)
 
+        if(receivableLines.some(line=>{const quantity=lineQtys[line.id]??0;return !Number.isInteger(quantity)||quantity<0||quantity>line.quantity_shipped-line.quantity_received})){
+            setError('Enter whole receiving quantities within the remaining stock for each line.')
+            return
+        }
+
         const receiveLines: ReceiveInventoryTransferLineInput[] = receivableLines
             .filter((l) => (lineQtys[l.id] ?? 0) > 0)
             .map((l) => ({
@@ -546,6 +552,7 @@ export default function TransfersPage() {
 }
 function WarehouseWorkspace({store}:{store:string}) {
     const commands=useWarehouseCommands(store)
+    const detail=useWarehouseDocument(store)
     const { notify } = useToast()
 
     const [transfers, setTransfers] = useState<TransferWithLines[]>([])
@@ -605,8 +612,11 @@ function WarehouseWorkspace({store}:{store:string}) {
         if (await productPicker.load()) setShowCreate(true)
     }
 
-    function openShip(transfer: TransferWithLines) {
-        if(commands.blocked)return
+    async function openShip(transfer: TransferWithLines) {
+        if(commands.blocked||detail.loading)return
+        try {
+            transfer=await detail.load('transfers',transfer.id,WarehouseTransferSchema)
+        }catch{notify({title:'The current warehouse record could not be loaded. Refresh and check your access.',variant:'critical'});return}
         if (transfer.status !== 'reserved') {
             notify({
                 title: `Cannot ship a transfer with status "${transferStatusLabel(transfer.status)}"`,
@@ -617,8 +627,11 @@ function WarehouseWorkspace({store}:{store:string}) {
         setShippingTransfer(transfer)
     }
 
-    function openReceive(transfer: TransferWithLines) {
-        if(commands.blocked)return
+    async function openReceive(transfer: TransferWithLines) {
+        if(commands.blocked||detail.loading)return
+        try {
+            transfer=await detail.load('transfers',transfer.id,WarehouseTransferSchema)
+        }catch{notify({title:'The current warehouse record could not be loaded. Refresh and check your access.',variant:'critical'});return}
         if (transfer.status === 'received' || transfer.status === 'cancelled') {
             notify({
                 title: `Cannot receive a ${transferStatusLabel(transfer.status).toLowerCase()} transfer`,
@@ -782,7 +795,7 @@ function WarehouseWorkspace({store}:{store:string}) {
                                                     <Button
                                                         variant="secondary"
                                                         size="sm"
-                                                        onClick={() => openShip(transfer)}
+                                                        onClick={() => void openShip(transfer)}
                                                         disabled={commands.blocked || transfer.status !== 'reserved'}
                                                     >
                                                         <Truck
@@ -794,7 +807,7 @@ function WarehouseWorkspace({store}:{store:string}) {
                                                     <Button
                                                         variant="secondary"
                                                         size="sm"
-                                                        onClick={() => openReceive(transfer)}
+                                                        onClick={() => void openReceive(transfer)}
                                                         disabled={
                                                             commands.blocked || transfer.status === 'received' ||
                                                             transfer.status === 'cancelled' ||

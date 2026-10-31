@@ -76,3 +76,19 @@ test('PO rejects foreign supplier joins and preserves zero whole-paise cost',()=
  (row.lines[0] as Record<string,unknown>).unit_cost=0.005;
  assert.equal(WarehousePurchaseOrderSchema.safeParse(row).success,false);
 });
+for(const transfer of [false,true])for(const fault of ['none','target','site','parent','empty','duplicate'])test((transfer?'transfer':'PO')+' SDK detail '+fault,async()=>{
+ const api=createLetbuyyApiClient({baseUrl:'https://gateway.test',storeId:uuid(99),fetch:async(input,init)=>{
+  const url=new URL(String(input));assert.equal(url.pathname,'/v1/inventory/'+(transfer?'transfers':'purchase-orders')+'/'+uuid(4));
+  assert.equal(url.searchParams.get('store_id'),uuid(1));assert.equal(init&&'cache'in init?init.cache:undefined,'no-store');assert.equal(new Headers(init?.headers).get('X-Store-ID'),uuid(1));
+  const row=record(transfer);
+  if(fault==='target')row.id=uuid(99);
+  if(fault==='site')row.site_id=uuid(99);
+  if(fault==='parent')(row.lines[0] as Record<string,unknown>)[transfer?'transfer_id':'purchase_order_id']=uuid(99);
+  if(fault==='empty')row.lines=[];
+  if(fault==='duplicate')row.lines.push({...row.lines[0]});
+  return Response.json({data:row});
+ }});
+ const get=()=>transfer?api.inventory.transfers.get(uuid(4),{store_id:uuid(1)}):api.inventory.purchaseOrders.get(uuid(4),{store_id:uuid(1)});
+ if(fault==='none')assert.equal((await get()).lines[0].quantity_received,2);
+ else await assert.rejects(get,e=>e instanceof LetbuyyApiError&&e.code==='WAREHOUSE_DOCUMENTS_UNVERIFIED');
+});

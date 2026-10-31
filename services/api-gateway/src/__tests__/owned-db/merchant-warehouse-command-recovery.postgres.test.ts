@@ -458,3 +458,34 @@ for(const transfer of [false,true])test((transfer?'transfer':'purchase order')+'
  owned.psql("UPDATE sites SET custom_user_id=NULL,user_id=NULL WHERE id="+quote(f.site.siteId)+";");
  const denied=await get('page=11&limit=100');assert.equal(denied.status,403);assert.equal(denied.json?.data,undefined);
 });
+
+for(const transfer of [false,true])test((transfer?'transfer':'PO')+' fresh SDK detail reads bind target/site and expose only current complete documents',async t=>{
+ const f=await fixture(t),key=randomUUID();
+ const made=transfer?await f.request('/transfers',{store_id:f.site.siteId,source_location_id:f.site.locationId,destination_location_id:f.destination,
+  lines:[{product_id:f.product,quantity:4}],idempotency_key:key},key):await f.request('/purchase-orders',f.create(key,4),key);
+ assert.equal(made.status,201,made.text);
+ const target=made.json?.data[transfer?'transfer':'purchase_order'].id,line=made.json?.data.lines[0].id,route=transfer?'transfers':'purchase-orders';
+ const api=createLetbuyyApiClient({baseUrl:'https://owned-gateway.example.invalid/v1',storeId:randomUUID(),
+  getHeaders:()=>signedIdentityHeaders(f.actor,'syn-wms-'+f.actor+'@example.invalid'),fetch:async(input,init)=>{
+   const url=new URL(typeof input==='string'?input:input instanceof URL?input.href:input.url);assert.equal(init&&'cache'in init?init.cache:undefined,'no-store');
+   const result=await f.gateway.request(url.pathname+url.search,init);assert.equal(new Headers(result.headers).get('Cache-Control'),'private, no-store');
+   return new Response(result.text,{status:result.status,headers:result.headers});}});
+ const get=()=>transfer?api.inventory.transfers.get(target,{store_id:f.site.siteId}):api.inventory.purchaseOrders.get(target,{store_id:f.site.siteId});
+ const before=await get();assert.equal(before.id,target);assert.equal(before.site_id,f.site.siteId);assert.equal(before.lines[0].quantity_received,0);
+ if(transfer){const ship=randomUUID();assert.equal((await f.request('/transfers/'+target+'/ship',{idempotency_key:ship},ship)).status,200);}
+ const receive=randomUUID(),received=await f.request('/'+route+'/'+target+'/receive',
+  {lines:[{[transfer?'transfer_line_id':'purchase_order_line_id']:line,quantity:2}],idempotency_key:receive},receive);assert.equal(received.status,200,received.text);
+ assert.equal((await get()).lines[0].quantity_received,2);assert.equal(before.lines[0].quantity_received,0);
+ const ownOther=newSyntheticTenant('detail-other-'+(++fixtureOrdinal));seedSyntheticTenant(owned.psql,ownOther);
+ owned.psql("UPDATE sites SET custom_user_id="+quote(f.actor)+" WHERE id="+quote(ownOther.siteId)+";");
+ await assert.rejects(()=>transfer?api.inventory.transfers.get(target,{store_id:ownOther.siteId}):api.inventory.purchaseOrders.get(target,{store_id:ownOther.siteId}),e=>e instanceof LetbuyyApiError&&e.status===404);
+ const endpoint='/v1/inventory/'+route+'/'+target+'?store_id='+f.site.siteId;
+ const foreign=await fixture(t),denied=await f.gateway.request(endpoint,{headers:await signedIdentityHeaders(foreign.actor,'syn-wms-'+foreign.actor+'@example.invalid',f.site.siteId)});
+ assert.equal(denied.status,403);assert.equal(denied.json?.data,undefined);
+ for(const path of ['/v1/inventory/'+route+'/invalid?store_id='+f.site.siteId,'/v1/inventory/'+route+'/'+target])
+  assert.equal((await f.gateway.request(path,{headers:await signedIdentityHeaders(f.actor,'syn-wms-'+f.actor+'@example.invalid',f.site.siteId)})).status,400);
+ owned.psql("UPDATE "+(transfer?'inventory_transfer_lines':'purchase_order_lines')+" SET site_id="+quote(ownOther.siteId)+" WHERE id="+quote(line)+";");
+ await assert.rejects(get,e=>e instanceof LetbuyyApiError&&e.code==='WAREHOUSE_DOCUMENTS_UNVERIFIED');
+ owned.psql("UPDATE "+(transfer?'inventory_transfers':'purchase_orders')+" SET deleted_at=now() WHERE id="+quote(target)+";");
+ await assert.rejects(get,e=>e instanceof LetbuyyApiError&&e.status===404);
+});

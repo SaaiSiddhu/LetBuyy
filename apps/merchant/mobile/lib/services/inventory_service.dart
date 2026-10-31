@@ -1072,6 +1072,46 @@ class InventoryService extends ChangeNotifier {
     (row) =>
         _suppliers = [row, ..._suppliers.where((item) => item.id != row.id)],
   );
+  Future<T> _warehouseDetail<T>(
+    String site,
+    String id,
+    Future<JsonMap> Function(ApiRequestOptions) read,
+    T Function(JsonMap) parse,
+  ) async {
+    final version = _api.captureRequestContext();
+    final raw = await read(_options(version, site));
+    _check(version);
+    try {
+      if (raw['id'] != id || raw['site_id'] != site)
+        throw const FormatException();
+      return parse(raw);
+    } on FormatException {
+      throw const ApiException(
+        message:
+            'This warehouse record could not be confirmed. Reload the current store.',
+        statusCode: 503,
+        code: 'WAREHOUSE_DOCUMENTS_UNVERIFIED',
+      );
+    }
+  }
+
+  Future<PurchaseOrderContract> fetchPurchaseOrder(String site, String id) =>
+      _warehouseDetail(
+        site,
+        id,
+        (options) =>
+            _api.inventory.purchaseOrder(id, storeId: site, options: options),
+        PurchaseOrderContract.fromVerifiedJson,
+      );
+  Future<InventoryTransferContract> fetchTransfer(String site, String id) =>
+      _warehouseDetail(
+        site,
+        id,
+        (options) =>
+            _api.inventory.transfer(id, storeId: site, options: options),
+        InventoryTransferContract.fromVerifiedJson,
+      );
+
   Future<List<PurchaseOrderContract>> fetchPurchaseOrders(
     String storeId, {
     int page = 1,

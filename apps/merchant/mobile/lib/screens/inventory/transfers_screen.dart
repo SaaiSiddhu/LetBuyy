@@ -1,6 +1,7 @@
 import '../../services/api_client.dart' show ApiException;
 import '../../widgets/shared/merchant_store_view.dart';
 import '../../widgets/shared/warehouse_command_recovery.dart';
+import '../../widgets/shared/warehouse_receipt_review.dart';
 import '../../app/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -281,14 +282,17 @@ class _InventoryTransfersScreenState extends State<InventoryTransfersScreen> {
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  '${transfer.sourceLocationId} -> ${transfer.destinationLocationId}',
+                  transfer.transferNumber.isEmpty
+                      ? 'Stock transfer'
+                      : transfer.transferNumber,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     color: colors.textPrimary,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
               ),
-              _statusChip(transfer.status),
               IconButton(
                 tooltip: 'View receipts',
                 icon: const Icon(Icons.receipt_long_outlined),
@@ -303,6 +307,14 @@ class _InventoryTransfersScreenState extends State<InventoryTransfersScreen> {
                 },
               ),
             ],
+          ),
+          const SizedBox(height: 8),
+          _statusChip(transfer.status),
+          const SizedBox(height: 8),
+          Text(
+            '${transfer.sourceLocationId} -> ${transfer.destinationLocationId}',
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: 8),
           Text(
@@ -323,7 +335,10 @@ class _InventoryTransfersScreenState extends State<InventoryTransfersScreen> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               OutlinedButton.icon(
-                onPressed: !_warehouseReady || _warehouseBusy
+                onPressed:
+                    !_warehouseReady ||
+                        _warehouseBusy ||
+                        transfer.status != 'reserved'
                     ? null
                     : () => _ship(transfer),
                 icon: const Icon(Icons.local_shipping_outlined, size: 18),
@@ -338,7 +353,14 @@ class _InventoryTransfersScreenState extends State<InventoryTransfersScreen> {
                 onPressed:
                     !_warehouseReady ||
                         _warehouseBusy ||
-                        transfer.remainingQuantity == 0
+                        ![
+                          'shipped',
+                          'partially_received',
+                        ].contains(transfer.status) ||
+                        !transfer.lines.any(
+                          (line) =>
+                              line.shippedQuantity > line.receivedQuantity,
+                        )
                     ? null
                     : () => _receive(transfer),
                 icon: const Icon(Icons.move_to_inbox_outlined, size: 18),
@@ -373,7 +395,17 @@ class _InventoryTransfersScreenState extends State<InventoryTransfersScreen> {
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
-        label,
+        const {
+              'draft': 'Draft',
+              'ordered': 'Ordered',
+              'reserved': 'Reserved',
+              'shipped': 'Shipped',
+              'partially_received': 'Partially received',
+              'received': 'Received',
+              'cancelled': 'Cancelled',
+              'closed': 'Closed',
+            }[label] ??
+            label,
         style: TextStyle(
           color: colors.warning,
           fontSize: 12,
@@ -429,20 +461,35 @@ class _InventoryTransfersScreenState extends State<InventoryTransfersScreen> {
         _warehouseBusy)
       return;
     setState(() => _warehouseBusy = true);
+    var dispatched = false;
     try {
       final service = context.read<InventoryService>();
+      final fresh = await service.fetchTransfer(view.storeId, transfer.id);
+      if (!_matches(view)) return;
+      if (fresh.status != 'reserved') {
+        _showSnackBar(
+          'This transfer is no longer reserved. Refresh the workspace.',
+        );
+        return;
+      }
+      if (!await reviewTransferShipment(context, view, fresh) ||
+          !_matches(view))
+        return;
+      dispatched = true;
       await service.shipTransfer(
-        transfer,
+        fresh,
         idempotencyKey: service.makeIdempotencyKey('transfer-ship'),
       );
       if (_matches(view)) {
-        _showSnackBar('Transfer shipped');
+        _showSnackBar('Shipment confirmed');
         _load();
       }
     } catch (error) {
       if (_matches(view))
         _showSnackBar(
-          'The outcome could not be confirmed. Check the saved warehouse request before trying again.',
+          dispatched
+              ? 'The outcome could not be confirmed. Check the saved warehouse request before trying again.'
+              : 'The current transfer could not be loaded. Refresh and check your access before shipping.',
           isError: true,
         );
     } finally {
@@ -458,20 +505,38 @@ class _InventoryTransfersScreenState extends State<InventoryTransfersScreen> {
         _warehouseBusy)
       return;
     setState(() => _warehouseBusy = true);
+    var dispatched = false;
     try {
       final service = context.read<InventoryService>();
+      final fresh = await service.fetchTransfer(view.storeId, transfer.id);
+      if (!_matches(view)) return;
+      if (!['shipped', 'partially_received'].contains(fresh.status) ||
+          !fresh.lines.any(
+            (line) => line.shippedQuantity > line.receivedQuantity,
+          )) {
+        _showSnackBar(
+          'No stock is available to receive on this record. Refresh the workspace.',
+        );
+        return;
+      }
+      final quantities = await reviewTransferReceipt(context, view, fresh);
+      if (quantities == null || !_matches(view)) return;
+      dispatched = true;
       await service.receiveTransfer(
-        transfer,
-        idempotencyKey: service.makeIdempotencyKey('transfer-receive'),
+        fresh,
+        quantities: quantities,
+        idempotencyKey: service.makeIdempotencyKey('warehouse-receive'),
       );
       if (_matches(view)) {
-        _showSnackBar('Transfer received');
+        _showSnackBar('Stock receipt confirmed');
         _load();
       }
     } catch (error) {
       if (_matches(view))
         _showSnackBar(
-          'The outcome could not be confirmed. Check the saved warehouse request before trying again.',
+          dispatched
+              ? 'The outcome could not be confirmed. Check the saved warehouse request before trying again.'
+              : 'The current warehouse record could not be loaded. Refresh and check your access before receiving.',
           isError: true,
         );
     } finally {

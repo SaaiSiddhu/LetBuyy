@@ -1,6 +1,8 @@
 import {z} from 'zod';
 
 const id=z.string().uuid(),count=z.number().int().min(0).max(999999);
+export const WarehouseDocumentScopeQuerySchema=z.object({store_id:id}).strict();
+export const WarehouseDocumentParamsSchema=z.object({id}).strict();
 const date=z.string().datetime({offset:true});
 const amount=z.number().finite().nonnegative().refine(n=>Math.round(n*100)/100===n,'Amounts must use whole paise.');
 export const WarehousePurchaseOrderLineSchema=z.object({

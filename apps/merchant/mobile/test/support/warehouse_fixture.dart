@@ -116,3 +116,72 @@ JsonMap warehouseAck(
     ],
   };
 }
+
+JsonMap warehouseDocument({
+  bool transfer = false,
+  String site = warehouseSite,
+  int quantity = 4,
+  int received = 0,
+  int shipped = 4,
+  int lineCount = 1,
+  String? status,
+}) {
+  const date = '2026-10-31T00:00:00Z';
+  return {
+    'id': warehouseTarget,
+    'site_id': site,
+    'notes': null,
+    'created_at': date,
+    'updated_at': date,
+    'status':
+        status ??
+        (received == quantity
+            ? 'received'
+            : received > 0
+            ? 'partially_received'
+            : transfer
+            ? 'shipped'
+            : 'ordered'),
+    if (transfer) ...{
+      'transfer_number': 'TR-SYN',
+      'source_location_id': warehouseLocation,
+      'destination_location_id': warehouseDestination,
+      'shipped_at': date,
+      'received_at': null,
+    } else ...{
+      'po_number': 'PO-SYN',
+      'supplier_id': null,
+      'supplier': null,
+      'location_id': warehouseLocation,
+      'expected_at': null,
+      'subtotal': 12.25 * quantity * lineCount,
+      'total': 12.25 * quantity * lineCount,
+      'currency': 'INR',
+    },
+    'lines': List.generate(
+      lineCount,
+      (index) => {
+        'id': index == 0
+            ? warehouseLine
+            : "99999999-9999-4999-8999-${index.toString().padLeft(12, '0')}",
+        'site_id': site,
+        transfer ? 'transfer_id' : 'purchase_order_id': warehouseTarget,
+        'product_id': warehouseProduct,
+        'variant_id': index == 0
+            ? null
+            : 'aaaaaaaa-aaaa-4aaa-8aaa-000000000001',
+        'sku': 'SYN-${index + 1}',
+        'product_name': 'Synthetic product ${index + 1}',
+        'created_at': date,
+        'quantity_received': received,
+        if (transfer) ...{
+          'quantity_requested': quantity,
+          'quantity_shipped': shipped,
+        } else ...{
+          'quantity_ordered': quantity,
+          'unit_cost': 12.25,
+        },
+      },
+    ),
+  };
+}

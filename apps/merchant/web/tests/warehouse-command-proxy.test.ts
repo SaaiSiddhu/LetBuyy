@@ -33,7 +33,7 @@ function evaluate<T>(url:URL,dependencies:Record<string,unknown>):T {
  const js=ts.transpileModule(readFileSync(url,'utf8'),{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.CommonJS}}).outputText;
  const exports={};new Function('require','exports',js)((name:string)=>{assert.ok(dependencies[name],name);return dependencies[name];},exports);return exports as T;
 }
-function load(kind:Kind,options:{unauthenticated?:boolean;foreignStore?:boolean;wrongActorReceipt?:boolean;cancelled?:boolean;wrongCapabilityActor?:boolean;capabilityMissing?:boolean;missingCount?:boolean}={}) {
+function load(kind:Kind,options:{unauthenticated?:boolean;foreignStore?:boolean;wrongActorReceipt?:boolean;cancelled?:boolean;wrongCapabilityActor?:boolean;capabilityMissing?:boolean;missingCount?:boolean;detail?:boolean;wrongDetailSite?:boolean}={}) {
  const calls:Array<{kind:string;key?:string|null;site?:string|null;body?:unknown;query?:Record<string,string>}>=[];
  const api=createLetbuyyApiClient({baseUrl:'https://api.synthetic.invalid/v1',storeId:id(99),fetch:async(input,init)=>{
   const request=new Request(input,init),url=new URL(request.url);
@@ -43,6 +43,16 @@ function load(kind:Kind,options:{unauthenticated?:boolean;foreignStore?:boolean;
    calls.push({kind:'capabilities'});if(options.capabilityMissing)return Response.json({error:{code:'NOT_FOUND'}},{status:404});
    return Response.json({data:{store_id:site,actor_id:options.wrongCapabilityActor?id(99):actor,protocol_version:'1',
     effect_policy:'atomic_receipt_or_unavailable',stop_supported:true}});
+  }
+  if(request.method==='GET'&&/\/inventory\/(purchase-orders|transfers)\/[^/]+$/.test(url.pathname)) {
+   calls.push({kind:'detail',site:request.headers.get('X-Store-ID'),query:Object.fromEntries(url.searchParams)});
+   const po=kind==='purchase_order.create',date='2026-10-31T00:00:00Z';
+   const row={id:id(3),site_id:options.wrongDetailSite?id(99):site,status:'partially_received',notes:null,created_at:date,
+    lines:[{id:id(4),site_id:site,product_id:id(6),variant_id:null,quantity_received:2,created_at:date,
+     ...(po?{purchase_order_id:id(3),quantity_ordered:4,unit_cost:12.25}:{transfer_id:id(3),quantity_requested:4,quantity_shipped:3})}],
+    ...(po?{po_number:'PO-SYN',supplier_id:null,location_id:id(5),expected_at:null,subtotal:49,total:49,currency:'INR'}:
+     {transfer_number:'TR-SYN',source_location_id:id(5),destination_location_id:id(8),shipped_at:null,received_at:null})};
+   return Response.json({data:row});
   }
   if(request.method==='GET'&&/\/inventory\/(purchase-orders|transfers)$/.test(url.pathname)) {
    calls.push({kind:'list',site:request.headers.get('X-Store-ID'),query:Object.fromEntries(url.searchParams)});
@@ -74,7 +84,7 @@ function load(kind:Kind,options:{unauthenticated?:boolean;foreignStore?:boolean;
  const warehouse=evaluate<Record<string,unknown>>(new URL('../src/lib/api/merchant-warehouse-scope.ts',import.meta.url),{
   'next/server':{NextRequest,NextResponse},'./merchant-security-scope':security});
  type Handler={POST?:(request:NextRequest,context:{params:Promise<{store:string;id:string}>})=>Promise<Response>};
- const route=evaluate<Handler&{GET?:Handler['POST']}>(new URL('../src/app/'+routes[kind],import.meta.url),{
+ const route=evaluate<Handler&{GET?:Handler['POST']}>(new URL('../src/app/'+(options.detail?routes[kind].replace('/route.ts','/[id]/route.ts'):routes[kind]),import.meta.url),{
   'next/server':{NextRequest,NextResponse},'@/lib/api/client':client,'@/lib/stores/resolve-owned-store':resolve,
   '@/lib/api/merchant-security-scope':security,'@/lib/api/merchant-warehouse-scope':warehouse,'@letbuyy/commerce-core':commerce,'@letbuyy/shared-types':shared});
  const request=(body:unknown=input(kind),headers:Record<string,string>={})=>new NextRequest(admin+'/api/stores/qa/warehouse',{method:kind==='capabilities'?'GET':'POST',
@@ -138,5 +148,20 @@ for(const kind of ['purchase_order.create','transfer.create'] as const) {
   assert.ok(response.status>=400);assert.equal(response.headers.get('Cache-Control'),'private, no-store');
   const body=await response.json();assert.equal(body.meta,undefined);assert.equal(body.data,undefined);
   if(denial!=='count')assert.equal(route.calls.filter(x=>x.kind==='list').length,0);
+ }));
+}
+
+for(const kind of ['purchase_order.create','transfer.create'] as const){
+ test(kind+' actual detail GET exposes fresh scoped lines through the strict SDK',async()=>configured(async()=>{
+  const route=load(kind,{detail:true}),response=await route.get('');assert.equal(response.status,200,await response.clone().text());
+  assert.equal(response.headers.get('Cache-Control'),'private, no-store');
+  const row=(await response.json()).data;assert.equal(row.id,id(3));assert.equal(row.site_id,site);assert.equal(row.lines[0].quantity_received,2);
+  assert.deepEqual(route.calls.map(x=>x.kind),['session','owner','detail']);assert.equal(route.calls[2].site,site);
+ }));
+ for(const denial of ['owner','session','actor','scope'])test(kind+' detail refuses '+denial,async()=>configured(async()=>{
+  const route=load(kind,{detail:true,foreignStore:denial==='owner',unauthenticated:denial==='session',wrongDetailSite:denial==='scope'});
+  const response=await route.get('',denial==='actor'?{'X-LetBuyy-Merchant-Context':id(99)}:{});
+  assert.ok(response.status>=400);assert.equal(response.headers.get('Cache-Control'),'private, no-store');assert.equal((await response.json()).data,undefined);
+  if(denial!=='scope')assert.equal(route.calls.filter(x=>x.kind==='detail').length,0);
  }));
 }

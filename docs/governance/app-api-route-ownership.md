@@ -220,3 +220,5 @@ database nor grants a permission lease or migration-readiness claim. New clients
 must confirm the guarded protocol before dispatch to prevent bootstrap into an
 older split-commit Gateway/BFF. Actual command authority/effects still live in the
 canonical Gateway/SQL owner. No new runtime, issuer or local stock writer is added.
+
+Merchant warehouse fresh detail reads (31 October 2026): `apps/merchant/web/src/app/api/stores/[store]/purchase-orders/[id]/route.ts` and `apps/merchant/web/src/app/api/stores/[store]/transfers/[id]/route.ts` are current-account, owned-site, no-store GET proxies in the existing `gateway-proxy` class. Validation and stock authority remain in Gateway/shared contracts. The maintained technical inventory becomes 235; the freeze validator remains unchanged.

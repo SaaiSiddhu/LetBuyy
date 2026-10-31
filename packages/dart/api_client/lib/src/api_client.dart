@@ -2645,6 +2645,10 @@ class InventoryApi {
       query: {'store_id':storeId,'page':page,'limit':limit,'sort':sort,if(status!=null)'status':status,if(search!=null)'search':search}),
   );
 
+  Future<JsonMap> purchaseOrder(String id,{required String storeId,ApiRequestOptions? options})=>_client.requestJson(
+    '/inventory/purchase-orders/${_encodePathSegment(id)}',options:_mergeOptions(
+      (options??const ApiRequestOptions()).copyWith(storeId:storeId),method:HttpMethod.get,query:{'store_id':storeId}));
+
   Future<JsonMap> createPurchaseOrder(
     JsonMap input, {
     ApiRequestOptions? options,
@@ -2670,6 +2674,10 @@ class InventoryApi {
     options: _mergeOptions((options??const ApiRequestOptions()).copyWith(storeId:storeId),
       query: {'store_id':storeId,'page':page,'limit':limit,'sort':sort,if(status!=null)'status':status,if(search!=null)'search':search}),
   );
+
+  Future<JsonMap> transfer(String id,{required String storeId,ApiRequestOptions? options})=>_client.requestJson(
+    '/inventory/transfers/${_encodePathSegment(id)}',options:_mergeOptions(
+      (options??const ApiRequestOptions()).copyWith(storeId:storeId),method:HttpMethod.get,query:{'store_id':storeId}));
 
   Future<JsonMap> createTransfer(JsonMap input, {ApiRequestOptions? options}) =>
       _client.requestJson(

@@ -1,4 +1,4 @@
-import {WarehousePurchaseOrderPageSchema,WarehouseTransferPageSchema,WarehousePurchaseOrderListQuerySchema,WarehouseTransferListQuerySchema,type WarehousePurchaseOrderListQuery,type WarehouseTransferListQuery,type WarehousePurchaseOrder,type WarehousePurchaseOrderLine,type WarehouseTransfer,type WarehouseTransferLine} from '@letbuyy/shared-types';
+import {WarehousePurchaseOrderSchema,WarehouseTransferSchema,WarehousePurchaseOrderPageSchema,WarehouseTransferPageSchema,WarehousePurchaseOrderListQuerySchema,WarehouseTransferListQuerySchema,type WarehousePurchaseOrderListQuery,type WarehouseTransferListQuery,type WarehousePurchaseOrder,type WarehousePurchaseOrderLine,type WarehouseTransfer,type WarehouseTransferLine} from '@letbuyy/shared-types';
 import {WarehouseCommandResultSchema,WarehouseCommandCapabilitiesSchema,WAREHOUSE_COMMAND_PROTOCOL_HEADER,WAREHOUSE_COMMAND_PROTOCOL_VERSION,type WarehouseCommandOperation,type WarehouseCommandResult,type StopWarehouseCommandInput,type WarehouseCommandCapabilities} from '@letbuyy/shared-types';
 export type {WarehouseCommandIntent,WarehouseCommandResult,StopWarehouseCommandInput} from '@letbuyy/shared-types';
 import type { ShippingCapabilities, ShippingProfile, CreateShippingProfileInput, UpdateShippingProfileInput } from '@letbuyy/shared-types';
@@ -4944,6 +4944,8 @@ export class LetbuyyApiClient {
     adjust: (input: InventoryAdjustInput, options?: LetbuyyRequestOptions) =>
       this.requestData<JsonRecord>('/inventory/adjust', { ...options, method: 'POST', body: input }),
     purchaseOrders: {
+      get:(id:string,query:{store_id:string},options?:LetbuyyRequestOptions)=>
+        this.requestWarehouseDocument(`/inventory/purchase-orders/${encodePathSegment(id)}`,id,query.store_id,WarehousePurchaseOrderSchema,options),
       list: (query: PurchaseOrderListQuery, options?: LetbuyyRequestOptions) =>
         this.requestWarehouseDocuments('/inventory/purchase-orders',WarehousePurchaseOrderListQuerySchema.parse(query),WarehousePurchaseOrderPageSchema,options),
       create: (input: CreatePurchaseOrderInput, options?: LetbuyyRequestOptions) =>
@@ -4987,6 +4989,8 @@ export class LetbuyyApiClient {
     release: (input: InventoryReservationActionInput, options?: LetbuyyRequestOptions) =>
       this.requestData<JsonRecord>('/inventory/release', { ...options, method: 'POST', body: input }),
     transfers: {
+      get:(id:string,query:{store_id:string},options?:LetbuyyRequestOptions)=>
+        this.requestWarehouseDocument(`/inventory/transfers/${encodePathSegment(id)}`,id,query.store_id,WarehouseTransferSchema,options),
       list: (query: InventoryTransferListQuery, options?: LetbuyyRequestOptions) =>
         this.requestWarehouseDocuments('/inventory/transfers',WarehouseTransferListQuerySchema.parse(query),WarehouseTransferPageSchema,options),
       create: (input: CreateInventoryTransferInput, options?: LetbuyyRequestOptions) =>
@@ -5736,6 +5740,14 @@ export class LetbuyyApiClient {
     if(!parsed.success||parsed.data.command_receipt.actor_id!==capabilities.actor_id||parsed.data.command_receipt.site_id!==store||parsed.data.command_receipt.operation!==operation||
       parsed.data.command_receipt.key!==input.idempotency_key||(target!==null&&parsed.data.command_receipt.target_id!==target))
       throw new LetbuyyApiError({status:502,code:'WAREHOUSE_ACKNOWLEDGEMENT_UNVERIFIED',message:'The warehouse outcome could not be confirmed. Keep the original request for recovery.'});
+    return parsed.data;
+  }
+
+  private async requestWarehouseDocument<T extends {id:string;site_id:string}>(path:string,id:string,store:string,
+    schema:{safeParse(value:unknown):{success:true;data:T}|{success:false}},options?:LetbuyyRequestOptions):Promise<T> {
+    const parsed=schema.safeParse(await this.requestData<unknown>(path,{...options,method:'GET',storeId:store,query:{store_id:store},cache:'no-store'}));
+    if(!parsed.success||parsed.data.site_id!==store||parsed.data.id!==id)throw new LetbuyyApiError({status:503,
+      code:'WAREHOUSE_DOCUMENTS_UNVERIFIED',message:'This warehouse record could not be confirmed. Reload the current store.'});
     return parsed.data;
   }
 

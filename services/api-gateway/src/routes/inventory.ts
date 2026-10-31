@@ -4,7 +4,7 @@ import { resolveMerchantResourceStoreIds } from '../lib/tenant-context';
 // ============================================================
 
 import { Hono } from 'hono';
-import { InventoryReservationSchema, InventoryReceiptSchema, WarehousePurchaseOrderPageSchema,WarehouseTransferPageSchema,
+import { InventoryReservationSchema, InventoryReceiptSchema, WarehousePurchaseOrderSchema,WarehouseTransferSchema,WarehousePurchaseOrderPageSchema,WarehouseTransferPageSchema,
  WAREHOUSE_COMMAND_PROTOCOL_HEADER,WAREHOUSE_COMMAND_PROTOCOL_VERSION,isWarehouseCommandPath } from '@letbuyy/shared-types';
 import type { Env } from '../index';
 import { executeInventoryAdjustment } from '../execution/inventory-adjustment.adapter';
@@ -27,7 +27,7 @@ import {
     ShipTransferSchema,
     StopWarehouseCommandSchema,
     prepareWarehouseCommand,
-    WarehousePurchaseOrderListQuerySchema,WarehouseTransferListQuerySchema,
+    WarehouseDocumentScopeQuerySchema,WarehouseDocumentParamsSchema,WarehousePurchaseOrderListQuerySchema,WarehouseTransferListQuerySchema,
     WarehouseCommandCapabilitiesQuerySchema,
     type WarehouseCommandCapabilitiesQuery,
     type StopWarehouseCommandInput,
@@ -457,6 +457,23 @@ router.post('/commands/stop', validate('json', StopWarehouseCommandSchema), asyn
 });
 
 // POST /inventory/purchase-orders — Create ordered PO and incoming inventory
+router.get('/purchase-orders/:id',validate('param',WarehouseDocumentParamsSchema),validate('query',WarehouseDocumentScopeQuerySchema),async c=>{
+    c.header('Cache-Control','private, no-store');
+    const {id}=WarehouseDocumentParamsSchema.parse(c.get('validatedParam'));
+    const {store_id:site}=WarehouseDocumentScopeQuerySchema.parse(c.get('validatedQuery'));
+    const db=getSupabaseAdmin(c),auth=c.get('auth'),actor=await resolveCustomUser(db,auth.user);
+    if(!actor||!await verifySiteOwnership(db,site,actor.id,auth.user.storeId))
+        return c.json(failureBody('FORBIDDEN','Your access to this store changed.'),403);
+    const {data,error}=await db.from('purchase_orders').select('*, supplier:suppliers(id,site_id,name), lines:purchase_order_lines(*)')
+        .eq('id',id).eq('site_id',site).is('deleted_at',null).is('lines.deleted_at',null).maybeSingle();
+    if(error)return c.json(dbFailureBody(),500);
+    if(!data)return c.json(failureBody('NOT_FOUND','Warehouse record not found.'),404);
+    const parsed=WarehousePurchaseOrderSchema.safeParse(data);
+    if(!parsed.success||parsed.data.id!==id||parsed.data.site_id!==site)
+        return c.json(failureBody('WAREHOUSE_DOCUMENTS_UNVERIFIED','This warehouse record could not be confirmed.'),503);
+    return c.json(success(parsed.data));
+});
+
 router.post('/purchase-orders', validate('json', CreatePurchaseOrderSchema), async (c) => {
     const auth = c.get('auth');
     const body = c.get('validatedBody') as CreatePurchaseOrderInput;
@@ -530,6 +547,23 @@ router.get('/transfers',validate('query',WarehouseTransferListQuerySchema), asyn
 });
 
 // POST /inventory/transfers — Reserve stock for transfer
+router.get('/transfers/:id',validate('param',WarehouseDocumentParamsSchema),validate('query',WarehouseDocumentScopeQuerySchema),async c=>{
+    c.header('Cache-Control','private, no-store');
+    const {id}=WarehouseDocumentParamsSchema.parse(c.get('validatedParam'));
+    const {store_id:site}=WarehouseDocumentScopeQuerySchema.parse(c.get('validatedQuery'));
+    const db=getSupabaseAdmin(c),auth=c.get('auth'),actor=await resolveCustomUser(db,auth.user);
+    if(!actor||!await verifySiteOwnership(db,site,actor.id,auth.user.storeId))
+        return c.json(failureBody('FORBIDDEN','Your access to this store changed.'),403);
+    const {data,error}=await db.from('inventory_transfers').select('*, lines:inventory_transfer_lines(*)')
+        .eq('id',id).eq('site_id',site).is('deleted_at',null).is('lines.deleted_at',null).maybeSingle();
+    if(error)return c.json(dbFailureBody(),500);
+    if(!data)return c.json(failureBody('NOT_FOUND','Warehouse record not found.'),404);
+    const parsed=WarehouseTransferSchema.safeParse(data);
+    if(!parsed.success||parsed.data.id!==id||parsed.data.site_id!==site)
+        return c.json(failureBody('WAREHOUSE_DOCUMENTS_UNVERIFIED','This warehouse record could not be confirmed.'),503);
+    return c.json(success(parsed.data));
+});
+
 router.post('/transfers', validate('json', CreateTransferSchema), async (c) => {
     const auth = c.get('auth');
     const body = c.get('validatedBody') as CreateTransferInput;

@@ -6,7 +6,8 @@ import {useMerchantSecurityContext} from '@/components/security/MerchantSecurity
 import {useWarehouseCommands,WarehouseRequestStoppedError,WarehouseCommandValidationError,type WarehouseSubmit} from '@/lib/inventory/use-warehouse-commands'
 import {WarehouseCommandRecovery} from '@/components/products/WarehouseCommandRecovery'
 import { useReadRequest } from '@/lib/api/use-read-request'
-import {WarehouseDocumentPageMetaSchema} from '@letbuyy/shared-types'
+import {WarehouseDocumentPageMetaSchema,WarehousePurchaseOrderSchema} from '@letbuyy/shared-types'
+import {useWarehouseDocument} from '@/lib/inventory/use-warehouse-document'
 import { useProductPicker } from '@/lib/api/use-product-picker'
 import { useInventoryLocations } from '@/lib/api/use-inventory-locations'
 import { formatIndiaDate as formatDate, formatInrCurrency } from '@letbuyy/ui/formatting'
@@ -382,6 +383,11 @@ function ReceivePOModal({ submitCommand, blocked, open, po, onClose, onReceived 
         if (!po) return
         setError(null)
 
+        if(receivableLines.some(line=>{const quantity=lineQtys[line.id]??0;return !Number.isInteger(quantity)||quantity<0||quantity>line.quantity_ordered-line.quantity_received})){
+            setError('Enter whole receiving quantities within the remaining stock for each line.')
+            return
+        }
+
         const receiveLines: ReceivePurchaseOrderLineInput[] = receivableLines
             .filter((l) => (lineQtys[l.id] ?? 0) > 0)
             .map((l) => ({
@@ -486,6 +492,7 @@ export default function PurchaseOrdersPage() {
 }
 function WarehouseWorkspace({store}:{store:string}) {
     const commands=useWarehouseCommands(store)
+    const detail=useWarehouseDocument(store)
     const { notify } = useToast()
 
     const [pos, setPos] = useState<PurchaseOrder[]>([])
@@ -562,9 +569,12 @@ function WarehouseWorkspace({store}:{store:string}) {
         }
     }
 
-    function openReceive(po: PurchaseOrder) {
-        if(commands.blocked)return
-        if (po.status === 'received' || po.status === 'cancelled' || po.status === 'closed') {
+    async function openReceive(po: PurchaseOrder) {
+        if(commands.blocked||detail.loading)return
+        try {
+            po=await detail.load('purchase-orders',po.id,WarehousePurchaseOrderSchema)
+        }catch{notify({title:'The current warehouse record could not be loaded. Refresh and check your access.',variant:'critical'});return}
+        if (po.status !== 'ordered' && po.status !== 'partially_received') {
             notify({ title: `Cannot receive a ${po.status} order`, variant: 'critical' })
             return
         }
@@ -705,7 +715,7 @@ function WarehouseWorkspace({store}:{store:string}) {
                                                 <Button
                                                     variant="secondary"
                                                     size="sm"
-                                                    onClick={() => openReceive(po)}
+                                                    onClick={() => void openReceive(po)}
                                                     disabled={commands.blocked || po.status === 'received' || po.status === 'cancelled' || po.status === 'closed'}
                                                 >
                                                     <Truck

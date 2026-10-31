@@ -131,7 +131,8 @@ export function classifyAppApiRoute(file) {
 // Gateway/SQL. Its exact path is also registered in the lint baseline.
 // MERCHANT-WAREHOUSE-PREFLIGHT: one scoped, no-store protocol descriptor proxy.
 // It grants no lease/readiness and stays in the same existing gateway-proxy class.
-export const APP_API_ROUTE_RATCHET = 233;
+// MERCHANT-WAREHOUSE-DETAIL: two fresh owner-scoped document read proxies.
+export const APP_API_ROUTE_RATCHET = 235;
 
 export function ownershipCounts(routes) {
   const counts = new Map();
