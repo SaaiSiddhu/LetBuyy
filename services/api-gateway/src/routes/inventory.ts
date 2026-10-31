@@ -415,13 +415,23 @@ router.get('/purchase-orders',validate('query',WarehousePurchaseOrderListQuerySc
     const db=getSupabaseAdmin(c),auth=c.get('auth'),actor=await resolveCustomUser(db,auth.user);
     if(!actor||!await verifySiteOwnership(db,query.store_id,actor.id,auth.user.storeId))
         return c.json(failureBody('FORBIDDEN','Your access to this store changed.'),403);
-    let read=db.from('purchase_orders').select('*, supplier:suppliers(id,site_id,name), lines:purchase_order_lines(*)',{count:'exact'})
-        .eq('site_id',query.store_id).is('deleted_at',null).is('lines.deleted_at',null);
-    if(query.status)read=read.eq('status',query.status);
-    if(query.search)read=read.ilike('po_number','%'+query.search.replace(/[\\%_]/g,'\\$&')+'%');
-    const ascending=query.sort==='oldest';
-    const {data,error,count}=await read.order('created_at',{ascending}).order('id',{ascending})
-        .range((query.page-1)*query.limit,query.page*query.limit-1);
+    const buildRead=(head=false)=>{
+        let read=db.from('purchase_orders').select('*, supplier:suppliers(id,site_id,name), lines:purchase_order_lines(*)',{count:'exact',head})
+            .eq('site_id',query.store_id).is('deleted_at',null).is('lines.deleted_at',null);
+        if(query.status)read=read.eq('status',query.status);
+        if(query.search)read=read.ilike('po_number','%'+query.search.replace(/[\\%_]/g,'\\$&')+'%');
+        return read;
+    };
+    const ascending=query.sort==='oldest',offset=(query.page-1)*query.limit;
+    let {data,error,count}=await buildRead().order('created_at',{ascending}).order('id',{ascending})
+        .range(offset,offset+query.limit-1);
+    // A page may disappear between requests. Confirm the same filtered population;
+    // never turn a missing count or an unrelated database failure into zero rows.
+    if(offset>0&&(error?.code==='PGRST103'||(!error&&Array.isArray(data)&&data.length===0&&count===null))){
+        const recovered=await buildRead(true);
+        if(recovered.error||recovered.count===null)return c.json(failureBody('WAREHOUSE_DOCUMENTS_UNVERIFIED','These warehouse records could not be confirmed.'),503);
+        data=[];count=recovered.count;error=null;
+    }
     if(error)return c.json(dbFailureBody(),500);
     if(!Array.isArray(data)||count===null)return c.json(failureBody('WAREHOUSE_DOCUMENTS_UNVERIFIED','These warehouse records could not be confirmed.'),503);
     const body=scopedInventoryPage(data,count,query.page,query.limit,query.store_id);
@@ -493,13 +503,23 @@ router.get('/transfers',validate('query',WarehouseTransferListQuerySchema), asyn
     const db=getSupabaseAdmin(c),auth=c.get('auth'),actor=await resolveCustomUser(db,auth.user);
     if(!actor||!await verifySiteOwnership(db,query.store_id,actor.id,auth.user.storeId))
         return c.json(failureBody('FORBIDDEN','Your access to this store changed.'),403);
-    let read=db.from('inventory_transfers').select('*, lines:inventory_transfer_lines(*)',{count:'exact'})
-        .eq('site_id',query.store_id).is('deleted_at',null).is('lines.deleted_at',null);
-    if(query.status)read=read.eq('status',query.status);
-    if(query.search)read=read.ilike('transfer_number','%'+query.search.replace(/[\\%_]/g,'\\$&')+'%');
-    const ascending=query.sort==='oldest';
-    const {data,error,count}=await read.order('created_at',{ascending}).order('id',{ascending})
-        .range((query.page-1)*query.limit,query.page*query.limit-1);
+    const buildRead=(head=false)=>{
+        let read=db.from('inventory_transfers').select('*, lines:inventory_transfer_lines(*)',{count:'exact',head})
+            .eq('site_id',query.store_id).is('deleted_at',null).is('lines.deleted_at',null);
+        if(query.status)read=read.eq('status',query.status);
+        if(query.search)read=read.ilike('transfer_number','%'+query.search.replace(/[\\%_]/g,'\\$&')+'%');
+        return read;
+    };
+    const ascending=query.sort==='oldest',offset=(query.page-1)*query.limit;
+    let {data,error,count}=await buildRead().order('created_at',{ascending}).order('id',{ascending})
+        .range(offset,offset+query.limit-1);
+    // A page may disappear between requests. Confirm the same filtered population;
+    // never turn a missing count or an unrelated database failure into zero rows.
+    if(offset>0&&(error?.code==='PGRST103'||(!error&&Array.isArray(data)&&data.length===0&&count===null))){
+        const recovered=await buildRead(true);
+        if(recovered.error||recovered.count===null)return c.json(failureBody('WAREHOUSE_DOCUMENTS_UNVERIFIED','These warehouse records could not be confirmed.'),503);
+        data=[];count=recovered.count;error=null;
+    }
     if(error)return c.json(dbFailureBody(),500);
     if(!Array.isArray(data)||count===null)return c.json(failureBody('WAREHOUSE_DOCUMENTS_UNVERIFIED','These warehouse records could not be confirmed.'),503);
     const body=scopedInventoryPage(data,count,query.page,query.limit,query.store_id);

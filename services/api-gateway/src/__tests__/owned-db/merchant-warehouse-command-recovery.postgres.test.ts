@@ -445,6 +445,11 @@ for(const transfer of [false,true])test((transfer?'transfer':'purchase order')+'
  const expected=JSON.parse(owned.psql("SELECT jsonb_agg(id ORDER BY id)::text FROM(SELECT id FROM "+table+" WHERE site_id="+quote(f.site.siteId)+" ORDER BY created_at,id OFFSET 1000 LIMIT 100)t;"));
  assert.deepEqual(last.json?.data.map((row:{id:string})=>row.id),expected);
  const next=await get('page=12&limit=100');assert.equal(next.status,200,next.text);assert.deepEqual(next.json?.data,[]);assert.equal(next.json?.meta.total,1005);
+ const blockedCount=tapRest(owned.restUrl,async(call,forward)=>call.resource===table&&call.method==='HEAD'?
+  Response.json({code:'SYN_COUNT_UNAVAILABLE'},{status:503}):forward());
+ try{const unavailable=await get('page=12&limit=100');assert.equal(unavailable.status,503,unavailable.text);assert.equal(unavailable.json?.data,undefined);assert.equal(unavailable.json?.meta,undefined);}
+ finally{blockedCount.restore();}
+
  for(const query of ['limit=101','page=0','page=1.5','sort=random','status=partial'])assert.equal((await get(query)).status,400,query);
  const filter=await get('status=received');assert.equal(filter.status,200,filter.text);assert.equal(filter.json?.meta.total,0);assert.deepEqual(filter.json?.data,[]);
  owned.psql("UPDATE "+table+" SET "+number+"='SYN%literal' WHERE id="+quote(first.json?.data[0].id)+";UPDATE "+table+" SET "+number+"='SYNxliteral' WHERE id="+quote(first.json?.data[1].id)+";UPDATE "+table+" SET deleted_at=now() WHERE id="+quote(first.json?.data[2].id)+";");
