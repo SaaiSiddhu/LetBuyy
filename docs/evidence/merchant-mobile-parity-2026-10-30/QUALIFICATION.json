@@ -1,12 +1,12 @@
 {
   "date": "2026-10-30",
-  "source_commit": "f44bc93af6fbaab3034aca30567d29fd3e2883a6",
+  "source_commit": "31d17b437fbc9139b5015545579840419d798502",
   "branch": "codex/merchant-mobile-parity",
   "scope": "source checkpoint; full 122-item acceptance remains in progress",
   "flutter": {
-    "source_commit": "f44bc93af6fbaab3034aca30567d29fd3e2883a6",
-    "tests": 592,
-    "pass": 592,
+    "source_commit": "31d17b437fbc9139b5015545579840419d798502",
+    "tests": 613,
+    "pass": 613,
     "fail": 0,
     "analysis": "pass"
   },
@@ -28,7 +28,7 @@
     },
     "ok": true,
     "exitCode": 0,
-    "source_commit": "f44bc93af6fbaab3034aca30567d29fd3e2883a6"
+    "source_commit": "31d17b437fbc9139b5015545579840419d798502"
   },
   "owned_database_runs": [
     {
@@ -793,6 +793,74 @@
         }
       ],
       "provider_evidence": "synthetic owned fixture only"
+    },
+    {
+      "run_id": "1f67a5b3afd0",
+      "source_commit": "31d17b437fbc9139b5015545579840419d798502",
+      "purpose": "composed warehouse apply/stop lifecycle, authority, whole-paise precision and guarded rollback",
+      "tests": 23,
+      "pass": 23,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-recovery.postgres.test.ts",
+          "tests": 20,
+          "pass": 20,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        },
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-rollback.postgres.test.ts",
+          "tests": 3,
+          "pass": 3,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        }
+      ]
+    },
+    {
+      "run_id": "228fb0ceff59",
+      "source_commit": "31d17b437fbc9139b5015545579840419d798502",
+      "purpose": "current populated tenant red-team and fresh database grants",
+      "tests": 8,
+      "pass": 8,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "path": "tests/executable/service-role-fresh-db-grants-postgres.test.mjs",
+          "tests": 6,
+          "pass": 6,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        },
+        {
+          "path": "tests/executable/tenant-redteam-postgres.test.mjs",
+          "tests": 2,
+          "pass": 2,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        }
+      ]
     }
   ],
   "ios_simulator_build": {
@@ -838,12 +906,12 @@
       "release signing"
     ],
     "captcha": "User authorized completion; app was already authenticated at next observation; no separate challenge click was issued or proven.",
-    "current_emulator_state": "Installed hash-verified ffdc3f47b debug APK; authorized login retained; Operations dashboard shows four generic unavailable metric reads after warehouse Retry. Exact task AVD still running for continuing read-only work."
+    "current_emulator_state": "Source 31d17b437 installed and hash verified on the recovered task AVD. Its earlier session has expired; current screen is sign-in. Earlier bounded read-only proofs are historical, not current build acceptance."
   },
   "production_account_used": true,
   "deployment_performed": false,
   "full_122_acceptance": "in_progress",
-  "previous_source_commit": "863f556b131db3f945f3489d3023a6b14ed3bb1a",
+  "previous_source_commit": "f44bc93af6fbaab3034aca30567d29fd3e2883a6",
   "customer_scope_tests": {
     "pass": 17,
     "fail": 0
@@ -866,14 +934,17 @@
     "restored_service_sha256": "8331a55932bbca8dcf8f950fcb3294b153f5fee57037be9842d55b4ebf3aa657"
   },
   "android_debug_build": {
-    "source_commit": "863f556b131db3f945f3489d3023a6b14ed3bb1a",
-    "bytes": 148929907,
-    "sha256": "f1921aba760b4dbe346c1d1c09ae373407356ad4717830381afd20625a7bcf39",
-    "installed_hash_matches": true,
+    "source_commit": "31d17b437fbc9139b5015545579840419d798502",
+    "bytes": 219779455,
+    "sha256": "0ffb0b96792516a329738615deb1d201f3a639cd1a42b2a767995fd44f79af8d",
     "serial": "emulator-5580",
     "avd": "LetBuyy_Merchant_Parity",
     "signing": "debug",
-    "configuration": "dart-defines/production.json"
+    "configuration": "dart-defines/production.json",
+    "installed_hash_matches": true,
+    "adb_port": 15038,
+    "adb_serial": "127.0.0.1:5581",
+    "observed": "Installed hash-verified debug artifact. Restored task emulator has returned to sign-in with security-check-unavailable state. No authenticated warehouse journey or production write was performed on this build."
   },
   "production_business_mutations_performed": false,
   "catalog_continuation": "committed and local/database/governance qualified; final hash-verified Android read/recovery observed; full web/mobile feature acceptance remains in progress",
@@ -914,8 +985,8 @@
     "production_business_mutations": false
   },
   "shared_dart_models_tests": {
-    "source_commit": "f44bc93af6fbaab3034aca30567d29fd3e2883a6",
-    "pass": 20,
+    "source_commit": "31d17b437fbc9139b5015545579840419d798502",
+    "pass": 28,
     "fail": 0,
     "focused_warehouse_before": {
       "pass": 0,
@@ -924,7 +995,9 @@
     "focused_warehouse_after": {
       "pass": 4,
       "fail": 0
-    }
+    },
+    "analysis": "pass",
+    "warehouse_intent_acknowledgement_tests": 8
   },
   "inventory_scope_journal_tests": {
     "pass": 49,
@@ -944,7 +1017,7 @@
     "fail": 0,
     "source_commit": "fff025100c2ced7bcbc2fa0c18b99f0cfc7e800a"
   },
-  "inventory_continuation": "Reservation, receipt and four-panel operations read source now qualified with bounded local/owned-DB/governance proof; finite BFF metric routing repaired. Hosted data and durable warehouse commands remain open. Continue PO/transfer/location/supplier lifecycle recovery, then the remaining feature ledger. Full 122 parity stays in progress.",
+  "inventory_continuation": "Native encrypted WMS retry/stop and atomic backend qualification now pass. Continue canonical web warehouse record/recovery repair, complete authorized reads/selectors/pagination and remaining feature ledger. All 122 parity remains in progress.",
   "previous_governance": {
     "counts": {
       "PASS": 114,
@@ -1292,6 +1365,16 @@
         "root_cause": "not determined by native UI; source BFF lacks the finite read routes before repair",
         "intentional_business_mutations": false
       }
+    },
+    {
+      "source_commit": "863f556b131db3f945f3489d3023a6b14ed3bb1a",
+      "bytes": 148929907,
+      "sha256": "f1921aba760b4dbe346c1d1c09ae373407356ad4717830381afd20625a7bcf39",
+      "installed_hash_matches": true,
+      "serial": "emulator-5580",
+      "avd": "LetBuyy_Merchant_Parity",
+      "signing": "debug",
+      "configuration": "dart-defines/production.json"
     }
   ],
   "source_reconciliation": {
@@ -1329,25 +1412,25 @@
     "scope": "source/local qualification only, paired rollback required",
     "next_number_if_unused": 414,
     "accepted_refs_rechecked": true,
-    "implementation": "414 paired guarded owner implemented and locally tested; native/web durable recovery still open",
+    "implementation": "414 paired guarded apply/stop owner implemented and locally tested; encrypted native retry/stop controls implemented; full web recovery and warehouse reads/selectors remain open",
     "evidence": "WAREHOUSE_ATOMICITY.md"
   },
   "warehouse_checkpoint": {
-    "backend_source_commit": "125bcd1d3",
-    "native_model_source_commit": "f44bc93af6fbaab3034aca30567d29fd3e2883a6",
+    "backend_source_commit": "31d17b437fbc9139b5015545579840419d798502",
+    "native_model_source_commit": "31d17b437fbc9139b5015545579840419d798502",
     "migration": 414,
     "owner_authorized_source_and_local_only": true,
-    "owned_final_run": "dc5b4c3be74d",
-    "owned_final_pass": 16,
+    "owned_final_run": "1f67a5b3afd0",
+    "owned_final_pass": 23,
     "owned_final_fail": 0,
-    "raw_access_and_tenant_run": "441313f95296",
+    "raw_access_and_tenant_run": "228fb0ceff59",
     "raw_access_and_tenant_pass": 8,
-    "gateway_units_and_contracts": 1867,
+    "gateway_units_and_contracts": 1877,
     "gateway_typecheck": "pass",
     "web_typecheck": "pass",
     "sdk_typecheck": "pass",
-    "native_client_recovery": "not implemented",
-    "safe_abandon_of_unapplied_pending_request": "not implemented",
+    "native_client_recovery": "implemented; 17 real transport/encrypted journal regressions and 4 rendered recovery-control cases pass locally",
+    "safe_abandon_of_unapplied_pending_request": "implemented as server-authoritative same-key stop; applied/cancelled outcomes distinguished",
     "hosted_migration": false,
     "deployed": false,
     "evidence": "WAREHOUSE_ATOMICITY.md",
@@ -1357,6 +1440,13 @@
       "quantity_shipped",
       "quantity_received"
     ],
-    "installed_android_source": "863f556b1"
-  }
+    "installed_android_source": "31d17b437fbc9139b5015545579840419d798502",
+    "web_client_recovery": "not implemented; canonical web record drift repair in progress",
+    "native_tests": 613,
+    "shared_model_tests": 28,
+    "native_journal_focused_tests": 17,
+    "native_workspace_tests": 18,
+    "authenticated_latest_device_warehouse_acceptance": false
+  },
+  "last_qualified_date": "2026-10-31"
 }
