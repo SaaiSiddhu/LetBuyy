@@ -1,14 +1,16 @@
 {
   "date": "2026-10-30",
-  "source_commit": "58030c1c3a0f89e7f77380bfb910beac037e8440",
+  "source_commit": "97edec1ea36254eeef79d1e09c1e62efcf0b105d",
   "branch": "codex/merchant-mobile-parity",
   "scope": "source checkpoint; full 122-item acceptance remains in progress",
   "flutter": {
-    "source_commit": "58030c1c3a0f89e7f77380bfb910beac037e8440",
-    "tests": 675,
-    "pass": 675,
+    "source_commit": "1dd5400bee4991b1036901811ef2ec84bfd046d5",
+    "integrated_source_commit": "97edec1ea36254eeef79d1e09c1e62efcf0b105d",
+    "tests": 694,
+    "pass": 694,
     "fail": 0,
-    "analysis": "pass"
+    "analysis": "pass",
+    "native_diff_from_integrated_source": "empty"
   },
   "shared_dart_transport_context_tests": {
     "pass": 12,
@@ -28,7 +30,7 @@
       "NOT_APPLICABLE": 1
     },
     "exitCode": 0,
-    "source_commit": "58030c1c3a0f89e7f77380bfb910beac037e8440"
+    "source_commit": "97edec1ea36254eeef79d1e09c1e62efcf0b105d"
   },
   "owned_database_runs": [
     {
@@ -1073,7 +1075,7 @@
   "production_account_used": true,
   "deployment_performed": false,
   "full_122_acceptance": "in_progress",
-  "previous_source_commit": "8be82e4afb63c388c02bfd9f8392c259e7711fd9",
+  "previous_source_commit": "58030c1c3a0f89e7f77380bfb910beac037e8440",
   "customer_scope_tests": {
     "pass": 17,
     "fail": 0
@@ -1704,7 +1706,7 @@
     "scope": "source/local qualification only, paired rollback required",
     "next_number_if_unused": 414,
     "accepted_refs_rechecked": true,
-    "implementation": "414 atomic owner, retained recovery, fresh protocol, exact parent pages, fresh details and reviewed native receipt/shipment flows qualified locally; selectors/creation recovery and hosted/release gates remain open",
+    "implementation": "Source-only draft 414 canonical-variant lookup corrected and requalified with paired rollback; no hosted migration. Native selectors/multi-line workflows qualified locally; list controls, metadata-creation recovery and actual hosted/release gates remain open.",
     "evidence": "WAREHOUSE_ATOMICITY.md"
   },
   "warehouse_checkpoint": {
@@ -1842,7 +1844,7 @@
     }
   },
   "last_qualified_date": "2026-11-01",
-  "implementation_commit": "58030c1c3a0f89e7f77380bfb910beac037e8440",
+  "implementation_commit": "97edec1ea36254eeef79d1e09c1e62efcf0b105d",
   "warehouse_previous_checkpoints": [
     {
       "backend_source_commit": "96153cd20bc3db3dd2c7539e3a77bd159820fb05",
@@ -2093,7 +2095,7 @@
     },
     "evidence": "NATIVE_VERIFICATION_RECOVERY.md",
     "full_122_accepted": false,
-    "secure_input_followup": "User unlocked Mac; CUA inventory works but cannot select task non-bundle emulator. User direct sign-in requested; no new authenticated session claimed."
+    "secure_input_followup": "User unlocked Mac; CUA cannot select non-bundle task emulator. Android Home observed via allowlisted package/control booleans; Merchant opened and sign-in form observed. Direct user sign-in pending. No agent credential entry, new authenticated session or production mutation."
   },
   "warehouse_option_checkpoint": {
     "source_commit": "58030c1c3a0f89e7f77380bfb910beac037e8440",
@@ -2123,5 +2125,56 @@
     "native_creation_selectors": "pending",
     "durable_option_creation": "pending",
     "hosted_acceptance": "pending"
+  },
+  "warehouse_native_creation_checkpoint": {
+    "source_commit": "97edec1ea36254eeef79d1e09c1e62efcf0b105d",
+    "native_source_commit": "1dd5400bee4991b1036901811ef2ec84bfd046d5",
+    "native_pass": 694,
+    "shared_models_pass": 64,
+    "gateway_pass": 2006,
+    "gateway_types": "pass",
+    "owned_before": {
+      "run_id": "8cd46b4a0cd8",
+      "pass": 36,
+      "fail": 2,
+      "reason": "Nonexistent product_variants.deleted_at in source-only draft migration 414"
+    },
+    "owned_after": {
+      "run_id": "d92e2301d0f2",
+      "pass": 38,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "roles": {
+      "run_id": "0fe15d83d81e",
+      "pass": 8,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "evidence": "WAREHOUSE_NATIVE_CREATION.md",
+    "android_debug": {
+      "source_commit": "1dd5400bee4991b1036901811ef2ec84bfd046d5",
+      "path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/apps/merchant/mobile/build/app/outputs/flutter-apk/app-debug.apk",
+      "bytes": 219833893,
+      "sha256": "fbd7896c7a64b47e433f2efa400d81d25b7c0e778669e6f6545efbb63da6f4af",
+      "kind": "android-debug-production-endpoints-not-release-signed",
+      "installed": false
+    },
+    "installed_current_source": false,
+    "authenticated_current_source": "unobserved"
   }
 }

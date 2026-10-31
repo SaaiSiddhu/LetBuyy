@@ -56,8 +56,12 @@ Accepted develop/staging were re-fetched on 31 October at `77584d19`; their maxi
 
 There was no hosted migration, deployment, release signing, publication, provider operation or all-122 acceptance. Release signing currently requires the already-named production keystore environment; no substitute release identity was created. A client marker alone cannot prove that an older Gateway/BFF has the guarded owner. Fresh protocol-capability preflight is now qualified locally; see the linked continuation for its exact boundaries. Rollout must retain the atomic owner/schema and test mixed versions; the populated receipt journal intentionally blocks destructive DOWN.
 
+## Latest continuation — 1 November 2026
+
+Scoped option readers and native multi-line creation now extend the existing journal. A real two-variant failure exposed and corrected the draft 414 lookup's nonexistent variant deletion column. Final integrated source `97edec1ea` qualifies **694 native / 64 models / 2,006 Gateway / 38 owned warehouse+rollback / 8 role / 114 governance** passes. [Exact failure, correction, artifact and boundaries](WAREHOUSE_NATIVE_CREATION.md).
+
 ## Next required work
 
-1. Keep the now-qualified scoped preflight and original-intent recovery while completing the remaining detail/form paths.
-2. Parent pagination/exact counts are locally qualified. Fresh details and native partial-line review are locally qualified. Complete application search/filter/sort, authorized selectors and multi-line creation. Canonical location/supplier creation recovery remains open.
-3. Verify real web↔mobile fixture writes/conflicts and browser/device journeys, then remaining catalogue/orders/settings/features, provider/money/buyer effects, performance, signed artifacts, staging/source/schema compatibility and rollback. All 122 ledger rows remain in progress.
+1. Preserve the scoped preflight, original-intent recovery, fresh detail review and current authorized selectors/multi-line preparation.
+2. Complete application search/filter/sort controls and canonical location/supplier creation recovery.
+3. Verify actual web/mobile fixture writes/conflicts and device journeys, then the remaining catalog/orders/settings/features, provider/money/buyer effects, measured performance, signed artifacts, staging/source/schema compatibility and production readback. All 122 inventory rows remain in progress.
