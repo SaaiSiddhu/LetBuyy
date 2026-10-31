@@ -623,7 +623,7 @@ test('fractional receiving input is a local validation error, with no dispatch o
         return warehouseResponse(url,url.includes('inventory-locations')?[locationOption(1)]:[warehouseRow(true)]);
     });
     try {
-        await h.click('Receive');await h.setField('input','1.5');await h.click('Mark as received');
+        await h.click('Receive');await h.setField('[role="dialog"] input','1.5');await h.click('Mark as received');
         assert.match(h.text(),/Enter whole receiving quantities/);assert.equal(writes,0);assert.equal(h.storage.length,0);
         assert.doesNotMatch(h.text(),/Warehouse request awaiting confirmation/);
     }finally{await h.close();}
@@ -1291,5 +1291,43 @@ for (const kind of ['purchasing','transfers'] as const) test(`${kind} delayed op
         await h.render('beta');await h.render('alpha')
         await act(async()=>pending.resolve(Response.json({data:[{...locationOption(21),name:'Retired private option'}],meta:{store_id:historySite,page:2,per_page:20,total:21,total_is_exact:true,has_next:false}})))
         assert.doesNotMatch(h.text(),/Retired private option/)
+    }finally{await h.close()}
+})
+
+for (const kind of ['purchasing','transfers'] as const) test(`${kind} filters query the full matching population and Clear restores canonical order`,async()=>{
+    const reads:URLSearchParams[]=[]
+    const h=await mount(kind,async url=>{
+        if(url.includes(kind==='purchasing'?'/purchase-orders?':'/transfers?'))reads.push(new URL(url,'http://localhost').searchParams)
+        return warehouseResponse(url,[])
+    })
+    try{
+        await h.setField('form[aria-label="Warehouse filters"] input','SYN_%')
+        await h.setField('select[name="warehouse-status"]','received')
+        await h.setField('select[name="warehouse-sort"]','oldest')
+        await h.click('Apply filters')
+        assert.equal(reads.at(-1)!.get('search'),'SYN_%');assert.equal(reads.at(-1)!.get('status'),'received');assert.equal(reads.at(-1)!.get('sort'),'oldest');assert.equal(reads.at(-1)!.get('page'),'1')
+        assert.match(h.text(),kind==='purchasing'?/No matching purchase orders/:/No matching transfers/)
+        await h.click('Clear filters')
+        assert.equal(reads.at(-1)!.has('search'),false);assert.equal(reads.at(-1)!.has('status'),false);assert.equal(reads.at(-1)!.get('sort'),'newest')
+        assert.match(h.text(),kind==='purchasing'?/No purchase orders yet/:/No transfers yet/)
+    }finally{await h.close()}
+})
+for (const kind of ['purchasing','transfers'] as const) test(`${kind} delayed filtered page retires across store A-B-A`,async()=>{
+    const pending=deferred<Response>()
+    const h=await mount(kind,async url=>url.includes('search=PrivateRetired')?pending.promise:warehouseResponse(url,[]))
+    try{
+        await h.setField('form[aria-label="Warehouse filters"] input','PrivateRetired');await h.click('Apply filters')
+        await h.render('beta');await h.render('alpha')
+        await act(async()=>pending.resolve(Response.json({data:[{...warehouseRow(kind==='purchasing'),po_number:'Retired filtered page',transfer_number:'Retired filtered page'}],meta:{store_id:historySite,page:1,per_page:20,total:1,total_is_exact:true,has_next:false}})))
+        assert.doesNotMatch(h.text(),/Retired filtered page/);assert.ok(h.controls().every(field=>field.value!=='PrivateRetired'))
+    }finally{await h.close()}
+})
+
+for(const kind of ['purchasing','transfers'] as const)test(`${kind} denied filtered reads retire counts and cannot imply an empty matching population`,async()=>{
+    const h=await mount(kind,async url=>warehouseResponse(url,[],url.includes('search=DeniedQuery')?403:200))
+    try{
+        await h.setField('form[aria-label="Warehouse filters"] input','DeniedQuery');await h.click('Apply filters')
+        assert.match(h.text(),/Count unavailable/);assert.doesNotMatch(h.text(),/No matching purchase orders|No matching transfers|0 matching records/)
+        await h.click('Clear filters');assert.match(h.text(),/0 matching records/)
     }finally{await h.close()}
 })

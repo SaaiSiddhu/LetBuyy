@@ -294,6 +294,23 @@ class InventoryLevel {
   bool get isLowStock => available > 0 && available <= 10;
 }
 
+const warehousePurchaseOrderStatuses = [
+  'draft',
+  'ordered',
+  'partially_received',
+  'received',
+  'cancelled',
+  'closed',
+];
+const warehouseTransferStatuses = [
+  'reserved',
+  'shipped',
+  'partially_received',
+  'received',
+  'cancelled',
+];
+const warehouseOptionStatuses = ['active', 'inactive'];
+
 class InventoryBarcodeLookup {
   const InventoryBarcodeLookup({
     required this.storeId,
@@ -398,7 +415,7 @@ void _verifyWarehouseOption(
       name is! String ||
       name.trim().isEmpty ||
       name.trim().length > 200 ||
-      !const ['active', 'inactive'].contains(json['status']) ||
+      !warehouseOptionStatuses.contains(json['status']) ||
       _recordDate(json['created_at']) == null ||
       (json[supplier ? 'store_id' : 'site_id'] != null &&
           json[supplier ? 'store_id' : 'site_id'] != site) ||
@@ -696,13 +713,7 @@ void _verifyWarehouseDocument(
       lines.length > 200)
     invalid();
   if (transfer) {
-    if (!const [
-          'reserved',
-          'shipped',
-          'partially_received',
-          'received',
-          'cancelled',
-        ].contains(json['status']) ||
+    if (!warehouseTransferStatuses.contains(json['status']) ||
         json['transfer_number'] is! String ||
         (json['transfer_number'] as String).isEmpty ||
         !_recordId(json['source_location_id']) ||
@@ -712,14 +723,7 @@ void _verifyWarehouseDocument(
         !dateField('received_at'))
       invalid();
   } else {
-    if (!const [
-          'draft',
-          'ordered',
-          'partially_received',
-          'received',
-          'cancelled',
-          'closed',
-        ].contains(json['status']) ||
+    if (!warehousePurchaseOrderStatuses.contains(json['status']) ||
         json['po_number'] is! String ||
         (json['po_number'] as String).isEmpty ||
         !json.containsKey('supplier_id') ||

@@ -11,6 +11,7 @@ import {useWarehouseDocument} from '@/lib/inventory/use-warehouse-document'
 import { useProductPicker } from '@/lib/api/use-product-picker'
 import { useInventoryLocations } from '@/lib/api/use-inventory-locations'
 import { useWarehouseSuppliers, type WarehouseOptionControls } from '@/lib/api/use-warehouse-options'
+import { WarehouseDocumentFilters } from '@/components/products/WarehouseDocumentFilters'
 import { WarehouseOptionSearch } from '@/components/products/WarehouseOptionSearch'
 import { formatIndiaDate as formatDate, formatInrCurrency } from '@letbuyy/ui/formatting'
 import {
@@ -510,6 +511,7 @@ function WarehouseWorkspace({store}:{store:string}) {
     const beginRead = useReadRequest(store)
     const {actorId:warehouseActor,siteId:warehouseSite}=useMerchantSecurityContext(store)
     const [page,setPage]=useState(1)
+    const [filters,setFilters]=useState<{search:string;status:string;sort:'newest'|'oldest'}>({search:'',status:'',sort:'newest'})
     const [population,setPopulation]=useState<{total:number;more:boolean}|null>(null)
     const [loading, setLoading] = useState(true)
     const [loadError, setLoadError] = useState<string | null>(null)
@@ -529,7 +531,7 @@ function WarehouseWorkspace({store}:{store:string}) {
         setPos([])
         setPopulation(null)
         try {
-            const poRes = await fetch(`/api/stores/${encodeURIComponent(store)}/purchase-orders?page=${page}&limit=20`, { headers:{'X-LetBuyy-Merchant-Context':warehouseActor}, cache: 'no-store', signal: request.signal })
+            const poRes = await fetch(`/api/stores/${encodeURIComponent(store)}/purchase-orders?${new URLSearchParams({page:String(page),limit:'20',sort:filters.sort,...(filters.search?{search:filters.search}:{}),...(filters.status?{status:filters.status}:{})})}`, { headers:{'X-LetBuyy-Merchant-Context':warehouseActor}, cache: 'no-store', signal: request.signal })
             const poBody = await poRes.json() as { data?: PurchaseOrder[]; meta?:unknown; error?: unknown }
             if (!request.isCurrent()) return
 
@@ -550,7 +552,7 @@ function WarehouseWorkspace({store}:{store:string}) {
         } finally {
             if (request.isCurrent()) setLoading(false)
         }
-    }, [store, beginRead, page, warehouseSite, warehouseActor])
+    }, [store, beginRead, page, warehouseSite, warehouseActor, filters])
 
     useEffect(() => { void loadAll() }, [loadAll])
 
@@ -613,6 +615,8 @@ function WarehouseWorkspace({store}:{store:string}) {
 
             <WarehouseCommandRecovery commands={commands} onResolved={()=>void loadAll()} />
 
+            <WarehouseDocumentFilters kind="purchase-orders" disabled={loading} onApply={(search,status,sort)=>{ setPos([]); setPopulation(null); setLoading(true); setPage(1); setFilters({search,status,sort}); }} />
+
             <Card>
                 <Section
                     title="Inbound inventory"
@@ -626,7 +630,7 @@ function WarehouseWorkspace({store}:{store:string}) {
                         </div>
                     ) : loadError ? <p>Purchase order records are unavailable. Reload the workspace to try again.</p> : pos.length === 0 ? (
                         <EmptyState
-                            title={page===1?"No purchase orders yet":"No records on this page"}
+                            title={filters.search||filters.status?"No matching purchase orders":page===1?"No purchase orders yet":"No records on this page"}
                             body="Create a purchase order to track supplier commitments, expected arrivals, and inventory receiving."
                             primaryAction={
                                 <Button

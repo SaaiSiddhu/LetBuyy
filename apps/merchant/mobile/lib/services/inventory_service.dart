@@ -1291,6 +1291,9 @@ class InventoryService extends ChangeNotifier {
     String storeId, {
     int page = 1,
     int limit = 20,
+    String? search,
+    String? status,
+    String sort = 'newest',
   }) => _readRecords(
     'orders',
     storeId,
@@ -1300,11 +1303,14 @@ class InventoryService extends ChangeNotifier {
       storeId: storeId,
       page: page,
       limit: limit,
+      search: search,
+      status: status,
+      sort: sort,
       options: options,
     ),
     PurchaseOrderContract.fromVerifiedJson,
     (rows) => _purchaseOrders = rows,
-    (row) => row.storeId == storeId,
+    (row) => row.storeId == storeId && (status == null || row.status == status),
     warehouse: true,
   );
 
@@ -1339,6 +1345,9 @@ class InventoryService extends ChangeNotifier {
     String storeId, {
     int page = 1,
     int limit = 20,
+    String? search,
+    String? status,
+    String sort = 'newest',
   }) => _readRecords(
     'transfers',
     storeId,
@@ -1348,11 +1357,14 @@ class InventoryService extends ChangeNotifier {
       storeId: storeId,
       page: page,
       limit: limit,
+      search: search,
+      status: status,
+      sort: sort,
       options: options,
     ),
     InventoryTransferContract.fromVerifiedJson,
     (rows) => _transfers = rows,
-    (row) => row.storeId == storeId,
+    (row) => row.storeId == storeId && (status == null || row.status == status),
     warehouse: true,
   );
 

@@ -395,21 +395,8 @@ class WarehouseCommandAcknowledgement {
         _invalid();
       final header = _object(data[po ? 'purchase_order' : 'transfer']);
       final states = po
-          ? [
-              'draft',
-              'ordered',
-              'partially_received',
-              'received',
-              'cancelled',
-              'closed',
-            ]
-          : [
-              'reserved',
-              'shipped',
-              'partially_received',
-              'received',
-              'cancelled',
-            ];
+          ? warehousePurchaseOrderStatuses
+          : warehouseTransferStatuses;
       if (header['id'] != receipt['target_id'] ||
           header['site_id'] != receipt['site_id'] ||
           !states.contains(header['status']))

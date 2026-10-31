@@ -1,3 +1,6 @@
+import 'package:letbuyy_models/letbuyy_models.dart'
+    show warehouseTransferStatuses;
+import '../../widgets/shared/warehouse_list_filters.dart';
 import '../../services/api_client.dart' show ApiException;
 import '../../widgets/shared/merchant_store_view.dart';
 import '../../widgets/shared/warehouse_command_recovery.dart';
@@ -29,6 +32,8 @@ class _InventoryTransfersScreenState extends State<InventoryTransfersScreen> {
   Object? _viewKey;
   int _readGeneration = 0;
   int _page = 1;
+  String _search = '', _status = '', _sort = 'newest';
+  bool get _filtered => _search.isNotEmpty || _status.isNotEmpty;
   int? _total;
   bool _more = false;
   MerchantStoreView? get _view =>
@@ -70,7 +75,13 @@ class _InventoryTransfersScreenState extends State<InventoryTransfersScreen> {
         return;
       }
       final service = context.read<InventoryService>();
-      final rows = await service.fetchTransfers(view.storeId, page: _page);
+      final rows = await service.fetchTransfers(
+        view.storeId,
+        page: _page,
+        search: _search.isEmpty ? null : _search,
+        status: _status.isEmpty ? null : _status,
+        sort: _sort,
+      );
       if (!_matches(view) || generation != _readGeneration) return;
       setState(() {
         _transfers = rows;
@@ -107,6 +118,9 @@ class _InventoryTransfersScreenState extends State<InventoryTransfersScreen> {
       ++_readGeneration;
       _storeId = null;
       _page = 1;
+      _search = '';
+      _status = '';
+      _sort = 'newest';
       _total = null;
       _more = false;
       _warehouseReady = false;
@@ -140,6 +154,21 @@ class _InventoryTransfersScreenState extends State<InventoryTransfersScreen> {
           child: Column(
             children: [
               _header(),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton.icon(
+                    onPressed: _storeId == null ? null : _filter,
+                    icon: const Icon(Icons.filter_list),
+                    label: Text(
+                      _search.isEmpty && _status.isEmpty && _sort == 'newest'
+                          ? 'Filter and sort'
+                          : 'Filters applied · Edit',
+                    ),
+                  ),
+                ),
+              ),
               if (_view != null)
                 WarehouseCommandRecovery(
                   view: _view!,
@@ -195,6 +224,26 @@ class _InventoryTransfersScreenState extends State<InventoryTransfersScreen> {
     );
   }
 
+  Future<void> _filter() async {
+    final view = _view;
+    if (!_matches(view)) return;
+    final result = await showWarehouseListFilters(
+      context,
+      view: view!,
+      initial: (search: _search, status: _status, sort: _sort),
+      statuses: warehouseTransferStatuses,
+      documents: true,
+    );
+    if (!_matches(view) || result == null) return;
+    setState(() {
+      _search = result.search;
+      _status = result.status;
+      _sort = result.sort;
+      _page = 1;
+    });
+    _load();
+  }
+
   Widget _header() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
@@ -245,8 +294,14 @@ class _InventoryTransfersScreenState extends State<InventoryTransfersScreen> {
     if (_transfers.isEmpty) {
       return _centerState(
         Icons.swap_horiz_outlined,
-        _page == 1 ? 'No transfers' : 'No records on this page',
-        'Move stock between locations when inventory needs balancing.',
+        _filtered
+            ? 'No matching transfers'
+            : _page == 1
+            ? 'No transfers'
+            : 'No records on this page',
+        _filtered
+            ? 'Clear or change the filters to find other records.'
+            : 'Move stock between locations when inventory needs balancing.',
       );
     }
     return RefreshIndicator(

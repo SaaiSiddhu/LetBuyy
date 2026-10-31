@@ -1,3 +1,6 @@
+import 'package:letbuyy_models/letbuyy_models.dart'
+    show warehouseOptionStatuses;
+import '../../widgets/shared/warehouse_list_filters.dart';
 import '../../services/api_client.dart' show ApiException;
 import '../../widgets/shared/merchant_store_view.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +27,8 @@ class _InventoryLocationsScreenState extends State<InventoryLocationsScreen> {
   Object? _viewKey;
   int _readGeneration = 0;
   int _page = 1;
+  String _search = '', _status = '', _sort = 'name_asc';
+  bool get _filtered => _search.isNotEmpty || _status.isNotEmpty;
   int? _total;
   bool _more = false;
   MerchantStoreView? get _view =>
@@ -65,7 +70,13 @@ class _InventoryLocationsScreenState extends State<InventoryLocationsScreen> {
         return;
       }
       final service = context.read<InventoryService>();
-      final rows = await service.fetchLocations(view.storeId, page: _page);
+      final rows = await service.fetchLocations(
+        view.storeId,
+        page: _page,
+        search: _search.isEmpty ? null : _search,
+        status: _status.isEmpty ? 'all' : _status,
+        sort: _sort,
+      );
       if (!_matches(view) || generation != _readGeneration) return;
       setState(() {
         _locations = rows;
@@ -102,6 +113,9 @@ class _InventoryLocationsScreenState extends State<InventoryLocationsScreen> {
       ++_readGeneration;
       _storeId = null;
       _page = 1;
+      _search = '';
+      _status = '';
+      _sort = 'name_asc';
       _total = null;
       _more = false;
       _locations = [];
@@ -129,6 +143,21 @@ class _InventoryLocationsScreenState extends State<InventoryLocationsScreen> {
           child: Column(
             children: [
               _header(),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton.icon(
+                    onPressed: _storeId == null ? null : _filter,
+                    icon: const Icon(Icons.filter_list),
+                    label: Text(
+                      _search.isEmpty && _status.isEmpty && _sort == 'name_asc'
+                          ? 'Filter and sort'
+                          : 'Filters applied · Edit',
+                    ),
+                  ),
+                ),
+              ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Row(
@@ -170,6 +199,26 @@ class _InventoryLocationsScreenState extends State<InventoryLocationsScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _filter() async {
+    final view = _view;
+    if (!_matches(view)) return;
+    final result = await showWarehouseListFilters(
+      context,
+      view: view!,
+      initial: (search: _search, status: _status, sort: _sort),
+      statuses: warehouseOptionStatuses,
+      documents: false,
+    );
+    if (!_matches(view) || result == null) return;
+    setState(() {
+      _search = result.search;
+      _status = result.status;
+      _sort = result.sort;
+      _page = 1;
+    });
+    _load();
   }
 
   Widget _header() {
@@ -222,8 +271,12 @@ class _InventoryLocationsScreenState extends State<InventoryLocationsScreen> {
     if (_locations.isEmpty) {
       return _centerState(
         Icons.warehouse_outlined,
-        'No locations yet',
-        'Add a warehouse or retail location before receiving stock.',
+        _filtered
+            ? 'No matching locations'
+            : (_page == 1 ? 'No locations yet' : 'No records on this page'),
+        _filtered
+            ? 'Clear or change the filters to find other records.'
+            : 'Add a warehouse or retail location before receiving stock.',
       );
     }
 
