@@ -9,7 +9,7 @@ import type {WarehouseCommandOperation} from '@letbuyy/shared-types';
 import {validateMerchantMutationRequest} from '../src/lib/api/request-origin';
 const id=(n:number)=>'00000000-0000-4000-8000-'+String(n).padStart(12,'0');
 const site=id(1),actor=id(7),key=id(2),admin='https://admin.example.invalid';
-type Kind=WarehouseCommandOperation|'stop';
+type Kind=WarehouseCommandOperation|'stop'|'capabilities';
 const kinds:Kind[]=['purchase_order.create','purchase_order.receive','transfer.create','transfer.ship','transfer.receive','stop'];
 const routes:Record<Kind,string>={
  'purchase_order.create':'api/stores/[store]/purchase-orders/route.ts',
@@ -18,6 +18,7 @@ const routes:Record<Kind,string>={
  'transfer.ship':'api/stores/[store]/transfers/[id]/ship/route.ts',
  'transfer.receive':'api/stores/[store]/transfers/[id]/receive/route.ts',
  stop:'api/v1/stores/[store]/inventory/commands/stop/route.ts',
+ capabilities:'api/v1/stores/[store]/inventory/commands/capabilities/route.ts',
 };
 function input(kind:Kind) {
  const common={idempotency_key:key};
@@ -31,14 +32,20 @@ function evaluate<T>(url:URL,dependencies:Record<string,unknown>):T {
  const js=ts.transpileModule(readFileSync(url,'utf8'),{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.CommonJS}}).outputText;
  const exports={};new Function('require','exports',js)((name:string)=>{assert.ok(dependencies[name],name);return dependencies[name];},exports);return exports as T;
 }
-function load(kind:Kind,options:{unauthenticated?:boolean;foreignStore?:boolean;wrongActorReceipt?:boolean;cancelled?:boolean}={}) {
+function load(kind:Kind,options:{unauthenticated?:boolean;foreignStore?:boolean;wrongActorReceipt?:boolean;cancelled?:boolean;wrongCapabilityActor?:boolean;capabilityMissing?:boolean}={}) {
  const calls:Array<{kind:string;key?:string|null;site?:string|null;body?:unknown}>=[];
  const api=createLetbuyyApiClient({baseUrl:'https://api.synthetic.invalid/v1',storeId:id(99),fetch:async(input,init)=>{
   const request=new Request(input,init),url=new URL(request.url);
   if(url.pathname==='/v1/auth/custom/session'){calls.push({kind:'session'});return Response.json({authenticated:!options.unauthenticated,user:options.unauthenticated?null:{id:actor}});}
+  if(url.pathname==='/v1/inventory/command-capabilities') {
+   assert.equal(url.searchParams.get('store_id'),site);assert.equal(request.headers.get('X-Store-ID'),site);
+   calls.push({kind:'capabilities'});if(options.capabilityMissing)return Response.json({error:{code:'NOT_FOUND'}},{status:404});
+   return Response.json({data:{store_id:site,actor_id:options.wrongCapabilityActor?id(99):actor,protocol_version:'1',
+    effect_policy:'atomic_receipt_or_unavailable',stop_supported:true}});
+  }
   const body=await request.json() as Record<string,unknown>;
   calls.push({kind:'gateway',key:request.headers.get('X-Idempotency-Key'),site:request.headers.get('X-Store-ID'),body});
-  const op=kind==='stop'?'transfer.ship':kind,po=op.startsWith('purchase_order.'),create=op.endsWith('.create'),receiving=op.endsWith('.receive');
+  const op=kind==='stop'||kind==='capabilities'?'transfer.ship':kind,po=op.startsWith('purchase_order.'),create=op.endsWith('.create'),receiving=op.endsWith('.receive');
   const command=kind==='stop'?body.command:commerce.prepareWarehouseCommand(op,create?null:id(3),body).command;
   const data={command_receipt:{id:id(9),key:body.idempotency_key,site_id:site,actor_id:options.wrongActorReceipt?id(99):actor,
    operation:op,target_id:id(3),command,effective_lines:receiving?(command as Record<string,unknown>).lines:null,
@@ -55,13 +62,13 @@ function load(kind:Kind,options:{unauthenticated?:boolean;foreignStore?:boolean;
   'next/server':{NextRequest,NextResponse},'./client':client,'./request-origin':{validateMerchantMutationRequest},'@/lib/stores/resolve-owned-store':resolve});
  const warehouse=evaluate<Record<string,unknown>>(new URL('../src/lib/api/merchant-warehouse-scope.ts',import.meta.url),{
   'next/server':{NextRequest,NextResponse},'./merchant-security-scope':security});
- type Handler={POST:(request:NextRequest,context:{params:Promise<{store:string;id:string}>})=>Promise<Response>};
- const route=evaluate<Handler>(new URL('../src/app/'+routes[kind],import.meta.url),{
+ type Handler={POST?:(request:NextRequest,context:{params:Promise<{store:string;id:string}>})=>Promise<Response>};
+ const route=evaluate<Handler&{GET?:Handler['POST']}>(new URL('../src/app/'+routes[kind],import.meta.url),{
   'next/server':{NextRequest,NextResponse},'@/lib/api/client':client,'@/lib/stores/resolve-owned-store':resolve,
   '@/lib/api/merchant-security-scope':security,'@/lib/api/merchant-warehouse-scope':warehouse,'@letbuyy/commerce-core':commerce});
- const request=(body:unknown=input(kind),headers:Record<string,string>={})=>new NextRequest(admin+'/api/stores/qa/warehouse',{method:'POST',
-  headers:{host:'admin.example.invalid',origin:admin,'Content-Type':'application/json','X-Idempotency-Key':key,'X-LetBuyy-Merchant-Context':actor,...headers},body:JSON.stringify(body)});
- return {calls,post:(body?:unknown,headers?:Record<string,string>)=>route.POST(request(body,headers),{params:Promise.resolve({store:'qa',id:id(3)})})};
+ const request=(body:unknown=input(kind),headers:Record<string,string>={})=>new NextRequest(admin+'/api/stores/qa/warehouse',{method:kind==='capabilities'?'GET':'POST',
+  headers:{host:'admin.example.invalid',origin:admin,'Content-Type':'application/json','X-Idempotency-Key':key,'X-LetBuyy-Merchant-Context':actor,...headers},body:kind==='capabilities'?undefined:JSON.stringify(body)});
+ return {calls,post:(body?:unknown,headers?:Record<string,string>)=>{const handler=kind==='capabilities'?route.GET:route.POST;assert.ok(handler);return handler(request(body,headers),{params:Promise.resolve({store:'qa',id:id(3)})});}};
 }
 async function configured(action:()=>Promise<void>) {
  const old=process.env.NEXT_PUBLIC_ADMIN_URL;process.env.NEXT_PUBLIC_ADMIN_URL=admin;
@@ -70,8 +77,8 @@ async function configured(action:()=>Promise<void>) {
 for(const kind of kinds) {
  test(kind+' actual Next proxy and SDK preserve current actor/site/key and private acknowledgement',async()=>configured(async()=>{
   const route=load(kind),response=await route.post();assert.equal(response.status,kind.endsWith('.create')?201:200,await response.clone().text());
-  assert.equal(response.headers.get('Cache-Control'),'private, no-store');assert.deepEqual(route.calls.map(x=>x.kind),['session','owner','gateway']);
-  const call=route.calls[2];assert.equal(call.key,key);assert.equal(call.site,site);assert.equal((call.body as Record<string,unknown>).idempotency_key,key);
+  assert.equal(response.headers.get('Cache-Control'),'private, no-store');assert.deepEqual(route.calls.map(x=>x.kind),['session','owner','capabilities','gateway']);
+  const call=route.calls[3];assert.equal(call.key,key);assert.equal(call.site,site);assert.equal((call.body as Record<string,unknown>).idempotency_key,key);
  }));
  for(const denial of ['origin','key','actor','owner','session','body-key','body-site'])test(kind+' refuses '+denial+' before stock dispatch',async()=>configured(async()=>{
   const route=load(kind,{foreignStore:denial==='owner',unauthenticated:denial==='session'}),body={...input(kind),
@@ -88,4 +95,18 @@ for(const kind of kinds) {
 test('versioned stop proxy returns a confirmed cancellation without representing it as an applied stock change',async()=>configured(async()=>{
  const route=load('stop',{cancelled:true}),response=await route.post();assert.equal(response.status,200);
  assert.equal((await response.json()).data.command_receipt.outcome,'cancelled');
+}));
+test('the actual capability GET binds actor/site without a mutation key and returns no-store policy data',async()=>configured(async()=>{
+ const route=load('capabilities'),response=await route.post(undefined,{'X-Idempotency-Key':'',origin:''});
+ assert.equal(response.status,200,await response.clone().text());assert.equal(response.headers.get('Cache-Control'),'private, no-store');
+ const data=(await response.json()).data;assert.equal(data.store_id,site);assert.equal(data.actor_id,actor);
+ assert.equal(data.effect_policy,'atomic_receipt_or_unavailable');assert.equal(data.ready,undefined);
+ assert.deepEqual(route.calls.map(x=>x.kind),['session','owner','capabilities']);
+}));
+for(const denial of ['session','owner','actor','upstream','wrong-actor'])test('capability proxy refuses '+denial+' without warehouse dispatch',async()=>configured(async()=>{
+ const route=load('capabilities',{unauthenticated:denial==='session',foreignStore:denial==='owner',
+  capabilityMissing:denial==='upstream',wrongCapabilityActor:denial==='wrong-actor'});
+ const response=await route.post(undefined,denial==='actor'?{'X-LetBuyy-Merchant-Context':id(99)}:{});
+ assert.ok(response.status>=400);assert.equal(response.headers.get('Cache-Control'),'private, no-store');
+ assert.equal(route.calls.filter(x=>x.kind==='gateway').length,0);
 }));

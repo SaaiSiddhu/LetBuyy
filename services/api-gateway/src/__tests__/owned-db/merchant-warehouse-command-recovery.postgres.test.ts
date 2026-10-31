@@ -386,3 +386,45 @@ test('downlevel warehouse clients are refused before effects or private receipt 
  assert.equal(read.status,200,read.text);assert.equal(read.json?.data.length,1);
  assert.equal(owned.psql("SELECT count(*)FROM warehouse_command_receipts WHERE site_id="+quote(f.site.siteId)+";"),'1');
 });
+
+test('capability descriptors are private current-owner policy reads, never a grant or readiness claim',async t=>{
+ const f=await fixture(t),other=await fixture(t);
+ const get=async(actor:string,site:string)=>f.gateway.request('/v1/inventory/command-capabilities?store_id='+site,{
+  headers:await signedIdentityHeaders(actor,'syn-wms-'+actor+'@example.invalid',site)});
+ const positive=await get(f.actor,f.site.siteId);assert.equal(positive.status,200,positive.text);
+ assert.equal(new Headers(positive.headers).get('Cache-Control'),'private, no-store');
+ assert.deepEqual(positive.json?.data,{store_id:f.site.siteId,actor_id:f.actor,protocol_version:'1',effect_policy:'atomic_receipt_or_unavailable',stop_supported:true});
+ assert.equal((await get(other.actor,f.site.siteId)).status,403);assert.equal((await get(f.actor,other.site.siteId)).status,403);
+ const staff=randomUUID();owned.psql("INSERT INTO users_custom(id,email,email_verified)VALUES("+quote(staff)+","+quote('syn-wms-'+staff+'@example.invalid')+",true);INSERT INTO employees(user_id,email,store_id,role,status,is_active,permissions)VALUES("+
+  quote(staff)+","+quote('syn-wms-'+staff+'@example.invalid')+","+quote(f.site.siteId)+",'editor','active',true,'{\"granted\":[\"products:write\"]}');");
+ assert.equal((await get(staff,f.site.siteId)).status,403);
+ owned.psql("UPDATE sites SET custom_user_id="+quote(other.actor)+" WHERE id="+quote(f.site.siteId)+";");
+ assert.equal((await get(f.actor,f.site.siteId)).status,403);
+ const replacement=await get(other.actor,f.site.siteId);assert.equal(replacement.status,200,replacement.text);assert.equal(replacement.json?.data.actor_id,other.actor);
+ assert.equal(owned.psql("SELECT count(*)FROM warehouse_command_receipts WHERE site_id="+quote(f.site.siteId)+";"),'0');
+});
+
+test('SDK missing-server preflight refuses before a real owned Gateway mutation can run',async t=>{
+ const f=await fixture(t);let posts=0;
+ const api=createLetbuyyApiClient({baseUrl:'https://owned-gateway.example.invalid/v1',
+  getHeaders:()=>signedIdentityHeaders(f.actor,'syn-wms-'+f.actor+'@example.invalid'),fetch:async(input,init)=>{
+   const url=new URL(typeof input==='string'?input:input instanceof URL?input.href:input.url);
+   if(url.pathname.endsWith('/command-capabilities'))return Response.json({error:{code:'NOT_FOUND'}},{status:404});
+   if(init?.method==='POST')posts++;
+   const result=await f.gateway.request(url.pathname+url.search,init);return new Response(result.text,{status:result.status,headers:result.headers});}});
+ await assert.rejects(()=>api.inventory.purchaseOrders.create(f.create(randomUUID())),e=>e instanceof LetbuyyApiError&&e.code==='WAREHOUSE_SERVER_UPGRADE_REQUIRED');
+ assert.equal(posts,0);assert.equal(owned.psql("SELECT count(*)FROM purchase_orders WHERE site_id="+quote(f.site.siteId)+";"),'0');
+});
+
+test('a supported guarded protocol still fails closed when atomic execution binding is unavailable',async t=>{
+ const f=await fixture(t),gateway=new Gateway(gatewayEnv(owned,await newIdentityKeys()));t.after(()=>gateway.settle());
+ const api=createLetbuyyApiClient({baseUrl:'https://owned-gateway.example.invalid/v1',
+  getHeaders:()=>signedIdentityHeaders(f.actor,'syn-wms-'+f.actor+'@example.invalid'),fetch:async(input,init)=>{
+   const url=new URL(typeof input==='string'?input:input instanceof URL?input.href:input.url),result=await gateway.request(url.pathname+url.search,init);
+   return new Response(result.text,{status:result.status,headers:result.headers});}});
+ const capabilities=await api.inventory.capabilities({store_id:f.site.siteId});assert.equal(capabilities.effect_policy,'atomic_receipt_or_unavailable');
+ assert.equal('ready' in capabilities,false);
+ await assert.rejects(()=>api.inventory.purchaseOrders.create(f.create(randomUUID())),e=>e instanceof LetbuyyApiError&&e.status===503);
+ assert.equal(owned.psql("SELECT count(*)FROM purchase_orders WHERE site_id="+quote(f.site.siteId)+";"),'0');
+ assert.equal(owned.psql("SELECT count(*)FROM warehouse_command_receipts WHERE site_id="+quote(f.site.siteId)+";"),'0');
+});

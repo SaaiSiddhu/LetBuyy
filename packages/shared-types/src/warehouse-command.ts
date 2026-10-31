@@ -2,6 +2,14 @@ import { z } from 'zod';
 
 export const WAREHOUSE_COMMAND_PROTOCOL_HEADER='X-LetBuyy-Warehouse-Protocol';
 export const WAREHOUSE_COMMAND_PROTOCOL_VERSION='1';
+export const WarehouseCommandCapabilitiesQuerySchema=z.object({store_id:z.string().uuid()}).strict();
+export type WarehouseCommandCapabilitiesQuery=z.infer<typeof WarehouseCommandCapabilitiesQuerySchema>;
+/** Describes the guarded code path, not migration readiness or a permission lease. */
+export const WarehouseCommandCapabilitiesSchema=z.object({
+ store_id:z.string().uuid(),actor_id:z.string().uuid(),protocol_version:z.literal(WAREHOUSE_COMMAND_PROTOCOL_VERSION),
+ effect_policy:z.literal('atomic_receipt_or_unavailable'),stop_supported:z.literal(true),
+}).strict();
+export type WarehouseCommandCapabilities=z.infer<typeof WarehouseCommandCapabilitiesSchema>;
 export function isWarehouseCommandPath(path:string):boolean {
  const value=path.startsWith('/v1/')?path.slice(3):path;
  return value==='/inventory/commands/stop'||/^\/inventory\/(?:purchase-orders|transfers)$/.test(value)||

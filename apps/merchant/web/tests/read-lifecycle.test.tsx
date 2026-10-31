@@ -329,7 +329,7 @@ test('operations panels settle independently and page only the requested identit
 type ContentPage = keyof typeof readPages
 type Transport = (url: string, init?: RequestInit) => Promise<Response>
 
-async function mount(kind: ContentPage | 'orders' | 'customers' | 'analytics' | 'search' | 'notifications' | 'purchasing' | 'transfers' | 'assistant' | 'themeLibrary' | 'previewUpdate' | 'loyalty' | 'checkoutDomain' | 'connectDomain', transport: Transport,configureStorage?:(storage:Storage)=>void) {
+async function mount(kind: ContentPage | 'orders' | 'customers' | 'analytics' | 'search' | 'notifications' | 'purchasing' | 'transfers' | 'assistant' | 'themeLibrary' | 'previewUpdate' | 'loyalty' | 'checkoutDomain' | 'connectDomain', transport: Transport,configureStorage?:(storage:Storage)=>void,initialProtocolAvailable=true) {
     const dom = new JSDOM('<!doctype html><div id="root"></div>', { url: 'http://localhost/alpha/orders' })
     const warehouse=kind==='purchasing'||kind==='transfers';
     if(warehouse)Object.defineProperty(dom.window.navigator,'locks',{value:{request:async(_name:string,callback:()=>unknown)=>callback()}});
@@ -338,7 +338,16 @@ async function mount(kind: ContentPage | 'orders' | 'customers' | 'analytics' | 
     for (const name of domGlobals) Object.defineProperty(globalThis, name, {
         configurable: true, writable: true, value: name === 'window' || name === 'self' ? dom.window : dom.window[name],
     })
-    globalThis.fetch = ((input: RequestInfo | URL, init?: RequestInit) => transport(String(input), init)) as typeof fetch
+    let protocolAvailable=initialProtocolAvailable,capabilityReads=0;
+    globalThis.fetch = ((input: RequestInfo | URL, init?: RequestInit) => {
+        const url=String(input),match=/\/api\/v1\/stores\/([^/]+)\/inventory\/commands\/capabilities$/.exec(url);
+        if(warehouse&&match){capabilityReads++;return Promise.resolve(protocolAvailable?json({
+            store_id:decodeURIComponent(match[1])==='alpha'?historySite:'22222222-2222-4222-8222-222222222222',
+            actor_id:new Headers(init?.headers).get('X-LetBuyy-Merchant-Context'),protocol_version:'1',
+            effect_policy:'atomic_receipt_or_unavailable',stop_supported:true,
+        }):Response.json({error:{code:'NOT_FOUND'}},{status:404}));}
+        return transport(url, init);
+    }) as typeof fetch
     configureStorage?.(dom.window.localStorage);
     const { createRoot } = await import('react-dom/client')
     const { AppRouterContext } = await import('next/dist/shared/lib/app-router-context.shared-runtime.js')
@@ -376,6 +385,8 @@ async function mount(kind: ContentPage | 'orders' | 'customers' | 'analytics' | 
         render,
         async remount(){await act(async()=>root.render(null));await render();},
         storage:dom.window.localStorage,
+        protocol(available:boolean){protocolAvailable=available;},
+        capabilityReads:()=>capabilityReads,
         completions: () => completions,
         text: () => dom.window.document.body.textContent || '',
         controls: () => [...dom.window.document.querySelectorAll('input,textarea,select,[role="switch"]')].map((node: Element) => ({ value: (node as HTMLInputElement).value, checked: (node as HTMLInputElement).checked, ariaChecked: node.getAttribute('aria-checked') })),
@@ -598,6 +609,33 @@ test('fractional receiving input is a local validation error, with no dispatch o
         await h.click('Receive');await h.setField('input','1.5');await h.click('Mark as received');
         assert.match(h.text(),/Enter whole receiving quantities/);assert.equal(writes,0);assert.equal(h.storage.length,0);
         assert.doesNotMatch(h.text(),/Warehouse request awaiting confirmation/);
+    }finally{await h.close();}
+});
+for(const kind of ['purchasing','transfers'] as const) {
+    test(`${kind} does not enable warehouse mutations against an older BFF/server`,async()=>{
+        let writes=0;
+        const h=await mount(kind,async(url,init)=>{if(init?.method==='POST')writes++;
+            return json(url.includes('inventory-locations')?[{id:'location-a',name:'A'},{id:'location-b',name:'B'}]:[warehouseRow(kind==='purchasing')]);
+        },undefined,false);
+        try {
+            assert.match(h.text(),/Warehouse actions unavailable/);await h.click(kind==='purchasing'?'Receive':'Ship');
+            assert.doesNotMatch(h.text(),/Receive stock —|Ship transfer —/);assert.equal(writes,0);assert.equal(h.storage.length,0);
+            assert.ok(h.capabilityReads()>0);
+        }finally{await h.close();}
+    });
+}
+test('browser recovery retains the original request through server unavailability and rechecks before replay',async()=>{
+    let writes=0,key='';
+    const h=await mount('transfers',async(url,init)=>{
+        if(init?.method==='POST'){writes++;key=new Headers(init.headers).get('X-Idempotency-Key')!;
+            if(writes===1)throw new Error('Synthetic lost reply');return json(warehouseAck(key));}
+        return json(url.includes('inventory-locations')?[{id:'location-a',name:'A'},{id:'location-b',name:'B'}]:[warehouseRow()]);
+    });
+    try {
+        await h.click('Ship');await h.click('Mark as shipped');await h.click('Cancel');h.protocol(false);await h.remount();
+        assert.match(h.text(),/Warehouse request awaiting confirmation/);await h.click('Retry original');assert.equal(writes,1);assert.equal(h.storage.length,1);
+        h.protocol(true);await h.click('Check saved requests');await h.click('Retry original');assert.equal(writes,2);assert.equal(h.storage.length,0);
+        assert.match(h.text(),/Original warehouse request confirmed/);
     }finally{await h.close();}
 });
 

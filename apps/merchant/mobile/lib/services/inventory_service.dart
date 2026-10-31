@@ -610,6 +610,40 @@ class InventoryService extends ChangeNotifier {
     if (_actor() != c.actorId || _store() != c.storeId) throw changed();
   }
 
+  Future<void> verifyWarehouseProtocol(String site) =>
+      _verifyWarehouseProtocol(_commandContext(site));
+  Future<void> _verifyWarehouseProtocol(MerchantSecurityContext c) async {
+    _checkCommand(c);
+    try {
+      final raw = await _api.inventory.commandCapabilities(
+        storeId: c.storeId,
+        options: _options(c.version, c.storeId),
+      );
+      _checkCommand(c);
+      final capabilities = WarehouseCommandCapabilities.fromJson(raw);
+      if (capabilities.storeId != c.storeId ||
+          capabilities.actorId != c.actorId)
+        throw const FormatException('Warehouse protocol scope mismatch.');
+    } on FormatException {
+      throw const ApiException(
+        message:
+            'Warehouse request support could not be confirmed. Try again later.',
+        statusCode: 503,
+        code: 'WAREHOUSE_PROTOCOL_UNVERIFIED',
+      );
+    } on ApiException catch (error) {
+      _checkCommand(c);
+      if (error.statusCode == 404)
+        throw const ApiException(
+          message:
+              'Warehouse request support needs a server update. Saved requests are retained.',
+          statusCode: 426,
+          code: 'WAREHOUSE_SERVER_UPGRADE_REQUIRED',
+        );
+      rethrow;
+    }
+  }
+
   Future<PendingSecurityCommand?> pendingAdjustment(String site) {
     final c = _commandContext(site);
     return _commands.serialized(
@@ -655,6 +689,7 @@ class InventoryService extends ChangeNotifier {
     late Future<WarehouseCommandAcknowledgement> result;
     result = _commands
         .serialized(() async {
+          await _verifyWarehouseProtocol(c);
           final pending = await _commands.prepare(
             c,
             _warehouseCommand,
@@ -703,6 +738,7 @@ class InventoryService extends ChangeNotifier {
           code: 'NO_PENDING_COMMAND',
         );
       }
+      await _verifyWarehouseProtocol(c);
       return _sendPendingWarehouse(c, pending, stop: stop);
     });
   }

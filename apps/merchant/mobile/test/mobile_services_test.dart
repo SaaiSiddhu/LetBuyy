@@ -4759,7 +4759,7 @@ void main() {
       final api=_FakeApiClient(json:{'/inventory/purchase-orders':[{
         ...createdAck['purchase_order'] as Map<String,dynamic>,'lines':createdAck['lines']}],
         '/inventory/purchase-orders/${w.warehouseTarget}/receive':receivedAck},
-        methodJson:{'POST /inventory/purchase-orders':createdAck});
+        methodJson:{'GET /inventory/command-capabilities':w.warehouseCapabilities(),'POST /inventory/purchase-orders':createdAck});
       final service=InventoryService(api:api,actorIdProvider:()=>w.warehouseActor,
         storeIdProvider:()=>w.warehouseSite,commands:SecurityCommandStore(storage:MemoryStorage()));
       final orders=await service.fetchPurchaseOrders(w.warehouseSite);
@@ -4786,7 +4786,7 @@ void main() {
         ...createdAck['transfer'] as Map<String,dynamic>,'lines':createdAck['lines']}],
         '/inventory/transfers/${w.warehouseTarget}/ship':shippedAck,
         '/inventory/transfers/${w.warehouseTarget}/receive':receivedAck},
-        methodJson:{'POST /inventory/transfers':createdAck});
+        methodJson:{'GET /inventory/command-capabilities':w.warehouseCapabilities(),'POST /inventory/transfers':createdAck});
       final service=InventoryService(api:api,actorIdProvider:()=>w.warehouseActor,
         storeIdProvider:()=>w.warehouseSite,commands:SecurityCommandStore(storage:MemoryStorage()));
       final transfers=await service.fetchTransfers(w.warehouseSite);

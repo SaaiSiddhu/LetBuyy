@@ -24,7 +24,7 @@ class WarehouseCommandRecovery extends StatefulWidget {
 class _WarehouseCommandRecoveryState extends State<WarehouseCommandRecovery> {
   InventoryService? _service;
   PendingSecurityCommand? _pending;
-  bool _reading = true, _busy = false;
+  bool _reading = true, _busy = false, _protocolReady = false;
   String? _error;
   int _generation = 0;
   bool _current(MerchantStoreView view) =>
@@ -32,7 +32,7 @@ class _WarehouseCommandRecoveryState extends State<WarehouseCommandRecovery> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final service = context.read<InventoryService>();
+    final service = Provider.of<InventoryService>(context);
     if (identical(service, _service)) return;
     _service?.removeListener(_scheduleRead);
     _service = service..addListener(_scheduleRead);
@@ -46,6 +46,7 @@ class _WarehouseCommandRecoveryState extends State<WarehouseCommandRecovery> {
       ++_generation;
       _pending = null;
       _reading = true;
+      _protocolReady = false;
       _error = null;
       _scheduleRead();
     }
@@ -58,12 +59,20 @@ class _WarehouseCommandRecoveryState extends State<WarehouseCommandRecovery> {
     final view = widget.view, generation = ++_generation;
     if (!_current(view)) return;
     widget.onReady(false);
-    setState(() => _reading = true);
+    setState(() {
+      _reading = true;
+      _protocolReady = false;
+    });
+    var readSaved = false;
     try {
       final pending = await _service!.pendingWarehouseCommand(view.storeId);
       if (!_current(view) || generation != _generation) return;
+      readSaved = true;
+      setState(() => _pending = pending);
+      await _service!.verifyWarehouseProtocol(view.storeId);
+      if (!_current(view) || generation != _generation) return;
       setState(() {
-        _pending = pending;
+        _protocolReady = true;
         _reading = false;
         _error = null;
       });
@@ -72,15 +81,22 @@ class _WarehouseCommandRecoveryState extends State<WarehouseCommandRecovery> {
       if (!_current(view) || generation != _generation) return;
       setState(() {
         _reading = false;
-        _error =
-            'The saved request could not be read. Check account access and secure storage, then try again.';
+        _protocolReady = false;
+        _error = readSaved
+            ? 'Warehouse actions are unavailable. Check your connection and current owner access, then check again. Saved requests are retained.'
+            : 'The saved request could not be read. Check account access and secure storage, then try again.';
       });
     }
   }
 
   Future<void> _recover({required bool stop}) async {
     final view = widget.view;
-    if (_busy || _reading || _pending == null || !_current(view)) return;
+    if (_busy ||
+        _reading ||
+        !_protocolReady ||
+        _pending == null ||
+        !_current(view))
+      return;
     if (stop) {
       final confirmed = await showDialog<bool>(
         context: context,
@@ -106,7 +122,7 @@ class _WarehouseCommandRecoveryState extends State<WarehouseCommandRecovery> {
           ),
         ),
       );
-      if (confirmed != true || !_current(view)) return;
+      if (confirmed != true || !_current(view) || !_protocolReady) return;
     }
     widget.onReady(false);
     setState(() {
@@ -179,20 +195,23 @@ class _WarehouseCommandRecoveryState extends State<WarehouseCommandRecovery> {
                 'Resolve the original request before starting another stock movement.',
               ),
             if (_error != null) Text(_error!),
-            if (!_reading && _pending == null)
-              TextButton(onPressed: _read, child: const Text('Check again')),
+            if (!_reading && (_pending == null || !_protocolReady))
+              TextButton(
+                onPressed: _busy ? null : _read,
+                child: const Text('Check again'),
+              ),
             if (_pending != null)
               Wrap(
                 spacing: 8,
                 children: [
                   FilledButton(
-                    onPressed: _busy || _reading
+                    onPressed: _busy || _reading || !_protocolReady
                         ? null
                         : () => _recover(stop: false),
                     child: const Text('Retry original'),
                   ),
                   OutlinedButton(
-                    onPressed: _busy || _reading
+                    onPressed: _busy || _reading || !_protocolReady
                         ? null
                         : () => _recover(stop: true),
                     child: const Text('Stop original'),

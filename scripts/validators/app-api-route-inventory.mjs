@@ -129,7 +129,9 @@ export function classifyAppApiRoute(file) {
 // MERCHANT-WAREHOUSE-RECOVERY (2026-10-31): one versioned, current-actor/site/key
 // guarded stop proxy. Existing gateway-proxy class; effects and receipts stay in
 // Gateway/SQL. Its exact path is also registered in the lint baseline.
-export const APP_API_ROUTE_RATCHET = 232;
+// MERCHANT-WAREHOUSE-PREFLIGHT: one scoped, no-store protocol descriptor proxy.
+// It grants no lease/readiness and stays in the same existing gateway-proxy class.
+export const APP_API_ROUTE_RATCHET = 233;
 
 export function ownershipCounts(routes) {
   const counts = new Map();

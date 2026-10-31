@@ -27,6 +27,8 @@ import {
     ShipTransferSchema,
     StopWarehouseCommandSchema,
     prepareWarehouseCommand,
+    WarehouseCommandCapabilitiesQuerySchema,
+    type WarehouseCommandCapabilitiesQuery,
     type StopWarehouseCommandInput,
     mapInventoryAdjustmentReason,
     mapInventoryLevelRecord,
@@ -58,6 +60,17 @@ router.use('*',async(c,next)=>{
  if(c.req.method==='POST'&&isWarehouseCommandPath(c.req.path)&&c.req.header(WAREHOUSE_COMMAND_PROTOCOL_HEADER)!==WAREHOUSE_COMMAND_PROTOCOL_VERSION)
   return c.json(failureBody('WAREHOUSE_CLIENT_UPGRADE_REQUIRED','Update the Merchant app before changing warehouse stock.'),426);
  await next();
+});
+router.get('/command-capabilities',validate('query',WarehouseCommandCapabilitiesQuerySchema),async c=>{
+ c.header('Cache-Control','private, no-store');
+ const {store_id:storeId}=c.get('validatedQuery') as WarehouseCommandCapabilitiesQuery;
+ const db=getSupabaseAdmin(c),auth=c.get('auth'),actor=await resolveCustomUser(db,auth.user);
+ if(!actor||!await verifySiteOwnership(db,storeId,actor.id,auth.user.storeId))
+  return c.json(failureBody('FORBIDDEN','Your access to this store changed.'),403);
+ // This owner never falls back to the legacy split-commit writer. Missing SQL
+ // support fails closed at execution; this descriptor does not assert readiness.
+ return c.json(success({store_id:storeId,actor_id:actor.id,protocol_version:WAREHOUSE_COMMAND_PROTOCOL_VERSION,
+  effect_policy:'atomic_receipt_or_unavailable',stop_supported:true}));
 });
 function scopedInventoryPage<T>(rows: T[], total: number, page: number, limit: number, storeId?: string) {
     const body = paginated(rows, total, page, limit);

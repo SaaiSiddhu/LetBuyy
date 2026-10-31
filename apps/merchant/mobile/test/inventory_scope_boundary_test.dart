@@ -66,7 +66,22 @@ ApiClient client(
     maxRetries: 0,
     contextVersionProvider: scope,
   );
-  dio.interceptors.add(InterceptorsWrapper(onRequest: handler));
+  dio.interceptors.add(
+    InterceptorsWrapper(
+      onRequest: (r, h) {
+        if (r.path.endsWith('/command-capabilities'))
+          respond(
+            r,
+            h,
+            w.warehouseCapabilities(
+              site: r.queryParameters['store_id'].toString(),
+            ),
+          );
+        else
+          handler(r, h);
+      },
+    ),
+  );
   addTearDown(result.close);
   return result;
 }

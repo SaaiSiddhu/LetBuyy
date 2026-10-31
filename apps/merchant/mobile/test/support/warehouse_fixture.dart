@@ -10,6 +10,16 @@ const warehouseActor = '11111111-1111-4111-8111-111111111111',
     warehouseDestination = '66666666-6666-4666-8666-666666666666',
     warehouseLine = '77777777-7777-4777-8777-777777777777',
     warehouseReceipt = '88888888-8888-4888-8888-888888888888';
+JsonMap warehouseCapabilities({
+  String actor = warehouseActor,
+  String site = warehouseSite,
+}) => {
+  'store_id': site,
+  'actor_id': actor,
+  'protocol_version': '1',
+  'effect_policy': 'atomic_receipt_or_unavailable',
+  'stop_supported': true,
+};
 PurchaseOrderInput warehousePo({
   String key = 'original-po-create',
   int quantity = 4,

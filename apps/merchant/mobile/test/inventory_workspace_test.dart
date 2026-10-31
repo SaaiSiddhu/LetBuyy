@@ -117,7 +117,8 @@ Future<StoreContext> mount(
   void Function(RequestOptions, RequestInterceptorHandler) handler, {
   bool settle = true,
   MemoryStorage? storage,
-  String actor = 'synthetic-owner',
+  String actor = w.warehouseActor,
+  bool protocolAvailable = true,
 }) async {
   SharedPreferences.setMockInitialValues({});
   tester.view.physicalSize = const Size(390, 844);
@@ -132,7 +133,27 @@ Future<StoreContext> mount(
     maxRetries: 0,
     contextVersionProvider: () => stores.requestContextKey,
   );
-  dio.interceptors.add(InterceptorsWrapper(onRequest: handler));
+  dio.interceptors.add(
+    InterceptorsWrapper(
+      onRequest: (r, h) {
+        if (r.path.endsWith('/command-capabilities')) {
+          respond(
+            r,
+            h,
+            protocolAvailable
+                ? w.warehouseCapabilities(
+                    actor: actor,
+                    site: r.queryParameters['store_id'].toString(),
+                  )
+                : {},
+            status: protocolAvailable ? 200 : 404,
+          );
+        } else {
+          handler(r, h);
+        }
+      },
+    ),
+  );
   addTearDown(api.close);
   stores = StoreContext(storeService: _FixedStores(api));
   final inventory = InventoryService(
@@ -163,6 +184,72 @@ Future<StoreContext> mount(
 }
 
 void main() {
+  for (final screen in [
+    const PurchaseOrdersScreen(),
+    const InventoryTransfersScreen(),
+  ]) {
+    testWidgets(
+      '${screen.runtimeType} refuses an older server before opening a new warehouse command',
+      (tester) async {
+        final writes = <RequestOptions>[];
+        await mount(tester, screen, (r, h) {
+          if (r.method != 'GET') writes.add(r);
+          respond(r, h, [record(siteA)]);
+        }, protocolAvailable: false);
+        expect(find.text('Warehouse actions unavailable'), findsOneWidget);
+        await tester.tap(
+          find.text(screen is PurchaseOrdersScreen ? 'New PO' : 'New transfer'),
+        );
+        await tester.pumpAndSettle();
+        expect(find.text('Create purchase order'), findsNothing);
+        expect(find.text('Create transfer'), findsNothing);
+        expect(writes, isEmpty);
+      },
+    );
+    testWidgets(
+      '${screen.runtimeType} retains original recovery while protocol support is unavailable',
+      (tester) async {
+        final storage = MemoryStorage(),
+            journal = SecurityCommandStore(storage: storage);
+        final saved = await journal.prepare(
+          (actorId: w.warehouseActor, storeId: siteA, version: null),
+          'inventory-warehouse',
+          WarehouseCommandIntent.ship(w.warehouseTarget).toJson(),
+          check: () {},
+        );
+        final writes = <RequestOptions>[];
+        await mount(
+          tester,
+          screen,
+          (r, h) {
+            if (r.method != 'GET') writes.add(r);
+            respond(r, h, []);
+          },
+          storage: storage,
+          protocolAvailable: false,
+        );
+        expect(
+          find.text('Warehouse request awaiting confirmation'),
+          findsOneWidget,
+        );
+        await tester.tap(find.text('Retry original'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Stop original'));
+        await tester.pumpAndSettle();
+        expect(find.text('Stop the original request?'), findsNothing);
+        expect(writes, isEmpty);
+        expect(
+          (await journal.read(
+            (actorId: w.warehouseActor, storeId: siteA, version: null),
+            'inventory-warehouse',
+            check: () {},
+          ))!.key,
+          saved.key,
+        );
+        expect(find.text('Check again'), findsOneWidget);
+      },
+    );
+  }
   for (final surface in [
     const PurchaseOrdersScreen(),
     const InventoryTransfersScreen(),

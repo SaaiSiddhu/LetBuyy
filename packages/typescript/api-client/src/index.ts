@@ -1,5 +1,5 @@
 import {WarehousePurchaseOrderSchema,WarehouseTransferSchema,type WarehousePurchaseOrder,type WarehousePurchaseOrderLine,type WarehouseTransfer,type WarehouseTransferLine} from '@letbuyy/shared-types';
-import {WarehouseCommandResultSchema,WAREHOUSE_COMMAND_PROTOCOL_HEADER,WAREHOUSE_COMMAND_PROTOCOL_VERSION,type WarehouseCommandOperation,type WarehouseCommandResult,type StopWarehouseCommandInput} from '@letbuyy/shared-types';
+import {WarehouseCommandResultSchema,WarehouseCommandCapabilitiesSchema,WAREHOUSE_COMMAND_PROTOCOL_HEADER,WAREHOUSE_COMMAND_PROTOCOL_VERSION,type WarehouseCommandOperation,type WarehouseCommandResult,type StopWarehouseCommandInput,type WarehouseCommandCapabilities} from '@letbuyy/shared-types';
 export type {WarehouseCommandIntent,WarehouseCommandResult,StopWarehouseCommandInput} from '@letbuyy/shared-types';
 import type { ShippingCapabilities, ShippingProfile, CreateShippingProfileInput, UpdateShippingProfileInput } from '@letbuyy/shared-types';
 import {CollectionListQuerySchema,type CollectionListQueryInput} from '@letbuyy/shared-types';
@@ -4937,6 +4937,8 @@ export class LetbuyyApiClient {
   };
 
   readonly inventory = {
+    capabilities:(query:{store_id:string},options?:LetbuyyRequestOptions)=>
+      this.requestWarehouseCapabilities(query.store_id,options),
     stopCommand:(input:StopWarehouseCommandInput,options?:LetbuyyRequestOptions)=>
       this.requestWarehouseAcknowledgement('/inventory/commands/stop',input,input.operation,input.target_id,{...options,storeId:input.store_id}),
     levels: (query?: InventoryLevelQuery, options?: LetbuyyRequestOptions) =>
@@ -5709,16 +5711,31 @@ export class LetbuyyApiClient {
     throw new LetbuyyApiError({status:409,code:'SETTINGS_LIMIT_REACHED',message:'This settings collection needs a paginated view.'});
   }
 
+  private async requestWarehouseCapabilities(store:string,options?:LetbuyyRequestOptions):Promise<WarehouseCommandCapabilities> {
+    try {
+      const parsed=WarehouseCommandCapabilitiesSchema.safeParse(await this.requestData<unknown>('/inventory/command-capabilities',
+        {...options,method:'GET',body:undefined,storeId:store,query:{store_id:store},idempotencyKey:undefined,cache:'no-store',responseType:'json'}));
+      if(!parsed.success||parsed.data.store_id!==store)throw new LetbuyyApiError({status:503,
+        code:'WAREHOUSE_PROTOCOL_UNVERIFIED',message:'Warehouse request support could not be confirmed. Try again later.'});
+      return parsed.data;
+    }catch(error){
+      if(error instanceof LetbuyyApiError&&error.status===404)throw new LetbuyyApiError({status:426,
+        code:'WAREHOUSE_SERVER_UPGRADE_REQUIRED',message:'Warehouse request support needs a server update. No stock change was sent.'});
+      throw error;
+    }
+  }
+
   private async requestWarehouseAcknowledgement(path:string,input:{idempotency_key:string},operation:WarehouseCommandOperation,
     target:string|null,options?:LetbuyyRequestOptions):Promise<WarehouseCommandResult> {
     const store=options?.storeId??this.defaultStoreId;
     if(!store)throw new LetbuyyApiError({status:400,code:'STORE_REQUIRED',message:'Select a store before changing warehouse stock.'});
     if(options?.idempotencyKey&&options.idempotencyKey!==input.idempotency_key)
       throw new LetbuyyApiError({status:400,code:'WAREHOUSE_KEY_CONFLICT',message:'Retry the original warehouse request key.'});
+    const capabilities=await this.requestWarehouseCapabilities(store,options);
     const headers=new Headers(options?.headers);headers.set(WAREHOUSE_COMMAND_PROTOCOL_HEADER,WAREHOUSE_COMMAND_PROTOCOL_VERSION);
     const parsed=WarehouseCommandResultSchema.safeParse(await this.requestData<unknown>(path,
       {...options,headers,storeId:store,idempotencyKey:input.idempotency_key,method:'POST',body:input}));
-    if(!parsed.success||parsed.data.command_receipt.site_id!==store||parsed.data.command_receipt.operation!==operation||
+    if(!parsed.success||parsed.data.command_receipt.actor_id!==capabilities.actor_id||parsed.data.command_receipt.site_id!==store||parsed.data.command_receipt.operation!==operation||
       parsed.data.command_receipt.key!==input.idempotency_key||(target!==null&&parsed.data.command_receipt.target_id!==target))
       throw new LetbuyyApiError({status:502,code:'WAREHOUSE_ACKNOWLEDGEMENT_UNVERIFIED',message:'The warehouse outcome could not be confirmed. Keep the original request for recovery.'});
     return parsed.data;

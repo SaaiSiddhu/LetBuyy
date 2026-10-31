@@ -3,6 +3,31 @@ import 'inventory_contracts.dart';
 
 const warehouseCommandProtocolHeader = 'X-LetBuyy-Warehouse-Protocol';
 const warehouseCommandProtocolVersion = '1';
+const warehouseCommandEffectPolicy = 'atomic_receipt_or_unavailable';
+
+class WarehouseCommandCapabilities {
+  const WarehouseCommandCapabilities._(this.storeId, this.actorId);
+  final String storeId, actorId;
+  factory WarehouseCommandCapabilities.fromJson(Map<String, dynamic> json) {
+    if (!_keys(json, [
+          'store_id',
+          'actor_id',
+          'protocol_version',
+          'effect_policy',
+          'stop_supported',
+        ]) ||
+        !_id(json['store_id']) ||
+        !_id(json['actor_id']) ||
+        json['protocol_version'] != warehouseCommandProtocolVersion ||
+        json['effect_policy'] != warehouseCommandEffectPolicy ||
+        json['stop_supported'] != true)
+      _invalid();
+    return WarehouseCommandCapabilities._(
+      json['store_id'] as String,
+      json['actor_id'] as String,
+    );
+  }
+}
 
 const warehouseCommandOperations = [
   'purchase_order.create',

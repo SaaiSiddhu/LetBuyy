@@ -39,3 +39,14 @@ test('all six warehouse paths preserve the durable protocol marker, original bod
   assert.equal(calls,6);
  }
 });
+test('warehouse preflight stays a scoped authenticated GET through the actual BFF',async()=>{
+ let calls=0;const env={INTERNAL_API_SECRET:'synthetic-warehouse-bff-secret',API_GATEWAY_SERVICE:{fetch:async(request:Request)=>{
+  calls++;const url=new URL(request.url);assert.equal(request.method,'GET');assert.equal(url.pathname,'/v1/inventory/command-capabilities');
+  assert.equal(url.searchParams.get('store_id'),'site-a');assert.equal(request.headers.get('X-Store-ID'),'site-a');
+  assert.equal(request.headers.get('Authorization'),null);assert.equal(request.headers.get('X-LetBuyy-Internal-Session-Token'),'a'.repeat(32));
+  return Response.json({data:{synthetic:true}},{headers:{'Cache-Control':'private, no-store'}});
+ }}};
+ const response=await app.fetch(new Request('https://mobile-bff.test/v1/inventory/command-capabilities?store_id=site-a',{
+  headers:{Authorization:'Bearer '+'a'.repeat(32),'X-Store-ID':'site-a'}}),env as never);
+ assert.equal(response.status,200);assert.equal(response.headers.get('Cache-Control'),'private, no-store');assert.equal(calls,1);
+});

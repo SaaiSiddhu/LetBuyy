@@ -1,7 +1,7 @@
 'use client';
 import {useCallback,useLayoutEffect,useRef,useState} from 'react';
 import {prepareWarehouseCommand} from '@letbuyy/commerce-core';
-import {WarehouseCommandResultSchema,type WarehouseCommandOperation,type WarehouseCommandResult,type WarehouseCommandIntent} from '@letbuyy/shared-types';
+import {WarehouseCommandResultSchema,WarehouseCommandCapabilitiesSchema,type WarehouseCommandOperation,type WarehouseCommandResult,type WarehouseCommandIntent} from '@letbuyy/shared-types';
 import {useMerchantSecurityContext} from '@/components/security/MerchantSecurityContext';
 import {completeWarehouseCommand,readPendingWarehouseCommand,retainWarehouseCommand,warehouseIntentFingerprint,warehouseCommandSlot,
  type SavedWarehouseCommand,type WarehouseScope} from './warehouse-command-journal';
@@ -18,6 +18,9 @@ export class WarehouseCommandValidationError extends Error {
   :operation.endsWith('.receive')?'Enter whole receiving quantities for the selected lines.'
   :'Reload the current store record before shipping.');this.name='WarehouseCommandValidationError';}
 }
+class WarehouseProtocolUnavailableError extends Error {
+ constructor(){super('Warehouse actions are unavailable. Check your connection and current owner access, then check again. Saved requests are retained.');this.name='WarehouseProtocolUnavailableError';}
+}
 const dependencies=()=>{
  if(!navigator.locks?.request)throw new Error('Browser request recovery is unavailable.');
  return {storage:window.localStorage,locks:navigator.locks};
@@ -29,17 +32,30 @@ export function useWarehouseCommands(store:string) {
  const [state,setState]=useState({identity:'',ready:false,busy:false,pending:null as SavedWarehouseCommand|null,error:null as string|null});
  const current=useCallback((captured:Scope)=>scope.current===captured&&captured.active,[]);
  const check=useCallback((captured:Scope)=>{if(!current(captured))throw changed();},[current]);
+ const verifyProtocol=useCallback(async(captured:Scope)=>{
+  check(captured);
+  try {
+   const response=await fetch(`/api/v1/stores/${encodeURIComponent(captured.store)}/inventory/commands/capabilities`,{
+    method:'GET',cache:'no-store',signal:AbortSignal.timeout(15_000),headers:{'X-LetBuyy-Merchant-Context':captured.actorId}});
+   const value:unknown=await response.json().catch(()=>null);check(captured);
+   const parsed=WarehouseCommandCapabilitiesSchema.safeParse(value&&typeof value==='object'&&'data' in value?value.data:undefined);
+   if(!response.ok||!parsed.success||parsed.data.actor_id!==captured.actorId||parsed.data.store_id!==captured.siteId)throw new WarehouseProtocolUnavailableError();
+  }catch{check(captured);throw new WarehouseProtocolUnavailableError();}
+ },[check]);
  const restore=useCallback(async(captured:Scope)=>{
   if(!current(captured)||busy.current)return;
   setState({identity:captured.identity,ready:false,busy:false,pending:null,error:null});
+  let pending:SavedWarehouseCommand|null=null;
   try {
-   const {storage,locks}=dependencies(),pending=await readPendingWarehouseCommand(captured,storage,locks,()=>check(captured));
+   const {storage,locks}=dependencies();pending=await readPendingWarehouseCommand(captured,storage,locks,()=>check(captured));
+   if(current(captured))setState({identity:captured.identity,ready:false,busy:false,pending,error:null});
+   await verifyProtocol(captured);
    if(current(captured))setState({identity:captured.identity,ready:true,busy:false,pending,error:null});
-  }catch{
-   if(current(captured))setState({identity:captured.identity,ready:false,busy:false,pending:null,
-    error:'The saved warehouse request could not be read. Keep this browser data and check storage and account access.'});
+  }catch(error){
+   if(current(captured))setState({identity:captured.identity,ready:false,busy:false,pending,
+    error:error instanceof WarehouseProtocolUnavailableError?error.message:'The saved warehouse request could not be read. Keep this browser data and check storage and account access.'});
   }
- },[check,current]);
+ },[check,current,verifyProtocol]);
  useLayoutEffect(()=>{
   const captured:Scope={actorId,siteId:siteId??'',store,identity,active:true};scope.current=captured;busy.current=false;
   void restore(captured);
@@ -91,6 +107,7 @@ export function useWarehouseCommands(store:string) {
   catch{throw new WarehouseCommandValidationError(operation);}
   busy.current=true;setState(s=>({...s,busy:true,error:null}));
   try {
+   try{await verifyProtocol(captured);}catch(error){if(current(captured))setState(s=>({...s,ready:false,error:error instanceof WarehouseProtocolUnavailableError?error.message:'Warehouse request support could not be confirmed.'}));throw error;}
    let saved:SavedWarehouseCommand;
    try{const {storage,locks}=dependencies();saved=await retainWarehouseCommand(captured,intent,storage,locks,()=>check(captured));}
    catch(error){if(current(captured))setState(s=>({...s,ready:false,error:'The original request could not be saved or confirmed. Check saved requests before continuing.'}));throw error;}
@@ -98,16 +115,17 @@ export function useWarehouseCommands(store:string) {
    if(result.command_receipt.outcome==='cancelled')throw new WarehouseRequestStoppedError();
    return result;
   }finally{if(current(captured)){busy.current=false;setState(s=>({...s,busy:false}));}}
- },[check,current,identity,run]);
+ },[check,current,identity,run,verifyProtocol]);
  const recover=useCallback(async(stop:boolean)=>{
   const captured=scope.current;if(!captured||captured.identity!==identity||!current(captured)||busy.current)throw changed();
   busy.current=true;setState(s=>({...s,busy:true,error:null}));
   try {
    const {storage,locks}=dependencies(),saved=await readPendingWarehouseCommand(captured,storage,locks,()=>check(captured));
    if(!saved)throw new Error('No warehouse request is awaiting confirmation.');
+   try{await verifyProtocol(captured);}catch(error){if(current(captured))setState(s=>({...s,ready:false,pending:saved,error:error instanceof WarehouseProtocolUnavailableError?error.message:'Warehouse request support could not be confirmed.'}));throw error;}
    return await run(saved,captured,stop);
   }finally{if(current(captured)){busy.current=false;setState(s=>({...s,busy:false}));}}
- },[check,current,identity,run]);
+ },[check,current,identity,run,verifyProtocol]);
  const visible=state.identity===identity;
  return {identity,scopeToken:scope.current,ready:visible&&state.ready,busy:visible&&state.busy,
   pending:visible?state.pending:null,error:visible?state.error:null,

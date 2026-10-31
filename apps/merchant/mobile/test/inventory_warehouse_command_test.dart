@@ -19,6 +19,29 @@ class Harness {
     dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (r, h) async {
+          if (r.path.endsWith('/command-capabilities')) {
+            capabilityReads++;
+            final status = deny ? 403 : capabilityStatus;
+            h.resolve(
+              Response(
+                requestOptions: r,
+                statusCode: status,
+                data: status == 200
+                    ? {
+                        'data':
+                            capabilityOverride ??
+                            warehouseCapabilities(actor: actor, site: site),
+                      }
+                    : {
+                        'error': {
+                          'code': status == 404 ? 'NOT_FOUND' : 'FORBIDDEN',
+                          'message': 'Synthetic capability refusal',
+                        },
+                      },
+              ),
+            );
+            return;
+          }
           final body = Map<String, dynamic>.from(r.data as Map),
               key = body['idempotency_key'] as String;
           requests.add(r);
@@ -164,6 +187,8 @@ class Harness {
   String actor = warehouseActor, site = warehouseSite;
   Object version = 'session-A';
   int effects = 0;
+  int capabilityReads = 0, capabilityStatus = 200;
+  JsonMap? capabilityOverride;
   bool failBefore = false, failAfter = false, deny = false;
   Completer<void>? holdResponse, entered;
   void Function(JsonMap)? corrupt;
@@ -431,11 +456,12 @@ void main() {
   test(
     'revoked owner denial retains the request for authorized resolution',
     () async {
-      final h = Harness()..deny = true, s = h.service();
+      final h = Harness()..failAfter = true, s = h.service();
       await expectLater(
         s.createPurchaseOrder(warehousePo()),
         throwsA(isA<ApiException>()),
       );
+      h.deny = true;
       await expectLater(
         s.stopWarehouseCommand(warehouseSite),
         throwsA(isA<ApiException>()),
@@ -444,7 +470,73 @@ void main() {
         (await s.pendingWarehouseCommand(warehouseSite))!.key,
         'original-po-create',
       );
-      expect(h.effects, 0);
+      expect(h.effects, 1);
+    },
+  );
+  test(
+    'older or mismatched server capability blocks before prepare and dispatch',
+    () async {
+      for (final fault in [
+        'missing',
+        'actor',
+        'site',
+        'version',
+        'policy',
+        'stop',
+      ]) {
+        final h = Harness(), s = h.service();
+        if (fault == 'missing')
+          h.capabilityStatus = 404;
+        else {
+          h.capabilityOverride = warehouseCapabilities();
+          switch (fault) {
+            case 'actor':
+              h.capabilityOverride!['actor_id'] = warehouseDestination;
+            case 'site':
+              h.capabilityOverride!['store_id'] = warehouseDestination;
+            case 'version':
+              h.capabilityOverride!['protocol_version'] = '0';
+            case 'policy':
+              h.capabilityOverride!['effect_policy'] = 'legacy';
+            case 'stop':
+              h.capabilityOverride!['stop_supported'] = false;
+          }
+        }
+        await expectLater(
+          s.createPurchaseOrder(warehousePo()),
+          throwsA(isA<ApiException>()),
+        );
+        expect(h.requests, isEmpty, reason: fault);
+        expect(h.storage.data, isEmpty, reason: fault);
+        expect(h.effects, 0);
+      }
+    },
+  );
+  test(
+    'an existing pending request survives an unavailable server preflight',
+    () async {
+      final h = Harness()..failAfter = true, s = h.service();
+      await expectLater(
+        s.createPurchaseOrder(warehousePo()),
+        throwsA(isA<ApiException>()),
+      );
+      h.capabilityStatus = 404;
+      await expectLater(
+        s.retryWarehouseCommand(warehouseSite),
+        throwsA(isA<ApiException>()),
+      );
+      await expectLater(
+        s.stopWarehouseCommand(warehouseSite),
+        throwsA(isA<ApiException>()),
+      );
+      expect(h.requests.length, 1);
+      expect(
+        (await s.pendingWarehouseCommand(warehouseSite))!.key,
+        'original-po-create',
+      );
+      h.capabilityStatus = 200;
+      expect((await s.retryWarehouseCommand(warehouseSite)).applied, isTrue);
+      expect(h.effects, 1);
     },
   );
 }

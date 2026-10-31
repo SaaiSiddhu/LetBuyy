@@ -2582,6 +2582,20 @@ class InventoryApi {
 
   final ApiClient _client;
 
+  Future<JsonMap> commandCapabilities({
+    required String storeId,
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/inventory/command-capabilities',
+    options: _mergeOptions(
+      (options ?? const ApiRequestOptions()).copyWith(
+        storeId: storeId,
+        headers: {...?options?.headers, 'Cache-Control': 'no-cache'},
+      ),
+      query: {'store_id': storeId},
+    ),
+  );
+
   Future<JsonMap> stopWarehouseCommand(
     JsonMap input, {
     ApiRequestOptions? options,

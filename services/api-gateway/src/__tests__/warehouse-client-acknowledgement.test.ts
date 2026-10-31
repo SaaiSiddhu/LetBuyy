@@ -4,6 +4,15 @@ import {createLetbuyyApiClient,LetbuyyApiError,type LetbuyyApiClient} from '@let
 import {prepareWarehouseCommand} from '@letbuyy/commerce-core';
 import type {WarehouseCommandOperation} from '@letbuyy/shared-types';
 const id=(n:number)=>'00000000-0000-4000-8000-'+String(n).padStart(12,'0');
+function protocolClient(options:Parameters<typeof createLetbuyyApiClient>[0]) {
+ const fetcher=options.fetch;assert.ok(fetcher);
+ return createLetbuyyApiClient({...options,fetch:async(input,init)=>{
+  const url=new URL(typeof input==='string'?input:input instanceof URL?input.href:input.url);
+  if(url.pathname.endsWith('/inventory/command-capabilities'))return Response.json({data:{store_id:id(1),actor_id:id(9),
+   protocol_version:'1',effect_policy:'atomic_receipt_or_unavailable',stop_supported:true}});
+  return fetcher(input,init);
+ }});
+}
 const operations:WarehouseCommandOperation[]=['purchase_order.create','purchase_order.receive','transfer.create','transfer.ship','transfer.receive'];
 function body(op:WarehouseCommandOperation) {
  const common={store_id:id(1),idempotency_key:id(2)};
@@ -32,17 +41,18 @@ function send(api:LetbuyyApiClient,op:WarehouseCommandOperation) {
 }
 for(const op of operations) {
  test(op+' SDK pins the request identity and decodes a populated scoped acknowledgement',async()=>{
-  const api=createLetbuyyApiClient({baseUrl:'https://gateway.test',storeId:id(99),fetch:async(_url,init)=>{
+  const api=protocolClient({baseUrl:'https://gateway.test',storeId:id(99),fetch:async(_url,init)=>{
    const headers=new Headers(init?.headers),payload=JSON.parse(String(init?.body));
    assert.equal(headers.get('X-Store-ID'),id(1));assert.equal(headers.get('X-Idempotency-Key'),id(2));assert.equal(headers.get('X-LetBuyy-Warehouse-Protocol'),'1');assert.equal(payload.idempotency_key,id(2));return Response.json({data:ack(op)});
   }});
   assert.equal((await send(api,op)).command_receipt.operation,op);
  });
- for(const fault of ['key','site','operation','shape'])test(op+' SDK refuses mismatched '+fault,async()=>{
-  const api=createLetbuyyApiClient({baseUrl:'https://gateway.test',fetch:async()=>{
+ for(const fault of ['key','site','actor','operation','shape'])test(op+' SDK refuses mismatched '+fault,async()=>{
+  const api=protocolClient({baseUrl:'https://gateway.test',fetch:async()=>{
    const data=ack(op);
    if(fault==='key')data.command_receipt.key=id(99);
    if(fault==='site')data.command_receipt.site_id=id(99);
+   if(fault==='actor')data.command_receipt.actor_id=id(99);
    if(fault==='operation')data.command_receipt.operation=op==='transfer.ship'?'transfer.receive':'transfer.ship';
    if(fault==='shape')data.lines=[];
    return Response.json({data});
@@ -52,7 +62,7 @@ for(const op of operations) {
  test(op+' SDK stop preserves both applied and cancelled outcomes',async()=>{
   for(const cancelled of [false,true]) {
    const desired=prepareWarehouseCommand(op,op.endsWith('.create')?null:id(3),body(op));
-   const api=createLetbuyyApiClient({baseUrl:'https://gateway.test',storeId:id(99),fetch:async(url)=>{
+   const api=protocolClient({baseUrl:'https://gateway.test',storeId:id(99),fetch:async(url)=>{
     assert.match(String(url),/\/inventory\/commands\/stop$/);return Response.json({data:ack(op,cancelled)});
    }});
    assert.equal((await api.inventory.stopCommand({store_id:id(1),idempotency_key:id(2),...desired})).command_receipt.outcome,cancelled?'cancelled':'applied');
@@ -60,7 +70,31 @@ for(const op of operations) {
  });
 }
 test('SDK rejects a header/body key conflict without dispatching a warehouse effect',async()=>{
- let calls=0;const api=createLetbuyyApiClient({baseUrl:'https://gateway.test',fetch:async()=>{calls++;return Response.json({});}});
+ let calls=0;const api=protocolClient({baseUrl:'https://gateway.test',fetch:async()=>{calls++;return Response.json({});}});
  await assert.rejects(()=>api.inventory.transfers.ship(id(3),{store_id:id(1),idempotency_key:id(2)},
   {idempotencyKey:id(99)}),e=>e instanceof LetbuyyApiError&&e.code==='WAREHOUSE_KEY_CONFLICT');assert.equal(calls,0);
+});
+test('a new SDK refuses an older server before any warehouse POST is dispatched',async()=>{
+ let posts=0;
+ const api=createLetbuyyApiClient({baseUrl:'https://legacy-gateway.test',fetch:async(_url,init)=>{
+  if((init?.method??'GET')==='GET')return Response.json({error:{code:'NOT_FOUND'}},{status:404});
+  posts++;return Response.json({data:{purchase_order:{id:id(3),site_id:id(1)},lines:[]}});
+ }});
+ await assert.rejects(()=>send(api,'purchase_order.create'));
+ assert.equal(posts,0,'capability failure must precede dispatch; an unrecognized acknowledgement is too late');
+});
+for(const fault of ['site','version','policy','stop','extra'])test('unverified server '+fault+' refuses before dispatch',async()=>{
+ let posts=0;
+ const api=createLetbuyyApiClient({baseUrl:'https://unverified-gateway.test',fetch:async(_url,init)=>{
+  if(init?.method==='POST'){posts++;return Response.json({data:ack('purchase_order.create')});}
+  const descriptor:Record<string,unknown>={store_id:id(1),actor_id:id(9),protocol_version:'1',effect_policy:'atomic_receipt_or_unavailable',stop_supported:true};
+  if(fault==='site')descriptor.store_id=id(99);
+  if(fault==='version')descriptor.protocol_version='2';
+  if(fault==='policy')descriptor.effect_policy='legacy';
+  if(fault==='stop')descriptor.stop_supported=false;
+  if(fault==='extra')descriptor.ready=true;
+  return Response.json({data:descriptor});
+ }});
+ await assert.rejects(()=>send(api,'purchase_order.create'),e=>e instanceof LetbuyyApiError&&e.code==='WAREHOUSE_PROTOCOL_UNVERIFIED');
+ assert.equal(posts,0);
 });

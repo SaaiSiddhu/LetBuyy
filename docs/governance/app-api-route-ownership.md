@@ -208,3 +208,15 @@ Gateway/SQL. The six actual Next proxy/SDK paths have 55 local positive and
 Origin/account/site/key/receipt refusal tests; source qualification is distinct
 from hosted or device acceptance. The route freeze and inventory/baseline equality
 tests remain enforced for every class; no new exception or runtime is introduced.
+
+
+### Merchant warehouse protocol preflight — 31 October 2026
+
+The paired maintained inventory and lint baseline move **232 → 233** for
+`apps/merchant/web/src/app/api/v1/stores/[store]/inventory/commands/capabilities/route.ts`.
+This is another existing-class `gateway-proxy`, with current account/site binding,
+a no-store GET and typed Gateway descriptor forwarding. It neither accesses a
+database nor grants a permission lease or migration-readiness claim. New clients
+must confirm the guarded protocol before dispatch to prevent bootstrap into an
+older split-commit Gateway/BFF. Actual command authority/effects still live in the
+canonical Gateway/SQL owner. No new runtime, issuer or local stock writer is added.

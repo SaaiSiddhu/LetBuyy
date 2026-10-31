@@ -69,6 +69,22 @@ Map<String, dynamic> receipt({bool cancelled = false, bool transfer = false}) =>
       ],
     };
 void main() {
+  test('warehouse capability descriptors require exact supported policy and scoped identities',(){
+    final good=<String,dynamic>{'store_id':a,'actor_id':b,'protocol_version':'1',
+      'effect_policy':'atomic_receipt_or_unavailable','stop_supported':true};
+    expect(WarehouseCommandCapabilities.fromJson(good).storeId,a);
+    for(final fault in ['actor','site','version','policy','stop','extra']) {
+      final row={...good};switch(fault){
+        case 'actor':row['actor_id']='unknown';
+        case 'site':row['store_id']=null;
+        case 'version':row['protocol_version']='0';
+        case 'policy':row['effect_policy']='legacy';
+        case 'stop':row['stop_supported']=false;
+        case 'extra':row['ready']=true;
+      }
+      expect(()=>WarehouseCommandCapabilities.fromJson(row),throwsFormatException,reason:fault);
+    }
+  });
   test(
     'PO intent normalizes UUIDs, exact paise, nulls, notes and UTC once',
     () {
