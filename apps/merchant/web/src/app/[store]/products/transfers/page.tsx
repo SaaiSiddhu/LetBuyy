@@ -36,25 +36,7 @@ import type {
     ReceiveInventoryTransferLineInput,
 } from '@letbuyy/api-client'
 
-// ── local type augmentation ───────────────────────────────────────────────────
-// The gateway returns lines via a joined select; the base type omits them.
-
-interface TransferLine {
-    id: string
-    product_id: string
-    variant_id?: string | null
-    quantity: number
-    quantity_received?: number | null
-}
-
-type TransferWithLines = InventoryTransfer & {
-    lines: TransferLine[]
-    notes?: string | null
-    shipped_at?: string | null
-    received_at?: string | null
-    source_location?: { name: string } | null
-    destination_location?: { name: string } | null
-}
+type TransferWithLines = InventoryTransfer;
 
 type TransferProductItem = {
     id: string
@@ -68,9 +50,9 @@ type TransferProductItem = {
 function transferStatusVariant(status: string): StatusVariant {
     switch (status) {
         case 'received': return 'success'
-        case 'partial': return 'info'
+        case 'partially_received': return 'info'
         case 'shipped': return 'warning'
-        case 'pending': return 'default'
+        case 'reserved': return 'default'
         case 'cancelled': return 'critical'
         default: return 'default'
     }
@@ -78,9 +60,9 @@ function transferStatusVariant(status: string): StatusVariant {
 
 function transferStatusLabel(status: string): string {
     switch (status) {
-        case 'pending': return 'Pending'
+        case 'reserved': return 'Pending'
         case 'shipped': return 'Shipped'
-        case 'partial': return 'Partially received'
+        case 'partially_received': return 'Partially received'
         case 'received': return 'Received'
         case 'cancelled': return 'Cancelled'
         default: return status
@@ -464,7 +446,7 @@ function ReceiveTransferModal({
         if (open && transfer) {
             const init: Record<string, number> = {}
             for (const l of transfer.lines) {
-                const remaining = l.quantity - (l.quantity_received ?? 0)
+                const remaining = l.quantity_shipped - l.quantity_received
                 init[l.id] = remaining > 0 ? remaining : 0
             }
             setLineQtys(init)
@@ -475,7 +457,7 @@ function ReceiveTransferModal({
     if (!transfer) return null
 
     const receivableLines = transfer.lines.filter(
-        (l) => l.quantity - (l.quantity_received ?? 0) > 0,
+        (l) => l.quantity_shipped - l.quantity_received > 0,
     )
 
     async function handleReceive() {
@@ -486,7 +468,7 @@ function ReceiveTransferModal({
             .filter((l) => (lineQtys[l.id] ?? 0) > 0)
             .map((l) => ({
                 transfer_line_id: l.id,
-                quantity_received: lineQtys[l.id] ?? 0,
+                quantity: lineQtys[l.id] ?? 0,
             }))
 
         if (!receiveLines.length) {
@@ -555,7 +537,7 @@ function ReceiveTransferModal({
                 ) : (
                     <div className="flex flex-col gap-[var(--lb-space-3)]">
                         {receivableLines.map((line) => {
-                            const remaining = line.quantity - (line.quantity_received ?? 0)
+                            const remaining = line.quantity_shipped - line.quantity_received
                             return (
                                 <div
                                     key={line.id}
@@ -571,7 +553,7 @@ function ReceiveTransferModal({
                                             </span>
                                         )}
                                         <span className="text-[length:var(--lb-font-size-xs)] text-[var(--lb-color-text-secondary)]">
-                                            Qty: {line.quantity} · Received: {line.quantity_received ?? 0} · Remaining: {remaining}
+                                            Requested: {line.quantity_requested} · Shipped: {line.quantity_shipped} · Received: {line.quantity_received} · Remaining: {remaining}
                                         </span>
                                     </div>
                                     <NumberField
@@ -649,7 +631,7 @@ export default function TransfersPage() {
     }
 
     function openShip(transfer: TransferWithLines) {
-        if (transfer.status !== 'pending') {
+        if (transfer.status !== 'reserved') {
             notify({
                 title: `Cannot ship a transfer with status "${transferStatusLabel(transfer.status)}"`,
                 variant: 'critical',
@@ -667,7 +649,7 @@ export default function TransfersPage() {
             })
             return
         }
-        if (transfer.status === 'pending') {
+        if (transfer.status === 'reserved') {
             notify({
                 title: 'Transfer must be shipped before it can be received',
                 variant: 'warning',
@@ -816,7 +798,7 @@ export default function TransfersPage() {
                                                         variant="secondary"
                                                         size="sm"
                                                         onClick={() => openShip(transfer)}
-                                                        disabled={transfer.status !== 'pending'}
+                                                        disabled={transfer.status !== 'reserved'}
                                                     >
                                                         <Truck
                                                             className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]"
@@ -831,7 +813,7 @@ export default function TransfersPage() {
                                                         disabled={
                                                             transfer.status === 'received' ||
                                                             transfer.status === 'cancelled' ||
-                                                            transfer.status === 'pending'
+                                                            transfer.status === 'reserved'
                                                         }
                                                     >
                                                         Receive

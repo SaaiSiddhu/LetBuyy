@@ -1,0 +1,55 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+import {WarehousePurchaseOrderSchema,WarehouseTransferSchema} from '@letbuyy/shared-types';
+import {createLetbuyyApiClient,LetbuyyApiError} from '@letbuyy/api-client';
+const uuid=(n:number)=>'00000000-0000-4000-8000-'+String(n).padStart(12,'0');
+function record(transfer:boolean) {
+ const date='2026-10-31T00:00:00.000Z';
+ const line={id:uuid(5),site_id:uuid(1),product_id:uuid(6),variant_id:null,quantity_received:2,created_at:date,
+  ...(transfer?{transfer_id:uuid(4),quantity_requested:4,quantity_shipped:3}:{purchase_order_id:uuid(4),quantity_ordered:4,unit_cost:0.29})};
+ return {id:uuid(4),site_id:uuid(1),status:'partially_received',notes:null,created_at:date,lines:[line],
+  ...(transfer?{transfer_number:'TR-SYN',source_location_id:uuid(7),destination_location_id:uuid(8),shipped_at:date,received_at:null}
+   :{po_number:'PO-SYN',supplier_id:uuid(9),location_id:uuid(7),supplier:{id:uuid(9),site_id:uuid(1),name:'Synthetic supplier'},
+     expected_at:null,subtotal:1.16,total:1.16,currency:'INR'})};
+}
+for(const transfer of [false,true]) {
+ const name=transfer?'transfer':'PO',schema=transfer?WarehouseTransferSchema:WarehousePurchaseOrderSchema;
+ test(name+' uses actual server counters and status with no local aliases',()=>{
+  const row=schema.parse(record(transfer));assert.equal(row.status,'partially_received');assert.equal(row.lines[0].quantity_received,2);
+  assert.equal(row.lines[0][transfer?'quantity_requested':'quantity_ordered'],4);
+ });
+ for(const fault of ['legacy-quantity','legacy-status','missing-count','fraction','foreign-line','foreign-parent','duplicate-line','over-received']) {
+  test(name+' rejects '+fault,()=>{
+   const row=record(transfer),line=row.lines[0] as Record<string,unknown>;
+   if(fault==='legacy-quantity'){line.quantity=4;delete line[transfer?'quantity_requested':'quantity_ordered'];}
+   if(fault==='legacy-status')row.status='partial';
+   if(fault==='missing-count')delete line.quantity_received;
+   if(fault==='fraction')line.quantity_received=1.5;
+   if(fault==='foreign-line')line.site_id=uuid(2);
+   if(fault==='foreign-parent')line[transfer?'transfer_id':'purchase_order_id']=uuid(2);
+   if(fault==='duplicate-line')row.lines.push({...row.lines[0]});
+   if(fault==='over-received')line.quantity_received=5;
+   assert.equal(schema.safeParse(row).success,false);
+  });
+ }
+ test(name+' SDK pins the explicit store and refuses an unverified private record',async()=>{
+  for(const foreign of [false,true]) {
+   const api=createLetbuyyApiClient({baseUrl:'https://gateway.test',storeId:uuid(2),fetch:async(input,init)=>{
+    const url=new URL(String(input));assert.equal(url.searchParams.get('store_id'),uuid(1));
+    assert.equal(new Headers(init?.headers).get('X-Store-ID'),uuid(1));
+    const row=record(transfer);if(foreign)row.site_id=uuid(2);return Response.json({data:[row]});
+   }});
+   const read=()=>transfer?api.inventory.transfers.list({store_id:uuid(1)}):api.inventory.purchaseOrders.list({store_id:uuid(1)});
+   if(foreign)await assert.rejects(read,e=>e instanceof LetbuyyApiError&&e.code==='WAREHOUSE_DOCUMENTS_UNVERIFIED');
+   else assert.equal((await read())[0].lines[0].quantity_received,2);
+  }
+ });
+}
+test('PO rejects foreign supplier joins and preserves zero whole-paise cost',()=>{
+ const row=record(false);(row.lines[0] as Record<string,unknown>).unit_cost=0;
+ assert.equal(WarehousePurchaseOrderSchema.parse(row).lines[0].unit_cost,0);
+ const foreign={...row,supplier:{id:uuid(9),site_id:uuid(2),name:'Foreign'}};
+ assert.equal(WarehousePurchaseOrderSchema.safeParse(foreign).success,false);
+ (row.lines[0] as Record<string,unknown>).unit_cost=0.005;
+ assert.equal(WarehousePurchaseOrderSchema.safeParse(row).success,false);
+});

@@ -4,7 +4,7 @@ import { resolveMerchantResourceStoreIds } from '../lib/tenant-context';
 // ============================================================
 
 import { Hono } from 'hono';
-import { InventoryReservationSchema, InventoryReceiptSchema } from '@letbuyy/shared-types';
+import { InventoryReservationSchema, InventoryReceiptSchema, WarehousePurchaseOrderSchema, WarehouseTransferSchema } from '@letbuyy/shared-types';
 import type { Env } from '../index';
 import { executeInventoryAdjustment } from '../execution/inventory-adjustment.adapter';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
@@ -406,15 +406,17 @@ router.get('/purchase-orders', async (c) => {
 
     const { data, error } = await db
         .from('purchase_orders')
-        .select('*, supplier:suppliers(name), lines:purchase_order_lines(*)')
+        .select('*, supplier:suppliers(id,site_id,name), lines:purchase_order_lines(*)')
         .in('site_id', ownedStoreIds)
         .is('deleted_at', null)
+        .is('lines.deleted_at', null)
         .order('created_at', { ascending: false });
 
-    if (isMissingTableError(error, 'purchase_orders')) return c.json(success([]));
     if (error) return c.json(dbFailureBody(), 500);
-
-    return c.json(success(data || []));
+    const parsed=WarehousePurchaseOrderSchema.array().safeParse(data);
+    if(!parsed.success||parsed.data.some(row=>!ownedStoreIds.includes(row.site_id)))
+        return c.json(failureBody('WAREHOUSE_DOCUMENTS_UNVERIFIED','Purchase order records could not be confirmed.'),503);
+    return c.json(success(parsed.data));
 });
 
 // Stop the logical request, not the business PO/transfer. An already applied
@@ -496,12 +498,14 @@ router.get('/transfers', async (c) => {
         .select('*, lines:inventory_transfer_lines(*)')
         .in('site_id', ownedStoreIds)
         .is('deleted_at', null)
+        .is('lines.deleted_at', null)
         .order('created_at', { ascending: false });
 
-    if (isMissingTableError(error, 'inventory_transfers')) return c.json(success([]));
     if (error) return c.json(dbFailureBody(), 500);
-
-    return c.json(success(data || []));
+    const parsed=WarehouseTransferSchema.array().safeParse(data);
+    if(!parsed.success||parsed.data.some(row=>!ownedStoreIds.includes(row.site_id)))
+        return c.json(failureBody('WAREHOUSE_DOCUMENTS_UNVERIFIED','Transfer records could not be confirmed.'),503);
+    return c.json(success(parsed.data));
 });
 
 // POST /inventory/transfers — Reserve stock for transfer

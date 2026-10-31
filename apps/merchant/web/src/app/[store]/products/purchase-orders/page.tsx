@@ -30,7 +30,6 @@ import {
 } from '@letbuyy/ui'
 import type {
     PurchaseOrder,
-    PurchaseOrderLine,
     Supplier,
     InventoryLocation,
     PurchaseOrderLineInput,
@@ -51,7 +50,7 @@ type PurchaseOrderProductItem = {
 function poStatusVariant(status: PurchaseOrder['status']): StatusVariant {
     switch (status) {
         case 'received': return 'success'
-        case 'partial': return 'info'
+        case 'partially_received': return 'info'
         case 'ordered': return 'default'
         case 'cancelled': return 'critical'
         default: return 'default'
@@ -62,15 +61,11 @@ function poStatusLabel(status: PurchaseOrder['status']): string {
     switch (status) {
         case 'draft': return 'Draft'
         case 'ordered': return 'Ordered'
-        case 'partial': return 'Partially received'
+        case 'partially_received': return 'Partially received'
         case 'received': return 'Received'
         case 'cancelled': return 'Cancelled'
         default: return status
     }
-}
-
-function totalPoLines(lines: PurchaseOrderLine[]): number {
-    return lines.reduce((sum, l) => sum + l.quantity * l.unit_cost, 0)
 }
 
 function generateIdempotencyKey(): string {
@@ -382,7 +377,7 @@ function ReceivePOModal({ open, store, po, onClose, onReceived }: ReceivePOModal
         if (open && po) {
             const init: Record<string, number> = {}
             for (const l of po.lines) {
-                const remaining = l.quantity - (l.received_quantity ?? 0)
+                const remaining = l.quantity_ordered - l.quantity_received
                 init[l.id] = remaining > 0 ? remaining : 0
             }
             setLineQtys(init)
@@ -393,7 +388,7 @@ function ReceivePOModal({ open, store, po, onClose, onReceived }: ReceivePOModal
     if (!po) return null
 
     const receivableLines = po.lines.filter(
-        (l) => l.quantity - (l.received_quantity ?? 0) > 0,
+        (l) => l.quantity_ordered - l.quantity_received > 0,
     )
 
     async function handleReceive() {
@@ -473,7 +468,7 @@ function ReceivePOModal({ open, store, po, onClose, onReceived }: ReceivePOModal
                 ) : (
                     <div className="flex flex-col gap-[var(--lb-space-3)]">
                         {receivableLines.map((line) => {
-                            const remaining = line.quantity - (line.received_quantity ?? 0)
+                            const remaining = line.quantity_ordered - line.quantity_received
                             return (
                                 <div
                                     key={line.id}
@@ -484,7 +479,7 @@ function ReceivePOModal({ open, store, po, onClose, onReceived }: ReceivePOModal
                                             Product ID: {line.product_id.slice(0, 8)}…
                                         </span>
                                         <span className="text-[length:var(--lb-font-size-xs)] text-[var(--lb-color-text-secondary)]">
-                                            Ordered: {line.quantity} · Already received: {line.received_quantity ?? 0} · Remaining: {remaining}
+                                            Ordered: {line.quantity_ordered} · Already received: {line.quantity_received} · Remaining: {remaining}
                                         </span>
                                     </div>
                                     <NumberField
@@ -578,7 +573,7 @@ export default function PurchaseOrdersPage() {
     }
 
     function openReceive(po: PurchaseOrder) {
-        if (po.status === 'received' || po.status === 'cancelled') {
+        if (po.status === 'received' || po.status === 'cancelled' || po.status === 'closed') {
             notify({ title: `Cannot receive a ${po.status} order`, variant: 'critical' })
             return
         }
@@ -698,7 +693,7 @@ export default function PurchaseOrdersPage() {
                                                 {po.lines.length}
                                             </td>
                                             <td className="py-[var(--lb-space-3)] pr-[var(--lb-space-4)] text-right tabular-nums text-[var(--lb-color-text-primary)]">
-                                                {formatInrCurrency(totalPoLines(po.lines)) ?? '—'}
+                                                {formatInrCurrency(po.total) ?? '—'}
                                             </td>
                                             <td className="py-[var(--lb-space-3)] pr-[var(--lb-space-4)] text-[var(--lb-color-text-secondary)]">
                                                 {po.expected_at ? formatDate(po.expected_at) : '—'}
@@ -711,7 +706,7 @@ export default function PurchaseOrdersPage() {
                                                     variant="secondary"
                                                     size="sm"
                                                     onClick={() => openReceive(po)}
-                                                    disabled={po.status === 'received' || po.status === 'cancelled'}
+                                                    disabled={po.status === 'received' || po.status === 'cancelled' || po.status === 'closed'}
                                                 >
                                                     <Truck
                                                         className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]"

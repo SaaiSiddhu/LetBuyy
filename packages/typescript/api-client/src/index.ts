@@ -1,3 +1,4 @@
+import {WarehousePurchaseOrderSchema,WarehouseTransferSchema,type WarehousePurchaseOrder,type WarehousePurchaseOrderLine,type WarehouseTransfer,type WarehouseTransferLine} from '@letbuyy/shared-types';
 import type { ShippingCapabilities, ShippingProfile, CreateShippingProfileInput, UpdateShippingProfileInput } from '@letbuyy/shared-types';
 import {CollectionListQuerySchema,type CollectionListQueryInput} from '@letbuyy/shared-types';
 import { StorefrontDirectoryPayloadSchema, type StorefrontDirectoryPayload } from '@letbuyy/shared-types';
@@ -2347,33 +2348,8 @@ export interface ReceivePurchaseOrderInput {
   idempotency_key: string;
 }
 
-export interface PurchaseOrderLine extends JsonRecord {
-  id: string;
-  purchase_order_id: string;
-  product_id: string;
-  variant_id?: string | null;
-  quantity: number;
-  unit_cost: number;
-  received_quantity: number;
-  created_at: string;
-  updated_at?: string | null;
-}
-
-export interface PurchaseOrder extends JsonRecord {
-  id: string;
-  site_id: string;
-  supplier_id?: string | null;
-  location_id: string;
-  status: 'draft' | 'ordered' | 'partial' | 'received' | 'cancelled';
-  po_number?: string | null;
-  expected_at?: string | null;
-  notes?: string | null;
-  total_cost: number;
-  created_at: string;
-  updated_at?: string | null;
-  supplier?: { name: string } | null;
-  lines: PurchaseOrderLine[];
-}
+export type PurchaseOrderLine=WarehousePurchaseOrderLine;
+export type PurchaseOrder=WarehousePurchaseOrder;
 
 export interface PurchaseOrderListQuery extends StoreScopedQuery {}
 
@@ -2438,7 +2414,7 @@ export interface ShipInventoryTransferInput {
 
 export interface ReceiveInventoryTransferLineInput {
   transfer_line_id: string;
-  quantity_received: number;
+  quantity: number;
 }
 
 export interface ReceiveInventoryTransferInput {
@@ -2447,14 +2423,8 @@ export interface ReceiveInventoryTransferInput {
   idempotency_key: string;
 }
 
-export interface InventoryTransfer extends JsonRecord {
-  id: string;
-  transfer_number: string;
-  source_location_id: string;
-  destination_location_id: string;
-  status: string;
-  created_at: string;
-}
+export type InventoryTransfer=WarehouseTransfer;
+export type InventoryTransferLine=WarehouseTransferLine;
 
 export interface InventoryTransferListQuery extends StoreScopedQuery {
   status?: string;
@@ -4971,7 +4941,7 @@ export class LetbuyyApiClient {
       this.requestData<JsonRecord>('/inventory/adjust', { ...options, method: 'POST', body: input }),
     purchaseOrders: {
       list: (query: PurchaseOrderListQuery, options?: LetbuyyRequestOptions) =>
-        this.requestData<PurchaseOrder[]>('/inventory/purchase-orders', { ...options, query }),
+        this.requestWarehouseDocuments('/inventory/purchase-orders',query,WarehousePurchaseOrderSchema,options),
       create: (input: CreatePurchaseOrderInput, options?: LetbuyyRequestOptions) =>
         this.requestData<JsonRecord>('/inventory/purchase-orders', { ...options, method: 'POST', body: input }),
       receive: (id: string, input: ReceivePurchaseOrderInput, options?: LetbuyyRequestOptions) =>
@@ -5014,7 +4984,7 @@ export class LetbuyyApiClient {
       this.requestData<JsonRecord>('/inventory/release', { ...options, method: 'POST', body: input }),
     transfers: {
       list: (query: InventoryTransferListQuery, options?: LetbuyyRequestOptions) =>
-        this.requestData<InventoryTransfer[]>('/inventory/transfers', { ...options, query }),
+        this.requestWarehouseDocuments('/inventory/transfers',query,WarehouseTransferSchema,options),
       create: (input: CreateInventoryTransferInput, options?: LetbuyyRequestOptions) =>
         this.requestData<JsonRecord>('/inventory/transfers', { ...options, method: 'POST', body: input }),
       ship: (id: string, input: ShipInventoryTransferInput, options?: LetbuyyRequestOptions) =>
@@ -5733,6 +5703,16 @@ export class LetbuyyApiClient {
       if (query.page!==undefined || !meta.has_next) return rows;
     }
     throw new LetbuyyApiError({status:409,code:'SETTINGS_LIMIT_REACHED',message:'This settings collection needs a paginated view.'});
+  }
+
+  private async requestWarehouseDocuments<T extends {site_id:string}>(path:string,query:StoreScopedQuery,
+    schema:{array():{safeParse(value:unknown):{success:true;data:T[]}|{success:false}}},options?:LetbuyyRequestOptions):Promise<T[]> {
+    const store=query.store_id??options?.storeId??this.defaultStoreId;
+    if(!store)throw new LetbuyyApiError({status:400,code:'STORE_REQUIRED',message:'Select a store before loading warehouse records.'});
+    const parsed=schema.array().safeParse(await this.requestData<unknown>(path,{...options,storeId:store,query:{...query,store_id:store}}));
+    if(!parsed.success||parsed.data.some(row=>row.site_id!==store))throw new LetbuyyApiError({status:503,
+      code:'WAREHOUSE_DOCUMENTS_UNVERIFIED',message:'These warehouse records could not be confirmed. Reload the current store.'});
+    return parsed.data;
   }
 
   async requestData<T>(path: string, options?: LetbuyyRequestOptions): Promise<T> {

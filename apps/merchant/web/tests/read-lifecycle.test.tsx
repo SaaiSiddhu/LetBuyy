@@ -477,6 +477,40 @@ test('notification results from a retired store cannot replace the current store
     } finally { await h.close() }
 })
 
+for (const kind of ['purchasing','transfers'] as const) {
+    test(`${kind} uses canonical partial quantities and sends the explicit remaining receipt`,async()=>{
+        const transfer=kind==='transfers',id='33333333-3333-4333-8333-333333333333',lineId='77777777-7777-4777-8777-777777777777';
+        const row={id,site_id:historySite,po_number:'PO-SYN',transfer_number:'TR-SYN',status:'partially_received',
+            created_at:'2026-10-31T00:00:00Z',supplier:null,supplier_id:null,location_id:'location-a',
+            source_location_id:'location-a',destination_location_id:'location-b',total:1.16,subtotal:1.16,currency:'INR',
+            notes:null,expected_at:null,shipped_at:null,received_at:null,
+            lines:[{id:lineId,site_id:historySite,purchase_order_id:id,transfer_id:id,
+                product_id:historyRecord().product_id,variant_id:null,quantity_ordered:4,quantity_requested:4,
+                quantity_shipped:3,quantity_received:2,unit_cost:0.29,created_at:'2026-10-31T00:00:00Z'}]};
+        const writes:Record<string,unknown>[]=[];
+        const h=await mount(kind,async(url,init)=>{
+            if(init?.method==='POST'){writes.push(JSON.parse(String(init.body)));return json({});}
+            if(url.includes('inventory-locations'))return json([{id:'location-a',name:'A'},{id:'location-b',name:'B'}]);
+            if(url.includes('/suppliers'))return json([]);
+            return json([row]);
+        });
+        try {
+            assert.match(h.text(),/Partially received/);
+            if(!transfer)assert.match(h.text(),/1\.16/);
+            await h.click('Receive');
+            assert.match(h.text(),transfer?/Requested: 4 · Shipped: 3 · Received: 2 · Remaining: 1/:/Ordered: 4 · Already received: 2 · Remaining: 2/);
+            await h.click(transfer?'Confirm receipt':'Mark as received');
+            assert.equal(writes.length,1);assert.deepEqual(writes[0].lines,[{[transfer?'transfer_line_id':'purchase_order_line_id']:lineId,quantity:transfer?1:2}]);
+        }finally{await h.close();}
+    });
+}
+test('a reserved transfer can open its shipping confirmation using the actual server status',async()=>{
+    const h=await mount('transfers',async url=>url.includes('inventory-locations')?json([{id:'a',name:'A'},{id:'b',name:'B'}]):json([
+        {id:'synthetic-transfer',transfer_number:'TR-SYN-RESERVED',status:'reserved',source_location_id:'a',destination_location_id:'b',
+            created_at:'2026-10-31T00:00:00Z',lines:[]} ]));
+    try{await h.click('Ship');assert.match(h.text(),/Ship transfer — TR-SYN-RESERVED/);}finally{await h.close();}
+});
+
 for (const [kind, label] of [['purchasing', 'Create purchase order'], ['transfers', 'Create transfer']] as const) {
     test(`${kind} loads rich product options on demand and permits the next bounded page`, async () => {
         const calls: string[] = []

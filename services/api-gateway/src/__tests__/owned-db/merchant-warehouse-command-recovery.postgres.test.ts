@@ -6,6 +6,7 @@ import {readFileSync} from 'node:fs';
 import {Gateway,gatewayEnv,newIdentityKeys,signedIdentityHeaders,tapRest} from './gateway-harness';
 import {requireOwnedDatabase,startOwnedPooledSqlProxy} from './owned-db-support';
 import {closePooledSqlClients} from '@letbuyy/infrastructure/pooled-sql-adapter';
+import {createLetbuyyApiClient,LetbuyyApiError} from '@letbuyy/api-client';
 import {newSyntheticTenant,seedSyntheticTenant} from './synthetic-tenant';
 const owned=requireOwnedDatabase();
 let fixtureOrdinal=0;
@@ -292,4 +293,32 @@ test('purchase costs preserve whole paise and reject rounding drift before any s
   const id=accepted.json?.data.purchase_order.id;
   assert.equal(owned.psql("SELECT (p.subtotal=sum(l.quantity_ordered*l.unit_cost))::text FROM purchase_orders p JOIN purchase_order_lines l ON l.purchase_order_id=p.id WHERE p.id="+quote(id)+" GROUP BY p.id;"),'true');
  }
+});
+
+test('the real SDK reads canonical partial PO and transfer counters from committed owned commands',async t=>{
+ const f=await fixture(t),poKey=randomUUID(),made=await f.request('/purchase-orders',f.create(poKey),poKey);assert.equal(made.status,201,made.text);
+ const po=made.json?.data.purchase_order.id,line=made.json?.data.lines[0].id,receiveKey=randomUUID();
+ const received=await f.request('/purchase-orders/'+po+'/receive',{lines:[{purchase_order_line_id:line,quantity:2}],idempotency_key:receiveKey},receiveKey);assert.equal(received.status,200,received.text);
+ const transferKey=randomUUID(),transfer=await f.request('/transfers',{store_id:f.site.siteId,source_location_id:f.site.locationId,
+  destination_location_id:f.destination,lines:[{product_id:f.product,quantity:4}],idempotency_key:transferKey},transferKey);assert.equal(transfer.status,201,transfer.text);
+ const id=transfer.json?.data.transfer.id,transferLine=transfer.json?.data.lines[0].id,shipKey=randomUUID(),receiveTransferKey=randomUUID();
+ assert.equal((await f.request('/transfers/'+id+'/ship',{idempotency_key:shipKey},shipKey)).status,200);
+ assert.equal((await f.request('/transfers/'+id+'/receive',{lines:[{transfer_line_id:transferLine,quantity:1}],idempotency_key:receiveTransferKey},receiveTransferKey)).status,200);
+ const api=createLetbuyyApiClient({baseUrl:'https://owned-gateway.example.invalid/v1',storeId:randomUUID(),
+  getHeaders:()=>signedIdentityHeaders(f.actor,'syn-wms-'+f.actor+'@example.invalid'),
+  fetch:async(input,init)=>{const url=new URL(typeof input==='string'?input:input instanceof URL?input.href:input.url);
+   assert.equal(url.hostname,'owned-gateway.example.invalid');const response=await f.gateway.request(url.pathname+url.search,init);
+   return new Response(response.text,{status:response.status,headers:response.headers});}});
+ const pos=await api.inventory.purchaseOrders.list({store_id:f.site.siteId}),transfers=await api.inventory.transfers.list({store_id:f.site.siteId});
+ assert.equal(pos.length,1);assert.equal(pos[0].status,'partially_received');assert.equal(pos[0].lines[0].quantity_ordered,3);
+ assert.equal(pos[0].lines[0].quantity_received,2);assert.equal(pos[0].total,36.75);assert.equal(pos[0].subtotal,36.75);
+ assert.equal(transfers.length,1);assert.equal(transfers[0].status,'partially_received');assert.equal(transfers[0].lines[0].quantity_requested,4);
+ assert.equal(transfers[0].lines[0].quantity_shipped,4);assert.equal(transfers[0].lines[0].quantity_received,1);
+ owned.psql("INSERT INTO purchase_order_lines(site_id,purchase_order_id,product_id,quantity_ordered,unit_cost,deleted_at)VALUES("+
+  quote(f.site.siteId)+","+quote(po)+","+quote(f.product)+",1,0.29,now());");
+ assert.equal((await api.inventory.purchaseOrders.list({store_id:f.site.siteId}))[0].lines.length,1,'soft-deleted lines do not enter receive forms');
+ const b=await fixture(t),supplier=randomUUID();owned.psql("INSERT INTO suppliers(id,site_id,name)VALUES("+quote(supplier)+","+quote(b.site.siteId)+",'SYN_PRIVATE_FOREIGN_SUPPLIER');UPDATE purchase_orders SET supplier_id="+quote(supplier)+" WHERE id="+quote(po)+";");
+ await assert.rejects(()=>api.inventory.purchaseOrders.list({store_id:f.site.siteId}),e=>e instanceof LetbuyyApiError&&e.code==='WAREHOUSE_DOCUMENTS_UNVERIFIED');
+ owned.psql("UPDATE purchase_orders SET supplier_id=NULL WHERE id="+quote(po)+";UPDATE inventory_transfer_lines SET site_id="+quote(b.site.siteId)+" WHERE id="+quote(transferLine)+";");
+ await assert.rejects(()=>api.inventory.transfers.list({store_id:f.site.siteId}),e=>e instanceof LetbuyyApiError&&e.code==='WAREHOUSE_DOCUMENTS_UNVERIFIED');
 });
