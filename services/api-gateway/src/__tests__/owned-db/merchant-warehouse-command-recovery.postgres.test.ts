@@ -550,3 +550,17 @@ for(const transfer of [false,true])test((transfer?'transfer':'PO')+' two-variant
   assert.equal(values,transfer?(index?'3|0|0':'2|0|0'):(index?'23|0|0':'22|0|0'));
  }
 });
+
+test('actual SDK location and supplier creation return canonical stored records and scoped readback',async t=>{
+ const f=await fixture(t),api=createLetbuyyApiClient({baseUrl:'https://owned.synthetic.invalid/v1',storeId:f.site.siteId,fetch:async(input,init)=>{
+  const request=new Request(input,init),url=new URL(request.url),headers=new Headers(request.headers);
+  for(const[name,value]of Object.entries(await signedIdentityHeaders(f.actor,'syn-wms-'+f.actor+'@example.invalid',f.site.siteId)))headers.set(name,value);
+  const result=await f.gateway.request(url.pathname+url.search,{method:request.method,headers,body:request.method==='GET'?undefined:await request.text()});return new Response(result.text,{status:result.status,headers:result.headers});
+ }});
+ const supplier=await api.inventory.suppliers.create({store_id:f.site.siteId,name:'Synthetic new supplier',contact_name:'Synthetic contact',email:'warehouse@example.invalid',address:{line1:'Synthetic supplier address'}},{storeId:f.site.siteId,idempotencyKey:randomUUID()});
+ assert.equal(supplier.site_id,f.site.siteId);assert.equal(supplier.name,'Synthetic new supplier');assert.deepEqual(supplier.address,{line1:'Synthetic supplier address'});
+ const location=await api.inventory.locations.create({store_id:f.site.siteId,name:'Synthetic new location',address:'Synthetic road',city:'Chennai',state:'Tamil Nadu',country:'IN',is_default:false},{storeId:f.site.siteId,idempotencyKey:randomUUID()});
+ assert.equal(location.store_id,f.site.siteId);assert.deepEqual(location.address,{address:'Synthetic road',city:'Chennai',state:'Tamil Nadu',country:'IN'});
+ const page=await api.inventory.locations.list({store_id:f.site.siteId,search:'Synthetic new location',status:'active'});assert.equal(page.total,1);assert.equal(page.data[0].id,location.id);assert.deepEqual(page.data[0].address,location.address);
+ assert.equal(owned.psql("SELECT count(*)FROM inventory_locations WHERE store_id="+quote(f.site.siteId)+" AND name='Synthetic new location';"),'1');
+});
