@@ -328,7 +328,7 @@ router.post('/locations', validate('json', CreateLocationSchema), async (c) => {
         return c.json(dbFailureBody(), 500);
     }
 
-    return c.json(success({ ...data, address: body.address || '', city: body.city || '', state: body.state || '', country: body.country }), 201);
+    return c.json(success(data), 201);
 });
 
 // GET /inventory/suppliers — List suppliers
