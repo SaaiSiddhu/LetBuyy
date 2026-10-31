@@ -1,12 +1,12 @@
 {
   "date": "2026-10-30",
-  "source_commit": "8be82e4afb63c388c02bfd9f8392c259e7711fd9",
+  "source_commit": "58030c1c3a0f89e7f77380bfb910beac037e8440",
   "branch": "codex/merchant-mobile-parity",
   "scope": "source checkpoint; full 122-item acceptance remains in progress",
   "flutter": {
-    "source_commit": "8be82e4afb63c388c02bfd9f8392c259e7711fd9",
-    "tests": 641,
-    "pass": 641,
+    "source_commit": "58030c1c3a0f89e7f77380bfb910beac037e8440",
+    "tests": 675,
+    "pass": 675,
     "fail": 0,
     "analysis": "pass"
   },
@@ -28,7 +28,7 @@
       "NOT_APPLICABLE": 1
     },
     "exitCode": 0,
-    "source_commit": "8be82e4afb63c388c02bfd9f8392c259e7711fd9"
+    "source_commit": "58030c1c3a0f89e7f77380bfb910beac037e8440"
   },
   "owned_database_runs": [
     {
@@ -1073,7 +1073,7 @@
   "production_account_used": true,
   "deployment_performed": false,
   "full_122_acceptance": "in_progress",
-  "previous_source_commit": "9bc3b34fcafb3171c6485ca16ad2f624470871cf",
+  "previous_source_commit": "8be82e4afb63c388c02bfd9f8392c259e7711fd9",
   "customer_scope_tests": {
     "pass": 17,
     "fail": 0
@@ -1842,7 +1842,7 @@
     }
   },
   "last_qualified_date": "2026-11-01",
-  "implementation_commit": "8be82e4afb63c388c02bfd9f8392c259e7711fd9",
+  "implementation_commit": "58030c1c3a0f89e7f77380bfb910beac037e8440",
   "warehouse_previous_checkpoints": [
     {
       "backend_source_commit": "96153cd20bc3db3dd2c7539e3a77bd159820fb05",
@@ -2092,6 +2092,36 @@
       "configuration_flags": "unobserved"
     },
     "evidence": "NATIVE_VERIFICATION_RECOVERY.md",
-    "full_122_accepted": false
+    "full_122_accepted": false,
+    "secure_input_followup": "User unlocked Mac; CUA inventory works but cannot select task non-bundle emulator. User direct sign-in requested; no new authenticated session claimed."
+  },
+  "warehouse_option_checkpoint": {
+    "source_commit": "58030c1c3a0f89e7f77380bfb910beac037e8440",
+    "evidence": "WAREHOUSE_OPTION_READS.md",
+    "owned_run": "8741f18edf45",
+    "owned_pass": 36,
+    "owned_fail": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "gateway_pass": 2006,
+    "native_pass": 675,
+    "shared_models_pass": 63,
+    "shared_dart_api_pass": 97,
+    "shared_dart_api_existing_skips": 6,
+    "web_composed_pass": 229,
+    "web_error_recovery_pass": 1,
+    "bff_pass": 24,
+    "shared_types_pass": 18,
+    "types_lint_analysis": "pass",
+    "emulator_install_for_this_source": false,
+    "native_creation_selectors": "pending",
+    "durable_option_creation": "pending",
+    "hosted_acceptance": "pending"
   }
 }
