@@ -285,8 +285,22 @@ valid PIN recovered choices and the same quote. Back to Cart preserved the one
 item and ₹1 total. No address, payment or order was submitted. Signed URLs and
 their tokens are excluded from retained evidence.
 
+A second real browser journey used Snaz's existing custom-domain cart, with one
+saved M/Blue variant at ₹3. Its signed handoff reached
+`checkout.store.pixlnova.com`, and Tamil Nadu / PIN 600001 returned the actual
+₹49 and free delivery choices. Selecting ₹49 was refused as a changed quote.
+Read-only diagnosis established that the active, unexpired cart's accepted
+product version was 16 and the live product version was 17; the variant remained
+available at the same ₹3 price. This is the existing stale-fact guard, not proof
+of a variant-pricing regression. The guard was not weakened, the cart was not
+edited through the database and no checkout was forced. macOS locked before the
+normal cart-review/reacceptance journey could be completed, so that custom-cart
+recovery remains explicitly unobserved. The initial diagnostic's undefined
+column refusal and the corrected read-only diagnostic are retained separately.
+
 **Still unobserved/open:** the production Merchant session expired and requires
 the owner's private sign-in before final signed-in Shipping/Taxes UI readback.
+The Mac must also be unlocked to finish the observed Snaz stale-cart recovery.
 GitHub CI remains billing-blocked, full hosted staging sign-in is unconfigured,
 and real Razorpay sandbox capture/refund with the new tax quote is unobserved.
 Shiprocket connector/platform execution, carrier billing/pickup/booking/tracking

@@ -2,7 +2,7 @@
   "status": "production-manual-shipping-gst-activated-with-open-acceptance-items",
   "clientDate": "2026-11-01",
   "clientTimezone": "Asia/Kolkata",
-  "recordedUtc": "2026-10-31T20:03:34.910386+00:00",
+  "recordedUtc": "2026-10-31T20:12:53.224237+00:00",
   "releaseRevision": "77584d19dc3dc557f29f9e2fbc7a967fe38e132c",
   "qualifiedRuntimeRevision": "d0afb90600b2c60c296220cdd8e53e757bdb2bf1",
   "testEvidenceRevision": "c305df10bd3e71df55a75824ae2be039dfe986b5",
@@ -373,6 +373,7 @@
   ],
   "openItems": [
     "Owner private login required for final production Merchant Shipping/Taxes settings readback",
+    "Normal Snaz stale-cart re-review/reacceptance remains unobserved because macOS locked",
     "GitHub CI billing block",
     "Full hosted staging sign-in unconfigured",
     "Real PSP sandbox capture/refund with new quote unobserved",
@@ -432,6 +433,30 @@
     {
       "file": "restored-native-transport-proof-20261031.json",
       "sha256": "ddcbe21981e9789cf69078d0207d9606fc451fae4223c0f7c22456a4a145b012"
+    },
+    {
+      "file": "shipping411-snaz-cart-quote-diagnostic-02.json",
+      "sha256": "3c69e47ffd0c70428987c33da6638e2138808a9b7bff8ee74129940b52f4792a"
     }
-  ]
+  ],
+  "customCartObservation": {
+    "storeHandle": "snaz",
+    "storefrontHost": "store.pixlnova.com",
+    "checkoutHost": "checkout.store.pixlnova.com",
+    "signedHandoffReachedCheckout": true,
+    "selectedVariantOptionsPreserved": true,
+    "subtotalMinor": 300,
+    "savedDeliveryOptionsMinor": [
+      4900,
+      0
+    ],
+    "quoteAccepted": false,
+    "refusal": "CHECKOUT_QUOTE_CHANGED",
+    "diagnosis": "Active cart accepted product version16; live product version17; variant is present at unchanged price. Existing stale-fact guard refuses reusing the old acceptance.",
+    "nativeDatabaseReadOnly": true,
+    "guardChanged": false,
+    "reacceptanceRecoveryObserved": false,
+    "blocker": "Mac locked before normal cart review/reacceptance could be tested",
+    "paymentOrOrderSubmitted": false
+  }
 }
