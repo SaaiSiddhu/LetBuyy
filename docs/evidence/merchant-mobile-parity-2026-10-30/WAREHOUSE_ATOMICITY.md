@@ -63,5 +63,5 @@ Scoped option readers and native multi-line creation now extend the existing jou
 ## Next required work
 
 1. Preserve the scoped preflight, original-intent recovery, fresh detail review and current authorized selectors/multi-line preparation.
-2. Complete application search/filter/sort controls and canonical location/supplier creation recovery.
+2. Application search/filter/sort and basic metadata creation/readback are now qualified locally ([evidence](WAREHOUSE_LIST_FILTERS.md)); complete durable original-key location/supplier creation recovery.
 3. Verify actual web/mobile fixture writes/conflicts and device journeys, then the remaining catalog/orders/settings/features, provider/money/buyer effects, measured performance, signed artifacts, staging/source/schema compatibility and production readback. All 122 inventory rows remain in progress.

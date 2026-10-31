@@ -1,13 +1,13 @@
 {
   "date": "2026-10-30",
-  "source_commit": "97edec1ea36254eeef79d1e09c1e62efcf0b105d",
+  "source_commit": "a0b7dad6660107063cbd141f80d674f38a8a1f1f",
   "branch": "codex/merchant-mobile-parity",
   "scope": "source checkpoint; full 122-item acceptance remains in progress",
   "flutter": {
-    "source_commit": "1dd5400bee4991b1036901811ef2ec84bfd046d5",
-    "integrated_source_commit": "97edec1ea36254eeef79d1e09c1e62efcf0b105d",
-    "tests": 694,
-    "pass": 694,
+    "source_commit": "4aa6be3e6fd7e053e656d065c562d076f2a389fd",
+    "integrated_source_commit": "a0b7dad6660107063cbd141f80d674f38a8a1f1f",
+    "tests": 706,
+    "pass": 706,
     "fail": 0,
     "analysis": "pass",
     "native_diff_from_integrated_source": "empty"
@@ -30,7 +30,7 @@
       "NOT_APPLICABLE": 1
     },
     "exitCode": 0,
-    "source_commit": "97edec1ea36254eeef79d1e09c1e62efcf0b105d"
+    "source_commit": "a0b7dad6660107063cbd141f80d674f38a8a1f1f"
   },
   "owned_database_runs": [
     {
@@ -1075,7 +1075,7 @@
   "production_account_used": true,
   "deployment_performed": false,
   "full_122_acceptance": "in_progress",
-  "previous_source_commit": "58030c1c3a0f89e7f77380bfb910beac037e8440",
+  "previous_source_commit": "97edec1ea36254eeef79d1e09c1e62efcf0b105d",
   "customer_scope_tests": {
     "pass": 17,
     "fail": 0
@@ -1844,7 +1844,7 @@
     }
   },
   "last_qualified_date": "2026-11-01",
-  "implementation_commit": "97edec1ea36254eeef79d1e09c1e62efcf0b105d",
+  "implementation_commit": "a0b7dad6660107063cbd141f80d674f38a8a1f1f",
   "warehouse_previous_checkpoints": [
     {
       "backend_source_commit": "96153cd20bc3db3dd2c7539e3a77bd159820fb05",
@@ -2176,5 +2176,47 @@
     },
     "installed_current_source": false,
     "authenticated_current_source": "unobserved"
-  }
+  },
+  "warehouse_list_and_metadata_readback_checkpoint": {
+    "source_commit": "a0b7dad6660107063cbd141f80d674f38a8a1f1f",
+    "client_source_commit": "4aa6be3e6fd7e053e656d065c562d076f2a389fd",
+    "evidence": "WAREHOUSE_LIST_FILTERS.md",
+    "native_pass": 706,
+    "shared_models_pass": 64,
+    "web_composed_pass": 235,
+    "web_types_and_lint": "pass",
+    "gateway_unit_pass": 2006,
+    "gateway_types": "pass",
+    "owned_before": {
+      "run_id": "2a1f4a92f603",
+      "pass": 38,
+      "fail": 1,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "owned_after": {
+      "run_id": "6e8b887f8131",
+      "pass": 39,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "client_diff_from_integrated_source": "empty",
+    "durable_metadata_creation_recovery": "pending",
+    "real_cross_client_acceptance": "pending",
+    "current_client_apk_installed": false
+  },
+  "device_acceptance_policy": "Owner approved Android emulator testing. Direct secure sign-in pending because CUA cannot select the non-bundle emulator window; no physical-device prerequisite is imposed."
 }
