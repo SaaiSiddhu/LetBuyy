@@ -560,9 +560,9 @@ test('actual SDK location and supplier creation return canonical stored records 
  const supplierAck=await api.inventory.suppliers.create({store_id:f.site.siteId,name:'Synthetic new supplier',contact_name:'Synthetic contact',email:'warehouse@example.invalid',address:{line1:'Synthetic supplier address'}},{storeId:f.site.siteId,idempotencyKey:randomUUID()});
  const supplier=supplierAck.supplier!;
  assert.equal(supplier.site_id,f.site.siteId);assert.equal(supplier.name,'Synthetic new supplier');assert.deepEqual(supplier.address,{line1:'Synthetic supplier address'});
- const locationAck=await api.inventory.locations.create({store_id:f.site.siteId,name:'Synthetic new location',address:'Synthetic road',city:'Chennai',state:'Tamil Nadu',country:'IN',is_default:false},{storeId:f.site.siteId,idempotencyKey:randomUUID()});
+ const locationAck=await api.inventory.locations.create({store_id:f.site.siteId,name:'Synthetic new location',address:'Synthetic road',city:'Chennai',state:'Tamil Nadu',country:'IN',pincode:'600001',is_default:false},{storeId:f.site.siteId,idempotencyKey:randomUUID()});
  const location=locationAck.location!;
- assert.equal(location.store_id,f.site.siteId);assert.deepEqual(location.address,{address:'Synthetic road',city:'Chennai',state:'Tamil Nadu',country:'IN'});
+ assert.equal(location.store_id,f.site.siteId);assert.deepEqual(location.address,{address:'Synthetic road',city:'Chennai',state:'Tamil Nadu',country:'IN',pincode:'600001'});
  const page=await api.inventory.locations.list({store_id:f.site.siteId,search:'Synthetic new location',status:'active'});assert.equal(page.total,1);assert.equal(page.data[0].id,location.id);assert.deepEqual(page.data[0].address,location.address);
  assert.equal(owned.psql("SELECT count(*)FROM inventory_locations WHERE store_id="+quote(f.site.siteId)+" AND name='Synthetic new location';"),'1');
 });
@@ -570,7 +570,7 @@ test('actual SDK location and supplier creation return canonical stored records 
 for(const supplier of [false,true]) {
  const operation=supplier?'supplier.create':'location.create',path=supplier?'/suppliers':'/locations',table=supplier?'suppliers':'inventory_locations',entity=supplier?'supplier':'location';
  const input=(site:string,key:string)=>({store_id:site,idempotency_key:key,name:'Synthetic recoverable '+entity,
-  ...(supplier?{contact_name:'Synthetic contact',address:{line1:'Synthetic road'}}:{address:'Synthetic road',city:'Chennai',state:'Tamil Nadu',country:'IN',is_default:false})});
+  ...(supplier?{contact_name:'Synthetic contact',address:{line1:'Synthetic road'}}:{address:'Synthetic road',city:'Chennai',state:'Tamil Nadu',country:'IN',pincode:'600001',is_default:false})});
  test(entity+' concurrent create and same-key replay commit one entity with one immutable acknowledgement',async t=>{
   const f=await fixture(t),key=randomUUID(),body=input(f.site.siteId,key);
   const results=await Promise.all([f.request(path,body,key),f.request(path,body,key)]);

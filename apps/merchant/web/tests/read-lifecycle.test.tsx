@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { createRequire } from 'node:module'
 import React, { act } from 'react'
+import {prepareWarehouseCommand} from '@letbuyy/shared-types'
 
 const requireUI = createRequire(new URL('../../../../packages/typescript/ui/package.json', import.meta.url))
 const { JSDOM } = requireUI('jsdom')
@@ -41,6 +42,8 @@ const contentPages = {
     testimonials: () => import('../src/app/[store]/testimonials/page'),
 }
 const readPages = {
+    locations:()=>import('../src/app/[store]/products/locations/page'),
+    suppliers:()=>import('../src/app/[store]/products/suppliers/page'),
     ...contentPages,
     aiStudio: () => import('../src/app/[store]/ai/page'),
     operationsDashboard: () => import('../src/app/[store]/products/operations-dashboard/page'),
@@ -346,7 +349,7 @@ type Transport = (url: string, init?: RequestInit) => Promise<Response>
 
 async function mount(kind: ContentPage | 'orders' | 'customers' | 'analytics' | 'search' | 'notifications' | 'purchasing' | 'transfers' | 'assistant' | 'themeLibrary' | 'previewUpdate' | 'loyalty' | 'checkoutDomain' | 'connectDomain', transport: Transport,configureStorage?:(storage:Storage)=>void,initialProtocolAvailable=true) {
     const dom = new JSDOM('<!doctype html><div id="root"></div>', { url: 'http://localhost/alpha/orders' })
-    const warehouse=kind==='purchasing'||kind==='transfers';
+    const warehouse=kind==='purchasing'||kind==='transfers'||kind==='locations'||kind==='suppliers';
     if(warehouse)Object.defineProperty(dom.window.navigator,'locks',{value:{request:async(_name:string,callback:()=>unknown)=>callback()}});
     const domGlobals = ['window', 'document', 'navigator', 'self', 'localStorage', 'MutationObserver', 'HTMLElement', 'Element']
     const previous = Object.fromEntries([...domGlobals, 'fetch'].map(name => [name, Object.getOwnPropertyDescriptor(globalThis, name)]))
@@ -427,6 +430,10 @@ async function mount(kind: ContentPage | 'orders' | 'customers' | 'analytics' | 
             const button = [...dom.window.document.querySelectorAll('button')].find(item => item.textContent?.trim() === label)
             assert.ok(button, `Missing button ${label}: ${dom.window.document.body.textContent}`)
             await act(async () => button.click())
+        },
+        async dialogClick(label:string){
+            const button=[...dom.window.document.querySelectorAll('[role="dialog"] button')].find(item=>item.textContent?.trim()===label)
+            assert.ok(button,`Missing dialog action ${label}`);await act(async()=>button.click())
         },
         async file(file: { name: string; size: number; text(): Promise<string> }) {
             const input = dom.window.document.querySelector('input[type="file"]') as HTMLInputElement
@@ -1331,3 +1338,51 @@ for(const kind of ['purchasing','transfers'] as const)test(`${kind} denied filte
         await h.click('Clear filters');assert.match(h.text(),/0 matching records/)
     }finally{await h.close()}
 })
+
+
+for(const kind of ['locations','suppliers'] as const){
+ const supplier=kind==='suppliers',entity=supplier?'supplier':'location',operation=supplier?'supplier.create':'location.create';
+ const row=(site=historySite)=>supplier?{id:'99999999-9999-4999-8999-999999999999',site_id:site,name:'Synthetic supplier',status:'active',created_at:'2026-11-01T00:00:00Z',contact_name:null,email:null,phone:null,address:{}}:{...locationOption(1,site),name:'Synthetic location'};
+ function acknowledgement(body:Record<string,unknown>,actor='11111111-1111-4111-8111-111111111111'){
+  const intent=prepareWarehouseCommand(operation,null,{...body,store_id:historySite}),command=intent.command;
+  return {command_receipt:{id:'88888888-8888-4888-8888-888888888888',key:body.idempotency_key,site_id:historySite,actor_id:actor,operation,target_id:row().id,command,effective_lines:null,outcome:'applied'},lines:[],
+   [entity]:{...row(),name:command.name,...(supplier?{contact_name:command.contact_name,email:command.email,phone:command.phone,address:command.address}:{is_default:command.is_default,address:Object.fromEntries(['address','city','state','country','pincode'].map(k=>[k,command[k]]))})}};
+ }
+ test(`${kind} actual form retains original creation after lost reply and recovers with same key`,async()=>{
+  const writes:Array<{url:string;body:Record<string,unknown>;key:string|null}>=[];let ack:ReturnType<typeof acknowledgement>|null=null,committed=false;
+  const h=await mount(kind,async(url,init)=>{
+   if(init?.method==='POST'){
+    const body=JSON.parse(String(init.body));writes.push({url,body,key:new Headers(init.headers).get('X-Idempotency-Key')});
+    if(!ack)ack=acknowledgement(body);
+    if(!committed){committed=true;throw new Error('Synthetic reply lost after commit')}
+    return json(ack);
+   }
+   return warehouseResponse(url,committed?[row()]:[]);
+  });
+  try{
+   await h.click(supplier?'Add supplier':'Add location');await h.setField('input[placeholder="'+(supplier?'e.g. Rajesh Traders':'e.g. Mumbai Warehouse')+'"]','Synthetic '+entity);
+   await h.setField('input[placeholder="'+(supplier?'400001':'411019')+'"]',supplier?'400001':'411019');
+   await h.dialogClick(supplier?'Add supplier':'Add location');
+   assert.match(h.text(),/Close this form and resolve the saved original request/);assert.equal(writes.length,1);assert.ok(writes[0].key);
+   await h.click('Cancel');assert.match(h.text(),/Warehouse request awaiting confirmation/);
+   await h.remount();assert.match(h.text(),/Warehouse request awaiting confirmation/);await h.click('Retry original');
+   assert.equal(writes.length,2);assert.deepEqual(writes[1],writes[0]);assert.doesNotMatch(h.text(),/Warehouse request awaiting confirmation/);
+   assert.match(h.text(),/Synthetic (location|supplier)/);assert.equal(h.storage.length,0);
+   assert.equal(supplier?(writes[0].body.address as Record<string,unknown>).pincode:writes[0].body.pincode,supplier?'400001':'411019');
+  }finally{await h.close()}
+ });
+ test(`${kind} account/store switch retires a delayed create without old success or journal removal`,async()=>{
+  const pending=deferred<Response>();let posted:Record<string,unknown>|null=null;
+  const h=await mount(kind,async(url,init)=>{if(init?.method==='POST'){posted=JSON.parse(String(init.body));return pending.promise}return warehouseResponse(url,[])});
+  try{
+   await h.click(supplier?'Add supplier':'Add location');await h.setField('input[placeholder="'+(supplier?'e.g. Rajesh Traders':'e.g. Mumbai Warehouse')+'"]','Synthetic '+entity);
+   await h.dialogClick(supplier?'Add supplier':'Add location');assert.ok(posted);await h.render('beta');
+   await act(async()=>pending.resolve(json(acknowledgement(posted!))));assert.doesNotMatch(h.text(),/Creation could not be confirmed|Location created|Supplier created/);
+   assert.equal(h.storage.length,1);await h.render('alpha');assert.match(h.text(),/Warehouse request awaiting confirmation/);
+  }finally{await h.close()}
+ });
+ test(`${kind} failed page removes private rows and preserves Previous without a false empty count`,async()=>{
+  const h=await mount(kind,async url=>url.includes('page=2')?json({},403):Response.json({data:Array.from({length:20},(_,i)=>({...row(),id:`10000000-0000-4000-8000-${String(i).padStart(12,'0')}`,name:'Private metadata '+i})),meta:{store_id:historySite,page:1,per_page:20,total:21,total_is_exact:true,has_next:true}}));
+  try{assert.match(h.text(),/21 matching records/);await h.click('Next');assert.doesNotMatch(h.text(),/Private metadata|No suppliers yet|No locations yet|0 matching/);assert.match(h.text(),/Count unavailable/);await h.click('Previous');assert.match(h.text(),/Private metadata/)}finally{await h.close()}
+ });
+}

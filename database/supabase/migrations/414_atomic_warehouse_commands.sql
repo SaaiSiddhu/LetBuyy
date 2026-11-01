@@ -100,7 +100,7 @@ BEGIN
   OR EXISTS(SELECT 1 FROM public.inventory_transfer_receipts WHERE site_id=p_site_id AND left(idempotency_key,length(p_key)+6)=p_key||':line:') THEN
   RAISE EXCEPTION 'WAREHOUSE_LEGACY_KEY';END IF;
  allowed:=CASE operation
-  WHEN 'location.create' THEN ARRAY['name','address','city','state','country','is_default']
+  WHEN 'location.create' THEN ARRAY['name','address','city','state','country','pincode','is_default']
   WHEN 'supplier.create' THEN ARRAY['name','contact_name','email','phone','address']
   WHEN 'purchase_order.create' THEN ARRAY['supplier_id','location_id','expected_at','notes','lines']
   WHEN 'transfer.create' THEN ARRAY['source_location_id','destination_location_id','notes','lines']
@@ -117,6 +117,7 @@ BEGIN
     OR jsonb_typeof(p_command->'city') IS DISTINCT FROM 'string' OR length(p_command->>'city')>100
     OR jsonb_typeof(p_command->'state') IS DISTINCT FROM 'string' OR length(p_command->>'state')>100
     OR jsonb_typeof(p_command->'country') IS DISTINCT FROM 'string' OR p_command->>'country'!~'^[A-Z]{2}$'
+    OR jsonb_typeof(p_command->'pincode') IS DISTINCT FROM 'string' OR p_command->>'pincode'!~'^(?:[0-9]{6})?$'
     OR jsonb_typeof(p_command->'is_default') IS DISTINCT FROM 'boolean' THEN RAISE EXCEPTION 'WAREHOUSE_INVALID';END IF;
   ELSE
    IF jsonb_typeof(p_command->'contact_name') NOT IN('string','null') OR length(p_command->>'contact_name')>200
@@ -135,7 +136,7 @@ BEGIN
  lines:=p_command->'lines';
  IF operation='location.create' THEN
   INSERT INTO public.inventory_locations(store_id,name,address,is_default,status,created_by,updated_by)
-   VALUES(p_site_id,p_command->>'name',jsonb_build_object('address',p_command->>'address','city',p_command->>'city','state',p_command->>'state','country',p_command->>'country'),(p_command->>'is_default')::boolean,'active',p_actor_id,p_actor_id) RETURNING * INTO row_location;
+   VALUES(p_site_id,p_command->>'name',jsonb_build_object('address',p_command->>'address','city',p_command->>'city','state',p_command->>'state','country',p_command->>'country','pincode',p_command->>'pincode'),(p_command->>'is_default')::boolean,'active',p_actor_id,p_actor_id) RETURNING * INTO row_location;
   target:=row_location.id;
  ELSIF operation='supplier.create' THEN
   INSERT INTO public.suppliers(site_id,name,contact_name,email,phone,address,status,created_by,updated_by)

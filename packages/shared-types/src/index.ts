@@ -5274,3 +5274,5 @@ export * from './checkout-totals-quote';
 export * from './warehouse-command';
 export * from './warehouse-documents';
 export * from './warehouse-options';
+
+export * from './warehouse-command-inputs';

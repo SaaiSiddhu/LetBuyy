@@ -15,11 +15,11 @@ export function WarehouseCommandRecovery({commands,onResolved}:{commands:Recover
    onResolved();
   }catch{/* The original intent remains visible for recovery. */}
  }
- if(!commands.ready&&!commands.error)return <Banner title="Checking saved warehouse requests" variant="info">Checking this account and store before enabling stock actions.</Banner>;
+ if(!commands.ready&&!commands.error)return <Banner title="Checking saved warehouse requests" variant="info">Checking this account and store before enabling warehouse actions.</Banner>;
  if(!commands.pending&&!commands.error)return null;
  return <>
   <Banner title={commands.pending?'Warehouse request awaiting confirmation':'Warehouse actions unavailable'} variant="warning">
-   <p>{commands.error??'Resolve the original request before starting another stock movement. Its original details are saved in this browser for recovery.'}</p>
+   <p>{commands.error??'Resolve the original request before starting another action. Its original details are saved in this browser for recovery.'}</p>
    {commands.pending?<div className="flex flex-wrap gap-[var(--lb-space-2)]">
     <Button disabled={commands.busy||!commands.ready} onClick={()=>void recover(false)}>Retry original</Button>
     <Button variant="secondary" disabled={commands.busy||!commands.ready} onClick={()=>setConfirm(commands.scopeToken)}>Stop original</Button>
@@ -29,7 +29,7 @@ export function WarehouseCommandRecovery({commands,onResolved}:{commands:Recover
   <Modal open={confirm!==null&&confirm===commands.scopeToken&&!!commands.scopeToken?.active}
    title="Stop the original request?" onClose={()=>setConfirm(null)}
    footer={<div className="flex gap-[var(--lb-space-2)]"><Button variant="secondary" disabled={commands.busy} onClick={()=>setConfirm(null)}>Back</Button><Button disabled={commands.busy} onClick={()=>void recover(true)}>Confirm stop</Button></div>}>
-   <p>If it already applied, this confirms its outcome. Otherwise, it prevents that request from applying later. It does not undo a stock movement that already happened.</p>
+   <p>If it already applied, this confirms its outcome. Otherwise, it prevents that request from applying later. It does not undo an action that already happened.</p>
    {commands.error&&<p role="alert">{commands.error}</p>}
   </Modal>
  </>;

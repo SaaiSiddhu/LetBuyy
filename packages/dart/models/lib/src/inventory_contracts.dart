@@ -494,6 +494,7 @@ class InventoryLocationInput {
     this.city = '',
     this.state = '',
     this.country = 'IN',
+    this.pincode = '',
     this.isDefault = false,
   });
 
@@ -503,6 +504,7 @@ class InventoryLocationInput {
   final String city;
   final String state;
   final String country;
+  final String pincode;
   final bool isDefault;
 
   Map<String, dynamic> toJson() => {
@@ -513,6 +515,7 @@ class InventoryLocationInput {
     if (state.trim().isNotEmpty) 'state': state.trim(),
     'country': country.trim().isEmpty ? 'IN' : country.trim().toUpperCase(),
     'is_default': isDefault,
+    if (pincode.trim().isNotEmpty) 'pincode': pincode.trim(),
   };
 }
 

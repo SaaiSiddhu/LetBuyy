@@ -482,6 +482,7 @@ class _LocationFormState extends State<_LocationForm> {
   final _city = TextEditingController();
   final _state = TextEditingController();
   final _country = TextEditingController(text: 'IN');
+  final _pincode = TextEditingController();
   bool _isDefault = false;
 
   String? _validation;
@@ -493,6 +494,7 @@ class _LocationFormState extends State<_LocationForm> {
     _city.dispose();
     _state.dispose();
     _country.dispose();
+    _pincode.dispose();
     super.dispose();
   }
 
@@ -529,6 +531,7 @@ class _LocationFormState extends State<_LocationForm> {
               ],
             ),
             _field(_country, 'Country code'),
+            _field(_pincode, 'Pincode (optional)'),
             SwitchListTile.adaptive(
               value: _isDefault,
               activeColor: mobile_tokens.LetbuyyColorTokens.brandPrimary,
@@ -551,6 +554,7 @@ class _LocationFormState extends State<_LocationForm> {
                   city: _city.text,
                   state: _state.text,
                   country: _country.text,
+                  pincode: _pincode.text,
                   isDefault: _isDefault,
                 );
                 try {
@@ -558,7 +562,7 @@ class _LocationFormState extends State<_LocationForm> {
                 } on FormatException {
                   setState(
                     () => _validation =
-                        'Enter a location name and a two-letter country code. Check address field lengths.',
+                        'Enter a location name, a two-letter country code, and an optional six-digit pincode.',
                   );
                   return;
                 }

@@ -1,4 +1,4 @@
-import {prepareWarehouseCommand,StopWarehouseCommandSchema} from '@letbuyy/commerce-core';
+import {prepareWarehouseCommand,StopWarehouseCommandSchema} from '@letbuyy/shared-types';
 import {WarehouseOptionListQuerySchema,WarehouseLocationSchema,WarehouseSupplierSchema,WarehouseLocationPageSchema,WarehouseSupplierPageSchema,type WarehouseOptionListQuery,type WarehouseLocation,type WarehouseSupplier,type WarehouseLocationInput} from '@letbuyy/shared-types';
 import {WarehousePurchaseOrderSchema,WarehouseTransferSchema,WarehousePurchaseOrderPageSchema,WarehouseTransferPageSchema,WarehousePurchaseOrderListQuerySchema,WarehouseTransferListQuerySchema,type WarehousePurchaseOrderListQuery,type WarehouseTransferListQuery,type WarehousePurchaseOrder,type WarehousePurchaseOrderLine,type WarehouseTransfer,type WarehouseTransferLine} from '@letbuyy/shared-types';
 import {WarehouseCommandResultSchema,WarehouseCommandCapabilitiesSchema,WAREHOUSE_COMMAND_PROTOCOL_HEADER,WAREHOUSE_COMMAND_PROTOCOL_VERSION,type WarehouseCommandOperation,type WarehouseCommandResult,type StopWarehouseCommandInput,type WarehouseCommandCapabilities} from '@letbuyy/shared-types';

@@ -12,8 +12,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@letbuyy/shared-types": "workspace:*",
-    "@letbuyy/commerce-core": "workspace:*"
+    "@letbuyy/shared-types": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.7.0"

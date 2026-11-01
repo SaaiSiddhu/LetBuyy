@@ -1,6 +1,10 @@
 'use client'
 
 import { useReadRequest } from '@/lib/api/use-read-request'
+import {useMerchantSecurityContext} from '@/components/security/MerchantSecurityContext'
+import {useWarehouseCommands,WarehouseCommandValidationError,type WarehouseSubmit} from '@/lib/inventory/use-warehouse-commands'
+import {WarehouseCommandRecovery} from '@/components/products/WarehouseCommandRecovery'
+import {WarehouseLocationPageSchema} from '@letbuyy/shared-types'
 
 import React, { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
@@ -47,13 +51,15 @@ function locationStatusLabel(status: string): string {
 
 interface CreateLocationModalProps {
     open: boolean
-    store: string
+    submit: WarehouseSubmit
+    blocked: boolean
+    scope: {active:boolean}|null
     hasExistingLocations: boolean
     onClose: () => void
     onCreated: () => void
 }
 
-function CreateLocationModal({ open, store, hasExistingLocations, onClose, onCreated }: CreateLocationModalProps) {
+function CreateLocationModal({ open, submit, blocked, scope, hasExistingLocations, onClose, onCreated }: CreateLocationModalProps) {
     const { notify } = useToast()
     const [name, setName] = useState('')
     const [isDefault, setIsDefault] = useState(false)
@@ -78,43 +84,18 @@ function CreateLocationModal({ open, store, hasExistingLocations, onClose, onCre
     }, [open, hasExistingLocations])
 
     async function handleSubmit() {
+        if(submitting||blocked||!scope?.active)return
         setError(null)
-        if (!name.trim()) {
-            setError('Location name is required.')
-            return
-        }
-
-        const address: Record<string, unknown> = {}
-        if (addressLine.trim()) address.line1 = addressLine.trim()
-        if (addressCity.trim()) address.city = addressCity.trim()
-        if (addressState.trim()) address.state = addressState.trim()
-        if (addressPincode.trim()) address.pincode = addressPincode.trim()
-
         setSubmitting(true)
         try {
-            const res = await fetch(`/api/stores/${encodeURIComponent(store)}/inventory-locations`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    name: name.trim(),
-                    is_default: isDefault,
-                    address: Object.keys(address).length > 0 ? address : undefined,
-                }),
-            })
-            if (!res.ok) {
-                const body = await res.json().catch(() => ({})) as { error?: unknown }
-                const msg = typeof body.error === 'string' ? body.error : 'Failed to create location'
-                setError(msg)
-                return
-            }
-            notify({ title: 'Location created', variant: 'success' })
+            await submit('location.create',null,{name:name.trim(),is_default:isDefault,address:addressLine.trim(),city:addressCity.trim(),state:addressState.trim(),country:'IN',pincode:addressPincode.trim()})
+            if(!scope.active)return
+            notify({title:'Location created',variant:'success'})
             onCreated()
             onClose()
-        } catch {
-            setError('Network error — please try again.')
-        } finally {
-            setSubmitting(false)
-        }
+        }catch(error){
+            if(scope.active)setError(error instanceof WarehouseCommandValidationError?error.message:'Creation could not be confirmed. Close this form and resolve the saved original request before trying again.')
+        }finally{if(scope.active)setSubmitting(false)}
     }
 
     return (
@@ -128,7 +109,7 @@ function CreateLocationModal({ open, store, hasExistingLocations, onClose, onCre
                     <Button variant="secondary" onClick={onClose} disabled={submitting}>
                         Cancel
                     </Button>
-                    <Button onClick={handleSubmit} disabled={submitting}>
+                    <Button onClick={handleSubmit} disabled={submitting||blocked}>
                         {submitting ? <Spinner size="sm" /> : null}
                         {submitting ? 'Adding…' : 'Add location'}
                     </Button>
@@ -221,6 +202,14 @@ function locationAddressLine(location: InventoryLocation): React.ReactNode {
 
 export default function LocationsPage() {
     const { store } = useParams<{ store: string }>()
+    const {actorId,siteId}=useMerchantSecurityContext(store)
+    return <MetadataWorkspace key={`${actorId}:${siteId??'unavailable'}:${store}`} store={store} />
+}
+function MetadataWorkspace({store}:{store:string}){
+    const {actorId,siteId}=useMerchantSecurityContext(store)
+    const commands=useWarehouseCommands(store)
+    const [page,setPage]=useState(1)
+    const [population,setPopulation]=useState<{total:number;more:boolean}|null>(null)
 
     const [locations, setLocations] = useState<InventoryLocation[]>([])
     const [loading, setLoading] = useState(true)
@@ -233,23 +222,28 @@ export default function LocationsPage() {
         if (!store) return
         setLoading(true)
         setLoadError(null)
+        setLocations([])
+        setPopulation(null)
         try {
-            const res = await fetch(`/api/stores/${encodeURIComponent(store)}/inventory-locations`, { cache: 'no-store', signal: request.signal })
-            const body = await res.json() as { data?: InventoryLocation[]; error?: unknown }
+            const res = await fetch(`/api/stores/${encodeURIComponent(store)}/inventory-locations?${new URLSearchParams({page:String(page),limit:'20',status:'all',sort:'name_asc'})}`, { headers:{'X-LetBuyy-Merchant-Context':actorId},cache: 'no-store', signal: request.signal })
+            const body:unknown=await res.json()
             if (!request.isCurrent()) return
             if (!res.ok) {
-                const msg = typeof body.error === 'string' ? body.error : 'Failed to load locations'
+                const msg = 'Failed to load locations'
                 setLoadError(msg)
                 return
             }
-            setLocations(body.data ?? [])
+            const parsed=WarehouseLocationPageSchema.parse(body)
+            if(parsed.meta.store_id!==siteId||parsed.meta.page!==page||parsed.meta.per_page!==20)throw new Error('Metadata page could not be confirmed')
+            setLocations(parsed.data)
+            setPopulation({total:parsed.meta.total,more:parsed.meta.has_next})
         } catch {
             if (!request.isCurrent()) return
             setLoadError('Unable to load locations — check your connection.')
         } finally {
             if (request.isCurrent()) setLoading(false)
         }
-    }, [beginLoadLocations, store])
+    }, [beginLoadLocations, store,actorId,siteId,page])
 
     useEffect(() => { void loadLocations() }, [loadLocations])
 
@@ -264,7 +258,7 @@ export default function LocationsPage() {
                     label: 'Add location',
                     icon: <MaterialIcon name="add" />,
                     onClick: () => setShowCreate(true),
-                    disabled: loading,
+                    disabled: loading||!!loadError||commands.blocked,
                 }}
             />
 
@@ -280,10 +274,16 @@ export default function LocationsPage() {
                 </Banner>
             )}
 
+            <WarehouseCommandRecovery commands={commands} onResolved={()=>void loadLocations()} />
+            <div className="flex items-center gap-[var(--lb-space-3)]" aria-label="Warehouse pages">
+                <Button variant="secondary" disabled={loading||page===1} onClick={()=>setPage(p=>p-1)}>Previous</Button>
+                <span>{population?`${population.total} matching records · Page ${page}`:`Page ${page} · Count unavailable`}</span>
+                <Button variant="secondary" disabled={loading||!population?.more} onClick={()=>setPage(p=>p+1)}>Next</Button>
+            </div>
             <Card>
                 <Section
                     title="Inventory locations"
-                    description="All warehouses and fulfilment centres linked to this store."
+                    description="Warehouses and fulfilment centres linked to this store."
                 >
                     {loading ? (
                         <div className="flex flex-col gap-[var(--lb-space-3)]">
@@ -291,12 +291,12 @@ export default function LocationsPage() {
                                 <Skeleton key={i} className="h-[var(--lb-space-10)] w-full rounded-[var(--lb-radius-md)]" />
                             ))}
                         </div>
-                    ) : locations.length === 0 ? (
+                    ) : loadError ? <p>Records are unavailable. Refresh and check your access.</p> : locations.length === 0 ? (
                         <EmptyState
                             title="No locations yet"
                             body="Add a warehouse or store to track inventory levels and receive purchase orders."
                             primaryAction={
-                                <Button onClick={() => setShowCreate(true)}>
+                                <Button disabled={commands.blocked||loading||!!loadError} onClick={() => setShowCreate(true)}>
                                     Add location
                                 </Button>
                             }
@@ -358,7 +358,9 @@ export default function LocationsPage() {
 
             <CreateLocationModal
                 open={showCreate}
-                store={store}
+                submit={commands.submit}
+                blocked={commands.blocked}
+                scope={commands.scopeToken}
                 hasExistingLocations={locations.length > 0}
                 onClose={() => setShowCreate(false)}
                 onCreated={() => void loadLocations()}

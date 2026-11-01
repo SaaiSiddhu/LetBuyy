@@ -164,7 +164,15 @@ class WarehouseCommandIntent {
     if (create ? target != null : !_id(target)) _invalid();
     final command = _object(json['command']);
     final expected = op == 'location.create'
-        ? ['name', 'address', 'city', 'state', 'country', 'is_default']
+        ? [
+            'name',
+            'address',
+            'city',
+            'state',
+            'country',
+            'pincode',
+            'is_default',
+          ]
         : op == 'supplier.create'
         ? ['name', 'contact_name', 'email', 'phone', 'address']
         : op == 'purchase_order.create'
@@ -180,7 +188,15 @@ class WarehouseCommandIntent {
       if (!_keys(
         command,
         location
-            ? ['name', 'address', 'city', 'state', 'country', 'is_default']
+            ? [
+                'name',
+                'address',
+                'city',
+                'state',
+                'country',
+                'pincode',
+                'is_default',
+              ]
             : ['name', 'contact_name', 'email', 'phone', 'address'],
       ))
         _invalid();
@@ -199,6 +215,9 @@ class WarehouseCommandIntent {
           final value = command[entry.key];
           if (value is! String || value.length > entry.value) _invalid();
         }
+        if (command['pincode'] is! String ||
+            !RegExp(r'^(?:[0-9]{6})?$').hasMatch(command['pincode'] as String))
+          _invalid();
         if (command['country'] is! String ||
             !RegExp(r'^[A-Z]{2}$').hasMatch(command['country'] as String) ||
             command['is_default'] is! bool)
@@ -294,6 +313,7 @@ class WarehouseCommandIntent {
           'country': input.country.trim().isEmpty
               ? 'IN'
               : input.country.trim().toUpperCase(),
+          'pincode': input.pincode.trim(),
           'is_default': input.isDefault,
         },
       });
@@ -503,6 +523,7 @@ class WarehouseCommandAcknowledgement {
               'city',
               'state',
               'country',
+              'pincode',
             ].any((key) => address[key] != command[key]))
           _invalid();
       } else {

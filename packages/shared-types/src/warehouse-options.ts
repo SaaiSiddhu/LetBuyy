@@ -10,6 +10,7 @@ export const WarehouseOptionListQuerySchema=z.object({
 export type WarehouseOptionListQuery=z.input<typeof WarehouseOptionListQuerySchema>;
 export const WarehouseLocationInputSchema=z.object({
  store_id:id,name,address:z.string().max(500).optional(),city:z.string().max(100).optional(),state:z.string().max(100).optional(),
+ pincode:z.string().trim().regex(/^(?:[0-9]{6})?$/,'Enter a six-digit India pincode.').default(''),
  country:z.string().length(2).toUpperCase().default('IN'),is_default:z.boolean().default(false),
 });
 export type WarehouseLocationInput=z.input<typeof WarehouseLocationInputSchema>;

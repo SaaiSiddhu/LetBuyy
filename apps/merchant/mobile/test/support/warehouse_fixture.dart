@@ -90,7 +90,7 @@ JsonMap warehouseAck(
           'store_id': site,
           'is_default': intent.command['is_default'],
           'address': {
-            for (final k in ['address', 'city', 'state', 'country'])
+            for (final k in ['address', 'city', 'state', 'country', 'pincode'])
               k: intent.command[k],
           },
         } else ...{

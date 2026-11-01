@@ -260,6 +260,7 @@ void main() {
               name: ' Synthetic location ',
               address: 'Synthetic road',
               city: 'Chennai',
+              pincode: '600001',
             ),
           );
     test(

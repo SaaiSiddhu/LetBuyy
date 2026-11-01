@@ -1,10 +1,13 @@
 'use client'
 
 import { useReadRequest } from '@/lib/api/use-read-request'
+import {useMerchantSecurityContext} from '@/components/security/MerchantSecurityContext'
+import {useWarehouseCommands,WarehouseCommandValidationError,type WarehouseSubmit} from '@/lib/inventory/use-warehouse-commands'
+import {WarehouseCommandRecovery} from '@/components/products/WarehouseCommandRecovery'
+import {WarehouseSupplierPageSchema} from '@letbuyy/shared-types'
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
-import { formatIndiaDate as formatDate } from '@letbuyy/ui/formatting'
 import {
     Badge,
     Banner,
@@ -47,12 +50,14 @@ function supplierStatusLabel(status?: string | null): string {
 
 interface CreateSupplierModalProps {
     open: boolean
-    store: string
+    submit: WarehouseSubmit
+    blocked: boolean
+    scope: {active:boolean}|null
     onClose: () => void
     onCreated: () => void
 }
 
-function CreateSupplierModal({ open, store, onClose, onCreated }: CreateSupplierModalProps) {
+function CreateSupplierModal({ open, submit, blocked, scope, onClose, onCreated }: CreateSupplierModalProps) {
     const { notify } = useToast()
     const [name, setName] = useState('')
     const [contactName, setContactName] = useState('')
@@ -80,45 +85,18 @@ function CreateSupplierModal({ open, store, onClose, onCreated }: CreateSupplier
     }, [open])
 
     async function handleSubmit() {
+        if(submitting||blocked||!scope?.active)return
         setError(null)
-        if (!name.trim()) {
-            setError('Supplier name is required.')
-            return
-        }
-
-        const address: Record<string, unknown> = {}
-        if (addressLine.trim()) address.line1 = addressLine.trim()
-        if (addressCity.trim()) address.city = addressCity.trim()
-        if (addressState.trim()) address.state = addressState.trim()
-        if (addressPincode.trim()) address.pincode = addressPincode.trim()
-
         setSubmitting(true)
         try {
-            const res = await fetch(`/api/stores/${encodeURIComponent(store)}/suppliers`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    name: name.trim(),
-                    contact_name: contactName.trim() || undefined,
-                    email: email.trim() || undefined,
-                    phone: phone.trim() || undefined,
-                    address: Object.keys(address).length > 0 ? address : undefined,
-                }),
-            })
-            if (!res.ok) {
-                const body = await res.json().catch(() => ({})) as { error?: unknown }
-                const msg = typeof body.error === 'string' ? body.error : 'Failed to create supplier'
-                setError(msg)
-                return
-            }
-            notify({ title: 'Supplier created', variant: 'success' })
+            await submit('supplier.create',null,{name:name.trim(),contact_name:contactName.trim()||undefined,email:email.trim()||undefined,phone:phone.trim()||undefined,address:{...(addressLine.trim()?{line1:addressLine.trim()}:{}),...(addressCity.trim()?{city:addressCity.trim()}:{}),...(addressState.trim()?{state:addressState.trim()}:{}),...(addressPincode.trim()?{pincode:addressPincode.trim()}:{})}})
+            if(!scope.active)return
+            notify({title:'Supplier created',variant:'success'})
             onCreated()
             onClose()
-        } catch {
-            setError('Network error — please try again.')
-        } finally {
-            setSubmitting(false)
-        }
+        }catch(error){
+            if(scope.active)setError(error instanceof WarehouseCommandValidationError?error.message:'Creation could not be confirmed. Close this form and resolve the saved original request before trying again.')
+        }finally{if(scope.active)setSubmitting(false)}
     }
 
     return (
@@ -132,7 +110,7 @@ function CreateSupplierModal({ open, store, onClose, onCreated }: CreateSupplier
                     <Button variant="secondary" onClick={onClose} disabled={submitting}>
                         Cancel
                     </Button>
-                    <Button onClick={handleSubmit} disabled={submitting}>
+                    <Button onClick={handleSubmit} disabled={submitting||blocked}>
                         {submitting ? <Spinner size="sm" /> : null}
                         {submitting ? 'Adding…' : 'Add supplier'}
                     </Button>
@@ -219,6 +197,14 @@ function CreateSupplierModal({ open, store, onClose, onCreated }: CreateSupplier
 
 export default function SuppliersPage() {
     const { store } = useParams<{ store: string }>()
+    const {actorId,siteId}=useMerchantSecurityContext(store)
+    return <MetadataWorkspace key={`${actorId}:${siteId??'unavailable'}:${store}`} store={store} />
+}
+function MetadataWorkspace({store}:{store:string}){
+    const {actorId,siteId}=useMerchantSecurityContext(store)
+    const commands=useWarehouseCommands(store)
+    const [page,setPage]=useState(1)
+    const [population,setPopulation]=useState<{total:number;more:boolean}|null>(null)
 
     const [suppliers, setSuppliers] = useState<Supplier[]>([])
     const [loading, setLoading] = useState(true)
@@ -231,23 +217,28 @@ export default function SuppliersPage() {
         if (!store) return
         setLoading(true)
         setLoadError(null)
+        setSuppliers([])
+        setPopulation(null)
         try {
-            const res = await fetch(`/api/stores/${encodeURIComponent(store)}/suppliers`, { cache: 'no-store', signal: request.signal })
-            const body = await res.json() as { data?: Supplier[]; error?: unknown }
+            const res = await fetch(`/api/stores/${encodeURIComponent(store)}/suppliers?${new URLSearchParams({page:String(page),limit:'20',status:'all',sort:'name_asc'})}`, { headers:{'X-LetBuyy-Merchant-Context':actorId},cache: 'no-store', signal: request.signal })
+            const body:unknown=await res.json()
             if (!request.isCurrent()) return
             if (!res.ok) {
-                const msg = typeof body.error === 'string' ? body.error : 'Failed to load suppliers'
+                const msg = 'Failed to load suppliers'
                 setLoadError(msg)
                 return
             }
-            setSuppliers(body.data ?? [])
+            const parsed=WarehouseSupplierPageSchema.parse(body)
+            if(parsed.meta.store_id!==siteId||parsed.meta.page!==page||parsed.meta.per_page!==20)throw new Error('Metadata page could not be confirmed')
+            setSuppliers(parsed.data)
+            setPopulation({total:parsed.meta.total,more:parsed.meta.has_next})
         } catch {
             if (!request.isCurrent()) return
             setLoadError('Unable to load suppliers — check your connection.')
         } finally {
             if (request.isCurrent()) setLoading(false)
         }
-    }, [beginLoadSuppliers, store])
+    }, [beginLoadSuppliers, store,actorId,siteId,page])
 
     useEffect(() => { void loadSuppliers() }, [loadSuppliers])
 
@@ -262,7 +253,7 @@ export default function SuppliersPage() {
                     label: 'Add supplier',
                     icon: <MaterialIcon name="add" />,
                     onClick: () => setShowCreate(true),
-                    disabled: loading,
+                    disabled: loading||!!loadError||commands.blocked,
                 }}
             />
 
@@ -272,10 +263,16 @@ export default function SuppliersPage() {
                 </Banner>
             )}
 
+            <WarehouseCommandRecovery commands={commands} onResolved={()=>void loadSuppliers()} />
+            <div className="flex items-center gap-[var(--lb-space-3)]" aria-label="Warehouse pages">
+                <Button variant="secondary" disabled={loading||page===1} onClick={()=>setPage(p=>p-1)}>Previous</Button>
+                <span>{population?`${population.total} matching records · Page ${page}`:`Page ${page} · Count unavailable`}</span>
+                <Button variant="secondary" disabled={loading||!population?.more} onClick={()=>setPage(p=>p+1)}>Next</Button>
+            </div>
             <Card>
                 <Section
                     title="Vendor list"
-                    description="All suppliers associated with this store."
+                    description="Suppliers linked to this store."
                 >
                     {loading ? (
                         <div className="flex flex-col gap-[var(--lb-space-3)]">
@@ -283,12 +280,12 @@ export default function SuppliersPage() {
                                 <Skeleton key={i} className="h-[var(--lb-space-10)] w-full rounded-[var(--lb-radius-md)]" />
                             ))}
                         </div>
-                    ) : suppliers.length === 0 ? (
+                    ) : loadError ? <p>Records are unavailable. Refresh and check your access.</p> : suppliers.length === 0 ? (
                         <EmptyState
                             title="No suppliers yet"
                             body="Add a supplier to link vendors to purchase orders and track inbound inventory."
                             primaryAction={
-                                <Button onClick={() => setShowCreate(true)}>
+                                <Button disabled={commands.blocked||loading||!!loadError} onClick={() => setShowCreate(true)}>
                                     Add supplier
                                 </Button>
                             }
@@ -371,7 +368,9 @@ export default function SuppliersPage() {
 
             <CreateSupplierModal
                 open={showCreate}
-                store={store}
+                submit={commands.submit}
+                blocked={commands.blocked}
+                scope={commands.scopeToken}
                 onClose={() => setShowCreate(false)}
                 onCreated={() => void loadSuppliers()}
             />

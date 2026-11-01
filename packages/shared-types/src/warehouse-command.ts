@@ -61,7 +61,7 @@ export const WarehouseCommandResultSchema = z.object({
     const location=receipt.operation==='location.create',entity=location?value.location:value.supplier;
     if(!entity||value.purchase_order||value.transfer||(location?value.supplier:value.location)||value.lines.length||receipt.effective_lines!==null||
       !receipt.target_id||entity.id!==receipt.target_id||('store_id'in entity?entity.store_id:entity.site_id)!==receipt.site_id||entity.name!==receipt.command.name||entity.status!=='active')invalid();
-    if(entity&&location){const address=entity.address;if(!address||!('is_default'in entity)||entity.is_default!==receipt.command.is_default||['address','city','state','country'].some(key=>address[key]!==receipt.command[key]))invalid();}
+    if(entity&&location){const address=entity.address;if(!address||!('is_default'in entity)||entity.is_default!==receipt.command.is_default||['address','city','state','country','pincode'].some(key=>address[key]!==receipt.command[key]))invalid();}
     if(entity&&!location&&(['contact_name','email','phone'].some(key=>entity[key]!==receipt.command[key])||!sameValue(entity.address,receipt.command.address)))invalid();
     return;
   }
