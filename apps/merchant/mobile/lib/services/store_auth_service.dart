@@ -15,6 +15,7 @@ enum AuthChangeEvent {
   signedOut,
   tokenRefreshed,
   sessionExpired,
+  sessionUnavailable,
 }
 
 class AuthState {
@@ -95,6 +96,18 @@ class MerchantMfaRequiredException implements Exception {
   String toString() => 'Enter your current authenticator code to sign in.';
 }
 
+class MerchantIdentityUnavailableException implements Exception {
+  const MerchantIdentityUnavailableException();
+  @override
+  String toString() => 'Sign-in is temporarily unavailable. Please retry.';
+}
+
+class MerchantAuthSupersededException implements Exception {
+  const MerchantAuthSupersededException();
+  @override
+  String toString() => 'This sign-in attempt is no longer current.';
+}
+
 class StoreAuthService extends ChangeNotifier {
   StoreAuthService({
     required ApiClient api,
@@ -150,37 +163,38 @@ class StoreAuthService extends ChangeNotifier {
   String? get accessToken => _session?.token;
   DateTime? get sessionExpiresAt => _session?.expiresAt;
   Stream<AuthState> get authStateChanges => _authEvents.stream;
+  bool _sessionRecoveryPending = false;
+  bool get hasSessionRecovery => _sessionRecoveryPending;
+  int _authEpoch = 0;
+  bool _disposed = false;
+  Future<void> _storageTail = Future<void>.value();
+  bool _isCurrent(int epoch) => !_disposed && epoch == _authEpoch;
+
+  // Order encrypted writes with sign-out. A late validation or interrupted write
+  // must never resurrect a retired account, including after process restart.
+  Future<bool> _writeStorage(int epoch, Future<void> Function() write) {
+    final operation = _storageTail.then((_) async {
+      if (!_isCurrent(epoch)) return false;
+      await write();
+      return _isCurrent(epoch);
+    });
+    _storageTail = operation.then<void>(
+      (_) {},
+      onError: (Object _, StackTrace __) {},
+    );
+    return operation;
+  }
 
   Future<void> restoreSession() async {
+    final epoch = ++_authEpoch;
     final token = await _secureStorage.read(key: _sessionTokenKey);
+    if (!_isCurrent(epoch)) return;
     if (token == null || token.isEmpty) {
       _emit(AuthChangeEvent.signedOut);
       return;
     }
 
-    final restoredUser = await _readStoredUser();
-    final restoredExpiresAt = await _readStoredExpiresAt();
-    if (restoredUser != null && !_isExpired(restoredExpiresAt)) {
-      _session = MerchantSession(
-        token: token,
-        user: restoredUser,
-        expiresAt: restoredExpiresAt,
-      );
-      notifyListeners();
-    }
-
-    final validatedSession = await _validateIdentitySession(token);
-    if (validatedSession != null) {
-      await _persistSession(validatedSession);
-      _session = validatedSession;
-      _emit(AuthChangeEvent.initialSession);
-      notifyListeners();
-      return;
-    }
-
-    await _clearSession();
-    _emit(AuthChangeEvent.sessionExpired);
-    notifyListeners();
+    await _recoverSession(token, AuthChangeEvent.initialSession, epoch);
   }
 
   Future<MerchantSessionUser?> signInWithPassword(
@@ -189,8 +203,11 @@ class StoreAuthService extends ChangeNotifier {
     String? turnstileToken,
     String? mfaCode,
   }) async {
+    final epoch = ++_authEpoch;
     final normalizedEmail = email.trim().toLowerCase();
     final csrf = await _fetchCsrfCookie();
+    final proof = await _requireTurnstileToken(turnstileToken);
+    if (!_isCurrent(epoch)) throw const MerchantAuthSupersededException();
     final response = await _postIdentityJson(
       '/api/auth/login',
       csrf: csrf,
@@ -199,9 +216,10 @@ class StoreAuthService extends ChangeNotifier {
         'password': password,
         if (mfaCode != null && mfaCode.trim().isNotEmpty)
           'mfaCode': mfaCode.trim(),
-        'turnstileToken': await _requireTurnstileToken(turnstileToken),
+        'turnstileToken': proof,
       },
     );
+    if (!_isCurrent(epoch)) throw const MerchantAuthSupersededException();
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       if (response.statusCode == 403 &&
@@ -215,17 +233,7 @@ class StoreAuthService extends ChangeNotifier {
       throw Exception('Identity platform did not return lb_session');
     }
 
-    final session =
-        await _validateIdentitySession(token) ??
-        MerchantSession(
-          token: token,
-          user: MerchantSessionUser(id: '', email: normalizedEmail),
-        );
-    await _persistSession(session);
-    _session = session;
-    _emit(AuthChangeEvent.signedIn);
-    notifyListeners();
-    return session.user;
+    return (await _acceptIdentityToken(token, epoch)).user;
   }
 
   Future<MerchantSessionUser?> signUp(
@@ -241,17 +249,11 @@ class StoreAuthService extends ChangeNotifier {
       return null;
     }
 
+    final epoch = ++_authEpoch;
     await verifySignUpOtp(normalizedEmail, otp.trim());
-    final session = await _setVerifiedPassword(
-      normalizedEmail,
-      password,
-      name: name,
-    );
-    await _persistSession(session);
-    _session = session;
-    _emit(AuthChangeEvent.signedIn);
-    notifyListeners();
-    return session.user;
+    if (!_isCurrent(epoch)) throw const MerchantAuthSupersededException();
+    final token = await _setVerifiedPassword(password, name: name);
+    return (await _acceptIdentityToken(token, epoch)).user;
   }
 
   Future<PendingMerchantSignUp> requestSignUpOtp(
@@ -299,11 +301,7 @@ class StoreAuthService extends ChangeNotifier {
     }
   }
 
-  Future<MerchantSession> _setVerifiedPassword(
-    String email,
-    String password, {
-    String? name,
-  }) async {
+  Future<String> _setVerifiedPassword(String password, {String? name}) async {
     final csrf = _csrfFromJar() ?? await _fetchCsrfCookie();
     final response = await _postIdentityJson(
       '/api/auth/set-password',
@@ -320,11 +318,7 @@ class StoreAuthService extends ChangeNotifier {
       throw Exception('Identity platform did not return lb_session');
     }
 
-    return await _validateIdentitySession(token) ??
-        MerchantSession(
-          token: token,
-          user: MerchantSessionUser(id: '', email: email),
-        );
+    return token;
   }
 
   Future<void> resetPassword(String email, {String? turnstileToken}) async {
@@ -351,51 +345,111 @@ class StoreAuthService extends ChangeNotifier {
   Future<void> Function()? beforeSignOut;
 
   Future<void> signOut() async {
-    try {
-      await beforeSignOut?.call();
-    } catch (_) {
-      debugPrint('Notification cleanup unavailable during sign-out.');
-    }
-    final token = _session?.token;
-    if (token != null && token.isNotEmpty) {
-      try {
-        await _http.post(
-          _identityUri('/api/auth/logout'),
-          headers: {'Cookie': '$_sessionCookieName=$token'},
-        );
-      } catch (error) {
-        debugPrint('Sign-out request failed: $error');
-      }
-    }
-
-    await _clearSession();
+    final epoch = ++_authEpoch;
+    final token =
+        _session?.token ??
+        _identityCookies[_sessionCookieName] ??
+        await _secureStorage.read(key: _sessionTokenKey);
+    if (!_isCurrent(epoch)) return;
+    _session = null;
+    _sessionRecoveryPending = false;
+    _identityCookies.clear();
     _emit(AuthChangeEvent.signedOut);
     notifyListeners();
+    try {
+      await _clearSession(epoch);
+    } finally {
+      try {
+        await beforeSignOut?.call();
+      } catch (_) {
+        debugPrint('Notification cleanup unavailable during sign-out.');
+      }
+      if (token != null && token.isNotEmpty) {
+        try {
+          await _http
+              .post(
+                _identityUri('/api/auth/logout'),
+                headers: {'Cookie': '$_sessionCookieName=$token'},
+              )
+              .timeout(const Duration(seconds: 20));
+        } catch (_) {
+          debugPrint('Identity sign-out confirmation unavailable.');
+        }
+      }
+    }
   }
 
   Future<bool> refreshSession() async {
+    final epoch = ++_authEpoch;
     final token =
         _session?.token ?? await _secureStorage.read(key: _sessionTokenKey);
+    if (!_isCurrent(epoch)) return false;
     if (token == null || token.isEmpty) {
-      await _clearSession();
+      await _clearSession(epoch);
+      if (!_isCurrent(epoch)) return false;
       _emit(AuthChangeEvent.signedOut);
       notifyListeners();
       return false;
     }
 
-    final validatedSession = await _validateIdentitySession(token);
-    if (validatedSession != null) {
-      await _persistSession(validatedSession);
-      _session = validatedSession;
-      _emit(AuthChangeEvent.tokenRefreshed);
-      notifyListeners();
-      return true;
-    }
+    return await _recoverSession(
+          token,
+          AuthChangeEvent.tokenRefreshed,
+          epoch,
+        ) !=
+        null;
+  }
 
-    await _clearSession();
-    _emit(AuthChangeEvent.sessionExpired);
+  Future<MerchantSession> _acceptIdentityToken(String token, int epoch) async {
+    // A successful password/OTP response proves a token was issued, not that a
+    // complete current user was read. Retain only that token until confirmation.
+    final saved = await _writeStorage(epoch, () async {
+      await _secureStorage.delete(key: _sessionUserKey);
+      await _secureStorage.delete(key: _sessionExpiresAtKey);
+      await _secureStorage.write(key: _sessionTokenKey, value: token);
+    });
+    if (!saved) throw const MerchantAuthSupersededException();
+    final session = await _recoverSession(
+      token,
+      AuthChangeEvent.signedIn,
+      epoch,
+    );
+    if (!_isCurrent(epoch)) throw const MerchantAuthSupersededException();
+    if (session != null) return session;
+    if (hasSessionRecovery) throw const MerchantIdentityUnavailableException();
+    throw Exception('This sign-in is no longer valid. Please sign in again.');
+  }
+
+  Future<MerchantSession?> _recoverSession(
+    String token,
+    AuthChangeEvent event,
+    int epoch,
+  ) async {
+    MerchantSession? validated;
+    try {
+      validated = await _validateIdentitySession(token);
+    } on MerchantIdentityUnavailableException {
+      if (!_isCurrent(epoch)) return null;
+      _session = null;
+      _sessionRecoveryPending = true;
+      _emit(AuthChangeEvent.sessionUnavailable);
+      notifyListeners();
+      return null;
+    }
+    if (!_isCurrent(epoch)) return null;
+    if (validated == null) {
+      await _clearSession(epoch);
+      if (!_isCurrent(epoch)) return null;
+      _emit(AuthChangeEvent.sessionExpired);
+      notifyListeners();
+      return null;
+    }
+    if (!await _persistSession(validated, epoch)) return null;
+    _session = validated;
+    _sessionRecoveryPending = false;
+    _emit(event);
     notifyListeners();
-    return false;
+    return validated;
   }
 
   Future<bool> handleUnauthorized(ApiException exception) async {
@@ -450,15 +504,18 @@ class StoreAuthService extends ChangeNotifier {
   }
 
   Future<String> _fetchCsrfCookie() async {
+    final epoch = _authEpoch;
     final existing = _csrfFromJar();
     if (existing != null && existing.isNotEmpty) return existing;
 
     try {
       final response = await _http.get(_identityUri('/login'));
+      if (!_isCurrent(epoch)) throw const MerchantAuthSupersededException();
       _storeResponseCookies(response);
     } catch (_) {
       // Fall through to cookie extraction / synthetic generation.
     }
+    if (!_isCurrent(epoch)) throw const MerchantAuthSupersededException();
 
     var csrf = _csrfFromJar();
     if (csrf == null || csrf.isEmpty) {
@@ -478,6 +535,7 @@ class StoreAuthService extends ChangeNotifier {
     required String csrf,
     required Map<String, Object?> body,
   }) async {
+    final epoch = _authEpoch;
     final response = await _http.post(
       _identityUri(path),
       headers: {
@@ -487,34 +545,57 @@ class StoreAuthService extends ChangeNotifier {
       },
       body: jsonEncode(body),
     );
+    if (!_isCurrent(epoch)) throw const MerchantAuthSupersededException();
+    // Protection redirects/HTML and server failures do not mean the entered
+    // password is wrong. Never pass an infrastructure page into login handling.
+    if (response.statusCode >= 300 && response.statusCode < 400 ||
+        response.statusCode >= 500) {
+      throw const MerchantIdentityUnavailableException();
+    }
+    try {
+      if (jsonDecode(response.body) is! Map)
+        throw const MerchantIdentityUnavailableException();
+    } catch (_) {
+      throw const MerchantIdentityUnavailableException();
+    }
     _storeResponseCookies(response);
     return response;
   }
 
   Future<MerchantSession?> _validateIdentitySession(String token) async {
     try {
-      final response = await _http.get(
-        _identityUri('/api/auth/session'),
-        headers: {'Cookie': '$_sessionCookieName=$token'},
-      );
-      if (response.statusCode < 200 || response.statusCode >= 300) {
-        return null;
-      }
-
+      final response = await _http
+          .get(
+            _identityUri('/api/auth/session'),
+            headers: {'Cookie': '$_sessionCookieName=$token'},
+          )
+          .timeout(const Duration(seconds: 20));
       final body = _decodeBody(response);
-      if (body['authenticated'] != true || body['user'] is! Map) return null;
+      // An HTML protection/login page, timeout or 5xx is not revocation. Only
+      // an explicit Identity denial may retire the original encrypted token.
+      if ((response.statusCode == 401 || response.statusCode == 403) &&
+          body['authenticated'] == false)
+        return null;
+      if (response.statusCode != 200)
+        throw const MerchantIdentityUnavailableException();
+      if (body['authenticated'] == false) return null;
+      if (body['authenticated'] != true || body['user'] is! Map) {
+        throw const MerchantIdentityUnavailableException();
+      }
 
       final user = MerchantSessionUser.fromJson(
         Map<String, dynamic>.from(body['user'] as Map),
       );
+      if (user.id.trim().isEmpty || user.email.trim().isEmpty) {
+        throw const MerchantIdentityUnavailableException();
+      }
       return MerchantSession(
-        token: token,
+        token: _extractCookie(response, _sessionCookieName) ?? token,
         user: user,
         expiresAt: _parseDateTime(body['expires_at'] ?? body['expiresAt']),
       );
-    } catch (error) {
-      debugPrint('Identity session validation failed: $error');
-      return null;
+    } catch (_) {
+      throw const MerchantIdentityUnavailableException();
     }
   }
 
@@ -549,48 +630,33 @@ class StoreAuthService extends ChangeNotifier {
     }
   }
 
-  Future<void> _persistSession(MerchantSession session) async {
-    await _secureStorage.write(key: _sessionTokenKey, value: session.token);
-    await _secureStorage.write(
-      key: _sessionUserKey,
-      value: jsonEncode(session.user.toJson()),
-    );
-    if (session.expiresAt != null) {
-      await _secureStorage.write(
-        key: _sessionExpiresAtKey,
-        value: session.expiresAt!.toIso8601String(),
-      );
-    } else {
-      await _secureStorage.delete(key: _sessionExpiresAtKey);
-    }
-  }
+  Future<bool> _persistSession(MerchantSession session, int epoch) =>
+      _writeStorage(epoch, () async {
+        await _secureStorage.write(key: _sessionTokenKey, value: session.token);
+        await _secureStorage.write(
+          key: _sessionUserKey,
+          value: jsonEncode(session.user.toJson()),
+        );
+        if (session.expiresAt != null) {
+          await _secureStorage.write(
+            key: _sessionExpiresAtKey,
+            value: session.expiresAt!.toIso8601String(),
+          );
+        } else {
+          await _secureStorage.delete(key: _sessionExpiresAtKey);
+        }
+      });
 
-  Future<MerchantSessionUser?> _readStoredUser() async {
-    final raw = await _secureStorage.read(key: _sessionUserKey);
-    if (raw == null || raw.isEmpty) return null;
-    try {
-      return MerchantSessionUser.fromJson(
-        Map<String, dynamic>.from(jsonDecode(raw) as Map),
-      );
-    } catch (_) {
-      return null;
-    }
-  }
-
-  Future<DateTime?> _readStoredExpiresAt() async {
-    return _parseDateTime(await _secureStorage.read(key: _sessionExpiresAtKey));
-  }
-
-  Future<void> _clearSession() async {
+  Future<void> _clearSession(int epoch) async {
+    if (!_isCurrent(epoch)) return;
     _session = null;
-    await _secureStorage.delete(key: _sessionTokenKey);
-    await _secureStorage.delete(key: _sessionUserKey);
-    await _secureStorage.delete(key: _sessionExpiresAtKey);
-  }
-
-  bool _isExpired(DateTime? expiresAt) {
-    if (expiresAt == null) return false;
-    return !expiresAt.isAfter(DateTime.now().add(const Duration(minutes: 2)));
+    _sessionRecoveryPending = false;
+    _identityCookies.clear();
+    await _writeStorage(epoch, () async {
+      await _secureStorage.delete(key: _sessionTokenKey);
+      await _secureStorage.delete(key: _sessionUserKey);
+      await _secureStorage.delete(key: _sessionExpiresAtKey);
+    });
   }
 
   Uri _identityUri(String path) => Uri.parse('$_identityBaseUrl$path');
@@ -603,6 +669,8 @@ class StoreAuthService extends ChangeNotifier {
 
   @override
   void dispose() {
+    _disposed = true;
+    _authEpoch++;
     _authEvents.close();
     _http.close();
     super.dispose();

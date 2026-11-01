@@ -207,14 +207,16 @@ void main() {
             MerchantTelemetryEventNames.authSignedOut,
           AuthChangeEvent.tokenRefreshed =>
             MerchantTelemetryEventNames.authSessionRestored,
+          AuthChangeEvent.sessionUnavailable => null,
         };
-        unawaited(
-          telemetryService.track(
-            eventName,
-            userId: state.session?.user.id,
-            metadata: {'auth_event': state.event.name},
-          ),
-        );
+        if (eventName != null)
+          unawaited(
+            telemetryService.track(
+              eventName,
+              userId: state.session?.user.id,
+              metadata: {'auth_event': state.event.name},
+            ),
+          );
       });
       final staffService = StaffService(api: apiClient);
       await staffService.restorePendingInvitation();

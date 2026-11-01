@@ -20,6 +20,7 @@ import '../../theme/app_theme_colors.dart';
 import '../../config/app_config.dart';
 import '../../app/routes.dart';
 import '../../widgets/shared/merchant_turnstile_attempt.dart';
+import 'error_screen.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Brand colours (kept local so the file is self-contained)
@@ -416,6 +417,48 @@ class _LoginScreenState extends State<LoginScreen>
 
   @override
   Widget build(BuildContext context) {
+    final recovering = context.select<StoreAuthService, bool>(
+      (auth) => auth.hasSessionRecovery,
+    );
+    if (recovering) {
+      return ErrorScreen(
+        title: _isLoading
+            ? 'Confirming sign-in...'
+            : 'Sign-in temporarily unavailable',
+        message:
+            _errorMessage ??
+            'Your saved sign-in is kept securely. Retry to confirm your account before opening your store.',
+        onRetry: _isLoading
+            ? null
+            : () async {
+                setState(() {
+                  _isLoading = true;
+                  _errorMessage = null;
+                });
+                try {
+                  if (await context.read<StoreAuthService>().refreshSession() &&
+                      mounted)
+                    await _navigateAfterAuth();
+                } catch (_) {
+                  if (mounted)
+                    setState(
+                      () => _errorMessage =
+                          'Saved sign-in could not be confirmed. Please retry.',
+                    );
+                } finally {
+                  if (mounted) setState(() => _isLoading = false);
+                }
+              },
+        onBackToLogin: () async {
+          await context.read<StoreAuthService>().signOut();
+          if (mounted)
+            setState(() {
+              _isLoading = false;
+              _errorMessage = null;
+            });
+        },
+      );
+    }
     final themeProvider = context.watch<ThemeProvider>();
     final langService = context.watch<LanguageService>();
     final isDark = themeProvider.isDarkMode(context);
