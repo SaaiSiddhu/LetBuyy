@@ -198,7 +198,7 @@ export const COMMERCE_OS_HIGHLIGHTS: Array<{ label: string; icon: string }> = [
 export const TRUST_INDICATORS: Array<{ icon: string; label: string }> = [
     { icon: 'currency_rupee', label: '0% commission forever' },
     { icon: 'language', label: 'India-first commerce platform' },
-    { icon: 'verified', label: 'GST-ready & KYC-verified payouts' },
+    { icon: 'lock', label: 'GST invoices & private KYC uploads' },
     { icon: 'smart_toy', label: 'AI-native architecture' },
 ]
 
