@@ -6,10 +6,8 @@ import { requireOwnedDatabase } from './owned-db-support';
 import { newSyntheticTenant, seedSyntheticTenant } from './synthetic-tenant';
 
 const owned = requireOwnedDatabase();
-const migration = readFileSync(new URL('../../../../../database/supabase/migrations/414_kyc_provider_decision_write_guard.sql', import.meta.url), 'utf8');
-const rollback = readFileSync(new URL('../../../../../database/supabase/rollback/414_kyc_provider_decision_write_guard.rollback.sql', import.meta.url), 'utf8');
-const privateMetadataMigration = readFileSync(new URL('../../../../../database/supabase/migrations/415_kyc_private_metadata_gateway_only.sql', import.meta.url), 'utf8');
-const privateMetadataRollback = readFileSync(new URL('../../../../../database/supabase/rollback/415_kyc_private_metadata_gateway_only.rollback.sql', import.meta.url), 'utf8');
+const migration = readFileSync(new URL('../../../../../database/supabase/migrations/415_kyc_private_metadata_gateway_only.sql', import.meta.url), 'utf8');
+const rollback = readFileSync(new URL('../../../../../database/supabase/rollback/415_kyc_private_metadata_gateway_only.rollback.sql', import.meta.url), 'utf8');
 const referenceLimitMigration = readFileSync(new URL('../../../../../database/supabase/migrations/417_kyc_last_four_reference_limit.sql', import.meta.url), 'utf8');
 const referenceLimitRollback = readFileSync(new URL('../../../../../database/supabase/rollback/417_kyc_last_four_reference_limit.rollback.sql', import.meta.url), 'utf8');
 
@@ -26,23 +24,15 @@ function guardShape() {
     ) FROM pg_class c WHERE c.oid='public.merchant_kyc_documents'::regclass;`);
 }
 
-test('KYC server-write containment has a paired pre-use rollback and forward replay', () => {
+test('KYC write and private metadata containment have one paired pre-use rollback and forward replay', () => {
     assert.deepEqual(JSON.parse(guardShape()), {
         force_rls: true, read_policy: false, write_policy: false, guard_trigger: true,
-    });
-    apply(privateMetadataRollback);
-    assert.deepEqual(JSON.parse(guardShape()), {
-        force_rls: true, read_policy: true, write_policy: false, guard_trigger: true,
     });
     apply(rollback);
     assert.deepEqual(JSON.parse(guardShape()), {
         force_rls: false, read_policy: false, write_policy: true, guard_trigger: false,
     });
     apply(migration);
-    assert.deepEqual(JSON.parse(guardShape()), {
-        force_rls: true, read_policy: true, write_policy: false, guard_trigger: true,
-    });
-    apply(privateMetadataMigration);
     assert.deepEqual(JSON.parse(guardShape()), {
         force_rls: true, read_policy: false, write_policy: false, guard_trigger: true,
     });
