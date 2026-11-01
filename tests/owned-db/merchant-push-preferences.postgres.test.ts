@@ -82,7 +82,7 @@ async function signIn(page:Page,identity:string,merchant:string,email:string,pas
 test('normal Merchant browser confirms notification preference writes and recovers log reads',{timeout:840000},async()=>{
   let stage='fixture setup';
   const mark=(next:string)=>{stage=next;console.info('OWNED_NOTIFICATION_BROWSER_STAGE '+next);};
-  const email=`syn-${actor}@example.invalid`,password='Synthetic-notification-browser-pass-42';
+  const email=`syn-${actor}@example.invalid`,password=`Synthetic-notification-${randomUUID()}`;
   const hash=await hashMerchantPassword(password);
   owned.psql(`UPDATE users_custom SET password_hash='${hash}',full_name='Synthetic Notification Owner' WHERE id='${actor}';`);
   const identityPort=await freePort(),merchantPort=await freePort(),identityOrigin=`http://localhost:${identityPort}`,merchantOrigin=`http://localhost:${merchantPort}`;
