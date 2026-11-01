@@ -16,7 +16,7 @@ import { closePooledSqlClients } from '@letbuyy/infrastructure/pooled-sql-adapte
 import { hashMerchantPassword } from '../../services/api-gateway/src/lib/merchant-password';
 import { Gateway, gatewayEnv, newIdentityKeys, INTERNAL_SECRET, tapRest, type RestTap } from '../../services/api-gateway/src/__tests__/owned-db/gateway-harness';
 import { requireOwnedDatabase, startOwnedPooledSqlProxy, type OwnedPooledSqlProxy, createOwnedCheckoutTlsCertificate, startOwnedClientRuntime, stopOwnedClientRuntime, type OwnedClientProcess } from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
-import { newSyntheticTenant, seedSyntheticTenant } from '../../services/api-gateway/src/__tests__/owned-db/synthetic-tenant';
+import { newSyntheticTenant, seedSyntheticOrder, seedSyntheticTenant, type SeedOptions } from '../../services/api-gateway/src/__tests__/owned-db/synthetic-tenant';
 
 const owned = requireOwnedDatabase();
 let proxy:OwnedPooledSqlProxy,gateway:Gateway,tap:RestTap;
@@ -168,8 +168,8 @@ after(async () => {
     if (bridge?.listening) await new Promise<void>(resolve => bridge!.close(() => resolve()));
 });
 
-async function fixture(tag: string) {
-    const tenant = newSyntheticTenant(tag); seedSyntheticTenant(owned.psql, tenant);
+async function fixture(tag: string, options: SeedOptions = {}) {
+    const tenant = newSyntheticTenant(tag); seedSyntheticTenant(owned.psql, tenant, options);
     const owner = crypto.randomUUID(), staff = crypto.randomUUID(), product = crypto.randomUUID();
     const email = `syn-published-owner-${owner}@example.invalid`, staffEmail = `syn-published-staff-${staff}@example.invalid`;
     const hash = await hashMerchantPassword(password);
@@ -483,6 +483,36 @@ test('General and Business expose keyboard labels and recover an optional status
     await pan.getByRole('textbox', { name: 'Last 4 of PAN' }).focus();
     await f.page.keyboard.press('Tab');
     await expect(pan.getByLabel('Upload Business PAN')).toBeFocused();
+});
+
+test('Merchant order detail renders generated order and immutable GST invoice numbers after a Business edit', { timeout: 180_000 }, async t => {
+    const f = await fixture('merchant-invoice', { gst: true, taxRates: true }); t.after(() => f.context.close());
+    const { orderId } = seedSyntheticOrder(owned.psql, f.tenant);
+    const [orderNumber, invoiceNumber] = owned.psql(`SELECT o.order_number||'|'||coalesce(o.gst_invoice_number,'')
+        FROM orders o WHERE o.id='${orderId}' AND o.store_id='${f.tenant.siteId}';`).split('|');
+    assert.match(orderNumber, /^ORD-[0-9]{8}-[0-9]+$/);
+    assert.equal(invoiceNumber, owned.psql(`SELECT invoice_number FROM gst_invoices
+        WHERE site_id='${f.tenant.siteId}' AND order_id='${orderId}';`));
+    assert.ok(invoiceNumber, 'the registered canonical order issued a GST invoice');
+    await signIn(f.page, f.email);
+    const detailUrl = `${merchantOrigin}/${f.tenant.subdomain}/orders/${orderId}`;
+    await f.page.goto(detailUrl);
+    await expect(f.page.getByRole('heading', { name: `Order #${orderNumber}`, exact: true })).toBeVisible();
+    await expect(f.page.getByText(invoiceNumber, { exact: true })).toBeVisible();
+
+    await f.page.goto(`${merchantOrigin}/${f.tenant.subdomain}/settings/business`);
+    await f.page.getByLabel('Invoice number prefix', { exact: true }).fill('NEW');
+    const [save] = await Promise.all([
+        f.page.waitForResponse(item => new URL(item.url()).pathname === `/api/stores/${f.tenant.subdomain}/settings`
+            && item.request().method() === 'PATCH'),
+        f.page.getByRole('button', { name: 'Save', exact: true }).first().click(),
+    ]);
+    assert.equal(save.status(), 200);
+    assert.equal(owned.psql(`SELECT invoice_number FROM gst_invoices WHERE site_id='${f.tenant.siteId}'
+        AND order_id='${orderId}';`), invoiceNumber, 'editing the current prefix cannot rewrite a historical invoice');
+    await f.page.goto(detailUrl);
+    await expect(f.page.getByRole('heading', { name: `Order #${orderNumber}`, exact: true })).toBeVisible();
+    await expect(f.page.getByText(invoiceNumber, { exact: true })).toBeVisible();
 });
 
 test('Merchant Business ignores legacy nested legal and GST copies after canonical fields are cleared', { timeout: 180_000 }, async t => {
