@@ -377,6 +377,18 @@ router.post('/documents/:id/refresh', validate('query', StoreQuerySchema), async
     if (!document) {
         return c.json({ error: { code: 'KYC_DOCUMENT_NOT_FOUND', message: 'KYC document not found' } }, 404);
     }
+    // A live provider must never receive an unscanned or historical reference-only
+    // document. The merchant can refresh the truthful current status while the
+    // trusted scanner is pending or has rejected the file, without a paid lookup.
+    if (providerMode(c.env) === 'live'
+        && (typeof document.metadata?.private_object_key !== 'string'
+            || document.metadata.malware_scan_status !== 'clean')) {
+        const rows = await loadDocuments(db, tenant.siteId);
+        return c.json(success({
+            document: serializeDocument(document),
+            overview: buildOverview(tenant.siteId, rows, providerMode(c.env)),
+        }));
+    }
     const verification = await verifyWithProvider(c.env, {
         siteId: tenant.siteId,
         documentId: document.id,

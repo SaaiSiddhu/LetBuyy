@@ -253,12 +253,34 @@ test('live-mode provider outage stays pending after clean private evidence and e
             assert.equal(uploaded.json?.data.document.evidence_scan_status, 'pending');
         }
         assert.equal(objects.size, 3);
+        const panId = owned.psql(`SELECT id FROM merchant_kyc_documents
+            WHERE site_id='${tenant.siteId}' AND document_type='business_pan';`);
+        const pendingScan = await liveGateway.request(`/v1/kyc/documents/${panId}/refresh?store_id=${tenant.siteId}`, {
+            method: 'POST', headers: { ...await signedIdentityHeaders(owner, email, tenant.siteId),
+                'X-Idempotency-Key': randomUUID() },
+        });
+        assert.equal(pendingScan.status, 200, pendingScan.text);
+        assert.equal(pendingScan.json?.data.document.evidence_scan_status, 'pending');
+        assert.equal(pendingScan.json?.data.document.provider_unavailable, false);
+        assert.match(pendingScan.json?.data.overview.next_action || '', /security scan is pending/i);
+        assert.equal(owned.psql(`SELECT metadata ? 'provider_checked_at' FROM merchant_kyc_documents
+            WHERE id='${panId}';`), 'f', 'a pending scan cannot reach provider verification');
+        owned.psql(`UPDATE merchant_kyc_documents SET metadata=jsonb_set(metadata,'{malware_scan_status}','"rejected"'::jsonb)
+            WHERE id='${panId}';`);
+        const rejectedScan = await liveGateway.request(`/v1/kyc/documents/${panId}/refresh?store_id=${tenant.siteId}`, {
+            method: 'POST', headers: { ...await signedIdentityHeaders(owner, email, tenant.siteId),
+                'X-Idempotency-Key': randomUUID() },
+        });
+        assert.equal(rejectedScan.status, 200, rejectedScan.text);
+        assert.equal(rejectedScan.json?.data.document.evidence_scan_status, 'rejected');
+        assert.equal(rejectedScan.json?.data.document.provider_unavailable, false);
+        assert.match(rejectedScan.json?.data.overview.next_action || '', /failed its security scan/i);
+        assert.equal(owned.psql(`SELECT metadata ? 'provider_checked_at' FROM merchant_kyc_documents
+            WHERE id='${panId}';`), 'f', 'a rejected scan cannot reach provider verification');
         // The fixture stands in for a trusted scanner. Clean evidence alone
         // still cannot make an unavailable provider approve a merchant.
         owned.psql(`UPDATE merchant_kyc_documents SET metadata=jsonb_set(metadata,'{malware_scan_status}','"clean"'::jsonb)
             WHERE site_id='${tenant.siteId}';`);
-        const panId = owned.psql(`SELECT id FROM merchant_kyc_documents
-            WHERE site_id='${tenant.siteId}' AND document_type='business_pan';`);
         const refreshed = await liveGateway.request(`/v1/kyc/documents/${panId}/refresh?store_id=${tenant.siteId}`, {
             method: 'POST', headers: { ...await signedIdentityHeaders(owner, email, tenant.siteId),
                 'X-Idempotency-Key': randomUUID() },

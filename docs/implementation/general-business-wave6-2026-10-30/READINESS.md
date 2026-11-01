@@ -36,6 +36,7 @@
 
 ## Local evidence, 2026-11-01
 
+- Live KYC scan sequencing: the Gateway now returns current redacted status without calling its live provider adapter when a private upload is missing, pending scan, or rejected by the scanner. The focused local KYC suite passed 6/6 and Gateway typecheck passed. Owned Gateway/Postgres/private-bucket-fixture run `66084008d4ee` passed 2/2 with complete cleanup: pending and rejected scans left `provider_checked_at` absent and `provider_unavailable` false; after a synthetic clean verdict, the unavailable live provider left the document submitted with no verified timestamp. The scanner and provider were fixtures, so real scanner ingestion and provider evidence remain open.
 - Merchant order-detail browser readback: owned run `16819f921626` passed 9/9, 0 failed; the signed-in Merchant page displayed actual generated `ORD-YYYYMMDD-sequence` and GST invoice numbers. A normal Business prefix edit changed current settings but did not change the historical invoice row or its order-detail rendering. Owned containers, network, and volume were removed. This proves local runtime behavior, not a deployed merchant session or Razorpay statement.
 
 ## Local evidence, 2026-10-30
