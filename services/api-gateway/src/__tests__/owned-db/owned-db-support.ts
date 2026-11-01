@@ -381,10 +381,14 @@ export async function stopOwnedClientRuntime(child:OwnedClientProcess|undefined)
     }
 }
 
+type OwnedImportCommitStage='row'|'registration'|'registration-stop';
 export interface OwnedPooledSqlProxy {
     env(): {HYPERDRIVE:{connectionString:string}; STOREFRONT_POOLED_SQL:'on'};
     stop():Promise<void>;
     lastRelayError():string|null;
+    /** Named wire fault: forward the real row transaction, lose only its COMMIT ack. */
+    dropNextProductImportCommitAcknowledgement(stage?:OwnedImportCommitStage):void;
+    droppedProductImportCommitAcknowledgements():number;
 }
 
 /** Actual PostgreSQL wire transport, fixed to the freshly verified owned cluster/database.
@@ -414,6 +418,7 @@ export async function startOwnedPooledSqlProxy(owned:OwnedDatabase):Promise<Owne
     const closed=new Set<Promise<void>>();
     let stopping=false;
     let relayError:string|null=null;
+    let dropImportCommit:OwnedImportCommitStage|null=null,droppedImportCommits=0;
     const killChildren=()=>{for(const child of children)if(child.pid){try{process.kill(-child.pid,'SIGKILL');}catch{/* already stopped */}}};
     process.once('exit',killChildren);
     const server=createServer(socket=>{
@@ -445,7 +450,60 @@ wait "$letbuyy_writer_pid" 2>/dev/null || true`;
         child.on('error',error=>{relayError=error.message.slice(0,300);socket.destroy();});
         child.stderr.on('data',(data:Buffer)=>{relayError=data.toString().slice(0,300);});
         child.stdin.on('error',()=>socket.destroy());child.stdout.on('error',()=>socket.destroy());
-        socket.pipe(child.stdin);child.stdout.pipe(socket);
+        // Observe protocol framing without logging/buffering entire sessions.
+        // Only the fixed import completion statement can arm the named fault;
+        // bound values and arbitrary caller-provided SQL never select a target.
+        let frontend=Buffer.alloc(0),backend=Buffer.alloc(0),startup=true,importRow:OwnedImportCommitStage|null=null;
+        const statements=new Map<string,OwnedImportCommitStage|null>(),portals=new Map<string,OwnedImportCommitStage|null>();
+        socket.on('data',(chunk:Buffer)=>{
+            frontend=Buffer.concat([frontend,chunk]);
+            while(frontend.length>=(startup?4:5)){
+                const size=frontend.readInt32BE(startup?0:1),length=size+(startup?0:1);
+                if(size<4||size>16_777_216){socket.destroy();return;}
+                if(frontend.length<length)return;
+                const frame=frontend.subarray(0,length);frontend=frontend.subarray(length);
+                if(startup){startup=false;continue;}
+                const type=String.fromCharCode(frame[0]);
+                if(type==='P'||type==='Q'){
+                    const nameEnd=type==='P'?frame.indexOf(0,5):4;
+                    const start=nameEnd+1,end=frame.indexOf(0,start);
+                    const query=start>=5&&end>start?frame.toString('utf8',start,end):'';
+                    const matching=/^SELECT public\.complete_product_import_row_v1\(/.test(query)?'row'
+                        :/^SELECT public\.register_product_import_v1\(/.test(query)?'registration'
+                        :/^SELECT public\.stop_product_import_registration_v1\(/.test(query)?'registration-stop':null;
+                    if(type==='P')statements.set(frame.toString('utf8',5,nameEnd),matching);
+                    else if(dropImportCommit===matching&&matching)importRow=matching;
+                }else if(type==='B'){
+                    const portalEnd=frame.indexOf(0,5),statementEnd=frame.indexOf(0,portalEnd+1);
+                    if(portalEnd>=5&&statementEnd>portalEnd)portals.set(frame.toString('utf8',5,portalEnd),
+                        statements.get(frame.toString('utf8',portalEnd+1,statementEnd))??null);
+                }else if(type==='E'&&dropImportCommit){
+                    const portalEnd=frame.indexOf(0,5);
+                    const operation=portalEnd>=5?portals.get(frame.toString('utf8',5,portalEnd)):null;
+                    if(operation===dropImportCommit&&operation)importRow=operation;
+                }
+            }
+        });
+        socket.pipe(child.stdin);
+        child.stdout.on('data',(chunk:Buffer)=>{
+            backend=Buffer.concat([backend,chunk]);
+            while(backend.length>=5){
+                const size=backend.readInt32BE(1),length=size+1;
+                if(size<4||size>16_777_216){socket.destroy();return;}
+                if(backend.length<length)return;
+                const frame=backend.subarray(0,length);backend=backend.subarray(length);
+                if(frame[0]===67){
+                    const command=frame.toString('utf8',5,length-1);
+                    if(command==='COMMIT'&&importRow&&importRow===dropImportCommit){
+                        // PostgreSQL has acknowledged its own actual COMMIT.
+                        // Nothing fabricates success or rolls back that state.
+                        dropImportCommit=null;droppedImportCommits++;socket.destroy();return;
+                    }
+                    if(command==='COMMIT'||command==='ROLLBACK')importRow=null;
+                }
+                if(!socket.write(frame)){child.stdout.pause();socket.once('drain',()=>child.stdout.resume());}
+            }
+        });
         socket.once('close',()=>{
             sockets.delete(socket);child.stdin.end();
             if(child.pid){try{process.kill(-child.pid,'SIGTERM');}catch{/* already stopped */}}
@@ -465,6 +523,11 @@ wait "$letbuyy_writer_pid" 2>/dev/null || true`;
     return Object.freeze({
         env:()=>({HYPERDRIVE:{connectionString},STOREFRONT_POOLED_SQL:'on' as const}),
         lastRelayError:()=>relayError,
+        dropNextProductImportCommitAcknowledgement:(stage:OwnedImportCommitStage='row')=>{
+            if(stopping||dropImportCommit)throw new Error('Owned import COMMIT fault is already armed or stopped');
+            dropImportCommit=stage;
+        },
+        droppedProductImportCommitAcknowledgements:()=>droppedImportCommits,
         stop:()=>stopped??=(async()=>{
             stopping=true;
             const serverClosed=new Promise<void>((resolve,reject)=>server.close(error=>error?reject(error):resolve()));

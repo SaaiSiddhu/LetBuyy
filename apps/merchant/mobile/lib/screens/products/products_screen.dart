@@ -16,6 +16,7 @@ import '../../models/store_model.dart';
 import '../../theme/app_theme_colors.dart';
 import 'product_form_screen.dart';
 import 'import_products_screen.dart';
+import 'csv_import_screen.dart';
 import '../../widgets/shared/cached_merchant_image.dart';
 import '../../widgets/shared/accessible_tap_region.dart';
 import '../../widgets/shared/loading_overlay.dart';
@@ -729,6 +730,16 @@ class _ProductsScreenState extends State<ProductsScreen> {
               borderRadius: BorderRadius.circular(12),
             ),
             itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'csv',
+                child: Row(
+                  children: [
+                    Icon(Icons.upload_file_outlined, size: 20),
+                    SizedBox(width: 12),
+                    Text('CSV imports'),
+                  ],
+                ),
+              ),
               PopupMenuItem(
                 value: 'inventory',
                 child: Row(
@@ -747,10 +758,19 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 ),
               ),
             ],
-            onSelected: (value) {
+            onSelected: (value) async {
               final view = _menuView;
               _menuView = null;
               if (view == null || !_scopeCurrent(view.key, view.store)) return;
+              if (value == 'csv') {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => CsvImportScreen(storeId: view.store!),
+                  ),
+                );
+                if (_scopeCurrent(view.key, view.store)) _loadData();
+              }
               if (value == 'inventory')
                 Navigator.pushNamed(context, AppRoutes.inventory);
             },

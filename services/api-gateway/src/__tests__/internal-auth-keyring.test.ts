@@ -154,3 +154,12 @@ test('caller names cannot resolve inherited object properties as signing credent
     const env = fakeEnv({ INTERNAL_API_KEYRING: JSON.stringify({ 'queue-workers-domain-reconcile': 'synthetic-job-only-key' }), INTERNAL_AUTH_LEGACY_ACCEPT: 'false' });
     for (const caller of ['__proto__', 'constructor', 'toString', 'valueOf']) assert.deepEqual(getSecretsForCaller(env, caller), []);
 });
+
+test('the dedicated import-recovery key never becomes app or Identity authority, including legacy-drain mode',()=>{
+    for(const legacy of ['true','false']) {
+        const env=fakeEnv({INTERNAL_API_SECRET:'synthetic-base-app-key',INTERNAL_AUTH_LEGACY_ACCEPT:legacy,
+            INTERNAL_API_KEYRING:JSON.stringify({'queue-workers-product-import':'synthetic-import-only-key'})});
+        assert.deepEqual(getSecretsForCaller(env,'queue-workers-product-import'),[]);
+        assert.ok(!getSecretsForCaller(env,'identity-platform').includes('synthetic-import-only-key'));
+    }
+});

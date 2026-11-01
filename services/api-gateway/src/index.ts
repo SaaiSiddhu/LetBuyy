@@ -96,6 +96,7 @@ import domainsRouter from './routes/domains';
 import customDomainsRouter, { storeAccessRouter } from './routes/custom-domains';
 import internalCustomDomainReconcileRouter from './routes/internal-custom-domain-reconcile';
 import internalNotificationJobsRouter from './routes/internal-notification-jobs';
+import internalProductImportRouter from './routes/internal-product-import';
 import internalStoreAccessRouter from './routes/internal-store-access';
 import { createAdminGraphQLRouter } from './graphql/admin';
 import { createStorefrontGraphQLRouter } from './graphql/storefront';
@@ -240,6 +241,7 @@ export interface Env {
     WORKER_INTERNAL_API_SECRET?: string;
     INTERNAL_GATEWAY_IP_ALLOWLIST?: string;
     INTERNAL_API_KEYRING?: string;
+    PRODUCT_IMPORT_REQUEST_SECRET?: string;
     STOREFRONT_INTERNAL_PERIMETER?: string;
     STOREFRONT_INTERNAL_REQUEST_KEYRING?: string;
     PLATFORM_CONSOLE_API_TOKEN?: string;
@@ -811,6 +813,7 @@ api.route('/internal/events', internalEventsRouter);
 api.route('/internal/store-access', internalStoreAccessRouter);
 api.route('/internal/custom-domain-reconcile', internalCustomDomainReconcileRouter);
 api.route('/internal/notification-jobs', internalNotificationJobsRouter);
+api.route('/internal/product-import', internalProductImportRouter);
 
 // Protected routes (auth required)
 api.use('/*', authMiddleware);

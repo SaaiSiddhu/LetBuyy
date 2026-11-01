@@ -257,8 +257,12 @@ void main() {
             // Data services
             ChangeNotifierProvider<StoreService>.value(value: storeService),
             ChangeNotifierProvider<ProductService>(
-              create: (_) =>
-                  ProductService(api: apiClient, cache: cacheService),
+              create: (_) => ProductService(
+                api: apiClient,
+                cache: cacheService,
+                actorIdProvider: () => authService.currentUser?.id,
+                storeIdProvider: () => storeContext.selectedStoreId,
+              ),
             ),
             ChangeNotifierProvider<OrderService>(
               create: (_) => OrderService(

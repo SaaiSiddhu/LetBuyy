@@ -9,3 +9,4 @@ export 'src/inventory_metrics.dart';
 export 'src/shipping_tax_contracts.dart';
 
 export 'src/warehouse_command_contracts.dart';
+export 'src/product_import_contracts.dart';

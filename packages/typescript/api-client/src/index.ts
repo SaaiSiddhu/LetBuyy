@@ -1,3 +1,6 @@
+import { ProductCsvImportSchema, ProductImportRegistrationStopSchema, type ProductImportRegistrationStop, ProductImportJobCommandSchema, ProductImportJobSchema, ProductImportCapabilitiesSchema,
+  ProductImportRowsPageSchema, ProductImportHistoryPageSchema, ProductImportRowsQuerySchema, ProductImportHistoryQuerySchema,
+  type ProductImportJob, type ProductImportJobCommand, type ProductImportRowsQuery } from '@letbuyy/shared-types';
 import {prepareWarehouseCommand,StopWarehouseCommandSchema} from '@letbuyy/shared-types';
 import {WarehouseOptionListQuerySchema,WarehouseLocationSchema,WarehouseSupplierSchema,WarehouseLocationPageSchema,WarehouseSupplierPageSchema,type WarehouseOptionListQuery,type WarehouseLocation,type WarehouseSupplier,type WarehouseLocationInput} from '@letbuyy/shared-types';
 import {WarehousePurchaseOrderSchema,WarehouseTransferSchema,WarehousePurchaseOrderPageSchema,WarehouseTransferPageSchema,WarehousePurchaseOrderListQuerySchema,WarehouseTransferListQuerySchema,type WarehousePurchaseOrderListQuery,type WarehouseTransferListQuery,type WarehousePurchaseOrder,type WarehousePurchaseOrderLine,type WarehouseTransfer,type WarehouseTransferLine} from '@letbuyy/shared-types';
@@ -3219,15 +3222,15 @@ export interface ExportJobSummary extends JsonRecord {
   id: string;
   type: 'products' | 'orders' | 'customers' | 'product_import';
   status: 'queued' | 'running' | 'completed' | 'failed';
-  row_count: number;
+  row_count: number | null;
   filename: string;
-  download_url: string;
+  download_url: string | null;
   created_at: string;
   updated_at: string;
   expires_at: string;
 }
 export type ProductImportResult = {
-  job: ExportJobSummary;
+  job: ProductImportJob;
 };
 export type ShippingLabelProvider = 'shiprocket' | 'delhivery' | 'pickrr';
 export type ShippingLabelPackage = {
@@ -4891,7 +4894,72 @@ export class LetbuyyApiClient {
         this.requestData<GiftCardLifecycleItem>(`/products/gift-cards/${encodePathSegment(id)}/status`, { ...options, method: 'POST', body: input }),
     },
     importCsv: (input: ProductImportInput, options?: LetbuyyRequestOptions) =>
-      this.requestData<ProductImportResult>('/export/import-products', { ...options, method: 'POST', body: input }),
+      this.productImports.register(input, options),
+  };
+
+  readonly productImports = {
+    capabilities: async (storeId: string, options?: LetbuyyRequestOptions) => {
+      const result = ProductImportCapabilitiesSchema.parse(await this.requestData<unknown>('/export/imports/capabilities',
+        {...options, storeId, query:{store_id:storeId}, cache:'no-store'}));
+      if(result.store_id!==storeId)throw new Error('Import store could not be confirmed.');
+      return result;
+    },
+    register: async (input: ProductImportInput, options?: LetbuyyRequestOptions):Promise<ProductImportResult> => {
+      const body=ProductCsvImportSchema.parse(input);
+      const response=await this.requestData<{job:unknown}>('/export/imports/register',
+        {...options,method:'POST',body,storeId:body.store_id,idempotencyKey:body.idempotency_key,cache:'no-store'});
+      const job=ProductImportJobSchema.parse(response.job);
+      const sourceHash=[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(body.csv)))].map(v=>v.toString(16).padStart(2,'0')).join('');
+      if(job.store_id!==body.store_id||job.idempotency_key!==body.idempotency_key||job.source_sha256!==sourceHash)throw new Error('Import acknowledgement could not be confirmed.');
+      return {job};
+    },
+    get: async (storeId:string,id:string,options?:LetbuyyRequestOptions):Promise<ProductImportResult> => {
+      const response=await this.requestData<{job:unknown}>(`/export/imports/${encodePathSegment(UuidSchema.parse(id))}`,
+        {...options,storeId,query:{store_id:storeId},cache:'no-store'});
+      const job=ProductImportJobSchema.parse(response.job);
+      if(job.store_id!==storeId||job.id!==id)throw new Error('Import scope could not be confirmed.');
+      return {job};
+    },
+    byKey: async (storeId:string,key:string,options?:LetbuyyRequestOptions):Promise<{job:ProductImportJob|null}> => {
+      const response=await this.requestData<{job:unknown}>(`/export/imports/by-key/${encodePathSegment(UuidSchema.parse(key))}`,
+        {...options,storeId,query:{store_id:storeId},cache:'no-store'});
+      if(response.job===null)return {job:null};
+      const job=ProductImportJobSchema.parse(response.job);
+      if(job.store_id!==storeId||job.idempotency_key!==key)throw new Error('Original import could not be confirmed.');
+      return {job};
+    },
+    stopRegistration:async(input:ProductImportRegistrationStop,options?:LetbuyyRequestOptions):Promise<ProductImportResult>=>{
+      const body=ProductImportRegistrationStopSchema.parse(input);
+      const response=await this.requestData<{job:unknown}>('/export/imports/stop-registration',
+        {...options,method:'POST',body,storeId:body.store_id,idempotencyKey:body.idempotency_key,cache:'no-store'});
+      const job=ProductImportJobSchema.parse(response.job);
+      if(job.store_id!==body.store_id||job.idempotency_key!==body.idempotency_key||job.source_sha256!==body.source_sha256
+        ||!['stopped','completed','blocked'].includes(job.status))throw new Error('Original import stop could not be confirmed.');
+      return {job};
+    },
+    history: async (query:{store_id:string;page?:number;limit?:number},options?:LetbuyyRequestOptions) => {
+      const q=ProductImportHistoryQuerySchema.parse(query);
+      const result=ProductImportHistoryPageSchema.parse(await this.requestData<unknown>('/export/imports',
+        {...options,storeId:q.store_id,query:q,cache:'no-store'}));
+      if(result.meta.store_id!==q.store_id||result.meta.page!==q.page||result.meta.per_page!==q.limit)throw new Error('Import history scope could not be confirmed.');
+      return result;
+    },
+    rows: async (id:string,query:ProductImportRowsQuery,options?:LetbuyyRequestOptions) => {
+      UuidSchema.parse(id);const q=ProductImportRowsQuerySchema.parse(query);
+      const result=ProductImportRowsPageSchema.parse(await this.requestData<unknown>(`/export/jobs/${encodePathSegment(id)}/rows`,
+        {...options,storeId:q.store_id,query:q,cache:'no-store'}));
+      if(result.meta.store_id!==q.store_id||result.meta.job_id!==id||result.meta.page!==q.page||result.meta.per_page!==q.limit
+        ||(q.status!=='all'&&result.data.some(row=>row.status!==q.status)))throw new Error('Import row scope could not be confirmed.');
+      return result;
+    },
+    command: async (input:ProductImportJobCommand,action:'retry'|'stop',options?:LetbuyyRequestOptions):Promise<ProductImportResult> => {
+      const body=ProductImportJobCommandSchema.parse(input);
+      const response=await this.requestData<{job:unknown}>(`/export/jobs/${encodePathSegment(body.job_id)}/${action}`,
+        {...options,method:'POST',body,storeId:body.store_id,idempotencyKey:body.idempotency_key,cache:'no-store'});
+      const job=ProductImportJobSchema.parse(response.job);
+      if(job.store_id!==body.store_id||job.id!==body.job_id||job.idempotency_key!==body.idempotency_key)throw new Error('Import recovery acknowledgement could not be confirmed.');
+      return {job};
+    },
   };
 
   readonly categories = {

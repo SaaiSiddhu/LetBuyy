@@ -7,6 +7,7 @@ import 'package:dio/dio.dart';
 import 'graphql.dart';
 import 'types.dart';
 import 'marketplace.dart';
+import 'product_import.dart';
 
 class ApiClient {
   ApiClient({
@@ -1176,11 +1177,124 @@ class ProductsApi {
         options: _mergeOptions(options, method: HttpMethod.post, body: input),
       );
 
-  Future<JsonMap> importCsv(JsonMap input, {ApiRequestOptions? options}) =>
-      _client.requestJson(
-        '/export/import-products',
-        options: _mergeOptions(options, method: HttpMethod.post, body: input),
-      );
+  Future<JsonMap> importCsv(JsonMap input, {ApiRequestOptions? options}) {
+    final body = validateProductImportRequest(input);
+    return _client.requestData<JsonMap>(
+      '/export/imports/register',
+      options: _mergeOptions(
+        options,
+        method: HttpMethod.post,
+        body: body,
+        storeId: body['store_id'] as String,
+        idempotencyKey: body['idempotency_key'] as String,
+      ),
+      decoder: asJsonMap,
+    );
+  }
+
+  Future<JsonMap> importCapabilities(
+    String storeId, {
+    ApiRequestOptions? options,
+  }) => _client.requestData<JsonMap>(
+    '/export/imports/capabilities',
+    options: _mergeOptions(
+      options,
+      query: {'store_id': storeId},
+      storeId: storeId,
+    ),
+    decoder: asJsonMap,
+  );
+
+  Future<JsonMap> stopImportRegistration(
+    JsonMap input, {
+    ApiRequestOptions? options,
+  }) => _client.requestData<JsonMap>(
+    '/export/imports/stop-registration',
+    options: _mergeOptions(
+      options,
+      method: HttpMethod.post,
+      body: input,
+      storeId: input['store_id'] as String?,
+      idempotencyKey: input['idempotency_key'] as String?,
+    ),
+    decoder: asJsonMap,
+  );
+  Future<JsonMap> importByKey(
+    String storeId,
+    String key, {
+    ApiRequestOptions? options,
+  }) => _client.requestData<JsonMap>(
+    '/export/imports/by-key/${_encodePathSegment(key)}',
+    options: _mergeOptions(
+      options,
+      query: {'store_id': storeId},
+      storeId: storeId,
+    ),
+    decoder: asJsonMap,
+  );
+  Future<JsonMap> importJob(
+    String storeId,
+    String id, {
+    ApiRequestOptions? options,
+  }) => _client.requestData<JsonMap>(
+    '/export/imports/${_encodePathSegment(id)}',
+    options: _mergeOptions(
+      options,
+      query: {'store_id': storeId},
+      storeId: storeId,
+    ),
+    decoder: asJsonMap,
+  );
+  Future<JsonMap> importHistory(
+    String storeId, {
+    int page = 1,
+    int limit = 20,
+    ApiRequestOptions? options,
+  }) => _client.requestData<JsonMap>(
+    '/export/imports',
+    options: _mergeOptions(
+      options,
+      query: {'store_id': storeId, 'page': page, 'limit': limit},
+      storeId: storeId,
+    ),
+    decoder: asJsonMap,
+  );
+  Future<JsonMap> importRows(
+    String storeId,
+    String id, {
+    int page = 1,
+    int limit = 20,
+    String status = 'all',
+    ApiRequestOptions? options,
+  }) => _client.requestData<JsonMap>(
+    '/export/jobs/${_encodePathSegment(id)}/rows',
+    options: _mergeOptions(
+      options,
+      query: {
+        'store_id': storeId,
+        'page': page,
+        'limit': limit,
+        'status': status,
+      },
+      storeId: storeId,
+    ),
+    decoder: asJsonMap,
+  );
+  Future<JsonMap> recoverImport(
+    JsonMap input, {
+    required bool stop,
+    ApiRequestOptions? options,
+  }) => _client.requestData<JsonMap>(
+    '/export/jobs/${_encodePathSegment(input['job_id'] as String)}/${stop ? 'stop' : 'retry'}',
+    options: _mergeOptions(
+      options,
+      method: HttpMethod.post,
+      body: input,
+      storeId: input['store_id'] as String?,
+      idempotencyKey: input['idempotency_key'] as String?,
+    ),
+    decoder: asJsonMap,
+  );
 }
 
 class OrdersApi {
@@ -3755,12 +3869,14 @@ ApiRequestOptions _mergeOptions(
   QueryParams? query,
   Object? body,
   String? idempotencyKey,
+  String? storeId,
 }) {
   return (options ?? const ApiRequestOptions()).copyWith(
     method: method,
     query: query,
     body: body,
     idempotencyKey: idempotencyKey,
+    storeId: storeId,
   );
 }
 

@@ -28,6 +28,11 @@ before(async () => {
     const file=(dir:string,name:string)=>readFileSync(new URL('../../../../../database/supabase/'+dir+'/'+name,import.meta.url),'utf8');
     assert.equal(psql('SELECT count(*) FROM inventory_adjustment_receipts;'),'0');
     assert.match(owned.psqlScriptExpectError(file('rollback','346_product_atomic_edits.rollback.sql')),/rollback346 refuses/);
+    // New private import/warehouse receipts also depend on this authority. Keep
+    // the frozen346 rollback and its assertions exact; retire only the empty
+    // owned successor fixtures, then restore them before current behavior.
+    owned.script(file('rollback','416_durable_product_imports.rollback.sql'));
+    owned.script(file('rollback','414_atomic_warehouse_commands.rollback.sql'));
     // Retire the unused GST successors first; their guards correctly protect the writer.
     owned.script(file('rollback','412_invoice_checkout_fact_parity.rollback.sql'));
     owned.script(file('rollback','411_authoritative_checkout_gst.rollback.sql'));
@@ -388,6 +393,8 @@ test('canonical commerce intent executes through the actual pooled SQL parameter
     restore('388_cart_order_fact_snapshots.sql');
     restore('411_authoritative_checkout_gst.sql');
     restore('412_invoice_checkout_fact_parity.sql');
+    restore('414_atomic_warehouse_commands.sql');
+    restore('416_durable_product_imports.sql');
 
     const metadata={note:'Synthetic "quotes", apostrophe\' and ₹',nested:[true,null,7]};
     const id=product(),plan=planProductMutation({name:'Synthetic pooled plan',metadata,version:version(id),idempotency_key:crypto.randomUUID()});

@@ -29,12 +29,7 @@ export {
 import { UuidSchema } from './uuid';
 export { UuidSchema } from './uuid';
 
-export const ProductCsvImportSchema = z.object({
-  store_id: UuidSchema,
-  // Keep quoted field whitespace and line breaks intact.
-  csv: z.string().min(1).max(1_048_576).refine(value => value.trim().length > 0, 'A product CSV is required'),
-});
-export type ProductCsvImportInput = z.infer<typeof ProductCsvImportSchema>;
+export * from './product-import';
 
 export const QueryBooleanSchema = z.preprocess((value) => {
   if (value === undefined || value === null || value === '') return false;

@@ -1,4 +1,5 @@
-import { createBoundDomainReconcileHeaders, domainReconcileEnvironment } from '@letbuyy/auth-core';
+import { createBoundDomainReconcileHeaders, domainReconcileEnvironment, createProductImportRequestHeaders,
+  PRODUCT_IMPORT_REQUEST_PATH } from '@letbuyy/auth-core';
 import { insertSupabaseRows, upsertSupabaseRows, type SupabaseServiceEnv } from '@letbuyy/infrastructure/supabase-adapter';
 import {
   writeRuntimeTelemetryDataPoint,
@@ -67,6 +68,8 @@ export interface Env extends SupabaseServiceEnv, PushProviderEnv {
   API_GATEWAY_SERVICE?: Fetcher;
   INTERNAL_API_SECRET?: string;
   DOMAIN_RECONCILE_REQUEST_SECRET?: string;
+  PRODUCT_IMPORT_REQUEST_SECRET?: string;
+  PRODUCT_IMPORT_RECOVERY?: string;
   QUEUE_TENANT_ENVELOPE_SECRET?: string;
   CUSTOM_DOMAIN_RECONCILE_BATCH_LIMIT?: string;
   RESEND_API_KEY?: string;
@@ -578,6 +581,28 @@ export async function triggerCustomDomainReconciler(env: Env, cron: string): Pro
   });
 }
 
+export async function triggerProductImportRecovery(env:Env):Promise<void> {
+  if(env.PRODUCT_IMPORT_RECOVERY!=='bound-request-v1')return;
+  const environment=domainReconcileEnvironment(env);
+  try {
+    if(!env.API_GATEWAY_SERVICE||!environment||!env.PRODUCT_IMPORT_REQUEST_SECRET)throw new Error('Import recovery is not configured');
+    const url=`https://queue-workers.internal${PRODUCT_IMPORT_REQUEST_PATH}`;
+    const body=new TextEncoder().encode('{}');
+    const headers=await createProductImportRequestHeaders({secret:env.PRODUCT_IMPORT_REQUEST_SECRET,environment,method:'POST',url,body});
+    const response=await env.API_GATEWAY_SERVICE.fetch(new Request(url,{method:'POST',headers,body,
+      redirect:'manual',signal:AbortSignal.timeout(30_000)}));
+    const value:unknown=await response.json().catch(()=>null);
+    const data=value && typeof value==='object' && 'data'in value ? value.data:null;
+    const results=data && typeof data==='object' && 'results'in data ? data.results:null;
+    const accepted=response.ok && value && typeof value==='object' && 'success'in value && value.success===true
+      && Array.isArray(results) && results.length<=2
+      && results.every((row:unknown)=>row && typeof row==='object' && 'status'in row
+        && ['queued','running','completed','failed','stopped','blocked'].includes(String(row.status)));
+    writeQueueLog(accepted?'info':'error',{route:'scheduled.product_import',status:accepted?'observed':'unavailable',
+      response_status:response.status,observed_jobs:Array.isArray(results)?results.length:0});
+  }catch{writeQueueLog('error',{route:'scheduled.product_import',status:'unavailable'});}
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -653,6 +678,7 @@ export default {
   },
   async scheduled(controller, env, ctx) {
     const cron = controller.cron || 'manual';
+    if(cron==='* * * * *'&&env.PRODUCT_IMPORT_RECOVERY==='bound-request-v1')ctx.waitUntil(triggerProductImportRecovery(env));
     // Dedicated minute tick recovers lost wakeups and due retries within the
     // invitation lifetime. Other established sweepers retain their own cadence.
     ctx.waitUntil(consumeNotificationJobs(env,`scheduled:notifications:${cron}:${Date.now()}`)

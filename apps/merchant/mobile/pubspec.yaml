@@ -48,6 +48,7 @@ dependencies:
   intl: ^0.20.2
   url_launcher: ^6.3.1
   path_provider: ^2.1.5
+  file_picker: 10.3.8
   share_plus: ^12.0.1
   http: ^1.2.2
   video_player: ^2.9.2

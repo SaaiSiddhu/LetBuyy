@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { createRequire } from 'node:module'
+import { createHash } from 'node:crypto'
 import React, { act } from 'react'
 import {prepareWarehouseCommand} from '@letbuyy/shared-types'
 
@@ -48,6 +49,7 @@ const readPages = {
     aiStudio: () => import('../src/app/[store]/ai/page'),
     operationsDashboard: () => import('../src/app/[store]/products/operations-dashboard/page'),
     exportPage: () => import('../src/app/[store]/export/page'),
+    productImports:()=>import('../src/app/[store]/products/import/page'),
     generalSettings: () => import('../src/app/[store]/settings/general/page'),
     checkoutSettings: () => import('../src/app/[store]/settings/checkout/page'),
     policySettings: () => import('../src/app/[store]/settings/policies/page'),
@@ -350,8 +352,9 @@ type Transport = (url: string, init?: RequestInit) => Promise<Response>
 
 async function mount(kind: ContentPage | 'orders' | 'customers' | 'analytics' | 'search' | 'notifications' | 'purchasing' | 'transfers' | 'assistant' | 'themeLibrary' | 'previewUpdate' | 'loyalty' | 'checkoutDomain' | 'connectDomain', transport: Transport,configureStorage?:(storage:Storage)=>void,initialProtocolAvailable=true) {
     const dom = new JSDOM('<!doctype html><div id="root"></div>', { url: 'http://localhost/alpha/orders' })
+    const productImports=kind==='productImports';
     const warehouse=kind==='purchasing'||kind==='transfers'||kind==='locations'||kind==='suppliers';
-    if(warehouse)Object.defineProperty(dom.window.navigator,'locks',{value:{request:async(_name:string,callback:()=>unknown)=>callback()}});
+    if(warehouse||productImports)Object.defineProperty(dom.window.navigator,'locks',{value:{request:async(_name:string,callback:()=>unknown)=>callback()}});
     const domGlobals = ['window', 'document', 'navigator', 'self', 'localStorage', 'sessionStorage', 'MutationObserver', 'HTMLElement', 'Element']
     const previous = Object.fromEntries([...domGlobals, 'fetch'].map(name => [name, Object.getOwnPropertyDescriptor(globalThis, name)]))
     for (const name of domGlobals) Object.defineProperty(globalThis, name, {
@@ -390,10 +393,10 @@ async function mount(kind: ContentPage | 'orders' | 'customers' | 'analytics' | 
     let completions = 0
     const root = createRoot(dom.window.document.getElementById('root')!)
     const router = { back() {}, forward() {}, refresh() {}, hmrRefresh() {}, push() {}, replace() {}, prefetch() {} }
-    const render = async (store = 'alpha', actorId = warehouse?'11111111-1111-4111-8111-111111111111':'actor-a') => {
+    const render = async (store = 'alpha', actorId = productImports?importActor:warehouse?'11111111-1111-4111-8111-111111111111':'actor-a') => {
         await act(async () => root.render(
             <AppRouterContext.Provider value={router}><PathParamsContext.Provider value={{ store }}>
-                <ToastProvider duration={0}><MerchantSecurityContext.Provider value={{ actorId, store,siteId:warehouse?(store==='alpha'?historySite:'22222222-2222-4222-8222-222222222222'):undefined }}>
+                <ToastProvider duration={0}><MerchantSecurityContext.Provider value={{ actorId, store,siteId:(warehouse||productImports)?(store==='alpha'?historySite:'22222222-2222-4222-8222-222222222222'):undefined }}>
                     <Component initialDomain="shop.example.invalid" onConnected={() => completions++} actorId={actorId} currentVersionId="current-version" availableVersionId="next-version" themeSlug="synthetic-theme" storeId={kind === 'previewUpdate' ? store : kind === 'themeLibrary' ? null : 'site-a'} store={store} storeName="Synthetic Store" siteType="store" appPlatformEnabled={false} onClose={() => {}} storeData={{ id: 'site-a', name: 'Synthetic Store', store_name: 'Synthetic Store', subdomain: store, site_type: 'store', status: 'draft', trial_ends_at: null, trial_status: null, theme_id: 'modern', theme_settings: null, custom_domain: null }} />
                 </MerchantSecurityContext.Provider></ToastProvider>
             </PathParamsContext.Provider></AppRouterContext.Provider>,
@@ -456,7 +459,7 @@ async function mount(kind: ContentPage | 'orders' | 'customers' | 'analytics' | 
         async file(file: { name: string; size: number; text(): Promise<string> }) {
             const input = dom.window.document.querySelector('input[type="file"]') as HTMLInputElement
             assert.ok(input, 'real file input')
-            Object.defineProperty(input, 'files', { configurable: true, value: [file] })
+            Object.defineProperty(input, 'files', { configurable: true, value: [{...file,arrayBuffer:async()=>new TextEncoder().encode(await file.text()).buffer}] })
             await act(async () => input.dispatchEvent(new dom.window.Event('change', { bubbles: true })))
         },
         async close() {
@@ -1348,71 +1351,133 @@ test('export retires a captured account even when the store URL is unchanged', a
     } finally { await h.close() }
 })
 
+const importActor='33333333-3333-4333-8333-333333333333',importActorB='44444444-4444-4444-8444-444444444444',importId='55555555-5555-4555-8555-555555555555';
+function canonicalImport(input:Record<string,unknown>,completed=false){return {id:importId,type:'product_import',contract_version:2,
+    store_id:historySite,actor_id:importActor,idempotency_key:input.idempotency_key,source_sha256:createHash('sha256').update(String(input.csv)).digest('hex'),
+    status:completed?'completed':'queued',total_rows:2,row_count:completed?2:0,failed_rows:0,pending_rows:completed?0:2,stopped_rows:0,
+    resumable:!completed,error_code:null,created_at:'2026-11-01T00:00:00Z',updated_at:'2026-11-01T00:00:00Z',started_at:null,
+    completed_at:completed?'2026-11-01T00:00:01Z':null,download_url:null};}
+function importPrivateRead(url:string,init:RequestInit|undefined,job:ReturnType<typeof canonicalImport>|null=null){
+    const u=new URL(url,'http://localhost'),view=u.searchParams.get('view'),actor=new Headers(init?.headers).get('X-LetBuyy-Merchant-Context');
+    const site=u.pathname.includes('/alpha/')?historySite:'22222222-2222-4222-8222-222222222222';
+    if(init?.method==='POST'||init?.method==='PUT'||init?.method==='PATCH')return null;
+    if(view==='capabilities')return json({store_id:site,actor_id:actor,contract_version:2,max_rows:500,max_bytes:1048576,durable_registration:true,durable_rows:true,async_recovery:true});
+    if(view==='key')return json({job:job?.idempotency_key===u.searchParams.get('key')?job:null});
+    if(!view){const data=job?.actor_id===actor&&job.store_id===site?[job]:[];return json({data,meta:{store_id:site,actor_id:actor,page:1,per_page:20,total:data.length,total_is_exact:true,has_next:false}});}
+    if(view==='rows')return json({data:[1,2].map(n=>({id:`60000000-0000-4000-8000-${String(n).padStart(12,'0')}`,job_id:importId,store_id:site,
+        ordinal:n,status:'completed',product_id:`70000000-0000-4000-8000-${String(n).padStart(12,'0')}`,error_code:null,attempt_count:1})),
+        meta:{store_id:site,actor_id:actor,job_id:importId,page:1,per_page:20,total:2,total_is_exact:true,has_next:false}});
+    return null;
+}
+
+test('the existing Export page leads to the one governed CSV workspace and has no legacy file submitter',async()=>{
+    const h=await mount('exportPage',async()=>{throw new Error('No import command is sent by following the export entry.');});
+    try{const link=document.querySelector('a[href="/alpha/products/import"]');assert.equal(link?.textContent,'Open CSV imports');assert.equal(document.querySelector('input[type=file]'),null);}
+    finally{await h.close();}
+});
+
 test('CSV import rejects an oversized file before reading it or sending a command', async () => {
-    let reads = 0, commands = 0
-    const h = await mount('exportPage', async () => { commands++; throw new Error('unexpected command') })
-    try {
-        await h.file({ name: 'large.csv', size: 3 * 1_048_576 + 1, text: async () => { reads++; return '' } })
-        await h.click('Import CSV')
-        assert.match(h.text(), /This CSV is too large/)
-        assert.equal(reads, 0)
-        assert.equal(commands, 0)
-    } finally { await h.close() }
-})
+    let reads=0,commands=0;
+    const h=await mount('productImports',async(url,init)=>{const read=importPrivateRead(url,init);if(read)return read;commands++;throw new Error('Unexpected import command');});
+    try{
+        await h.file({name:'large.csv',size:3*1048576+1,text:async()=>{reads++;return '';}});
+        assert.match(h.text(),/at most one MiB/);assert.equal(reads,0);assert.equal(commands,0);
+    }finally{await h.close();}
+});
 
-test('CSV import checks the same job after a read failure and displays the committed row count', async () => {
-    const calls: { url: string; init?: RequestInit }[] = []
-    const h = await mount('exportPage', async (url, init) => {
-        calls.push({ url, init })
-        if (init?.method === 'POST') return json({ job: { id: 'import-a', type: 'product_import', status: 'queued', row_count: 0 } }, 202)
-        if (calls.length === 2) return new Response('', { status: 503 })
-        return json({ job: { id: 'import-a', type: 'product_import', status: 'completed', row_count: 2 } })
-    })
-    try {
-        const csv = 'name,description\r\n"東京","  First\r\nSecond  "\r\n'
-        await h.file({ name: 'quoted.csv', size: Buffer.byteLength(csv), text: async () => csv })
-        await h.click('Import CSV')
-        assert.match(h.text(), /Unable to check import/)
-        await h.click('Check import again')
-        assert.match(h.text(), /Import complete[\s\S]*2 products imported/)
-        assert.equal(calls.length, 3)
-        assert.deepEqual(calls.map(call => call.url), ['/api/stores/alpha/products/import', '/api/stores/alpha/exports/import-a', '/api/stores/alpha/exports/import-a'])
-        assert.equal(calls[0].init?.body, JSON.stringify({ csv }))
-        assert.equal(calls[0].init?.signal, undefined, 'progress read deadlines do not abort or replay the import command')
-        assert.equal(document.querySelector('a[download]'), null, 'imports never expose an export download action')
-    } finally { await h.close() }
-})
+test('CSV import checks the same job after a read failure and displays the committed row count',async()=>{
+    const calls:{url:string;init?:RequestInit}[]= [];let input:Record<string,unknown>|null=null,reads=0;
+    const h=await mount('productImports',async(url,init)=>{
+        const base=importPrivateRead(url,init,input?canonicalImport(input):null);if(base)return base;
+        calls.push({url,init});if(init?.method==='POST'){input=JSON.parse(String(init.body));return json({job:canonicalImport(input!)},202);}
+        reads++;return reads===1?new Response('',{status:503}):json({job:canonicalImport(input!,true)});
+    });
+    try{
+        const csv='\uFEFFname,description\r\n"東京","  First\r\nSecond  "\r\n';
+        await h.file({name:'quoted.csv',size:Buffer.byteLength(csv),text:async()=>csv});await h.click('Start import');
+        for(let i=0;i<10&&!input;i++)await h.pause(0);await h.pause(0);
+        assert.match(h.text(),/could not be confirmed/);await h.click('Refresh status');
+        assert.match(h.text(),/completed: 2\/2 products committed/);
+        assert.equal(calls.filter(c=>c.init?.method==='POST').length,1);
+        assert.equal(calls.filter(c=>c.init?.method!=='POST').length,2);
+        assert.ok(calls.filter(c=>c.init?.method!=='POST').every(c=>new URL(c.url,'http://localhost').searchParams.get('id')===importId));
+        const body=input as unknown as {csv:string;idempotency_key:string;contract_version:number};
+        assert.equal(body.csv,csv);assert.equal(body.contract_version,2);assert.equal(new Headers(calls[0].init?.headers).get('X-Idempotency-Key'),body.idempotency_key);
+        assert.equal(document.querySelectorAll('a[download]:not([href^="data:"])').length,0,'imports never expose a result-file download; the static input template remains available');
+    }finally{await h.close();}
+});
 
-test('CSV import retires late status and command acknowledgements when the captured account changes', async () => {
-    for (const stage of ['command', 'status'] as const) {
-        const late = deferred<Response>(), signals: AbortSignal[] = []
-        const h = await mount('exportPage', async (_url, init) => {
-            if (init?.method === 'POST') return stage === 'command' ? late.promise : json({ job: { id: 'old-import', type: 'product_import', status: 'queued', row_count: 0 } }, 202)
-            signals.push(init!.signal!); return late.promise
-        })
-        try {
-            await h.file({ name: 'old.csv', size: 11, text: async () => 'name\nItem\n' })
-            await h.click('Import CSV')
-            await h.render('alpha', 'actor-b')
-            if (stage === 'status') assert.ok(signals[0]?.aborted)
-            await act(async () => late.resolve(json({ job: { id: 'old-import', type: 'product_import', status: 'completed', row_count: 777777 } })))
-            assert.doesNotMatch(h.text(), /777,777|Import complete|import-a|old-import/)
-            if (stage === 'command') assert.doesNotMatch(h.text(), /Import queued/)
-        } finally { await h.close() }
+test('CSV import retires late status and command acknowledgements when the captured account changes',async()=>{
+    for(const stage of ['command','status'] as const){
+        const late=deferred<Response>(),signals:AbortSignal[]=[];let command:Record<string,unknown>|null=null;
+        const h=await mount('productImports',async(url,init)=>{
+            const base=importPrivateRead(url,init);if(base)return base;
+            if(init?.method==='POST'){command=JSON.parse(String(init.body));return stage==='command'?late.promise:json({job:canonicalImport(command!)},202);}
+            signals.push(init!.signal!);return late.promise;
+        });
+        try{
+            await h.file({name:'old.csv',size:10,text:async()=>'name\nItem\n'});await h.click('Start import');
+            for(let i=0;i<10&&!command;i++)await h.pause(0);assert.ok(command);if(stage==='status')await h.pause(0);
+            await h.render('alpha',importActorB);if(stage==='status')assert.ok(signals[0]?.aborted);
+            await act(async()=>late.resolve(json({job:canonicalImport(command!,true)})));await h.pause(0);
+            assert.doesNotMatch(h.text(),/2\/2 products committed|Original import|old.csv/);
+            assert.equal(document.querySelector('textarea')?.value,'');
+        }finally{await h.close();}
     }
-})
+});
 
-test('CSV import lost acknowledgement reports uncertainty and never automatically replays the command', async () => {
-    let commands = 0
-    const h = await mount('exportPage', async () => { commands++; throw new TypeError('fetch failed') })
-    try {
-        await h.file({ name: 'import.csv', size: 10, text: async () => 'name\nItem\n' })
-        await h.click('Import CSV')
-        assert.match(h.text(), /could not be confirmed[\s\S]*Some products may already exist/)
-        assert.equal(commands, 1)
-        assert.doesNotMatch(h.text(), /Import complete|Import queued/)
-    } finally { await h.close() }
-})
+test('CSV import lost acknowledgement retains its original key and never automatically replays',async()=>{
+    let commands=0;
+    const h=await mount('productImports',async(url,init)=>{const base=importPrivateRead(url,init);if(base)return base;commands++;throw new TypeError('fetch failed');});
+    try{
+        await h.file({name:'import.csv',size:10,text:async()=>'name\nItem\n'});await h.click('Start import');
+        for(let i=0;i<10&&!commands;i++)await h.pause(0);await h.pause(0);
+        assert.match(h.text(),/could not be confirmed[\s\S]*Recover the original registration/);assert.equal(commands,1);
+        const saved=h.storage.getItem(`letbuyy.product-import.v2:${importActor}:${historySite}`);assert.ok(saved);
+        assert.equal(JSON.parse(saved!).sourceSha256,createHash('sha256').update('name\nItem\n').digest('hex'));
+        assert.ok(!saved!.includes('name\\nItem'));
+        assert.doesNotMatch(h.text(),/completed:|Original import/);
+    }finally{await h.close();}
+});
+
+test('CSV import keeps a newer access denial authoritative over an older capability success',async()=>{
+    const capability=deferred<Response>();let captured:string|undefined;
+    const h=await mount('productImports',async(url,init)=>{
+        if(new URL(url,'http://localhost').searchParams.get('view')==='capabilities'){captured=url;return capability.promise;}
+        return json({error:{code:'FORBIDDEN'}},403);
+    });
+    try{
+        assert.ok(captured);assert.match(h.text(),/Store access changed/);
+        await act(async()=>capability.resolve(importPrivateRead(captured!, {headers:{'X-LetBuyy-Merchant-Context':importActor}})!));await h.pause(0);
+        const start=[...document.querySelectorAll('button')].find(button=>button.textContent==='Start import');
+        assert.ok(start?.disabled);assert.match(h.text(),/Store access changed/);
+        assert.doesNotMatch(h.text(),/No CSV imports for this account and store/);
+    }finally{await h.close();}
+});
+
+test('CSV import stops an unconfirmed registration with its retained identity before allowing another file',async()=>{
+    const source='name\nOriginal product\n',key='88888888-8888-4888-8888-888888888888',hash=createHash('sha256').update(source).digest('hex');
+    const pending={actorId:importActor,siteId:historySite,version:2,key,sourceSha256:hash};
+    const slot=`letbuyy.product-import.v2:${importActor}:${historySite}`,writes:RequestInit[]=[];
+    const stopped={...canonicalImport({idempotency_key:key,csv:source}),status:'stopped',total_rows:0,pending_rows:0,resumable:false,error_code:'PRODUCT_IMPORT_STOPPED',completed_at:'2026-11-01T00:00:01Z'};
+    const h=await mount('productImports',async(url,init)=>{
+        if(init?.method==='PUT'){writes.push(init);return json({job:stopped});}
+        const view=new URL(url,'http://localhost').searchParams.get('view');
+        if(view==='job')return json({job:stopped});
+        if(view==='rows')return json({data:[],meta:{store_id:historySite,actor_id:importActor,job_id:importId,page:1,per_page:20,total:0,total_is_exact:true,has_next:false}});
+        return importPrivateRead(url,init)!;
+    },storage=>storage.setItem(slot,JSON.stringify(pending)));
+    try{
+        window.confirm=()=>true;
+        await h.file({name:'original.csv',size:Buffer.byteLength(source),text:async()=>source});
+        await h.click('Stop original request');
+        assert.equal(writes.length,1);assert.equal(new Headers(writes[0].headers).get('X-Idempotency-Key'),key);
+        assert.deepEqual(JSON.parse(String(writes[0].body)),{store_id:historySite,idempotency_key:key,source_sha256:hash,contract_version:2});
+        assert.equal(h.storage.getItem(slot),null);assert.equal(document.querySelector('textarea')?.value,'');
+        assert.match(h.text(),/Registration was stopped before any rows were accepted/);
+        assert.doesNotMatch(h.text(),/0\/0 products committed|original.csv|original registration needs confirmation/i);
+    }finally{await h.close();}
+});
 
 const checkoutSetup = (store = 'alpha', active = false) => ({
     site_id: '11111111-1111-4111-8111-111111111111', hostname: `checkout.${store}.shops.example.invalid`, parent_hostname: 'shops.example.invalid',

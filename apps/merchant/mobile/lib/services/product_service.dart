@@ -1,19 +1,292 @@
 import 'dart:io';
+import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
-import 'package:letbuyy_models/letbuyy_models.dart';
+import 'package:letbuyy_models/letbuyy_models.dart' hide JsonMap;
 
 import 'api_client.dart';
 import 'cache_service.dart';
+import 'security_command_store.dart';
 
 /// Merchant catalog transport and context-scoped presentation state.
 class ProductService extends ChangeNotifier {
   final ApiClient _api;
   final CacheService? _cache;
 
-  ProductService({required ApiClient api, CacheService? cache})
-    : _api = api,
-      _cache = cache;
+  ProductService({
+    required ApiClient api,
+    CacheService? cache,
+    String? Function()? actorIdProvider,
+    String? Function()? storeIdProvider,
+    SecurityCommandStore? commands,
+  }) : _api = api,
+       _cache = cache,
+       _actor = actorIdProvider ?? (() => null),
+       _store = storeIdProvider ?? (() => null),
+       _commands = commands ?? SecurityCommandStore();
+  final String? Function() _actor, _store;
+  final SecurityCommandStore _commands;
+  static const _csvCommand = 'product-csv-import';
+
+  MerchantSecurityContext _importContext(String store) {
+    final actor = _actor();
+    if (actor == null || actor.isEmpty || _store() != store)
+      throw const ApiException(
+        message: 'Reload the selected account and store.',
+        statusCode: 409,
+        code: 'SESSION_CONTEXT_CHANGED',
+      );
+    return (
+      actorId: actor,
+      storeId: store,
+      version: _api.captureRequestContext(),
+    );
+  }
+
+  void _checkImport(MerchantSecurityContext c) {
+    _checkContext(c.version, _actor() == c.actorId && _store() == c.storeId);
+  }
+
+  ApiRequestOptions _importOptions(MerchantSecurityContext c) =>
+      ApiRequestOptions(
+        storeId: c.storeId,
+        expectedContextVersion: c.version,
+        maxRetries: 0,
+      );
+  ProductImportJob _importJob(
+    Object? value,
+    MerchantSecurityContext c, {
+    String? key,
+    String? hash,
+    String? id,
+  }) {
+    final job = ProductImportJob.fromJson(asJsonMap(value));
+    if (job.actorId != c.actorId ||
+        job.storeId != c.storeId ||
+        (key != null && job.key != key) ||
+        (hash != null && job.sourceSha256 != hash) ||
+        (id != null && job.id != id)) {
+      throw const ApiException(
+        message: 'The original import acknowledgement could not be confirmed.',
+        statusCode: 502,
+        code: 'PRODUCT_IMPORT_UNCONFIRMED',
+      );
+    }
+    return job;
+  }
+
+  Future<ProductImportCapabilities> verifyCsvImport(String store) async {
+    final c = _importContext(store);
+    final raw = await _api.products.importCapabilities(
+      store,
+      options: _importOptions(c),
+    );
+    _checkImport(c);
+    final caps = ProductImportCapabilities.fromJson(raw);
+    if (caps.actorId != c.actorId || caps.storeId != c.storeId)
+      throw const FormatException('Import support context changed.');
+    return caps;
+  }
+
+  Future<PendingSecurityCommand?> pendingCsvImport(String store) =>
+      _commands.serialized(() {
+        final c = _importContext(store);
+        return _commands.read(c, _csvCommand, check: () => _checkImport(c));
+      });
+  Future<ProductImportJob?> recoverCsvRegistration(String store) =>
+      _commands.serialized(() async {
+        final c = _importContext(store),
+            pending = await _commands.read(
+              _importContext(store),
+              _csvCommand,
+              check: () => _checkImport(c),
+            );
+        if (pending == null) return null;
+        final raw = await _api.products.importByKey(
+          store,
+          pending.key,
+          options: _importOptions(c),
+        );
+        _checkImport(c);
+        if (raw['job'] == null) return null;
+        final job = _importJob(
+          raw['job'],
+          c,
+          key: pending.key,
+          hash: pending.intent['source_sha256'] as String,
+        );
+        await _commands.complete(c, pending, check: () => _checkImport(c));
+        return job;
+      });
+  Future<ProductImportJob> importProductCsv(
+    String store,
+    String csv,
+  ) => _commands.serialized(() async {
+    final c = _importContext(store);
+    if (csv.trim().isEmpty || utf8.encode(csv).length > productImportMaxBytes)
+      throw const FormatException('Use a CSV of at most one MiB.');
+    validateProductImportRequest({
+      'store_id': store,
+      'csv': csv,
+      'contract_version': productImportContractVersion,
+      'idempotency_key': '00000000-0000-4000-8000-000000000000',
+    });
+    await verifyCsvImport(store);
+    _checkImport(c);
+    final hash = productImportSourceSha256(csv),
+        pending = await _commands.prepare(c, _csvCommand, {
+          'contract_version': productImportContractVersion,
+          'source_sha256': hash,
+        }, check: () => _checkImport(c));
+    final known = await _api.products.importByKey(
+      store,
+      pending.key,
+      options: _importOptions(c),
+    );
+    _checkImport(c);
+    if (known['job'] != null) {
+      final job = _importJob(known['job'], c, key: pending.key, hash: hash);
+      await _commands.complete(c, pending, check: () => _checkImport(c));
+      return job;
+    }
+    try {
+      final raw = await _api.products.importCsv({
+        'store_id': store,
+        'csv': csv,
+        'idempotency_key': pending.key,
+        'contract_version': productImportContractVersion,
+      }, options: _importOptions(c));
+      _checkImport(c);
+      final job = _importJob(raw['job'], c, key: pending.key, hash: hash);
+      await _commands.complete(c, pending, check: () => _checkImport(c));
+      return job;
+    } on ApiException catch (error) {
+      _checkImport(c);
+      // These parser refusals occur before registration or any product write.
+      if ((error.statusCode == 400 && error.code == 'INVALID_CSV') ||
+          (error.statusCode == 413 && error.code == 'IMPORT_TOO_LARGE')) {
+        await _commands.complete(c, pending, check: () => _checkImport(c));
+      }
+      rethrow;
+    }
+  });
+
+  Future<ProductImportJob?> stopCsvRegistration(
+    String store,
+  ) => _commands.serialized(() async {
+    final c = _importContext(store),
+        pending = await _commands.read(
+          _importContext(store),
+          _csvCommand,
+          check: () => _checkImport(c),
+        );
+    if (pending == null) return null;
+    final raw = await _api.products.stopImportRegistration({
+      'store_id': store,
+      'idempotency_key': pending.key,
+      'source_sha256': pending.intent['source_sha256'],
+      'contract_version': productImportContractVersion,
+    }, options: _importOptions(c));
+    _checkImport(c);
+    final job = _importJob(
+      raw['job'],
+      c,
+      key: pending.key,
+      hash: pending.intent['source_sha256'] as String,
+    );
+    if (!['stopped', 'completed', 'blocked'].contains(job.status))
+      throw const ApiException(
+        message:
+            'The original stop could not be confirmed. Keep the request for recovery.',
+        statusCode: 502,
+        code: 'PRODUCT_IMPORT_UNCONFIRMED',
+      );
+    await _commands.complete(c, pending, check: () => _checkImport(c));
+    return job;
+  });
+  Future<ProductImportJob> fetchCsvImport(String store, String id) async {
+    final c = _importContext(store),
+        raw = await _api.products.importJob(
+          store,
+          id,
+          options: _importOptions(c),
+        );
+    _checkImport(c);
+    return _importJob(raw['job'], c, id: id);
+  }
+
+  Future<ProductImportPage<ProductImportJob>> fetchCsvImports(
+    String store, {
+    int page = 1,
+  }) async {
+    final c = _importContext(store),
+        raw = await _api.products.importHistory(
+          store,
+          page: page,
+          options: _importOptions(c),
+        );
+    _checkImport(c);
+    final result = ProductImportPage.history(raw);
+    if (result.storeId != c.storeId ||
+        result.actorId != c.actorId ||
+        result.page != page ||
+        result.perPage != 20)
+      throw const FormatException('Import history scope changed.');
+    return result;
+  }
+
+  Future<ProductImportPage<ProductImportRow>> fetchCsvRows(
+    String store,
+    String id, {
+    int page = 1,
+    String status = 'all',
+  }) async {
+    final c = _importContext(store),
+        raw = await _api.products.importRows(
+          store,
+          id,
+          page: page,
+          status: status,
+          options: _importOptions(c),
+        );
+    _checkImport(c);
+    final result = ProductImportPage.rows(raw);
+    if (result.storeId != c.storeId ||
+        result.actorId != c.actorId ||
+        result.jobId != id ||
+        result.page != page ||
+        result.perPage != 20 ||
+        (status != 'all' && result.items.any((row) => row.status != status)))
+      throw const FormatException('Import rows scope changed.');
+    return result;
+  }
+
+  Future<ProductImportJob> recoverCsvImport(
+    ProductImportJob original, {
+    bool stop = false,
+  }) async {
+    final c = _importContext(original.storeId);
+    if (original.actorId != c.actorId)
+      throw const FormatException('Import account changed.');
+    final raw = await _api.products.recoverImport(
+      {
+        'store_id': c.storeId,
+        'job_id': original.id,
+        'idempotency_key': original.key,
+        'contract_version': productImportContractVersion,
+      },
+      stop: stop,
+      options: _importOptions(c),
+    );
+    _checkImport(c);
+    return _importJob(
+      raw['job'],
+      c,
+      id: original.id,
+      key: original.key,
+      hash: original.sourceSha256,
+    );
+  }
 
   final Set<String> _cacheDeniedStores = {};
   List<ProductContract> _productContracts = [];
