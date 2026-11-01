@@ -1,6 +1,6 @@
 # General and Business Wave 6 — implementation and acceptance ledger
 
-**Status: IN PROGRESS / NO GO for production.** Source work is in `codex/general-business-kyc`, rebased onto `origin/develop` `a2f05798f` after the shipping/GST merge. This file records evidence, not a release approval.
+**Status: IN PROGRESS / NO GO for production.** Source work is in `codex/general-business-kyc`, which includes `origin/develop` through `14961c132` after the Accounts and shipping/GST merge. This file records evidence, not a release approval.
 
 ## Decisions
 
