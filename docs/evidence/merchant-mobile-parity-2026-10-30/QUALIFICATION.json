@@ -1,15 +1,16 @@
 {
   "date": "2026-10-30",
-  "source_commit": "15fca500a08ee8c1c3c4d37a376f8fd81ee97403",
+  "source_commit": "13d254de23e29919af5d5d4ce81e567584adc338",
   "branch": "codex/merchant-mobile-parity",
   "scope": "source checkpoint; full 122-item acceptance remains in progress",
   "flutter": {
-    "source_commit": "15fca500a08ee8c1c3c4d37a376f8fd81ee97403",
-    "tests": 728,
-    "pass": 728,
+    "source_commit": "13d254de23e29919af5d5d4ce81e567584adc338",
+    "tests": 747,
+    "pass": 747,
     "fail": 0,
     "analysis": "pass",
-    "log": "/private/tmp/letbuyy-metadata-recovery-connected-native-all.log"
+    "log": "/private/tmp/letbuyy-hosted-warehouse-20261101/native-environment-full-tests.log",
+    "analysis_log": "/private/tmp/letbuyy-hosted-warehouse-20261101/native-environment-analyze.log"
   },
   "shared_dart_transport_context_tests": {
     "pass": 12,
@@ -1934,7 +1935,7 @@
     }
   },
   "last_qualified_date": "2026-11-01",
-  "implementation_commit": "15fca500a08ee8c1c3c4d37a376f8fd81ee97403",
+  "implementation_commit": "13d254de23e29919af5d5d4ce81e567584adc338",
   "warehouse_previous_checkpoints": [
     {
       "backend_source_commit": "96153cd20bc3db3dd2c7539e3a77bd159820fb05",
@@ -2415,5 +2416,235 @@
     "removed": true,
     "credentials_saved": false,
     "app_session_preserved": true
+  },
+  "native_environment_boundary_checkpoint": {
+    "source_commit": "13d254de23e29919af5d5d4ce81e567584adc338",
+    "report": "HOSTED_WAREHOUSE_RECOVERY.md",
+    "focused_tests": 19,
+    "full_native_pass": 747,
+    "analysis": "pass",
+    "staging_endpoints_isolated": true,
+    "configuration_checked_before_session_restore": true,
+    "production_debug_artifact": {
+      "sourceRevision": "13d254de23e29919af5d5d4ce81e567584adc338",
+      "configuration": "dart-defines/production.json",
+      "artifact": "debug",
+      "releaseSigning": false,
+      "bytes": 219844402,
+      "sha256": "f18e002298f23dcb46b798e9d4e8950fe374fe8ca880204fb45e1895c589b7db",
+      "installed": true,
+      "installedHashMatches": true,
+      "serial": "emulator-5580",
+      "read_only_device_observation": {
+        "signed_in_tabs_retained": true,
+        "products_reachable": true,
+        "configuration_error_visible": false,
+        "password_fields_present": false,
+        "business_mutation": false,
+        "warehouse_write_or_sync_accepted": false
+      }
+    },
+    "governance": {
+      "sourceRevision": "13d254de23e29919af5d5d4ce81e567584adc338",
+      "resultSource": "completed gate text log; --json-out was ignored by CLI; no machine-readable full matrix emitted",
+      "exitCode": 0,
+      "counts": {
+        "pass": 114,
+        "fail": 0,
+        "blocked": 0,
+        "skip": 0,
+        "notApplicable": 1
+      },
+      "disposableClone": true,
+      "nonBlockingBranchDispositionAdvisories": true
+    },
+    "staging_configuration_or_provider_acceptance": false,
+    "colocated_environment_persistence_acceptance": false
+  },
+  "hosted_warehouse_recovery_checkpoint": {
+    "backend_web_source": "9b5b89437703cba8527b9e0ca32ca9a7aca495b8",
+    "native_source": "13d254de23e29919af5d5d4ce81e567584adc338",
+    "report": "HOSTED_WAREHOUSE_RECOVERY.md",
+    "production_api_version": "f5d20b78-e4ba-4c26-95f7-65d5ffc17bfa",
+    "production_bff_version": "984c46ab-17d9-4a8b-9320-9a089fcfef84",
+    "actual_native_trace": {
+      "locations": {
+        "bff": 200,
+        "gateway": 200
+      },
+      "suppliers": {
+        "bff": 200,
+        "gateway": 200
+      },
+      "command_capabilities": {
+        "bff": 404,
+        "gateway": 404
+      }
+    },
+    "observed_cause": "deployed API handlers omit the required metadata acknowledgment and capability route; migration 414 is absent",
+    "production_catalog": {
+      "actor_guard": true,
+      "history_count": 341,
+      "metadata_tables": [
+        {
+          "rls": true,
+          "name": "inventory_locations",
+          "owner": "postgres",
+          "force_rls": true
+        },
+        {
+          "rls": true,
+          "name": "suppliers",
+          "owner": "postgres",
+          "force_rls": true
+        }
+      ],
+      "warehouse_owner_function": false,
+      "warehouse_receipt_relation": false,
+      "history_sha256": "db50a4d8614bba02fed5b8fb965495b35274f94f39c474a6401061e7cffc3319"
+    },
+    "staging_catalog": {
+      "history_count": 341,
+      "tail_versions": [
+        "400",
+        "401",
+        "402",
+        "403",
+        "404",
+        "405",
+        "406",
+        "407",
+        "408",
+        "409",
+        "410",
+        "411",
+        "412",
+        "413"
+      ],
+      "actor_guard": true,
+      "warehouse_owner_function": false,
+      "warehouse_receipt_relation": false,
+      "metadata_tables": [
+        {
+          "name": "suppliers",
+          "owner": "postgres",
+          "rls": true,
+          "force_rls": true
+        },
+        {
+          "name": "inventory_locations",
+          "owner": "postgres",
+          "rls": true,
+          "force_rls": true
+        }
+      ],
+      "history_sha256": "db50a4d8614bba02fed5b8fb965495b35274f94f39c474a6401061e7cffc3319"
+    },
+    "approved_encrypted_production_backup": {
+      "created": true,
+      "plaintext_retained": false,
+      "role_passwords_exported": false,
+      "round_trip_verified": true,
+      "ciphertext_sha256": "1b01ff49c4a5f362cdee98a9d6d6a8191dc50b1054da8ad88cca33370d74c76e",
+      "scope": "local migration-414 retained-data restore rehearsal only; initial automatic-review refusal resolved by explicit approval"
+    },
+    "retained_data_rehearsal": {
+      "report": "HOSTED_WAREHOUSE_REHEARSAL.json",
+      "run_id": "d0b2239984e0",
+      "pass": true,
+      "retained_tables": 523,
+      "exactly_preserved_tables": 523,
+      "changes": [],
+      "cleanup": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "local_worker_bundles": {
+      "api": [
+        {
+          "name": "c6f286e6f01e19f49c2439685e34a41f73cf8329-blake2b.wasm",
+          "bytes": 7442,
+          "sha256": "b478c0d889d97d7a8db4d10501457ad78dd406d02dcb4c892c0d844805ef05bb"
+        },
+        {
+          "name": "e4cdc523e88360df8f26f17ea8c50d2f8ff1421b-argon2.wasm",
+          "bytes": 6660,
+          "sha256": "83b5829d20b4312aca1a56819f95eef20492e058c70f282c9ed6929f579b20ed"
+        },
+        {
+          "name": "index.js",
+          "bytes": 8468197,
+          "sha256": "cd641400800125fadde1d8615254834e7cdfc6181ad270b6cf000c13df1095c3"
+        }
+      ],
+      "bff": [
+        {
+          "name": "index.js",
+          "bytes": 1162764,
+          "sha256": "fbe8393288aac8fb548970f4f859d2cec9d65f717c36ff347d3e790de8f619e9"
+        }
+      ]
+    },
+    "local_staging_worker_bundles": {
+      "api-staging-bundle": [
+        {
+          "file": "index.js",
+          "bytes": 8468197,
+          "sha256": "cd641400800125fadde1d8615254834e7cdfc6181ad270b6cf000c13df1095c3"
+        },
+        {
+          "file": "README.md",
+          "bytes": 120,
+          "sha256": "41fc19dca07dd129db1b054ee9b8684d399b310c3bf19ba2443cf6bc5cde66f8"
+        },
+        {
+          "file": "e4cdc523e88360df8f26f17ea8c50d2f8ff1421b-argon2.wasm",
+          "bytes": 6660,
+          "sha256": "83b5829d20b4312aca1a56819f95eef20492e058c70f282c9ed6929f579b20ed"
+        },
+        {
+          "file": "c6f286e6f01e19f49c2439685e34a41f73cf8329-blake2b.wasm",
+          "bytes": 7442,
+          "sha256": "b478c0d889d97d7a8db4d10501457ad78dd406d02dcb4c892c0d844805ef05bb"
+        }
+      ],
+      "bff-staging-bundle": [
+        {
+          "file": "index.js",
+          "bytes": 1162764,
+          "sha256": "fbe8393288aac8fb548970f4f859d2cec9d65f717c36ff347d3e790de8f619e9"
+        },
+        {
+          "file": "README.md",
+          "bytes": 127,
+          "sha256": "732aa8807b19870ed874f42cdd51ecbb12c7741bd8183455ba0d99547da4252f"
+        }
+      ]
+    },
+    "merchant_production_artifact": {
+      "source_revision": "9b5b89437703cba8527b9e0ca32ca9a7aca495b8",
+      "project_id": "prj_BkaBsf3h7TvKRMpmyYQWsVmfP38J",
+      "target": "production",
+      "uploaded": false,
+      "live_alias_changed": false,
+      "external_symlinks": false,
+      "tree_sha256": "0808f1e3e3793d11c154b42f9b697bd13b23f4eb063954a466b9cd0dee12c2ad"
+    },
+    "merchant_preview_artifact": "rejected for staging: required API/Accounts/admin/internal configuration missing",
+    "staging_dependencies": {
+      "merchant_alias": "missing",
+      "accounts_alias": "missing",
+      "bff_internal_secret": "missing",
+      "bff_turnstile_secret": "missing",
+      "maintenance_decision": "requested; pending explicit approval"
+    },
+    "hosted_schema_write": false,
+    "worker_upload_or_activation": false,
+    "vercel_upload_or_alias_change": false,
+    "source_push_or_promotion": false,
+    "production_business_mutations": false,
+    "full_122_acceptance": false
   }
 }

@@ -36,6 +36,24 @@ Row 27 is **implemented + locally/database verified in this bounded scope**. It 
 
 Row 28: the existing native `ImportProductsScreen` selects existing catalog products into a store selection. It is not CSV import. The canonical `ProductsApi.importCsv` already targets `/export/import-products`; the current server `createJob` generates a new random job ID on every submission. Complete server-owned logical job retry/effect-once behavior and truthful queued/partial/failure/readback before accepting a native CSV import flow. Do not build a second importer or use production records as test fixtures.
 
+Reinspection at integrated source `9b5b89437` confirms the selection screen calls
+`StoreService.updateSelectedProducts` → generic store PATCH with
+`selected_product_ids`; that property is absent from canonical
+`packages/tenant-core/src/index.ts:UpdateStoreSchema` and the Gateway store PATCH
+allowlist. This is not a supported catalog-import command. It also fetches one
+20-row product page while presenting a whole-catalog count, suppresses its read
+error and shows invented progress percentages. Existing success UI is not a
+persisted selection/import proof. The actual web CSV proxy is
+`apps/merchant/web/src/app/api/stores/[store]/products/import/route.ts`; it uses
+`ProductCsvImportSchema` and the same shared import API, without carrying a stable
+original import key. In `services/api-gateway/src/routes/export.ts`, source CSV
+and job identities are randomized separately, the job record is stored in R2,
+and per-row product execution runs in `waitUntil`. Before wiring mobile CSV,
+complete the canonical durable logical job identity, payload conflict, current
+authority, interrupted/partial job reconciliation and readback. R2 alone must not
+become a competing business-command authority. This inspection is source evidence,
+not a new owned-database or hosted duplicate-import reproduction.
+
 Web product query/page completeness, signed-in two-direction mutations, restricted staff/revocation, hosted compatibility, offline/reconnect recovery, accessible devices, release signing and rollout/rollback remain open. No row is fully accepted by these receipts.
 
 
