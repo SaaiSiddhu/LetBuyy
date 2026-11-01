@@ -275,14 +275,18 @@ export async function getRazorpayOrderNotes(
   return order.notes || {};
 }
 
-export async function verifyRazorpayCredentials(credentials: RazorpayCredentials): Promise<boolean> {
-  const response = await fetch('https://api.razorpay.com/v1/payments?count=1', {
+export async function verifyRazorpayCredentials(credentials: RazorpayCredentials,
+  options: { fetch?: RazorpayFetch } = {}): Promise<boolean> {
+  const response = await (options.fetch ?? fetch)('https://api.razorpay.com/v1/payments?count=1', {
     headers: {
       Authorization: basicAuth(credentials),
     },
   });
-
-  return response.ok;
+  if (response.ok) return true;
+  if (response.status === 401 || response.status === 403) return false;
+  // A provider outage, throttle, or unexpected response cannot prove that the
+  // merchant's saved key is invalid. Keep the previous connection unchanged.
+  throw new Error('Razorpay credential verification is temporarily unavailable');
 }
 
 export async function hmacSha256Hex(secret: string, payload: string): Promise<string> {

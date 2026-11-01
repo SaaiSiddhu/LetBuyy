@@ -124,8 +124,45 @@ test('payment setup is explicit, revisioned, tenant-bound and never manufactures
         const stale = await request('PATCH', { cod_enabled: false, expected_revision: revision });
         assert.equal(stale.status, 409, stale.text); assert.equal(row(), after);
     });
+    await t.test('a saved test key accepts a separate webhook secret through a new immutable version', async () => {
+        const beforeId = owned.psql(`SELECT payment_settings->'razorpay'->>'credential_id' FROM sites WHERE id='${tenant.siteId}';`);
+        const beforeCipher = owned.psql(`SELECT encrypted_credentials->>'key_secret_ciphertext' FROM payment_credentials WHERE id='${beforeId}';`);
+        const beforeCount = Number(owned.psql(`SELECT count(*) FROM payment_credentials WHERE site_id='${tenant.siteId}';`));
+        const current = await request('GET'); assert.equal(current.status, 200, current.text);
+        const command = { attach_to_existing: true, webhook_secret: randomUUID().replaceAll('-', ''),
+            expected_revision: current.json?.data.revision };
+        const key = randomUUID(), calls = verificationCalls;
+        const attached = await request('POST', command, key); assert.equal(attached.status, 200, attached.text);
+        const afterId = owned.psql(`SELECT payment_settings->'razorpay'->>'credential_id' FROM sites WHERE id='${tenant.siteId}';`);
+        assert.notEqual(afterId, beforeId);
+        assert.equal(attached.json?.data.online_payment_enabled, false, 'new callback version requires explicit checkout re-enable');
+        assert.equal(attached.json?.data.cod_enabled, true);
+        assert.equal(attached.json?.data.payment_settings.razorpay.webhook_secret_configured, true);
+        assert.equal(attached.json?.data.webhook_callback_url,
+            `https://webhooks.staging.letbuyy.com/razorpay/merchant/${tenant.siteId}/${afterId}`);
+        assert.equal(attached.json?.data.setup.can_enable_online, true);
+        assert.equal(verificationCalls, calls + 1);
+        assert.equal(Number(owned.psql(`SELECT count(*) FROM payment_credentials WHERE site_id='${tenant.siteId}';`)), beforeCount + 1);
+        assert.equal(owned.psql(`SELECT encrypted_credentials->>'key_secret_ciphertext' FROM payment_credentials WHERE id='${beforeId}';`), beforeCipher,
+            'pinned older sessions retain their original immutable credential');
+        assert.match(owned.psql(`SELECT encrypted_credentials->>'key_secret_ciphertext' FROM payment_credentials WHERE id='${afterId}';`),
+            new RegExp(`^v3:[^:]+:${afterId}:`));
+        assert.ok(!attached.text.includes(command.webhook_secret));
+        assert.ok(!attached.text.includes(credentials.key_secret));
+        const replay = await request('POST', command, key); assert.equal(replay.status, 200, replay.text);
+        assert.deepEqual(replay.json, attached.json); assert.equal(verificationCalls, calls + 1);
+        assert.equal(Number(owned.psql(`SELECT count(*) FROM payment_credentials WHERE site_id='${tenant.siteId}';`)), beforeCount + 1);
+        const stale = await request('POST', { ...command, webhook_secret: randomUUID().replaceAll('-', '') });
+        assert.equal(stale.status, 409, stale.text);
+        const snapshot = row(); providerStatus = 503;
+        const outage = await request('POST', { ...command, webhook_secret: randomUUID().replaceAll('-', ''),
+            expected_revision: attached.json?.data.revision });
+        assert.equal(outage.status, 503, outage.text); assert.equal(row(), snapshot);
+        providerStatus = 200;
+    });
     await t.test('CAS refuses a connection replacement raced by a method change', async () => {
         let interposed = false;
+        const beforeOnline = owned.psql(`SELECT online_payment_enabled FROM sites WHERE id='${tenant.siteId}';`);
         const tap = tapRest(owned.restEnv().SUPABASE_URL as string, async (call, forward) => {
             if (!interposed && call.resource === 'rpc/commit_store_payment_configuration_v1' && call.method === 'POST') {
                 interposed = true;
@@ -135,7 +172,8 @@ test('payment setup is explicit, revisioned, tenant-bound and never manufactures
         });
         try {
             const result = await request('POST', credentials); assert.equal(result.status, 409, result.text); assert.equal(interposed, true);
-            assert.equal(owned.psql(`SELECT online_payment_enabled FROM sites WHERE id='${tenant.siteId}';`), 't', 'failed save cannot disable the active connection');
+            assert.equal(owned.psql(`SELECT online_payment_enabled FROM sites WHERE id='${tenant.siteId}';`), beforeOnline,
+                'failed save cannot change the current online method');
             assert.equal(owned.psql(`SELECT cod_enabled FROM sites WHERE id='${tenant.siteId}';`), 'f');
         } finally { tap.restore(); }
     });

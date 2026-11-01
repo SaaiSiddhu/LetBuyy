@@ -4009,6 +4009,8 @@ export class LetbuyyApiClient {
         this.requestData<StorePaymentConfig>(`/stores/${encodePathSegment(id)}/payment-config`, options),
       save: (id: string, input: SaveStorePaymentConfigInput, options?: LetbuyyRequestOptions) =>
         this.requestData<StorePaymentConfig>(`/stores/${encodePathSegment(id)}/payment-config`, { ...options, method: 'POST', body: input }),
+      attachWebhook: (id: string, input: import('@letbuyy/shared-types').AttachStorePaymentWebhookInput, options?: LetbuyyRequestOptions) =>
+        this.requestData<StorePaymentConfig>(`/stores/${encodePathSegment(id)}/payment-config`, { ...options, method: 'POST', body: input }),
       updateMethods: (id: string, input: import('@letbuyy/shared-types').UpdateStorePaymentMethodsInput, options?: LetbuyyRequestOptions) =>
         this.requestData<StorePaymentConfig>(`/stores/${encodePathSegment(id)}/payment-config`, { ...options, method: 'PATCH', body: input }),
     },

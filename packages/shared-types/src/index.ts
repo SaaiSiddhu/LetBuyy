@@ -2168,8 +2168,8 @@ export const SubscriptionVerificationResultSchema = z.object({
   message: z.string().max(500).optional(),
 }).passthrough();
 
-export { StorePaymentSetupSchema, SaveStorePaymentConfigSchema, UpdateStorePaymentMethodsSchema,
-  type StorePaymentSetup, type SaveStorePaymentConfigInput, type UpdateStorePaymentMethodsInput } from './payment-setup';
+export { StorePaymentSetupSchema, SaveStorePaymentConfigSchema, AttachStorePaymentWebhookSchema, UpdateStorePaymentMethodsSchema,
+  type StorePaymentSetup, type SaveStorePaymentConfigInput, type AttachStorePaymentWebhookInput, type UpdateStorePaymentMethodsInput } from './payment-setup';
 
 export const StorePaymentSettingsSchema = z.object({
   mode: z.enum(['unconfigured', 'shared', 'ownAccount']).default('unconfigured'),

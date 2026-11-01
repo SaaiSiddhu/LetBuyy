@@ -1,6 +1,20 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { createRazorpayPaymentProvider, fetchRazorpayOrdersByReceipt, fetchRazorpayPlan, fetchRazorpaySubscription, fetchRazorpayInvoice,fetchRazorpayRefund, hmacSha256Hex } from './index';
+import { createRazorpayPaymentProvider, fetchRazorpayOrdersByReceipt, fetchRazorpayPlan, fetchRazorpaySubscription, fetchRazorpayInvoice,fetchRazorpayRefund, hmacSha256Hex, verifyRazorpayCredentials } from './index';
+
+test('credential verification distinguishes rejected keys from provider outage', async () => {
+  const credentials = { keyId: 'rzp_test_fixture', keySecret: 'synthetic-secret' };
+  for (const status of [200, 401, 403, 429, 503]) {
+    const verify = verifyRazorpayCredentials(credentials, { fetch: (async (url, init) => {
+      assert.equal(String(url), 'https://api.razorpay.com/v1/payments?count=1');
+      assert.equal(new Headers(init?.headers).get('Authorization'), `Basic ${btoa('rzp_test_fixture:synthetic-secret')}`);
+      return new Response('{}', { status });
+    }) as typeof fetch });
+    if (status === 200) assert.equal(await verify, true);
+    else if (status === 401 || status === 403) assert.equal(await verify, false);
+    else await assert.rejects(verify, /temporarily unavailable/);
+  }
+});
 
 test('Razorpay webhook receipt uses delivery identity and a stable signed-body fallback', async () => {
   const secret = 'synthetic-webhook-secret';

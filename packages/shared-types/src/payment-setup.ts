@@ -32,6 +32,14 @@ export const SaveStorePaymentConfigSchema = z.object({
   }
 });
 
+/** Add the separate callback secret to an already verified test connection.
+ * The server rebinds both secrets to a new immutable credential version. */
+export const AttachStorePaymentWebhookSchema = z.object({
+  attach_to_existing: z.literal(true),
+  webhook_secret: z.string().min(16).max(256).regex(/^[^\s\u0000-\u001f]+$/),
+  expected_revision: z.string().datetime({ offset: true }),
+}).strict();
+
 export const UpdateStorePaymentMethodsSchema = z.object({
   cod_enabled: z.boolean().optional(),
   online_payment_enabled: z.boolean().optional(),
@@ -42,4 +50,5 @@ export const UpdateStorePaymentMethodsSchema = z.object({
 
 export type StorePaymentSetup = z.infer<typeof StorePaymentSetupSchema>;
 export type SaveStorePaymentConfigInput = z.input<typeof SaveStorePaymentConfigSchema>;
+export type AttachStorePaymentWebhookInput = z.infer<typeof AttachStorePaymentWebhookSchema>;
 export type UpdateStorePaymentMethodsInput = z.infer<typeof UpdateStorePaymentMethodsSchema>;

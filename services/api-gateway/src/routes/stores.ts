@@ -19,11 +19,12 @@ import {
     encryptPaymentWebhookSecret,
     isMissingSitesPaymentColumnError,
     projectStorePaymentConfig,
+    readStoreRazorpayTestCredentials,
     verifyRazorpayCredentials,
     type PaymentSettings,
 } from '../lib/store-payment-config';
 import { isComingSoonSiteType, isLegacySiteType, legacySiteTypeCreationEnabled } from '@letbuyy/tenant-core';
-import { UpdateStorePaymentMethodsSchema, type CustomDomainHealth } from '@letbuyy/shared-types';
+import { AttachStorePaymentWebhookSchema, UpdateStorePaymentMethodsSchema, type CustomDomainHealth } from '@letbuyy/shared-types';
 import { registerStoreLocalizationRoutes } from './stores-localization';
 import { canonicalizeExecutionPayload } from '@letbuyy/event-core';
 import { z } from 'zod';
@@ -406,7 +407,7 @@ router.get('/:id/health', async (c) => {
 });
 
 // POST /stores/:id/payment-config — Save seller-owned Razorpay credentials
-router.post('/:id/payment-config', validate('json', PaymentConfigSchema), async (c) => {
+router.post('/:id/payment-config', validate('json', z.union([PaymentConfigSchema, AttachStorePaymentWebhookSchema])), async (c) => {
     const auth = c.get('auth');
     const storeId = c.req.param('id');
     const body = c.get('validatedBody') as {
@@ -415,7 +416,7 @@ router.post('/:id/payment-config', validate('json', PaymentConfigSchema), async 
         webhook_secret?: string;
         test_mode: boolean;
         expected_revision?: string;
-    };
+    } | { attach_to_existing: true; webhook_secret: string; expected_revision: string };
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
@@ -470,26 +471,43 @@ router.post('/:id/payment-config', validate('json', PaymentConfigSchema), async 
     if (body.expected_revision && body.expected_revision !== store.updated_at) {
         throw new AppError('Payment settings changed. Reload before saving.', 409, 'PAYMENT_CONFIG_CONFLICT');
     }
-    if (!body.test_mode) {
+    if ('test_mode' in body && !body.test_mode) {
         throw new AppError('Live checkout requires qualified provider onboarding and settlement readiness. Keep this connection in test mode.', 409, 'PAYMENT_LIVE_NOT_READY');
+    }
+    let keyId: string;
+    let keySecret: string;
+    if ('attach_to_existing' in body) {
+        const hydrated = await hydratePaymentCredential(db, store);
+        const selected = hydrated.payment_settings?.razorpay;
+        if (!selected?.credential_id || selected.test_mode !== true || selected.verified !== true || !selected.key_id) {
+            throw new AppError('This test connection must be reconnected before a webhook secret can be added.', 409, 'PAYMENT_CONNECTION_UPGRADE_REQUIRED');
+        }
+        const saved = await readStoreRazorpayTestCredentials(hydrated.payment_settings,
+            c.env.PAYMENT_CONFIG_ENCRYPTION_KEY, storeId);
+        if (!saved) throw new AppError('Saved test credentials are unavailable. Reconnect the account before adding its webhook.', 503, 'PAYMENT_CONFIG_UNAVAILABLE');
+        keyId = saved.keyId;
+        keySecret = saved.keySecret;
+    } else {
+        keyId = body.key_id;
+        keySecret = body.key_secret;
     }
     const credentialId = crypto.randomUUID();
     let keySecretCiphertext: string;
     let webhookSecretCiphertext: string | undefined;
     try {
-        keySecretCiphertext = await encryptPaymentSecret(body.key_secret, c.env.PAYMENT_CONFIG_ENCRYPTION_KEY, {
-            siteId: storeId, keyId: body.key_id, environment: 'sandbox', credentialId,
+        keySecretCiphertext = await encryptPaymentSecret(keySecret, c.env.PAYMENT_CONFIG_ENCRYPTION_KEY, {
+            siteId: storeId, keyId, environment: 'sandbox', credentialId,
         });
         webhookSecretCiphertext = body.webhook_secret
             ? await encryptPaymentWebhookSecret(body.webhook_secret, c.env.PAYMENT_CONFIG_ENCRYPTION_KEY, {
-                siteId: storeId, keyId: body.key_id, environment: 'sandbox', credentialId,
+                siteId: storeId, keyId, environment: 'sandbox', credentialId,
             }) : undefined;
     } catch {
         throw new AppError('Payment credential encryption is temporarily unavailable. Your saved connection is unchanged.',503,'PAYMENT_CONFIG_UNAVAILABLE');
     }
     let verified: boolean;
     try {
-        verified = await verifyRazorpayCredentials(body.key_id, body.key_secret);
+        verified = await verifyRazorpayCredentials(keyId, keySecret);
     } catch {
         throw new AppError('Razorpay could not be reached to verify these credentials. Your saved connection is unchanged.', 503, 'PAYMENT_VERIFICATION_UNAVAILABLE');
     }
@@ -498,13 +516,13 @@ router.post('/:id/payment-config', validate('json', PaymentConfigSchema), async 
     }
     const now = new Date().toISOString();
     const paymentSettings: PaymentSettings = { mode: 'ownAccount', gateways: ['razorpay'], razorpay: {
-        credential_id: credentialId, key_id: body.key_id, key_secret_ciphertext: keySecretCiphertext,
+        credential_id: credentialId, key_id: keyId, key_secret_ciphertext: keySecretCiphertext,
         ...(webhookSecretCiphertext ? { webhook_secret_ciphertext: webhookSecretCiphertext } : {}),
         test_mode: true, verified: true, connected_at: now, updated_at: now,
     } };
     return c.json(await commitPaymentConfiguration(c, { actorId: customUser.id, current: store,
         proposed: { ...store, payment_settings: paymentSettings, online_payment_enabled: false },
-        operation: 'save', payload: { credential_id: credentialId, key_id: body.key_id, key_secret_ciphertext: keySecretCiphertext,
+        operation: 'save', payload: { credential_id: credentialId, key_id: keyId, key_secret_ciphertext: keySecretCiphertext,
             ...(webhookSecretCiphertext ? { webhook_secret_ciphertext: webhookSecretCiphertext } : {}) },
         credentialsUsable: true,
     }));

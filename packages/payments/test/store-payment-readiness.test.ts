@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { StorePaymentSetupSchema, SaveStorePaymentConfigSchema, UpdateStorePaymentMethodsSchema } from '@letbuyy/shared-types';
+import { StorePaymentSetupSchema, SaveStorePaymentConfigSchema, AttachStorePaymentWebhookSchema, UpdateStorePaymentMethodsSchema } from '@letbuyy/shared-types';
 import { deriveStorePaymentSetup, type StorePaymentReadinessInput } from '../src/store-payment-readiness';
 
 const ready: StorePaymentReadinessInput = {
@@ -64,6 +64,17 @@ test('credential input defaults to test and rejects environment confusion, coerc
     { test_mode: false }, { test_mode: 'false' }, { key_id: input.key_id.replace('_test_', '_live_') },
     { key_secret: 'too short' }, { key_secret: 'synthetic credential only' }, { mode: 'shared' },
   ]) assert.equal(SaveStorePaymentConfigSchema.safeParse({ ...input, ...change }).success, false);
+});
+
+test('attaching a callback secret needs a current revision and cannot smuggle API credentials', () => {
+  const valid = { attach_to_existing: true, webhook_secret: 'synthetic-webhook-secret',
+    expected_revision: '2026-11-01T10:00:00.000Z' };
+  assert.equal(AttachStorePaymentWebhookSchema.safeParse(valid).success, true);
+  for (const change of [{ expected_revision: undefined }, { webhook_secret: 'short' },
+    { webhook_secret: 'secret with spaces' }, { key_secret: 'synthetic-api-secret' },
+    { attach_to_existing: false }]) {
+    assert.equal(AttachStorePaymentWebhookSchema.safeParse({ ...valid, ...change }).success, false);
+  }
 });
 
 test('method updates cannot smuggle gateway, credentials or non-boolean grants', () => {
