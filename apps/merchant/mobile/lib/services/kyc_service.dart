@@ -344,6 +344,17 @@ class KycService extends ChangeNotifier {
   }) async {
     final operation = _begin(storeId, options);
     try {
+      // The screen disables unavailable uploads, but the service must also
+      // refuse them before reading or sending document bytes.
+      if (_overview?['india_direct_upload_available'] != true &&
+          _overview?['private_upload_available'] != true) {
+        throw const ApiException(
+          message:
+              'Private India upload is unavailable. Refresh status and retry.',
+          statusCode: 503,
+          code: 'KYC_UPLOAD_UNAVAILABLE',
+        );
+      }
       late final Map<String, dynamic> response;
       if (_overview?['india_direct_upload_available'] == true) {
         final bytes = await file.readAsBytes();

@@ -292,4 +292,218 @@ void main() {
       expect(service.overview, isNull);
     },
   );
+
+  test(
+    'unavailable India upload is refused before the device reads or sends a file',
+    () async {
+      final calls = <String>[];
+      final dio = Dio();
+      final api = ApiClient(
+        baseUrl: 'https://synthetic.invalid/v1',
+        dio: dio,
+        maxRetries: 0,
+      );
+      dio.interceptors.add(
+        InterceptorsWrapper(
+          onRequest: (options, handler) {
+            calls.add(options.uri.path);
+            handler.resolve(
+              Response(
+                requestOptions: options,
+                statusCode: 200,
+                data: {
+                  'data': {
+                    ...overview(),
+                    'india_direct_upload_available': false,
+                  },
+                },
+              ),
+            );
+          },
+        ),
+      );
+      var posts = 0;
+      final service = KycService(
+        api: api,
+        postIndiaObject: (_, _, _, _) async {
+          posts++;
+          return 'unexpected-version';
+        },
+      );
+      addTearDown(service.dispose);
+      await service.fetchOverview(site);
+      await expectLater(
+        service.uploadDocument(
+          storeId: site,
+          documentType: 'bank_proof',
+          documentNumberLast4: '1234',
+          file: File(
+            '${Directory.systemTemp.path}/letbuyy-kyc-must-not-read-${DateTime.now().microsecondsSinceEpoch}.png',
+          ),
+        ),
+        throwsA(
+          isA<ApiException>().having(
+            (e) => e.code,
+            'code',
+            'KYC_UPLOAD_UNAVAILABLE',
+          ),
+        ),
+      );
+      expect(
+        calls,
+        hasLength(1),
+        reason: 'only the explicit overview read may reach the API',
+      );
+      expect(calls.single, endsWith('/kyc'));
+      expect(posts, 0);
+      expect(service.isLoading, false);
+    },
+  );
+
+  test(
+    'mobile retries a rejected Mumbai POST with a fresh ticket and keeps old status until completion',
+    () async {
+      const firstReceipt = '7b1714db-932e-4e19-985d-710266796aba';
+      var intents = 0, posts = 0;
+      final calls = <RequestOptions>[];
+      Map<String, dynamic> currentOverview(String last4) => {
+        ...overview(),
+        'documents': [
+          {
+            'document_type': 'bank_proof',
+            'document_number_last4': last4,
+            'status': 'submitted',
+          },
+        ],
+      };
+      final dio = Dio();
+      final api = ApiClient(
+        baseUrl: 'https://synthetic.invalid/v1',
+        dio: dio,
+        maxRetries: 0,
+      );
+      dio.interceptors.add(
+        InterceptorsWrapper(
+          onRequest: (options, handler) {
+            calls.add(options);
+            final path = options.uri.path;
+            late final Map<String, dynamic> data;
+            if (path.endsWith('/upload-intent')) {
+              final issuedReceipt = ++intents == 1 ? firstReceipt : receipt;
+              data = {
+                'receipt_id': issuedReceipt,
+                'method': 'POST',
+                'url': 'https://privatekyc.s3.ap-south-1.amazonaws.com/',
+                'fields': {'key': 'kyc/$site/bank_proof/$issuedReceipt'},
+                'maximum_object_bytes': 5242880,
+                'expires_at': DateTime.now()
+                    .add(const Duration(minutes: 2))
+                    .toIso8601String(),
+              };
+            } else if (path.endsWith('/upload-complete')) {
+              data = {
+                'site_id': site,
+                'receipt_id': receipt,
+                'document_status': 'submitted',
+                'evidence_scan_status': 'pending',
+                'overview': currentOverview('2222'),
+              };
+            } else {
+              data = currentOverview('1111');
+            }
+            handler.resolve(
+              Response(
+                requestOptions: options,
+                statusCode: 200,
+                data: {'data': data},
+              ),
+            );
+          },
+        ),
+      );
+      final service = KycService(
+        api: api,
+        postIndiaObject: (_, fields, bytes, _) async {
+          posts++;
+          expect(
+            fields['key'],
+            'kyc/$site/bank_proof/${posts == 1 ? firstReceipt : receipt}',
+          );
+          expect(bytes.length, 9);
+          if (posts == 1) {
+            throw const ApiException(
+              message: 'Private storage unavailable. Retry upload.',
+              statusCode: 503,
+              code: 'KYC_INDIA_OBJECT_UNCONFIRMED',
+            );
+          }
+          return 'synthetic-version-2';
+        },
+      );
+      final dir = await Directory.systemTemp.createTemp(
+        'kyc-india-mobile-retry-',
+      );
+      addTearDown(() async {
+        service.dispose();
+        await dir.delete(recursive: true);
+      });
+      final file = File('${dir.path}/proof.png');
+      await file.writeAsBytes([
+        0x89,
+        0x50,
+        0x4e,
+        0x47,
+        0x0d,
+        0x0a,
+        0x1a,
+        0x0a,
+        1,
+      ]);
+      await service.fetchOverview(site);
+      expect(service.documents.single['document_number_last4'], '1111');
+      Future<Map<String, dynamic>> attempt() => service.uploadDocument(
+        storeId: site,
+        documentType: 'bank_proof',
+        documentNumberLast4: '2222',
+        file: file,
+      );
+      await expectLater(
+        attempt(),
+        throwsA(
+          isA<ApiException>().having(
+            (e) => e.code,
+            'code',
+            'KYC_INDIA_OBJECT_UNCONFIRMED',
+          ),
+        ),
+      );
+      expect(service.documents.single['document_number_last4'], '1111');
+      expect(
+        calls.where((item) => item.uri.path.endsWith('/upload-complete')),
+        isEmpty,
+      );
+      expect(service.isLoading, false);
+
+      final result = await attempt();
+      expect(result['evidence_scan_status'], 'pending');
+      expect(service.documents.single['document_number_last4'], '2222');
+      expect(intents, 2);
+      expect(posts, 2);
+      final intentCalls = calls
+          .where((item) => item.uri.path.endsWith('/upload-intent'))
+          .toList();
+      final completion = calls.singleWhere(
+        (item) => item.uri.path.endsWith('/upload-complete'),
+      );
+      Object? idempotency(RequestOptions request) => request.headers.entries
+          .where((entry) => entry.key.toLowerCase() == 'x-idempotency-key')
+          .map((entry) => entry.value)
+          .firstOrNull;
+      expect(idempotency(intentCalls[0]), isNot(idempotency(intentCalls[1])));
+      expect(idempotency(completion), idempotency(intentCalls[1]));
+      expect((completion.data as Map)['receipt_id'], receipt);
+      expect((completion.data as Map)['version_id'], 'synthetic-version-2');
+      expect(calls.where((item) => item.uri.path.endsWith('/upload')), isEmpty);
+    },
+  );
 }
