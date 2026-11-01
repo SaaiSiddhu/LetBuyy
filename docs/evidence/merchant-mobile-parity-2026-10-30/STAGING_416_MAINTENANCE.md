@@ -1,6 +1,6 @@
 # Staging416 maintenance proposal — approval required
 
-2 November2026. **Prepared; not approved or executed.** This is a new staging-only window after the completed415 window. It authorizes no production app/schema/DNS/WAF change, remote branch promotion, paid provider operation or release certification.
+2 November2026. **Prepared; not approved or executed. Native follow-up admission is in progress; the old9bffa native artifact is withheld.** This is a new staging-only window after the completed415 window. It authorizes no production app/schema/DNS/WAF change, remote branch promotion, paid provider operation or release certification.
 
 `source/local → qualified artifacts → fresh staging recovery →416 only → exact staging activation → synthetic acceptance → retained-state readback`.
 

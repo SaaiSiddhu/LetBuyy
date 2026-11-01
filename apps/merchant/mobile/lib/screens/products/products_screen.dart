@@ -15,7 +15,6 @@ import '../../services/product_service.dart';
 import '../../models/store_model.dart';
 import '../../theme/app_theme_colors.dart';
 import 'product_form_screen.dart';
-import 'import_products_screen.dart';
 import 'csv_import_screen.dart';
 import '../../widgets/shared/cached_merchant_image.dart';
 import '../../widgets/shared/accessible_tap_region.dart';
@@ -351,19 +350,16 @@ class _ProductsScreenState extends State<ProductsScreen> {
     if (result == true) _loadData();
   }
 
-  void _navigateToImport() async {
-    if (_store == null) return;
-
-    final result = await Navigator.push<bool>(
+  Future<void> _navigateToImport() async {
+    final store = _store, captured = _viewContext;
+    if (store == null || !_scopeCurrent(captured, store.id)) return;
+    await Navigator.push<void>(
       context,
-      MaterialPageRoute(
-        builder: (_) => ImportProductsScreen(
-          store: _store!,
-          alreadySelectedIds: Set.from(_store!.selectedProductIds),
-        ),
-      ),
+      MaterialPageRoute(builder: (_) => CsvImportScreen(storeId: store.id)),
     );
-    if (result == true) _loadData();
+    // Imports continue durably after leaving their page. Returning always reads
+    // the current catalog; a popped route's return value is not a job receipt.
+    if (_scopeCurrent(captured, store.id)) await _loadData();
   }
 
   Future<void> _seedSampleProduct() async {
@@ -763,13 +759,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
               _menuView = null;
               if (view == null || !_scopeCurrent(view.key, view.store)) return;
               if (value == 'csv') {
-                await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => CsvImportScreen(storeId: view.store!),
-                  ),
-                );
-                if (_scopeCurrent(view.key, view.store)) _loadData();
+                await _navigateToImport();
               }
               if (value == 'inventory')
                 Navigator.pushNamed(context, AppRoutes.inventory);
@@ -1175,22 +1165,24 @@ class _ProductsScreenState extends State<ProductsScreen> {
       );
     }
 
-    return GridView.builder(
-      controller: _scrollController,
-      padding: EdgeInsets.fromLTRB(16, 0, 16, _isSelectionMode ? 100 : 24),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        mainAxisExtent:
-            (MediaQuery.sizeOf(context).width - 42) / 2 +
-            MediaQuery.textScalerOf(context).scale(112),
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
+    return LayoutBuilder(
+      builder: (context, constraints) => GridView.builder(
+        controller: _scrollController,
+        padding: EdgeInsets.fromLTRB(16, 0, 16, _isSelectionMode ? 100 : 24),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          mainAxisExtent:
+              (constraints.maxWidth - 42) / 2 +
+              MediaQuery.textScalerOf(context).scale(112),
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 10,
+        ),
+        itemCount: _filteredProducts.length,
+        itemBuilder: (context, index) {
+          final product = _filteredProducts[index];
+          return _buildProductCard(product);
+        },
       ),
-      itemCount: _filteredProducts.length,
-      itemBuilder: (context, index) {
-        final product = _filteredProducts[index];
-        return _buildProductCard(product);
-      },
     );
   }
 
@@ -1551,7 +1543,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     spacing: 12,
                     runSpacing: 12,
                     children: [
-                      if (_totalSellerProducts > 0) ...[
+                      if (_store != null) ...[
                         OutlinedButton.icon(
                           onPressed: _navigateToImport,
                           style: OutlinedButton.styleFrom(
@@ -1566,7 +1558,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                             ),
                           ),
                           icon: const Icon(Icons.download_rounded, size: 18),
-                          label: const Text('Import'),
+                          label: const Text('Import CSV'),
                         ),
                       ],
                       OutlinedButton.icon(

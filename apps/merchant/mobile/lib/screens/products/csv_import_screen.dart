@@ -76,6 +76,7 @@ class _CsvImportScreenState extends State<CsvImportScreen> {
           _rows = null;
           _source.clear();
           _file = null;
+          _pending = false;
           _supportError = 'Store access changed. Reload this store.';
         });
       }
@@ -112,6 +113,9 @@ class _CsvImportScreenState extends State<CsvImportScreen> {
           _supportError = null;
         });
     } catch (error) {
+      if (error is ApiException &&
+          (error.statusCode == 401 || error.statusCode == 403))
+        rethrow;
       if (_current)
         setState(() {
           _supported = false;

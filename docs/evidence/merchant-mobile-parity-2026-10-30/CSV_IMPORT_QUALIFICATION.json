@@ -132,5 +132,6 @@
   },
   "hosted416": false,
   "productionActivation": false,
-  "all122Accepted": false
+  "all122Accepted": false,
+  "nativeAdmissionStatus": "superseded-withheld: subsequent entry and live-capability-denial regression repaired; current786-test native follow-up awaits its own artifact/governance record"
 }

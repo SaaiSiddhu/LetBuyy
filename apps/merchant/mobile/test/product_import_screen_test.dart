@@ -9,6 +9,7 @@ import 'package:letbuyy_models/letbuyy_models.dart' hide JsonMap;
 import 'package:letbuyy_store/app/store_context.dart';
 import 'package:letbuyy_store/models/store_model.dart';
 import 'package:letbuyy_store/screens/products/csv_import_screen.dart';
+import 'package:letbuyy_store/screens/products/products_screen.dart';
 import 'package:letbuyy_store/services/api_client.dart';
 import 'package:letbuyy_store/services/product_service.dart';
 import 'package:letbuyy_store/services/security_command_store.dart';
@@ -35,10 +36,43 @@ class FixedStores extends StoreService {
 class ScreenProducts extends ProductService {
   ScreenProducts(ApiClient api) : super(api: api);
   bool unavailable = false;
+  bool denied = false;
   bool pending = false;
+  bool emptyCatalog = false;
+  String catalogName = 'Original catalog product';
+  final catalogReads = <String>[];
   ProductImportJob? registrationStop;
   Completer<ProductImportJob>? reply;
   final submissions = <String>[];
+  @override
+  Future<List<Map<String, dynamic>>> fetchProducts(
+    String storeId, {
+    int page = 1,
+    int limit = 20,
+    String? cursor,
+    String? search,
+    String status = 'all',
+    String sort = 'display_order',
+    String order = 'asc',
+    String? stockFilter,
+  }) async {
+    catalogReads.add(storeId);
+    return emptyCatalog
+        ? []
+        : [
+            {
+              'id': fixture.jobId,
+              'store_id': storeId,
+              'name': catalogName,
+              'price': 10.50,
+              'stock': 2,
+              'is_active': true,
+              'status': 'active',
+              'images': <String>[],
+            },
+          ];
+  }
+
   ProductImportJob get existing => ProductImportJob.fromJson({
     ...fixture.job(fixture.jobId, 'a' * 64),
     'status': 'failed',
@@ -50,6 +84,12 @@ class ScreenProducts extends ProductService {
   });
   @override
   Future<ProductImportCapabilities> verifyCsvImport(String store) async {
+    if (denied)
+      throw const ApiException(
+        message: 'Synthetic access denial',
+        statusCode: 403,
+        code: 'FORBIDDEN',
+      );
     if (unavailable)
       throw const ApiException(
         message: 'Synthetic recovery outage',
@@ -171,6 +211,8 @@ Future<(StoreContext, ScreenProducts)> mount(
   WidgetTester tester, {
   bool unavailable = false,
   bool pending = false,
+  bool catalog = false,
+  bool emptyCatalog = false,
 }) async {
   SharedPreferences.setMockInitialValues({});
   final api = ApiClient(baseUrl: 'https://unused.synthetic.invalid/v1');
@@ -180,14 +222,19 @@ Future<(StoreContext, ScreenProducts)> mount(
   await stores.loadStores();
   final products = ScreenProducts(api)
     ..unavailable = unavailable
-    ..pending = pending;
+    ..pending = pending
+    ..emptyCatalog = emptyCatalog;
   await tester.pumpWidget(
     MultiProvider(
       providers: [
         ChangeNotifierProvider.value(value: stores),
         ChangeNotifierProvider<ProductService>.value(value: products),
       ],
-      child: const MaterialApp(home: CsvImportScreen(storeId: fixture.site)),
+      child: MaterialApp(
+        home: catalog
+            ? const ProductsScreen()
+            : const CsvImportScreen(storeId: fixture.site),
+      ),
     ),
   );
   await tester.pumpAndSettle();
@@ -195,6 +242,119 @@ Future<(StoreContext, ScreenProducts)> mount(
 }
 
 void main() {
+  testWidgets(
+    'a live CSV capability denial clears private content while retaining the uncertain original request',
+    (tester) async {
+      final (_, products) = await mount(tester, pending: true);
+      final history = find.text('failed · 1/2 committed');
+      await tester.ensureVisible(history);
+      await tester.tap(history);
+      await tester.pumpAndSettle();
+      expect(find.text('Row 1: completed'), findsOneWidget);
+      final input = find.byType(TextField);
+      await tester.ensureVisible(input);
+      await tester.enterText(input, fixture.csv);
+      products.denied = true;
+      await tester.tap(find.byTooltip('Refresh imports'));
+      await tester.pumpAndSettle();
+      expect(find.text('Row 1: completed'), findsNothing);
+      expect(find.text('failed · 1/2 committed'), findsNothing);
+      expect(
+        find.text('Store access changed. Reload this store.'),
+        findsOneWidget,
+      );
+      expect(tester.widget<TextField>(input).controller!.text, isEmpty);
+      expect(
+        find.textContaining('An original registration needs confirmation'),
+        findsNothing,
+      );
+      expect(
+        products.pending,
+        isTrue,
+        reason:
+            'A denial retires private presentation, not the encrypted original intent.',
+      );
+      expect(
+        tester
+            .widget<FilledButton>(
+              find.widgetWithText(FilledButton, 'Start import'),
+            )
+            .onPressed,
+        isNull,
+      );
+      expect(tester.takeException(), isNull);
+    },
+  );
+  for (final entry in ['toolbar', 'overflow', 'empty']) {
+    testWidgets(
+      'Products $entry entry opens the same CSV workspace and reads the catalog on return',
+      (tester) async {
+        await tester.binding.setSurfaceSize(const Size(900, 1200));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+        final (_, products) = await mount(
+          tester,
+          catalog: true,
+          emptyCatalog: entry == 'empty',
+        );
+        expect(products.catalogReads, [fixture.site]);
+        if (entry == 'overflow') {
+          await tester.tap(find.byType(PopupMenuButton<String>));
+          await tester.pumpAndSettle();
+          await tester.tap(find.text('CSV imports'));
+        } else {
+          final action = find.text(entry == 'empty' ? 'Import CSV' : 'Import');
+          await tester.ensureVisible(action);
+          await tester.tap(action);
+        }
+        await tester.pumpAndSettle();
+        expect(find.byType(CsvImportScreen), findsOneWidget);
+        expect(find.text('Connected as Seller'), findsNothing);
+        expect(
+          products.catalogReads,
+          [fixture.site],
+          reason:
+              'Opening imports must not invoke the retired catalog-selection reader.',
+        );
+        products
+          ..emptyCatalog = false
+          ..catalogName = 'Read back after import';
+        await tester.tap(find.byTooltip('Back'));
+        await tester.pumpAndSettle();
+        expect(products.catalogReads, [fixture.site, fixture.site]);
+        expect(find.text('Read back after import'), findsOneWidget);
+        expect(products.submissions, isEmpty);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+
+  testWidgets(
+    'returning from imports after a store switch never reloads the retired store',
+    (tester) async {
+      final (stores, products) = await mount(tester, catalog: true);
+      await tester.tap(find.text('Import'));
+      await tester.pumpAndSettle();
+      products.catalogName = 'Current second-store catalog';
+      final switched = stores.selectStore(stores.stores.last);
+      await tester.pump();
+      await switched;
+      await tester.pumpAndSettle();
+      expect(find.textContaining('Account or store changed'), findsOneWidget);
+      final originalReads = products.catalogReads
+          .where((site) => site == fixture.site)
+          .length;
+      await tester.tap(find.byTooltip('Back'));
+      await tester.pumpAndSettle();
+      expect(
+        products.catalogReads.where((site) => site == fixture.site).length,
+        originalReads,
+      );
+      expect(products.catalogReads.last, second);
+      expect(find.text('Current second-store catalog'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   testWidgets(
     'native original-registration stop confirms the request and clears its CSV without importing products',
     (tester) async {
