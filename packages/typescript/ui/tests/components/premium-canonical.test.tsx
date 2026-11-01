@@ -1,7 +1,7 @@
 import React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
-import { Card, FormProtectionProvider, MetricCard, PageHeader, ProviderModeBadge, SaveBar, Section } from '../../src';
+import { Badge, Banner, Card, FormProtectionProvider, MetricCard, PageHeader, ProviderModeBadge, SaveBar, Section } from '../../src';
 import { letbuyySurfaceTokens } from '../../src/tokens';
 
 function contrast(a: string, b: string) {
@@ -20,6 +20,16 @@ describe('premium canonical admin compositions', () => {
         view.rerender(<ProviderModeBadge mode="sandbox" />);
         expect(screen.getByText('Sandbox').getAttribute('data-provider-mode')).toBe('sandbox');
     });
+    it('uses compact status chips and quiet inline alerts in the admin surface', () => {
+        const admin = letbuyySurfaceTokens.admin.light;
+        expect(contrast(admin['--lb-component-badge-success-text'], admin['--lb-component-badge-success-bg'])).toBeGreaterThanOrEqual(4.5);
+        expect(contrast(admin['--lb-component-banner-success-text'], admin['--lb-component-banner-success-bg'])).toBeGreaterThanOrEqual(4.5);
+        const { container } = render(<><Badge label="Connected" variant="success" /><Banner variant="success" title="Ready">Your domain is connected.</Banner></>);
+        expect(screen.getByText('Connected').className).toContain('rounded-[6px]');
+        expect(screen.getByText('Connected').className).toContain('badge-success-bg');
+        expect(screen.getByRole('status').className).toContain('banner-success-bg');
+        expect(container.querySelectorAll('svg')).toHaveLength(1);
+    });
     it('keeps action, inverse text, links, focus and essential control boundaries legible without recoloring other surfaces', () => {
         const admin = letbuyySurfaceTokens.admin.light;
         expect(admin['--lb-component-sidebar-bg']).toBe('#1E1A2D');
@@ -34,7 +44,8 @@ describe('premium canonical admin compositions', () => {
         expect(contrast(admin['--lb-component-save-bar-focus'], admin['--lb-component-save-bar-bg'])).toBeGreaterThanOrEqual(3);
         expect(letbuyySurfaceTokens.storefront.light['--lb-color-primary']).toBe('#8B5CF6');
         expect(letbuyySurfaceTokens.identity.light['--lb-component-save-bar-bg']).toBeUndefined();
-        expect(admin['--lb-component-banner-danger-text']).toBe(letbuyySurfaceTokens.identity.light['--lb-component-banner-danger-text']);
+        expect(admin['--lb-component-banner-danger-text']).not.toBe(letbuyySurfaceTokens.identity.light['--lb-component-banner-danger-text']);
+        expect(contrast(admin['--lb-component-banner-danger-text'], admin['--lb-component-banner-danger-bg'])).toBeGreaterThanOrEqual(4.5);
     });
 
     it('keeps solid semantic statuses legible, including composited translucent descriptions', () => {

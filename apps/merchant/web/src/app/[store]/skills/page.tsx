@@ -9,7 +9,6 @@ import { Button, Input,
     Banner,
     Card,
     ConfirmDialog,
-    EmptyState,
     Gauge,
     ListChecks,
     Page,
@@ -24,6 +23,7 @@ import { Button, Input,
     Trash2,
     useToast,
 } from '@letbuyy/ui'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import type { StatusVariant } from '@letbuyy/ui'
 
 interface Skill {
@@ -383,7 +383,7 @@ export default function SkillsPage() {
             {items.length === 0 && !showForm ? (
                 <Card>
                     <Section title="Skills">
-                        <EmptyState
+                        <EmptyState scene="skills"
                             icon={<ListChecks className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                             title="No skills yet"
                             body="Add the skills, tools, and strengths that help visitors understand what you can do."

@@ -10,7 +10,6 @@ import {
     Button,
     Card,
     Drawer,
-    EmptyState,
     Input,
     MaterialIcon,
     NumberField,
@@ -25,6 +24,7 @@ import {
 import { formatIndiaDate, formatInrCurrency } from '@letbuyy/ui/formatting'
 import type { Customer, CustomerSegment, CustomerSegmentPreview, CustomerSegmentRules } from '@letbuyy/shared-types'
 import { buildEmptyRules, buildFormState, formStateToRules, type SegmentFormState } from '@/lib/customers/segment-form'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 
 // ---------------------------------------------------------------------------
 // Local types (mirrors gateway CustomerSegment / CustomerSegmentRules shapes)
@@ -622,7 +622,7 @@ export default function CustomerSegmentsPage() {
             ) : segments.length === 0 ? (
                 <Card>
                     <Section>
-                        <EmptyState
+                        <EmptyState scene="segments"
                             icon={<MaterialIcon name="group_work" />}
                             title="No segments yet"
                             body="Create a segment to group customers by status, tags, spend, order count, or last order date."

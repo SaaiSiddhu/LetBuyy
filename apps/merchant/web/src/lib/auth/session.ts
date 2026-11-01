@@ -66,7 +66,7 @@ const getStoreForCurrentSession = cache(async (
             theme_id: data.theme_id || 'modern',
             theme_settings: data.theme_settings || null,
             custom_domain: data.custom_domain || null,
-            custom_domain_status: data.custom_domain_status || 'none',
+            custom_domain_status: data.custom_domain_status || null,
         }
     } catch (error) {
         // 401/403 (no access) and 404 (missing store) → not found.

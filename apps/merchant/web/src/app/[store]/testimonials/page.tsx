@@ -10,7 +10,6 @@ import { Button, Input,
     Banner,
     Card,
     ConfirmDialog,
-    EmptyState,
     MessageSquare,
     Page,
     PageHeader,
@@ -26,6 +25,7 @@ import { Button, Input,
     Trash2,
     useToast,
 } from '@letbuyy/ui'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import { formatIndiaDate as formatDate } from '@letbuyy/ui/formatting'
 
 interface Testimonial {
@@ -399,7 +399,7 @@ export default function TestimonialsPage() {
             {items.length === 0 && !showForm ? (
                 <Card>
                     <Section title="Testimonials">
-                        <EmptyState
+                        <EmptyState scene="testimonials"
                             icon={<MessageSquare className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                             title="No testimonials yet"
                             body="Add quotes from customers, clients, or collaborators to make your portfolio more credible."

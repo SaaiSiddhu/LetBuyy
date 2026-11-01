@@ -19,7 +19,6 @@ import {
     Banner,
     Button,
     Card,
-    EmptyState,
     Input,
     MaterialIcon,
     Modal,
@@ -37,6 +36,7 @@ import {
     type SelectOption,
     type StatusVariant,
 } from '@letbuyy/ui'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import type {
     InventoryTransfer,
     InventoryLocation,
@@ -720,7 +720,7 @@ function WarehouseWorkspace({store}:{store:string}) {
                             ))}
                         </div>
                     ) : loadError ? <p>Transfer records are unavailable. Reload the workspace to try again.</p> : transfers.length === 0 ? (
-                        <EmptyState
+                        <EmptyState scene="transfers"
                             icon={
                                 <RefreshCw
                                     className="h-[var(--lb-size-icon-lg)] w-[var(--lb-size-icon-lg)]"

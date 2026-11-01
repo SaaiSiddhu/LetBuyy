@@ -36,7 +36,7 @@ async function mount(url: string, transport: (url: string, init?: RequestInit) =
     async function render(next = url) {
         const parsed = new URL(next, 'http://localhost');
         const store = parsed.pathname.split('/')[1];
-        await act(async () => root.render(<AppRouterContext.Provider value={router}><PathParamsContext.Provider value={{ store }}><SearchParamsContext.Provider value={parsed.searchParams}><PathnameContext.Provider value={parsed.pathname}>{workspace ? <ToastProvider><ThemeWorkspace/></ToastProvider> : <ThemeMarketplace/>}</PathnameContext.Provider></SearchParamsContext.Provider></PathParamsContext.Provider></AppRouterContext.Provider>));
+        await act(async () => root.render(<AppRouterContext.Provider value={router}><PathParamsContext.Provider value={{ store }}><SearchParamsContext.Provider value={parsed.searchParams}><PathnameContext.Provider value={parsed.pathname}>{workspace ? <ToastProvider><ThemeWorkspace view={parsed.searchParams.get('view') === 'library' ? 'library' : 'overview'}/></ToastProvider> : <ThemeMarketplace/>}</PathnameContext.Provider></SearchParamsContext.Provider></PathParamsContext.Provider></AppRouterContext.Provider>));
     }
     await render();
     return { render, pushes, document: dom.window.document,
@@ -135,11 +135,11 @@ test('unconfirmed package metadata keeps demo details available while Add is dis
 });
 
 for (const visibility of [
-    { label: 'unpublished', published: false, status: 'draft', access_mode: 'public', embedded: false },
-    { label: 'private published', published: true, status: 'published', access_mode: 'preview_only', embedded: false },
-    { label: 'public published', published: true, status: 'published', access_mode: 'public', embedded: true },
-    { label: 'visibility unavailable', published: true, status: 'published', access_mode: 'public', embedded: false, unavailable: true },
-]) test(`current-theme hero uses live scoped visibility: ${visibility.label}`, async () => {
+    { label: 'unpublished', published: false, status: 'draft', access_mode: 'public' },
+    { label: 'private published', published: true, status: 'published', access_mode: 'preview_only' },
+    { label: 'public published', published: true, status: 'published', access_mode: 'public' },
+    { label: 'visibility unavailable', published: true, status: 'published', access_mode: 'public', unavailable: true },
+]) test(`current-theme artwork stays usable across visibility states: ${visibility.label}`, async () => {
     const h = await mount('/sample-store/online-store/themes', async url => {
         if (url.includes('/access')) return visibility.unavailable
             ? Response.json({ error: { message: 'Synthetic visibility outage' } }, { status: 503 })
@@ -148,8 +148,9 @@ for (const visibility of [
         return Response.json({ themes: [theme], currentTheme: theme, storeId: site, storeStatus: visibility.status });
     }, true);
     try {
-        assert.equal(Boolean(h.document.querySelector('iframe[title="Current storefront"]')), visibility.embedded);
-        if (!visibility.embedded) assert.match(h.text(), /Open the theme editor to preview your saved design/);
+        assert.equal(h.document.querySelector('iframe[title="Current storefront preview"]'), null);
+        assert.ok(h.document.querySelector('img[alt="Threadline theme artwork"]'));
+        assert.match(h.text(), /Preview saved design in editor/);
         assert.match(h.text(), /Threadline/);
     } finally { await h.close(); }
 });
@@ -162,7 +163,7 @@ for (const artwork of [
  {version:'2.0.0',original:'https://custom.example.invalid/captured-design.webp',expected:'https://custom.example.invalid/captured-design.webp'},
 ]) test(`installed library artwork honors its captured version and custom override: ${artwork.version}/${artwork.original}`,async()=>{
  const circuit={...theme,slug:'letbuyy-forge',name:'Circuit'};
- const h=await mount('/sample-store/online-store/themes',async url=>{
+ const h=await mount('/sample-store/online-store/themes?view=library',async url=>{
   if(url.includes('/access'))return Response.json({data:{published:false,status:'draft',access_mode:'public',access_message:null,has_password:false}});
   if(url.includes('/library'))return Response.json({data:{themes:[{slug:circuit.slug,name:circuit.name,version:artwork.version,thumbnail_url:artwork.original,instance_status:'installed',installed_at:'2026-10-27T00:00:00Z',last_published_at:null,last_modified_at:'2026-10-27T00:00:00Z',hasDraft:true,isCurrentlyPublished:false,updateAvailable:false,theme_package_version_id:versionId}]}});
   return Response.json({themes:[circuit],currentTheme:circuit,storeId:site,storeStatus:'draft'});
@@ -170,7 +171,7 @@ for (const artwork of [
  try{const image=h.document.querySelector('img[alt="Circuit design preview"]');assert.ok(image);assert.equal(image.getAttribute('src'),artwork.expected);assert.match(h.text(),/Saved draft/);}finally{await h.close();}
 });
 
-test('a public overview frame uses the allowed Commerce platform origin while View store keeps the buyer hostname',async()=>{
+test('the overview keeps the buyer hostname in View store while presenting theme artwork',async()=>{
  const names: string[]=['NEXT_PUBLIC_STOREFRONT_URL','NEXT_PUBLIC_STORE_ROOT_DOMAIN','NEXT_PUBLIC_STORE_ROOT_DOMAIN_ALIASES','NODE_ENV'];
  const prior=Object.fromEntries(names.map(name=>[name,process.env[name]]));
  Object.assign(process.env,{NEXT_PUBLIC_STOREFRONT_URL:'https://storefront.stores.example.test',NEXT_PUBLIC_STORE_ROOT_DOMAIN:'stores.example.test',NEXT_PUBLIC_STORE_ROOT_DOMAIN_ALIASES:'storefront.stores.example.test',NODE_ENV:'production'});
@@ -181,22 +182,37 @@ test('a public overview frame uses the allowed Commerce platform origin while Vi
    return Response.json({themes:[theme],currentTheme:theme,storeId:site,storeStatus:'published'});
   },true);
   try{
-   const frame=h.document.querySelector<HTMLIFrameElement>('iframe[title="Current storefront"]');assert.ok(frame);
-   assert.equal(frame.src,'https://storefront.stores.example.test/store/sample-store');
+   assert.ok(h.document.querySelector('img[alt="Threadline theme artwork"]'));
    const view=[...h.document.querySelectorAll('a')].find(a=>a.textContent?.includes('View store'));assert.ok(view);
    assert.equal(new URL(view.href).hostname,'sample-store.stores.example.test');
-   assert.equal(frame.getAttribute('sandbox'),'allow-scripts allow-same-origin allow-forms');
   }finally{await h.close();}
  }finally{for(const name of names){if(prior[name]===undefined)delete process.env[name];else process.env[name]=prior[name];}}
 });
 
 test('library distinguishes the included catalog from a full custom allowance and never publishes on load',async()=>{
  let mutations=0;
- const h=await mount('/sample-store/online-store/themes',async(url,init)=>{
+ const h=await mount('/sample-store/online-store/themes?view=library',async(url,init)=>{
   if(init?.method&&init.method!=='GET')mutations++;
   if(url.includes('/access'))return Response.json({data:{published:true,status:'published',access_mode:'public',access_message:null,has_password:false}});
   if(url.includes('/library'))return Response.json({data:{themes:[],allowance:{included_themes:Array.from({length:10},(_,i)=>`included-${i}`),custom_used:1,custom_limit:1,plan_name:'Free'}}});
   return Response.json({themes:[theme],currentTheme:theme,storeId:site,storeStatus:'published'});
  },true);
  try{assert.match(h.text(),/10 built-in themes included on every plan/);assert.match(h.text(),/Custom designs: 1 \/ 1 \(Free\)/);assert.match(h.text(),/until you publish/);assert.equal(mutations,0);}finally{await h.close();}
+});
+
+test('online store overview requests five featured themes and keeps full library separate', async () => {
+ const calls: string[] = [];
+ const featured = ['Circuit', 'Threadline', 'Dewdrop', 'Habitat', 'Pantry', 'Sixth theme'].map((name, index) => ({ ...theme, id: `${site.slice(0,-1)}${index}`, slug: `featured-${index}`, name, thumbnail_url: `/theme-previews/${index}.webp` }));
+ const h = await mount('/sample-store/online-store/themes', async url => {
+  calls.push(url);
+  if (url.includes('/access')) return Response.json({ data: { published: false, status: 'draft', access_mode: 'preview_only', access_message: null, has_password: false } });
+  return Response.json({ themes: featured, currentTheme: theme, storeId: site, storeStatus: 'draft' });
+ }, true);
+ try {
+  assert.ok(calls.some(url => url.includes('limit=5') && url.includes('sort=portfolio')));
+  assert.equal(h.document.querySelectorAll('article[aria-label$=" theme"]').length, 5);
+  assert.match(h.text(), /Explore more themes/);
+  assert.doesNotMatch(h.text(), /My themes|Search themes|All categories/);
+  assert.ok([...h.document.querySelectorAll('a')].some(link => link.getAttribute('href')?.includes('view=library')));
+ } finally { await h.close(); }
 });

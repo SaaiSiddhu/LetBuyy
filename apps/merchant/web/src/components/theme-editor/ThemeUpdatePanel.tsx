@@ -56,6 +56,7 @@
 
 import { useState, useCallback, useId, useEffect, useRef } from 'react'
 import { useReadRequest } from '@/lib/api/use-read-request'
+import { MerchantNavigationLink } from '@/components/MerchantNavigationLink'
 import {
     AlertTriangle,
     ArrowUp,
@@ -122,6 +123,8 @@ export interface ThemeUpdateDiff {
 
 /** Props for ThemeUpdatePanel. */
 export interface ThemeUpdatePanelProps {
+    /** Owned store path segment for the existing library duplication workflow. */
+    storeSlug: string
     /** Theme slug (used in API paths). */
     themeSlug: string
     /** Resolved store ID (UUID). Forwarded to the same-origin proxy. */
@@ -228,6 +231,7 @@ export default function ThemeUpdatePanel(props: ThemeUpdatePanelProps) {
 }
 
 function ScopedThemeUpdatePanel({
+    storeSlug,
     themeSlug,
     storeId,
     currentVersionId,
@@ -546,14 +550,13 @@ function ScopedThemeUpdatePanel({
                         If you proceed without duplicating, content in removed sections will be lost.
                     </p>
                     <div className="flex flex-wrap gap-[var(--lb-space-2)]">
-                        <Button
-                            unstyled
-                            type="button"
+                        <MerchantNavigationLink
+                            href={`/${encodeURIComponent(storeSlug)}/online-store/themes`}
                             className="inline-flex h-[var(--lb-size-control-sm)] items-center rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border-strong)] bg-[var(--lb-color-primary)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] leading-none text-[color:var(--lb-color-text-on-primary)] hover:opacity-90 focus-visible:outline focus-visible:outline-[var(--lb-color-focus-ring)]"
-                            aria-label="Duplicate theme before updating (recommended to preserve content)"
+                            aria-label="Open theme library to duplicate this theme before updating"
                         >
-                            Duplicate first
-                        </Button>
+                            Duplicate in theme library
+                        </MerchantNavigationLink>
                         <Button
                             unstyled
                             type="button"

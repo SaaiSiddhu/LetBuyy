@@ -48,6 +48,7 @@
    ====================================== */
 
 :root {
+  --font-letbuyy-display: var(--font-letbuyy-sans);
   --font-inter: var(--font-letbuyy-sans), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-display-premium: var(--font-letbuyy-display), var(--font-letbuyy-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono-premium: var(--font-letbuyy-mono), "SFMono-Regular", Consolas, "Liberation Mono", monospace;
@@ -115,19 +116,15 @@
      plane's own backing puts the page above it, exactly as intended, while the
      interactive bar stays on top where its popovers need it.
      —————————————————————————————————————————————————————————— */
-  /* The bar. 48 + 16 = 64px, from the space scale rather than a magic number,
+  /* The bar. 48 + 8 = 56px, from the space scale rather than a magic number,
      so the chrome rescales with the token system. Everything that must clear
      the header — the page plane, the drawer, the scrim, the assistant panel,
      the bottom sheets, toasts — derives from this one value. */
-  --admin-header-height: calc(var(--lb-space-9) + var(--lb-space-4));
-  /* The canonical page-top curve, and therefore exactly how deep and how wide
-     the header shows through at each corner. A touch larger than the 16px panel
-     radius it replaces — the arc is permanent now, so it reads as the shell's
-     silhouette — but no larger: past ~20px the notch starts to look like a
-     bite taken out of the page rather than a softened corner. */
-  --admin-page-curve: calc(var(--lb-radius-xl) + var(--lb-space-1));
+  --admin-header-height: calc(var(--lb-space-9) + var(--lb-space-2));
+  /* A restrained curve on all four content-sheet corners. */
+  --admin-page-curve: var(--lb-radius-md);
   /* The rail's own corner, one step tighter than the page's. Derived from it,
-     never set independently, so retuning the page top retunes the rail with it.
+     never set independently, so retuning the page retunes the rail with it.
      Tighter on purpose: the rail is a narrow dark column, and an arc sized for
      a full-width sheet eats a visibly larger bite out of it at the same radius. */
   --admin-rail-curve: calc(var(--admin-page-curve) - var(--lb-space-1));
@@ -373,7 +370,7 @@ html {
 body {
   background: var(--bg);
   color: var(--text-primary);
-  font-family: var(--font-inter);
+  font-family: var(--lb-font-family-body);
   font-size: var(--lb-font-size-body);
   line-height: var(--lb-line-height-body);
   -webkit-font-smoothing: antialiased;
@@ -487,7 +484,8 @@ body {
    scroll does so inside it (the page plane, the nav rail, the settings pane),
    which is what keeps the header, the rail and the page's curved top pinned. */
 .admin-shell {
-  --header-bg: var(--lb-component-header-bg);
+  /* Match the marketing site's dark hero behind its transparent header. */
+  --header-bg: #0a0912;
   --header-border: color-mix(in srgb, var(--lb-color-primary) 14%, transparent);
   --header-fg: var(--lb-component-header-text);
   --header-muted: var(--lb-component-header-text-subdued);
@@ -497,7 +495,7 @@ body {
   --header-control-active: color-mix(in srgb, var(--lb-color-primary) 22%, transparent);
   --header-logo-glow: color-mix(in srgb, var(--lb-color-primary) 32%, transparent);
   --header-search-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 6px 20px color-mix(in srgb, var(--lb-color-primary) 10%, transparent);
-  --sidebar-bg: var(--lb-component-sidebar-bg);
+  --sidebar-bg: var(--header-bg);
   --sidebar-border: var(--lb-component-sidebar-border);
   --sidebar-active-bg: var(--lb-component-sidebar-active-bg);
   --sidebar-active-text: var(--lb-component-sidebar-active-text);
@@ -603,18 +601,32 @@ body {
    —————————————————————————————————————————————————————————— */
 .admin-panel-frame {
   background: var(--header-bg);
-  /* Not margin/top: the frame is a plain flex child of the 100dvh shell, so a
-     padding-top is what reserves the bar while keeping the frame's own box
-     exactly one viewport tall. The reserved strip is painted in --header-bg
-     above, which is what continues the header downward behind the sheet. */
-  padding-top: var(--admin-header-height);
+  /* The left inset holds the docked rail on desktop. Tablet docks it flush;
+     only the phone drawer floats above the page. */
+  gap: var(--lb-space-1);
+  padding: calc(var(--admin-header-height) + var(--lb-space-1)) 0 0 var(--lb-space-1);
+}
+
+@media (min-width: 1024px) {
+  .admin-panel-frame {
+    /* A hairline of dark shell defines the desktop sheet's right/bottom edge. */
+    padding-right: var(--lb-space-1);
+    padding-bottom: var(--lb-space-1);
+  }
+
 }
 
 .admin-panel-sidebar {
-  /* The rail owns the leading corner of the sheet at >=1024px, and carries the
-     same corner as an overlay drawer below it — one radius for both states. */
-  border-start-start-radius: var(--admin-rail-curve);
+  width: 200px;
+  background: var(--sidebar-bg) !important;
+  /* One quiet edge keeps the rail distinct without drawing a second frame
+     around the navigation or competing with the content sheet. */
+  border: 1px solid color-mix(in srgb, var(--lb-component-sidebar-text) 10%, transparent);
+  border-radius: var(--admin-rail-curve);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.15);
   overflow: hidden;
+  --lb-density-sidebar-row-height: 30px;
+  --lb-density-sidebar-icon-size: 18px;
 
   /* Layout only. The rail's colours — including its inverted text ramp and the
      lighter accent the active row/rail indicator needs against a dark surface —
@@ -623,6 +635,212 @@ body {
      --lb-color-primary; doing so leaked a sidebar-local brand colour into every
      descendant that happened to read the global token. */
   color: var(--lb-component-sidebar-text);
+}
+
+.admin-sidebar-footer-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.admin-sidebar-footer-row > nav {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.admin-sidebar-collapse-toggle {
+  display: inline-flex;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in srgb, var(--lb-component-sidebar-text) 12%, transparent);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.035);
+  color: #aaa9b4;
+  transition: background var(--lb-motion-fast) var(--lb-ease-out), border-color var(--lb-motion-fast) var(--lb-ease-out), color var(--lb-motion-fast) var(--lb-ease-out);
+}
+
+.admin-sidebar-collapse-toggle:hover {
+  border-color: color-mix(in srgb, var(--lb-component-sidebar-text) 24%, transparent);
+  background: rgba(255, 255, 255, 0.09);
+  color: var(--lb-component-sidebar-text);
+}
+
+.admin-sidebar-collapse-toggle:focus-visible {
+  outline: 2px solid var(--lb-color-focus-ring);
+  outline-offset: 2px;
+  color: var(--lb-component-sidebar-text);
+}
+
+@media (min-width: 769px) {
+  .admin-panel-sidebar--collapsed {
+    width: 56px;
+  }
+
+  .admin-panel-sidebar--collapsed .admin-sidebar-footer-row {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .admin-panel-sidebar--collapsed .admin-sidebar-footer-row > nav {
+    width: 100%;
+    flex: none;
+  }
+
+  .admin-panel-sidebar--collapsed nav[aria-label] > ul > li > a,
+  .admin-panel-sidebar--collapsed nav[aria-label] > ul > li > .relative > a {
+    justify-content: center;
+    padding-inline: 0;
+  }
+
+  /* Keep labels in the accessibility tree while showing only icon artwork. */
+  .admin-panel-sidebar--collapsed nav[aria-label] > ul > li > a > span:nth-child(2),
+  .admin-panel-sidebar--collapsed nav[aria-label] > ul > li > .relative > a > span:nth-child(2) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .admin-panel-sidebar--collapsed nav[aria-label] ul ul,
+  .admin-panel-sidebar--collapsed nav[aria-label] button[aria-expanded],
+  .admin-panel-sidebar--collapsed nav[aria-label] > ul > li > a > span:nth-child(3),
+  .admin-panel-sidebar--collapsed nav[aria-label] > ul > li > .relative > a > span:nth-child(3),
+  .admin-panel-sidebar--collapsed div:has(> nav[aria-label="Sales channels"]) > div:first-child,
+  .admin-panel-sidebar--collapsed div:has(> nav[aria-label="Apps"]) > div:first-child {
+    display: none;
+  }
+
+  .admin-panel-sidebar--collapsed nav[aria-label] > ul > li:has(ul [aria-current="page"]) > .relative > a {
+    background: var(--lb-component-sidebar-active-bg);
+  }
+}
+
+@media (max-width: 1023.98px) {
+  .admin-sidebar-collapse-toggle {
+    display: none;
+  }
+}
+
+/* The canonical Lucide icons inherit the sidebar's neutral text ramp. */
+.admin-panel-sidebar .merchant-sidebar-icon {
+  width: var(--lb-density-sidebar-icon-size);
+  height: var(--lb-density-sidebar-icon-size);
+  flex: none;
+  color: var(--lb-component-sidebar-text-subdued);
+  opacity: 1;
+}
+
+.admin-panel-sidebar a:hover .merchant-sidebar-icon,
+.admin-panel-sidebar button:hover .merchant-sidebar-icon {
+  color: var(--lb-component-sidebar-text);
+  opacity: 1;
+}
+
+.admin-panel-sidebar a[aria-current="page"] .merchant-sidebar-icon,
+.admin-panel-sidebar li:has(ul [aria-current="page"]) > .relative > a .merchant-sidebar-icon {
+  color: var(--lb-component-sidebar-active-text);
+  opacity: 1;
+}
+
+/* Shopify's current admin uses a compact route label above larger in-page
+   headings. Reuse the existing card-title type role for Merchant page headers,
+   while leaving body, tables and secondary copy on their shared scale. */
+.admin-shell {
+  --lb-component-page-header-title-size: var(--lb-font-size-card-title);
+  --lb-component-page-header-title-line-height: var(--lb-line-height-card-title);
+}
+
+@media (max-width: 1023.98px) {
+  .admin-panel-frame {
+    gap: 0;
+    padding-left: 0;
+  }
+}
+
+/* Tablet keeps both navigation levels in the flex/grid flow. The compact
+   primary rail meets the viewport's left and bottom edges; the settings
+   column follows it, leaving the entire remaining width to the page. */
+@media (min-width: 769px) and (max-width: 1023.98px) {
+  .admin-panel-drawer,
+  .admin-sidebar-overlay.active {
+    display: none !important;
+  }
+
+  .admin-panel-sidebar:not(.admin-panel-drawer) {
+    display: flex !important;
+    position: static;
+    width: 56px;
+    min-width: 56px;
+    height: 100%;
+    min-height: 0;
+    border-left: 0;
+    border-bottom: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .admin-panel-frame {
+    padding-right: 0;
+    padding-bottom: 0;
+  }
+
+  .admin-page-scroll--settings {
+    border-bottom-left-radius: 0;
+  }
+}
+
+/* Compact the hierarchy without shrinking its type or the disclosure target. */
+.admin-panel-sidebar nav[aria-label="Primary navigation"] ul ul > li > a,
+.admin-panel-sidebar nav[aria-label="Primary navigation"] ul ul > li > button {
+  min-height: 28px;
+  font-size: var(--lb-font-size-secondary);
+  line-height: var(--lb-line-height-secondary);
+}
+
+.admin-panel-sidebar div:has(> nav[aria-label="Sales channels"]),
+.admin-panel-sidebar div:has(> nav[aria-label="Apps"]) {
+  margin-top: var(--lb-space-3);
+}
+
+/* Merchant navigation uses a single quiet selection pill. The shared shell's
+   decorative left tick, inset ring and child guide make this compact rail look
+   busier than the reference, especially with Products expanded. Keep its
+   route state and focus ring intact; only remove those decorative strokes. */
+.admin-panel-sidebar nav[aria-label="Primary navigation"] > ul > li > .relative > a[aria-current="page"]:not(:focus-visible),
+.admin-panel-sidebar nav[aria-label="Primary navigation"] > ul > li:has(ul [aria-current="page"]) > .relative > a:not(:focus-visible),
+.admin-panel-sidebar nav[aria-label="Primary navigation"] > ul > li > a[aria-current="page"]:not(:focus-visible) {
+  box-shadow: none;
+}
+
+.admin-panel-sidebar nav[aria-label="Primary navigation"] > ul > li > .relative > a[aria-current="page"] .letbuyy-icon,
+.admin-panel-sidebar nav[aria-label="Primary navigation"] > ul > li:has(ul [aria-current="page"]) > .relative > a .letbuyy-icon,
+.admin-panel-sidebar nav[aria-label="Primary navigation"] > ul > li > a[aria-current="page"] .letbuyy-icon {
+  color: var(--lb-component-sidebar-active-text);
+  opacity: 1;
+}
+
+.admin-panel-sidebar nav[aria-label="Primary navigation"] > ul > li > .relative > a::before,
+.admin-panel-sidebar nav[aria-label="Primary navigation"] > ul > li > a::before,
+.admin-panel-sidebar nav[aria-label="Primary navigation"] > ul > li > button::before,
+.admin-panel-sidebar nav[aria-label="Primary navigation"] ul ul::before {
+  content: none;
+}
+
+/* A child destination still belongs to its selected parent. The disclosure
+   button stays separate from the link and keeps its full touch target. */
+.admin-panel-sidebar nav[aria-label="Primary navigation"] button[aria-expanded] svg {
+  width: 9px;
+  height: 9px;
+  opacity: 0.68;
+}
+
+.admin-panel-sidebar nav[aria-label="Primary navigation"] button[aria-expanded] svg path {
+  stroke-width: 1.5px;
 }
 
 /* ——————————————————————————————————————————————————————————
@@ -635,7 +853,7 @@ body {
    —————————————————————————————————————————————————————————— */
 .admin-page-scroll {
   background: var(--lb-color-bg);
-  border-start-end-radius: var(--admin-page-curve);
+  border-radius: var(--admin-page-curve);
   /* Reserve the gutter permanently: without it, freezing this scroller for a
      modal (see [data-lb-scroll-locked] below) would shift the page sideways. */
   scrollbar-gutter: stable;
@@ -650,6 +868,61 @@ body {
      treatment the settings pane and the nav rails already use. */
   scrollbar-width: thin;
   scrollbar-color: color-mix(in srgb, var(--lb-color-text) 22%, transparent) transparent;
+}
+
+/* Settings owns a second navigation column inside the same page plane. */
+@media (min-width: 769px) {
+  .admin-page-scroll--settings,
+  .admin-page-scroll--settings .admin-settings-wrapper {
+    background: var(--sidebar-bg);
+  }
+}
+
+.admin-rail-popover {
+  position: fixed;
+  z-index: 70;
+  display: flex;
+  flex-direction: column;
+  min-width: 174px;
+  max-width: 240px;
+  padding: 5px;
+  border: 1px solid color-mix(in srgb, var(--lb-component-sidebar-text) 16%, transparent);
+  border-radius: 10px;
+  background: var(--sidebar-bg);
+  box-shadow: 0 14px 35px rgb(0 0 0 / 30%);
+  color: var(--lb-component-sidebar-text);
+}
+
+.admin-rail-popover-title,
+.admin-rail-popover-link {
+  display: block;
+  border-radius: 6px;
+  padding: 7px 10px;
+  color: var(--lb-component-sidebar-text);
+  font-size: var(--lb-font-size-secondary);
+  line-height: var(--lb-line-height-secondary);
+  text-decoration: none;
+}
+
+.admin-rail-popover-title {
+  font-weight: var(--lb-font-weight-semibold);
+}
+
+.admin-rail-popover-link {
+  color: var(--lb-component-sidebar-text-subdued);
+}
+
+.admin-rail-popover-link[aria-current="page"] {
+  background: var(--lb-component-sidebar-active-bg);
+  color: var(--lb-component-sidebar-active-text);
+  font-weight: var(--lb-font-weight-medium);
+}
+
+.admin-rail-popover a:hover,
+.admin-rail-popover a:focus-visible {
+  background: var(--lb-component-sidebar-hover-bg);
+  color: var(--lb-component-sidebar-text);
+  outline: none;
 }
 
 .admin-page-scroll::-webkit-scrollbar {
@@ -671,9 +944,9 @@ body {
    `overflow:hidden` on <body>, which does nothing here because <body> is not
    the scroller — so it also marks the document element, and this is the rule
    that makes the mark mean something. */
-/* Both, because which one is live depends on the route: on settings at >=1024px
+/* Both, because which one is live depends on the route: on settings at >=769px
    the panel's content column is the scroller and .admin-page-scroll is inert,
-   and below 1024px it is the other way round. Freezing only one meant every
+   and below 769px it is the other way round. Freezing only one meant every
    modal and confirm dialog on desktop settings let the page scroll behind it. */
 [data-lb-scroll-locked] .admin-page-scroll,
 [data-lb-scroll-locked] .settings-content {
@@ -700,8 +973,8 @@ body {
   background: var(--lb-color-bg);
 }
 
-@media (max-width: 1023px) {
-  /* Below lg the panel goes flat and hands scrolling up (.settings-content is
+@media (max-width: 768px) {
+  /* On phones the panel goes flat and hands scrolling up (.settings-content is
      height:auto/overflow:visible there). It hands it all the way up to
      .admin-page-scroll — NOT to this wrapper. A scroller here would be a second,
      inner scrollport whose top is square, and the page's curve would then clip a
@@ -714,24 +987,8 @@ body {
   }
 }
 
-/* The sheet's LEADING corner belongs to whatever is flush against the viewport
-   edge there. With a docked rail that is the rail; without one it is the sheet.
-   Two independent reasons the rail can be absent, hence two rules for one
-   declaration:
-     --flush  : a route whose rail is hidden at every width (settings brings its
-                own panel rail), set by AdminShell.
-     <1024px  : the rail is an overlay drawer on every route.
-   Both take --admin-page-curve exactly — no allowance, no asymmetry. This used
-   to be `+ 1px` below lg, to stop a sub-pixel crescent of the near-white sheet
-   showing through the drawer's coincident arc while the drawer is open ("white
-   particles"). A 1px difference between the page's two top corners is the more
-   visible defect of the two, and it is on screen all the time rather than only
-   while the drawer is open. */
-.admin-page-scroll--flush {
-  border-start-start-radius: var(--admin-page-curve);
-}
-
-@media (max-width: 1023px) {
+/* On phones the rail overlays the page, so the sheet owns both corners. */
+@media (max-width: 768px) {
   .admin-page-scroll {
     border-start-start-radius: var(--admin-page-curve);
   }
@@ -780,14 +1037,13 @@ body {
   border-bottom-right-radius: var(--lb-component-sidebar-item-radius);
 }
 
-/* The footer nav slot's TOP divider — the hairline above the sticky bottom
-   "Settings" row — takes the same secondary colour and the same curve,
-   mirrored to the corners IT owns. Scoped to the one footer this app renders
-   (the settings-shortcut nav; settings routes pass no footer at all). */
-.admin-panel-sidebar > div:has(> nav[aria-label="Settings navigation"]) {
-  border-color: var(--lb-color-secondary-action);
-  border-top-left-radius: var(--lb-component-sidebar-item-radius);
-  border-top-right-radius: var(--lb-component-sidebar-item-radius);
+/* Settings belongs to the same dark rail. Its divider is a neutral hairline,
+   not a separate purple panel. */
+.admin-panel-sidebar > div:has(> .admin-sidebar-footer-row) {
+  border: 0;
+  border-top: 1px solid color-mix(in srgb, var(--lb-component-sidebar-text) 12%, transparent);
+  border-radius: 0;
+  background: transparent;
 }
 
 .admin-drawer-back:hover {
@@ -809,16 +1065,16 @@ body {
 /* Only the OPEN overlay state carries .admin-panel-drawer, so the in-flow
    desktop rail is never animated. Reuses @keyframes slideInLeft — the same one
    the deleted settings drawer used — so unifying is not a motion regression. */
-@media (max-width: 1023px) {
+@media (max-width: 768px) {
   .admin-panel-drawer {
     animation: slideInLeft var(--lb-motion-slow) var(--lb-ease-out);
-    /* The trailing edge stays SQUARE on purpose. Rounding it cuts a notch out of
-       the rail that can only show what is behind — the white page — so a bright
-       wedge appears between the dark header above and the dark rail below, and
-       the curve reads as damage rather than as a corner. The rail is only ever
-       curved against dark: its leading corner, over the frame.
-       A soft shadow is what separates it from the page now that no scrim does. */
-    box-shadow: var(--lb-space-1) 0 var(--lb-space-6) color-mix(in srgb, var(--lb-color-text) 22%, transparent);
+    left: 0;
+    top: var(--admin-header-height);
+    height: calc(100dvh - var(--admin-header-height));
+    border-left: 0;
+    border-bottom: 0;
+    border-radius: 0 var(--admin-rail-curve) 0 0;
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.34);
   }
 }
 
@@ -1122,7 +1378,7 @@ body {
   align-items: center;
   justify-content: space-between;
   height: var(--admin-header-height);
-  padding: 0 20px;
+  padding: 0 16px 0 24px;
   background: var(--header-bg) !important;
   box-shadow: none;
   position: fixed;
@@ -1130,14 +1386,14 @@ body {
   left: 0;
   right: 0;
   z-index: 50;
-  gap: 16px;
+  gap: 12px;
 }
 
 .admin-header-left {
   display: flex;
   align-items: center;
   gap: 12px;
-  width: 268px;
+  width: 220px;
   min-width: 0;
   flex-shrink: 0;
 }
@@ -1147,8 +1403,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  width: 168px;
-  height: 48px;
+  width: 180px;
+  height: 52px;
   padding: 0;
   border-radius: var(--lb-radius-md);
   text-decoration: none;
@@ -1169,8 +1425,8 @@ body {
 .admin-header-logo-frame {
   position: relative;
   display: block;
-  width: 160px;
-  height: 40px;
+  width: 180px;
+  height: 51px;
   overflow: hidden;
   border-radius: var(--lb-radius-md);
 }
@@ -1189,8 +1445,8 @@ body {
   display: none;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
+  width: 34px;
+  height: 34px;
   border-radius: var(--lb-radius-md);
   border: 1px solid transparent;
   background: transparent;
@@ -1210,18 +1466,13 @@ body {
   outline-offset: 2px;
 }
 
-/* The drawer is the ONLY path to sidebar navigation below lg (1024px): the main
-   rail is `hidden lg:flex` and the settings rail is display:none from 1023px
-   down. Revealing its trigger only at 768px left a 769-1023px band with no
-   reachable sidebar nav at all. Match the lg breakpoint instead. */
-@media (max-width: 1023.98px) {
+/* Phones use the drawer; tablet and desktop have an in-flow rail. */
+@media (max-width: 768px) {
   .admin-header-hamburger {
     display: flex;
   }
 
-  /* Start the scrim at the page plane's top — the SAME edge the drawer uses —
-     at every width the drawer exists, not only <=768px. If the two disagree a
-     band of scrim shows above the drawer's curve. */
+  /* Start the scrim at the same top edge as the phone drawer. */
   .admin-sidebar-overlay.active {
     top: var(--admin-header-height);
   }
@@ -1240,9 +1491,9 @@ body {
   align-items: center;
   gap: 10px;
   width: 100%;
-  max-width: 660px;
-  height: 40px;
-  padding: 0 12px 0 14px;
+  max-width: 600px;
+  height: 36px;
+  padding: 0 10px 0 12px;
   border-radius: 10px;
   border: 1px solid var(--header-control-border);
   background: var(--header-control-bg);
@@ -1262,7 +1513,7 @@ body {
 }
 
 .admin-header-search .letbuyy-icon {
-  font-size: 19px;
+  font-size: 18px;
   color: currentColor;
 }
 
@@ -1303,7 +1554,7 @@ body {
   align-items: center;
   justify-content: flex-end;
   gap: 6px;
-  width: 252px;
+  width: 220px;
   min-width: 0;
   flex-shrink: 0;
 }
@@ -1312,8 +1563,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: var(--lb-radius-md);
   border: 1px solid transparent;
   background: transparent;
@@ -1324,8 +1575,8 @@ body {
 }
 
 .admin-header-btn .letbuyy-icon {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   stroke-width: 2.1;
 }
 
@@ -1353,7 +1604,7 @@ body {
   justify-content: center;
   gap: 7px;
   min-width: 0;
-  height: 36px;
+  height: 32px;
   padding: 2px 10px 2px 4px;
   border-radius: var(--lb-radius-md);
   border: 1px solid transparent;
@@ -1377,8 +1628,8 @@ body {
 }
 
 .store-switcher-pill-icon {
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   border-radius: 8px;
   background: linear-gradient(135deg, var(--primary-light), var(--primary));
   color: white;
@@ -2131,6 +2382,35 @@ body {
   animation: dropdownFadeIn 0.15s ease-out;
 }
 
+.admin-notifications-page-shell {
+  width: min(100%, 54rem);
+  margin-inline: auto;
+  padding: var(--lb-space-6);
+}
+
+.admin-notifications-page {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--lb-radius-lg);
+  overflow: hidden;
+}
+
+.admin-notifications-page .admin-notifications-list {
+  max-height: none;
+}
+
+.admin-notifications-page .admin-notifications-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--lb-space-3);
+}
+
+.admin-notifications-page .admin-notifications-footer span {
+  margin-right: auto;
+  color: var(--text-secondary);
+}
+
 .dark .admin-notifications-dropdown {
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
   background: var(--bg-secondary);
@@ -2177,7 +2457,6 @@ body {
   padding: 12px 16px;
   border-bottom: 1px solid var(--border-light);
   transition: background 0.1s;
-  cursor: pointer;
 }
 
 .admin-notification-item:last-child {
@@ -2262,161 +2541,95 @@ body {
 .admin-draft-banner {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
-  background: rgba(245, 158, 11, 0.1);
-  border-bottom: 1px solid rgba(245, 158, 11, 0.2);
-  font-size: var(--lb-font-size-small);
-  font-weight: 500;
-  color: var(--warning);
+  gap: var(--lb-space-2);
+  margin: var(--lb-space-3) var(--lb-space-4) 0;
+  padding: var(--lb-space-2) var(--lb-space-3);
+  border: 1px solid color-mix(in srgb, var(--lb-color-warning) 28%, var(--lb-color-border));
+  border-radius: var(--lb-radius-md);
+  background: color-mix(in srgb, var(--lb-color-warning-soft) 28%, var(--lb-color-card));
+  color: var(--lb-color-warning);
+  font-size: var(--lb-font-size-caption);
+  font-weight: var(--lb-font-weight-medium);
 }
 
 .admin-draft-banner-message {
   min-width: 0;
-  line-height: 1.45;
+  color: var(--lb-color-text);
+  line-height: var(--lb-line-height-caption);
 }
 
-/* Trial Toast — bottom-right floating card */
+/* Trial status card sits beside the Home draft status, never over page content. */
 .admin-trial-toast {
-  /* fixed, not absolute: pinned to the viewport so it stays put while the
-     dashboard scrolls, instead of drifting up the page with the content. */
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 360px;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-  z-index: 48;
-  overflow: hidden;
-  animation: slideUp 0.3s ease-out;
-}
-
-.dark .admin-trial-toast {
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
-}
-
-.admin-trial-toast-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  padding: 10px 12px 10px 16px;
-  transition: background 0.15s;
-}
-
-.admin-trial-toast-header:hover {
-  background: var(--bg-secondary);
-}
-
-.admin-trial-toast-toggle {
-  flex: 1;
+  gap: var(--lb-space-3);
   min-width: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  padding: 4px 0;
-  border: none;
-  background: transparent;
-  color: inherit;
-  font-family: inherit;
-  cursor: pointer;
-  text-align: left;
+  padding: var(--lb-space-3) var(--lb-space-4);
+  border: 1px solid var(--lb-color-border);
+  border-radius: var(--lb-radius-md);
+  background: var(--lb-color-card);
 }
 
-.admin-trial-toast-toggle:focus-visible,
-.admin-trial-toast-dismiss:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 2px;
+.admin-trial-toast-icon {
+  display: grid;
+  place-items: center;
+  width: var(--lb-size-control-md);
+  height: var(--lb-size-control-md);
+  flex: none;
+  border-radius: var(--lb-radius-md);
+  background: var(--lb-color-primary-soft);
+  color: var(--lb-color-primary);
 }
 
-.admin-trial-toast-title {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-primary);
+.admin-trial-toast-content {
+  display: grid;
+  gap: var(--lb-space-1);
+  min-width: 0;
+  flex: 1;
 }
 
-.admin-trial-toast-title-icon {
-  color: var(--primary);
-  flex-shrink: 0;
+.admin-trial-toast-eyebrow {
+  color: var(--lb-color-primary);
+  font-size: var(--lb-font-size-caption);
+  font-weight: var(--lb-font-weight-semibold);
+  letter-spacing: .04em;
+  text-transform: uppercase;
 }
 
-.admin-trial-toast-chevron {
-  color: var(--text-hint);
-  flex-shrink: 0;
-  transition: transform 0.2s;
+.admin-trial-toast-content strong {
+  color: var(--lb-color-text);
+  font-size: var(--lb-font-size-secondary);
 }
 
-.admin-trial-toast-chevron.collapsed {
-  transform: rotate(180deg);
-}
-
-.admin-trial-toast-dismiss {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  flex-shrink: 0;
-  border: none;
-  border-radius: var(--lb-radius-sm);
-  background: transparent;
-  color: var(--text-hint);
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s;
-}
-
-.admin-trial-toast-dismiss:hover {
-  background: var(--bg-secondary);
-  color: var(--text-primary);
-}
-
-.admin-trial-toast-body {
-  padding: 0 16px 16px;
-  font-size: var(--lb-font-size-small);
-  color: var(--text-secondary);
-  line-height: 1.6;
-}
-
-.admin-trial-toast-body strong {
-  color: var(--text-primary);
-  font-weight: 700;
-}
-
-.admin-trial-toast-body ul {
-  list-style: disc;
-  padding-left: 18px;
-  margin: 8px 0;
-}
-
-.admin-trial-toast-body li {
-  margin-bottom: 4px;
+.admin-trial-toast-content > span:last-child {
+  color: var(--lb-color-text-subdued);
+  font-size: var(--lb-font-size-caption);
+  line-height: var(--lb-line-height-caption);
 }
 
 .admin-trial-toast-btn {
-  display: block;
-  width: 100%;
-  padding: 10px;
-  margin-top: 12px;
-  background: var(--text-primary);
-  color: var(--bg);
-  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--lb-space-1);
+  flex: none;
+  min-height: var(--lb-size-control-sm);
+  padding-inline: var(--lb-space-3);
+  border: 1px solid var(--lb-color-border);
   border-radius: var(--lb-radius-md);
-  font-size: var(--lb-font-size-small);
-  font-weight: 600;
-  cursor: pointer;
-  transition: opacity 0.15s;
-  text-align: center;
+  background: var(--lb-color-card);
+  color: var(--lb-color-text);
+  font-size: var(--lb-font-size-caption);
+  font-weight: var(--lb-font-weight-semibold);
   text-decoration: none;
+  white-space: nowrap;
 }
 
-.admin-trial-toast-btn:hover {
-  opacity: 0.9;
+.admin-trial-toast-btn:hover { background: var(--lb-color-surface-subdued); }
+.admin-trial-toast-btn:focus-visible { outline: 2px solid var(--lb-color-focus-ring); outline-offset: 2px; }
+
+@media (max-width: 420px) {
+  .admin-trial-toast { flex-wrap: wrap; }
+  .admin-trial-toast-btn { margin-left: calc(var(--lb-size-control-md) + var(--lb-space-3)); }
 }
 
 /* ======================================
@@ -2510,25 +2723,25 @@ body {
 /* ══════════════════════════════════════════════════════════════════
    Settings layout system
    All measurements live here — reference --lb-* tokens throughout
-   Breakpoints: mobile <640 · tablet 640-1023 · desktop ≥1024
+   Breakpoints: phone ≤768 · docked tablet 769-1023 · desktop ≥1024
    ══════════════════════════════════════════════════════════════════ */
 
 .settings-shell {
   /* ── Component-scoped layout tokens ──────────────────────────── */
   /* Sidebar */
-  --settings-sidebar-w: 300px;
-  --settings-sidebar-store-h: calc(var(--lb-space-7) + var(--lb-space-4));   /* 48px */
-  --settings-sidebar-user-h: calc(var(--lb-space-7) + var(--lb-space-4));
-  --settings-sidebar-avatar-sz: calc(var(--lb-space-7) + var(--lb-space-1)); /* 36px */
+  --settings-sidebar-w: 220px;
+  --settings-sidebar-store-h: 40px;
+  --settings-sidebar-user-h: 40px;
+  --settings-sidebar-avatar-sz: 26px;                                         /* match header store avatar */
   --settings-sidebar-avatar-radius: var(--lb-radius-md);
   --settings-sidebar-store-gap: var(--lb-space-2);
-  --settings-sidebar-pad-x: var(--lb-space-4);                               /* 16px */
+  --settings-sidebar-pad-x: var(--lb-space-3);                               /* 12px */
   --settings-sidebar-icon-sz: var(--lb-space-4);
   --settings-sidebar-name-size: var(--lb-font-size-secondary);               /* 13px */
   --settings-sidebar-sub-size: var(--lb-font-size-caption);                  /* 12px */
   /* Search bar */
   --settings-search-h: var(--lb-space-7);                                    /* 32px */
-  --settings-search-margin: var(--lb-space-2);
+  --settings-search-margin: 6px;
   --settings-search-radius: var(--lb-radius-md);
   --settings-search-icon-sz: var(--lb-space-4);
   --settings-search-font: var(--lb-font-size-secondary);
@@ -2537,24 +2750,16 @@ body {
      above, which feed --lb-density-sidebar-* and --lb-component-sidebar-*)
      so this panel's rows can never drift out of sync with the primary nav
      again; retuning the main sidebar retunes this one with it. */
-  --settings-nav-item-h: var(--lb-density-sidebar-row-height);               /* 32px, tracks main sidebar */
+  --settings-nav-item-h: 30px;                                               /* main rail's compact row height */
   --settings-nav-item-radius: var(--lb-component-sidebar-item-radius);       /* 8px, tracks main sidebar */
   --settings-nav-item-font: var(--lb-font-size-sidebar);                     /* 14px, tracks main sidebar */
-  --settings-nav-item-pad-x: var(--lb-space-3);                              /* 12px */
-  --settings-nav-item-gap: var(--lb-space-3);                                /* 12px, tracks main sidebar's icon/label gap */
-  --settings-nav-pad: var(--lb-space-2);
+  --settings-nav-item-pad-x: var(--lb-space-2);                              /* 8px */
+  --settings-nav-item-gap: var(--lb-space-2);                                /* 8px */
+  --settings-nav-pad: 6px;
   --settings-nav-group-font: var(--lb-font-size-caption);
-  --settings-nav-icon-sz: var(--lb-density-sidebar-icon-size);               /* 18px, tracks main sidebar */
-  /* Shell panel */
-  --settings-shell-max-w: 1120px;
-  --settings-shell-pad-x: var(--lb-space-7);                                 /* 32px */
-  --settings-shell-pad-y: var(--lb-space-5);                                 /* 20px */
-  /* Derived, never set independently. The card is a surface nested INSIDE the
-     page top, so it takes the same step-down the nav rails take rather than
-     restating the page's own radius — retuning --admin-page-curve retunes both. */
-  --settings-shell-radius: var(--admin-rail-curve);
+  --settings-nav-icon-sz: var(--lb-space-4);                                 /* 16px */
   /* Content area */
-  --settings-content-max-w: 860px;
+  --settings-content-max-w: 1120px;
   --settings-content-pad-x: var(--lb-space-8);                               /* 40px */
   --settings-content-pad-y: var(--lb-space-5);                               /* 20px */
   --settings-content-pad-bottom: var(--lb-space-9);                          /* 48px */
@@ -2573,21 +2778,12 @@ body {
   flex: 1 1 auto;
   min-height: 0;
   overflow: hidden;
-  /* Center the panel on the page with side breathing room */
-  width: min(var(--settings-shell-max-w), calc(100% - 2 * var(--settings-shell-pad-x)));
-  margin: var(--settings-shell-pad-y) auto;
-  border-radius: var(--settings-shell-radius);
-  background: var(--lb-color-surface);
-  /* The card's edge is an INSET RING, not a border. With a border, `overflow`
-     clips to the PADDING box — the radius minus the border width — so the dark
-     rail underneath had to be given its own `calc(radius - 1px)` arc to hide the
-     light crescent the mismatched antialiasing exposed. With no border the clip
-     radius IS the card radius, the rail takes the same token, and this surface
-     is left with exactly two rendered radii: the page's and this one. The ring
-     paints inside the clip, so it follows the same arc. */
-  box-shadow:
-    inset 0 0 0 1px var(--lb-color-border),
-    var(--lb-shadow-card);
+  /* Settings is an integrated column of the page, not an inset card. */
+  width: 100%;
+  margin: 0;
+  border-radius: 0;
+  background: var(--sidebar-bg);
+  box-shadow: none;
 }
 
 /* ── Settings sidebar — left column of the unified panel ── */
@@ -2599,16 +2795,9 @@ body {
   /* Same dark ink rail as the main nav — reads as one navigation surface
      rather than two competing panels. Reuses the rail token so the two stay
      in sync if it is retuned. */
-  background: var(--lb-component-sidebar-bg);
-  /* The rail paints its own arc coincident with the card's clip, at the SAME
-     radius. That is only possible because the card's edge is an inset ring
-     rather than a border (see .settings-shell): with a border, `overflow` clips
-     to the padding box and the rail had to be cut 1px tighter to stop a
-     discontinuous run of the card's light surface showing along the arc — the
-     white speckle. Removing the border removed the cause, so the third radius
-     value went with it. Logical properties so a future RTL mirror stays correct. */
-  border-start-start-radius: var(--settings-shell-radius);
-  border-end-start-radius: var(--settings-shell-radius);
+  background: var(--sidebar-bg);
+  /* The page plane supplies the outer curve; this column joins the main rail. */
+  border-radius: 0;
   box-shadow: none;
 
   /* Every child in this panel derives from --text-primary / --bg /
@@ -2623,9 +2812,9 @@ body {
      NOT redefined here — the rail-appropriate accent is already carried by
      --lb-component-sidebar-rail-color. */
   --text-primary: var(--lb-component-sidebar-text);
-  --bg: var(--lb-component-sidebar-bg);
-  --bg-secondary: color-mix(in srgb, var(--lb-component-sidebar-text) 10%, var(--lb-component-sidebar-bg));
-  --border: color-mix(in srgb, var(--lb-component-sidebar-text) 18%, var(--lb-component-sidebar-bg));
+  --bg: var(--sidebar-bg);
+  --bg-secondary: color-mix(in srgb, var(--lb-component-sidebar-text) 10%, var(--sidebar-bg));
+  --border: color-mix(in srgb, var(--lb-component-sidebar-text) 18%, var(--sidebar-bg));
   --lb-color-border: var(--border);
   /* Accent chips inside this panel (store icon, user avatar, nav badge dot) are
      filled with var(--primary). The page-level primary IS the rail colour, so on
@@ -2634,11 +2823,57 @@ body {
      rail (4.95:1 light / 6.18:1 dark) — still canonical, still one source. */
   --primary: var(--lb-component-sidebar-rail-color);
   color: var(--text-primary);
-  border-right: 1px solid var(--lb-color-border);
+  border-right: 0;
   display: flex;
   flex-direction: column;
   padding: 0;
   overflow: hidden;
+}
+
+.settings-sidebar-heading {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 36px;
+  margin: 4px 6px 0;
+  padding: 0 3px;
+  border-radius: 7px;
+  color: var(--lb-component-sidebar-text);
+  font-size: var(--lb-font-size-sidebar);
+  font-weight: var(--lb-font-weight-semibold);
+}
+
+.settings-sidebar-back,
+.settings-sidebar-title {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  border-radius: 6px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.settings-sidebar-back {
+  justify-content: center;
+  width: 30px;
+}
+
+.settings-sidebar-title {
+  flex: 1;
+  padding-inline: 6px;
+}
+
+.settings-sidebar-back:hover,
+.settings-sidebar-title:hover,
+.settings-sidebar-back:focus-visible,
+.settings-sidebar-title:focus-visible {
+  background: var(--lb-component-sidebar-hover-bg);
+  outline: none;
+}
+
+.settings-sidebar-heading .letbuyy-icon {
+  width: 16px;
+  height: 16px;
 }
 
 /* Store identity */
@@ -2647,18 +2882,7 @@ body {
   align-items: center;
   gap: var(--settings-sidebar-store-gap);
   min-height: var(--settings-sidebar-store-h);
-  padding: var(--lb-space-3) var(--settings-sidebar-pad-x);
-  /* Secondary, not the panel-local --border alias: that resolves to an
-     18%-mix wash of the rail text over the rail bg — close enough to the
-     surface it sits on to nearly disappear, same problem the main drawer's
-     header/footer dividers had. --lb-color-secondary-action is one step
-     lighter than the rail and reads as an actual line. Radius on only the
-     corners this divider owns (bottom, since it sits at the bottom of this
-     block) still draws a visible arc at each end — same technique, same
-     item-radius token the nav rows below already track. */
-  border-bottom: 1px solid var(--lb-color-secondary-action);
-  border-bottom-left-radius: var(--lb-component-sidebar-item-radius);
-  border-bottom-right-radius: var(--lb-component-sidebar-item-radius);
+  padding: var(--lb-space-2) var(--settings-sidebar-pad-x);
   margin-bottom: 0;
 }
 
@@ -2666,21 +2890,22 @@ body {
   width: var(--settings-sidebar-avatar-sz);
   height: var(--settings-sidebar-avatar-sz);
   border-radius: var(--settings-sidebar-avatar-radius);
-  background: var(--primary);
-  /* Ink on the light rail accent (5.83:1) — white would only reach 2.9:1. */
-  color: var(--lb-component-sidebar-bg);
+  background: linear-gradient(135deg, var(--primary-light), var(--lb-color-primary));
+  color: white;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: var(--lb-font-size-caption);
   font-weight: 700;
   flex-shrink: 0;
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--primary) 38%, transparent), 0 6px 18px color-mix(in srgb, var(--primary) 18%, transparent);
+  margin-left: auto;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 22%), 0 0 0 1px color-mix(in srgb, white 16%, transparent);
 }
 
 .settings-sidebar-store-info {
   display: flex;
   flex-direction: column;
+  flex: 1;
   min-width: 0;
 }
 
@@ -2768,8 +2993,19 @@ body {
      always-visible one (native bars fade out on idle on macOS). */
   scrollbar-width: none;
 }
+
+.settings-sidebar-nav [role="group"] + [role="group"] {
+  margin-top: 10px;
+}
 .settings-sidebar-nav::-webkit-scrollbar {
   display: none;
+}
+
+.settings-sidebar-no-results {
+  padding: var(--lb-space-3) var(--settings-nav-item-pad-x);
+  color: var(--text-secondary);
+  font-size: var(--settings-nav-item-font);
+  line-height: 1.5;
 }
 
 .settings-nav-group-label {
@@ -2794,29 +3030,29 @@ body {
   font-size: var(--settings-nav-item-font);
   line-height: var(--lb-line-height-sidebar);
   font-weight: var(--lb-font-weight-medium);
-  color: color-mix(in srgb, var(--text-primary) 76%, transparent);
+  color: color-mix(in srgb, var(--lb-component-sidebar-text) 72%, transparent);
   text-decoration: none;
   transition: background var(--lb-motion-fast), color var(--lb-motion-fast);
   cursor: pointer;
-  margin-bottom: 2px;
+  margin-bottom: 1px;
   min-width: 0;
 }
 
 .settings-nav-item:hover {
-  background: color-mix(in srgb, var(--text-primary) 7%, transparent);
+  background: var(--lb-component-sidebar-hover-bg);
   color: var(--text-primary);
 }
 
 .settings-nav-item.active {
-  background: color-mix(in srgb, var(--text-primary) 8%, var(--bg) 92%);
-  color: var(--text-primary);
+  background: var(--lb-component-sidebar-active-bg);
+  color: var(--lb-component-sidebar-active-text);
   font-weight: var(--lb-font-weight-semibold);
 }
 
 .settings-nav-item > .letbuyy-icon:first-child {
   width: var(--settings-nav-icon-sz);
   height: var(--settings-nav-icon-sz);
-  color: color-mix(in srgb, var(--text-primary) 74%, transparent);
+  color: var(--lb-component-sidebar-section-text);
   flex-shrink: 0;
   stroke-width: 2.45;
   fill: color-mix(in srgb, currentColor 12%, transparent);
@@ -2873,12 +3109,7 @@ body {
   align-items: center;
   gap: var(--settings-sidebar-store-gap);
   min-height: var(--settings-sidebar-user-h);
-  padding: var(--lb-space-3) var(--settings-sidebar-pad-x);
-  /* Mirrors .settings-sidebar-store: secondary colour, and curved on the TOP
-     corners — this divider sits at the top of the footer block. */
-  border-top: 1px solid var(--lb-color-secondary-action);
-  border-top-left-radius: var(--lb-component-sidebar-item-radius);
-  border-top-right-radius: var(--lb-component-sidebar-item-radius);
+  padding: var(--lb-space-2) var(--settings-sidebar-pad-x);
   margin-top: auto;
 }
 
@@ -2886,22 +3117,15 @@ body {
   width: var(--settings-sidebar-avatar-sz);
   height: var(--settings-sidebar-avatar-sz);
   border-radius: var(--settings-sidebar-avatar-radius);
-  /* Same diagonal-gradient + inset-sheen + glow treatment as the header's
-     store-switcher-pill-icon, built off the panel-local --primary (the
-     rail-appropriate accent, see .settings-sidebar above) rather than the
-     header's raw --primary so it stays legible against this dark rail. Both
-     gradient stops stay in the same light-tint family as --primary alone,
-     so the dark-ink contrast verified below is preserved. */
-  background: linear-gradient(135deg, color-mix(in srgb, var(--primary) 82%, white), var(--primary));
-  /* Ink on the light rail accent (5.83:1) — white would only reach 2.9:1. */
-  color: var(--lb-component-sidebar-bg);
+  background: linear-gradient(135deg, var(--primary-light), var(--lb-color-primary));
+  color: white;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: var(--lb-font-size-caption);
   font-weight: 700;
   flex-shrink: 0;
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 30%), 0 0 0 1px color-mix(in srgb, var(--primary) 38%, transparent), 0 6px 16px color-mix(in srgb, var(--primary) 20%, transparent);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 22%), 0 0 0 1px color-mix(in srgb, white 16%, transparent);
 }
 
 .settings-sidebar-user-info {
@@ -2958,10 +3182,8 @@ body {
 }
 
 /* ── Settings content area ───────────────────
-   The panel's own scrollport at >=1024px. It scrolls inside .settings-shell,
-   whose overflow:hidden + radius is what rounds this column's top corner — same
-   contract as the page: the curve is on a box that does not move, and the
-   content travels under it.
+   The column's own scrollport at >=1024px. Its left corners separate the light
+   work area from the adjacent dark settings navigation.
    Scrollbar theming matches .admin-page-scroll exactly, and for the same
    reason: a default bar is not clipped by border-radius, so its grey track
    would paint square over the card's arc the moment a settings page is long
@@ -2971,7 +3193,8 @@ body {
   min-width: 0;
   height: 100%;
   overflow-y: auto;
-  background: transparent;
+  background: var(--lb-color-bg);
+  border-radius: var(--admin-page-curve) 0 0 var(--admin-page-curve);
   /* Same as .admin-page-scroll: a wheel that reaches the end of this column must
      not chain out into whatever is behind the panel, and the gutter stays
      reserved so freezing this scroller for a modal cannot shift the pane. */
@@ -3012,25 +3235,38 @@ body {
 }
 
 /* ══ Responsive breakpoints ═════════════════════════════════════════
-   Desktop  ≥1024px : sidebar + content grid (default above)
-   Tablet   640-1023: sidebar hidden → drawer nav, full-width content
-   Mobile   <640px  : same as tablet, tighter topbar padding
+   Desktop  ≥1024px : settings sidebar + content grid (default above)
+   Tablet   769-1023: compact main rail + settings sidebar + content grid
+   Phone    ≤768px  : shared drawer nav, full-width content
    ══════════════════════════════════════════════════════════════════ */
 
-/* ── Tablet + Mobile: strip panel, show topbar/drawer nav ── */
-@media (max-width: 1023px) {
+@media (min-width: 769px) and (max-width: 1023.98px) {
+  .settings-shell {
+    --settings-sidebar-w: 200px;
+    --settings-content-pad-x: var(--lb-space-5);
+    grid-template-columns: var(--settings-sidebar-w) minmax(0, 1fr);
+  }
+
+  .settings-content > [data-lb-page] {
+    max-width: 100%;
+    padding-inline: var(--settings-content-pad-x);
+  }
+}
+
+/* ── Phone: strip panel and use the shared edge-aligned drawer nav ── */
+@media (max-width: 768px) {
   /* NOTE: the `position: fixed` inset-below-the-header block that used to live
      here — with its own overflow, its own scrollbar theming and its own curved
      top corners — is gone. It was a second, settings-only implementation of the
      shell this file now provides for every route: .admin-page-scroll is the one
      scrollport and it owns the curve at every breakpoint. */
 
-  /* Flat below lg: no card, no radius, no inner scroller — the panel just grows
+  /* Flat on phones: no card, no radius, no inner scroller — the panel grows
      and the page scrollport (which owns the curve) does the scrolling.
      `flex: 1 0 auto` undoes the desktop base: grow to fill a short page, never
      shrink, and size from content — so a long panel still exceeds the wrapper
      and the overflow reaches the scrollport above it. (A `min-height: 100%`
-     here would be inert: the wrapper is height:auto below lg, so the percentage
+     here would be inert: the wrapper is height:auto on phones, so the percentage
      has no definite height to resolve against.) */
   .settings-shell {
     grid-template-columns: 1fr;
@@ -3054,6 +3290,7 @@ body {
     height: auto;
     overflow-y: visible;
     background: var(--lb-color-bg);
+    border-radius: 0;
   }
 
   /* Mobile content: tighter horizontal padding */
@@ -3063,8 +3300,8 @@ body {
   }
 }
 
-/* Tablet (640–1023px): wider content padding + constrained max-width */
-@media (min-width: 640px) and (max-width: 1023px) {
+/* Wide phones retain a readable measure without the docked navigation. */
+@media (min-width: 640px) and (max-width: 768px) {
   .settings-content > [data-lb-page] {
     max-width: 720px;
     margin: 0 auto;
@@ -5152,11 +5389,6 @@ body {
   border-radius: var(--lb-radius-sm);
   background: transparent;
   color: rgb(111 111 111);
-  cursor: pointer;
-}
-
-.admin-cmd-filter:hover {
-  background: rgb(237 237 237);
 }
 
 .admin-cmd-filter .letbuyy-icon {
@@ -5217,6 +5449,25 @@ body {
   background: rgb(237 237 237);
 }
 
+.admin-cmd-search-warning {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--lb-space-3);
+  padding: var(--lb-space-2) var(--lb-space-4);
+  color: var(--lb-color-text-subdued);
+  background: var(--lb-color-surface-subdued);
+  border-bottom: 1px solid var(--lb-color-border);
+  font-size: var(--lb-font-size-caption);
+}
+
+.admin-cmd-search-warning button {
+  color: var(--lb-color-primary);
+  font-weight: var(--lb-font-weight-semibold);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 .admin-cmd-results {
   flex: 1;
   min-height: 0;
@@ -5236,6 +5487,7 @@ body {
 
 .admin-cmd-item {
   display: flex;
+  width: 100%;
   align-items: center;
   gap: 9px;
   min-height: 34px;
@@ -5243,6 +5495,9 @@ body {
   border-radius: var(--lb-radius-md);
   font-size: var(--lb-font-size-small);
   color: rgb(75 85 99);
+  border: 0;
+  background: transparent;
+  text-align: left;
   cursor: pointer;
   transition: background 0.1s;
 }
@@ -5673,19 +5928,9 @@ body {
    ====================================== */
 
 @media (max-width: 768px) {
-  :root {
-    /* Taller than desktop (48 + 24 = 72px): the mobile bar carries the drawer
-       toggle, search and three actions in a narrower column, so it needs the
-       extra vertical room to stop reading as cramped. Only the bar is retuned —
-       the curve is shared, so the page top looks identical at every width, and
-       everything positional (plane, drawer, scrim, sheets, toasts) recomputes
-       from here. */
-    --admin-header-height: calc(var(--lb-space-9) + var(--lb-space-6));
-  }
-
   .admin-header {
-    gap: 8px;
-    padding: 0 12px;
+    gap: 6px;
+    padding: 0 10px;
   }
 
   .admin-header-left {
@@ -5698,9 +5943,9 @@ body {
   }
 
   .admin-header-hamburger {
-    width: 38px;
-    height: 38px;
-    border-radius: 11px;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
     display: flex;
   }
 
@@ -5712,10 +5957,10 @@ body {
 
   .admin-header-search {
     max-width: none;
-    height: 40px;
+    height: 36px;
     border-radius: 10px;
-    padding-inline: 14px;
-    font-size: 15px;
+    padding-inline: 12px;
+    font-size: 14px;
   }
 
   .admin-header-shortcut {
@@ -5728,8 +5973,8 @@ body {
   }
 
   .admin-header-btn {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     border-radius: 10px;
   }
 
@@ -5738,8 +5983,8 @@ body {
   }
 
   .store-switcher-pill {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     padding: 3px;
     border-radius: 10px;
   }
@@ -5750,8 +5995,8 @@ body {
   }
 
   .store-switcher-pill-icon {
-    width: 28px;
-    height: 28px;
+    width: 26px;
+    height: 26px;
     border-radius: var(--lb-radius-md);
     font-size: 11px;
   }
@@ -5827,14 +6072,6 @@ body {
   .admin-sidebar-overlay.active {
     display: block;
     top: var(--admin-header-height);
-  }
-
-  /* Trial toast: full-width on mobile */
-  .admin-trial-toast {
-    left: 12px;
-    right: 12px;
-    bottom: 12px;
-    width: auto;
   }
 
   /* Setup assistant: full screen on mobile — it replaces the sheet entirely, so

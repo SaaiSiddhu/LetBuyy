@@ -5,6 +5,7 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import TrialBanner from '../src/components/TrialBanner'
 import { AppRouterContext, type AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime.js'
 import SelectPlanClient from '../src/app/[store]/access_account/checkout/select-plan/SelectPlanClient'
+import { planAnnualSavingMinor, type SubscriptionPlanView } from '../src/lib/billing/plan-ui'
 import { gstStateCodeFromName } from '../src/lib/india/gst-states'
 Object.assign(globalThis, { React })
 
@@ -39,4 +40,19 @@ test('plan picker uses subscription/trial state rather than a leftover future or
     assert.doesNotMatch(renderHeading(null, null, future), /trial/i)
     assert.match(renderHeading(null, 'active', future), /left in your trial/)
     assert.match(renderHeading(null, 'expired', past), /trial has ended/)
+})
+
+test('annual savings and plan claims follow the returned catalog, without invented bonuses or competitor prices', () => {
+    const router: AppRouterInstance = { back() {}, forward() {}, refresh() {}, push() {}, replace() {}, prefetch() {} }
+    const plan: SubscriptionPlanView = {
+        id: 'plan-growth', slug: 'growth', name: 'Growth', tagline: 'For growing stores',
+        is_popular: false, price_monthly_inr: 50000, price_yearly_inr: 40000,
+        gmv_percentage: 0, promo_price_inr: 0, promo_months: 0, promo_label: null,
+        features: [{ label: 'Catalog management', icon: 'check' }], compare_features: [],
+        requires_contact: false, status: 'available', purchasable: true, founding_price_inr: 0,
+    }
+    assert.equal(planAnnualSavingMinor(plan.price_monthly_inr, plan.price_yearly_inr), 120000)
+    const markup = renderToStaticMarkup(<AppRouterContext.Provider value={router}><SelectPlanClient plans={[plan]} currentPlan={null} trialStatus={null} trialEndsAt={null} storeName="Synthetic store" storeSlug="alpha-store" storeId="11111111-1111-4111-8111-111111111111" siteType="store" /></AppRouterContext.Provider>)
+    assert.match(markup, /Catalog management/)
+    assert.doesNotMatch(markup, /Save 20%|₹20,000\+|Domain credit|Priority Support|24\/7 monitoring|AI built-in/)
 })

@@ -10,7 +10,6 @@ import { Button, Table,
     Banner,
     Card,
     ConfirmDialog,
-    EmptyState,
     Mail,
     MessageSquare,
     Page,
@@ -26,6 +25,7 @@ import { Button, Table,
     Users,
     useToast,
 } from '@letbuyy/ui'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import { formatIndiaDateWithTime as formatDate } from '@letbuyy/ui/formatting'
 
 type LeadStatus = 'new' | 'read' | 'contacted' | 'converted'
@@ -235,7 +235,7 @@ export default function LeadsPage() {
     const renderLeads = (leads: Lead[]) => {
         if (items.length === 0) {
             return (
-                <EmptyState
+                <EmptyState scene="leads"
                     icon={<Users className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                     title="No leads yet"
                     body="Lead captures and sign-up forms from your storefront will appear here with follow-up status actions."
@@ -246,7 +246,7 @@ export default function LeadsPage() {
 
         if (leads.length === 0) {
             return (
-                <EmptyState
+                <EmptyState scene="leads"
                     icon={<User className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                     title="No leads in this view"
                     body="Switch views or wait for matching lead captures to arrive."

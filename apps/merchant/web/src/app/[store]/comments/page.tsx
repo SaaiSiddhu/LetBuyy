@@ -5,7 +5,8 @@ import { useReadRequest } from '@/lib/api/use-read-request'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { COMMENT_MODERATION_STATUS_PRESENTATION, presentStatus } from '@letbuyy/shared-types'
-import { AlertTriangle, Avatar, Badge, Banner, Button, Card, Check, ConfirmDialog, EmptyState, Mail, MessageSquare, Page, PageHeader, RefreshCw, Section, Skeleton, StatusPresentationBadge, Tabs, Trash2, useToast } from '@letbuyy/ui'
+import { AlertTriangle, Avatar, Badge, Banner, Button, Card, Check, ConfirmDialog, Mail, MessageSquare, Page, PageHeader, RefreshCw, Section, Skeleton, StatusPresentationBadge, Tabs, Trash2, useToast } from '@letbuyy/ui'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import { formatIndiaDate as formatDate } from '@letbuyy/ui/formatting'
 
 type CommentStatus = 'pending' | 'approved' | 'spam'
@@ -170,7 +171,7 @@ export default function CommentsPage() {
 
     const renderComments = useCallback((items: BlogComment[]) => (
         items.length === 0 ? (
-            <EmptyState
+            <EmptyState scene="comments"
                 icon={<MessageSquare className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                 title="No comments in this view"
                 body="Switch moderation views or wait for readers to comment on published posts."
@@ -364,7 +365,7 @@ export default function CommentsPage() {
                     description="Approve useful comments, mark spam, or delete comments that should not appear on your blog."
                 >
                     {comments.length === 0 ? (
-                        <EmptyState
+                        <EmptyState scene="comments"
                             icon={<MessageSquare className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                             title="No comments yet"
                             body="When readers comment on your blog posts, they will appear here for moderation."

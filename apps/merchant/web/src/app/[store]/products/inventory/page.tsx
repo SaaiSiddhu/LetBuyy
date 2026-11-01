@@ -3,9 +3,9 @@
 import { useReadRequest } from '@/lib/api/use-read-request'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import Image from 'next/image'
 import { useParams } from 'next/navigation'
-import { Button, Input, Table, Avatar, Badge, Banner, Card, EmptyState, Page, PageHeader, Pencil, RefreshCw, SaveBar, Search, Section, Skeleton, useToast } from '@letbuyy/ui'
+import { Button, Input, Table, Avatar, Badge, Banner, Card, Page, PageHeader, Pencil, RefreshCw, SaveBar, Search, Section, Skeleton, useToast } from '@letbuyy/ui'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import { formatDisplayDate } from '@letbuyy/ui/formatting'
 import { useMerchantSecurityContext } from '@/components/security/MerchantSecurityContext'
 import type { InventoryLevel } from '@letbuyy/shared-types'
@@ -61,10 +61,10 @@ function normalizeInventoryItem(row: Record<string, unknown>): InventoryItem {
         sku: typeof row.sku === 'string' ? row.sku : null,
         images: Array.isArray(row.images) ? row.images.filter((image): image is string => typeof image === 'string') : [],
         available: typeof row.available === 'number' ? row.available : typeof row.available === 'string' && /^-?[0-9]+$/.test(row.available) ? Number(row.available) : Number.NaN,
-        reserved: Number(row.reserved || 0),
-        incoming: Number(row.incoming || 0),
-        on_hand: Number(row.on_hand || 0),
-        sellable: Number(row.sellable ?? row.available ?? 0),
+        reserved: typeof row.reserved === 'number' ? row.reserved : Number.NaN,
+        incoming: typeof row.incoming === 'number' ? row.incoming : Number.NaN,
+        on_hand: typeof row.on_hand === 'number' ? row.on_hand : Number.NaN,
+        sellable: typeof row.sellable === 'number' ? row.sellable : Number.NaN,
         track_inventory: row.track_inventory !== false,
         updated_at: typeof row.updated_at === 'string' ? row.updated_at : null,
     }
@@ -119,11 +119,14 @@ export default function InventoryPage() {
             })
             const payload = await response.json().catch(() => null)
             if (!response.ok) throw new Error(getErrorMessage(payload, 'Unable to load inventory'))
-            const rows = Array.isArray(payload?.data) ? payload.data.map((row: Record<string, unknown>) => normalizeInventoryItem(row)) as InventoryItem[] : []
+            if (!Array.isArray(payload?.data)) throw new Error('Inventory response is incomplete')
+            const rows = payload.data.map((row: Record<string, unknown>) => normalizeInventoryItem(row)) as InventoryItem[]
             if (!request.isCurrent() || !currentScope(captured) || sequence !== readSequence.current) return
             setPageMeta({ total: Number.isSafeInteger(payload?.meta?.total) ? payload.meta.total : null, hasNext: payload?.meta?.has_next === true })
-            setProducts(rows.filter(row => row.id && Number.isSafeInteger(row.available)))
-            if (rows.some(row => !Number.isSafeInteger(row.available))) setError('Some stock quantities could not be verified. Refresh before adjusting those records.')
+            const verified = (row: InventoryItem) => Boolean(row.id && row.product_id)
+                && [row.available, row.reserved, row.incoming, row.on_hand, row.sellable].every(Number.isSafeInteger)
+            setProducts(rows.filter(verified))
+            if (rows.some(row => !verified(row))) setError('Some stock quantities could not be verified. Refresh before adjusting those records.')
         } catch (inventoryError) {
             if (!request.isCurrent() || !currentScope(captured) || sequence !== readSequence.current) return
             setProducts([]); setError(inventoryError instanceof Error ? inventoryError.message : 'Unable to load inventory')
@@ -352,16 +355,7 @@ export default function InventoryPage() {
                     {loading ? (
                         <Skeleton variant="table" lines={6} />
                     ) : products.length === 0 ? (
-                        <EmptyState
-                            illustration={
-                                <Image
-                                    src="/Emptystate Illustration/Inventory_Emptystate.png"
-                                    alt=""
-                                    width={200}
-                                    height={200}
-                                    aria-hidden="true"
-                                />
-                            }
+                        <EmptyState scene="inventory"
                             title={error ? 'Unable to load inventory' : page > 1 ? 'No stock levels on this page' : 'No inventory to track'}
                             body={error || (page > 1 ? 'Return to the previous page or refresh to check current stock levels.' : 'Add products to your store to start tracking inventory levels.')}
                             primaryAction={error ? (
@@ -386,7 +380,7 @@ export default function InventoryPage() {
                                 columns={columns}
                                 filterChips={searchQuery ? [{ label: `Search: ${searchQuery}`, onRemove: () => setSearchQuery('') }] : []}
                                 emptyState={(
-                                    <EmptyState
+                                    <EmptyState scene="inventory"
                                         icon={<Search className="h-[var(--lb-size-icon-lg)] w-[var(--lb-size-icon-lg)]" aria-hidden="true" />}
                                         title="No inventory matches your search"
                                         body="Clear the search query to see all tracked inventory."

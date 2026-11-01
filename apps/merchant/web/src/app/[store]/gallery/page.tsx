@@ -10,7 +10,6 @@ import { Button,
     Banner,
     Card,
     ConfirmDialog,
-    EmptyState,
     FileText,
     Image as ImageIcon,
     Page,
@@ -22,6 +21,7 @@ import { Button,
     Upload,
     useToast,
 } from '@letbuyy/ui'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import { formatIndiaDate as formatDate } from '@letbuyy/ui/formatting'
 
 interface MediaItem {
@@ -284,7 +284,7 @@ export default function GalleryPage() {
                     description="Files uploaded through products, blog posts, and other sections appear here for review and cleanup."
                 >
                     {items.length === 0 ? (
-                        <EmptyState
+                        <EmptyState scene="gallery"
                             icon={<ImageIcon className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                             title="No media yet"
                             body="Upload images, videos, and documents through products, posts, pages, or theme settings. They will appear in this library."

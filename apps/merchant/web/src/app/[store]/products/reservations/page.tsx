@@ -11,7 +11,6 @@ import {
     Banner,
     Button,
     Card,
-    EmptyState,
     Input,
     Page,
     PageHeader,
@@ -23,6 +22,7 @@ import {
     type SelectOption,
     type StatusVariant,
 } from '@letbuyy/ui'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import { formatIndiaDate } from '@letbuyy/ui/formatting'
 
 // ── types ─────────────────────────────────────────────────────────────────────
@@ -269,7 +269,7 @@ function InventoryReservationsWorkspace({ store }: { store: string }) {
                         </div>
                     ) : !error && rows.length === 0 ? (
                         <div className="p-[var(--lb-space-6)]">
-                            <EmptyState
+                            <EmptyState scene="reservations"
                                 kind="inventory"
                                 title="No reservations found"
                                 body={

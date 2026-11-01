@@ -231,6 +231,7 @@ export default function UpdatePageClient({
 
                 {versionInfo ? (
                     <ThemeUpdatePanel
+                        storeSlug={store}
                         themeSlug={versionInfo.themeSlug}
                         storeId={storeId}
                         currentVersionId={versionInfo.currentVersionId}

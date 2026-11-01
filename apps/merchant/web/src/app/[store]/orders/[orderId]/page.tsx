@@ -13,13 +13,13 @@ import {
     Banner,
     Button,
     Card,
-    EmptyState,
     MaterialIcon,
     Page,
     PageHeader,
     Section,
     Skeleton,
 } from '@letbuyy/ui'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import {
     formatInrCurrency,
     formatIndiaDate,
@@ -105,7 +105,10 @@ function readNullableString(row: Record<string, unknown>, key: string): string |
 }
 
 function readNumber(row: Record<string, unknown>, key: string): number {
-    return Number(row[key] ?? 0)
+    const value = row[key]
+    if (value === null || value === undefined || value === '') return Number.NaN
+    const parsed = Number(value)
+    return Number.isFinite(parsed) ? parsed : Number.NaN
 }
 
 function readAddress(raw: unknown): OrderAddress | null {
@@ -122,10 +125,10 @@ function mapOrderDetail(raw: Record<string, unknown>): OrderDetail {
         id: readString(raw, 'id'),
         store_id: readString(raw, 'store_id'),
         order_number: readString(raw, 'order_number'),
-        status: readString(raw, 'status') || 'pending',
-        payment_status: readString(raw, 'payment_status') || 'pending',
+        status: readString(raw, 'status') || 'unknown',
+        payment_status: readString(raw, 'payment_status') || 'unknown',
         fulfillment_status: readNullableString(raw, 'fulfillment_status'),
-        payment_method: readString(raw, 'payment_method') || 'cod',
+        payment_method: readString(raw, 'payment_method') || 'unknown',
         payment_gateway: readNullableString(raw, 'payment_gateway'),
         payment_id: readNullableString(raw, 'payment_id'),
         payment_processed_at: readNullableString(raw, 'payment_processed_at'),
@@ -334,7 +337,7 @@ function AddressesCard({ order }: { order: OrderDetail }) {
         return (
             <Card>
                 <Section title="Addresses">
-                    <EmptyState
+                    <EmptyState scene="order-detail"
                         icon={<MaterialIcon name="location_on" />}
                         title="No addresses on this order"
                         body="Shipping and billing addresses will appear here when available."
@@ -432,7 +435,7 @@ function LineItemsCard({ items }: { items: OrderLineItem[] }) {
         return (
             <Card>
                 <Section title="Line items">
-                    <EmptyState
+                    <EmptyState scene="order-detail"
                         icon={<MaterialIcon name="inventory_2" />}
                         title="No line items available"
                         body="Line items for this order are not available from the gateway response."
@@ -581,7 +584,11 @@ export default function OrderDetailPage() {
                 return
             }
 
-            if (payload?.data && typeof payload.data === 'object') {
+            if (payload?.data && typeof payload.data === 'object' &&
+                typeof payload.data.id === 'string' && payload.data.id === orderId &&
+                payload.data.total !== null && payload.data.total !== undefined && payload.data.total !== '' &&
+                Number.isFinite(Number(payload.data.total)) &&
+                typeof payload.data.status === 'string') {
                 setOrder(mapOrderDetail(payload.data as Record<string, unknown>))
             } else {
                 setError('Unexpected response from server.')
@@ -640,7 +647,7 @@ export default function OrderDetailPage() {
                 />
                 <Card>
                     <Section>
-                        <EmptyState
+                        <EmptyState scene="order-detail"
                             icon={<MaterialIcon name="error" />}
                             title="Unable to load order"
                             body={error ?? 'An unexpected error occurred.'}

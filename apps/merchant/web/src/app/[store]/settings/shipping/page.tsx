@@ -4,9 +4,10 @@ import { useReadRequest } from '@/lib/api/use-read-request'
 
 import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
-import { Badge, Banner, Button, Card, ConfirmDialog, EmptyState, Globe, Input, Plus, ProviderModeBadge, Section, Skeleton, Truck, useToast } from '@letbuyy/ui'
+import { Badge, Banner, Button, Card, ConfirmDialog,  Globe, Input, Plus, ProviderModeBadge, Section, Skeleton, Truck, useToast } from '@letbuyy/ui'
 import type { ShippingZone as CanonicalShippingZone, ShippingRate as CanonicalShippingRate } from '@letbuyy/shared-types'
 import { CreateShippingRateSchema, UpdateShippingRateSchema } from '@letbuyy/checkout-core'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import { SettingsPane } from '@/components/settings/SettingsPane'
 import { ShippingProfiles } from '@/components/settings/ShippingProfiles'
 import { ShippingCapabilitiesSchema, ShippingProfileSchema, type ShippingProfile } from '@letbuyy/shared-types'
@@ -556,7 +557,7 @@ export default function ShippingSettingsPage() {
                         )}
                     >
                         {zones.length === 0 ? (
-                            <EmptyState
+                            <EmptyState scene="shipping"
                                 icon={<Truck className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                                 title="No shipping zones configured"
                                 body="Create Indian delivery zones and add rates so checkout can offer delivery to eligible addresses."

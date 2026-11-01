@@ -13,7 +13,6 @@ import {
     Banner,
     Button,
     Card,
-    EmptyState,
     Input,
     MaterialIcon,
     Modal,
@@ -27,6 +26,7 @@ import {
     useToast,
     type StatusVariant,
 } from '@letbuyy/ui'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import type { InventoryLocation } from '@letbuyy/api-client'
 
 // ── helpers ──────────────────────────────────────────────────────────────────
@@ -292,7 +292,7 @@ function MetadataWorkspace({store}:{store:string}){
                             ))}
                         </div>
                     ) : loadError ? <p>Records are unavailable. Refresh and check your access.</p> : locations.length === 0 ? (
-                        <EmptyState
+                        <EmptyState scene="locations"
                             title="No locations yet"
                             body="Add a warehouse or store to track inventory levels and receive purchase orders."
                             primaryAction={

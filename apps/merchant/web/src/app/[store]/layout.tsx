@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { getSessionUser, getStoreForUser, getUserStores } from "@/lib/auth/session";
 import AdminShell from "@/components/AdminShell";
 import { getMerchantSignInUrl, MERCHANT_RETURN_PATH_HEADER } from "@/lib/public-urls";
+import { isAppPlatformEnabled } from "@/lib/app-platform-flag";
 
 interface StoreLayoutProps {
     children: React.ReactNode;
@@ -54,6 +55,7 @@ export default async function StoreLayout({ children, params }: StoreLayoutProps
             user={user}
             userStores={userStores}
             userStoresPromise={userStoresPromise}
+            appPlatformEnabled={isAppPlatformEnabled()}
         >
             {children}
         </AdminShell>

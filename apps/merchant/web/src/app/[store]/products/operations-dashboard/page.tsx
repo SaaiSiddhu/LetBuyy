@@ -10,7 +10,6 @@ import {
     Button,
     Banner,
     Card,
-    EmptyState,
     Page,
     PageHeader,
     Section,
@@ -18,6 +17,7 @@ import {
     Table,
     type StatusVariant,
 } from '@letbuyy/ui'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import type {
     SupplierMetricsResult,
     WarehouseMetricsResult,
@@ -203,7 +203,7 @@ export default function OperationsDashboardPage() {
                             {summaryState.message}
                         </Banner>
                     ) : !summary ? (
-                        <EmptyState
+                        <EmptyState scene="operations"
                             title="No data available"
                             body="Start by creating products, purchase orders, or inventory transfers."
                         />
@@ -283,7 +283,7 @@ export default function OperationsDashboardPage() {
                             {supplierState.message}
                         </Banner>
                     ) : !supplierResult || supplierResult.suppliers.length === 0 ? (
-                        <EmptyState
+                        <EmptyState scene="operations"
                             title="No supplier data yet"
                             body="Create purchase orders linked to suppliers to see performance metrics here."
                         />
@@ -360,7 +360,7 @@ export default function OperationsDashboardPage() {
                             {warehouseState.message}
                         </Banner>
                     ) : !warehouseResult || warehouseResult.warehouses.length === 0 ? (
-                        <EmptyState
+                        <EmptyState scene="operations"
                             title="No inventory locations configured"
                             body="Set up inventory locations to track stock across warehouses and retail locations."
                         />
@@ -430,7 +430,7 @@ export default function OperationsDashboardPage() {
                             {transferState.message}
                         </Banner>
                     ) : !transferResult || transferResult.total_count === 0 ? (
-                        <EmptyState
+                        <EmptyState scene="operations"
                             title="No transfers yet"
                             body="Create inventory transfers to move stock between locations and track pipeline here."
                         />

@@ -16,7 +16,6 @@ import {
     Banner,
     Button,
     Card,
-    EmptyState,
     Input,
     MaterialIcon,
     Modal,
@@ -30,6 +29,7 @@ import {
     useToast,
     type TableColumn,
 } from '@letbuyy/ui'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 
 // ─── Local types ──────────────────────────────────────────────────────────────
 
@@ -563,7 +563,7 @@ export default function MarketingCampaignsPage() {
     // ─── Empty state ───────────────────────────────────────────────────────────
 
     const emptyState = (
-        <EmptyState
+        <EmptyState scene="marketing"
             icon={<MaterialIcon name={error ? 'error' : 'campaign'} />}
             title={error ? 'Unable to load campaigns' : 'No campaigns yet'}
             body={error ?? 'Create an email campaign to reach your subscribed customers.'}

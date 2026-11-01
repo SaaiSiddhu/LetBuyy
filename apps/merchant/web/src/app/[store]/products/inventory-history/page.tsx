@@ -11,7 +11,6 @@ import {
     Banner,
     Button,
     Card,
-    EmptyState,
     Input,
     Page,
     PageHeader,
@@ -22,6 +21,7 @@ import {
     useToast,
     type StatusVariant,
 } from '@letbuyy/ui'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import { formatIndiaDate } from '@letbuyy/ui/formatting'
 
 // ── analytics KPI types ───────────────────────────────────────────────────────
@@ -395,7 +395,7 @@ function InventoryHistoryWorkspace({ store }: { store: string }) {
                         </div>
                     ) : !error && rows.length === 0 ? (
                         <div className="p-[var(--lb-space-6)]">
-                            <EmptyState
+                            <EmptyState scene="inventory-history"
                                 kind="inventory"
                                 title="No adjustment records"
                                 body={

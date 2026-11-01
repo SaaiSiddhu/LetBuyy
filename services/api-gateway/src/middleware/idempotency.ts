@@ -207,7 +207,10 @@ export const protectedMutationIdempotency = createMiddleware<{ Bindings: Env }>(
     const routeOwnedCollectionMembership = method === 'PUT' && /^\/products\/collections\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/products$/i.test(orderPath);
     // Product PATCH owns an atomic actor/payload/version-bound receipt after live access checks.
     const routeOwnedProductReceipt = method === 'PATCH' && /^\/products\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(orderPath);
-    if (routeOwnedCollectionMembership || routeOwnedWarehouseCommand || routeOwnedInventoryAdjustment || routeOwnedSubscriptionCheckout || routeOwnedProductReceipt || routeOwnedMoneyClaim || credentialCommand || routeOwnedOrderReceipt || !MUTATION_METHODS.has(method) || !isProtectedMutationPath(c.req.path, method)) {
+    // The gift-card RPC owns a serialised, site-bound issue receipt. HTTP replay
+    // would return its one-time code again and skip the route's live owner check.
+    const routeOwnedGiftCardIssue = method === 'POST' && orderPath === '/products/gift-cards';
+    if (routeOwnedGiftCardIssue || routeOwnedCollectionMembership || routeOwnedWarehouseCommand || routeOwnedInventoryAdjustment || routeOwnedSubscriptionCheckout || routeOwnedProductReceipt || routeOwnedMoneyClaim || credentialCommand || routeOwnedOrderReceipt || !MUTATION_METHODS.has(method) || !isProtectedMutationPath(c.req.path, method)) {
         await next();
         return;
     }

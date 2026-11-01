@@ -68,44 +68,22 @@ const storeNavigation: MerchantNavItem[] = [
     // reads useSearchParams, and neither value exists in its OrderStatus union.
     { path: 'orders', label: 'Orders', icon: 'shopping_bag', shortcut: 'g o' },
     {
-        // `exact` because `products` prefixes `products/inventory`,
-        // `products/purchase-orders` etc., which now live in their own groups.
-        // Without it, every warehousing route would also force this group open.
+        // Product and stock destinations stay together in the rail. Creation is
+        // an action on the Products page, not a permanent navigation item.
         path: 'products',
         label: 'Products',
         icon: 'inventory_2',
         shortcut: 'g p',
-        exact: true,
         children: [
-            { path: 'products/new', label: 'Add product', shortcut: 'n p' },
             { path: 'products/collections', label: 'Collections' },
             { path: 'products/smart-collections', label: 'Smart collections', keywords: ['automated', 'rules', 'dynamic collection', 'conditions'] },
-            { path: 'categories', label: 'Categories' },
-            { path: 'export', label: 'Export and import', keywords: ['csv', 'import', 'export', 'bulk', 'migrate'] },
-        ],
-    },
-    {
-        // Stock control. The parent is the inventory page itself.
-        path: 'products/inventory',
-        label: 'Inventory',
-        icon: 'warehouse',
-        shortcut: 'g i',
-        children: [
-            { path: 'products/inventory-history', label: 'Inventory history', keywords: ['movements', 'ledger', 'adjustments', 'audit'] },
-            { path: 'products/reservations', label: 'Reservations', keywords: ['reserved', 'hold', 'allocation'] },
-            { path: 'products/locations', label: 'Locations', keywords: ['warehouse', 'location', 'stock location'] },
-            { path: 'products/operations-dashboard', label: 'Operations dashboard', keywords: ['kpi', 'metrics', 'operations'] },
-        ],
-    },
-    {
-        // Procurement — a different persona and cadence from merchandising.
-        path: 'products/purchase-orders',
-        label: 'Purchasing',
-        icon: 'local_shipping',
-        children: [
+            { path: 'products/inventory', label: 'Inventory' },
+            { path: 'products/purchase-orders', label: 'Purchase orders' },
             { path: 'products/transfers', label: 'Transfers' },
             { path: 'products/receipts', label: 'Receipts', keywords: ['receiving', 'received', 'receipt history'] },
             { path: 'products/suppliers', label: 'Vendors', keywords: ['supplier', 'vendor', 'purchasing'] },
+            { path: 'categories', label: 'Categories' },
+            { path: 'export', label: 'Export and import', keywords: ['csv', 'import', 'export', 'bulk', 'migrate'] },
         ],
     },
     {
@@ -312,14 +290,18 @@ export function normalizeSiteType(siteType: string | null | undefined): Merchant
     return 'store'
 }
 
-export function getMerchantNavigation(siteType: string | null | undefined): MerchantNavItem[] {
-    return navigationByType[normalizeSiteType(siteType)]
+export function getMerchantNavigation(siteType: string | null | undefined, appPlatformEnabled = false): MerchantNavItem[] {
+    const items = navigationByType[normalizeSiteType(siteType)]
+    // The app marketplace is a frozen seam. Its mounted route returns 404
+    // unless the server's explicit feature gate is enabled, so no navigation
+    // surface may advertise it by default.
+    return appPlatformEnabled ? items : items.filter(item => item.path !== 'apps')
 }
 
-export function getMerchantCommandItems(siteType: string | null | undefined, store: string): MerchantCommandItem[] {
-    const commands: MerchantCommandItem[] = getQuickActionCommands(siteType, store)
+export function getMerchantCommandItems(siteType: string | null | undefined, store: string, appPlatformEnabled = false): MerchantCommandItem[] {
+    const commands: MerchantCommandItem[] = getQuickActionCommands(siteType, store).filter(command => appPlatformEnabled || command.href !== `/${store}/apps`)
 
-    for (const item of getMerchantNavigation(siteType)) {
+    for (const item of getMerchantNavigation(siteType, appPlatformEnabled)) {
         commands.push(toCommand(item, item.label, store))
 
         for (const child of item.children ?? []) {
@@ -330,7 +312,8 @@ export function getMerchantCommandItems(siteType: string | null | undefined, sto
     return commands
 }
 
-export function resolveKeyboardShortcut(siteType: string | null | undefined, sequence: string): string | null {
+export function resolveKeyboardShortcut(siteType: string | null | undefined, sequence: string, appPlatformEnabled = false): string | null {
+    if (!appPlatformEnabled && sequence.toLowerCase() === 'g x') return null
     return shortcutDestinations[normalizeSiteType(siteType)][sequence.toLowerCase()] ?? null
 }
 

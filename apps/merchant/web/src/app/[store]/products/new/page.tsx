@@ -53,7 +53,6 @@ import { Button, Input,
     Badge,
     Banner,
     Card,
-    EmptyState,
     Edit3,
     Image as ImageIcon,
     Modal,
@@ -74,6 +73,7 @@ import { Button, Input,
     useToast,
     useFormProtection,
 } from '@letbuyy/ui'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 
 function CheckboxControl({
     checked,
@@ -1003,7 +1003,7 @@ export default function AddProductPage() {
                                     ))}
                                 </div>
                             ) : (
-                                <EmptyState
+                                <EmptyState scene={isEditing ? 'product-detail' : 'product-editor'}
                                     icon={<ImageIcon className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                                     title="No product media yet"
                                     body="Upload product images so shoppers can inspect materials, colors, and details before buying."

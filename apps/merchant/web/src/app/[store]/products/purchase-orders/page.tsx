@@ -19,7 +19,6 @@ import {
     Banner,
     Button,
     Card,
-    EmptyState,
     Input,
     MaterialIcon,
     Modal,
@@ -36,6 +35,7 @@ import {
     type SelectOption,
     type StatusVariant,
 } from '@letbuyy/ui'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import type {
     PurchaseOrder,
     Supplier,
@@ -629,7 +629,7 @@ function WarehouseWorkspace({store}:{store:string}) {
                             ))}
                         </div>
                     ) : loadError ? <p>Purchase order records are unavailable. Reload the workspace to try again.</p> : pos.length === 0 ? (
-                        <EmptyState
+                        <EmptyState scene="purchase-orders"
                             title={filters.search||filters.status?"No matching purchase orders":page===1?"No purchase orders yet":"No records on this page"}
                             body="Create a purchase order to track supplier commitments, expected arrivals, and inventory receiving."
                             primaryAction={

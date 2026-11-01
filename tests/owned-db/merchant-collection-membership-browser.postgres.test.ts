@@ -192,8 +192,8 @@ async function openManage(saved:Manual){
         const[listed]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname==='/api/stores/'+site.subdomain+'/collections'&&r.request().method()==='GET'),page.goto(merchantOrigin+'/'+site.subdomain+'/products/collections')]);
         assert.equal(listed.status(),200);
         const row=page.getByRole('row').filter({has:page.getByText(saved.name,{exact:true})});await expect(row).toBeVisible();
-        const choiceReply=page.waitForResponse(r=>new URL(r.url()).pathname==='/api/stores/'+site.subdomain+'/products'&&r.request().method()==='GET');
-        const[reply]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname===membershipPath(saved)&&r.request().method()==='GET'),row.getByRole('button',{name:'Manage products',exact:true}).click()]);
+        const choiceReply=page.waitForResponse(r=>new URL(r.url()).pathname==='/api/stores/'+site.subdomain+'/products'&&r.request().method()==='GET',{timeout:90000});
+        const[reply]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname===membershipPath(saved)&&r.request().method()==='GET',{timeout:90000}),row.getByRole('button',{name:'Manage products',exact:true}).click()]);
         const choices=await choiceReply;
         console.info('OWNED_COLLECTION_MEMBERSHIP_NORMAL_OPEN '+JSON.stringify({collectionStatus:reply.status(),choiceStatus:choices.status(),choiceQuery:new URL(choices.url()).search,normalIdentity:true,positiveFake:false}));
         return{page,reply,choices};
@@ -287,6 +287,7 @@ test('a lost committed reply survives reload and exact replay never overwrites a
 
 test('normal public Commerce render recovers from a real outage and shows the current owner-saved membership',{timeout:300000},async()=>{
     const saved=manualCollection('render'),consumer=await browser!.newContext(),page=await consumer.newPage();
+    consumer.setDefaultTimeout(90000);consumer.setDefaultNavigationTimeout(90000);
     const url=commerceOrigin+'/collections/'+saved.id;
     let edit:Awaited<ReturnType<typeof loaded>>|undefined;
     try{

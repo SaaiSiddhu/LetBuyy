@@ -2847,5 +2847,37 @@
     "owned_object_absence_readbacks": 7,
     "all_owned_objects_absent": true,
     "cleanup_receipt": "/private/tmp/letbuyy-parity-continuation-20261101/owned-export-fixture-cleanup-readback.json"
+  },
+  "source_integration_checkpoint": {
+    "report": "MERCHANT_SOURCE_INTEGRATION.md",
+    "status": "local-merge-renumbering-approved-awaiting-owned-database-and-governance",
+    "source_base": "bbb9aab758188b1f07fcc44ed9a60b15309e7328",
+    "merge_head": "e4105581e3346041d71694d3db093eb713773e07",
+    "conflicts_resolved": 10,
+    "merchant_pass": 1636,
+    "gateway_unit_pass": 2027,
+    "ui_pass": 75,
+    "typecheck": [
+      "merchant",
+      "gateway",
+      "typescript-api-client",
+      "ui"
+    ],
+    "next_build": "pass-local-not-admitted",
+    "runtime_source_fingerprint": "594f35b0d3419ebe7da60bad03ca3c5a8417173499ef512c24a0831204485db3",
+    "all_migration_sql_bytes_unchanged": true,
+    "migration_renumbered": true,
+    "integrated_governance_accepted": false,
+    "owned_database_accepted": false,
+    "merchant_deployed": false,
+    "native_source_unchanged": true,
+    "accounts_source_unchanged": true,
+    "bff_source_unchanged": true,
+    "remote_push": false,
+    "production_activation": false,
+    "migration_numbering_owner_approved": true,
+    "gift_card_migration": 415,
+    "warehouse_migration": 414,
+    "migration_sql_bytes_preserved": true
   }
 }

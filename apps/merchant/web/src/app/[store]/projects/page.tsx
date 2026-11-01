@@ -10,7 +10,6 @@ import { Button, Input,
     Briefcase,
     Card,
     ConfirmDialog,
-    EmptyState,
     ExternalLink,
     FileText,
     Page,
@@ -26,6 +25,7 @@ import { Button, Input,
     Trash2,
     useToast,
 } from '@letbuyy/ui'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 
 interface Project {
     id: string
@@ -382,7 +382,7 @@ export default function ProjectsPage() {
             {projects.length === 0 && !showForm ? (
                 <Card>
                     <Section title="Projects">
-                        <EmptyState
+                        <EmptyState scene="projects"
                             icon={<Briefcase className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                             title="No projects yet"
                             body="Add case studies, portfolio work, and project links to make your profile easier to evaluate."

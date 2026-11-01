@@ -1,18 +1,19 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import { MerchantNavigationLink } from './MerchantNavigationLink'
 import { MerchantNavigationProvider, MerchantNavigationFeedback } from './MerchantNavigationProvider'
 import HeaderBar from './HeaderBar'
-import TrialBanner from './TrialBanner'
 import { MerchantSecurityContext } from './security/MerchantSecurityContext'
 import type { SessionUser } from '@/lib/auth/session'
-import { AppNavigation, Button, LayoutDashboard, MaterialIcon, Navigation, NavigationLinkProvider, ToastProvider, acquireScrollLock, isNavItemActive, type AppNavigationSection, type NavigationItem } from '@letbuyy/ui'
+import { AlertTriangle, AppNavigation, ArrowLeft, Button, LayoutDashboard, Navigation, NavigationLinkProvider, ToastProvider, acquireScrollLock, isNavItemActive, type AppNavigationSection, type NavigationItem } from '@letbuyy/ui'
 import { getMerchantNavigation, type MerchantNavItem } from './merchantNavigation'
-import { SETTINGS_NAV_GROUPS } from './settings/settings-navigation'
+import { MerchantSidebarIcon } from './MerchantSidebarIcon'
+import { getSettingsNavigationGroups } from './settings/settings-navigation'
+import { PanelLeft } from 'lucide-react'
 
 const CommandPalette = dynamic(() => import('./CommandPalette'))
 const AISidebar = dynamic(() => import('./AISidebar'))
@@ -27,8 +28,14 @@ const DRAWER_ID = 'admin-nav-drawer'
  */
 const PAGE_SCROLL_ID = 'admin-page-scroll'
 
+interface RailMenuState {
+    item: AppNavigationSection['items'][number]
+    top: number
+    left: number
+}
+
 /**
- * Settings runs a second scrollport at >=1024px: the panel is a fixed-height
+ * Settings runs a second scrollport at tablet width and above: the panel is a fixed-height
  * card, so its content column is what moves there while PAGE_SCROLL_ID sits
  * still. Below 1024px the panel flattens and the page scroller takes over
  * again. Anything that acts on "the thing that scrolls" has to cover both.
@@ -73,17 +80,40 @@ interface AdminShellProps {
     user: SessionUser
     userStores: UserStore[]
     userStoresPromise?: Promise<StoreSwitcherResult>
+    appPlatformEnabled: boolean
     children: React.ReactNode
 }
 
-export default function MerchantControlPlaneShell({ store, storeData, user, userStores, userStoresPromise, children }: AdminShellProps) {
+export default function MerchantControlPlaneShell({ store, storeData, user, userStores, userStoresPromise, appPlatformEnabled, children }: AdminShellProps) {
     const pathname = usePathname()
     const [sidebarOpen, setSidebarOpen] = useState(false)
+    const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+    const [tabletDocked, setTabletDocked] = useState(false)
     const [aiPanelOpen, setAiPanelOpen] = useState(false)
     const [cmdPaletteOpen, setCmdPaletteOpen] = useState(false)
+    const [railMenu, setRailMenu] = useState<RailMenuState | null>(null)
+    const railMenuRef = useRef<HTMLDivElement | null>(null)
+
+    useEffect(() => {
+        try {
+            setSidebarCollapsed(window.localStorage.getItem('letbuyy:merchant-sidebar-collapsed') === 'true')
+        } catch {
+            // Navigation remains usable when storage is blocked or unavailable.
+        }
+    }, [])
+
+    const toggleSidebarCollapsed = () => {
+        const next = !sidebarCollapsed
+        setSidebarCollapsed(next)
+        try {
+            window.localStorage.setItem('letbuyy:merchant-sidebar-collapsed', String(next))
+        } catch {
+            // The preference is optional; the current session still collapses.
+        }
+    }
 
     // Client navigation retains the shell; close its mobile drawer on arrival.
-    useEffect(() => { setSidebarOpen(false) }, [pathname])
+    useEffect(() => { setSidebarOpen(false); setRailMenu(null) }, [pathname])
 
     // The router restores scroll on the DOCUMENT, which no longer scrolls, so a
     // client-side navigation out of a scrolled list would land halfway down the
@@ -95,15 +125,21 @@ export default function MerchantControlPlaneShell({ store, storeData, user, user
         document.querySelectorAll(SCROLLPORT_SELECTOR).forEach(el => el.scrollTo(0, 0))
     }, [pathname])
 
-    // The drawer only exists below lg. Without this, opening at 900px and then
-    // widening leaves the z-39 scrim painted over the whole app (its .active
-    // display:block rule is not media-gated) and role="dialog" on the desktop rail.
+    // The drawer is mobile-only. Tablet and desktop dock the primary rail.
     useEffect(() => {
-        const mq = window.matchMedia('(min-width: 1024px)')
-        const sync = () => { if (mq.matches) setSidebarOpen(false) }
+        const mq = window.matchMedia('(min-width: 769px)')
+        const tablet = window.matchMedia('(min-width: 769px) and (max-width: 1023.98px)')
+        const sync = () => {
+            if (mq.matches) setSidebarOpen(false)
+            setTabletDocked(tablet.matches)
+        }
         sync()
         mq.addEventListener('change', sync)
-        return () => mq.removeEventListener('change', sync)
+        tablet.addEventListener('change', sync)
+        return () => {
+            mq.removeEventListener('change', sync)
+            tablet.removeEventListener('change', sync)
+        }
     }, [])
 
     // Modal drawer contract, ported verbatim from the settings drawer this
@@ -129,7 +165,12 @@ export default function MerchantControlPlaneShell({ store, storeData, user, user
             const first = focusable[0]
             const last = focusable[focusable.length - 1]
             const active = document.activeElement
-            if (active === drawer) { e.preventDefault(); e.shiftKey ? last.focus() : first.focus(); return }
+            if (active === drawer) {
+                e.preventDefault()
+                if (e.shiftKey) last.focus()
+                else first.focus()
+                return
+            }
             if (!drawer.contains(active)) { e.preventDefault(); first.focus(); return }
             if (e.shiftKey && active === first) { e.preventDefault(); last.focus(); return }
             if (!e.shiftKey && active === last) { e.preventDefault(); first.focus() }
@@ -143,7 +184,18 @@ export default function MerchantControlPlaneShell({ store, storeData, user, user
         }
     }, [sidebarOpen])
 
+    useEffect(() => {
+        if (!railMenu) return
+        function closeOnOutsidePointer(event: PointerEvent) {
+            if (event.target instanceof Node && (railMenuRef.current?.contains(event.target) || document.getElementById(DRAWER_ID)?.contains(event.target))) return
+            setRailMenu(null)
+        }
+        document.addEventListener('pointerdown', closeOnOutsidePointer)
+        return () => document.removeEventListener('pointerdown', closeOnOutsidePointer)
+    }, [railMenu])
+
     const isDraft = storeData.status === 'draft'
+    const isDashboardPage = /\/dashboard\/?$/.test(pathname ?? '')
     // Segment-aware, not substring. `/{store}/…` puts the tenant's own subdomain
     // in the path, and neither `editor` nor `settings` is a reserved subdomain —
     // so a store called `editor-shop` would make `.includes('/editor')` true and
@@ -163,33 +215,59 @@ export default function MerchantControlPlaneShell({ store, storeData, user, user
                                 </MerchantSecurityContext.Provider></ToastProvider></NavigationLinkProvider>
     }
 
-    // Settings routes reuse the SAME shell and the SAME drawer — only the nav
-    // data, the brand slot and the sidebar's desktop visibility differ. That is
-    // what makes the mobile settings drawer identical to the main one by
-    // construction rather than by two stylesheets kept in sync by hand.
-    const navigationSections = isSettingsPage
-        ? buildSettingsNavigationSections(store)
-        : buildNavigationSections(store, storeData.site_type)
+    // The desktop shell always owns the primary rail. Settings adds its own
+    // adjacent navigation column; only the small-screen drawer swaps its rows.
+    const navigationSections = isSettingsPage && sidebarOpen
+        ? buildSettingsNavigationSections(store, appPlatformEnabled)
+        : buildNavigationSections(store, storeData.site_type, appPlatformEnabled)
+    const railCollapsed = isSettingsPage || sidebarCollapsed || tabletDocked
 
-    // Below lg the rail is an overlay drawer, pinned to the page plane's top edge
-    // so its curve lines up with the sheet's exactly. z-40 keeps it over the
-    // scrim (39) and under the header (50), whose popovers hang below the bar.
+    function showRailMenu(target: EventTarget | null) {
+        if (!railCollapsed || sidebarOpen || !(target instanceof Element)) return
+        const row = target.closest<HTMLElement>('[data-navigation-item]')
+        const sidebar = document.getElementById(DRAWER_ID)
+        if (!row || !sidebar?.contains(row)) { setRailMenu(null); return }
+        const item = navigationSections.flatMap(section => section.items).find(entry => entry.id === row.dataset.navigationItem)
+        if (!item) { setRailMenu(null); return }
+        const rect = row.getBoundingClientRect()
+        setRailMenu({ item, top: Math.max(8, Math.min(rect.top, window.innerHeight - 280)), left: rect.right + 8 })
+    }
+
+    function closeRailMenu(relatedTarget: EventTarget | null) {
+        if (relatedTarget instanceof Node && railMenuRef.current?.contains(relatedTarget)) return
+        setRailMenu(null)
+    }
+
+    // Hover is unavailable on many tablets. A tap on a collapsed section
+    // opens the same submenu; its parent destination remains in that menu.
+    function openRailMenuOnTap(target: EventTarget | null, event: { preventDefault(): void; stopPropagation(): void }) {
+        if (!railCollapsed || sidebarOpen || !window.matchMedia('(hover: none)').matches || !(target instanceof Element)) return
+        const row = target.closest<HTMLElement>('[data-navigation-item]')
+        const item = navigationSections.flatMap(section => section.items).find(entry => entry.id === row?.dataset.navigationItem)
+        if (!row || !item?.children?.length) return
+        event.preventDefault()
+        event.stopPropagation()
+        const rect = row.getBoundingClientRect()
+        setRailMenu({ item, top: Math.max(8, Math.min(rect.top, window.innerHeight - 280)), left: rect.right + 8 })
+    }
+
+    // Phones use an overlay drawer pinned to the header. On tablet the closed
+    // icon rail stays in flow so it never covers the content or settings nav.
+    // z-40 keeps the phone drawer over the scrim and under the header.
     const drawerClass = 'admin-panel-sidebar admin-panel-drawer fixed left-0 top-[var(--admin-header-height)] z-40 flex h-[calc(100dvh_-_var(--admin-header-height))]'
 
-    // At lg+ the rail is a plain flex child of a frame that already has a
+    // At tablet+ the rail is a plain flex child of a frame that already has a
     // definite height, so it stretches on its own: no sticky, no viewport math,
     // and explicitly not self-start (which would stop it stretching).
     const railClass = 'lg:static lg:z-auto lg:h-full lg:min-h-0'
 
-    // On settings the drawer is mobile-only: the desktop settings panel brings
-    // its own rail, so >=1024px must never see this one.
+    // An open settings drawer is phone-only. The closed rail stays docked from
+    // tablet upward beside the settings navigation column.
     const sidebarOpenClass = isSettingsPage
         ? `${drawerClass} lg:hidden`
         : `${drawerClass} ${railClass}`
 
-    const sidebarClosedClass = isSettingsPage
-        ? 'admin-panel-sidebar hidden'
-        : `admin-panel-sidebar hidden lg:flex ${railClass}`
+    const sidebarClosedClass = `admin-panel-sidebar hidden lg:flex ${railClass}`
 
     return (
         <MerchantNavigationProvider><NavigationLinkProvider linkComponent={MerchantNavigationLink}><ToastProvider>
@@ -200,9 +278,11 @@ export default function MerchantControlPlaneShell({ store, storeData, user, user
                     user={user}
                     userStores={userStores}
                     userStoresPromise={userStoresPromise}
+                    appPlatformEnabled={appPlatformEnabled}
                     onMenuToggle={() => setSidebarOpen(o => !o)}
                     onSearchOpen={() => setCmdPaletteOpen(true)}
-                    onAISidebarToggle={isSettingsPage ? () => {} : () => setAiPanelOpen(!aiPanelOpen)}
+                    onAISidebarToggle={() => setAiPanelOpen(!aiPanelOpen)}
+                    showAssistant={!isSettingsPage}
                     isSettingsPage={!!isSettingsPage}
                     isMenuOpen={sidebarOpen}
                     menuDrawerId={DRAWER_ID}
@@ -229,36 +309,48 @@ export default function MerchantControlPlaneShell({ store, storeData, user, user
                     // single scroll container, which is what pins the curve.
                     fixedViewport
                     className="admin-panel-frame"
-                    // --flush: the sheet takes its OWN leading corner because no
-                    // rail sits in it. On settings the shared rail is hidden at
-                    // every width (the panel brings its own), so without this the
-                    // page would be curved top-right and square top-left at
-                    // >=1024px. Below lg the CSS handles the same thing by
-                    // breakpoint, since there the rail is an overlay on every route.
-                    mainClassName={isSettingsPage ? 'admin-page-scroll admin-page-scroll--flush' : 'admin-page-scroll'}
+                    // Settings paints the dark backing for its second navigation
+                    // column inside this same rounded page plane.
+                    mainClassName={isSettingsPage ? 'admin-page-scroll admin-page-scroll--settings' : 'admin-page-scroll'}
                     mainProps={{ id: PAGE_SCROLL_ID }}
-                    sidebarClassName={sidebarOpen ? sidebarOpenClass : sidebarClosedClass}
+                    sidebarClassName={`${sidebarOpen ? sidebarOpenClass : sidebarClosedClass} ${railCollapsed && !sidebarOpen ? 'admin-panel-sidebar--collapsed' : ''}`}
                     sidebarProps={{
                         id: DRAWER_ID,
                         tabIndex: -1,
+                        onMouseOver: (event) => showRailMenu(event.target),
+                        onFocusCapture: (event) => showRailMenu(event.target),
+                        onClickCapture: (event) => openRailMenuOnTap(event.target, event),
+                        onMouseLeave: (event) => closeRailMenu(event.relatedTarget),
+                        onScrollCapture: () => setRailMenu(null),
+                        onKeyDown: (event) => { if (event.key === 'Escape') setRailMenu(null) },
                         ...(sidebarOpen ? {
                             role: 'dialog',
                             'aria-modal': true,
                             'aria-label': isSettingsPage ? 'Settings navigation' : 'Main navigation',
                         } : {}),
                     }}
-                    brand={isSettingsPage ? (
+                    brand={isSettingsPage && sidebarOpen ? (
                         <Link href={`/${store}/dashboard`} className="admin-drawer-back">
-                            <MaterialIcon name="arrow_back" size={16} />
+                            <ArrowLeft size={16} aria-hidden="true" />
                             <span>Back to home</span>
                         </Link>
                     ) : undefined}
-                    footer={isSettingsPage ? undefined : (
-                        <Navigation
-                            linkComponent={MerchantNavigationLink}
-                            ariaLabel="Settings navigation"
-                            items={buildFooterItems(store, storeData.site_type, pathname ?? '/')}
-                        />
+                    footer={isSettingsPage && sidebarOpen ? undefined : (
+                        <div className="admin-sidebar-footer-row">
+                            <Navigation
+                                linkComponent={MerchantNavigationLink}
+                                ariaLabel="Settings navigation"
+                                items={buildFooterItems(store, storeData.site_type, pathname ?? '/', appPlatformEnabled)}
+                            />
+                            {!isSettingsPage && <Button unstyled type="button" className="admin-sidebar-collapse-toggle"
+                                onClick={toggleSidebarCollapsed}
+                                aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+                                aria-controls={DRAWER_ID}
+                                aria-expanded={!sidebarCollapsed}
+                                title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}>
+                                <PanelLeft size={17} strokeWidth={1.8} aria-hidden="true" />
+                            </Button>}
+                        </div>
                     )}
                 >
                     {isSettingsPage ? (
@@ -271,7 +363,7 @@ export default function MerchantControlPlaneShell({ store, storeData, user, user
                         <div className="admin-settings-wrapper">
                             {isDraft && (
                                 <div className="admin-draft-banner">
-                                    <MaterialIcon name="warning" size={16} />
+                                    <AlertTriangle size={16} aria-hidden="true" />
                                     <span className="admin-draft-banner-message">
                                         Your site is in <strong>draft</strong> mode. It is not visible to visitors yet.
                                     </span>
@@ -290,9 +382,9 @@ export default function MerchantControlPlaneShell({ store, storeData, user, user
                         // would square off the corners it just rounded.
                         <div className={`flex min-h-full min-w-0 ${aiPanelOpen ? 'ai-open' : ''}`}>
                             <div className="min-w-0 flex-1">
-                                {isDraft && (
+                                {isDraft && !isDashboardPage && (
                                     <div className="admin-draft-banner">
-                                        <MaterialIcon name="warning" size={16} />
+                                        <AlertTriangle size={16} aria-hidden="true" />
                                         <span className="admin-draft-banner-message">
                                             Your site is in <strong>draft</strong> mode. It is not visible to visitors yet.
                                         </span>
@@ -303,13 +395,6 @@ export default function MerchantControlPlaneShell({ store, storeData, user, user
                                     {children}
                                 </MerchantSecurityContext.Provider>
 
-                                {pathname?.endsWith('/dashboard') && (
-                                    <TrialBanner
-                                        storeSlug={store}
-                                        trialEndsAt={storeData.trial_ends_at}
-                                        trialStatus={storeData.trial_status}
-                                    />
-                                )}
                             </div>
 
                             {/* AI sidebar panel — inline, pushes main content */}
@@ -324,12 +409,32 @@ export default function MerchantControlPlaneShell({ store, storeData, user, user
                     )}
                 </AppNavigation>
 
+                {railMenu && railCollapsed && !sidebarOpen && (
+                    <nav ref={railMenuRef} className="admin-rail-popover" style={{ top: railMenu.top, left: railMenu.left }}
+                        aria-label={`${railMenu.item.label} navigation`}
+                        onMouseLeave={(event) => {
+                            if (event.relatedTarget instanceof Node && document.getElementById(DRAWER_ID)?.contains(event.relatedTarget)) return
+                            setRailMenu(null)
+                        }}
+                        onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setRailMenu(null) }}
+                        onKeyDown={(event) => { if (event.key === 'Escape') { setRailMenu(null); document.getElementById(DRAWER_ID)?.focus() } }}>
+                        {railMenu.item.href && <MerchantNavigationLink href={railMenu.item.href} className="admin-rail-popover-title" onClick={() => setRailMenu(null)}>{railMenu.item.label}</MerchantNavigationLink>}
+                        {!railMenu.item.href && <span className="admin-rail-popover-title">{railMenu.item.label}</span>}
+                        {railMenu.item.children?.map(child => child.href && (
+                            <MerchantNavigationLink key={child.id} href={child.href} className="admin-rail-popover-link"
+                                aria-current={pathname && isNavItemActive(pathname, child.href) ? 'page' : undefined}
+                                onClick={() => setRailMenu(null)}>{child.label}</MerchantNavigationLink>
+                        ))}
+                    </nav>
+                )}
+
                 {/* Command palette */}
                 {cmdPaletteOpen && (
                     <CommandPalette
                         store={store}
                         storeName={storeData.name || storeData.store_name || store}
                         siteType={storeData.site_type}
+                        appPlatformEnabled={appPlatformEnabled}
                         onClose={() => setCmdPaletteOpen(false)}
                     />
                 )}
@@ -343,8 +448,8 @@ function hasSegmentRun(segments: string[], run: string[]): boolean {
     return segments.some((_, i) => run.every((part, offset) => segments[i + offset] === part))
 }
 
-function buildNavigationSections(store: string, siteType: string | null | undefined): AppNavigationSection[] {
-    const groups = getMerchantNavigation(siteType)
+function buildNavigationSections(store: string, siteType: string | null | undefined, appPlatformEnabled: boolean): AppNavigationSection[] {
+    const groups = getMerchantNavigation(siteType, appPlatformEnabled)
     const sectionItems: Record<'primary' | 'sales' | 'apps' | 'bottom', MerchantNavItem[]> = {
         primary: [],
         sales: [],
@@ -369,7 +474,7 @@ function buildNavigationSections(store: string, siteType: string | null | undefi
  * than a second look-alike. `active` is deliberately NOT set: AppNavigation
  * injects isNavItemActive() with the same predicate the settings rail uses.
  */
-function buildSettingsNavigationSections(store: string): AppNavigationSection[] {
+function buildSettingsNavigationSections(store: string, appPlatformEnabled: boolean): AppNavigationSection[] {
     return [
         {
             // No visible heading (parity with the main drawer's first section),
@@ -385,7 +490,7 @@ function buildSettingsNavigationSections(store: string): AppNavigationSection[] 
                 icon: <LayoutDashboard className="letbuyy-icon" aria-hidden="true" />,
             }],
         },
-        ...SETTINGS_NAV_GROUPS.map((group) => ({
+        ...getSettingsNavigationGroups(appPlatformEnabled).map((group) => ({
             title: group.title,
             items: group.items.map((item) => {
                 const ItemIcon = item.Icon
@@ -400,8 +505,8 @@ function buildSettingsNavigationSections(store: string): AppNavigationSection[] 
     ]
 }
 
-function buildFooterItems(store: string, siteType: string | null | undefined, pathname: string): NavigationItem[] {
-    const groups = getMerchantNavigation(siteType)
+function buildFooterItems(store: string, siteType: string | null | undefined, pathname: string, appPlatformEnabled: boolean): NavigationItem[] {
+    const groups = getMerchantNavigation(siteType, appPlatformEnabled)
     return groups
         .filter((item) => item.section === 'bottom')
         .map((item) => {
@@ -415,7 +520,7 @@ function buildFooterItems(store: string, siteType: string | null | undefined, pa
                 id: item.path,
                 label: item.label,
                 href: children.length === 0 ? `/${store}/${item.path}` : undefined,
-                icon: <MaterialIcon name={item.icon} size={16} aria-hidden="true" />,
+                icon: <MerchantSidebarIcon name={item.icon} label={item.label} />,
                 active: isNavItemActive(pathname, `/${store}/${item.path}`),
                 children: children.length > 0 ? children : undefined,
             }
@@ -441,7 +546,7 @@ function toNavigationItems(store: string, item: MerchantNavItem): AppNavigationS
         label: item.label,
         href: duplicatesAChild ? undefined : `/${store}/${item.path}`,
         exact: item.exact,
-        icon: <MaterialIcon name={item.icon} size={16} aria-hidden="true" />,
+        icon: <MerchantSidebarIcon name={item.icon} label={item.label} />,
         children: children.length > 0 ? children : undefined,
     }]
 }

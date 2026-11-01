@@ -206,10 +206,10 @@ function NavItem({ item, linkComponent }: { item: NavigationItem; linkComponent?
     // the whole expanded block instead of on its own row.
     if (isLinkedParent) {
         return (
-            <li>
+            <li data-navigation-item={item.id}>
                 <div className="relative">
                     <Link
-                        className={parentCls(!!item.active && !anyChildActive, item.disabled)}
+                        className={parentCls(!!item.active, item.disabled)}
                         href={item.disabled ? undefined : item.href}
                         aria-current={item.active && !anyChildActive ? 'page' : undefined}
                         aria-disabled={item.disabled || undefined}
@@ -243,7 +243,7 @@ function NavItem({ item, linkComponent }: { item: NavigationItem; linkComponent?
     }
 
     return (
-        <li>
+        <li data-navigation-item={item.id}>
             {item.href && !hasChildren ? (
                 <Link
                     className={parentCls(!!item.active, item.disabled)}

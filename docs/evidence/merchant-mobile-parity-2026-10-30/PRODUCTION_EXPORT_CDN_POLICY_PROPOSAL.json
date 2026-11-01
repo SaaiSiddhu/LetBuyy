@@ -8,8 +8,8 @@
   "hostname": "cdn.letbuyy.store",
   "bucket": "letbuyy-media-production",
   "expression": "(http.host eq \"cdn.letbuyy.store\" and (url_decode(http.request.uri.path, \"r\") eq \"/exports\" or starts_with(url_decode(http.request.uri.path, \"r\"), \"/exports/\")))",
-  "status": "proposal-only-awaiting-specific-owner-approval",
-  "approved": false,
+  "status": "owner-approved-awaiting-two-canary-verification",
+  "approved": true,
   "scope": [
     "Read current production CDN policy metadata",
     "Create two harmless synthetic canaries under a public and an export prefix; no merchant/customer payloads",
@@ -20,5 +20,7 @@
   "release_scope": "This proposal covers only the CDN restriction and controlled canaries. Application deployment, aliases, schema, original files, payment/provider operations and private storage cutover require their own authority.",
   "rollback": "If the public control regresses, remove only the newly created rule after deleting the two owned canaries; preserve existing configuration.",
   "stage_evidence": "STAGING_PRIVATE_EXPORTS.md",
-  "limitation": "Outer mitigation; complete permanent private storage separation before final production certification."
+  "limitation": "Outer mitigation; complete permanent private storage separation before final production certification.",
+  "owner_approval": "Approve scoped production privacy check and guard (Recommended)",
+  "application_release_authorized": false
 }
