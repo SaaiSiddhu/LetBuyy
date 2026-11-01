@@ -65,7 +65,7 @@ export function BuyerAuthorize({
         try {
             const res = await fetch('/api/buyer/oauth/authorize', {
                 method: 'POST',
-                headers: getAuthHeaders(),
+                headers: (await getAuthHeaders()),
                 body: JSON.stringify({
                     response_type: 'code',
                     client_id: request.clientId,
@@ -91,9 +91,16 @@ export function BuyerAuthorize({
 
     async function useAnotherAccount() {
         setLoading(true)
-        await fetch('/api/buyer/logout', { method: 'POST', headers: getAuthHeaders() }).catch(() => undefined)
-        setLoading(false)
-        router.refresh()
+        setError(null)
+        try {
+            const res = await fetch('/api/buyer/logout', { method: 'POST', headers: (await getAuthHeaders()) })
+            if (!res.ok) throw new Error(GENERIC)
+            router.refresh()
+        } catch {
+            setError(GENERIC)
+        } finally {
+            setLoading(false)
+        }
     }
 
     async function submitCredentials(event: React.FormEvent) {
@@ -103,7 +110,7 @@ export function BuyerAuthorize({
         try {
             const res = await fetch(mode === 'sign-in' ? '/api/buyer/login' : '/api/buyer/register', {
                 method: 'POST',
-                headers: getAuthHeaders(),
+                headers: (await getAuthHeaders()),
                 body: JSON.stringify({ email: email.trim(), password, turnstileToken: turnstileToken || undefined }),
             })
             if (!res.ok) {

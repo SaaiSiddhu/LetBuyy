@@ -158,7 +158,7 @@ function SetPasswordContent() {
         try {
             const res = await fetch('/api/auth/set-password', {
                 method: 'POST',
-                headers: getAuthHeaders(),
+                headers: (await getAuthHeaders()),
                 body: JSON.stringify({ password }),
             })
 

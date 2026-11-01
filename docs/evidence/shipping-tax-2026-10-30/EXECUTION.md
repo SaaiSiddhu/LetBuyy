@@ -306,9 +306,19 @@ No address, payment or order was submitted. The initial diagnostic's undefined
 column refusal and corrected diagnostic remain retained alongside
 `shipping411-snaz-browser-recovery-20261101.json`.
 
-**Still unobserved/open:** the production Merchant session expired and requires
-the owner's private sign-in before final signed-in Shipping/Taxes UI readback.
-GitHub CI remains billing-blocked, full hosted staging sign-in is unconfigured,
+**Signed-in production follow-up (1 November):** after the owner privately
+completed sign-in, both Snaz Shipping and Taxes pages loaded under the real owner
+permissions. Shipping profiles and their single-profile boundary, country/state/PIN
+coverage, both saved delivery rates, and all rate-editor condition/estimate/COD
+fields were visible. The editor was opened and cancelled without saving. Manual
+shipping is available; both carrier integrations remain visibly pending. Taxes
+shows inclusive pricing, zero rates and the incomplete-registration warning;
+Business details has no completed legal name/GSTIN/state. No tax registration was
+guessed and no setting was changed. This closes the signed-in page readback, not
+a registered-tax payment or carrier journey. The private sanitized receipt is
+`shipping411-signed-in-settings-browser-20261101.json`.
+
+**Still unobserved/open:** GitHub CI remains billing-blocked, full hosted staging sign-in is unconfigured,
 and real Razorpay sandbox capture/refund with the new tax quote is unobserved.
 Shiprocket connector/platform execution, carrier billing/pickup/booking/tracking
 and F18 GST credit notes/reporting remain unimplemented. These are not described
