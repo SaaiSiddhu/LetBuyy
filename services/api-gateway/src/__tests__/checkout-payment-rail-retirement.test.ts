@@ -22,6 +22,8 @@ import storefrontRouter from '../routes/storefront';
 const testDir = dirname(fileURLToPath(import.meta.url));
 const routesPath = join(testDir, '../routes/storefront/checkout-payment-routes.ts');
 const currentSource = readFileSync(routesPath, 'utf8');
+const buyerCheckoutClient = readFileSync(join(testDir,
+    '../../../../apps/commerce/web/src/app/store/[subdomain]/checkout/checkout-client.tsx'), 'utf8');
 
 function env(): Env {
     return {
@@ -66,6 +68,12 @@ test('none of the retired provider paths appear anywhere in the mounted storefro
             !currentSource.includes(segment),
             `checkout-payment-routes.ts must not reference ${segment}`,
         );
+    }
+});
+
+test('the buyer checkout component has no caller for the retired direct order or verify path', () => {
+    for (const path of ['/payments/razorpay/order', '/payments/razorpay/verify', "fetch('/api/orders'"]) {
+        assert.equal(buyerCheckoutClient.includes(path), false, `buyer checkout must use the hosted session instead of ${path}`);
     }
 });
 

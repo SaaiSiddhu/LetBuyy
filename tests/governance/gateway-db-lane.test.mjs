@@ -183,6 +183,7 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
         "storefront-collection-discovery.postgres.test.ts",
         "storefront-customer-address-atomicity.postgres.test.ts",
         "storefront-customer-profile.postgres.test.ts",
+        "storefront-direct-payment-retirement.postgres.test.ts",
         "storefront-discovery.postgres.test.ts",
         "storefront-electronics-search.postgres.test.ts",
         "storefront-measurement-discovery.postgres.test.ts",

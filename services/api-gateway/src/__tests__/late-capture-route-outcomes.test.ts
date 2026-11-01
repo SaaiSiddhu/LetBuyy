@@ -266,18 +266,17 @@ test('verify: a confirmed capture announces order.paid once, keyed on the provid
         'the same key the webhook path uses, so the pair produces one event');
 });
 
-test('legacy unversioned test fixture keeps its provider order and public key contract for drain', async (t) => {
+test('unversioned fallback keys cannot start a new direct payment', async (t) => {
     const postgrest = installFakePostgrest({ order: PENDING_ORDER });
     t.after(() => postgrest.restore());
     const response = await storefrontApp([]).request('/late-capture/payments/razorpay/order', {
         method: 'POST', headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ orderId: ORDER, idempotencyKey: 'razorpay-order-own-account' }),
     });
-    assert.equal(response.status, 200);
-    const payload = await response.json() as { data: { keyId: string; razorpayOrderId: string } };
-    assert.equal(payload.data.keyId, STORE_KEY_ID);
-    assert.equal(payload.data.razorpayOrderId, 'order_RZP_route');
-    assert.deepEqual(postgrest.razorpayRequests.map(request => request.path), ['/v1/orders']);
+    assert.equal(response.status, 410);
+    assert.equal((await response.json() as { error: { code: string } }).error.code, 'HOSTED_CHECKOUT_REQUIRED');
+    assert.equal(postgrest.razorpayRequests.length, 0);
+    assert.equal(postgrest.requests.filter(request => request.path === 'orders' || request.path.startsWith('rpc/')).length, 0);
 });
 
 test('a saved merchant account cannot start an unpinned direct storefront payment', async t => {
@@ -293,23 +292,6 @@ test('a saved merchant account cannot start an unpinned direct storefront paymen
     assert.equal(postgrest.requests.filter(request => request.path === 'orders' || request.path.startsWith('rpc/')).length, 0,
         'no order or payment reference is touched');
 });
-
-for (const scenario of [
-    { name: 'lower amount', fixture: { providerOrderAmount: 100 } },
-    { name: 'foreign currency', fixture: { providerOrderCurrency: 'USD' } },
-]) {
-    test(`storefront order creation refuses a provider order with ${scenario.name} before binding`, async (t) => {
-        const postgrest = installFakePostgrest({ order: PENDING_ORDER, ...scenario.fixture });
-        t.after(() => postgrest.restore());
-        const response = await storefrontApp([]).request('/late-capture/payments/razorpay/order', {
-            method: 'POST', headers: { 'content-type': 'application/json' },
-            body: JSON.stringify({ orderId: ORDER, idempotencyKey: `razorpay-order-${scenario.name.replaceAll(' ', '-')}` }),
-        });
-        assert.equal(response.status, 502);
-        assert.equal((await response.json() as { error: { code: string } }).error.code, 'PAYMENT_PROVIDER_MISMATCH');
-        assert.equal(postgrest.requests.filter(request => request.path === 'rpc/attach_order_payment_reference_with_ledger').length, 0);
-    });
-}
 
 test('verify: disabled merchant payment setup refuses a signed capture before ledger writes', async (t) => {
     const postgrest = installFakePostgrest({ order: PENDING_ORDER, rpcResult: CONFIRMED, onlinePaymentEnabled: false });
