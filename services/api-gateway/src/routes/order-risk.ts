@@ -301,12 +301,13 @@ async function releaseCancelledCodOrderResources(
         console.warn(JSON.stringify({ level: 'warn', event: 'cod_inventory_release_failed', order_id: orderId, error: String(releaseError) }));
     }
     try {
-        await db.rpc('restore_gift_card_on_refund', {
+        const { error: restoreError } = await db.rpc('restore_gift_card_on_refund', {
             p_store_id: tenant.siteId,
             p_order_id: orderId,
             p_actor_id: tenant.userId ?? null,
             p_request_id: tenant.requestId ?? null,
         });
+        if (restoreError) throw new Error('Gift-card restoration unavailable');
     } catch (restoreError) {
         console.warn(JSON.stringify({ level: 'warn', event: 'cod_gift_card_restore_failed', order_id: orderId, error: String(restoreError) }));
     }

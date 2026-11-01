@@ -1075,12 +1075,13 @@ router.patch('/:id', validate('json', UpdateOrderStatusSchema), async (c) => {
             // LB-11 — restore any gift-card balance redeemed on this order (the whole order is
             // being reversed). Idempotent + best-effort; never blocks the status change.
             try {
-                await db.rpc('restore_gift_card_on_refund', {
+                const { error: restoreError } = await db.rpc('restore_gift_card_on_refund', {
                     p_store_id: tenant.siteId,
                     p_order_id: orderId,
                     p_actor_id: tenant.userId,
                     p_request_id: tenant.requestId,
                 });
+                if (restoreError) throw new Error('Gift-card restoration unavailable');
             } catch (restoreError) {
                 console.warn(JSON.stringify({
                     level: 'warn',
