@@ -23,7 +23,7 @@ async function fixture(t:{after(fn:()=>Promise<void>):void}) {
  const gateway=new Gateway(gatewayEnv(owned,await newIdentityKeys(),proxy.env()));
  t.after(async()=>{await gateway.settle();await closePooledSqlClients();await proxy.stop();});
  const requestAs=async(who:string,selected:string,path:string,body:unknown,key:string)=>gateway.request('/v1/inventory'+path,{
-  method:'POST',headers:{...await signedIdentityHeaders(who,`syn-wms-${who}@example.invalid`,selected),'Idempotency-Key':key,'X-LetBuyy-Warehouse-Protocol':'1'},body:JSON.stringify(body),
+  method:'POST',headers:{...await signedIdentityHeaders(who,`syn-wms-${who}@example.invalid`,selected),'Idempotency-Key':key,'X-LetBuyy-Warehouse-Protocol':'2'},body:JSON.stringify(body),
  });
  const request=(path:string,body:unknown,key:string)=>requestAs(actor,site.siteId,path,body,key);
  const create=(key:string,quantity=3)=>({store_id:site.siteId,location_id:site.locationId,lines:[{product_id:product,quantity,unit_cost:12.25}],idempotency_key:key});
@@ -371,9 +371,9 @@ test('typed SDK recovery distinguishes committed lost replies from a stopped una
 test('downlevel warehouse clients are refused before effects or private receipt replay',async t=>{
  const f=await fixture(t),key=randomUUID(),body=f.create(key),positive=await f.request('/purchase-orders',body,key);assert.equal(positive.status,201,positive.text);
  const before=stock(f.site.siteId);
- const paths=['/purchase-orders','/purchase-orders/'+positive.json?.data.purchase_order.id+'/receive','/transfers',
+ const paths=['/locations','/suppliers','/purchase-orders','/purchase-orders/'+positive.json?.data.purchase_order.id+'/receive','/transfers',
   '/transfers/'+randomUUID()+'/ship','/transfers/'+randomUUID()+'/receive','/commands/stop'];
- for(const version of [null,'0','2'])for(const path of paths) {
+ for(const version of [null,'0','1'])for(const path of paths) {
   const headers={...await signedIdentityHeaders(f.actor,'syn-wms-'+f.actor+'@example.invalid',f.site.siteId),
    'Idempotency-Key':key,...(version===null?{}:{'X-LetBuyy-Warehouse-Protocol':version})};
   const result=await f.gateway.request('/v1/inventory'+path,{
@@ -393,7 +393,7 @@ test('capability descriptors are private current-owner policy reads, never a gra
   headers:await signedIdentityHeaders(actor,'syn-wms-'+actor+'@example.invalid',site)});
  const positive=await get(f.actor,f.site.siteId);assert.equal(positive.status,200,positive.text);
  assert.equal(new Headers(positive.headers).get('Cache-Control'),'private, no-store');
- assert.deepEqual(positive.json?.data,{store_id:f.site.siteId,actor_id:f.actor,protocol_version:'1',effect_policy:'atomic_receipt_or_unavailable',stop_supported:true});
+ assert.deepEqual(positive.json?.data,{store_id:f.site.siteId,actor_id:f.actor,protocol_version:'2',effect_policy:'atomic_receipt_or_unavailable',stop_supported:true});
  assert.equal((await get(other.actor,f.site.siteId)).status,403);assert.equal((await get(f.actor,other.site.siteId)).status,403);
  const staff=randomUUID();owned.psql("INSERT INTO users_custom(id,email,email_verified)VALUES("+quote(staff)+","+quote('syn-wms-'+staff+'@example.invalid')+",true);INSERT INTO employees(user_id,email,store_id,role,status,is_active,permissions)VALUES("+
   quote(staff)+","+quote('syn-wms-'+staff+'@example.invalid')+","+quote(f.site.siteId)+",'editor','active',true,'{\"granted\":[\"products:write\"]}');");
@@ -557,10 +557,74 @@ test('actual SDK location and supplier creation return canonical stored records 
   for(const[name,value]of Object.entries(await signedIdentityHeaders(f.actor,'syn-wms-'+f.actor+'@example.invalid',f.site.siteId)))headers.set(name,value);
   const result=await f.gateway.request(url.pathname+url.search,{method:request.method,headers,body:request.method==='GET'?undefined:await request.text()});return new Response(result.text,{status:result.status,headers:result.headers});
  }});
- const supplier=await api.inventory.suppliers.create({store_id:f.site.siteId,name:'Synthetic new supplier',contact_name:'Synthetic contact',email:'warehouse@example.invalid',address:{line1:'Synthetic supplier address'}},{storeId:f.site.siteId,idempotencyKey:randomUUID()});
+ const supplierAck=await api.inventory.suppliers.create({store_id:f.site.siteId,name:'Synthetic new supplier',contact_name:'Synthetic contact',email:'warehouse@example.invalid',address:{line1:'Synthetic supplier address'}},{storeId:f.site.siteId,idempotencyKey:randomUUID()});
  assert.equal(supplier.site_id,f.site.siteId);assert.equal(supplier.name,'Synthetic new supplier');assert.deepEqual(supplier.address,{line1:'Synthetic supplier address'});
- const location=await api.inventory.locations.create({store_id:f.site.siteId,name:'Synthetic new location',address:'Synthetic road',city:'Chennai',state:'Tamil Nadu',country:'IN',is_default:false},{storeId:f.site.siteId,idempotencyKey:randomUUID()});
+ const supplier=supplierAck.supplier!;
+ const locationAck=await api.inventory.locations.create({store_id:f.site.siteId,name:'Synthetic new location',address:'Synthetic road',city:'Chennai',state:'Tamil Nadu',country:'IN',is_default:false},{storeId:f.site.siteId,idempotencyKey:randomUUID()});
+ const location=locationAck.location!;
  assert.equal(location.store_id,f.site.siteId);assert.deepEqual(location.address,{address:'Synthetic road',city:'Chennai',state:'Tamil Nadu',country:'IN'});
  const page=await api.inventory.locations.list({store_id:f.site.siteId,search:'Synthetic new location',status:'active'});assert.equal(page.total,1);assert.equal(page.data[0].id,location.id);assert.deepEqual(page.data[0].address,location.address);
  assert.equal(owned.psql("SELECT count(*)FROM inventory_locations WHERE store_id="+quote(f.site.siteId)+" AND name='Synthetic new location';"),'1');
 });
+
+for(const supplier of [false,true]) {
+ const operation=supplier?'supplier.create':'location.create',path=supplier?'/suppliers':'/locations',table=supplier?'suppliers':'inventory_locations',entity=supplier?'supplier':'location';
+ const input=(site:string,key:string)=>({store_id:site,idempotency_key:key,name:'Synthetic recoverable '+entity,
+  ...(supplier?{contact_name:'Synthetic contact',address:{line1:'Synthetic road'}}:{address:'Synthetic road',city:'Chennai',state:'Tamil Nadu',country:'IN',is_default:false})});
+ test(entity+' concurrent create and same-key replay commit one entity with one immutable acknowledgement',async t=>{
+  const f=await fixture(t),key=randomUUID(),body=input(f.site.siteId,key);
+  const results=await Promise.all([f.request(path,body,key),f.request(path,body,key)]);
+  for(const result of results)assert.equal(result.status,201,result.text);
+  assert.deepEqual(results[0].json?.data,results[1].json?.data);
+  const data=results[0].json?.data;
+  assert.equal(data.command_receipt.operation,operation);assert.equal(data[entity].created_by,f.actor);
+  assert.equal(owned.psql(`SELECT count(*) FROM ${table} WHERE id='${data[entity].id}';`),'1');
+  assert.equal(owned.psql(`SELECT count(*) FROM warehouse_command_receipts WHERE idempotency_key='${key}';`),'1');
+  const conflict=await f.request(path,{...body,name:'Changed details'},key);assert.equal(conflict.status,409,conflict.text);
+  const read=await f.gateway.request('/v1/inventory'+path+'?store_id='+f.site.siteId+'&search='+encodeURIComponent(body.name),{headers:await signedIdentityHeaders(f.actor,'syn@example.invalid',f.site.siteId)});
+  assert.equal(read.status,200,read.text);assert.equal(read.json?.data.length,1);assert.equal(read.json?.data[0].id,data[entity].id);
+ });
+ test(entity+' receipt insertion fault rolls back the entity and original key recovers',async t=>{
+  const f=await fixture(t),key=randomUUID(),body=input(f.site.siteId,key);
+  const count=()=>owned.psql(`SELECT count(*) FROM ${table} WHERE ${supplier?'site_id':'store_id'}='${f.site.siteId}';`),before=count();
+  owned.psql(`CREATE FUNCTION public.syn_metadata_receipt_failure() RETURNS trigger LANGUAGE plpgsql AS $$BEGIN IF NEW.idempotency_key='${key}' THEN RAISE EXCEPTION 'SYN_METADATA_RECEIPT_FAILURE';END IF;RETURN NEW;END$$;
+  CREATE TRIGGER syn_metadata_receipt_failure BEFORE INSERT ON public.warehouse_command_receipts FOR EACH ROW EXECUTE FUNCTION public.syn_metadata_receipt_failure();`);
+  try {const failed=await f.request(path,body,key);assert.ok(failed.status>=500,failed.text);assert.ok(!failed.text.includes('SYN_METADATA_RECEIPT_FAILURE'));assert.equal(count(),before);}
+  finally {owned.psql('DROP TRIGGER syn_metadata_receipt_failure ON public.warehouse_command_receipts;DROP FUNCTION public.syn_metadata_receipt_failure();');}
+  const recovered=await f.request(path,body,key);assert.equal(recovered.status,201,recovered.text);assert.equal(Number(count()),Number(before)+1);
+ });
+ test(entity+' SDK recovers a lost committed response without a duplicate and stop resolves either outcome',async t=>{
+  const f=await fixture(t),key=randomUUID(),body=input(f.site.siteId,key);let lose=true;
+  const api=createLetbuyyApiClient({baseUrl:'https://synthetic.invalid/v1',storeId:f.site.siteId,fetch:async(url,init)=>{
+   const u=new URL(String(url)),headers={...Object.fromEntries(new Headers(init?.headers)),...await signedIdentityHeaders(f.actor,'syn@example.invalid',f.site.siteId)};
+   const result=await f.gateway.request(u.pathname+u.search,{...init,headers});
+   if(init?.method==='POST'&&lose&&result.status===201){lose=false;throw new Error('Synthetic lost response after commit');}
+   return new Response(result.text,{status:result.status,headers:result.headers});
+  }});
+  const create=()=>supplier?api.inventory.suppliers.create(body):api.inventory.locations.create(body);
+  await assert.rejects(create);const recovered=await create();assert.equal(recovered.command_receipt.outcome,'applied');
+  const original=prepareWarehouseCommand(operation,null,body),stopped=await api.inventory.stopCommand({store_id:f.site.siteId,idempotency_key:key,...original});
+  assert.deepEqual(stopped,recovered);
+  const nextKey=randomUUID(),next=input(f.site.siteId,nextKey),intent=prepareWarehouseCommand(operation,null,next);
+  const cancelled=await api.inventory.stopCommand({store_id:f.site.siteId,idempotency_key:nextKey,...intent});assert.equal(cancelled.command_receipt.outcome,'cancelled');
+  const later=await f.request(path,next,nextKey);assert.equal(later.status,409,later.text);assert.equal(later.json?.error.code,'WAREHOUSE_REQUEST_STOPPED');
+ });
+ test(entity+' current owner and tenant checks precede private replay, including retired records',async t=>{
+  const f=await fixture(t),other=await fixture(t),key=randomUUID(),body=input(f.site.siteId,key);
+  const created=await f.request(path,body,key);assert.equal(created.status,201,created.text);
+  const denied=await f.requestAs(other.actor,f.site.siteId,path,body,key);assert.ok(denied.status>=400);assert.equal(denied.json?.data,undefined);
+  const crossSite=await other.request(path,{...input(other.site.siteId,key)},key);assert.equal(crossSite.status,409,crossSite.text);
+  const id=created.json?.data[entity].id;
+  owned.psql(`UPDATE ${table} SET deleted_at=now() WHERE id='${id}';`);
+  const replay=await f.request(path,body,key);assert.equal(replay.status,404,replay.text);
+  const intent=prepareWarehouseCommand(operation,null,body),stop=await f.request('/commands/stop',{store_id:f.site.siteId,idempotency_key:key,...intent},key);
+  assert.equal(stop.status,200,stop.text);assert.equal(stop.json?.data.command_receipt.outcome,'applied');
+ });
+ test(entity+' raw inserts are fenced for every Data API role while canonical creation remains usable',async t=>{
+  const f=await fixture(t),key=randomUUID(),body=input(f.site.siteId,key),positive=await f.request(path,body,key);assert.equal(positive.status,201,positive.text);
+  for(const role of ['anon','authenticated','app_tenant','service_role']) {
+   assert.equal(owned.psql(`SELECT has_table_privilege('${role}','public.${table}','INSERT');`),'f',role);
+   assert.match(owned.psqlScriptExpectError(`BEGIN;SET LOCAL ROLE ${role};INSERT INTO public.${table}(${supplier?'site_id':'store_id'},name)VALUES('${f.site.siteId}','Synthetic bypass');COMMIT;`),/permission denied/);
+  }
+ });
+}

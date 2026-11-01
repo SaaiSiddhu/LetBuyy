@@ -2,7 +2,7 @@
 import 'inventory_contracts.dart';
 
 const warehouseCommandProtocolHeader = 'X-LetBuyy-Warehouse-Protocol';
-const warehouseCommandProtocolVersion = '1';
+const warehouseCommandProtocolVersion = '2';
 const warehouseCommandEffectPolicy = 'atomic_receipt_or_unavailable';
 
 class WarehouseCommandCapabilities {
@@ -35,6 +35,8 @@ const warehouseCommandOperations = [
   'transfer.create',
   'transfer.ship',
   'transfer.receive',
+  'location.create',
+  'supplier.create',
 ];
 bool _id(Object? value) =>
     value is String &&
@@ -161,7 +163,11 @@ class WarehouseCommandIntent {
         target = json['target_id'];
     if (create ? target != null : !_id(target)) _invalid();
     final command = _object(json['command']);
-    final expected = op == 'purchase_order.create'
+    final expected = op == 'location.create'
+        ? ['name', 'address', 'city', 'state', 'country', 'is_default']
+        : op == 'supplier.create'
+        ? ['name', 'contact_name', 'email', 'phone', 'address']
+        : op == 'purchase_order.create'
         ? ['supplier_id', 'location_id', 'expected_at', 'notes', 'lines']
         : op == 'transfer.create'
         ? ['source_location_id', 'destination_location_id', 'notes', 'lines']
@@ -169,7 +175,51 @@ class WarehouseCommandIntent {
         ? <String>[]
         : ['lines'];
     if (!_keys(command, expected)) _invalid();
-    if (create) {
+    if (op == 'location.create' || op == 'supplier.create') {
+      final location = op == 'location.create';
+      if (!_keys(
+        command,
+        location
+            ? ['name', 'address', 'city', 'state', 'country', 'is_default']
+            : ['name', 'contact_name', 'email', 'phone', 'address'],
+      ))
+        _invalid();
+      final name = command['name'];
+      if (name is! String ||
+          name.trim() != name ||
+          name.isEmpty ||
+          name.length > 200)
+        _invalid();
+      if (location) {
+        for (final entry in {
+          'address': 500,
+          'city': 100,
+          'state': 100,
+        }.entries) {
+          final value = command[entry.key];
+          if (value is! String || value.length > entry.value) _invalid();
+        }
+        if (command['country'] is! String ||
+            !RegExp(r'^[A-Z]{2}$').hasMatch(command['country'] as String) ||
+            command['is_default'] is! bool)
+          _invalid();
+      } else {
+        for (final entry in {
+          'contact_name': 200,
+          'email': 254,
+          'phone': 30,
+        }.entries) {
+          final value = command[entry.key];
+          if (value != null && (value is! String || value.length > entry.value))
+            _invalid();
+        }
+        final email = command['email'];
+        if (email is String &&
+            !RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(email))
+          _invalid();
+        _object(command['address']);
+      }
+    } else if (create) {
       if (command['notes'] != null &&
           (command['notes'] is! String ||
               (command['notes'] as String).length > 1000))
@@ -187,7 +237,9 @@ class WarehouseCommandIntent {
           command['source_location_id'] == command['destination_location_id'])
         _invalid();
     }
-    if (op != 'transfer.ship') {
+    if (op != 'transfer.ship' &&
+        op != 'location.create' &&
+        op != 'supplier.create') {
       final lines = command['lines'];
       if (lines != null || create) {
         if (lines is! List || lines.isEmpty || lines.length > 200) _invalid();
@@ -228,6 +280,39 @@ class WarehouseCommandIntent {
       _capture(command) as Map<String, dynamic>,
     );
   }
+  factory WarehouseCommandIntent.location(InventoryLocationInput input) =>
+      WarehouseCommandIntent.fromJson({
+        'operation': 'location.create',
+        'target_id': null,
+        'command': {
+          'name': input.name.trim(),
+          'address': input.address.trim(),
+          'city': input.city.trim(),
+          'state': input.state.trim(),
+          'country': input.country.trim().isEmpty
+              ? 'IN'
+              : input.country.trim().toUpperCase(),
+          'is_default': input.isDefault,
+        },
+      });
+  factory WarehouseCommandIntent.supplier(InventorySupplierInput input) =>
+      WarehouseCommandIntent.fromJson({
+        'operation': 'supplier.create',
+        'target_id': null,
+        'command': {
+          'name': input.name.trim(),
+          'contact_name': input.contactName.trim().isEmpty
+              ? null
+              : input.contactName.trim(),
+          'email': input.email.trim().isEmpty
+              ? null
+              : input.email.trim().toLowerCase(),
+          'phone': input.phone.trim().isEmpty ? null : input.phone.trim(),
+          'address': input.address.trim().isEmpty
+              ? <String, dynamic>{}
+              : {'line1': input.address.trim()},
+        },
+      });
   factory WarehouseCommandIntent.purchaseOrder(PurchaseOrderInput input) =>
       WarehouseCommandIntent.fromJson({
         'operation': 'purchase_order.create',
@@ -348,6 +433,8 @@ class WarehouseCommandAcknowledgement {
             'command_receipt',
             'purchase_order',
             'transfer',
+            'location',
+            'supplier',
             'lines',
           ].contains(key),
         ) ||
@@ -384,11 +471,50 @@ class WarehouseCommandAcknowledgement {
     if (receipt['outcome'] == 'cancelled') {
       if (data['purchase_order'] != null ||
           data['transfer'] != null ||
+          data['location'] != null ||
+          data['supplier'] != null ||
           lines.isNotEmpty ||
           receipt['effective_lines'] != null ||
           (create ? receipt['target_id'] != null : !_id(receipt['target_id'])))
         _invalid();
+    } else if (op == 'location.create' || op == 'supplier.create') {
+      final location = op == 'location.create',
+          entity = _object(data[location ? 'location' : 'supplier']),
+          command = _object(receipt['command']);
+      if (!_id(receipt['target_id']) ||
+          data['purchase_order'] != null ||
+          data['transfer'] != null ||
+          data[location ? 'supplier' : 'location'] != null ||
+          lines.isNotEmpty ||
+          receipt['effective_lines'] != null ||
+          entity['id'] != receipt['target_id'] ||
+          entity[location ? 'store_id' : 'site_id'] != receipt['site_id'] ||
+          entity['name'] != command['name'] ||
+          entity['status'] != 'active')
+        _invalid();
+      if (location) {
+        InventoryLocationContract.fromVerifiedJson(entity);
+        final address = _object(entity['address']);
+        if (entity['is_default'] != command['is_default'] ||
+            [
+              'address',
+              'city',
+              'state',
+              'country',
+            ].any((key) => address[key] != command[key]))
+          _invalid();
+      } else {
+        InventorySupplierContract.fromVerifiedJson(entity);
+        if ([
+              'contact_name',
+              'email',
+              'phone',
+            ].any((key) => entity[key] != command[key]) ||
+            !_same(entity['address'], command['address']))
+          _invalid();
+      }
     } else {
+      if (data['location'] != null || data['supplier'] != null) _invalid();
       if (!_id(receipt['target_id']) ||
           lines.isEmpty ||
           data[po ? 'transfer' : 'purchase_order'] != null)
@@ -451,6 +577,14 @@ class WarehouseCommandAcknowledgement {
   String? get targetId => receipt['target_id'] as String?;
   bool get applied => receipt['outcome'] == 'applied';
   Map<String, dynamic> get command => _object(receipt['command']);
+  InventoryLocationContract? get location =>
+      applied && operation == 'location.create'
+      ? InventoryLocationContract.fromVerifiedJson(_object(data['location']))
+      : null;
+  InventorySupplierContract? get supplier =>
+      applied && operation == 'supplier.create'
+      ? InventorySupplierContract.fromVerifiedJson(_object(data['supplier']))
+      : null;
   PurchaseOrderContract? get purchaseOrder =>
       applied && operation.startsWith('purchase_order.')
       ? PurchaseOrderContract.fromJson(data)

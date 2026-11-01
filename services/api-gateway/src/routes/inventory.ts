@@ -291,44 +291,15 @@ router.get('/locations',validate('query',WarehouseOptionListQuerySchema),async c
 });
 
 // POST /inventory/locations — Create a new location
-router.post('/locations', validate('json', CreateLocationSchema), async (c) => {
-    const auth = c.get('auth');
-    const body = c.get('validatedBody') as CreateLocationInput;
-    const db = getSupabaseAdmin(c);
-    const customUser = await resolveCustomUser(db, auth.user);
-
-    if (!customUser) {
-        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
-    }
-    if (!(await verifySiteOwnership(db, body.store_id, customUser.id, auth.user.storeId))) {
-        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
-    }
-    const staffBlock = await assertStaffPermission(c, body.store_id, customUser.id, 'products:write');
-    if (staffBlock) return staffBlock;
-
-    const { data, error } = await db
-        .from('inventory_locations')
-        .insert({ store_id: body.store_id, name: body.name, is_default: body.is_default,
-            address: { address: body.address || '', city: body.city || '', state: body.state || '', country: body.country },
-            created_by: customUser.id, updated_by: customUser.id })
-        .select()
-        .single();
-
-    if (isMissingTableError(error, 'inventory_locations')) {
-        return c.json({
-            success: false,
-            error: {
-                code: 'INVENTORY_SCHEMA_MISSING',
-                message: 'Inventory locations are not available in this local database schema',
-            },
-        }, 503);
-    }
-
-    if (error) {
-        return c.json(dbFailureBody(), 500);
-    }
-
-    return c.json(success(data), 201);
+router.post('/locations',validate('json',CreateLocationSchema),async c=>{
+ c.header('Cache-Control','private, no-store');
+ const body=c.get('validatedBody') as CreateLocationInput,db=getSupabaseAdmin(c),auth=c.get('auth');
+ const actor=await resolveCustomUser(db,auth.user);
+ if(!actor||!await verifySiteOwnership(db,body.store_id,actor.id,auth.user.storeId))return c.json(failureBody('FORBIDDEN','Your access to this store changed.'),403);
+ const blocked=await assertStaffPermission(c,body.store_id,actor.id,'products:write');if(blocked)return blocked;
+ const intent=prepareWarehouseCommand('location.create',null,body);
+ const data=await executeWarehouseCommand(c.env,body.store_id,actor.id,body.idempotency_key,intent.operation,null,intent.command,requestId(c));
+ return c.json(success(data),201);
 });
 
 // GET /inventory/suppliers — List suppliers
@@ -360,35 +331,15 @@ router.get('/suppliers',validate('query',WarehouseOptionListQuerySchema),async c
 });
 
 // POST /inventory/suppliers — Create supplier
-router.post('/suppliers', validate('json', CreateSupplierSchema), async (c) => {
-    const auth = c.get('auth');
-    const body = c.get('validatedBody') as CreateSupplierInput;
-    const db = getSupabaseAdmin(c);
-    const customUser = await resolveCustomUser(db, auth.user);
-
-    if (!customUser) return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
-    if (!(await verifySiteOwnership(db, body.store_id, customUser.id, auth.user.storeId))) {
-        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
-    }
-    const staffBlock = await assertStaffPermission(c, body.store_id, customUser.id, 'products:write');
-    if (staffBlock) return staffBlock;
-
-    const { data, error } = await db
-        .from('suppliers')
-        .insert({
-            site_id: body.store_id,
-            name: body.name,
-            contact_name: body.contact_name || null,
-            email: body.email || null,
-            phone: body.phone || null,
-            address: body.address || {},
-            created_by: customUser.id,
-        })
-        .select()
-        .single();
-
-    if (error) return c.json(dbFailureBody(), 500);
-    return c.json(success(data), 201);
+router.post('/suppliers',validate('json',CreateSupplierSchema),async c=>{
+ c.header('Cache-Control','private, no-store');
+ const body=c.get('validatedBody') as CreateSupplierInput,db=getSupabaseAdmin(c),auth=c.get('auth');
+ const actor=await resolveCustomUser(db,auth.user);
+ if(!actor||!await verifySiteOwnership(db,body.store_id,actor.id,auth.user.storeId))return c.json(failureBody('FORBIDDEN','Your access to this store changed.'),403);
+ const blocked=await assertStaffPermission(c,body.store_id,actor.id,'products:write');if(blocked)return blocked;
+ const intent=prepareWarehouseCommand('supplier.create',null,body);
+ const data=await executeWarehouseCommand(c.env,body.store_id,actor.id,body.idempotency_key,intent.operation,null,intent.command,requestId(c));
+ return c.json(success(data),201);
 });
 
 // GET /inventory/purchase-orders — List purchase orders

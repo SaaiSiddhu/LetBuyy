@@ -5,7 +5,7 @@ import '../../services/security_command_store.dart';
 import 'merchant_store_view.dart';
 
 /// Recovery is independent of list loading: a failed read must never hide an
-/// unresolved stock request or invite a new request with different details.
+/// unresolved warehouse request or invite a new request with different details.
 class WarehouseCommandRecovery extends StatefulWidget {
   const WarehouseCommandRecovery({
     super.key,
@@ -107,7 +107,7 @@ class _WarehouseCommandRecoveryState extends State<WarehouseCommandRecovery> {
             content: const Text(
               'If it already applied, this confirms its outcome. '
               'Otherwise, it prevents that request from applying later. '
-              'It does not undo a stock movement that already happened.',
+              'It does not undo an action that already happened.',
             ),
             actions: [
               TextButton(
@@ -138,7 +138,7 @@ class _WarehouseCommandRecoveryState extends State<WarehouseCommandRecovery> {
         SnackBar(
           content: Text(
             ack.applied
-                ? 'Original warehouse request confirmed. Refreshing current stock.'
+                ? 'Original warehouse request confirmed. Refreshing current records.'
                 : 'Original warehouse request stopped before it applied.',
           ),
         ),
@@ -192,7 +192,7 @@ class _WarehouseCommandRecoveryState extends State<WarehouseCommandRecovery> {
             ),
             if (_pending != null)
               const Text(
-                'Resolve the original request before starting another stock movement.',
+                'Resolve the original request before starting another action.',
               ),
             if (_error != null) Text(_error!),
             if (!_reading && (_pending == null || !_protocolReady))

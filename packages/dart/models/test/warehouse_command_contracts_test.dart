@@ -70,7 +70,7 @@ Map<String, dynamic> receipt({bool cancelled = false, bool transfer = false}) =>
     };
 void main() {
   test('warehouse capability descriptors require exact supported policy and scoped identities',(){
-    final good=<String,dynamic>{'store_id':a,'actor_id':b,'protocol_version':'1',
+    final good=<String,dynamic>{'store_id':a,'actor_id':b,'protocol_version':'2',
       'effect_policy':'atomic_receipt_or_unavailable','stop_supported':true};
     expect(WarehouseCommandCapabilities.fromJson(good).storeId,a);
     for(final fault in ['actor','site','version','policy','stop','extra']) {

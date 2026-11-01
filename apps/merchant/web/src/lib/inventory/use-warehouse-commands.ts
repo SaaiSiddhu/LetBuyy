@@ -16,6 +16,8 @@ export class WarehouseCommandValidationError extends Error {
   ?'Choose valid products and a destination warehouse. Use whole quantities and costs with at most two decimal places.'
   :operation==='transfer.create'?'Choose different source and destination warehouses, valid products and whole quantities.'
   :operation.endsWith('.receive')?'Enter whole receiving quantities for the selected lines.'
+  :operation==='location.create'?'Enter a location name and valid address details.'
+  :operation==='supplier.create'?'Enter a supplier name and valid contact details.'
   :'Reload the current store record before shipping.');this.name='WarehouseCommandValidationError';}
 }
 class WarehouseProtocolUnavailableError extends Error {
@@ -68,7 +70,9 @@ export function useWarehouseCommands(store:string) {
   check(captured);
   const intent=saved.intent,base=`/api/stores/${encodeURIComponent(captured.store)}`;
   const stopPath=`/api/v1/stores/${encodeURIComponent(captured.store)}/inventory/commands/stop`;
-  const path=intent.operation==='purchase_order.create'?`${base}/purchase-orders`
+  const path=intent.operation==='location.create'?`${base}/inventory-locations`
+   :intent.operation==='supplier.create'?`${base}/suppliers`
+   :intent.operation==='purchase_order.create'?`${base}/purchase-orders`
    :intent.operation==='transfer.create'?`${base}/transfers`
    :`${base}/${intent.operation.startsWith('purchase_order.')?'purchase-orders':'transfers'}/${encodeURIComponent(intent.target_id!)}/${intent.operation.endsWith('.ship')?'ship':'receive'}`;
   const stopBody={store_id:saved.siteId,idempotency_key:saved.key,...intent};

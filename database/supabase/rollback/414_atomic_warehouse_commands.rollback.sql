@@ -137,6 +137,41 @@ BEGIN
  END LOOP;
 END $restore_effects$;
 
+-- Restore only captured metadata INSERT grants after proving unchanged parents.
+LOCK TABLE public.inventory_locations,public.suppliers IN ACCESS EXCLUSIVE MODE;
+DO $metadata_restore$
+DECLARE signature text; relation_row record; j record; entry record; shape text; role_sql text;
+BEGIN
+ IF (SELECT count(*)FROM public.migration_privilege_journal WHERE migration='414' AND privilege='WAREHOUSE METADATA TABLE FENCE')<>2
+  OR EXISTS(SELECT 1 FROM public.migration_privilege_journal WHERE migration='414' AND privilege LIKE 'WAREHOUSE METADATA %' AND object_signature NOT IN('public.inventory_locations','public.suppliers')) THEN
+  RAISE EXCEPTION 'rollback414 refuses missing/changed metadata provenance';END IF;
+ FOREACH signature IN ARRAY ARRAY['public.inventory_locations','public.suppliers'] LOOP
+  SELECT * INTO relation_row FROM pg_class WHERE oid=to_regclass(signature);
+  IF NOT FOUND OR relation_row.relowner<>current_user::regrole::oid
+   OR EXISTS(SELECT 1 FROM aclexplode(coalesce(relation_row.relacl,acldefault('r',relation_row.relowner)))a WHERE a.privilege_type='INSERT' AND a.grantee<>relation_row.relowner)
+   OR EXISTS(SELECT 1 FROM pg_attribute c CROSS JOIN LATERAL aclexplode(c.attacl)a WHERE c.attrelid=relation_row.oid AND a.privilege_type='INSERT' AND a.grantee<>relation_row.relowner) THEN
+   RAISE EXCEPTION 'rollback414 refuses changed metadata owner/INSERT profile';END IF;
+SELECT jsonb_build_object(
+ 'relation',jsonb_build_array(t.relkind,t.relpersistence,t.relrowsecurity,t.relforcerowsecurity,t.reloptions,t.relreplident),
+ 'columns',(SELECT jsonb_agg(jsonb_build_array(a.attnum,a.attname,a.atttypid,a.atttypmod,a.attnotnull,a.attisdropped,a.attidentity,a.attgenerated,a.attcollation,a.attacl,pg_get_expr(d.adbin,d.adrelid)) ORDER BY a.attnum) FROM pg_attribute a LEFT JOIN pg_attrdef d ON d.adrelid=a.attrelid AND d.adnum=a.attnum WHERE a.attrelid=t.oid AND a.attnum>0),
+ 'constraints',(SELECT jsonb_agg(jsonb_build_array(c.conname,pg_get_constraintdef(c.oid),c.convalidated,c.condeferrable,c.condeferred) ORDER BY c.conname) FROM pg_constraint c WHERE c.conrelid=t.oid),
+ 'indexes',(SELECT jsonb_agg(pg_get_indexdef(i.indexrelid) ORDER BY i.indexrelid::regclass::text) FROM pg_index i WHERE i.indrelid=t.oid),
+ 'policies',(SELECT jsonb_agg(jsonb_build_array(x.polname,x.polcmd,x.polpermissive,x.polroles,pg_get_expr(x.polqual,x.polrelid),pg_get_expr(x.polwithcheck,x.polrelid)) ORDER BY x.polname) FROM pg_policy x WHERE x.polrelid=t.oid),
+ 'triggers',(SELECT jsonb_agg(jsonb_build_array(x.tgname,pg_get_triggerdef(x.oid),x.tgenabled) ORDER BY x.tgname) FROM pg_trigger x WHERE x.tgrelid=t.oid AND NOT x.tgisinternal)
+ )::text INTO shape FROM pg_class t WHERE t.oid=relation_row.oid;
+  SELECT * INTO j FROM public.migration_privilege_journal WHERE migration='414' AND object_signature=signature AND privilege='WAREHOUSE METADATA TABLE FENCE';
+  IF NOT FOUND OR j.object_oid IS DISTINCT FROM relation_row.oid OR j.object_owner IS DISTINCT FROM relation_row.relowner OR j.grantee IS DISTINCT FROM pg_get_userbyid(relation_row.relowner)
+   OR j.action IS DISTINCT FROM 'granted' OR j.object_definition_hash IS DISTINCT FROM encode(sha256(convert_to(shape,'UTF8')),'hex') THEN
+   RAISE EXCEPTION 'rollback414 refuses changed metadata shape/provenance';END IF;
+  FOR entry IN SELECT * FROM public.migration_privilege_journal WHERE migration='414' AND object_signature=signature AND privilege='WAREHOUSE METADATA INSERT' LOOP
+   IF entry.grantee NOT IN('PUBLIC','anon','authenticated','app_tenant','service_role') OR entry.action<>'revoked' OR entry.object_oid IS DISTINCT FROM relation_row.oid
+    OR entry.object_owner IS DISTINCT FROM relation_row.relowner OR entry.object_definition_hash IS DISTINCT FROM j.object_definition_hash THEN RAISE EXCEPTION 'rollback414 refuses changed metadata INSERT provenance';END IF;
+   role_sql:=CASE WHEN entry.grantee='PUBLIC' THEN 'PUBLIC' ELSE quote_ident(entry.grantee) END;
+   EXECUTE format('GRANT INSERT ON TABLE %s TO %s',signature,role_sql);
+  END LOOP;
+ END LOOP;
+END $metadata_restore$;
+
 DROP FUNCTION public.apply_warehouse_command_v1(uuid,uuid,text,text,uuid,jsonb,text) RESTRICT;
 DROP TABLE public.warehouse_command_receipts RESTRICT;
 DROP FUNCTION public.guard_warehouse_command_receipt_v1() RESTRICT;

@@ -358,7 +358,7 @@ async function mount(kind: ContentPage | 'orders' | 'customers' | 'analytics' | 
         const url=String(input),match=/\/api\/v1\/stores\/([^/]+)\/inventory\/commands\/capabilities$/.exec(url);
         if(warehouse&&match){capabilityReads++;return Promise.resolve(protocolAvailable?json({
             store_id:decodeURIComponent(match[1])==='alpha'?historySite:'22222222-2222-4222-8222-222222222222',
-            actor_id:new Headers(init?.headers).get('X-LetBuyy-Merchant-Context'),protocol_version:'1',
+            actor_id:new Headers(init?.headers).get('X-LetBuyy-Merchant-Context'),protocol_version:'2',
             effect_policy:'atomic_receipt_or_unavailable',stop_supported:true,
         }):Response.json({error:{code:'NOT_FOUND'}},{status:404}));}
         return transport(url, init);

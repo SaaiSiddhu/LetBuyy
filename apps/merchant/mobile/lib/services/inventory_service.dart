@@ -855,6 +855,14 @@ class InventoryService extends ChangeNotifier {
                 body,
                 options: options,
               ),
+              'location.create' => _api.inventory.createLocation(
+                body,
+                options: options,
+              ),
+              'supplier.create' => _api.inventory.createSupplier(
+                body,
+                options: options,
+              ),
               'transfer.receive' => _api.inventory.receiveTransfer(
                 intent.targetId!,
                 body,
@@ -1199,15 +1207,14 @@ class InventoryService extends ChangeNotifier {
 
   Future<InventoryLocationContract> createLocation(
     InventoryLocationInput input,
-  ) => _command(
-    'locations',
-    input.storeId,
-    (options) =>
-        _api.inventory.createLocation(input.toJson(), options: options),
-    InventoryLocationContract.fromVerifiedJson,
-    (row) =>
-        _locations = [row, ..._locations.where((item) => item.id != row.id)],
-  );
+  ) async {
+    final ack = await submitWarehouseCommand(
+      input.storeId,
+      WarehouseCommandIntent.location(input),
+    );
+    return _appliedWarehouse(ack, ack.location);
+  }
+
   Future<List<InventorySupplierContract>> fetchSuppliers(
     String storeId, {
     int page = 1,
@@ -1238,15 +1245,14 @@ class InventoryService extends ChangeNotifier {
 
   Future<InventorySupplierContract> createSupplier(
     InventorySupplierInput input,
-  ) => _command(
-    'suppliers',
-    input.storeId,
-    (options) =>
-        _api.inventory.createSupplier(input.toJson(), options: options),
-    InventorySupplierContract.fromVerifiedJson,
-    (row) =>
-        _suppliers = [row, ..._suppliers.where((item) => item.id != row.id)],
-  );
+  ) async {
+    final ack = await submitWarehouseCommand(
+      input.storeId,
+      WarehouseCommandIntent.supplier(input),
+    );
+    return _appliedWarehouse(ack, ack.supplier);
+  }
+
   Future<T> _warehouseDetail<T>(
     String site,
     String id,

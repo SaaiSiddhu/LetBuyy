@@ -1,3 +1,4 @@
+import '../../widgets/shared/warehouse_command_recovery.dart';
 import 'package:letbuyy_models/letbuyy_models.dart'
     show warehouseOptionStatuses;
 import '../../widgets/shared/warehouse_list_filters.dart';
@@ -31,6 +32,7 @@ class _InventoryLocationsScreenState extends State<InventoryLocationsScreen> {
   bool get _filtered => _search.isNotEmpty || _status.isNotEmpty;
   int? _total;
   bool _more = false;
+  bool _warehouseReady = false, _warehouseBusy = false;
   MerchantStoreView? get _view =>
       _storeId == null ? null : (key: _viewKey, storeId: _storeId!);
   bool _matches(MerchantStoreView? view) =>
@@ -113,6 +115,8 @@ class _InventoryLocationsScreenState extends State<InventoryLocationsScreen> {
       ++_readGeneration;
       _storeId = null;
       _page = 1;
+      _warehouseReady = false;
+      _warehouseBusy = false;
       _search = '';
       _status = '';
       _sort = 'name_asc';
@@ -129,7 +133,12 @@ class _InventoryLocationsScreenState extends State<InventoryLocationsScreen> {
     return Scaffold(
       backgroundColor: colors.bgStart,
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: _storeId == null || _isLoading || _error != null
+        onPressed:
+            !_warehouseReady ||
+                _warehouseBusy ||
+                _storeId == null ||
+                _isLoading ||
+                _error != null
             ? null
             : _createLocation,
         backgroundColor: mobile_tokens.LetbuyyColorTokens.brandPrimary,
@@ -143,6 +152,15 @@ class _InventoryLocationsScreenState extends State<InventoryLocationsScreen> {
           child: Column(
             children: [
               _header(),
+              if (_view != null)
+                WarehouseCommandRecovery(
+                  view: _view!,
+                  onReady: (ready) {
+                    if (mounted && _warehouseReady != ready)
+                      setState(() => _warehouseReady = ready);
+                  },
+                  onResolved: _load,
+                ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Align(
@@ -366,7 +384,7 @@ class _InventoryLocationsScreenState extends State<InventoryLocationsScreen> {
 
   Future<void> _createLocation() async {
     final view = _view;
-    if (!_matches(view)) return;
+    if (!_matches(view) || !_warehouseReady || _warehouseBusy) return;
     final input = await showModalBottomSheet<InventoryLocationInput>(
       context: context,
       isScrollControlled: true,
@@ -382,6 +400,8 @@ class _InventoryLocationsScreenState extends State<InventoryLocationsScreen> {
     if (input == null || !_matches(view) || input.storeId != view!.storeId)
       return;
 
+    if (!_warehouseReady || _warehouseBusy) return;
+    setState(() => _warehouseBusy = true);
     try {
       await context.read<InventoryService>().createLocation(input);
       if (_matches(view)) {
@@ -391,9 +411,11 @@ class _InventoryLocationsScreenState extends State<InventoryLocationsScreen> {
     } catch (error) {
       if (_matches(view))
         _showSnackBar(
-          'The inventory change could not be confirmed. Refresh before retrying.',
+          'The outcome could not be confirmed. Recover the saved original warehouse request before trying again.',
           isError: true,
         );
+    } finally {
+      if (_matches(view)) setState(() => _warehouseBusy = false);
     }
   }
 

@@ -1444,6 +1444,9 @@ importers:
 
   packages/typescript/api-client:
     dependencies:
+      '@letbuyy/commerce-core':
+        specifier: workspace:*
+        version: link:../../commerce-core
       '@letbuyy/shared-types':
         specifier: workspace:*
         version: link:../../shared-types

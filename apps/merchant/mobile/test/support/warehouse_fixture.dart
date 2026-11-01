@@ -16,7 +16,7 @@ JsonMap warehouseCapabilities({
 }) => {
   'store_id': site,
   'actor_id': actor,
-  'protocol_version': '1',
+  'protocol_version': '2',
   'effect_policy': 'atomic_receipt_or_unavailable',
   'stop_supported': true,
 };
@@ -63,6 +63,9 @@ JsonMap warehouseAck(
       : create
       ? null
       : intent.targetId;
+  final metadata =
+      intent.operation == 'location.create' ||
+      intent.operation == 'supplier.create';
   return {
     'command_receipt': {
       'id': warehouseReceipt,
@@ -77,7 +80,26 @@ JsonMap warehouseAck(
           : null,
       'outcome': applied ? 'applied' : 'cancelled',
     },
-    if (applied)
+    if (applied && metadata)
+      intent.operation == 'location.create' ? 'location' : 'supplier': {
+        'id': target,
+        'name': intent.command['name'],
+        'status': 'active',
+        'created_at': '2026-11-01T00:00:00Z',
+        if (intent.operation == 'location.create') ...{
+          'store_id': site,
+          'is_default': intent.command['is_default'],
+          'address': {
+            for (final k in ['address', 'city', 'state', 'country'])
+              k: intent.command[k],
+          },
+        } else ...{
+          'site_id': site,
+          for (final k in ['contact_name', 'email', 'phone', 'address'])
+            k: intent.command[k],
+        },
+      },
+    if (applied && !metadata)
       po ? 'purchase_order' : 'transfer': {
         'id': target,
         'site_id': site,
@@ -101,7 +123,7 @@ JsonMap warehouseAck(
         if (!po) 'destination_location_id': warehouseDestination,
       },
     'lines': [
-      if (applied)
+      if (applied && !metadata)
         {
           'id': warehouseLine,
           'site_id': site,

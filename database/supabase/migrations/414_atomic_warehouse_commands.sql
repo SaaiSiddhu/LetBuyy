@@ -9,7 +9,7 @@ CREATE TABLE public.warehouse_command_receipts (
  idempotency_key text NOT NULL UNIQUE CHECK(length(idempotency_key) BETWEEN 8 AND 200 AND idempotency_key=btrim(idempotency_key)),
  site_id uuid NOT NULL REFERENCES public.sites(id) ON DELETE RESTRICT,
  actor_id uuid NOT NULL REFERENCES public.users_custom(id) ON DELETE RESTRICT,
- operation text NOT NULL CHECK(operation IN('purchase_order.create','purchase_order.receive','transfer.create','transfer.ship','transfer.receive')),
+ operation text NOT NULL CHECK(operation IN('purchase_order.create','purchase_order.receive','transfer.create','transfer.ship','transfer.receive','location.create','supplier.create')),
  target_id uuid,
  authority_guard regprocedure NOT NULL DEFAULT 'public.assert_product_edit_actor_v1(uuid,uuid,text)'::regprocedure,
  command jsonb NOT NULL CHECK(jsonb_typeof(command)='object'),
@@ -20,7 +20,7 @@ CREATE TABLE public.warehouse_command_receipts (
  deleted_at timestamptz CHECK(deleted_at IS NULL),
  created_by uuid NOT NULL REFERENCES public.users_custom(id) ON DELETE RESTRICT,
  updated_by uuid NOT NULL REFERENCES public.users_custom(id) ON DELETE RESTRICT,
- CHECK((target_id IS NOT NULL OR(operation IN('purchase_order.create','transfer.create') AND response #>> '{command_receipt,outcome}'='cancelled')) IS TRUE),
+ CHECK((target_id IS NOT NULL OR(operation IN('purchase_order.create','transfer.create','location.create','supplier.create') AND response #>> '{command_receipt,outcome}'='cancelled')) IS TRUE),
  CHECK(created_by=actor_id AND updated_by=actor_id AND updated_at=created_at)
 );
 CREATE INDEX warehouse_command_receipts_target_idx ON public.warehouse_command_receipts(site_id,target_id,created_at);
@@ -43,6 +43,7 @@ DECLARE
  target uuid; allowed text[]; line jsonb; lines jsonb; effective_lines jsonb;
  line_key text; result jsonb; response jsonb; receipt_id uuid:=gen_random_uuid();
  row_po public.purchase_orders%ROWTYPE; row_transfer public.inventory_transfers%ROWTYPE;
+ row_location public.inventory_locations%ROWTYPE; row_supplier public.suppliers%ROWTYPE;
  item record; product uuid; variant uuid; location uuid; quantity integer;
  operation text:=CASE WHEN left(p_operation,7)='cancel:' THEN substr(p_operation,8) ELSE p_operation END;
  cancelling boolean:=left(p_operation,7)='cancel:';
@@ -51,7 +52,7 @@ BEGIN
   RAISE EXCEPTION 'WAREHOUSE_FORBIDDEN' USING ERRCODE='42501';END IF;
  PERFORM pg_advisory_xact_lock_shared(hashtextextended('letbuyy:migration:414:warehouse-commands',0));
  IF p_site_id IS NULL OR p_actor_id IS NULL OR p_key IS NULL OR length(p_key) NOT BETWEEN 8 AND 200 OR p_key<>btrim(p_key)
-  OR operation IS NULL OR operation NOT IN('purchase_order.create','purchase_order.receive','transfer.create','transfer.ship','transfer.receive')
+  OR operation IS NULL OR operation NOT IN('purchase_order.create','purchase_order.receive','transfer.create','transfer.ship','transfer.receive','location.create','supplier.create')
   OR jsonb_typeof(p_command) IS DISTINCT FROM 'object' OR octet_length(p_command::text)>131072
   OR p_request_id IS NULL OR length(p_request_id) NOT BETWEEN 1 AND 200 THEN RAISE EXCEPTION 'WAREHOUSE_INVALID';END IF;
  -- Check current authority before reading any previous private acknowledgement.
@@ -68,13 +69,19 @@ BEGIN
  has_receipt:=FOUND;
  IF has_receipt AND(receipt.site_id IS DISTINCT FROM p_site_id OR receipt.actor_id IS DISTINCT FROM p_actor_id
   OR receipt.operation IS DISTINCT FROM operation OR receipt.command IS DISTINCT FROM p_command
-  OR(operation NOT IN('purchase_order.create','transfer.create') AND receipt.target_id IS DISTINCT FROM p_target_id)) THEN
+  OR(operation NOT IN('purchase_order.create','transfer.create','location.create','supplier.create') AND receipt.target_id IS DISTINCT FROM p_target_id)) THEN
   RAISE EXCEPTION 'WAREHOUSE_KEY_CONFLICT';END IF;
- IF (operation IN('purchase_order.create','transfer.create')) IS DISTINCT FROM (p_target_id IS NULL) THEN
+ IF (operation IN('purchase_order.create','transfer.create','location.create','supplier.create')) IS DISTINCT FROM (p_target_id IS NULL) THEN
   RAISE EXCEPTION 'WAREHOUSE_INVALID';END IF;
  target:=CASE WHEN has_receipt THEN receipt.target_id ELSE p_target_id END;
  IF target IS NOT NULL THEN
-  IF operation LIKE 'purchase_order.%' THEN
+  IF operation='location.create' THEN
+   SELECT * INTO row_location FROM public.inventory_locations WHERE id=target AND store_id=p_site_id AND(deleted_at IS NULL OR cancelling) FOR UPDATE;
+   IF NOT FOUND THEN RAISE EXCEPTION 'WAREHOUSE_NOT_FOUND';END IF;
+  ELSIF operation='supplier.create' THEN
+   SELECT * INTO row_supplier FROM public.suppliers WHERE id=target AND site_id=p_site_id AND(deleted_at IS NULL OR cancelling) FOR UPDATE;
+   IF NOT FOUND THEN RAISE EXCEPTION 'WAREHOUSE_NOT_FOUND';END IF;
+  ELSIF operation LIKE 'purchase_order.%' THEN
    SELECT * INTO row_po FROM public.purchase_orders WHERE id=target AND site_id=p_site_id AND(deleted_at IS NULL OR cancelling) FOR UPDATE;
    IF NOT FOUND THEN RAISE EXCEPTION 'WAREHOUSE_NOT_FOUND';END IF;
   ELSE
@@ -93,6 +100,8 @@ BEGIN
   OR EXISTS(SELECT 1 FROM public.inventory_transfer_receipts WHERE site_id=p_site_id AND left(idempotency_key,length(p_key)+6)=p_key||':line:') THEN
   RAISE EXCEPTION 'WAREHOUSE_LEGACY_KEY';END IF;
  allowed:=CASE operation
+  WHEN 'location.create' THEN ARRAY['name','address','city','state','country','is_default']
+  WHEN 'supplier.create' THEN ARRAY['name','contact_name','email','phone','address']
   WHEN 'purchase_order.create' THEN ARRAY['supplier_id','location_id','expected_at','notes','lines']
   WHEN 'transfer.create' THEN ARRAY['source_location_id','destination_location_id','notes','lines']
   WHEN 'transfer.ship' THEN ARRAY[]::text[] ELSE ARRAY['lines'] END;
@@ -100,6 +109,22 @@ BEGIN
   RAISE EXCEPTION 'WAREHOUSE_INVALID';END IF;
  IF p_command ? 'notes' AND(jsonb_typeof(p_command->'notes') NOT IN('null','string') OR length(p_command->>'notes')>1000) THEN
   RAISE EXCEPTION 'WAREHOUSE_INVALID';END IF;
+ IF operation IN('location.create','supplier.create') THEN
+  IF jsonb_typeof(p_command->'name') IS DISTINCT FROM 'string' OR p_command->>'name'<>btrim(p_command->>'name')
+   OR length(p_command->>'name') NOT BETWEEN 1 AND 200 THEN RAISE EXCEPTION 'WAREHOUSE_INVALID';END IF;
+  IF operation='location.create' THEN
+   IF jsonb_typeof(p_command->'address') IS DISTINCT FROM 'string' OR length(p_command->>'address')>500
+    OR jsonb_typeof(p_command->'city') IS DISTINCT FROM 'string' OR length(p_command->>'city')>100
+    OR jsonb_typeof(p_command->'state') IS DISTINCT FROM 'string' OR length(p_command->>'state')>100
+    OR jsonb_typeof(p_command->'country') IS DISTINCT FROM 'string' OR p_command->>'country'!~'^[A-Z]{2}$'
+    OR jsonb_typeof(p_command->'is_default') IS DISTINCT FROM 'boolean' THEN RAISE EXCEPTION 'WAREHOUSE_INVALID';END IF;
+  ELSE
+   IF jsonb_typeof(p_command->'contact_name') NOT IN('string','null') OR length(p_command->>'contact_name')>200
+    OR jsonb_typeof(p_command->'email') NOT IN('string','null') OR length(p_command->>'email')>254
+    OR jsonb_typeof(p_command->'phone') NOT IN('string','null') OR length(p_command->>'phone')>30
+    OR jsonb_typeof(p_command->'address') IS DISTINCT FROM 'object' THEN RAISE EXCEPTION 'WAREHOUSE_INVALID';END IF;
+  END IF;
+ END IF;
  IF cancelling THEN
   response:=jsonb_build_object('lines','[]'::jsonb,'command_receipt',jsonb_build_object('id',receipt_id,'key',p_key,'site_id',p_site_id,
    'actor_id',p_actor_id,'operation',operation,'target_id',p_target_id,'command',p_command,'effective_lines',NULL,'outcome','cancelled'));
@@ -108,7 +133,15 @@ BEGIN
   RETURN response;
  END IF;
  lines:=p_command->'lines';
- IF operation IN('purchase_order.create','transfer.create') THEN
+ IF operation='location.create' THEN
+  INSERT INTO public.inventory_locations(store_id,name,address,is_default,status,created_by,updated_by)
+   VALUES(p_site_id,p_command->>'name',jsonb_build_object('address',p_command->>'address','city',p_command->>'city','state',p_command->>'state','country',p_command->>'country'),(p_command->>'is_default')::boolean,'active',p_actor_id,p_actor_id) RETURNING * INTO row_location;
+  target:=row_location.id;
+ ELSIF operation='supplier.create' THEN
+  INSERT INTO public.suppliers(site_id,name,contact_name,email,phone,address,status,created_by,updated_by)
+   VALUES(p_site_id,p_command->>'name',p_command->>'contact_name',p_command->>'email',p_command->>'phone',p_command->'address','active',p_actor_id,p_actor_id) RETURNING * INTO row_supplier;
+  target:=row_supplier.id;
+ ELSIF operation IN('purchase_order.create','transfer.create') THEN
   IF jsonb_typeof(lines) IS DISTINCT FROM 'array' OR jsonb_array_length(lines) NOT BETWEEN 1 AND 200 THEN RAISE EXCEPTION 'WAREHOUSE_INVALID';END IF;
   FOR line IN SELECT value FROM jsonb_array_elements(lines) LOOP
    allowed:=CASE WHEN operation='purchase_order.create' THEN ARRAY['product_id','variant_id','quantity','unit_cost'] ELSE ARRAY['product_id','variant_id','quantity'] END;
@@ -201,7 +234,11 @@ BEGIN
  END IF;
  IF target IS NULL THEN RAISE EXCEPTION 'WAREHOUSE_ACK_UNAVAILABLE';END IF;
  -- Canonical stable snapshots, including lines on ship and exact replay.
- IF operation LIKE 'purchase_order.%' THEN
+ IF operation='location.create' THEN
+  result:=jsonb_build_object('location',to_jsonb(row_location),'lines','[]'::jsonb);
+ ELSIF operation='supplier.create' THEN
+  result:=jsonb_build_object('supplier',to_jsonb(row_supplier),'lines','[]'::jsonb);
+ ELSIF operation LIKE 'purchase_order.%' THEN
   SELECT jsonb_build_object('purchase_order',to_jsonb(po),'lines',(SELECT coalesce(jsonb_agg(to_jsonb(l) ORDER BY l.id),'[]'::jsonb)
     FROM public.purchase_order_lines l WHERE l.purchase_order_id=target AND l.site_id=p_site_id AND l.deleted_at IS NULL))
    INTO result FROM public.purchase_orders po WHERE po.id=target AND po.site_id=p_site_id AND po.deleted_at IS NULL;
@@ -258,6 +295,37 @@ BEGIN
  END LOOP;
 END $effects$;
 
+
+-- Metadata creation shares this same immutable command owner. Old direct clients
+-- cannot bypass its receipt through raw Data API INSERT, including after rollback.
+DO $metadata_fence$
+DECLARE signature text; relation_row record; a record; shape text; role_sql text;
+BEGIN
+ FOREACH signature IN ARRAY ARRAY['public.inventory_locations','public.suppliers'] LOOP
+  SELECT * INTO relation_row FROM pg_class WHERE oid=to_regclass(signature);
+  IF NOT FOUND OR relation_row.relowner<>current_user::regrole::oid OR relation_row.relkind<>'r'
+   OR EXISTS(SELECT 1 FROM aclexplode(coalesce(relation_row.relacl,acldefault('r',relation_row.relowner))) a
+    WHERE a.privilege_type='INSERT' AND a.grantee<>relation_row.relowner AND(a.grantor<>relation_row.relowner OR a.is_grantable OR a.grantee NOT IN(0,'anon'::regrole::oid,'authenticated'::regrole::oid,'app_tenant'::regrole::oid,'service_role'::regrole::oid)))
+   OR EXISTS(SELECT 1 FROM pg_attribute c CROSS JOIN LATERAL aclexplode(c.attacl) a WHERE c.attrelid=relation_row.oid AND a.privilege_type='INSERT' AND a.grantee<>relation_row.relowner) THEN
+   RAISE EXCEPTION 'migration414 refuses unreviewed metadata INSERT profile';END IF;
+SELECT jsonb_build_object(
+ 'relation',jsonb_build_array(t.relkind,t.relpersistence,t.relrowsecurity,t.relforcerowsecurity,t.reloptions,t.relreplident),
+ 'columns',(SELECT jsonb_agg(jsonb_build_array(a.attnum,a.attname,a.atttypid,a.atttypmod,a.attnotnull,a.attisdropped,a.attidentity,a.attgenerated,a.attcollation,a.attacl,pg_get_expr(d.adbin,d.adrelid)) ORDER BY a.attnum) FROM pg_attribute a LEFT JOIN pg_attrdef d ON d.adrelid=a.attrelid AND d.adnum=a.attnum WHERE a.attrelid=t.oid AND a.attnum>0),
+ 'constraints',(SELECT jsonb_agg(jsonb_build_array(c.conname,pg_get_constraintdef(c.oid),c.convalidated,c.condeferrable,c.condeferred) ORDER BY c.conname) FROM pg_constraint c WHERE c.conrelid=t.oid),
+ 'indexes',(SELECT jsonb_agg(pg_get_indexdef(i.indexrelid) ORDER BY i.indexrelid::regclass::text) FROM pg_index i WHERE i.indrelid=t.oid),
+ 'policies',(SELECT jsonb_agg(jsonb_build_array(x.polname,x.polcmd,x.polpermissive,x.polroles,pg_get_expr(x.polqual,x.polrelid),pg_get_expr(x.polwithcheck,x.polrelid)) ORDER BY x.polname) FROM pg_policy x WHERE x.polrelid=t.oid),
+ 'triggers',(SELECT jsonb_agg(jsonb_build_array(x.tgname,pg_get_triggerdef(x.oid),x.tgenabled) ORDER BY x.tgname) FROM pg_trigger x WHERE x.tgrelid=t.oid AND NOT x.tgisinternal)
+ )::text INTO shape FROM pg_class t WHERE t.oid=relation_row.oid;
+  INSERT INTO public.migration_privilege_journal(migration,object_signature,grantee,privilege,action,object_oid,object_owner,object_definition_hash)
+   VALUES('414',signature,pg_get_userbyid(relation_row.relowner),'WAREHOUSE METADATA TABLE FENCE','granted',relation_row.oid,relation_row.relowner,encode(sha256(convert_to(shape,'UTF8')),'hex'));
+  FOR a IN SELECT * FROM aclexplode(coalesce(relation_row.relacl,acldefault('r',relation_row.relowner))) WHERE privilege_type='INSERT' AND grantee<>relation_row.relowner LOOP
+   role_sql:=CASE WHEN a.grantee=0 THEN 'PUBLIC' ELSE quote_ident(pg_get_userbyid(a.grantee)) END;
+   INSERT INTO public.migration_privilege_journal(migration,object_signature,grantee,privilege,action,object_oid,object_owner,object_definition_hash)
+    VALUES('414',signature,CASE WHEN a.grantee=0 THEN 'PUBLIC' ELSE pg_get_userbyid(a.grantee) END,'WAREHOUSE METADATA INSERT','revoked',relation_row.oid,relation_row.relowner,encode(sha256(convert_to(shape,'UTF8')),'hex'));
+   EXECUTE format('REVOKE INSERT ON TABLE %s FROM %s',signature,role_sql);
+  END LOOP;
+ END LOOP;
+END $metadata_fence$;
 
 DO $provenance$
 DECLARE signature text; f record; shape text; relation_row record;

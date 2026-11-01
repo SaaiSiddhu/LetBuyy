@@ -26,8 +26,9 @@ for(const supplier of [false,true])for(const fault of ['none','session','owner',
  const client={createMerchantApiClient:()=>api,merchantApiErrorResponse:(error:unknown)=>NextResponse.json({error:{code:error instanceof LetbuyyApiError?error.code:'UNAVAILABLE'}},{status:error instanceof LetbuyyApiError?error.status:503})};
  const owner={resolveOwnedStoreId:async()=>fault==='owner'?{error:NextResponse.json({error:{code:'NOT_FOUND'}},{status:404})}:{storeId:site}};
  const security=evaluate<Record<string,unknown>>('../src/lib/api/merchant-security-scope.ts',{'next/server':{NextRequest,NextResponse},'./client':client,'./request-origin':{validateMerchantMutationRequest},'@/lib/stores/resolve-owned-store':owner});
+ const warehouse=evaluate<Record<string,unknown>>('../src/lib/api/merchant-warehouse-scope.ts',{'next/server':{NextRequest,NextResponse},'./merchant-security-scope':security});
  const route=evaluate<{GET:(r:NextRequest,c:{params:Promise<{store:string}>})=>Promise<Response>}>(`../src/app/api/stores/[store]/${supplier?'suppliers':'inventory-locations'}/route.ts`,{
-  'next/server':{NextRequest,NextResponse},'@/lib/api/client':client,'@/lib/stores/resolve-owned-store':owner,'@letbuyy/shared-types':shared,'@/lib/api/merchant-security-scope':security});
+  'next/server':{NextRequest,NextResponse},'@/lib/api/client':client,'@/lib/stores/resolve-owned-store':owner,'@letbuyy/shared-types':shared,'@/lib/api/merchant-security-scope':security,'@/lib/api/merchant-warehouse-scope':warehouse});
  const query=fault==='query'?'page=0':'page=2&limit=2&status=active&store_id='+id(99);
  const result=await route.GET(new NextRequest('https://merchant.synthetic.invalid/api/stores/syn/options?'+query,{headers:{'X-LetBuyy-Merchant-Context':fault==='actor'?id(99):actor}}),{params:Promise.resolve({store:'syn'})});
  const body=await result.json();

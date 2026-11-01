@@ -4712,43 +4712,6 @@ void main() {
       expect(api.bodies['/inventory/adjust'], containsPair('adjustment', 5));
     });
 
-    test('InventoryService manages WMS locations and suppliers', () async {
-      final api = _FakeApiClient(
-        paginated: {'/inventory/locations':[_locationJson()],'/inventory/suppliers':[_supplierJson()]},
-        paginatedMeta:{for(final path in ['/inventory/locations','/inventory/suppliers'])path:w.warehousePageMeta()},
-        methodJson:{'POST /inventory/locations':_locationJson(),'POST /inventory/suppliers':_supplierJson()},
-      );
-      final service = InventoryService(api: api);
-
-      final locations = await service.fetchLocations(w.warehouseSite);
-      final createdLocation = await service.createLocation(
-        const InventoryLocationInput(
-          storeId: w.warehouseSite,
-          name: 'North warehouse',
-          city: 'Delhi',
-          state: 'Delhi',
-          isDefault: true,
-        ),
-      );
-      final suppliers = await service.fetchSuppliers(w.warehouseSite);
-      final createdSupplier = await service.createSupplier(
-        const InventorySupplierInput(
-          storeId: w.warehouseSite,
-          name: 'Acme Textiles',
-          contactName: 'Riya',
-          email: 'riya@example.com',
-          phone: '+911111111111',
-        ),
-      );
-
-      expect(locations.single.name, 'North warehouse');
-      expect(createdLocation.isDefault, isTrue);
-      expect(suppliers.single.name, 'Acme Textiles');
-      expect(createdSupplier.email, 'riya@example.com');
-      expect(api.paths, contains('/inventory/locations'));
-      expect(api.paths, contains('/inventory/suppliers'));
-    });
-
     test('InventoryService creates and advances purchase orders', () async {
       final input=w.warehousePo(), intent=WarehouseCommandIntent.purchaseOrder(w.warehousePo());
       final createdAck=w.warehouseAck(intent,input.idempotencyKey);

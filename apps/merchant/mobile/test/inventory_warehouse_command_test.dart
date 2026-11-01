@@ -78,6 +78,10 @@ class Harness {
           if (ack == null) {
             final op = stop
                 ? body['operation'] as String
+                : r.path.endsWith('/locations')
+                ? 'location.create'
+                : r.path.endsWith('/suppliers')
+                ? 'supplier.create'
                 : r.path.endsWith('/purchase-orders')
                 ? 'purchase_order.create'
                 : r.path.contains('/purchase-orders/')
@@ -92,6 +96,16 @@ class Harness {
                     'operation': op,
                     'target_id': body['target_id'],
                     'command': body['command'],
+                  })
+                : op == 'location.create' || op == 'supplier.create'
+                ? WarehouseCommandIntent.fromJson({
+                    'operation': op,
+                    'target_id': null,
+                    'command': {
+                      for (final e in body.entries)
+                        if (e.key != 'store_id' && e.key != 'idempotency_key')
+                          e.key: e.value,
+                    },
                   })
                 : op == 'purchase_order.create'
                 ? WarehouseCommandIntent.fromJson({
@@ -204,6 +218,146 @@ class Harness {
 }
 
 void main() {
+  for (final supplier in [false, true]) {
+    final label = supplier ? 'supplier' : 'location';
+    Future<Object> create(InventoryService s) => supplier
+        ? s.createSupplier(
+            const InventorySupplierInput(
+              storeId: warehouseSite,
+              name: ' Synthetic supplier ',
+              address: 'Synthetic road',
+            ),
+          )
+        : s.createLocation(
+            const InventoryLocationInput(
+              storeId: warehouseSite,
+              name: ' Synthetic location ',
+              address: 'Synthetic road',
+              city: 'Chennai',
+            ),
+          );
+    test(
+      '$label successful creation returns the acknowledged record without publishing it as a fresh list',
+      () async {
+        final h = Harness(), s = h.service(), record = await create(s);
+        expect(
+          record,
+          supplier
+              ? isA<InventorySupplierContract>()
+              : isA<InventoryLocationContract>(),
+        );
+        expect(s.locations, isEmpty);
+        expect(s.suppliers, isEmpty);
+        expect(h.effects, 1);
+        expect(await s.pendingWarehouseCommand(warehouseSite), isNull);
+      },
+    );
+    test(
+      '$label late account/store response preserves original private request',
+      () async {
+        final h = Harness(), s = h.service(), hold = Completer<void>();
+        h.holdResponse = hold;
+        h.entered = Completer<void>();
+        final entered = h.entered!.future,
+            result = expectLater(create(s), throwsA(isA<ApiException>()));
+        await entered;
+        h.actor = warehouseDestination;
+        h.site = warehouseDestination;
+        h.version = 'other-session';
+        hold.complete();
+        await result;
+        expect(
+          await h.service().pendingWarehouseCommand(warehouseDestination),
+          isNull,
+        );
+        h.actor = warehouseActor;
+        h.site = warehouseSite;
+        h.version = 'restored-session';
+        expect(await s.pendingWarehouseCommand(warehouseSite), isNotNull);
+        expect((await s.retryWarehouseCommand(warehouseSite)).applied, isTrue);
+        expect(h.effects, 1);
+      },
+    );
+    test(
+      '$label restart retains one frozen creation after lost committed response',
+      () async {
+        final h = Harness()..failAfter = true;
+        await expectLater(create(h.service()), throwsA(isA<ApiException>()));
+        final s = h.service(),
+            saved = await s.pendingWarehouseCommand(warehouseSite);
+        expect(saved!.intent['operation'], '$label.create');
+        await expectLater(
+          s.createPurchaseOrder(warehousePo()),
+          throwsA(isA<ApiException>()),
+        );
+        final ack = await s.retryWarehouseCommand(warehouseSite);
+        expect(ack.applied, isTrue);
+        expect(h.effects, 1);
+        expect(h.bodies[0], h.bodies[1]);
+        expect(await s.pendingWarehouseCommand(warehouseSite), isNull);
+        expect(s.locations, isEmpty);
+        expect(s.suppliers, isEmpty);
+      },
+    );
+    for (final committed in [false, true])
+      test(
+        '$label stop resolves ${committed ? 'applied' : 'cancelled'} creation',
+        () async {
+          final h = Harness();
+          h.failAfter = committed;
+          h.failBefore = !committed;
+          await expectLater(create(h.service()), throwsA(isA<ApiException>()));
+          final s = h.service(),
+              ack = await s.stopWarehouseCommand(warehouseSite);
+          expect(ack.applied, committed);
+          expect(h.effects, committed ? 1 : 0);
+          expect(await s.pendingWarehouseCommand(warehouseSite), isNull);
+        },
+      );
+    for (final fault in ['address', 'actor', 'site', 'name'])
+      test(
+        '$label rejects foreign $fault confirmation and retains original',
+        () async {
+          final h = Harness(), s = h.service();
+          h.corrupt = (ack) {
+            final entity = ack[label] as Map,
+                receipt = ack['command_receipt'] as Map;
+            if (fault == 'actor') receipt['actor_id'] = warehouseDestination;
+            if (fault == 'site') receipt['site_id'] = warehouseDestination;
+            if (fault == 'address')
+              entity['address'] = {'line1': 'Other address'};
+            if (fault == 'name') entity['name'] = 'Other name';
+          };
+          await expectLater(create(s), throwsA(anything));
+          expect(await s.pendingWarehouseCommand(warehouseSite), isNotNull);
+          h.corrupt = null;
+          expect(
+            (await s.retryWarehouseCommand(warehouseSite)).applied,
+            isTrue,
+          );
+          expect(h.effects, 1);
+        },
+      );
+    test(
+      '$label revoked authority cannot recover or erase the saved creation',
+      () async {
+        final h = Harness()..failAfter = true;
+        await expectLater(create(h.service()), throwsA(isA<ApiException>()));
+        h.deny = true;
+        final s = h.service();
+        await expectLater(
+          s.retryWarehouseCommand(warehouseSite),
+          throwsA(isA<ApiException>()),
+        );
+        await expectLater(
+          s.stopWarehouseCommand(warehouseSite),
+          throwsA(isA<ApiException>()),
+        );
+        expect(await s.pendingWarehouseCommand(warehouseSite), isNotNull);
+        expect(h.effects, 1);
+      },
+    );
+  }
   test(
     'restart after a lost committed reply retries the frozen request with one effect',
     () async {
@@ -232,7 +386,7 @@ void main() {
       expect(h.bodies[0], h.bodies[1]);
       expect(
         h.requests.every(
-          (r) => r.headers['X-LetBuyy-Warehouse-Protocol'] == '1',
+          (r) => r.headers['X-LetBuyy-Warehouse-Protocol'] == '2',
         ),
         isTrue,
       );

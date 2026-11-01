@@ -11,18 +11,22 @@ import {validateMerchantMutationRequest} from '../src/lib/api/request-origin';
 const id=(n:number)=>'00000000-0000-4000-8000-'+String(n).padStart(12,'0');
 const site=id(1),actor=id(7),key=id(2),admin='https://admin.example.invalid';
 type Kind=WarehouseCommandOperation|'stop'|'capabilities';
-const kinds:Kind[]=['purchase_order.create','purchase_order.receive','transfer.create','transfer.ship','transfer.receive','stop'];
+const kinds:Kind[]=['purchase_order.create','purchase_order.receive','transfer.create','transfer.ship','transfer.receive','location.create','supplier.create','stop'];
 const routes:Record<Kind,string>={
  'purchase_order.create':'api/stores/[store]/purchase-orders/route.ts',
  'purchase_order.receive':'api/stores/[store]/purchase-orders/[id]/receive/route.ts',
  'transfer.create':'api/stores/[store]/transfers/route.ts',
  'transfer.ship':'api/stores/[store]/transfers/[id]/ship/route.ts',
  'transfer.receive':'api/stores/[store]/transfers/[id]/receive/route.ts',
+ 'location.create':'api/stores/[store]/inventory-locations/route.ts',
+ 'supplier.create':'api/stores/[store]/suppliers/route.ts',
  stop:'api/v1/stores/[store]/inventory/commands/stop/route.ts',
  capabilities:'api/v1/stores/[store]/inventory/commands/capabilities/route.ts',
 };
 function input(kind:Kind) {
  const common={idempotency_key:key};
+ if(kind==='location.create')return {...common,name:'Synthetic location',address:'Synthetic road',city:'Chennai',state:'Tamil Nadu',country:'IN',is_default:false};
+ if(kind==='supplier.create')return {...common,name:'Synthetic supplier',address:{line1:'Synthetic road'}};
  if(kind==='purchase_order.create')return {...common,location_id:id(5),lines:[{product_id:id(6),quantity:4,unit_cost:12.25}]};
  if(kind==='transfer.create')return {...common,source_location_id:id(5),destination_location_id:id(8),lines:[{product_id:id(6),quantity:4}]};
  if(kind==='transfer.ship')return common;
@@ -41,7 +45,7 @@ function load(kind:Kind,options:{unauthenticated?:boolean;foreignStore?:boolean;
   if(url.pathname==='/v1/inventory/command-capabilities') {
    assert.equal(url.searchParams.get('store_id'),site);assert.equal(request.headers.get('X-Store-ID'),site);
    calls.push({kind:'capabilities'});if(options.capabilityMissing)return Response.json({error:{code:'NOT_FOUND'}},{status:404});
-   return Response.json({data:{store_id:site,actor_id:options.wrongCapabilityActor?id(99):actor,protocol_version:'1',
+   return Response.json({data:{store_id:site,actor_id:options.wrongCapabilityActor?id(99):actor,protocol_version:'2',
     effect_policy:'atomic_receipt_or_unavailable',stop_supported:true}});
   }
   if(request.method==='GET'&&/\/inventory\/(purchase-orders|transfers)\/[^/]+$/.test(url.pathname)) {
@@ -68,11 +72,13 @@ function load(kind:Kind,options:{unauthenticated?:boolean;foreignStore?:boolean;
   calls.push({kind:'gateway',key:request.headers.get('X-Idempotency-Key'),site:request.headers.get('X-Store-ID'),body});
   const op=kind==='stop'||kind==='capabilities'?'transfer.ship':kind,po=op.startsWith('purchase_order.'),create=op.endsWith('.create'),receiving=op.endsWith('.receive');
   const command=kind==='stop'?body.command:commerce.prepareWarehouseCommand(op,create?null:id(3),body).command;
+  const metadata=op==='location.create'||op==='supplier.create',normalized=command as Record<string,unknown>;
   const data={command_receipt:{id:id(9),key:body.idempotency_key,site_id:site,actor_id:options.wrongActorReceipt?id(99):actor,
    operation:op,target_id:id(3),command,effective_lines:receiving?(command as Record<string,unknown>).lines:null,
    outcome:options.cancelled?'cancelled':'applied'},
-   ...(!options.cancelled?{[po?'purchase_order':'transfer']:{id:id(3),site_id:site,status:create?(po?'ordered':'reserved'):receiving?'partially_received':'shipped'}}:{}),
-   lines:options.cancelled?[]:[{id:id(4),site_id:site,[po?'purchase_order_id':'transfer_id']:id(3),product_id:id(6),variant_id:null,
+   ...(!options.cancelled&&metadata?{[op==='location.create'?'location':'supplier']:{id:id(3),[op==='location.create'?'store_id':'site_id']:site,name:normalized.name,status:'active',created_at:'2026-11-01T00:00:00Z',...(op==='location.create'?{is_default:false,address:{address:normalized.address,city:normalized.city,state:normalized.state,country:normalized.country}}:{contact_name:normalized.contact_name,email:normalized.email,phone:normalized.phone,address:normalized.address})}}:{}),
+   ...(!options.cancelled&&!metadata?{[po?'purchase_order':'transfer']:{id:id(3),site_id:site,status:create?(po?'ordered':'reserved'):receiving?'partially_received':'shipped'}}:{}),
+   lines:options.cancelled||metadata?[]:[{id:id(4),site_id:site,[po?'purchase_order_id':'transfer_id']:id(3),product_id:id(6),variant_id:null,
     ...(po?{quantity_ordered:4,quantity_received:receiving?2:0,unit_cost:12.25}:{quantity_requested:4,quantity_shipped:create?0:4,quantity_received:receiving?2:0})}]};
   return Response.json({data});
  }});

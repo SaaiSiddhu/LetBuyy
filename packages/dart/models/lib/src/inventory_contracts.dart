@@ -546,7 +546,8 @@ class InventorySupplierContract {
       address: _stringValue(
         json['address_text'] ??
             (json['address'] is Map
-                ? _mapValue(json['address'])['address']
+                ? (_mapValue(json['address'])['address'] ??
+                      _mapValue(json['address'])['line1'])
                 : json['address']),
       ),
     );

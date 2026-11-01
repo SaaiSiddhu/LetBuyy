@@ -363,7 +363,7 @@ export const CommerceMetricPageQuerySchema = PaginationQuery.pick({ page: true, 
 export type CommerceMetricStoreQuery = z.infer<typeof CommerceMetricStoreQuerySchema>;
 export type CommerceMetricPageQuery = z.infer<typeof CommerceMetricPageQuerySchema>;
 
-export const CreateLocationSchema=WarehouseLocationInputSchema;
+export const CreateLocationSchema=WarehouseLocationInputSchema.extend({idempotency_key:z.string().min(8).max(200)});
 
 export const AdjustInventorySchema = z.object({
   product_id: UuidSchema,
@@ -392,10 +392,11 @@ export const BulkAdjustSchema = z.object({
 
 export const CreateSupplierSchema = z.object({
   store_id: UuidSchema,
+  idempotency_key:z.string().min(8).max(200),
   name: z.string().trim().min(1).max(200),
-  contact_name: z.string().max(200).optional(),
-  email: EmailSchema.optional(),
-  phone: z.string().max(30).optional(),
+  contact_name: z.string().max(200).nullish(),
+  email: EmailSchema.nullish(),
+  phone: z.string().max(30).nullish(),
   address: z.record(z.string(), z.unknown()).optional(),
 });
 
@@ -458,6 +459,8 @@ export const ShipTransferSchema = z.object({
 
 // The original normalized intent is also the authority for stopping an uncertain command.
 const NormalizedWarehouseCommands = {
+  'location.create':CreateLocationSchema.omit({store_id:true,idempotency_key:true}).extend({address:z.string().max(500),city:z.string().max(100),state:z.string().max(100)}).strict(),
+  'supplier.create':CreateSupplierSchema.omit({store_id:true,idempotency_key:true}).extend({contact_name:z.string().max(200).nullable(),email:EmailSchema.nullable(),phone:z.string().max(30).nullable(),address:z.record(z.string(),z.unknown())}).strict(),
   'purchase_order.create': CreatePurchaseOrderSchema.omit({store_id:true,idempotency_key:true}).extend({
     supplier_id:UuidSchema.nullable(), expected_at:z.string().datetime({offset:true}).nullable(),
     notes:CreatePurchaseOrderSchema.shape.notes.unwrap().nullable(),
@@ -472,7 +475,7 @@ const NormalizedWarehouseCommands = {
   'transfer.ship':z.object({}).strict(),
 };
 export const StopWarehouseCommandSchema=StopWarehouseCommandInputSchema.superRefine((value,ctx)=>{
-  const create=value.operation==='purchase_order.create'||value.operation==='transfer.create';
+  const create=value.operation.endsWith('.create');
   const parsed=NormalizedWarehouseCommands[value.operation].safeParse(value.command);
   const missingCost=value.operation==='purchase_order.create'&&Array.isArray(value.command.lines)&&
     value.command.lines.some(line=>!line||typeof line!=='object'||!Object.prototype.hasOwnProperty.call(line,'unit_cost'));
@@ -487,6 +490,8 @@ export function prepareWarehouseCommand(operation:import('@letbuyy/shared-types'
  targetId:string|null,input:unknown):import('@letbuyy/shared-types').WarehouseCommandIntent {
  let command:Record<string,unknown>;
  switch(operation) {
+  case 'location.create': {const body=CreateLocationSchema.parse(input);command={name:body.name,address:body.address?.trim()??'',city:body.city?.trim()??'',state:body.state?.trim()??'',country:body.country,is_default:body.is_default};break;}
+  case 'supplier.create': {const body=CreateSupplierSchema.parse(input);command={name:body.name,contact_name:body.contact_name?.trim()||null,email:body.email?.trim().toLowerCase()||null,phone:body.phone?.trim()||null,address:body.address??{}};break;}
   case 'purchase_order.create': {
    const body=CreatePurchaseOrderSchema.parse(input);
    command={supplier_id:body.supplier_id??null,location_id:body.location_id,
@@ -503,7 +508,7 @@ export function prepareWarehouseCommand(operation:import('@letbuyy/shared-types'
   case 'transfer.ship': ShipTransferSchema.parse(input);command={};break;
   default:throw new Error('The warehouse operation could not be confirmed.');
  }
- const create=operation==='purchase_order.create'||operation==='transfer.create';
+ const create=operation.endsWith('.create');
  if(create!==(targetId===null)||(!create&&!UuidSchema.safeParse(targetId).success))throw new Error('The warehouse target could not be confirmed.');
  return {operation,target_id:targetId,command};
 }

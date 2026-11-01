@@ -36,6 +36,7 @@ export async function executeWarehouseCommand(env:Env,siteId:string,actorId:stri
   if(message.includes('WAREHOUSE_LEGACY_KEY')) throw new AppError('This earlier warehouse request needs review. Its outcome cannot be safely reapplied.',409,'WAREHOUSE_LEGACY_KEY');
   if(message.includes('WAREHOUSE_STATE_CONFLICT')||code==='40P01'||code==='40001'||code==='23505'||
    /cannot be.*status|receive quantity|quantity.*exceed|insufficient|not enough/i.test(message)) throw new AppError('Warehouse stock or status changed. Retry the same request or reload the current record.',409,'WAREHOUSE_CONFLICT');
+  if((operation==='location.create'||operation==='supplier.create')&&message.includes('WAREHOUSE_INVALID'))throw new AppError('Warehouse setup saving is unavailable. Keep the original request and retry after the server/schema update.',503,'WAREHOUSE_UNAVAILABLE');
   if(message.includes('WAREHOUSE_INVALID')||code==='23503'||code==='23514'||code?.startsWith('22')) throw new ValidationError('The warehouse request details are invalid.');
   throw error;
  }

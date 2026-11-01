@@ -1,3 +1,4 @@
+import {prepareWarehouseCommand,StopWarehouseCommandSchema} from '@letbuyy/commerce-core';
 import {WarehouseOptionListQuerySchema,WarehouseLocationSchema,WarehouseSupplierSchema,WarehouseLocationPageSchema,WarehouseSupplierPageSchema,type WarehouseOptionListQuery,type WarehouseLocation,type WarehouseSupplier,type WarehouseLocationInput} from '@letbuyy/shared-types';
 import {WarehousePurchaseOrderSchema,WarehouseTransferSchema,WarehousePurchaseOrderPageSchema,WarehouseTransferPageSchema,WarehousePurchaseOrderListQuerySchema,WarehouseTransferListQuerySchema,type WarehousePurchaseOrderListQuery,type WarehouseTransferListQuery,type WarehousePurchaseOrder,type WarehousePurchaseOrderLine,type WarehouseTransfer,type WarehouseTransferLine} from '@letbuyy/shared-types';
 import {WarehouseCommandResultSchema,WarehouseCommandCapabilitiesSchema,WAREHOUSE_COMMAND_PROTOCOL_HEADER,WAREHOUSE_COMMAND_PROTOCOL_VERSION,type WarehouseCommandOperation,type WarehouseCommandResult,type StopWarehouseCommandInput,type WarehouseCommandCapabilities} from '@letbuyy/shared-types';
@@ -2358,6 +2359,7 @@ export type PurchaseOrderListQuery=WarehousePurchaseOrderListQuery;
 
 // ── Suppliers ────────────────────────────────────────────────────
 export interface CreateSupplierInput {
+  idempotency_key?:string;
   store_id: string;
   name: string;
   contact_name?: string;
@@ -2369,7 +2371,7 @@ export interface CreateSupplierInput {
 export type Supplier=WarehouseSupplier;
 
 // ── Inventory locations ──────────────────────────────────────────
-export type CreateInventoryLocationInput=WarehouseLocationInput;
+export type CreateInventoryLocationInput=WarehouseLocationInput & {idempotency_key?:string};
 
 export type InventoryLocation=WarehouseLocation;
 
@@ -4937,13 +4939,13 @@ export class LetbuyyApiClient {
       list: (query: WarehouseOptionListQuery, options?: LetbuyyRequestOptions) =>
         this.requestWarehouseCollection('/inventory/suppliers',WarehouseOptionListQuerySchema.parse(query),WarehouseSupplierPageSchema,options,'WAREHOUSE_OPTIONS_UNVERIFIED'),
       create: (input: CreateSupplierInput, options?: LetbuyyRequestOptions) =>
-        this.requestWarehouseOptionCreated('/inventory/suppliers',input,WarehouseSupplierSchema,options),
+        this.requestWarehouseMetadata('/inventory/suppliers',input,'supplier.create',options),
     },
     locations: {
       list: (query: WarehouseOptionListQuery, options?: LetbuyyRequestOptions) =>
         this.requestWarehouseCollection('/inventory/locations',WarehouseOptionListQuerySchema.parse(query),WarehouseLocationPageSchema,options,'WAREHOUSE_OPTIONS_UNVERIFIED'),
       create: (input: CreateInventoryLocationInput, options?: LetbuyyRequestOptions) =>
-        this.requestWarehouseOptionCreated('/inventory/locations',input,WarehouseLocationSchema,options),
+        this.requestWarehouseMetadata('/inventory/locations',input,'location.create',options),
     },
     history: async (query?: InventoryHistoryQuery, options?: LetbuyyRequestOptions): Promise<PaginatedResponse<InventoryHistoryEntry>> => {
       const body = await this.request<GatewayResponse<unknown[]>>('/inventory/history', { ...options, storeId: query?.store_id ?? options?.storeId, query });
@@ -5713,12 +5715,15 @@ export class LetbuyyApiClient {
     if(!store)throw new LetbuyyApiError({status:400,code:'STORE_REQUIRED',message:'Select a store before changing warehouse stock.'});
     if(options?.idempotencyKey&&options.idempotencyKey!==input.idempotency_key)
       throw new LetbuyyApiError({status:400,code:'WAREHOUSE_KEY_CONFLICT',message:'Retry the original warehouse request key.'});
+    let intent:ReturnType<typeof prepareWarehouseCommand>;
+    try{intent=path==='/inventory/commands/stop'?StopWarehouseCommandSchema.parse(input):prepareWarehouseCommand(operation,target,{...input,store_id:store});}
+    catch{throw new LetbuyyApiError({status:400,code:'WAREHOUSE_COMMAND_INVALID',message:'Check the warehouse request before saving.'});}
     const capabilities=await this.requestWarehouseCapabilities(store,options);
     const headers=new Headers(options?.headers);headers.set(WAREHOUSE_COMMAND_PROTOCOL_HEADER,WAREHOUSE_COMMAND_PROTOCOL_VERSION);
     const parsed=WarehouseCommandResultSchema.safeParse(await this.requestData<unknown>(path,
       {...options,headers,storeId:store,idempotencyKey:input.idempotency_key,method:'POST',body:input}));
     if(!parsed.success||parsed.data.command_receipt.actor_id!==capabilities.actor_id||parsed.data.command_receipt.site_id!==store||parsed.data.command_receipt.operation!==operation||
-      parsed.data.command_receipt.key!==input.idempotency_key||(target!==null&&parsed.data.command_receipt.target_id!==target))
+      parsed.data.command_receipt.key!==input.idempotency_key||!sameWarehouseValue(parsed.data.command_receipt.command,intent.command)||(target!==null&&parsed.data.command_receipt.target_id!==target))
       throw new LetbuyyApiError({status:502,code:'WAREHOUSE_ACKNOWLEDGEMENT_UNVERIFIED',message:'The warehouse outcome could not be confirmed. Keep the original request for recovery.'});
     return parsed.data;
   }
@@ -5731,12 +5736,10 @@ export class LetbuyyApiClient {
     return parsed.data;
   }
 
-  private async requestWarehouseOptionCreated<T extends {id:string;name:string}>(path:string,input:{store_id:string;name:string},
-    schema:{safeParse(value:unknown):{success:true;data:T}|{success:false}},options?:LetbuyyRequestOptions):Promise<T> {
-    const parsed=schema.safeParse(await this.requestData<unknown>(path,{...options,storeId:input.store_id,method:'POST',body:input}));
-    if(!parsed.success||('store_id'in parsed.data?parsed.data.store_id:('site_id'in parsed.data?parsed.data.site_id:undefined))!==input.store_id||parsed.data.name!==input.name.trim())
-      throw new LetbuyyApiError({status:503,code:'WAREHOUSE_OPTION_OUTCOME_UNVERIFIED',message:'This warehouse record could not be confirmed. Reload the current store.'});
-    return parsed.data;
+  private async requestWarehouseMetadata(path:string,input:{store_id:string;name:string;idempotency_key?:string},operation:'location.create'|'supplier.create',options?:LetbuyyRequestOptions):Promise<WarehouseCommandResult> {
+    const key=input.idempotency_key??options?.idempotencyKey;
+    if(!key)throw new LetbuyyApiError({status:400,code:'IDEMPOTENCY_KEY_REQUIRED',message:'Keep one original key for this warehouse setup request.'});
+    return this.requestWarehouseAcknowledgement(path,{...input,idempotency_key:key},operation,null,{...options,storeId:input.store_id});
   }
 
   private async requestWarehouseCollection<T extends {id:string;status:string}>(path:string,
@@ -6126,3 +6129,12 @@ export type {
 // CreatePurchaseOrderInput, ReceivePurchaseOrderInput, ReceivePurchaseOrderLineInput,
 // Supplier, CreateSupplierInput, InventoryLocation, CreateInventoryLocationInput
 // are defined and exported inline above.
+
+function sameWarehouseValue(a:unknown,b:unknown):boolean {
+ if(a===b)return true;
+ if(Array.isArray(a)&&Array.isArray(b))return a.length===b.length&&a.every((value,index)=>sameWarehouseValue(value,b[index]));
+ if(a&&b&&typeof a==='object'&&typeof b==='object'&&!Array.isArray(a)&&!Array.isArray(b)) {
+  const left=a as Record<string,unknown>,right=b as Record<string,unknown>,keys=Object.keys(left);
+  return keys.length===Object.keys(right).length&&keys.every(key=>Object.prototype.hasOwnProperty.call(right,key)&&sameWarehouseValue(left[key],right[key]));
+ }return false;
+}
