@@ -601,7 +601,7 @@ for(const supplier of [false,true]) {
    if(init?.method==='POST'&&lose&&result.status===201){lose=false;throw new Error('Synthetic lost response after commit');}
    return new Response(result.text,{status:result.status,headers:result.headers});
   }});
-  const create=()=>supplier?api.inventory.suppliers.create(body):api.inventory.locations.create(body);
+  const create=()=>supplier?api.inventory.suppliers.create({...body,address:{line1:'Synthetic road'}}):api.inventory.locations.create({...body,address:'Synthetic road'});
   await assert.rejects(create);const recovered=await create();assert.equal(recovered.command_receipt.outcome,'applied');
   const original=prepareWarehouseCommand(operation,null,body),stopped=await api.inventory.stopCommand({store_id:f.site.siteId,idempotency_key:key,...original});
   assert.deepEqual(stopped,recovered);
