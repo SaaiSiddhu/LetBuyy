@@ -1068,25 +1068,27 @@ export const CodReconciliationOverviewSchema = z.object({
   }),
 });
 
-export const MerchantKycDocumentSchema = AuditedEntitySchema.extend({
+/** Merchant-visible KYC status only. Private object keys and scanner/provider payloads stay in the Gateway. */
+export const MerchantKycDocumentSchema = TimestampedEntitySchema.extend({
+  created_at: z.string().datetime({ offset: true }),
+  updated_at: z.string().datetime({ offset: true }),
+  deleted_at: z.string().datetime({ offset: true }).optional().nullable(),
   site_id: UuidSchema,
   document_type: MerchantKycDocumentTypeSchema,
   status: MerchantKycDocumentStatusSchema,
   provider: z.string().min(1).max(80),
   provider_mode: MerchantKycProviderModeSchema,
   provider_reference: z.string().optional().nullable(),
+  has_private_upload: z.boolean(),
   evidence_scan_status: z.enum(['pending', 'clean', 'rejected']).optional().nullable(),
   provider_unavailable: z.boolean().optional(),
   requires_resubmission: z.boolean().optional(),
   document_number_last4: z.string().optional().nullable(),
-  file_url: UrlSchema.optional().nullable(),
-  file_name: z.string().optional().nullable(),
   rejection_reason: z.string().optional().nullable(),
-  metadata: MetadataSchema.default({}),
-  submitted_at: z.string().datetime().optional().nullable(),
-  verified_at: z.string().datetime().optional().nullable(),
-  rejected_at: z.string().datetime().optional().nullable(),
-}).passthrough();
+  submitted_at: z.string().datetime({ offset: true }).optional().nullable(),
+  verified_at: z.string().datetime({ offset: true }).optional().nullable(),
+  rejected_at: z.string().datetime({ offset: true }).optional().nullable(),
+}).strict();
 
 export const MerchantKycRequirementSchema = z.object({
   document_type: MerchantKycDocumentTypeSchema,
@@ -1099,10 +1101,11 @@ export const MerchantKycOverviewSchema = z.object({
   site_id: UuidSchema,
   overall_status: MerchantKycOverallStatusSchema,
   provider_mode: MerchantKycProviderModeSchema,
+  private_upload_available: z.boolean(),
   required_documents: z.array(MerchantKycRequirementSchema).default([]),
   documents: z.array(MerchantKycDocumentSchema).default([]),
   next_action: z.string().optional().nullable(),
-});
+}).strict();
 
 export const MerchantTwoFactorSchema = AuditedEntitySchema.extend({
   custom_user_id: UuidSchema,

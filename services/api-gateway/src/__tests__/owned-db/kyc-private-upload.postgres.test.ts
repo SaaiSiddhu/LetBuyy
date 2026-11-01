@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test, { after } from 'node:test';
 import { randomUUID } from 'node:crypto';
+import { MerchantKycOverviewSchema } from '@letbuyy/shared-types';
 import { requireOwnedDatabase } from './owned-db-support';
 import { Gateway, gatewayEnv, newIdentityKeys, signedIdentityHeaders, tapRest } from './gateway-harness';
 import { newSyntheticTenant, seedSyntheticTenant } from './synthetic-tenant';
@@ -142,6 +143,8 @@ test('KYC file upload remains private, tenant-owned and pending provider evidenc
         method: 'GET', headers: await signedIdentityHeaders(owner, `kyc-${owner}@example.invalid`, tenant.siteId),
     });
     assert.equal(ownerOverview.status, 200, 'positive control: the site owner reads sanitized KYC status through the Gateway');
+    assert.deepEqual(MerchantKycOverviewSchema.parse(ownerOverview.json?.data), ownerOverview.json?.data,
+        'the actual owned Gateway response conforms to the redacted client contract');
     assert.equal(ownerOverview.json?.data.documents[0]?.status, 'submitted');
     assert.equal(ownerOverview.json?.data.private_upload_available, true);
     assert.equal(ownerOverview.json?.data.documents[0]?.evidence_scan_status, 'pending');
