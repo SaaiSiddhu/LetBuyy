@@ -37,14 +37,14 @@ test('KYC file upload remains private, tenant-owned and pending provider evidenc
         body: JSON.stringify({ store_id: tenant.siteId, document_type: 'business_pan', document_number_last4: '1234' }) });
     assert.equal(legacy.status, 410, 'last-four-only JSON submission cannot create KYC evidence');
     assert.equal(owned.psql(`SELECT count(*) FROM merchant_kyc_documents WHERE site_id='${tenant.siteId}';`), '0');
-    const upload = async (siteId: string, file: File, key = randomUUID()) => {
+    const upload = async (siteId: string, file: File, key = randomUUID(), last4 = '1234') => {
         const headers = await signedIdentityHeaders(owner, `kyc-${owner}@example.invalid`, siteId);
         delete headers['Content-Type'];
         headers['X-Idempotency-Key'] = key;
         const form = new FormData();
         form.set('store_id', siteId);
         form.set('document_type', 'business_pan');
-        form.set('document_number_last4', '1234');
+        form.set('document_number_last4', last4);
         form.set('file', file);
         return gateway.request('/v1/kyc/documents/upload', { method: 'POST', headers, body: form });
     };
@@ -211,6 +211,12 @@ test('KYC file upload remains private, tenant-owned and pending provider evidenc
     const invalid = await upload(tenant.siteId, new File(['not a PDF'], 'fake.pdf', { type: 'application/pdf' }));
     assert.equal(invalid.status, 415, invalid.text);
     assert.equal(objects.size, 1);
+    const overlong = await upload(tenant.siteId, pdf(), randomUUID(), '12345');
+    assert.equal(overlong.status, 400, overlong.text);
+    assert.equal(objects.size, 1, 'overlong references must fail before a private object is written');
+    assert.match(owned.psqlExpectError(`UPDATE merchant_kyc_documents SET document_number_last4='12345'
+        WHERE site_id='${tenant.siteId}' AND document_type='business_pan';`), /merchant_kyc_documents_last4_check/,
+    'the database must reject more than four reference characters');
     const noBucket = gatewayEnv(owned, await newIdentityKeys());
     const headers = await signedIdentityHeaders(owner, `kyc-${owner}@example.invalid`, tenant.siteId);
     delete headers['Content-Type'];

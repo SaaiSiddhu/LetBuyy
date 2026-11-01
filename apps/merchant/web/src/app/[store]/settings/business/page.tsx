@@ -392,8 +392,8 @@ export default function BusinessSettingsPage() {
     const submitDocument = useCallback(async (type: KycDocumentType) => {
         const input = docInputs[type] || { last4: '' }
         const file = docFiles[type]
-        if (!input.last4.trim()) {
-            notify({ title: 'Add a reference', description: 'Enter the last four characters.', variant: 'warning' })
+        if (!/^[A-Za-z0-9]{2,4}$/.test(input.last4.trim())) {
+            notify({ title: 'Add a reference', description: 'Enter only the final 2–4 reference characters.', variant: 'warning' })
             return
         }
         if (!file) {
@@ -417,7 +417,7 @@ export default function BusinessSettingsPage() {
             }
             setDocInputs((cur) => ({ ...cur, [type]: { last4: '' } }))
             setDocFiles((cur) => ({ ...cur, [type]: null }))
-            notify({ title: 'Document received', description: `${DOC_META[type].title} is pending provider review. This does not authorize payouts.`, variant: 'success' })
+            notify({ title: 'Document received', description: `${DOC_META[type].title} is pending a security scan. This does not authorize payouts.`, variant: 'success' })
         } catch (err) {
             const msg = err instanceof Error ? err.message : 'Unable to submit document'
             notify({ title: 'Submission failed', description: msg, variant: 'critical' })
@@ -641,9 +641,9 @@ export default function BusinessSettingsPage() {
                                             <Input
                                                 label={meta.last4Label}
                                                 value={input.last4}
-                                                onChange={(e) => setDocInput(req.document_type, { last4: e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8) })}
+                                                onChange={(e) => setDocInput(req.document_type, { last4: e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4) })}
                                                 placeholder="••••"
-                                                maxLength={8}
+                                                maxLength={4}
                                                 helperText={meta.last4Hint}
                                             />
                                             <label className="settings-business-kyc-upload">

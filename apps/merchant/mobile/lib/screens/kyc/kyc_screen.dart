@@ -676,8 +676,8 @@ class _ReferenceDialogState extends State<_ReferenceDialog> {
   Future<void> _record() async {
     if (_saving || !widget.isCurrent()) return;
     final digits = _digits.text.trim();
-    if (!RegExp(r'^[A-Za-z0-9]{2,8}$').hasMatch(digits)) {
-      setState(() => _error = 'Enter 2–8 reference characters.');
+    if (!RegExp(r'^[A-Za-z0-9]{2,4}$').hasMatch(digits)) {
+      setState(() => _error = 'Enter only the final 2–4 reference characters.');
       return;
     }
     if (_file == null) {
@@ -754,7 +754,7 @@ class _ReferenceDialogState extends State<_ReferenceDialog> {
               TextField(
                 controller: _digits,
                 enabled: !_saving,
-                maxLength: 8,
+                maxLength: 4,
                 decoration: const InputDecoration(
                   labelText: 'Reference digits',
                   hintText: 'Last 4 characters, where available',

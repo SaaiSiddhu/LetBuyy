@@ -32,7 +32,7 @@ const StoreQuerySchema = z.object({
 
 const SubmitKycDocumentSchema = StoreQuerySchema.extend({
     document_type: DocumentTypeSchema,
-    document_number_last4: z.string().trim().min(2).max(8).regex(/^[A-Za-z0-9]+$/).optional(),
+    document_number_last4: z.string().trim().min(2).max(4).regex(/^[A-Za-z0-9]+$/).optional(),
     // Identity and bank documents must use the private upload flow, never a URL.
     file_url: z.never().optional(),
     file_name: z.never().optional(),
@@ -267,12 +267,12 @@ router.post('/documents/upload', bodyLimit({ maxSize: 6 * 1024 * 1024 }), async 
     let form: FormData;
     try { form = await c.req.formData(); }
     catch { return c.json({ error: { code: 'KYC_INVALID_UPLOAD', message: 'Upload a valid document.' } }, 400); }
-    const input = StoreQuerySchema.extend({ document_type: DocumentTypeSchema, document_number_last4: z.string().trim().min(2).max(8).regex(/^[A-Za-z0-9]+$/) }).safeParse({
+    const input = StoreQuerySchema.extend({ document_type: DocumentTypeSchema, document_number_last4: z.string().trim().min(2).max(4).regex(/^[A-Za-z0-9]+$/) }).safeParse({
         store_id: form.get('store_id'),
         document_type: form.get('document_type'),
         document_number_last4: form.get('document_number_last4'),
     });
-    if (!input.success) return c.json({ error: { code: 'KYC_INVALID_UPLOAD', message: 'Choose a document type and enter its final reference characters.' } }, 400);
+    if (!input.success) return c.json({ error: { code: 'KYC_INVALID_UPLOAD', message: 'Choose a document type and enter only the final 2–4 reference characters.' } }, 400);
     const file = form.get('file') as File | string | null;
     if (!(file instanceof File) || file.size === 0 || file.size > 5 * 1024 * 1024) {
         return c.json({ error: { code: 'KYC_INVALID_FILE', message: 'Choose a PDF, JPEG, or PNG under 5 MB.' } }, 400);

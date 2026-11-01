@@ -485,7 +485,8 @@ void main() {
         await Future<void>.delayed(const Duration(milliseconds: 100));
       });
       await tester.pump();
-      expect(find.text('Enter 2–8 reference characters.'), findsOneWidget);
+      expect(find.text('Enter only the final 2–4 reference characters.'), findsOneWidget);
+      expect(tester.widget<TextField>(find.byType(TextField)).maxLength, 4);
       expect(f.calls.where((r) => r.method == 'POST'), isEmpty);
       await submitReference(tester, f, '1234');
       expect(
