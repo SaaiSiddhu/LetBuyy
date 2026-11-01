@@ -215,7 +215,9 @@ class WarehouseCommandIntent {
         }
         final email = command['email'];
         if (email is String &&
-            !RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(email))
+            !RegExp(
+              r"^(?:[A-Za-z0-9_'+\-]+\.)*[A-Za-z0-9_'+\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$",
+            ).hasMatch(email))
           _invalid();
         _object(command['address']);
       }

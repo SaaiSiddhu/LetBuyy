@@ -104,3 +104,8 @@ for(const fault of ['site','version','policy','stop','extra'])test('unverified s
  await assert.rejects(()=>send(api,'purchase_order.create'),e=>e instanceof LetbuyyApiError&&e.code==='WAREHOUSE_PROTOCOL_UNVERIFIED');
  assert.equal(posts,0);
 });
+
+for(const email of ['a@example.c','a..b@example.invalid','a@-example.invalid','a b@example.invalid','a'.repeat(240)+'@example.invalid'])test('supplier invalid email is refused before capability or effect dispatch: '+email.length,async()=>{
+ let calls=0;const api=createLetbuyyApiClient({baseUrl:'https://synthetic.invalid/v1',fetch:async()=>{calls++;return Response.json({});}});
+ await assert.rejects(()=>api.inventory.suppliers.create({store_id:id(1),name:'Synthetic supplier',email,idempotency_key:id(2)}),e=>e instanceof LetbuyyApiError&&e.code==='WAREHOUSE_COMMAND_INVALID');assert.equal(calls,0);
+});

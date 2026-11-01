@@ -558,8 +558,8 @@ test('actual SDK location and supplier creation return canonical stored records 
   const result=await f.gateway.request(url.pathname+url.search,{method:request.method,headers,body:request.method==='GET'?undefined:await request.text()});return new Response(result.text,{status:result.status,headers:result.headers});
  }});
  const supplierAck=await api.inventory.suppliers.create({store_id:f.site.siteId,name:'Synthetic new supplier',contact_name:'Synthetic contact',email:'warehouse@example.invalid',address:{line1:'Synthetic supplier address'}},{storeId:f.site.siteId,idempotencyKey:randomUUID()});
- assert.equal(supplier.site_id,f.site.siteId);assert.equal(supplier.name,'Synthetic new supplier');assert.deepEqual(supplier.address,{line1:'Synthetic supplier address'});
  const supplier=supplierAck.supplier!;
+ assert.equal(supplier.site_id,f.site.siteId);assert.equal(supplier.name,'Synthetic new supplier');assert.deepEqual(supplier.address,{line1:'Synthetic supplier address'});
  const locationAck=await api.inventory.locations.create({store_id:f.site.siteId,name:'Synthetic new location',address:'Synthetic road',city:'Chennai',state:'Tamil Nadu',country:'IN',is_default:false},{storeId:f.site.siteId,idempotencyKey:randomUUID()});
  const location=locationAck.location!;
  assert.equal(location.store_id,f.site.siteId);assert.deepEqual(location.address,{address:'Synthetic road',city:'Chennai',state:'Tamil Nadu',country:'IN'});

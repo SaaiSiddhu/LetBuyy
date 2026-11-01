@@ -218,6 +218,32 @@ class Harness {
 }
 
 void main() {
+  test(
+    'supplier validation rejects unsupported email forms before saving an unrecoverable request',
+    () async {
+      final h = Harness(), s = h.service();
+      for (final email in [
+        'a@example.c',
+        'a..b@example.invalid',
+        'a@-example.invalid',
+        'a b@example.invalid',
+        '${'a' * 240}@example.invalid',
+      ]) {
+        await expectLater(
+          s.createSupplier(
+            InventorySupplierInput(
+              storeId: warehouseSite,
+              name: 'Synthetic supplier',
+              email: email,
+            ),
+          ),
+          throwsFormatException,
+        );
+        expect(h.requests, isEmpty);
+        expect(h.storage.data, isEmpty);
+      }
+    },
+  );
   for (final supplier in [false, true]) {
     final label = supplier ? 'supplier' : 'location';
     Future<Object> create(InventoryService s) => supplier

@@ -395,7 +395,7 @@ export const CreateSupplierSchema = z.object({
   idempotency_key:z.string().min(8).max(200),
   name: z.string().trim().min(1).max(200),
   contact_name: z.string().max(200).nullish(),
-  email: EmailSchema.nullish(),
+  email: EmailSchema.max(254).nullish(),
   phone: z.string().max(30).nullish(),
   address: z.record(z.string(), z.unknown()).optional(),
 });
@@ -460,7 +460,7 @@ export const ShipTransferSchema = z.object({
 // The original normalized intent is also the authority for stopping an uncertain command.
 const NormalizedWarehouseCommands = {
   'location.create':CreateLocationSchema.omit({store_id:true,idempotency_key:true}).extend({address:z.string().max(500),city:z.string().max(100),state:z.string().max(100)}).strict(),
-  'supplier.create':CreateSupplierSchema.omit({store_id:true,idempotency_key:true}).extend({contact_name:z.string().max(200).nullable(),email:EmailSchema.nullable(),phone:z.string().max(30).nullable(),address:z.record(z.string(),z.unknown())}).strict(),
+  'supplier.create':CreateSupplierSchema.omit({store_id:true,idempotency_key:true}).extend({contact_name:z.string().max(200).nullable(),email:EmailSchema.max(254).nullable(),phone:z.string().max(30).nullable(),address:z.record(z.string(),z.unknown())}).strict(),
   'purchase_order.create': CreatePurchaseOrderSchema.omit({store_id:true,idempotency_key:true}).extend({
     supplier_id:UuidSchema.nullable(), expected_at:z.string().datetime({offset:true}).nullable(),
     notes:CreatePurchaseOrderSchema.shape.notes.unwrap().nullable(),
