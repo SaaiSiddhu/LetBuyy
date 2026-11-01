@@ -487,6 +487,17 @@ test('General and Business expose keyboard labels and recover an optional status
     await pan.getByRole('textbox', { name: 'Last 4 of PAN' }).focus();
     await f.page.keyboard.press('Tab');
     await expect(pan.getByLabel('Upload Business PAN')).toBeFocused();
+
+    await f.page.goto(`${merchantOrigin}/${f.tenant.subdomain}/products`);
+    for (const [label, path] of [
+        ['Inventory history', 'products/inventory-history'],
+        ['Reservations', 'products/reservations'],
+        ['Locations', 'products/locations'],
+        ['Operations dashboard', 'products/operations-dashboard'],
+    ]) {
+        await expect(f.page.getByRole('link', { name: label, exact: true })).toHaveAttribute('href',
+            `/${f.tenant.subdomain}/${path}`);
+    }
 });
 
 test('Business disables private uploads on an unavailable KYC binding and recovers after status reload', { timeout: 180_000 }, async t => {

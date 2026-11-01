@@ -97,7 +97,7 @@ test('W1: the Liquid render-FAILURE -> React fallback safety net is untouched (n
   const src = read(COMPOSITION);
   assert.match(
     src,
-    /if \(result\.status !== 'rendered' \|\| !result\.liquid\) return null;/,
+    /if \(result\.status !== 'rendered' \|\| !result\.liquid\) \{[\s\S]{0,200}?return null;/,
     'a Liquid render failure must still fall back to React by returning null from renderLiquidPlan',
   );
   assert.match(
@@ -138,7 +138,6 @@ const NEW_ROUTES = [
   { file: `${STORE_ROOT}/collections/page.tsx`, templateKey: /'list-collections'/ },
   { file: `${STORE_ROOT}/contact/page.tsx`, templateKey: /'contact'/ },
   { file: `${STORE_ROOT}/password/page.tsx`, templateKey: /type: 'password'/ },
-  { file: `${STORE_ROOT}/customers/register/page.tsx`, templateKey: /'customers\/register'/ },
 ];
 
 for (const { file, templateKey } of NEW_ROUTES) {
@@ -156,6 +155,16 @@ for (const { file, templateKey } of NEW_ROUTES) {
     assert.match(src, /StorefrontCompositionEngine/, `${file} must render through the shared composition engine (no second pattern)`);
   });
 }
+
+test('W2: buyer registration enters the sole Identity flow and returns to the same store', () => {
+  const file = `${STORE_ROOT}/customers/register/page.tsx`;
+  assert.ok(exists(file), `${file} must exist`);
+  const src = read(file);
+  assert.doesNotMatch(src, /['"]use client['"]/);
+  assert.match(src, /export default async function/);
+  assert.match(src, /if \(!store\) return notFound\(\);/);
+  assert.match(src, /redirect\(`\/api\/buyer-auth\/start\?\$\{new URLSearchParams\(\{screen:'register',return_to:`\/store\/\$\{subdomain\}\/account`\}\)\}`\);/);
+});
 
 test('W2: collections/page.tsx (the list index) is distinct from collections/[slug]/page.tsx (a single collection)', () => {
   assert.ok(exists(`${STORE_ROOT}/collections/[slug]/page.tsx`), 'the existing single-collection route must be untouched');
