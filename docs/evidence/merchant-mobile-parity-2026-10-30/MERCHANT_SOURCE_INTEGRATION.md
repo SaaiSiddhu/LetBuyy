@@ -1,6 +1,6 @@
 # Merchant source integration — 1 November 2026
 
-Status: source/local integration is committed at `7b76ffed97e9f1f4c18e9dc0162ada3e7257ddd6` and the applicable local gates below pass. No new Merchant deployment, hosted415 or remote push. Earlier pending/uncommitted paragraphs below describe preparation before the owner decision. Preserve the READY Accounts recovery `ce8140b09` / `dpl_D7ThevfxEBw887k74Jj3ugVsNS4x` and existing staging API/BFF. Migration414 must not be submitted again or rolled down after use.
+Status: integrated source `7b76ffed97e9f1f4c18e9dc0162ada3e7257ddd6` is committed and its local gates pass. The owner's later staging415 maintenance approval has now been executed:415 once, API844 and the complete protected Merchant artifact independently verified. [Current hosted execution, retention limits and native acceptance](STAGING_415_ACCEPTANCE.md). The remaining preparation/pending-decision paragraphs below are historical source-integration evidence, superseded by the recorded owner decisions and current execution. No remote push or production application/schema activation occurred.414/415 must not be replayed or blindly rolled down after use.
 
 ## Source and resolved conflicts
 

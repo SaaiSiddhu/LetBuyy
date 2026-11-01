@@ -1,18 +1,18 @@
 {
   "date": "2026-10-30",
-  "source_commit": "aeef87046a497567e8fcfc8b2aacafe896ce4c87",
+  "source_commit": "f91d8eca0b8dd2d7043e4b85208c847aa089a3b7",
   "branch": "codex/merchant-mobile-parity",
   "scope": "source and bounded hosted staging checkpoint; full 122-item acceptance remains in progress",
   "flutter": {
-    "source_commit": "aeef87046a497567e8fcfc8b2aacafe896ce4c87",
-    "native_tested_source": "427e949c0ab3605b0075e1a0d82399d76f20315e",
-    "native_tree_identical": true,
-    "tests": 765,
-    "pass": 765,
+    "source_commit": "161504e65689261e720883f1519ba9d192627a81",
+    "tests": 766,
+    "pass": 766,
     "fail": 0,
     "analysis": "pass",
-    "log": "/private/tmp/letbuyy-parity-continuation-20261101/native-identity-qualified-tests.log",
-    "analysis_log": "/private/tmp/letbuyy-parity-continuation-20261101/native-identity-qualified-analysis.log"
+    "log": "/private/tmp/letbuyy-parity-continuation-20261101/native-bundled-font-full-tests.log",
+    "network_blocked_typography_test": "pass",
+    "ui_kit_analysis": "pass",
+    "marketplace_consumer_analysis": "pass"
   },
   "shared_dart_transport_context_tests": {
     "pass": 12,
@@ -32,8 +32,8 @@
       "NOT_APPLICABLE": 1
     },
     "exitCode": 0,
-    "source_commit": "aeef87046a497567e8fcfc8b2aacafe896ce4c87",
-    "report": "/private/tmp/letbuyy-parity-continuation-20261101/identity-privacy-governance.json",
+    "source_commit": "f91d8eca0b8dd2d7043e4b85208c847aa089a3b7",
+    "report": "/private/tmp/letbuyy-parity-continuation-20261101/native-roundtrip-final-governance.log",
     "disposable_clone_only": true
   },
   "owned_database_runs": [
@@ -1117,7 +1117,7 @@
   "authenticated_native_journeys": "Historical installed source 13d254de: authorized sign-in and read-only primary tabs; latest 288cb3dfa staging-isolation source has no new emulator UI acceptance; hosted SDK/Next backend proofs are recorded separately",
   "production_account_used": true,
   "deployment_performed": true,
-  "full_122_acceptance": "in_progress; source/native debug and bounded staged backend/privacy proof; no fully accepted feature row",
+  "full_122_acceptance": "in_progress; approved staging415 schema/API/web and bounded current native/Next warehouse proof accepted; ordinary DNS, normal protected login and other per-feature/provider/release gates open; no fully accepted feature row",
   "previous_source_commit": "13d254de23e29919af5d5d4ce81e567584adc338",
   "customer_scope_tests": {
     "pass": 17,
@@ -1938,7 +1938,7 @@
       "receipt": "/private/tmp/letbuyy-warehouse-detail-mobile-tests-complete.log"
     }
   },
-  "last_qualified_date": "2026-11-01",
+  "last_qualified_date": "2026-11-01 UTC",
   "implementation_commit": "aeef87046a497567e8fcfc8b2aacafe896ce4c87",
   "warehouse_previous_checkpoints": [
     {
@@ -2857,6 +2857,313 @@
   },
   "source_integration_checkpoint": {
     "report": "MERCHANT_SOURCE_INTEGRATION.md",
+    "status": "source-local-qualified-and-staging415-api-merchant-verified",
+    "source_base": "bbb9aab758188b1f07fcc44ed9a60b15309e7328",
+    "merge_head": "e4105581e3346041d71694d3db093eb713773e07",
+    "conflicts_resolved": 10,
+    "merchant_pass": 1636,
+    "gateway_unit_pass": 2027,
+    "ui_pass": 75,
+    "typecheck": [
+      "merchant",
+      "gateway",
+      "typescript-api-client",
+      "ui"
+    ],
+    "next_build": "complete-external-closure-admitted-and-hosted-verified",
+    "runtime_source_fingerprint": "594f35b0d3419ebe7da60bad03ca3c5a8417173499ef512c24a0831204485db3",
+    "all_migration_sql_bytes_unchanged": true,
+    "migration_renumbered": true,
+    "integrated_governance_accepted": true,
+    "owned_database_accepted": true,
+    "merchant_deployed": true,
+    "native_source_unchanged": true,
+    "accounts_source_unchanged": true,
+    "bff_source_unchanged": true,
+    "remote_push": false,
+    "production_activation": false,
+    "migration_numbering_owner_approved": true,
+    "gift_card_migration": 415,
+    "warehouse_migration": 414,
+    "migration_sql_bytes_preserved": true,
+    "source_commit": "7b76ffed97e9f1f4c18e9dc0162ada3e7257ddd6",
+    "merge_committed": true,
+    "governance_pass": 114,
+    "owned_gateway_suites": 9,
+    "owned_gateway_pass": 95,
+    "redteam_isolated_top_level_cases_pass": 2,
+    "mixed_redteam_fixture_failure_retained": true,
+    "retained_staging_rehearsal_pass": true,
+    "retained_tables_exactly_preserved": 523,
+    "rehearsal_run": "a019dfea1199",
+    "gift_card_rollback_exact": true,
+    "owned_cleanup_empty": true,
+    "merchant_artifact_tree_sha256": "685cf603aa7ee1cb57b7f03745e1a12fad16cc99e938082bedf5011adda77f04",
+    "api_main_sha256": "34204b6c3396fb9c8771526b9cc4dd0a7ee60d6308bc318305dec333c13eeceb",
+    "hosted415_applied": true,
+    "hosted415_approval_pending": false,
+    "original_prepared_merchant_artifact_rejected_before_upload": true,
+    "current_artifact_report": "STAGING_415_ACCEPTANCE.md"
+  },
+  "latest_integrated_source": "7b76ffed97e9f1f4c18e9dc0162ada3e7257ddd6",
+  "production_export_privacy_checkpoint": {
+    "report": "PRODUCTION_PRIVATE_EXPORTS.md",
+    "policy": "PRODUCTION_EXPORT_CDN_POLICY.json",
+    "ownerApproved": true,
+    "ruleId": "2dfe2ddf5eb24682acc5ccf1ce53619d",
+    "exactUiReadback": true,
+    "beforePublicAndPrivate": 200,
+    "afterPublic": 200,
+    "afterCanonicalAndFourVariants": 403,
+    "canaryCount": 2,
+    "bothOriginAbsent": true,
+    "productionApplicationRelease": false,
+    "schemaWrite": false,
+    "permanentPrivateStorageAccepted": false
+  },
+  "staging415_maintenance_checkpoint": {
+    "report": "STAGING_415_ACCEPTANCE.md",
+    "owner_approved": true,
+    "status": "schema-api-protected-merchant-and-bounded-warehouse-client-verified",
+    "runtime_source": "7b76ffed97e9f1f4c18e9dc0162ada3e7257ddd6",
+    "tooling_source": "200bab0aeedd03285fda6c3a1555a39db7db7885",
+    "staging_only": true,
+    "migration415_dispatches": 1,
+    "history_entries": 343,
+    "warehouse414_preserved": true,
+    "rehearsal": {
+      "run_id": "abe1b64ff78a",
+      "original_tables_exact": 524,
+      "original_warehouse_receipts": 13,
+      "owned_cleanup_empty": true
+    },
+    "hosted_retention": {
+      "unchanged_tables_exact": 517,
+      "operational_tables_original_rows_exact": 6,
+      "short_lived_replay_table_removal_identities_not_captured": 3,
+      "per_row_expiry_removal_proven": false
+    },
+    "api": {
+      "version": "844f3c28-4c13-435b-9ada-5a931d1890fa",
+      "main_sha256": "89f1db61559cfd0a472e39e01e70ab52d46d39f0a0797b03bb5dcf6d7c25ad1b",
+      "actual_three_modules_verified": true,
+      "variables_preserved": 64,
+      "resource_bindings_preserved": 12,
+      "secret_writes": false
+    },
+    "merchant": {
+      "deployment": "dpl_tr4FKGLnQRBh4UmGnPuHtRNrXzp8",
+      "alias": "admin-staging.letbuyy.com",
+      "output_tree_sha256": "8cbfe7f323129dae28a7fb8002755d03bf4b3bb20af05d3453a1628cc3ef7b14",
+      "closure_sha256": "cad17f0728643e709e3e9e22eb4257f9ec71b50c3b0c1bd63fe768a647b910aa",
+      "external_file_closure_verified": true,
+      "protection_preserved": true
+    },
+    "tooling_tests_pass": 18,
+    "current_api_next_existing_native_readback_pass": 6,
+    "earlier_native_api_version": "2ec36261-eee3-49b5-95e8-5c6c0b7d9928",
+    "earlier_native_ui": "bounded pass; one location and one supplier committed, receipts15",
+    "current_api_native_ui": "two bounded real-native journeys pass with host-resolved test-only TLS transport; normal DNS/login excluded",
+    "normal_password_login": false,
+    "browser_visual_acceptance": false,
+    "production_application_schema_activation": false,
+    "remote_push": false,
+    "current_api_next_roundtrip_checks": 10,
+    "active_staff_permission_revocation_checks": 7,
+    "shared_sdk_reciprocal_original_key_replays": "pass; real TS and host Dart VM",
+    "native_dns_accepted": false,
+    "normal_staging_apk_restored": true,
+    "original13_whole_row_receipt_hash_preserved": true,
+    "final_warehouse_receipts": 19,
+    "expected_added_receipts": 6,
+    "stock_total": 25,
+    "all_new_staff_sessions_revoked": true,
+    "native_owner_journey": {
+      "status": "passed-bounded-native-ui-await-hosted-readback",
+      "environment": "staging",
+      "nativeProductSource": "161504e65689261e720883f1519ba9d192627a81",
+      "harnessSource": "0bf5151222f6f3f08f2e2510d616edbfc28d472a",
+      "harnessFileSha256": "d36f04d33da581b09c6844acd51952df5100a94db389c3bed2e589ac2512a175",
+      "emulator": "emulator-5580",
+      "hostedApiSource": "7b76ffed97e9f1f4c18e9dc0162ada3e7257ddd6",
+      "hostedApiVersion": "844f3c28-4c13-435b-9ada-5a931d1890fa",
+      "candidateApiActivationAccepted": true,
+      "normalPasswordLogin": false,
+      "providerSecretsInApp": false,
+      "hostResolvedTestTransport": true,
+      "nativeDnsAccepted": false,
+      "productionWrite": false,
+      "requestedUtc": "2026-11-01T17:48:33.759325+00:00",
+      "commandExit": 0,
+      "nativeResult": {
+        "environment": "staging",
+        "normalPasswordLogin": false,
+        "realNativeScreens": true,
+        "realHostedBff": true,
+        "productionWrite": false,
+        "hostResolvedTestTransport": true,
+        "nativeDnsAccepted": false,
+        "certificateVerification": "default trust roots and original hostname",
+        "checks": [
+          "canonical synthetic owner session and owned store validated",
+          "location native form, hosted readback and resolved encrypted intent",
+          "supplier native form, hosted readback and resolved encrypted intent",
+          "actor switch retires prior rows; populated cross-tenant read denied",
+          "completed"
+        ],
+        "status": "passed-bounded-staging-native-warehouse-ui"
+      },
+      "compiledHarnessApkSha256": "a0651d79aee73842858e9958e91ec2c1866458968d68b2a133d5f5c418c08778",
+      "finishedUtc": "2026-11-01T17:49:40.552339+00:00"
+    },
+    "native_next_roundtrip": {
+      "status": "passed-bounded-native-ui-await-hosted-readback",
+      "environment": "staging",
+      "nativeProductSource": "161504e65689261e720883f1519ba9d192627a81",
+      "harnessSource": "f91d8eca0b8dd2d7043e4b85208c847aa089a3b7",
+      "harnessFileSha256": "ccd7e3b73c997147c0c97a3a000d7a634fb5aca7aad82001d94c0c23b2f18896",
+      "emulator": "emulator-5580",
+      "hostedApiSource": "7b76ffed97e9f1f4c18e9dc0162ada3e7257ddd6",
+      "hostedApiVersion": "844f3c28-4c13-435b-9ada-5a931d1890fa",
+      "candidateApiActivationAccepted": true,
+      "normalPasswordLogin": false,
+      "providerSecretsInApp": false,
+      "hostResolvedTestTransport": true,
+      "nativeDnsAccepted": false,
+      "productionWrite": false,
+      "requestedUtc": "2026-11-01T17:53:55.019354+00:00",
+      "commandExit": 0,
+      "nativeResult": {
+        "environment": "staging",
+        "normalPasswordLogin": false,
+        "realNativeScreens": true,
+        "realHostedBff": true,
+        "productionWrite": false,
+        "hostResolvedTestTransport": true,
+        "nativeDnsAccepted": false,
+        "certificateVerification": "default trust roots and original hostname",
+        "checks": [
+          "canonical synthetic owner session and owned store validated",
+          "location native form, hosted readback and resolved encrypted intent (prior commit reconciled)",
+          "supplier native form, hosted readback and resolved encrypted intent",
+          "actor switch retires prior rows; populated cross-tenant read denied",
+          "completed"
+        ],
+        "status": "passed-bounded-staging-native-warehouse-ui"
+      },
+      "compiledHarnessApkSha256": "04400b43d0a4cff5175ff9d8c0ec3c1f4a02a09a4fe5a456bf9ff7869735c3a1",
+      "finishedUtc": "2026-11-01T17:54:42.771036+00:00"
+    },
+    "next_checks": {
+      "status": "passed-bounded-current-next-native-roundtrip",
+      "environment": "staging",
+      "webDeployment": "dpl_tr4FKGLnQRBh4UmGnPuHtRNrXzp8",
+      "apiVersion": "844f3c28-4c13-435b-9ada-5a931d1890fa",
+      "runtimeSource": "7b76ffed97e9f1f4c18e9dc0162ada3e7257ddd6",
+      "nativeProductSource": "161504e65689261e720883f1519ba9d192627a81",
+      "nativeHarnessSource": "f91d8eca0b8dd2d7043e4b85208c847aa089a3b7",
+      "hostResolvedNativeTestTransport": true,
+      "nativeDnsAccepted": false,
+      "browserVisualAcceptance": false,
+      "normalPasswordLogin": false,
+      "productionWrite": false,
+      "checks": [
+        {
+          "name": "actual Next inventory-locations reads current native and roundtrip rows with exact population and no-store",
+          "status": "pass"
+        },
+        {
+          "name": "actual Next suppliers reads current native and roundtrip rows with exact population and no-store",
+          "status": "pass"
+        },
+        {
+          "name": "same original Next key replays identical complete receipt after native recovery",
+          "status": "pass"
+        },
+        {
+          "name": "changed Next command cannot reuse original key",
+          "status": "pass"
+        },
+        {
+          "name": "foreign mutation origin denied",
+          "status": "pass"
+        },
+        {
+          "name": "body and header command-key mismatch denied",
+          "status": "pass"
+        },
+        {
+          "name": "production-only cookie denied",
+          "status": "pass"
+        },
+        {
+          "name": "retired actor acknowledgement denied",
+          "status": "pass"
+        },
+        {
+          "name": "other owner denied populated fixture store with canonical opaque404",
+          "status": "pass"
+        },
+        {
+          "name": "second owner own-store positive control",
+          "status": "pass"
+        }
+      ],
+      "readUtc": "2026-11-01T17:58:27.171738+00:00"
+    },
+    "native_tls_control": {
+      "status": "passed",
+      "fixture": {
+        "hostname": "bff-staging.letbuyy.com",
+        "ipv4": "104.21.30.148",
+        "resolvedUtc": "2026-11-01T17:45:47.604066+00:00"
+      },
+      "nativeDnsAccepted": false,
+      "hostResolvedTestTransport": true,
+      "noProviderProtectionBypass": true,
+      "certificateVerification": "default trust roots, actual hostname",
+      "requestedUtc": "2026-11-01T17:45:47.604066+00:00",
+      "commandExit": 0,
+      "result": {
+        "environment": "staging",
+        "hostResolvedTestTransport": true,
+        "nativeDnsAccepted": false,
+        "healthStatus": 200,
+        "wrongTlsHostnameDenied": true,
+        "status": "passed-bounded-host-resolved-native-tls"
+      },
+      "finishedUtc": "2026-11-01T17:46:13.286742+00:00"
+    },
+    "normal_apk_restore": {
+      "status": "normal-staging-debug-apk-restored-and-installed-hash-verified",
+      "sourceRevision": "161504e65689261e720883f1519ba9d192627a81",
+      "apkSha256": "e6afa2bb605b0256d90ff85528c1c1fab0bad679e8790e7d35fa6944c7cb2db7",
+      "compiledHarnessInstalled": false,
+      "privateWarehouseFixtureAbsent": true,
+      "debugSigning": true,
+      "normalPasswordLogin": false,
+      "nativeDnsAccepted": false,
+      "productionWrite": false,
+      "restoredUtc": "2026-11-01T17:55:59.905730+00:00"
+    },
+    "final_governance": {
+      "ok": true,
+      "counts": {
+        "PASS": 114,
+        "FAIL": 0,
+        "BLOCKED": 0,
+        "SKIP": 0,
+        "NOT_APPLICABLE": 1
+      },
+      "exitCode": 0,
+      "source_commit": "f91d8eca0b8dd2d7043e4b85208c847aa089a3b7",
+      "report": "/private/tmp/letbuyy-parity-continuation-20261101/native-roundtrip-final-governance.log",
+      "disposable_clone_only": true
+    },
+    "final_api_readback_utc": "2026-11-01T18:01:31.198768Z"
+  },
+  "source_integration_previous_hosted_status": {
+    "report": "MERCHANT_SOURCE_INTEGRATION.md",
     "status": "source-local-qualified-and-artifacts-admitted-hosted415-maintenance-pending",
     "source_base": "bbb9aab758188b1f07fcc44ed9a60b15309e7328",
     "merge_head": "e4105581e3346041d71694d3db093eb713773e07",
@@ -2903,20 +3210,78 @@
     "hosted415_applied": false,
     "hosted415_approval_pending": true
   },
-  "latest_integrated_source": "7b76ffed97e9f1f4c18e9dc0162ada3e7257ddd6",
-  "production_export_privacy_checkpoint": {
-    "report": "PRODUCTION_PRIVATE_EXPORTS.md",
-    "policy": "PRODUCTION_EXPORT_CDN_POLICY.json",
-    "ownerApproved": true,
-    "ruleId": "2dfe2ddf5eb24682acc5ccf1ce53619d",
-    "exactUiReadback": true,
-    "beforePublicAndPrivate": 200,
-    "afterPublic": 200,
-    "afterCanonicalAndFourVariants": 403,
-    "canaryCount": 2,
-    "bothOriginAbsent": true,
-    "productionApplicationRelease": false,
-    "schemaWrite": false,
-    "permanentPrivateStorageAccepted": false
+  "native_font_checkpoint": {
+    "sourceRevision": "161504e65689261e720883f1519ba9d192627a81",
+    "stagingOnly": true,
+    "debugSigning": true,
+    "apk": "/private/tmp/letbuyy-parity-continuation-20261101/merchant-staging-bundled-font-161504e65.apk",
+    "apkSha256": "e6afa2bb605b0256d90ff85528c1c1fab0bad679e8790e7d35fa6944c7cb2db7",
+    "bytes": 219865526,
+    "bundledInterWeights": 9,
+    "fontBytesMatchPinnedGoogleFontsRegistry": true,
+    "fontRuntimeFetching": false,
+    "providerSecretsInApp": false,
+    "nativeTests": {
+      "pass": 766,
+      "fail": 0
+    },
+    "analysis": {
+      "merchant": "pass",
+      "uiKit": "pass",
+      "marketplaceCompatibility": "pass"
+    },
+    "normalPasswordLogin": false,
+    "createdUtc": "2026-11-01T16:56:04.007325+00:00",
+    "governance": {
+      "pass": 114,
+      "fail": 0,
+      "blocked": 0,
+      "skip": 0,
+      "not_applicable": 1,
+      "disposable_clone_only": true,
+      "source_commit": "161504e65689261e720883f1519ba9d192627a81"
+    },
+    "task_emulator_dns_recovery": {
+      "status": "booted-dns-verified",
+      "emulator": "emulator-5580",
+      "dnsServer": "10.233.27.34",
+      "dnsSource": "current Mac active resolver, validated A answer",
+      "systemDnsChanged": false,
+      "otherAvdsTouched": false,
+      "wipeData": false,
+      "startedUtc": "2026-11-01T17:02:59.325436+00:00",
+      "launcherPid": 58953,
+      "dnsResolutionVerified": true,
+      "finishedUtc": "2026-11-01T17:03:25.429135+00:00",
+      "shell_lookup_only": true
+    },
+    "native_dns_accepted": false,
+    "standard_private_dns_restored": true
+  },
+  "flutter_prior_identity_checkpoint": {
+    "source_commit": "aeef87046a497567e8fcfc8b2aacafe896ce4c87",
+    "native_tested_source": "427e949c0ab3605b0075e1a0d82399d76f20315e",
+    "native_tree_identical": true,
+    "tests": 765,
+    "pass": 765,
+    "fail": 0,
+    "analysis": "pass",
+    "log": "/private/tmp/letbuyy-parity-continuation-20261101/native-identity-qualified-tests.log",
+    "analysis_log": "/private/tmp/letbuyy-parity-continuation-20261101/native-identity-qualified-analysis.log"
+  },
+  "latest_qualified_code_source": "f91d8eca0b8dd2d7043e4b85208c847aa089a3b7",
+  "governance_before_staging415_current_harness": {
+    "ok": true,
+    "counts": {
+      "PASS": 114,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "SKIP": 0,
+      "NOT_APPLICABLE": 1
+    },
+    "exitCode": 0,
+    "source_commit": "aeef87046a497567e8fcfc8b2aacafe896ce4c87",
+    "report": "/private/tmp/letbuyy-parity-continuation-20261101/identity-privacy-governance.json",
+    "disposable_clone_only": true
   }
 }

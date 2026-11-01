@@ -1,8 +1,8 @@
-# Staging415 maintenance proposal — 1 November 2026
+# Staging415 maintenance execution — 1 November 2026
 
-Status: **owner-approved staging maintenance window in progress**, 1 November 2026. The owner explicitly approved “staging415 maintenance and verification” after reviewing this plan. Production application/schema activation remains excluded. The earlier source/local-only decision is retained as historical scope; this later decision authorizes the staging steps below. `scripts/supabase/README.md` recovery, exact-history and maintenance-window gates apply.
+Status: **owner-approved staging schema/API/Merchant activation completed; bounded warehouse client acceptance verified; full122/release open**, 1 November 2026. The owner explicitly approved “staging415 maintenance and verification” after reviewing this plan. Production application/schema activation remains excluded. The earlier source/local-only decision is retained as historical scope; this later decision authorizes the staging steps below. `scripts/supabase/README.md` recovery, exact-history and maintenance-window gates apply.
 
-## Concrete candidate
+## Originally prepared candidate — superseded packaging identities
 
 | Item | Qualified identity |
 | --- | --- |
@@ -31,7 +31,7 @@ Staging project only, with current protected `admin-staging.letbuyy.com`, existi
 
 Production remains limited to the separately approved, completed CDN export guard. Full122 acceptance, permanent private export storage, durable CSV import, provider sandbox and signed-release gates remain open.
 
-## Execution checkpoint — 1 November 2026
+## Earlier execution checkpoint — 1 November 2026
 
 The fresh approved encrypted staging backup is retained privately, with no plaintext dump or provider-role passwords. Its PG17 restore and415-only UP/DOWN/UP rehearsal passed: **524/524 original tables**, exact original history/function/index rollback and **13/13 existing warehouse receipts** preserved; owned local resources were removed. Rehearsal run `abe1b64ff78a`. The previous523-table rehearsal remains historical evidence.
 
@@ -40,3 +40,8 @@ Staging415 was dispatched **once**, acknowledged at `2026-11-01T13:45:20Z`, and 
 The initial live retention gate stopped on seven operational tables. Read-only reconciliation independently reproduced the exact pre-dispatch hashes of **517 unchanged tables** (including durable commerce/auth/session/storage data) and **every original row in all six operational log tables**; those logs contain additions only. The seventh table contains short-lived internal-auth replay claims: its exact canonical307 function, RLS and restricted ACLs are unchanged, with bounded expiry cleanup and at most600-second claim validity. **Exact identities of the three immediately removed replay claims were not captured before dispatch and cannot be reconstructed; per-row expiry-removal proof is not claimed.** The aggregate differences and failed first retention receipt are preserved privately. This limitation is separate from the exact durable-session retention and524-table isolated rehearsal.
 
 The first governed API activation command timed out without acknowledgement. Independent Cloudflare readback showed the previous staging API version still active. The intent and private log are retained; Merchant activation and native hosted execution have not yet begun at this checkpoint. CLI account-check completion/exit is under reconciliation. No application release or production-ready verdict is asserted.
+
+
+## Current outcome
+
+415, API844 and protected Merchant `dpl_tr4FKGLnQRBh4UmGnPuHtRNrXzp8` are independently verified. The original external-file Merchant artifact was rejected before upload; the complete closure and minified API identities supersede the originally prepared package hashes above. Native font/runtime evidence, bounded current-API Next↔native roundtrip and the unresolved ordinary emulator DNS limitation are recorded in [STAGING_415_ACCEPTANCE.md](STAGING_415_ACCEPTANCE.md). Preserve the original timeout, packaging and retention receipts. No new maintenance approval or migration replay is needed to continue the already authorized staging verification.
