@@ -568,7 +568,7 @@ export default function BusinessSettingsPage() {
                             onChange={(e) => set('pan_last4', e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4))}
                             placeholder="1234F"
                             maxLength={4}
-                            helperText="We only store the last 4 characters of your PAN. Upload the full PAN under verification below."
+                            helperText="We store only the last 4 characters here. Upload your PAN document privately below; these reference characters do not verify it."
                         />
 
                 </Section>
@@ -614,7 +614,7 @@ export default function BusinessSettingsPage() {
             <Section variant="grouped" title="Verification &amp; KYC" >
 
                     <div className="settings-general-hint">
-                        Upload PDF, JPEG, or PNG evidence privately (up to 5 MB). Provider review is required before live verification or payouts.
+                        Upload PDF, JPEG, or PNG evidence privately (up to 5 MB). LetBuyy verification requires an approved review provider. Your payment provider must separately approve live payments and the settlement bank.
                     </div>
 
                     <div className="settings-business-kyc-list">
