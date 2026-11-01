@@ -68,6 +68,7 @@ export function inspectVercelOutputClosure({ repoRoot, outputDir }) {
   walk(output);
   if (!functions.length) throw new Error("Expected at least one real function configuration");
   const references = new Map();
+  const linkedDirectories = new Set();
   for (const location of functions) {
     const func = JSON.parse(fs.readFileSync(location, "utf8"));
     const mapped = func.filePathMap ?? {};
@@ -77,10 +78,26 @@ export function inspectVercelOutputClosure({ repoRoot, outputDir }) {
     for (const [source, destination] of Object.entries(mapped)) {
       relativeFile(path.dirname(location), destination);
       references.set(source, describe(repo, source));
+      const resolved = fs.realpathSync(relativeFile(repo, source));
+      const canonical = path.relative(repo, resolved).split(path.sep).join("/");
+      if (fs.statSync(resolved).isDirectory()) linkedDirectories.add(canonical);
+      else if (canonical !== source) references.set(canonical, describe(repo, canonical));
     }
     const handler = relativeFile(path.dirname(location), func.handler);
     if (!fs.existsSync(handler) && !Object.values(mapped).includes(func.handler)) {
       throw new Error(`Missing function handler: ${func.handler}`);
+    }
+  }
+  for (const directory of linkedDirectories) {
+    if (![...references.values()].some((file) => file.type === "file" && file.path.startsWith(directory + "/"))) {
+      throw new Error(`Symlink target has no declared runtime files: ${directory}`);
+    }
+  }
+  for (const name of references.keys()) {
+    if (!name.endsWith("/.next/BUILD_ID")) continue;
+    const buildId = fs.readFileSync(relativeFile(repo, name), "utf8").trim();
+    if (!/^[A-Za-z0-9_-]+$/.test(buildId) || !fs.existsSync(path.join(output, "static/_next/static", buildId))) {
+      throw new Error("Next server BUILD_ID does not match the packaged static output");
     }
   }
   const ordered = (rows) => rows.sort((a, b) => a.path.localeCompare(b.path));

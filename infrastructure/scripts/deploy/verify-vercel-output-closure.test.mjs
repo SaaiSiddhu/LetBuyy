@@ -81,3 +81,34 @@ test("an external reference cannot escape through a symlinked parent", () => fix
     assert.throws(inspect, /escapes its root/);
   } finally { fs.rmSync(outside, { recursive: true, force: true }); }
 }));
+
+test("file symlink captures its target bytes and detects target drift", () => fixture(({ directory, configure, inspect }) => {
+  fs.writeFileSync(path.join(directory, "target.json"), "{}");
+  fs.symlinkSync("target.json", path.join(directory, "alias.json"));
+  configure({ "alias.json": "runtime.json" });
+  const before = inspect();
+  assert.equal(before.externalReferences.length, 2);
+  fs.writeFileSync(path.join(directory, "target.json"), '{"changed":true}');
+  assert.notEqual(inspect().closureSha256, before.closureSha256);
+}));
+
+test("directory aliases require declared target files", () => fixture(({ directory, configure, inspect }) => {
+  fs.mkdirSync(path.join(directory, "dependency"));
+  fs.writeFileSync(path.join(directory, "dependency/index.js"), "module.exports = 1;");
+  fs.symlinkSync("dependency", path.join(directory, "alias"));
+  configure({ alias: "alias" });
+  assert.throws(inspect, /no declared runtime files/);
+  configure({ alias: "alias", "dependency/index.js": "dependency/index.js" });
+  assert.equal(inspect().complete, true);
+}));
+
+test("Next server and static BUILD_ID must agree", () => fixture(({ directory, outputDir, configure, inspect }) => {
+  const file = "apps/merchant/web/.next/BUILD_ID";
+  fs.mkdirSync(path.dirname(path.join(directory, file)), { recursive: true });
+  fs.writeFileSync(path.join(directory, file), "qualified-build");
+  configure({ [file]: file });
+  fs.mkdirSync(path.join(outputDir, "static/_next/static/different-build"), { recursive: true });
+  assert.throws(inspect, /BUILD_ID does not match/);
+  fs.mkdirSync(path.join(outputDir, "static/_next/static/qualified-build"), { recursive: true });
+  assert.equal(inspect().complete, true);
+}));
