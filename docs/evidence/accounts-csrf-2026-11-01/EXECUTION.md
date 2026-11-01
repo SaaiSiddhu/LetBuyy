@@ -1,6 +1,6 @@
 # Accounts open-form CSRF renewal
 
-Status: implemented and locally verified; production activation pending qualification and its own release decision.
+Status: production activated after the owner accepted this exact Accounts-only release and its documented TEST-R8 limits. Final private post-release sign-in confirmation is pending.
 
 The owner reported `POST /api/auth/login` returning 403 with “Invalid request. Please refresh and try again.” Browser inspection found no canonical or legacy CSRF cookie on the preserved filled form. A separate network reload issued the existing host-only cookie; the owner retried verification privately and confirmed reaching Merchant. This restored the current session, but it does not deploy the permanent repair.
 
@@ -15,3 +15,11 @@ Local evidence in `/private/tmp/letbuyy-accounts-csrf-20261101/`:
 - Initial source-checkout fixture was refused because a real local app environment file exists. A subsequent sandbox attempt could not access Docker; both raw failures remain. The successful run used an isolated snapshot with no copied app environment files and the real Docker daemon. Its runner removed owned test resources.
 
 No schema, database, Worker, DNS, provider credential, payment or carrier change is included. Hosted CI/staging/live verification and release provenance are recorded separately when actually observed.
+
+Production follow-up: release 14961c132 is on GitHub develop/staging/main with zero remote staging/main lag. The owner approved review SHA256 ad7b43e890972389b0117a0402183a2140c815dabba48a6f996f8025d18ffbb7. The exact READY production artifact dpl_CgC8rBNFLVwLoMS2AdEN92deQ9mt was promoted; accounts.letbuyy.com points to it. The Merchant, Commerce and Marketing live aliases retain their prior deployments. No rebuild, schema, Worker, DNS, secret or payment change occurred.
+
+Seven performed hosted artifact checks passed. The staged public cookie/bundle checks are separate from its first protected login probe, which returned 429 before CSRF and remains unverified. The unpromoted production artifact kept missing/mismatched CSRF 403 and matching-CSRF/missing-credentials 400. Live public requests then proved the same cookie attributes and compiled renewal helper without an extra login probe or deployment-protection header. The initial protected live read is retained separately; its generic transport label named the deployment origin even though it used the exact approved Accounts project hostname. The second anonymous live observation is the public-access proof.
+
+GitHub is executing jobs again. Lint, secret hygiene, governance and mobile passed at the latest observation. Build, Typecheck and Merge safety hit the unchanged Gateway tsc's 2 GB heap limit (exit 134); no TypeScript diagnostic was reported. The identical Gateway build/typecheck command passed locally with a bounded 4 GB heap. The broader behavioral CI job is still running; full CI is not claimed green. These limits were explicit in the owner-approved review and must not hide any later relevant failure.
+
+The owner confirmed the original restored session reached Merchant, and both live Merchant Shipping/Taxes settings pages were inspected read-only. A fresh post-release private login was requested after activation. It is not yet claimed observed. See PRODUCTION.json and the private raw evidence directory for exact lineage, aliases and outstanding acceptance.
