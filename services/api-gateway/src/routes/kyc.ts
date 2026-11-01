@@ -92,7 +92,7 @@ function providerMode(env: Env): MerchantKycProviderMode {
 function providerName(env: Env): MerchantKycProvider {
     if (providerMode(env) === 'sandbox') return 'letbuyy_sandbox_kyc';
     const value = env.KYC_PROVIDER;
-    return value === 'hyperverge' || value === 'manual' || value === 'signzy' ? value : 'manual';
+    return value === 'hyperverge' || value === 'manual' || value === 'signzy' ? value : 'unconfigured';
 }
 
 function serializeDocument(row: KycDocumentRow) {

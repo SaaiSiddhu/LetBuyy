@@ -80,6 +80,10 @@ test('KYC adapter is sandbox-first, manual-review aware, and fail-closed for aut
         () => createKycVerificationAdapter({ provider: 'signzy', mode: 'live', apiKey: 'provider-key' }),
         KycProviderUnavailableError,
     );
+    assert.throws(
+        () => createKycVerificationAdapter({ provider: 'unconfigured', mode: 'live' }),
+        KycProviderUnavailableError,
+    );
 });
 
 test('sandbox and provider-unavailable records never complete business verification', () => {

@@ -1,5 +1,5 @@
 export type MerchantKycProviderMode = 'sandbox' | 'live';
-export type MerchantKycProvider = 'letbuyy_sandbox_kyc' | 'signzy' | 'hyperverge' | 'manual';
+export type MerchantKycProvider = 'letbuyy_sandbox_kyc' | 'signzy' | 'hyperverge' | 'manual' | 'unconfigured';
 export type MerchantKycDocumentType =
   | 'business_pan'
   | 'gst_certificate'
@@ -93,6 +93,9 @@ function manualReviewResult(
 }
 
 export function createKycVerificationAdapter(credentials: KycVerificationCredentials): KycVerificationAdapter {
+  if (credentials.provider === 'unconfigured') {
+    throw new KycProviderUnavailableError('KYC_LIVE_PROVIDER_UNAVAILABLE: no KYC provider is configured');
+  }
   if (credentials.mode === 'live' && credentials.provider === 'manual') {
     return {
       async verifyDocument(input) {
