@@ -1,16 +1,18 @@
 {
   "date": "2026-10-30",
-  "source_commit": "288cb3dfa02f8b0d2b650de7126504864b3c89b6",
+  "source_commit": "aeef87046a497567e8fcfc8b2aacafe896ce4c87",
   "branch": "codex/merchant-mobile-parity",
   "scope": "source and bounded hosted staging checkpoint; full 122-item acceptance remains in progress",
   "flutter": {
-    "source_commit": "288cb3dfa02f8b0d2b650de7126504864b3c89b6",
-    "tests": 750,
-    "pass": 750,
+    "source_commit": "aeef87046a497567e8fcfc8b2aacafe896ce4c87",
+    "native_tested_source": "427e949c0ab3605b0075e1a0d82399d76f20315e",
+    "native_tree_identical": true,
+    "tests": 765,
+    "pass": 765,
     "fail": 0,
     "analysis": "pass",
-    "log": "/private/tmp/letbuyy-hosted-warehouse-20261101/cookie-native-full.log",
-    "analysis_log": "/private/tmp/letbuyy-hosted-warehouse-20261101/cookie-native-analyze.log"
+    "log": "/private/tmp/letbuyy-parity-continuation-20261101/native-identity-qualified-tests.log",
+    "analysis_log": "/private/tmp/letbuyy-parity-continuation-20261101/native-identity-qualified-analysis.log"
   },
   "shared_dart_transport_context_tests": {
     "pass": 12,
@@ -30,8 +32,8 @@
       "NOT_APPLICABLE": 1
     },
     "exitCode": 0,
-    "source_commit": "288cb3dfa02f8b0d2b650de7126504864b3c89b6",
-    "report": "/private/tmp/letbuyy-hosted-warehouse-20261101/staging-isolation-governance-final.json",
+    "source_commit": "aeef87046a497567e8fcfc8b2aacafe896ce4c87",
+    "report": "/private/tmp/letbuyy-parity-continuation-20261101/identity-privacy-governance.json",
     "disposable_clone_only": true
   },
   "owned_database_runs": [
@@ -1115,7 +1117,7 @@
   "authenticated_native_journeys": "Historical installed source 13d254de: authorized sign-in and read-only primary tabs; latest 288cb3dfa staging-isolation source has no new emulator UI acceptance; hosted SDK/Next backend proofs are recorded separately",
   "production_account_used": true,
   "deployment_performed": true,
-  "full_122_acceptance": "in_progress; no fully accepted row; staging backend evidence only",
+  "full_122_acceptance": "in_progress; source/native debug and bounded staged backend/privacy proof; no fully accepted feature row",
   "previous_source_commit": "13d254de23e29919af5d5d4ce81e567584adc338",
   "customer_scope_tests": {
     "pass": 17,
@@ -1937,7 +1939,7 @@
     }
   },
   "last_qualified_date": "2026-11-01",
-  "implementation_commit": "288cb3dfa02f8b0d2b650de7126504864b3c89b6",
+  "implementation_commit": "aeef87046a497567e8fcfc8b2aacafe896ce4c87",
   "warehouse_previous_checkpoints": [
     {
       "backend_source_commit": "96153cd20bc3db3dd2c7539e3a77bd159820fb05",
@@ -2757,5 +2759,93 @@
     "normal_login_accepted": false,
     "native_direct_protected_accounts_access_accepted": false,
     "full_122_acceptance": false
+  },
+  "identity_recovery_previous_checkpoint": {
+    "source_commit": "288cb3dfa02f8b0d2b650de7126504864b3c89b6",
+    "implementation_commit": "288cb3dfa02f8b0d2b650de7126504864b3c89b6",
+    "flutter": {
+      "source_commit": "288cb3dfa02f8b0d2b650de7126504864b3c89b6",
+      "tests": 750,
+      "pass": 750,
+      "fail": 0,
+      "analysis": "pass",
+      "log": "/private/tmp/letbuyy-hosted-warehouse-20261101/cookie-native-full.log",
+      "analysis_log": "/private/tmp/letbuyy-hosted-warehouse-20261101/cookie-native-analyze.log"
+    },
+    "governance": {
+      "ok": true,
+      "counts": {
+        "PASS": 114,
+        "FAIL": 0,
+        "BLOCKED": 0,
+        "SKIP": 0,
+        "NOT_APPLICABLE": 1
+      },
+      "exitCode": 0,
+      "source_commit": "288cb3dfa02f8b0d2b650de7126504864b3c89b6",
+      "report": "/private/tmp/letbuyy-hosted-warehouse-20261101/staging-isolation-governance-final.json",
+      "disposable_clone_only": true
+    }
+  },
+  "identity_recovery_checkpoint": {
+    "report": "IDENTITY_SESSION_RECOVERY.md",
+    "accounts_tests": 77,
+    "auth_core_tests": 48,
+    "focused_native_tests": 19,
+    "negative_control_rejected_blank_user": true,
+    "native_apk_sha256": "d76711ba3582c4a5c94ed63e957c73db725407476748e793c6efa3e0fa8f55b9",
+    "native_apk_bytes": 219865278,
+    "installed_hash_matches": true,
+    "profile": "staging",
+    "accounts_candidate": "dpl_D7ThevfxEBw887k74Jj3ugVsNS4x",
+    "accounts_candidate_last_state": "READY",
+    "cli_timeout_reconciled_no_resubmit": true,
+    "normal_staging_password_captcha_login_accepted": false,
+    "production_application_activation": false,
+    "source_commit": "ce8140b092197a06b7cfd940d154cae4353e886d",
+    "accounts_candidate_alias": "accounts-staging.letbuyy.com",
+    "accounts_candidate_tree_sha256": "eb66ef56418b8132da6a19bfa9f10d4a31873bfa11e632c2d712915409f93a83",
+    "bounded_live_http_checks": 7,
+    "malformed_cookie_signed_out": true,
+    "production_named_cookie_signed_out": true,
+    "anonymous_protection_preserved": true,
+    "readback": "/private/tmp/letbuyy-parity-continuation-20261101/live-session-cookie-shape-readback.json",
+    "prior_candidate": {
+      "id": "dpl_C2rKrfMq6WZFGxsm4phkGXG71SwV",
+      "state": "READY-superseded",
+      "timeout_reconciled_no_resubmit": true
+    },
+    "concurrent_merchant_stage": {
+      "deployment": "dpl_A5ws3ZPqWnu73BWcJskie1fuUMhz",
+      "source": "e4105581e3346041d71694d3db093eb713773e07",
+      "overwritten": false,
+      "local_merge_conflicts": 10,
+      "current_alias_full_parity_accepted": false
+    }
+  },
+  "staging_private_export_checkpoint": {
+    "report": "STAGING_PRIVATE_EXPORTS.md",
+    "policy": "STAGING_EXPORT_CDN_POLICY.json",
+    "stage_rule_id": "448f40ff18614cafbbd72312d69f6458",
+    "exact_expression_ui_readback": true,
+    "nonzero_public_control": 200,
+    "canonical_and_encoded_private_paths": 403,
+    "actual_export_checks": 8,
+    "actual_export_rows": 1,
+    "owner_download": 200,
+    "other_owner_download": 404,
+    "anonymous_download": 401,
+    "missing_signature": 403,
+    "current_actual_dart_sdk_readback": {
+      "locations": 3,
+      "suppliers": 2,
+      "device_ui": false
+    },
+    "production_policy_approval_pending": true,
+    "permanent_private_storage_cutover_accepted": false,
+    "durable_csv_import_accepted": false,
+    "owned_object_absence_readbacks": 7,
+    "all_owned_objects_absent": true,
+    "cleanup_receipt": "/private/tmp/letbuyy-parity-continuation-20261101/owned-export-fixture-cleanup-readback.json"
   }
 }

@@ -12,12 +12,12 @@ Runtime source remains `288cb3dfa02f8b0d2b650de7126504864b3c89b6`; this continua
 - After the owner's specific domain-access confirmation, two TXT proofs were appended at `_vercel.letbuyy.com`. All five previous proofs were observed preserved. The missing `admin-staging` CNAME was added using Vercel's exact displayed target, DNS only. Existing Accounts routing was retained.
 - Vercel independently verifies both project domains against branch `staging`. Verification automatically assigned the expected aliases; the helper's old absence precondition stopped before mutation. Readback reconciled the exact assignments, then confirmed protection:
 
-| Host | Project deployment | Anonymous read |
+| Host at initial setup readback | Project deployment | Anonymous read |
 | --- | --- | --- |
 | `admin-staging.letbuyy.com` | `dpl_EfLAyZXXmP1C6jZcBAVcUgPkwEfD` | 302 to Vercel SSO, nonce set |
 | `accounts-staging.letbuyy.com` | `dpl_Fr4p9vCTyiy4ag3YkP8zDL3BRi2B` | 302 to Vercel SSO, nonce set |
 
-Production Worker versions and the `admin.letbuyy.com` / `accounts.letbuyy.com` deployment IDs match the previous checkpoint. Deployment protection was not disabled, and no protection bypass was added to the mobile app.
+At this setup readback, production Worker versions and the `admin.letbuyy.com` / `accounts.letbuyy.com` deployment IDs matched the previous checkpoint. Production aliases subsequently advanced outside this task; the later reconciliation is recorded in IDENTITY_SESSION_RECOVERY.md. Deployment protection was not disabled, and no protection bypass was added to the mobile app.
 
 ## Evidence and remaining acceptance
 
@@ -26,3 +26,5 @@ Private receipts under `/private/tmp/letbuyy-parity-continuation-20261101/`: `st
 This closes the missing staging key, credential storage, preview activation and custom-domain setup. It does **not** prove normal password/Turnstile login, provider sandbox effects or all 122 features. The protected Accounts hostname correctly blocks a direct native HTTP client without Vercel access. Browser navigation was interrupted by concurrent user activity; no CAPTCHA was solved in this continuation. A controlled native acceptance transport must keep provider protection credentials outside the app and preserve canonical identity verification. Existing hosted SDK/Next/warehouse evidence remains bounded as documented in [STAGING_WAREHOUSE_ACCEPTANCE.md](STAGING_WAREHOUSE_ACCEPTANCE.md).
 
 CSV upload and interrupted import recovery remain open: the current R2 job creator allocates a new job for each request and the product loop has no durable row identity. Do not call a retry safe or expose a native CSV success flow until this is repaired and fault-tested through the existing product owner.
+
+Later Accounts recovery is READY at `dpl_D7ThevfxEBw887k74Jj3ugVsNS4x` with seven bounded live checks. Merchant staging advanced externally to `dpl_A5ws3ZPqWnu73BWcJskie1fuUMhz` (`e4105581…`); its source must be integrated and qualified before claiming current alias parity. See IDENTITY_SESSION_RECOVERY.md.

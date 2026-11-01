@@ -1,0 +1,46 @@
+{
+  "environment": "staging",
+  "zone": "letbuyy.store",
+  "description": "Staging: block direct export objects",
+  "action": "block",
+  "enabled": true,
+  "expression": "(http.host eq \"cdn-staging.letbuyy.store\" and (url_decode(http.request.uri.path, \"r\") eq \"/exports\" or starts_with(url_decode(http.request.uri.path, \"r\"), \"/exports/\")))",
+  "purpose": "Prevent direct unauthenticated CDN retrieval of private export jobs, sources and results; preserve the canonical authenticated Gateway download boundary.",
+  "preserve": [
+    "Existing security rules",
+    "Public media delivery",
+    "Gateway authenticated downloads",
+    "Production CDN and API policy"
+  ],
+  "rollback": "Remove only the exact newly created staging rule if a positive public-media control regresses; preserve all existing rules.",
+  "acceptance": [
+    "Nonzero public control is anonymously readable",
+    "Canonical and encoded private export paths do not disclose the owned canary",
+    "Canonical authenticated export/download boundary remains available",
+    "Owned canaries removed after checks"
+  ],
+  "status": "active-staging-rule-and-hosted-canary-contracts-verified",
+  "production_activation_authorized": false,
+  "provider_rule_id": "448f40ff18614cafbbd72312d69f6458",
+  "provider_readback": "Exact saved expression, Block and Active observed in existing UI; CLI WAF read refused by existing OAuth scope.",
+  "public_positive_control": {
+    "status": 200,
+    "exact_nonzero_bytes": true
+  },
+  "private_path_variants": {
+    "canonical": 403,
+    "encoded_prefix": 403,
+    "encoded_separator": 403,
+    "recursive_encoding": 403,
+    "dot_segments": 403
+  },
+  "canonical_authenticated_export": {
+    "row_count": 1,
+    "owner_download": 200,
+    "rival_download": 404,
+    "anonymous_download": 401,
+    "missing_signature": 403
+  },
+  "cleanup": "Owned canaries deleted with absence readback; actual owned export job/result deleted and job 404 confirmed.",
+  "protection_scope": "Outer delivery restriction on staging export paths; permanent private storage cutover and production acceptance remain open."
+}
