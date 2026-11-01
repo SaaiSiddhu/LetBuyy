@@ -20,7 +20,7 @@ export interface VerifyKycDocumentInput {
   documentId: string;
   documentType: MerchantKycDocumentType;
   documentNumberLast4?: string | null;
-  fileUrl?: string | null;
+  privateUploadPresent: boolean;
 }
 
 export interface VerifyKycDocumentResult {
@@ -52,7 +52,7 @@ function sandboxResult(
   credentials: KycVerificationCredentials,
   input: VerifyKycDocumentInput,
 ): VerifyKycDocumentResult {
-  const hasEvidence = Boolean(input.fileUrl || input.documentNumberLast4);
+  const hasEvidence = input.privateUploadPresent === true;
   return {
     // Sandbox evidence proves only that an input was supplied. It cannot verify
     // identity, bank ownership, or eligibility for real settlement.
@@ -77,7 +77,7 @@ function manualReviewResult(
   credentials: KycVerificationCredentials,
   input: VerifyKycDocumentInput,
 ): VerifyKycDocumentResult {
-  const hasEvidence = Boolean(input.fileUrl || input.documentNumberLast4);
+  const hasEvidence = input.privateUploadPresent === true;
   return {
     status: 'needs_review',
     provider: credentials.provider,

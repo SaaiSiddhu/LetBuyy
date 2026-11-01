@@ -59,6 +59,7 @@ test('KYC adapter is sandbox-first, manual-review aware, and fail-closed for aut
         documentId: '22222222-2222-4222-8222-222222222222',
         documentType: 'business_pan',
         documentNumberLast4: '1234',
+        privateUploadPresent: false,
     });
     assert.equal(result.status, 'needs_review');
     assert.equal(result.provider, 'manual');
@@ -72,9 +73,20 @@ test('KYC adapter is sandbox-first, manual-review aware, and fail-closed for aut
         documentId: '22222222-2222-4222-8222-222222222222',
         documentType: 'bank_proof',
         documentNumberLast4: '1234',
+        privateUploadPresent: false,
     });
-    assert.equal(sandboxResult.status, 'submitted');
+    assert.equal(sandboxResult.status, 'needs_review', 'final-four digits alone are not KYC evidence');
+    assert.equal(sandboxResult.metadata.evidence_present, false);
     assert.equal(sandboxResult.providerMode, 'sandbox');
+    const uploadedSandboxResult = await sandbox.verifyDocument({
+        siteId: '11111111-1111-4111-8111-111111111111',
+        documentId: '22222222-2222-4222-8222-222222222222',
+        documentType: 'bank_proof',
+        documentNumberLast4: '1234',
+        privateUploadPresent: true,
+    });
+    assert.equal(uploadedSandboxResult.status, 'submitted');
+    assert.equal(uploadedSandboxResult.metadata.evidence_present, true);
 
     assert.throws(
         () => createKycVerificationAdapter({ provider: 'signzy', mode: 'live', apiKey: 'provider-key' }),

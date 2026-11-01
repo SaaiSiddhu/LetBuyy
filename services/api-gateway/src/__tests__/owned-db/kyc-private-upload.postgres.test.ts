@@ -356,6 +356,22 @@ test('KYC file upload remains private, tenant-owned and pending provider evidenc
     assert.equal(unavailableOverview.status, 200, unavailableOverview.text);
     assert.equal(unavailableOverview.json?.data.private_upload_available, false);
     assert.match(unavailableOverview.json?.data.next_action || '', /Private document upload is unavailable/);
+    const historicalUrl = 'https://example.invalid/legacy-identity-proof';
+    owned.psql(`INSERT INTO merchant_kyc_documents
+        (site_id,document_type,document_number_last4,status,provider,provider_mode,file_url,metadata)
+        VALUES ('${tenant.siteId}','identity_proof','1234','submitted','letbuyy_sandbox_kyc','sandbox',
+            '${historicalUrl}','{}'::jsonb);`);
+    const historicalId = owned.psql(`SELECT id FROM merchant_kyc_documents
+        WHERE site_id='${tenant.siteId}' AND document_type='identity_proof';`);
+    const historicalRefreshHeaders = await signedIdentityHeaders(owner, `kyc-${owner}@example.invalid`, tenant.siteId);
+    historicalRefreshHeaders['X-Idempotency-Key'] = randomUUID();
+    const historicalRefresh = await gateway.request(`/v1/kyc/documents/${historicalId}/refresh?store_id=${tenant.siteId}`,
+        { method: 'POST', headers: historicalRefreshHeaders });
+    assert.equal(historicalRefresh.status, 200, historicalRefresh.text);
+    assert.equal(historicalRefresh.json?.data.document.status, 'needs_review',
+        'final-four digits and a legacy link cannot count as uploaded evidence');
+    assert.equal(historicalRefresh.json?.data.document.has_private_upload, false);
+    assert.ok(!historicalRefresh.text.includes(historicalUrl), 'the legacy URL is never returned as a download link');
 });
 
 test('canonical business edits atomically revoke only affected KYC evidence until a new upload', async () => {

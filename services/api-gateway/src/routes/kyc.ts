@@ -237,7 +237,7 @@ async function verifyWithProvider(
         documentId: string;
         documentType: MerchantKycDocumentType;
         documentNumberLast4?: string | null;
-        fileUrl?: string | null;
+        privateUploadPresent: boolean;
     },
 ) {
     try {
@@ -252,7 +252,7 @@ async function verifyWithProvider(
             documentId: input.documentId,
             documentType: input.documentType,
             documentNumberLast4: input.documentNumberLast4,
-            fileUrl: input.fileUrl,
+            privateUploadPresent: input.privateUploadPresent,
         });
     } catch {
         return verificationUnavailableResult(env, input);
@@ -474,7 +474,7 @@ router.post('/documents/:id/refresh', validate('query', StoreQuerySchema), async
             documentId: document.id,
             documentType: document.document_type,
             documentNumberLast4: document.document_number_last4 || null,
-            fileUrl: document.file_url || null,
+            privateUploadPresent: typeof document.metadata?.private_object_key === 'string',
         });
         const now = new Date().toISOString();
         const providerMetadata: Record<string, unknown> = verification.metadata;
