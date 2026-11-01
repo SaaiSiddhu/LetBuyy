@@ -110,3 +110,4 @@ export { signKycIndiaS3Post, type KycIndiaS3PostInput, type KycIndiaS3Post,
   type KycIndiaContentType } from './kyc-india-s3-post';
 export { verifyKycIndiaS3Head, type KycIndiaS3HeadExpectation,
   type KycIndiaS3VerifiedObject } from './kyc-india-s3-head';
+export { headKycIndiaS3Object, type KycIndiaS3HeadRequest } from './kyc-india-s3-head-request';
