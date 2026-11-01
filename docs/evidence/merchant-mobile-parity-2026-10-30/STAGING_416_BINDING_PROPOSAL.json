@@ -1,6 +1,6 @@
 {
   "status": "proposal-only-no-provider-mutation",
-  "sourceRevision": "9bffaca702c579ee675530a5242dd416d1059617",
+  "sourceRevision": "e8d1ac3c177775606378487378f665cac8013536",
   "environment": "staging",
   "API": {
     "worker": "letbuyy-api-staging",
@@ -36,5 +36,7 @@
   "newSecret": "one newly generated purpose-only value, encrypted local recovery retention, no existing credential export or keyring rewrite",
   "protectedMerchantAlias": "admin-staging.letbuyy.com",
   "accountsBffProductionDnsWafChanges": false,
-  "providerSource": "https://developers.cloudflare.com/api/resources/workers/subresources/scripts/subresources/versions/methods/create/"
+  "providerSource": "https://developers.cloudflare.com/api/resources/workers/subresources/scripts/subresources/versions/methods/create/",
+  "apiBuiltSourceRevision": "9bffaca702c579ee675530a5242dd416d1059617",
+  "apiRuntimeInputsIdentical": true
 }

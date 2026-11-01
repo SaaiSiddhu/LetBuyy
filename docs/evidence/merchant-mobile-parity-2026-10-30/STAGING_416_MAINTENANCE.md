@@ -1,15 +1,15 @@
 # Staging416 maintenance proposal — approval required
 
-2 November2026. **Prepared; not approved or executed. Native follow-up admission is in progress; the old9bffa native artifact is withheld.** This is a new staging-only window after the completed415 window. It authorizes no production app/schema/DNS/WAF change, remote branch promotion, paid provider operation or release certification.
+2 November2026. **Prepared; not approved or executed. The final native follow-up is qualified; the earlier9bffa native artifact is superseded and withheld.** This is a new staging-only window after the completed415 window. It authorizes no production app/schema/DNS/WAF change, remote branch promotion, paid provider operation or release certification.
 
 `source/local → qualified artifacts → fresh staging recovery →416 only → exact staging activation → synthetic acceptance → retained-state readback`.
 
 ## Frozen candidate and demonstrated prerequisites
 
-Runtime source **`9bffaca702c579ee675530a5242dd416d1059617`**. [Qualification manifest](CSV_IMPORT_QUALIFICATION.json), [recovery contracts/failures](CSV_IMPORT_RECOVERY.md), [exact binding proposal](STAGING_416_BINDING_PROPOSAL.json).
+Coherent source **`e8d1ac3c177775606378487378f665cac8013536`**. [Current follow-up qualification](CSV_IMPORT_FOLLOWUP_QUALIFICATION.json), [unchanged backend/web qualification](CSV_IMPORT_QUALIFICATION.json), [recovery contracts/failures](CSV_IMPORT_RECOVERY.md), [exact binding proposal](STAGING_416_BINDING_PROPOSAL.json).
 
 - 114 governance validators pass; zero failures, blocked or skipped. A first113/1 run exposed the missing schema-derived tenant registry update; the canonical generator now includes both new tables. No exception or weakened validator.
-- 781 Merchant Flutter tests,2,037 Gateway unit tests,137 auth/queue checks,25 BFF consumer checks. Configured web phases545/818/295 pass. Shared types/build and touched TS/Dart/Merchant analysis pass. Counts overlap; they are not122-feature acceptance.
+- 786 Merchant Flutter tests,2,037 Gateway unit tests,137 auth/queue checks,25 BFF consumer checks. Configured web phases545/818/295 pass. Shared types/build and touched TS/Dart/Merchant analysis pass. Counts overlap; they are not122-feature acceptance.
 - Owned PostgreSQL `770aec51870e`:108/108, consisting of18 import and90 existing atomic-product checks. Registry unit75, actual-table/raw-role8 (`61b7b209b8fe`) and isolated red-team2 (`0dc651f09fc6`) pass. Owned resources are removed. Actual wire-level registration/row/stop COMMIT acknowledgement loss, quota contention, stop-before-late-registration, failed-row recovery and500-row bounded processing are local proofs.
 - Existing encrypted pre415 staging snapshot rehearsal `702f4979573f`: exact native PG17 restore; locally restore415, then managed416 UP/DOWN/UP; all524 original tables and13 warehouse receipts exact. This archive predates current staging additions. **It does not replace the fresh recovery backup required below.**
 
@@ -20,11 +20,13 @@ Prepared artifacts (not uploaded):
 | API staging main |SHA256 `3c6aee121550b145ba66254264e111005a150033e63a1ff267089d84db8c7762`,4,844,158 bytes; Argon2/Blake2b WASM hashes unchanged |
 | Existing queue-worker main |SHA256 `ef2a34acca9bc021f70fa8a1485fc28e6f923245988a05024a30dcca52b68458`,1,924,412 bytes; compiled212a8 source, identical runtime inputs at9bffa |
 | Protected Merchant preview |Tree `40990807f2ae8df0e3b7dd3e85a635face8e19e9739a4476039946cc664f0011`; complete frozen closure `95797b7867c2d9f6bb38db16d511ed026bd6b79e40de0af84f14333f92622311`;5 functions,984 output entries,651 external references;1,150 files scanned, generated staging secret values absent |
-| Normal staging debug APK |SHA256 `2ad363e50295122dc39ab2823c75c779b1a2392f8013bc7b458f1323538a61d7`,219,970,939 bytes; compiled212a8 source, identical native/Dart inputs at9bffa;9 Inter fonts/license and configured BFF/Accounts/Admin staging URLs verified; uninstalled; debug signing |
+| Normal staging debug APK |SHA256 `b55efe36ba368963e156c3e3ad49021378d2f917dce9cc10cabe3dd1681b3273`,219,944,828 bytes; exacte8d1 source;9 Inter fonts/license and configured BFF/Accounts/Admin staging URLs verified; uninstalled; debug signing |
 |416 forward |Source SHA256 `20d4b5e223e5fca53625724af92bb852e800315dd4b22b1be3edf262d98554d5` |
 |416 paired DOWN |Source SHA256 `a8cdcff194a13e4c5b3395554d55d67db8df195214cb33bce68c4e1a8f947753` |
 
-Offline managed forward/DOWN artifacts are prepared from9bffa in private directories. Their current manifests are **rehearsal-only**. Fresh live history digest, exact migration names and a new guarded journaled batch must be prepared after recovery checks. No unexecuted history row is marked applied.
+API and protected-web artifacts were built at9bffa; queue at212a8. Exact service/package/web/schema/build-tool inputs are unchanged ate8d1, as recorded in the follow-up manifest. The final native artifact replaces the earlier9bffa APK: all Import entries reach CSV and live capability denial retires private content. Original artifact hashes remain historical; the withheld APK must not be installed.
+
+Offline managed forward/DOWN artifacts are prepared from9bffa with identical416 source/adapter bytes ate8d1 in private directories. Their current manifests are **rehearsal-only**. Fresh live history digest, exact migration names and a new guarded journaled batch must be prepared after recovery checks. No unexecuted history row is marked applied.
 
 ## Approved-window operations requested
 
