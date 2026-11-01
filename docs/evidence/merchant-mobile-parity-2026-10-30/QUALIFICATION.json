@@ -1,16 +1,15 @@
 {
   "date": "2026-10-30",
-  "source_commit": "a0b7dad6660107063cbd141f80d674f38a8a1f1f",
+  "source_commit": "15fca500a08ee8c1c3c4d37a376f8fd81ee97403",
   "branch": "codex/merchant-mobile-parity",
   "scope": "source checkpoint; full 122-item acceptance remains in progress",
   "flutter": {
-    "source_commit": "4aa6be3e6fd7e053e656d065c562d076f2a389fd",
-    "integrated_source_commit": "a0b7dad6660107063cbd141f80d674f38a8a1f1f",
-    "tests": 706,
-    "pass": 706,
+    "source_commit": "15fca500a08ee8c1c3c4d37a376f8fd81ee97403",
+    "tests": 728,
+    "pass": 728,
     "fail": 0,
     "analysis": "pass",
-    "native_diff_from_integrated_source": "empty"
+    "log": "/private/tmp/letbuyy-metadata-recovery-connected-native-all.log"
   },
   "shared_dart_transport_context_tests": {
     "pass": 12,
@@ -30,7 +29,7 @@
       "NOT_APPLICABLE": 1
     },
     "exitCode": 0,
-    "source_commit": "a0b7dad6660107063cbd141f80d674f38a8a1f1f"
+    "source_commit": "15fca500a08ee8c1c3c4d37a376f8fd81ee97403"
   },
   "owned_database_runs": [
     {
@@ -1025,6 +1024,70 @@
         }
       ],
       "provider_evidence": "owned synthetic PostgreSQL/PostgREST; no hosted/provider acceptance"
+    },
+    {
+      "source_commit": "0cc7141d00f8cc3494274a0f11821d18d74b66ba",
+      "run_id": "90c34525839f",
+      "tests": 51,
+      "pass": 51,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-recovery.postgres.test.ts",
+          "tests": 46,
+          "pass": 46,
+          "fail": 0,
+          "code": 0
+        },
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-rollback.postgres.test.ts",
+          "tests": 5,
+          "pass": 5,
+          "fail": 0,
+          "code": 0
+        }
+      ],
+      "provider_evidence": "owned synthetic fixtures; no hosted or provider mutation"
+    },
+    {
+      "source_commit": "15fca500a08ee8c1c3c4d37a376f8fd81ee97403",
+      "run_id": "25db76a0876b",
+      "tests": 51,
+      "pass": 51,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-recovery.postgres.test.ts",
+          "tests": 46,
+          "pass": 46,
+          "fail": 0,
+          "code": 0
+        },
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-rollback.postgres.test.ts",
+          "tests": 5,
+          "pass": 5,
+          "fail": 0,
+          "code": 0
+        }
+      ],
+      "provider_evidence": "owned synthetic fixtures; no hosted or provider mutation"
     }
   ],
   "ios_simulator_build": {
@@ -1046,36 +1109,11 @@
     "complete_release_environment_present": false,
     "signed_release": "unavailable"
   },
-  "authenticated_native_journeys": {
-    "scope": "authorized production owner, read-only emulator observations",
-    "observed": [
-      "signed-in dashboard",
-      "customer list",
-      "fresh customer detail",
-      "server customer search with a nonmatching query",
-      "correct storefront hostname and no-data visitor metrics on rebuilt app",
-      "catalog server search and explicit older-server filter refusal",
-      "current product editor fields after successful fresh read, without saving",
-      "two-decimal catalog price semantics on final APK",
-      "clear stock filter action restores actual catalog after hosted filter refusal",
-      "c732d0392 Products entry reached Inventory and loaded a hosted stock row; Android System UI ANR limited usability",
-      "753734ed5 recovered emulator retained login; Products \u2192 Inventory \u2192 Stock history and Retry rendered the unavailable-contract guard without fabricated empty history"
-    ],
-    "unverified": [
-      "owner mutations",
-      "restricted staff",
-      "revoked access",
-      "bidirectional web/mobile writes",
-      "provider sandbox",
-      "release signing"
-    ],
-    "captcha": "User authorized completion; app was already authenticated at next observation; no separate challenge click was issued or proven.",
-    "current_emulator_state": "Protocol-aware source 96153cd20 arm64 debug APK is installed/hash-verified on the task AVD. Current accessibility check observes sign-in/security-check unavailable; historical authenticated reads do not certify this build."
-  },
+  "authenticated_native_journeys": "Authorized sign-in succeeded; final hash-verified APK retains authenticated primary tabs; production checks read-only; full hosted write/sync/staff acceptance open",
   "production_account_used": true,
   "deployment_performed": false,
   "full_122_acceptance": "in_progress",
-  "previous_source_commit": "97edec1ea36254eeef79d1e09c1e62efcf0b105d",
+  "previous_source_commit": "0cc7141d00f8cc3494274a0f11821d18d74b66ba",
   "customer_scope_tests": {
     "pass": 17,
     "fail": 0
@@ -1098,59 +1136,45 @@
     "restored_service_sha256": "8331a55932bbca8dcf8f950fcb3294b153f5fee57037be9842d55b4ebf3aa657"
   },
   "android_debug_build": {
-    "source_commit": "8be82e4afb63c388c02bfd9f8392c259e7711fd9",
-    "bytes": 148988532,
-    "sha256": "86051ec64636eb76bf535e26f4f672331447d039793b8446858fe53fdb69b236",
-    "serial": "emulator-5580",
-    "avd": "LetBuyy_Merchant_Parity",
-    "signing": "debug",
+    "source_commit": "15fca500a08ee8c1c3c4d37a376f8fd81ee97403",
+    "path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/apps/merchant/mobile/build/app/outputs/flutter-apk/app-debug.apk",
+    "bytes": 219850329,
+    "sha256": "fec82e09e09c4b88c8adcd781b6961a48bd23adbf58626e6e65b5b6302cc5785",
     "configuration": "dart-defines/production.json",
-    "target_platform": "android-arm64",
+    "kind": "android-debug-apk",
+    "installed": true,
+    "signed_release": false,
+    "installed_sha256": "fec82e09e09c4b88c8adcd781b6961a48bd23adbf58626e6e65b5b6302cc5785",
     "installed_hash_matches": true,
-    "adb_port": 15038,
-    "adb_serial": "127.0.0.1:5581",
     "read_only_acceptance": {
-      "source_commit": "8be82e4afb63c388c02bfd9f8392c259e7711fd9",
-      "installed_hash_verified": true,
-      "before": {
-        "merchant_surface_visible": true,
-        "sign_in_visible": true,
-        "retry_control_visible": true,
-        "security_passed_visible": false,
-        "security_unavailable_visible": true
+      "source_commit": "15fca500a08ee8c1c3c4d37a376f8fd81ee97403",
+      "serial": "emulator-5580",
+      "retained_authenticated_tabs": true,
+      "screens": {
+        "Locations": {
+          "screen_observed": true,
+          "create_enabled": false,
+          "warehouse_unavailable": true,
+          "count_unavailable": true,
+          "false_zero_visible": false,
+          "saved_request_pending": false,
+          "password_fields_present": false
+        },
+        "Suppliers": {
+          "screen_observed": true,
+          "create_enabled": false,
+          "warehouse_unavailable": true,
+          "count_unavailable": true,
+          "false_zero_visible": false,
+          "saved_request_pending": false,
+          "password_fields_present": false
+        }
       },
-      "retry_tapped_once": true,
-      "after_immediate": {
-        "merchant_surface_visible": true,
-        "sign_in_visible": true,
-        "retry_control_visible": false,
-        "security_passed_visible": false,
-        "security_unavailable_visible": false
-      },
-      "credentials_entered": false,
-      "auth_requests_intentionally_submitted": false,
-      "authenticated_warehouse_acceptance": false,
-      "intentional_production_business_writes": false,
-      "observed_at": "2026-11-01T00:14:26.997987+05:30",
-      "after_settled": {
-        "sign_in_visible": true,
-        "retry_control_visible": false,
-        "security_passed_visible": false,
-        "security_unavailable_visible": false,
-        "human_verification_control_offered": true,
-        "observed_at": "2026-11-01T00:15:23.711983+05:30"
-      },
-      "human_control_attempt": {
-        "human_control_candidates": 1,
-        "human_control_tapped_once": true,
-        "security_passed_visible": true,
-        "retry_control_visible": false,
-        "security_unavailable_visible": false,
-        "sign_in_visible": true,
-        "observed_at": "2026-11-01T00:16:48.208864+05:30"
-      }
+      "production_business_writes": false,
+      "private_values_in_evidence": false,
+      "hosted_failure_cause": "not determined by UI; no compatible hosted creation or sync claim"
     },
-    "observed": "Exact APK hash matches; Retry and user-authorized real checkbox completed, frontend Security check passed. No credentials/auth submission; Mac locked blocks secure input. Owned AVD subsequently reopened visibly with data preserved; proof is not retained across restart."
+    "observed": "Hash-verified final APK retains sign-in. Products \u2192 Inventory \u2192 Locations and Suppliers observed; both warehouse-unavailable and count-unavailable, creation disabled, no fabricated zero. UI does not determine hosted failure cause. No production business writes."
   },
   "production_business_mutations_performed": false,
   "catalog_continuation": "committed and local/database/governance qualified; final hash-verified Android read/recovery observed; full web/mobile feature acceptance remains in progress",
@@ -1191,11 +1215,10 @@
     "production_business_mutations": false
   },
   "shared_dart_models_tests": {
-    "source_commit": "9bc3b34fcafb3171c6485ca16ad2f624470871cf",
-    "pass": 60,
-    "fail": 0,
-    "analysis": "pass",
-    "strict_warehouse_document_read_checks": 31
+    "source_commit": "15fca500a08ee8c1c3c4d37a376f8fd81ee97403",
+    "tests": 64,
+    "pass": 64,
+    "fail": 0
   },
   "inventory_scope_journal_tests": {
     "pass": 49,
@@ -1658,6 +1681,73 @@
         "observed_at": "2026-10-31T23:44:50.533819+05:30"
       },
       "observed": "Current hash matches; sign-in/security-check unavailable; authenticated latest warehouse journey remains open."
+    },
+    {
+      "source_commit": "8be82e4afb63c388c02bfd9f8392c259e7711fd9",
+      "bytes": 148988532,
+      "sha256": "86051ec64636eb76bf535e26f4f672331447d039793b8446858fe53fdb69b236",
+      "serial": "emulator-5580",
+      "avd": "LetBuyy_Merchant_Parity",
+      "signing": "debug",
+      "configuration": "dart-defines/production.json",
+      "target_platform": "android-arm64",
+      "installed_hash_matches": true,
+      "adb_port": 15038,
+      "adb_serial": "127.0.0.1:5581",
+      "read_only_acceptance": {
+        "source_commit": "8be82e4afb63c388c02bfd9f8392c259e7711fd9",
+        "installed_hash_verified": true,
+        "before": {
+          "merchant_surface_visible": true,
+          "sign_in_visible": true,
+          "retry_control_visible": true,
+          "security_passed_visible": false,
+          "security_unavailable_visible": true
+        },
+        "retry_tapped_once": true,
+        "after_immediate": {
+          "merchant_surface_visible": true,
+          "sign_in_visible": true,
+          "retry_control_visible": false,
+          "security_passed_visible": false,
+          "security_unavailable_visible": false
+        },
+        "credentials_entered": false,
+        "auth_requests_intentionally_submitted": false,
+        "authenticated_warehouse_acceptance": false,
+        "intentional_production_business_writes": false,
+        "observed_at": "2026-11-01T00:14:26.997987+05:30",
+        "after_settled": {
+          "sign_in_visible": true,
+          "retry_control_visible": false,
+          "security_passed_visible": false,
+          "security_unavailable_visible": false,
+          "human_verification_control_offered": true,
+          "observed_at": "2026-11-01T00:15:23.711983+05:30"
+        },
+        "human_control_attempt": {
+          "human_control_candidates": 1,
+          "human_control_tapped_once": true,
+          "security_passed_visible": true,
+          "retry_control_visible": false,
+          "security_unavailable_visible": false,
+          "sign_in_visible": true,
+          "observed_at": "2026-11-01T00:16:48.208864+05:30"
+        }
+      },
+      "observed": "Exact APK hash matches; Retry and user-authorized real checkbox completed, frontend Security check passed. No credentials/auth submission; Mac locked blocks secure input. Owned AVD subsequently reopened visibly with data preserved; proof is not retained across restart."
+    },
+    {
+      "source_commit": "0cc7141d00f8cc3494274a0f11821d18d74b66ba",
+      "path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/apps/merchant/mobile/build/app/outputs/flutter-apk/app-debug.apk",
+      "bytes": 219839802,
+      "sha256": "e7d95f6917caa26457dfa5e4e2cc9f5b113b153bb7dfa0b7fdd941b48729462d",
+      "configuration": "dart-defines/production.json",
+      "kind": "android-debug-apk",
+      "installed": true,
+      "signed_release": false,
+      "installed_sha256": "e7d95f6917caa26457dfa5e4e2cc9f5b113b153bb7dfa0b7fdd941b48729462d",
+      "installed_hash_matches": true
     }
   ],
   "source_reconciliation": {
@@ -1844,7 +1934,7 @@
     }
   },
   "last_qualified_date": "2026-11-01",
-  "implementation_commit": "a0b7dad6660107063cbd141f80d674f38a8a1f1f",
+  "implementation_commit": "15fca500a08ee8c1c3c4d37a376f8fd81ee97403",
   "warehouse_previous_checkpoints": [
     {
       "backend_source_commit": "96153cd20bc3db3dd2c7539e3a77bd159820fb05",
@@ -2218,5 +2308,112 @@
     "real_cross_client_acceptance": "pending",
     "current_client_apk_installed": false
   },
-  "device_acceptance_policy": "Owner approved Android emulator testing. Direct secure sign-in pending because CUA cannot select the non-bundle emulator window; no physical-device prerequisite is imposed."
+  "device_acceptance_policy": "Owner approved Android emulator testing. Direct secure sign-in pending because CUA cannot select the non-bundle emulator window; no physical-device prerequisite is imposed.",
+  "warehouse_metadata_recovery_checkpoint": {
+    "source_commit": "15fca500a08ee8c1c3c4d37a376f8fd81ee97403",
+    "integrated_test_source": "15fca500a08ee8c1c3c4d37a376f8fd81ee97403",
+    "protocol_version": "2",
+    "native_tests": 728,
+    "gateway_tests": 2025,
+    "web_composed_tests": 259,
+    "sdk_warehouse_tests": 61,
+    "full_122_acceptance": "in_progress",
+    "owned_run": "25db76a0876b",
+    "owned_tests": 51,
+    "owned_pass": 51,
+    "owned_fail": 0,
+    "owned_cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "sql_rollback_pair": "414",
+    "hosted_migration_applied": false,
+    "production_business_writes": false,
+    "report": "WAREHOUSE_METADATA_RECOVERY.md",
+    "test_only_follow_up": "included in final source; shared wire codec permits SDK imports; web metadata dialogs connected and structured location pincode preserved",
+    "device_read_only_acceptance": {
+      "source_commit": "15fca500a08ee8c1c3c4d37a376f8fd81ee97403",
+      "serial": "emulator-5580",
+      "retained_authenticated_tabs": true,
+      "screens": {
+        "Locations": {
+          "screen_observed": true,
+          "create_enabled": false,
+          "warehouse_unavailable": true,
+          "count_unavailable": true,
+          "false_zero_visible": false,
+          "saved_request_pending": false,
+          "password_fields_present": false
+        },
+        "Suppliers": {
+          "screen_observed": true,
+          "create_enabled": false,
+          "warehouse_unavailable": true,
+          "count_unavailable": true,
+          "false_zero_visible": false,
+          "saved_request_pending": false,
+          "password_fields_present": false
+        }
+      },
+      "production_business_writes": false,
+      "private_values_in_evidence": false,
+      "hosted_failure_cause": "not determined by UI; no compatible hosted creation or sync claim"
+    }
+  },
+  "authenticated_sign_in_20261101": {
+    "native_source": "8be82e4afb63c388c02bfd9f8392c259e7711fd9",
+    "auth_form_left": true,
+    "dashboard_reached": true,
+    "production_business_writes": false,
+    "human_verification_completed_by": "user",
+    "private_values_in_evidence": false
+  },
+  "warehouse_metadata_role_baseline": {
+    "source_commit": "023ca4131",
+    "run_id": "c51c7ba82aaf",
+    "tests": 8,
+    "pass": 8,
+    "fail": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "reuse": "unchanged tenant and metadata INSERT privilege fence; final command behavior also covered by final owned 51 checks"
+  },
+  "warehouse_metadata_prior_governance": [
+    {
+      "ok": true,
+      "counts": {
+        "PASS": 114,
+        "FAIL": 0,
+        "BLOCKED": 0,
+        "SKIP": 0,
+        "NOT_APPLICABLE": 1
+      },
+      "exitCode": 0,
+      "source_commit": "a0b7dad6660107063cbd141f80d674f38a8a1f1f"
+    },
+    {
+      "source_commit": "023ca4131",
+      "ok": false,
+      "counts": {
+        "PASS": 113,
+        "FAIL": 1
+      },
+      "failure": "SDK imported domain layer; fixed by one shared wire codec and domain public re-exports in 15fca500a"
+    }
+  ],
+  "private_signin_input_helper": {
+    "removed": true,
+    "credentials_saved": false,
+    "app_session_preserved": true
+  }
 }
