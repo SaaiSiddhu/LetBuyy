@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { verifyLetbuyySessionCookieValue } from '@letbuyy/auth-core'
 
 interface SessionReadDependencies {
     getSessionCookie(): Promise<string | undefined | null>
@@ -17,7 +18,7 @@ export function createMerchantSessionRead(dependencies: SessionReadDependencies)
     return async function readSession() {
         try {
             const token = await dependencies.getSessionCookie()
-            if (!token) return reply({ authenticated: false })
+            if (!token || !verifyLetbuyySessionCookieValue('merchant', token).accepted) return reply({ authenticated: false })
             const response = await dependencies.requestSession(token)
             const payload = record(await response.json())
             if ([200, 401, 403].includes(response.status) && payload?.authenticated === false) {
@@ -30,7 +31,7 @@ export function createMerchantSessionRead(dependencies: SessionReadDependencies)
             if (typeof user?.id !== 'string' || !user.id.trim() || typeof user.email !== 'string' || !user.email.trim()) return unavailable()
             const { rotated_session_token: rotatedToken, ...session } = payload
             if (rotatedToken !== undefined) {
-                if (typeof rotatedToken !== 'string' || !rotatedToken.trim()) return unavailable()
+                if (typeof rotatedToken !== 'string' || !verifyLetbuyySessionCookieValue('merchant', rotatedToken).accepted) return unavailable()
                 await dependencies.setSessionCookie(rotatedToken)
             }
             return reply(session)
