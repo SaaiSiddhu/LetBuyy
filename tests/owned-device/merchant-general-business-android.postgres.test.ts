@@ -44,8 +44,11 @@ test('owned Merchant Android General, conflict, and private KYC journey', { time
   const donePath = join(journeyRoot, 'journey-done.json');
   const injectPath = join(journeyRoot, 'inject-conflict.json');
   const injectedPath = join(journeyRoot, 'injected-conflict.json');
+  const kycOutagePath = join(journeyRoot, 'kyc-outage-active.json');
+  const kycOutageServedPath = join(journeyRoot, 'kyc-outage-served.json');
   assert.equal(existsSync(donePath), false, 'a prior marker cannot certify this run');
   assert.equal(existsSync(injectPath), false, 'a prior conflict command cannot be replayed');
+  assert.equal(existsSync(kycOutagePath), false, 'a prior outage command cannot be replayed');
 
   const keys = await newIdentityKeys();
   const identityOrigin = `http://127.0.0.1:${identityPort}`;
@@ -71,6 +74,13 @@ test('owned Merchant Android General, conflict, and private KYC journey', { time
   const calls: Array<{ path: string; method: string; status: number; source: string }> = [];
   const record = async (request: Request, source: string): Promise<Response> => {
     const url = new URL(request.url);
+    if (source === 'mobile-bff' && request.method === 'GET' && url.pathname === '/v1/kyc' && existsSync(kycOutagePath)) {
+      calls.push({ path: url.pathname, method: request.method, status: 503, source });
+      writeFileSync(kycOutageServedPath, JSON.stringify({ run_id: owned.runId, status: 503,
+        count: calls.filter(call => call.source === source && call.path === url.pathname && call.status === 503).length }) + '\n');
+      writeFileSync(join(journeyRoot, 'backend-progress.json'), JSON.stringify({ run_id: owned.runId, calls }, null, 2) + '\n');
+      return Response.json({ code: 'SERVICE_UNAVAILABLE', message: 'Temporary synthetic verification outage' }, { status: 503 });
+    }
     const bytes = ['GET', 'HEAD'].includes(request.method) ? undefined : new Uint8Array(await request.arrayBuffer());
     const result = await gateway.request(url.pathname + url.search, {
       method: request.method, headers: request.headers, ...(bytes?.length ? { body: bytes as BodyInit } : {}),
@@ -155,11 +165,16 @@ test('owned Merchant Android General, conflict, and private KYC journey', { time
     const finalInstalled = execFileSync(adb, ['-s', receipt.serial, 'shell', 'pm', 'path', 'com.letbuyy.store'], { encoding: 'utf8' }).trim().replace(/^package:/, '');
     assert.equal(finalInstalled, receipt.installed_path, 'the observed journey must use one installed APK');
     assert.equal(execFileSync(adb, ['-s', receipt.serial, 'shell', 'sha256sum', finalInstalled], { encoding: 'utf8' }).trim().split(/\s+/)[0], receipt.apk_sha256);
-    for (const step of ['normal-native-login', 'general-readback', 'stale-save-recovery', 'private-kyc-upload']) assert.ok(proof.steps.includes(step), step);
+    for (const step of ['normal-native-login', 'light-theme', 'general-readback', 'stale-save-recovery', 'kyc-error-retry', 'private-kyc-upload']) assert.ok(proof.steps.includes(step), step);
     assert.ok(proof.evidence.length >= 4);
     for (const path of proof.evidence) { assert.ok(path.startsWith(journeyRoot + '/')); assert.ok(existsSync(path)); }
     assert.ok(calls.some(call => call.source === 'mobile-bff' && call.path === `/v1/stores/${tenant.siteId}` && call.method === 'GET' && call.status === 200));
     assert.ok(calls.some(call => call.source === 'mobile-bff' && call.path === `/v1/stores/${tenant.siteId}` && call.method === 'PATCH' && call.status === 409));
+    assert.ok(calls.filter(call => call.source === 'mobile-bff' && call.path === '/v1/kyc' && call.method === 'GET' && call.status === 503).length >= 2,
+      'the persistent outage must survive the client automatic retry before manual recovery');
+    assert.ok(calls.some(call => call.source === 'mobile-bff' && call.path === '/v1/kyc' && call.method === 'GET' && call.status === 200));
+    assert.ok(existsSync(kycOutageServedPath), 'the controlled outage was consumed by the native read');
+    assert.equal(existsSync(kycOutagePath), false, 'manual recovery must clear the controlled outage');
     assert.ok(calls.some(call => call.source === 'mobile-bff' && call.path === '/v1/kyc/documents/upload' && call.method === 'POST' && call.status === 201));
     assert.equal(owned.psql(`SELECT name FROM sites WHERE id='${tenant.siteId}';`), 'Wave 6 server edit');
     assert.equal(owned.psql(`SELECT count(*) FROM merchant_kyc_documents WHERE site_id='${tenant.siteId}' AND document_type='business_pan' AND metadata ? 'private_object_key';`), '1');
