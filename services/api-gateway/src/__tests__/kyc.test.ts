@@ -167,6 +167,9 @@ test('a provider status alone cannot authorize a stored KYC verified timestamp',
     assert.equal(acceptsLiveKycApproval(evidence, { ...result, metadata: { provider_verified: true, provider_unavailable: true } }), false);
     assert.equal(acceptsLiveKycApproval({ ...evidence, metadata: { ...evidence.metadata, malware_scan_status: 'pending' } }, result), false);
     assert.equal(acceptsLiveKycApproval({ ...evidence, metadata: { malware_scan_status: 'clean' } }, result), false);
+    assert.equal(acceptsLiveKycApproval({ ...evidence, metadata: {
+        ...evidence.metadata, profile_change_requires_resubmission: true,
+    } }, result), false, 'old evidence cannot regain approval after a business profile change');
     assert.equal(acceptsLiveKycApproval({ ...evidence, metadata: { malware_scan_status: 'pending' } }, {
         ...result, metadata: { provider_verified: true, private_object_key: 'provider-claimed-object', malware_scan_status: 'clean' },
     }), false, 'provider metadata cannot forge the trusted upload pointer or scanner verdict');

@@ -116,6 +116,7 @@ function serializeDocument(row: KycDocumentRow) {
         has_private_upload: Boolean(row.metadata?.private_object_key),
         evidence_scan_status: evidenceScanStatus,
         provider_unavailable: row.metadata?.provider_unavailable === true,
+        requires_resubmission: row.metadata?.profile_change_requires_resubmission === true,
         submitted_at: row.submitted_at || null,
         verified_at: hasLiveProviderEvidence(row) ? row.verified_at || null : null,
         rejected_at: row.rejected_at || null,
@@ -149,6 +150,8 @@ function nextAction(status: string, rows: KycDocumentRow[], mode: MerchantKycPro
         return mode === 'sandbox'
             ? 'Upload the remaining required documents privately. Sandbox uploads are not provider reviewed and cannot enable live payouts.'
             : 'Upload the remaining required documents privately. Reference digits alone are not verification evidence.';
+    if (rows.some((row) => row.metadata?.profile_change_requires_resubmission === true))
+        return 'Business details changed. Replace the affected document so it can be reviewed again.';
     if (mode === 'sandbox' && rows.some((row) => row.metadata?.private_object_key && row.metadata.malware_scan_status !== 'clean'))
         return 'Sandbox upload received. Security scan pending. It is not provider reviewed and cannot enable live payouts.';
     if (mode === 'sandbox' && rows.length > 0) return 'Sandbox uploads are stored for testing only. They are not provider reviewed and cannot enable live payouts.';
@@ -407,7 +410,8 @@ router.post('/documents/:id/refresh', validate('query', StoreQuerySchema), async
     // A live provider must never receive an unscanned or historical reference-only
     // document. The merchant can refresh the truthful current status while the
     // trusted scanner is pending or has rejected the file, without a paid lookup.
-    if (providerMode(c.env) === 'live'
+    if (document.metadata?.profile_change_requires_resubmission === true
+        || providerMode(c.env) === 'live'
         && (typeof document.metadata?.private_object_key !== 'string'
             || document.metadata.malware_scan_status !== 'clean')) {
         const rows = await loadDocuments(db, tenant.siteId);

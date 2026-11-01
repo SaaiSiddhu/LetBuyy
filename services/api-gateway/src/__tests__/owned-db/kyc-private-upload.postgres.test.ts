@@ -258,6 +258,108 @@ test('KYC file upload remains private, tenant-owned and pending provider evidenc
     assert.match(unavailableOverview.json?.data.next_action || '', /Private document upload is unavailable/);
 });
 
+test('canonical business edits atomically revoke only affected KYC evidence until a new upload', async () => {
+    const tenant = newSyntheticTenant('kyc-change');
+    seedSyntheticTenant(owned.psql, tenant, { gst: true });
+    const owner = randomUUID();
+    owned.psql(`INSERT INTO users_custom(id,email,email_verified,full_name)
+        VALUES ('${owner}','kyc-${owner}@example.invalid',true,'Synthetic KYC owner');
+        UPDATE sites SET custom_user_id='${owner}' WHERE id='${tenant.siteId}';`);
+    for (const documentType of ['business_pan', 'gst_certificate', 'bank_proof', 'address_proof']) {
+        owned.psql(`INSERT INTO merchant_kyc_documents(site_id,document_type,document_number_last4,status,
+            provider,provider_mode,provider_reference,metadata,verified_at)
+            VALUES ('${tenant.siteId}','${documentType}','1234','verified','signzy','live',
+            'synthetic-${documentType}',jsonb_build_object('provider_verified',true,'private_object_key',
+            'kyc/${tenant.siteId}/${documentType}/synthetic','malware_scan_status','clean'),now());`);
+    }
+    const objects = new Map<string, Uint8Array>();
+    const bucket = {
+        put: async (key: string, bytes: Uint8Array) => { objects.set(key, bytes); },
+        delete: async (key: string) => { objects.delete(key); },
+    };
+    const profileGateway = new Gateway(gatewayEnv(owned, await newIdentityKeys(), {
+        KYC_PROVIDER_MODE: 'live', KYC_PROVIDER: 'signzy', KYC_PRIVATE_BUCKET: bucket,
+    }));
+    const headers = async () => signedIdentityHeaders(owner, `kyc-${owner}@example.invalid`, tenant.siteId);
+    const overview = async () => profileGateway.request(`/v1/kyc?store_id=${tenant.siteId}`, {
+        method: 'GET', headers: await headers(),
+    });
+    const patchStore = async (body: Record<string, unknown>) => profileGateway.request(`/v1/stores/${tenant.siteId}`, {
+        method: 'PATCH', headers: { ...await headers(), 'X-Idempotency-Key': randomUUID() },
+        body: JSON.stringify(body),
+    });
+    const readDoc = (response: Awaited<ReturnType<typeof overview>>, type: string) =>
+        response.json?.data.documents.find((row: { document_type: string }) => row.document_type === type);
+    try {
+        const before = await overview();
+        assert.equal(before.status, 200, before.text);
+        assert.equal(before.json?.data.overall_status, 'verified', 'synthetic approvals are a positive control only');
+        let version = Number(owned.psql(`SELECT version FROM sites WHERE id='${tenant.siteId}';`));
+        const publicEdit = await patchStore({ version, name: 'Changed synthetic storefront name',
+            business_profile: { trade_name: 'Changed synthetic trade name', email: 'synthetic@example.invalid' },
+        });
+        assert.equal(publicEdit.status, 200, publicEdit.text);
+        version = publicEdit.json!.data.version;
+        assert.equal((await overview()).json?.data.overall_status, 'verified',
+            'public-facing edits do not revoke unrelated private identity evidence');
+        const legalEdit = await patchStore({ version, legal_name: 'Changed synthetic legal name' });
+        assert.equal(legalEdit.status, 200, legalEdit.text);
+        version = legalEdit.json!.data.version;
+        const afterLegal = await overview();
+        assert.equal(afterLegal.json?.data.overall_status, 'needs_review');
+        assert.equal(readDoc(afterLegal, 'business_pan')?.requires_resubmission, true);
+        assert.equal(readDoc(afterLegal, 'business_pan')?.status, 'needs_review');
+        assert.equal(readDoc(afterLegal, 'bank_proof')?.status, 'verified');
+        assert.equal(readDoc(afterLegal, 'gst_certificate')?.status, 'verified');
+        assert.match(afterLegal.json?.data.next_action || '', /Business details changed/);
+        assert.equal(owned.psql(`SELECT provider_reference IS NULL AND verified_at IS NULL
+            FROM merchant_kyc_documents WHERE site_id='${tenant.siteId}' AND document_type='business_pan';`), 't');
+        const panId = readDoc(afterLegal, 'business_pan')!.id;
+        const oldRefresh = await profileGateway.request(`/v1/kyc/documents/${panId}/refresh?store_id=${tenant.siteId}`, {
+            method: 'POST', headers: { ...await headers(), 'X-Idempotency-Key': randomUUID() },
+        });
+        assert.equal(oldRefresh.status, 200, oldRefresh.text);
+        assert.equal(oldRefresh.json?.data.document.requires_resubmission, true);
+        assert.equal(oldRefresh.json?.data.document.status, 'needs_review');
+        assert.equal(owned.psql(`SELECT count(*) FROM idempotency_keys WHERE site_id='${tenant.siteId}'
+            AND scope='kyc:document-refresh:${panId}';`), '0', 'stale proof cannot start provider review');
+
+        const gstEdit = await patchStore({ version, gstin: null, gst_state_code: null });
+        assert.equal(gstEdit.status, 200, gstEdit.text);
+        version = gstEdit.json!.data.version;
+        assert.equal(readDoc(await overview(), 'gst_certificate')?.requires_resubmission, true);
+        const addressEdit = await patchStore({ version, invoice_address: {
+            line1: 'Changed synthetic supplier road', city: 'Bengaluru', state: 'Karnataka',
+            state_code: '29', zip: '560001', country: 'IN',
+        } });
+        assert.equal(addressEdit.status, 200, addressEdit.text);
+        const afterAddress = await overview();
+        assert.equal(readDoc(afterAddress, 'address_proof')?.requires_resubmission, true);
+        assert.equal(readDoc(afterAddress, 'bank_proof')?.status, 'verified');
+
+        const form = new FormData();
+        form.set('store_id', tenant.siteId);
+        form.set('document_type', 'business_pan');
+        form.set('document_number_last4', '1234');
+        form.set('file', new File([new TextEncoder().encode('%PDF-1.7\nreplacement')], 'replacement.pdf', { type: 'application/pdf' }));
+        const uploadHeaders: Record<string, string> = { ...await headers(), 'X-Idempotency-Key': randomUUID() };
+        delete uploadHeaders['Content-Type'];
+        const replacement = await profileGateway.request('/v1/kyc/documents/upload', {
+            method: 'POST', headers: uploadHeaders, body: form,
+        });
+        assert.equal(replacement.status, 201, replacement.text);
+        assert.equal(replacement.json?.data.document.requires_resubmission, false);
+        assert.equal(replacement.json?.data.document.status, 'submitted');
+        assert.equal(replacement.json?.data.document.evidence_scan_status, 'pending');
+        assert.equal(objects.size, 1);
+        assert.ok(!replacement.text.includes('private_object_key'));
+        const unsafeRollback = readFileSync(new URL('../../../../../database/supabase/rollback/418_kyc_profile_change_revocation.rollback.sql', import.meta.url), 'utf8');
+        assert.match(owned.psqlExpectError(unsafeRollback), /KYC evidence exists; retain profile-change revocation/);
+    } finally {
+        await profileGateway.settle();
+    }
+});
+
 test('live-mode provider outage stays pending after clean private evidence and exposes only redacted status', async () => {
     const tenant = newSyntheticTenant('kyc-live-outage');
     seedSyntheticTenant(owned.psql, tenant);

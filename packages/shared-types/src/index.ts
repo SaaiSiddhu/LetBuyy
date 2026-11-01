@@ -1077,6 +1077,7 @@ export const MerchantKycDocumentSchema = AuditedEntitySchema.extend({
   provider_reference: z.string().optional().nullable(),
   evidence_scan_status: z.enum(['pending', 'clean', 'rejected']).optional().nullable(),
   provider_unavailable: z.boolean().optional(),
+  requires_resubmission: z.boolean().optional(),
   document_number_last4: z.string().optional().nullable(),
   file_url: UrlSchema.optional().nullable(),
   file_name: z.string().optional().nullable(),

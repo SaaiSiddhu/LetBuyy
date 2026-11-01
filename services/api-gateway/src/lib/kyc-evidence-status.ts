@@ -14,6 +14,7 @@ export function hasLiveProviderEvidence(row: KycEvidenceStatusRow): boolean {
         && Boolean(row.provider_reference) && row.metadata?.provider_verified === true
         && typeof row.metadata?.private_object_key === 'string'
         && row.metadata.malware_scan_status === 'clean'
+        && row.metadata.profile_change_requires_resubmission !== true
         && !row.metadata.provider_unavailable && !row.metadata.sandbox;
 }
 

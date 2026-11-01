@@ -602,6 +602,7 @@ String _statusTitle(String status) {
 
 String _documentProgressTitle(Map<String, dynamic> document, String status) {
   if (document['evidence_scan_status'] == 'rejected') return 'Security scan failed';
+  if (document['requires_resubmission'] == true) return 'Replace document';
   if (status != 'submitted') return _statusTitle(status);
   switch (document['evidence_scan_status']) {
     case 'pending':

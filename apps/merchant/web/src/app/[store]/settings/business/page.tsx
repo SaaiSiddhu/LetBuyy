@@ -48,6 +48,7 @@ interface KycDocument {
     has_private_upload?: boolean
     evidence_scan_status?: 'pending' | 'clean' | 'rejected' | null
     provider_unavailable?: boolean
+    requires_resubmission?: boolean
     rejection_reason: string | null
     submitted_at: string | null
     verified_at: string | null
@@ -163,6 +164,7 @@ const STATUS_META: Record<KycDocumentStatus, { label: string; Icon: LucideIcon; 
 
 function displayDocumentStatus(status: KycDocumentStatus, document: KycDocument | undefined, mode: KycOverview['provider_mode'] | undefined) {
     if (document?.evidence_scan_status === 'rejected') return { label: 'Security scan failed', Icon: AlertCircle, tone: 'rejected' }
+    if (document?.requires_resubmission) return { label: 'Replace document', Icon: AlertTriangle, tone: 'review' }
     if (document && !document.has_private_upload && status !== 'draft' && status !== 'rejected')
         return { label: 'Upload required', Icon: AlertTriangle, tone: 'review' }
     if (mode === 'sandbox' && status === 'verified') return { label: 'Sandbox reference', Icon: Info, tone: 'submitted' }
