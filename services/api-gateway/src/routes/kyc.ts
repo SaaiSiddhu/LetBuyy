@@ -7,6 +7,7 @@ import { IdempotencyExecutionAdapter } from '../execution/idempotency-execution.
 import { getSupabaseAdmin, success } from '../lib/supabase';
 import { resolveTenantContextForOwnedSite } from '../lib/tenant-context';
 import { acceptsLiveKycApproval, effectiveKycDocumentStatus, hasLiveProviderEvidence } from '../lib/kyc-evidence-status';
+import { queueUnreferencedKycObject, tryDeleteReplacedKycObject } from '../lib/kyc-private-object-cleanup';
 import { validate } from '../middleware/validation';
 import {
     createKycVerificationAdapter,
@@ -379,11 +380,16 @@ router.post('/documents/upload', bodyLimit({ maxSize: 6 * 1024 * 1024 }), async 
             if (result.error || !result.data) throw new Error('KYC document save failed');
             document = result.data as KycDocumentRow;
         } catch (error) {
-            await bucket.delete(key);
+            try { await bucket.delete(key); }
+            catch { await queueUnreferencedKycObject(db, tenant.siteId, key); }
             throw error;
         }
         const oldKey = prior?.metadata?.private_object_key;
-        if (typeof oldKey === 'string' && oldKey.startsWith(`kyc/${tenant.siteId}/`)) await bucket.delete(oldKey);
+        if (typeof oldKey === 'string' && oldKey.startsWith(`kyc/${tenant.siteId}/`)) {
+            // The row-update trigger queued this exact old key in the same
+            // transaction. A failed delete is retried by the existing cron.
+            await tryDeleteReplacedKycObject(db, bucket, tenant.siteId, oldKey);
+        }
         const rows = await loadDocuments(db, tenant.siteId);
         await idempotency.complete({ id: claim.id,
             responseBody: { success: true, data: { document_id: document.id } }, statusCode: 201,

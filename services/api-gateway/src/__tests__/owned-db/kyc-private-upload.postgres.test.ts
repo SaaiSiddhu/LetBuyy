@@ -5,12 +5,17 @@ import { randomUUID } from 'node:crypto';
 import { requireOwnedDatabase } from './owned-db-support';
 import { Gateway, gatewayEnv, newIdentityKeys, signedIdentityHeaders, tapRest } from './gateway-harness';
 import { newSyntheticTenant, seedSyntheticTenant } from './synthetic-tenant';
+import { drainKycPrivateObjectCleanup } from '../../lib/kyc-private-object-cleanup';
 
 const owned = requireOwnedDatabase();
 let gateway: Gateway;
 after(async () => { await gateway?.settle(); });
 
 test('KYC file upload remains private, tenant-owned and pending provider evidence', async () => {
+    const cleanupMigration = readFileSync(new URL('../../../../../database/supabase/migrations/420_kyc_private_object_cleanup.sql', import.meta.url), 'utf8');
+    const cleanupRollback = readFileSync(new URL('../../../../../database/supabase/rollback/420_kyc_private_object_cleanup.rollback.sql', import.meta.url), 'utf8');
+    owned.psql(cleanupRollback);
+    owned.psql(cleanupMigration);
     const tenant = newSyntheticTenant('kyc-upload');
     const otherTenant = newSyntheticTenant('kyc-other');
     seedSyntheticTenant(owned.psql, tenant);
@@ -23,12 +28,19 @@ test('KYC file upload remains private, tenant-owned and pending provider evidenc
       UPDATE sites SET custom_user_id='${other}' WHERE id='${otherTenant.siteId}';`);
     const objects = new Map<string, Uint8Array>();
     let pauseUploads: (() => Promise<void>) | null = null;
+    let failDeleteKey: string | null = null;
+    let failDeleteCount = 0;
     const bucket = {
         put: async (key: string, bytes: Uint8Array) => {
             if (pauseUploads) await pauseUploads();
             objects.set(key, bytes);
         },
-        delete: async (key: string) => { objects.delete(key); },
+        delete: async (key: string) => {
+            if (key === failDeleteKey && failDeleteCount-- > 0) {
+                throw new Error('synthetic R2 deletion outage');
+            }
+            objects.delete(key);
+        },
     };
     gateway = new Gateway(gatewayEnv(owned, await newIdentityKeys(), { KYC_PRIVATE_BUCKET: bucket }));
     const legacyHeaders = await signedIdentityHeaders(owner, `kyc-${owner}@example.invalid`, tenant.siteId);
@@ -102,10 +114,44 @@ test('KYC file upload remains private, tenant-owned and pending provider evidenc
     assert.equal(replaced.status, 201, replaced.text);
     assert.equal(objects.size, 1);
     assert.equal(objects.has(priorKey), false);
+    assert.equal(owned.psql(`SELECT status FROM kyc_private_object_cleanup_jobs WHERE object_key='${priorKey}';`),
+        'completed', 'an immediate successful delete closes its durable cleanup record');
     const oldKeyReplay = await upload(tenant.siteId, pdf(), firstKey);
     assert.equal(oldKeyReplay.status, 409, 'a completed upload key must remain consumed after a newer document replaces it');
     assert.equal(oldKeyReplay.json?.error?.code, 'KYC_UPLOAD_SUPERSEDED');
     assert.equal(objects.size, 1);
+    const keyBeforeDeleteOutage = JSON.parse(owned.psql(`SELECT metadata::text FROM merchant_kyc_documents
+        WHERE site_id='${tenant.siteId}' AND document_type='business_pan';`)).private_object_key as string;
+    failDeleteKey = keyBeforeDeleteOutage;
+    failDeleteCount = 2;
+    const replacementDuringDeleteOutage = await upload(tenant.siteId, pdf());
+    assert.equal(replacementDuringDeleteOutage.status, 201,
+        'a saved replacement remains a success when deleting its former private object fails');
+    assert.equal(objects.size, 2, 'the failed R2 delete is visible in the owned fixture');
+    assert.equal(owned.psql(`SELECT status FROM kyc_private_object_cleanup_jobs WHERE object_key='${keyBeforeDeleteOutage}';`),
+        'pending', 'the row replacement atomically retained a durable cleanup claim');
+    const firstCleanup = await drainKycPrivateObjectCleanup(gateway.env);
+    assert.equal(firstCleanup.deleted, 0);
+    assert.equal(firstCleanup.deferred, 1);
+    assert.equal(objects.size, 2, 'a second R2 outage retains the durable retry and both private objects');
+    assert.equal(owned.psql(`SELECT attempts FROM kyc_private_object_cleanup_jobs WHERE object_key='${keyBeforeDeleteOutage}';`), '1');
+    owned.psql(`UPDATE kyc_private_object_cleanup_jobs SET next_attempt_at=now()
+        WHERE object_key='${keyBeforeDeleteOutage}';`);
+    const cleanup = await drainKycPrivateObjectCleanup(gateway.env);
+    assert.equal(cleanup.deleted, 1);
+    assert.equal(cleanup.deferred, 0);
+    assert.equal(objects.size, 1, 'scheduled retry removes only the unreferenced old object');
+    assert.equal(owned.psql(`SELECT status FROM kyc_private_object_cleanup_jobs WHERE object_key='${keyBeforeDeleteOutage}';`),
+        'completed');
+    assert.match(owned.psqlExpectError(cleanupRollback), /KYC private cleanup records exist; retain the retry queue/);
+    try {
+        assert.equal(asAuthenticatedOwner('SELECT count(*) FROM public.kyc_private_object_cleanup_jobs;'), '0');
+    } catch (error) {
+        assert.match(String(error), /permission denied|row-level security/);
+    }
+    assert.match(owned.psqlExpectError(`SET ROLE authenticated; SET request.jwt.claim.sub = '${owner}';
+        SELECT count(*) FROM public.list_due_kyc_private_cleanup_v1(20);`), /permission denied/,
+    'an authenticated merchant cannot enumerate the cross-site cleanup queue');
     const concurrentKey = randomUUID();
     let releaseClaimedUpload!: () => void;
     let claimedUploadArrived!: () => void;

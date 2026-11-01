@@ -12,6 +12,7 @@ import { observability, getObservabilityRoute } from './middleware/observability
 import { internalPerimeter } from './middleware/internal-perimeter';
 import { AppError, formatAppError } from './lib/errors';
 import { getSupabaseAdminFromEnv } from './lib/supabase';
+import { drainKycPrivateObjectCleanup } from './lib/kyc-private-object-cleanup';
 import { resolveCredentialedCorsOrigin } from './lib/cors';
 import type { RazorpayOrderSearchResult } from '@letbuyy/infrastructure/razorpay-adapter';
 import storesRouter from './routes/stores';
@@ -959,6 +960,25 @@ async function runScheduledDispatch(controller: ScheduledController, env: Env): 
     const outbox = new OutboxExecutionAdapter(db);
     const queue = new QueueExecutionAdapter(db);
     const queueNames: ScheduledQueueName[] = ['analytics-events', 'search-indexing', 'payment-events'];
+
+    // Private KYC evidence cleanup is independent of outbox traffic. Its due
+    // records must still drain on an otherwise idle scheduled tick.
+    if (env.KYC_PRIVATE_BUCKET) {
+        try {
+            const cleanup = await drainKycPrivateObjectCleanup(env);
+            if (cleanup.scanned > 0) console.info(JSON.stringify({
+                level: 'info', service: 'letbuyy-api', route: 'scheduled.kyc_private_cleanup',
+                method: 'CRON', status_code: cleanup.deferred > 0 ? 207 : 200,
+                ...cleanup,
+            }));
+        } catch {
+            console.error(JSON.stringify({
+                level: 'error', service: 'letbuyy-api', route: 'scheduled.kyc_private_cleanup',
+                method: 'CRON', status_code: 500,
+                error: 'Private KYC cleanup retry failed',
+            }));
+        }
+    }
 
     try {
         const pending = await hasPendingScheduledDispatchWork(
