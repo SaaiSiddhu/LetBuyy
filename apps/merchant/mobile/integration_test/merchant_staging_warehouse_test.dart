@@ -19,7 +19,7 @@ import 'package:letbuyy_store/theme/store_theme.dart';
 // source, APK assets, command arguments or test output. This exercises real
 // screens and the hosted BFF, not normal password/CAPTCHA/Accounts UI sign-in.
 void main() {
-  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+  final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   testWidgets('staging warehouse screens persist and retire actor scope', (
     tester,
   ) async {
@@ -70,6 +70,8 @@ void main() {
     void record(String name) {
       checks.add(name);
       result['checks'] = checks;
+      binding.reportData = Map<String, Object?>.from(result);
+      debugPrint('STAGING_WAREHOUSE_RESULT ${jsonEncode(result)}');
       File('$directory/merchant-staging-warehouse-result.json')
           .writeAsStringSync('${jsonEncode(result)}\n');
     }
@@ -106,6 +108,10 @@ void main() {
       final finder = find.byWidgetPredicate(
         (widget) =>
             widget is TextField && widget.decoration?.labelText == label,
+      );
+      await waitUntil(
+        () => finder.evaluate().isNotEmpty,
+        'The current warehouse form has opened its $label field',
       );
       await tester.ensureVisible(finder);
       await tester.enterText(finder, value);
@@ -149,7 +155,25 @@ void main() {
           'Current hosted warehouse capabilities and encrypted journal are ready',
         );
         if (!exists) {
-          await tap(supplier ? 'New supplier' : 'New location');
+          final label = supplier ? 'New supplier' : 'New location';
+          final field = supplier ? 'Supplier name' : 'Name';
+          // A capability recheck may retire readiness between the previous
+          // frame and this tap. Reopen only the empty form, never a submitted
+          // command; submission itself remains a single original intent.
+          for (var attempt = 0; attempt < 3; attempt++) {
+            await waitUntil(
+              () => tester.widget<FloatingActionButton>(
+                find.byType(FloatingActionButton),
+              ).onPressed != null,
+              'Current warehouse action is available',
+            );
+            await tap(label);
+            await tester.pump(const Duration(seconds: 1));
+            if (find.byWidgetPredicate(
+              (widget) => widget is TextField &&
+                  widget.decoration?.labelText == field,
+            ).evaluate().isNotEmpty) break;
+          }
           await fill(supplier ? 'Supplier name' : 'Name', name);
           if (supplier) {
             await fill('Email', 'native-stage@example.invalid');
