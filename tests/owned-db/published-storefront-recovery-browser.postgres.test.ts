@@ -531,8 +531,11 @@ test('Merchant KYC proxy denies closed intake, then sends India file bytes direc
 
     const pdf = Buffer.from('%PDF-1.7\nSynthetic Mumbai browser upload proof\n');
     const digest = createHash('sha256').update(pdf).digest();
+    const replacementPdf = Buffer.from('%PDF-1.7\nSynthetic Mumbai replacement proof\n');
+    const replacementDigest = createHash('sha256').update(replacementPdf).digest();
     const bucket = 'letbuyy-kyc-mumbai-synthetic';
     const versionId = 'synthetic-version-1';
+    const replacementVersionId = 'synthetic-version-2';
     const indiaConfig = {
         KYC_INDIA_UPLOAD_ENABLED: 'true', KYC_INDIA_BUCKET: bucket,
         KYC_INDIA_ACCOUNT_ID: '123456789012',
@@ -549,6 +552,7 @@ test('Merchant KYC proxy denies closed intake, then sends India file bytes direc
 
     const originalFetch = globalThis.fetch;
     let stsCalls = 0, headCalls = 0, browserPosts = 0;
+    let rejectNextPost = false;
     let browserPostHasFile = false, browserPostHasScopedKey = false;
     const browserUploadFailures: string[] = [];
     f.page.on('requestfailed', request => {
@@ -583,13 +587,16 @@ test('Merchant KYC proxy denies closed intake, then sends India file bytes direc
         if (target.startsWith(`https://${bucket}.s3.ap-south-1.amazonaws.com/kyc/`)) {
             headCalls++;
             assert.equal(init?.method, 'HEAD');
-            assert.equal(new URL(target).searchParams.get('versionId'), versionId);
+            const requestedVersion = new URL(target).searchParams.get('versionId');
+            assert.ok(requestedVersion === versionId || requestedVersion === replacementVersionId);
+            const expectedBytes = requestedVersion === versionId ? pdf : replacementPdf;
+            const expectedDigest = requestedVersion === versionId ? digest : replacementDigest;
             const headers = new Headers(init?.headers);
             assert.equal(headers.get('x-amz-expected-bucket-owner'), '123456789012');
             assert.equal(headers.get('x-amz-checksum-mode'), 'ENABLED');
             return new Response(null, { status: 200, headers: {
-                'x-amz-version-id': versionId, 'content-length': String(pdf.length),
-                'content-type': 'application/pdf', 'x-amz-checksum-sha256': digest.toString('base64'),
+                'x-amz-version-id': requestedVersion, 'content-length': String(expectedBytes.length),
+                'content-type': 'application/pdf', 'x-amz-checksum-sha256': expectedDigest.toString('base64'),
                 'x-amz-server-side-encryption': 'AES256',
             } });
         }
@@ -610,12 +617,18 @@ test('Merchant KYC proxy denies closed intake, then sends India file bytes direc
         assert.equal(route.request().method(), 'POST');
         browserPosts++;
         const body = route.request().postDataBuffer();
-        browserPostHasFile = Boolean(body?.includes(pdf));
+        browserPostHasFile = Boolean(body?.includes(browserPosts === 1 ? pdf : replacementPdf));
         browserPostHasScopedKey = Boolean(body?.includes(Buffer.from(`kyc/${f.tenant.siteId}/business_pan/`)));
+        if (rejectNextPost) {
+            rejectNextPost = false;
+            await route.fulfill({ status: 503, headers: { 'access-control-allow-origin': merchantOrigin },
+                body: 'Synthetic S3 outage' });
+            return;
+        }
         await route.fulfill({ status: 201, headers: {
             'access-control-allow-origin': merchantOrigin,
             'access-control-expose-headers': 'x-amz-version-id',
-            'x-amz-version-id': versionId,
+            'x-amz-version-id': browserPosts === 1 ? versionId : replacementVersionId,
         } });
     });
 
@@ -657,6 +670,52 @@ test('Merchant KYC proxy denies closed intake, then sends India file bytes direc
     assert.equal(owned.psql(`SELECT status||'|'||outcome FROM kyc_private_object_cleanup_jobs
         WHERE site_id='${f.tenant.siteId}' AND storage_provider='aws_s3_mumbai';`), 'completed|retained');
     assert.doesNotMatch(await f.page.locator('body').innerText(), /kyc\/[^\s]+\/business_pan\/|synthetic-temporary|sha256_hex/);
+
+    // The storage outage must leave the first evidence row intact. A new
+    // browser attempt must get a fresh ticket and replace it only on completion.
+    const firstObjectKey = owned.psql(`SELECT metadata->>'private_object_key' FROM merchant_kyc_documents
+        WHERE site_id='${f.tenant.siteId}' AND document_type='business_pan';`);
+    await pan.getByRole('textbox', { name: 'Last 4 of PAN' }).fill('5678');
+    await pan.getByLabel('Upload Business PAN').setInputFiles({ name: 'replacement-pan.pdf',
+        mimeType: 'application/pdf', buffer: replacementPdf });
+    rejectNextPost = true;
+    const [outageIntent] = await Promise.all([
+        f.page.waitForResponse(item => new URL(item.url()).pathname === `/api/stores/${f.tenant.subdomain}/kyc/upload-intent`
+            && item.request().method() === 'POST'),
+        pan.getByRole('button', { name: 'Resubmit document' }).click(),
+    ]);
+    assert.equal(outageIntent.status(), 201, await outageIntent.text());
+    await expect(f.page.getByText('Submission failed')).toBeVisible();
+    await expect(f.page.getByText('Private storage did not accept the document. Retry upload.')).toBeVisible();
+    assert.equal(browserPosts, 2);
+    assert.equal(headCalls, 1, 'a rejected S3 POST cannot trigger upload completion');
+    assert.equal(owned.psql(`SELECT document_number_last4||'|'||(metadata->>'private_object_key')||'|'||
+        (metadata->>'private_object_version_id')||'|'||(metadata->>'provider_verified')
+        FROM merchant_kyc_documents WHERE site_id='${f.tenant.siteId}' AND document_type='business_pan';`),
+        `1234|${firstObjectKey}|${versionId}|false`, 'storage outage leaves existing private evidence unchanged');
+    await expect(pan.getByText('No scan result yet')).toBeVisible();
+
+    const replacementCompletionPromise = f.page.waitForResponse(item =>
+        new URL(item.url()).pathname === `/api/stores/${f.tenant.subdomain}/kyc/upload-complete`
+            && item.request().method() === 'POST', { timeout: 30_000 });
+    const [retryIntent, retryCompletion] = await Promise.all([
+        f.page.waitForResponse(item => new URL(item.url()).pathname === `/api/stores/${f.tenant.subdomain}/kyc/upload-intent`
+            && item.request().method() === 'POST'),
+        replacementCompletionPromise,
+        pan.getByRole('button', { name: 'Resubmit document' }).click(),
+    ]);
+    assert.equal(retryIntent.status(), 201, await retryIntent.text());
+    assert.equal(retryCompletion.status(), 201, await retryCompletion.text());
+    await expect(pan.getByText('No scan result yet')).toBeVisible();
+    assert.equal(browserPosts, 3);
+    assert.equal(headCalls, 2);
+    const replacementObjectKey = owned.psql(`SELECT metadata->>'private_object_key' FROM merchant_kyc_documents
+        WHERE site_id='${f.tenant.siteId}' AND document_type='business_pan';`);
+    assert.notEqual(replacementObjectKey, firstObjectKey);
+    assert.equal(owned.psql(`SELECT document_number_last4||'|'||(metadata->>'private_object_version_id')||'|'||
+        (metadata->>'malware_scan_status')||'|'||(metadata->>'provider_verified')
+        FROM merchant_kyc_documents WHERE site_id='${f.tenant.siteId}' AND document_type='business_pan';`),
+        `5678|${replacementVersionId}|pending|false`);
 });
 
 test('Merchant order detail renders generated order and immutable GST invoice numbers after a Business edit', { timeout: 180_000 }, async t => {
