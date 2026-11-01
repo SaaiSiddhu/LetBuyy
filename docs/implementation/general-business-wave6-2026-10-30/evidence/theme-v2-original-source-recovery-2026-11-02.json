@@ -11,6 +11,13 @@
     "originalThemeSourceFiles": 20,
     "originalLockfile": "not recovered from reachable history or examined unreachable blobs"
   },
+  "lockfileSuccessorReview": {
+    "previousPinnedSha256": "b4cf0213a9236c586a29a809f0f7c3966b0c4d3a965dc1fd9f22a2876ba6acf0",
+    "previousPinnedCommit": "d0afb90600b2c60c296220cdd8e53e757bdb2bf1",
+    "currentSha256": "0af8a0c0ff84853eca5938614dd9ecc1c4476f0d06db1f401d85a3974b1e9e52",
+    "diff": "Six added importer lines only: zod for apps/merchant/web and saxes for apps/platform/identity; no theme importer or package resolution changed.",
+    "record": "docs/evidence/consolidation-2026-10-25/PROMOTION_SOURCE_COMPATIBILITY.json"
+  },
   "reproduction": {
     "command": "node --import tsx scripts/governance/check-admitted-theme-v200-source.mjs",
     "result": "HISTORICAL_FACTORY_PARITY_ONLY",
