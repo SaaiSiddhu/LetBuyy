@@ -1,6 +1,6 @@
 # Staging415 maintenance proposal — 1 November 2026
 
-Status: prepared; **not authorized for hosted execution**. The latest owner decision explicitly approves warehouse414 + gift-card415 **source/local only**. This proposal extends only staging. `scripts/supabase/README.md` requires fresh verified recovery/restore, exact history admission and an approved maintenance window before hosted execution.
+Status: **owner-approved staging maintenance window in progress**, 1 November 2026. The owner explicitly approved “staging415 maintenance and verification” after reviewing this plan. Production application/schema activation remains excluded. The earlier source/local-only decision is retained as historical scope; this later decision authorizes the staging steps below. `scripts/supabase/README.md` recovery, exact-history and maintenance-window gates apply.
 
 ## Concrete candidate
 
@@ -30,3 +30,13 @@ Local proof:114 governance validators;95 checks across nine current owned Gatewa
 Staging project only, with current protected `admin-staging.letbuyy.com`, existing Accounts staging and BFF/API staging origins. Fresh encrypted backup stays in the private task recovery area with the existing separately protected recovery key; no credentials or private row contents in reports. Synthetic commerce only; no real charge, refund, payout, registrar order, account/legal acceptance, outgoing customer communication or publication.
 
 Production remains limited to the separately approved, completed CDN export guard. Full122 acceptance, permanent private export storage, durable CSV import, provider sandbox and signed-release gates remain open.
+
+## Execution checkpoint — 1 November 2026
+
+The fresh approved encrypted staging backup is retained privately, with no plaintext dump or provider-role passwords. Its PG17 restore and415-only UP/DOWN/UP rehearsal passed: **524/524 original tables**, exact original history/function/index rollback and **13/13 existing warehouse receipts** preserved; owned local resources were removed. Rehearsal run `abe1b64ff78a`. The previous523-table rehearsal remains historical evidence.
+
+Staging415 was dispatched **once**, acknowledged at `2026-11-01T13:45:20Z`, and independently read back: history343, exact executed SQL payload, valid unique replay index, intended function lock/conflict behavior, original function ACL, all previous history and warehouse414 preserved.414 was never resubmitted.
+
+The initial live retention gate stopped on seven operational tables. Read-only reconciliation independently reproduced the exact pre-dispatch hashes of **517 unchanged tables** (including durable commerce/auth/session/storage data) and **every original row in all six operational log tables**; those logs contain additions only. The seventh table contains short-lived internal-auth replay claims: its exact canonical307 function, RLS and restricted ACLs are unchanged, with bounded expiry cleanup and at most600-second claim validity. **Exact identities of the three immediately removed replay claims were not captured before dispatch and cannot be reconstructed; per-row expiry-removal proof is not claimed.** The aggregate differences and failed first retention receipt are preserved privately. This limitation is separate from the exact durable-session retention and524-table isolated rehearsal.
+
+The first governed API activation command timed out without acknowledgement. Independent Cloudflare readback showed the previous staging API version still active. The intent and private log are retained; Merchant activation and native hosted execution have not yet begun at this checkpoint. CLI account-check completion/exit is under reconciliation. No application release or production-ready verdict is asserted.
