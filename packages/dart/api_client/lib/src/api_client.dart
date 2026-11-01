@@ -242,6 +242,7 @@ class ApiClient {
           : null,
     );
   }
+
   /// Sorted origin choices from currently visible marketplace listings.
   Future<List<String>> marketplaceOrigins({ApiRequestOptions? options}) async {
     final body = await get('/storefront/marketplace/origins', options: options);
@@ -1282,6 +1283,22 @@ class KycApi {
         options: _mergeOptions(options, method: HttpMethod.post, body: input),
       );
 
+  Future<JsonMap> indiaUploadIntent(
+    JsonMap input, {
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/kyc/documents/upload-intent',
+    options: _mergeOptions(options, method: HttpMethod.post, body: input),
+  );
+
+  Future<JsonMap> indiaUploadComplete(
+    JsonMap input, {
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/kyc/documents/upload-complete',
+    options: _mergeOptions(options, method: HttpMethod.post, body: input),
+  );
+
   Future<JsonMap> uploadDocument({
     required String storeId,
     required String documentType,
@@ -1290,7 +1307,11 @@ class KycApi {
     ApiRequestOptions? options,
   }) async {
     if (await file.length() > 5 * 1024 * 1024) {
-      throw const ApiException(message: 'Choose a document under 5 MB.', statusCode: 413, code: 'KYC_FILE_TOO_LARGE');
+      throw const ApiException(
+        message: 'Choose a document under 5 MB.',
+        statusCode: 413,
+        code: 'KYC_FILE_TOO_LARGE',
+      );
     }
     final name = file.path.split(Platform.pathSeparator).last;
     final form = FormData.fromMap({
@@ -1299,15 +1320,24 @@ class KycApi {
       'document_number_last4': documentNumberLast4,
       'file': await MultipartFile.fromFile(file.path, filename: name),
     });
-    return _client.requestJson('/kyc/documents/upload',
-      options: _mergeOptions(options, method: HttpMethod.post, body: form));
+    return _client.requestJson(
+      '/kyc/documents/upload',
+      options: _mergeOptions(options, method: HttpMethod.post, body: form),
+    );
   }
 
-  Future<JsonMap> refreshDocument(String id, String storeId, {ApiRequestOptions? options}) =>
-      _client.requestJson(
-        '/kyc/documents/${_encodePathSegment(id)}/refresh',
-        options: _mergeOptions(options, method: HttpMethod.post, query: {'store_id': storeId}),
-      );
+  Future<JsonMap> refreshDocument(
+    String id,
+    String storeId, {
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/kyc/documents/${_encodePathSegment(id)}/refresh',
+    options: _mergeOptions(
+      options,
+      method: HttpMethod.post,
+      query: {'store_id': storeId},
+    ),
+  );
 }
 
 class TwoFactorApi {
@@ -1686,11 +1716,21 @@ class ExportsApi {
     options: _mergeOptions(options, query: {'store_id': storeId}),
   );
 
-  Future<String> download(String id, {required String token, ApiRequestOptions? options}) async {
-    final data = await _client.request('/export/jobs/${_encodePathSegment(id)}/download',
-      options: _mergeOptions(options, query: {'token': token}));
+  Future<String> download(
+    String id, {
+    required String token,
+    ApiRequestOptions? options,
+  }) async {
+    final data = await _client.request(
+      '/export/jobs/${_encodePathSegment(id)}/download',
+      options: _mergeOptions(options, query: {'token': token}),
+    );
     if (data is! String) {
-      throw const ApiException(message: 'Export download is unavailable.', statusCode: 502, code: 'INVALID_EXPORT_DOWNLOAD');
+      throw const ApiException(
+        message: 'Export download is unavailable.',
+        statusCode: 502,
+        code: 'INVALID_EXPORT_DOWNLOAD',
+      );
     }
     return data;
   }

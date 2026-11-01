@@ -200,7 +200,8 @@ class _KycScreenState extends State<KycScreen> {
         key == null ||
         stores == null ||
         _referenceOpen ||
-        _overview?['private_upload_available'] != true ||
+        (_overview?['private_upload_available'] != true &&
+            _overview?['india_direct_upload_available'] != true) ||
         !_isCurrent(version, key))
       return;
     final service = context.read<KycService>();
@@ -241,7 +242,9 @@ class _KycScreenState extends State<KycScreen> {
         setState(() => _overview = service.overview);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Private document received. No security scan result yet.'),
+            content: Text(
+              'Private document received. No security scan result yet.',
+            ),
           ),
         );
       }
@@ -257,7 +260,8 @@ class _KycScreenState extends State<KycScreen> {
         !_loading &&
         _error == null &&
         _storeId != null &&
-        _overview?['private_upload_available'] == true;
+        (_overview?['private_upload_available'] == true ||
+            _overview?['india_direct_upload_available'] == true);
 
     return Scaffold(
       backgroundColor: colors.card,
@@ -291,6 +295,8 @@ class _KycScreenState extends State<KycScreen> {
                   ? 'Checking private upload availability.'
                   : _error != null
                   ? 'Verification is unavailable. Retry to check whether private upload is available.'
+                  : _overview?['india_direct_upload_available'] == true
+                  ? 'India upload test: your photo goes directly to private storage. Security scan and provider review are still pending.'
                   : _overview?['private_upload_available'] == false
                   ? 'Private upload is unavailable. Your saved status remains visible; retry later.'
                   : 'Upload verification documents here. A trusted security scan must pass before provider review.',
@@ -339,8 +345,10 @@ class _KycScreenState extends State<KycScreen> {
                                 ),
                                 onRecord:
                                     _referenceOpen ||
-                                        overview['private_upload_available'] !=
-                                            true
+                                        (overview['private_upload_available'] !=
+                                                true &&
+                                            overview['india_direct_upload_available'] !=
+                                                true)
                                     ? null
                                     : () => _showReferenceDialog(
                                         item['document_type']?.toString(),
@@ -405,7 +413,9 @@ class _StatusPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = AppThemeColors.of(context);
-    final uploadUnavailable = overview['private_upload_available'] == false;
+    final uploadUnavailable =
+        overview['private_upload_available'] != true &&
+        overview['india_direct_upload_available'] != true;
     final hasReference = (overview['documents'] as List? ?? const [])
         .whereType<Map>()
         .any(_referenceOnly);

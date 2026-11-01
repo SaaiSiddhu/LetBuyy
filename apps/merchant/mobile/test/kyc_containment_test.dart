@@ -530,6 +530,26 @@ void main() {
   );
 
   testWidgets(
+    'India direct upload availability enables the document control with test copy',
+    (tester) async {
+      final f = Fixture();
+      await tester.pumpWidget(f.screen());
+      await tester.pump();
+      await replyWidget(tester, f, {
+        ...overview('store-a'),
+        'private_upload_available': false,
+        'india_direct_upload_available': true,
+      });
+      await tester.pumpAndSettle();
+      expect(find.textContaining('India upload test:'), findsOneWidget);
+      expect(find.text('Add document'), findsOneWidget);
+      expect(tester.widget<TextButton>(find.byKey(const ValueKey('record-reference-bank_proof'))).onPressed,
+        isNotNull);
+      expect(f.calls.where((r) => r.method == 'POST'), isEmpty);
+    },
+  );
+
+  testWidgets(
     'unbound private storage disables uploads until a fresh status read reports recovery',
     (tester) async {
       final f = Fixture();
