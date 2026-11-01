@@ -1,6 +1,6 @@
 {
   "recordedUtc": "2026-11-01T04:06:27.612785+00:00",
-  "status": "PRODUCTION-ACTIVATED-public-readback-verified-private-post-release-sign-in-pending",
+  "status": "PRODUCTION-ACTIVATED-public-readback-verified-private-sign-in-user-confirmed",
   "releaseRevision": "14961c132d814e40cc0dfb268ecbaede3de5f76b",
   "qualifiedRuntimeRevision": "fc810fe019c441e2f69d54b209fba68588e760b7",
   "project": "accounts",
@@ -84,7 +84,13 @@
   },
   "normalExpiredFormProof": "Local production-built Identity + actual Gateway/PostgREST/owned PostgreSQL; missing CSRF403 then one renewal HEAD, one successful credential POST and real Merchant redirect; five retained browser tests pass",
   "userConfirmedBeforePermanentDeployment": "Reached Merchant after manual renewal of missing cookie",
-  "postReleasePrivateSignIn": "Pending owner response; no credential or CAPTCHA entry by agent",
+  "postReleasePrivateSignIn": {
+    "status": "USER-CONFIRMED",
+    "dateIST": "2026-11-01",
+    "outcome": "Fresh private Accounts sign-in reached Merchant without the reported Invalid request error",
+    "source": "Owner direct reply after activation",
+    "agentEnteredCredentialsOrSolvedChallenge": false
+  },
   "acceptedLimits": [
     "Hosted staging login429 before CSRF; full staged sign-in unverified",
     "CI Gateway build/typechecks2GB heap failure, same unchanged Gateway tsc passes locally with4GB; broad behavioral CI still pending at last observation"
@@ -108,5 +114,24 @@
     "payment/order",
     "carrier booking"
   ],
-  "evidenceDirectory": "/private/tmp/letbuyy-accounts-csrf-20261101"
+  "evidenceDirectory": "/private/tmp/letbuyy-accounts-csrf-20261101",
+  "ownerConfirmationReceipt": "/private/tmp/letbuyy-accounts-csrf-20261101/accounts-live-owner-confirmation.json",
+  "ciLatestObservation": {
+    "workflowRun": 41269888381,
+    "source": "github-ci-owner-confirmation.json",
+    "status": "in_progress",
+    "passedJobs": [
+      "Lint",
+      "Secret hygiene",
+      "Governance",
+      "Mobile merchant Flutter"
+    ],
+    "acceptedHeapFailureJobs": [
+      "Build",
+      "Typecheck",
+      "Merge safety gate"
+    ],
+    "behavioralJob": "in_progress",
+    "newFailedJobsSinceApproval": []
+  }
 }
