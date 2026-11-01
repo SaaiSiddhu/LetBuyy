@@ -1,0 +1,39 @@
+{
+  "dateIst": "2026-11-01",
+  "scope": "Canonical Core catalog footer public-contact cutover after accepted migration 368",
+  "finding": "The current Core fixture changed only the footer since accepted migration 368. Its historical generator compared the new footer against the frozen 13-section refresh and failed. The accepted seed still carried the older footer without the shop public-contact drop.",
+  "change": "Keep generator 368 pinned to its accepted footer and add paired migration 426 for the unowned Core catalog footer. The new migration accepts only the exact old or new section, updates no site-owned theme, draft, or published release, and has a guarded reverse path.",
+  "checks": {
+    "historicalAndFooterGeneratorTests": { "passed": 3, "failed": 0, "skipped": 0 },
+    "footerGeneratorCheck": "passed",
+    "migrationSafety": "passed",
+    "rollbackIntegrity": "passed",
+    "ownedCoreCatalog": {
+      "runId": "5da8357febb8",
+      "tests": 4,
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "cleanupFailures": 0,
+      "remainingOwnedContainers": 0,
+      "remainingOwnedNetworks": 0,
+      "remainingOwnedVolumes": 0
+    },
+    "ownedSignedInBrowser": {
+      "runId": "efa3a1122e6f",
+      "tests": 11,
+      "passed": 11,
+      "failed": 0,
+      "skipped": 0,
+      "cleanupFailures": 0,
+      "remainingOwnedContainers": 0,
+      "remainingOwnedNetworks": 0,
+      "remainingOwnedVolumes": 0
+    }
+  },
+  "limits": [
+    "A previously published historical footer remains immutable and may require a merchant theme upgrade and republish before new public-contact fallback appears.",
+    "No staging/production migration, hosted custom-domain readback, actual notification delivery, or live provider approval is established.",
+    "Sequential migration validation requires the new migration to be staged in Git; the pre-stage run refused the untracked file as designed."
+  ]
+}

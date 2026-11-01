@@ -17,6 +17,28 @@ test('fully migrated Core catalog carries current canonical section definitions'
  assert.deepEqual(differences,[],'fresh installations must use the actual current canonical section definitions');
 });
 
+test('public-contact footer catalog migration is exact, reversible, and leaves merchant documents intact',()=>{
+ const forward=readFileSync('database/supabase/migrations/426_core_public_contact_footer.sql','utf8');
+ const rollback=readFileSync('database/supabase/rollback/426_core_public_contact_footer.rollback.sql','utf8');
+ const catalog=()=>owned.psql("SELECT default_template::text FROM themes WHERE slug='letbuyy-core';");
+ const quote=(value:string)=>"'"+value.replaceAll("'","''")+"'";
+ const restore=(value:string)=>owned.script(`UPDATE themes SET default_template=${quote(value)}::jsonb WHERE slug='letbuyy-core';`);
+ const merchantDocuments=()=>owned.psql("SELECT jsonb_build_object('sites',(SELECT count(*) FROM sites),'drafts',(SELECT count(*) FROM theme_editor_drafts),'releases',(SELECT count(*) FROM theme_releases))::text;");
+ const current=catalog(), documents=merchantDocuments();
+ try{
+  owned.script(forward);assert.equal(catalog(),current,'repeat forward preserves exact catalog');
+  owned.script(rollback);const previous=catalog();assert.notEqual(previous,current);
+  assert.equal(JSON.parse(previous).liquidBundle.sections.footer.source.includes('shop.contact_email'),false);
+  owned.script(rollback);assert.equal(catalog(),previous,'repeat rollback is harmless');
+  const drift=JSON.parse(previous);drift.liquidBundle.sections.footer.source+='\n<!-- unknown merchant edit -->';
+  restore(JSON.stringify(drift));const unknown=catalog();
+  assert.throws(()=>owned.script(forward),/Unexpected Core catalog footer/);
+  assert.equal(catalog(),unknown,'unknown footer is untouched');
+  restore(previous);owned.script(forward);assert.equal(catalog(),current);
+  assert.equal(merchantDocuments(),documents,'site, draft, and release counts are unchanged');
+ }finally{restore(current);}
+});
+
 
 test('Core section refresh refuses unknown catalog state and preserves real merchant draft/release documents',async()=>{
  const forward=readFileSync('database/supabase/migrations/368_core_section_catalog_refresh.sql','utf8');
