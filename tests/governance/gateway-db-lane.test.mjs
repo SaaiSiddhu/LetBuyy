@@ -153,6 +153,7 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
         "platform-trust-authority.postgres.test.ts",
         "platform-trust-browser.postgres.test.ts",
         "pooled-tenant-context.postgres.test.ts",
+        "pricing-provider-gates.postgres.test.ts",
         "privacy-support-visibility.postgres.test.ts",
         "product-atomic-edits.postgres.test.ts",
         "product-importer-disclosure.postgres.test.ts",
