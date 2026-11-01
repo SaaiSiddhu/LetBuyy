@@ -2,6 +2,19 @@
 -- fails. The old key is queued in the same transaction as the evidence change.
 BEGIN;
 
+DO $preflight$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM public.merchant_kyc_documents AS d
+     WHERE d.metadata ? 'private_object_key'
+       AND coalesce(d.metadata->>'private_object_key', '') !~
+         ('^kyc/' || d.site_id::text || '/' || d.document_type || '/[A-Za-z0-9_-]{1,160}$')
+  ) THEN
+    RAISE EXCEPTION 'Existing private KYC object key needs a reviewed site-bound migration before cleanup can be enabled'
+      USING ERRCODE = '23514';
+  END IF;
+END $preflight$;
+
 CREATE TABLE public.kyc_private_object_cleanup_jobs (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   site_id uuid NOT NULL REFERENCES public.sites(id) ON DELETE RESTRICT,

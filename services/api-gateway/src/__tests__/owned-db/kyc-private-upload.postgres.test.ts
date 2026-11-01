@@ -16,6 +16,15 @@ test('KYC file upload remains private, tenant-owned and pending provider evidenc
     const cleanupMigration = readFileSync(new URL('../../../../../database/supabase/migrations/420_kyc_private_object_cleanup.sql', import.meta.url), 'utf8');
     const cleanupRollback = readFileSync(new URL('../../../../../database/supabase/rollback/420_kyc_private_object_cleanup.rollback.sql', import.meta.url), 'utf8');
     owned.psql(cleanupRollback);
+    const preflightTenant = newSyntheticTenant('kyc-preflight');
+    seedSyntheticTenant(owned.psql, preflightTenant);
+    owned.psql(`INSERT INTO merchant_kyc_documents(site_id,document_type,status,provider,provider_mode,metadata)
+        VALUES ('${preflightTenant.siteId}','identity_proof','submitted','letbuyy_sandbox_kyc','sandbox',
+        '{"private_object_key":"kyc/another-site/identity_proof/unsafe"}'::jsonb);`);
+    assert.match(owned.psqlExpectError(cleanupMigration), /Existing private KYC object key needs a reviewed site-bound migration/,
+        'the migration stops before schema change when an existing private key is outside its site');
+    owned.psql(`UPDATE merchant_kyc_documents SET metadata='{}'::jsonb
+        WHERE site_id='${preflightTenant.siteId}' AND document_type='identity_proof';`);
     owned.psql(cleanupMigration);
     const tenant = newSyntheticTenant('kyc-upload');
     const otherTenant = newSyntheticTenant('kyc-other');
