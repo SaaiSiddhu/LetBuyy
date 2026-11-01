@@ -57,6 +57,25 @@ void main() {
     () async {
       WidgetsFlutterBinding.ensureInitialized();
 
+      final configurationError = AppConfig.endpointConfigurationError();
+      if (configurationError != null) {
+        runApp(
+          MaterialApp(
+            home: Scaffold(
+              body: SafeArea(
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Text(configurationError),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+        return;
+      }
+
       GoogleFonts.config.allowRuntimeFetching = true;
       late final StoreAuthService authService;
       final cacheService = await CacheService.open(

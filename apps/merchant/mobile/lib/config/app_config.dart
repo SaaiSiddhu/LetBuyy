@@ -2,6 +2,54 @@
 class AppConfig {
   AppConfig._();
 
+  /// Checked before restoring a session or constructing authenticated clients.
+  /// A staging label must never turn production defaults into a test backend.
+  static String? endpointConfigurationError({
+    String environmentName = environment,
+    String bffUrl = bffBaseUrl,
+    String apiUrl = apiBaseUrl,
+    String identityUrl = identityBaseUrl,
+    String adminUrl = adminBaseUrl,
+  }) {
+    if (environmentName == 'local' || environmentName == 'development') {
+      return null;
+    }
+    final production = environmentName == 'production';
+    if (!production && environmentName != 'staging') {
+      return 'The app environment is not supported.';
+    }
+    final bffHosts = production
+        ? const {'bff.letbuyy.com'}
+        : const {'bff-staging.letbuyy.com', 'bff.staging.letbuyy.com'};
+    final identityHosts = production
+        ? const {'accounts.letbuyy.com'}
+        : const {'accounts-staging.letbuyy.com'};
+    final adminHosts = production
+        ? const {'admin.letbuyy.com'}
+        : const {'admin-staging.letbuyy.com', 'admin.staging.letbuyy.com'};
+
+    bool matches(String value, Set<String> hosts, String path) {
+      final uri = Uri.tryParse(value);
+      return uri != null &&
+          uri.scheme == 'https' &&
+          hosts.contains(uri.host) &&
+          (!uri.hasPort || uri.port == 443) &&
+          uri.userInfo.isEmpty &&
+          !uri.hasQuery &&
+          !uri.hasFragment &&
+          (uri.path == path || uri.path == '$path/');
+    }
+
+    if (!matches(bffUrl, bffHosts, '/v1') ||
+        !matches(apiUrl, bffHosts, '/v1') ||
+        Uri.tryParse(bffUrl)?.host != Uri.tryParse(apiUrl)?.host ||
+        !matches(identityUrl, identityHosts, '') ||
+        !matches(adminUrl, adminHosts, '')) {
+      return 'The app endpoints do not match its environment. Install a corrected build.';
+    }
+    return null;
+  }
+
   /// Base URL for the mobile BFF worker (no trailing slash).
   ///
   /// The app sends `lb_session` only to this BFF. The BFF signs internal
@@ -75,7 +123,9 @@ class AppConfig {
   static const pushSenderId = String.fromEnvironment('FCM_SENDER_ID');
   static const pushProjectId = String.fromEnvironment('FCM_PROJECT_ID');
   static bool get hasAndroidPushConfiguration =>
-      [pushApiKey,pushAppId,pushSenderId,pushProjectId].every((value)=>value.isNotEmpty && !value.startsWith('SKIP_NEEDS_HUMAN_'));
+      [pushApiKey, pushAppId, pushSenderId, pushProjectId].every(
+        (value) => value.isNotEmpty && !value.startsWith('SKIP_NEEDS_HUMAN_'),
+      );
 
   /// Runtime environment label attached to diagnostics and telemetry.
   static const String environment = String.fromEnvironment(
