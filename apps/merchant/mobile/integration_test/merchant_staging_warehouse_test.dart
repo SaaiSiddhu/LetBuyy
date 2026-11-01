@@ -16,6 +16,8 @@ import 'package:letbuyy_store/services/inventory_service.dart';
 import 'package:letbuyy_store/services/store_service.dart';
 import 'package:letbuyy_store/theme/store_theme.dart';
 
+import 'support/resolved_staging_transport.dart';
+
 // Explicit, approved staging job. The fixture is supplied to this app's private
 // files directory over task-owned ADB stdin; credentials never enter defines,
 // source, APK assets, command arguments or test output. This exercises real
@@ -45,6 +47,15 @@ void main() {
       var actor = owner['id'] as String;
       var token = owner['token'] as String;
       StoreContext? scope;
+      final resolved = fixture['resolvedBffAddress'];
+      if (resolved != null) {
+        expect(resolved['hostname'], 'bff-staging.letbuyy.com');
+        final age = DateTime.now().toUtc().difference(
+          DateTime.parse(resolved['resolvedUtc'] as String),
+        );
+        expect(age.isNegative, isFalse);
+        expect(age, lessThan(const Duration(minutes: 10)));
+      }
       final api = ApiClient(
         baseUrl: AppConfig.bffBaseUrl,
         tokenProvider: () => token,
@@ -53,6 +64,9 @@ void main() {
         attachSessionCookie: true,
         sessionCookieName: AppConfig.sessionCookieName,
         receiveTimeout: const Duration(seconds: 45),
+        dio: resolved == null
+            ? null
+            : resolvedStagingVerificationTransport(resolved['ipv4'] as String),
       );
       final stores = StoreService(api: api);
       final storeScope = StoreContext(storeService: stores);
@@ -69,6 +83,9 @@ void main() {
         'realNativeScreens': true,
         'realHostedBff': true,
         'productionWrite': false,
+        'hostResolvedTestTransport': resolved != null,
+        'nativeDnsAccepted': resolved == null,
+        'certificateVerification': 'default trust roots and original hostname',
       };
       void record(String name) {
         checks.add(name);
