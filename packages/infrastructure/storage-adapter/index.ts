@@ -113,3 +113,5 @@ export { verifyKycIndiaS3Head, type KycIndiaS3HeadExpectation,
 export { headKycIndiaS3Object, type KycIndiaS3HeadRequest } from './kyc-india-s3-head-request';
 export { assumeKycIndiaUploadRole, kycIndiaUploadSessionPolicy,
   type KycIndiaUploadRoleInput, type KycIndiaUploadCredentials } from './kyc-india-s3-sts';
+export { parseKycIndiaGuardDutyEvent, type KycIndiaGuardDutyExpectation,
+  type KycIndiaScanResult } from './kyc-india-guardduty-event';

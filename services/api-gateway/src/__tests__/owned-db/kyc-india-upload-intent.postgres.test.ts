@@ -10,6 +10,8 @@ const forward = readFileSync(new URL('../../../../../database/supabase/migration
 const rollback = readFileSync(new URL('../../../../../database/supabase/rollback/421_kyc_india_upload_intent.rollback.sql', import.meta.url), 'utf8');
 const providerIsolation = readFileSync(new URL('../../../../../database/supabase/migrations/422_kyc_r2_india_provider_isolation.sql', import.meta.url), 'utf8');
 const providerIsolationRollback = readFileSync(new URL('../../../../../database/supabase/rollback/422_kyc_r2_india_provider_isolation.rollback.sql', import.meta.url), 'utf8');
+const scanForward = readFileSync(new URL('../../../../../database/supabase/migrations/423_kyc_india_scanner_verdict.sql', import.meta.url), 'utf8');
+const scanRollback = readFileSync(new URL('../../../../../database/supabase/rollback/423_kyc_india_scanner_verdict.rollback.sql', import.meta.url), 'utf8');
 
 function intent(siteId: string, id: string, key: string, documentType = 'business_pan'): string {
   return `INSERT INTO public.kyc_private_object_cleanup_jobs
@@ -28,10 +30,12 @@ function asTenant(siteId: string, statement: string): string {
 
 test('India upload intent is a durable, tenant-fenced extension of the existing receipt', () => {
   // The paired rollback is reversible only before real India evidence exists.
+  owned.psql(scanRollback);
   owned.psql(providerIsolationRollback);
   owned.psql(rollback);
   owned.psql(forward);
   owned.psql(providerIsolation);
+  owned.psql(scanForward);
 
   const a = newSyntheticTenant('kyc-india-a');
   const b = newSyntheticTenant('kyc-india-b');
@@ -89,6 +93,7 @@ test('India upload intent is a durable, tenant-fenced extension of the existing 
     private_storage_provider: 'aws_s3_mumbai',
     private_object_key: `kyc/${a.siteId}/identity_proof/${objectId}`,
     private_object_version_id: version,
+    private_upload_receipt_id: objectId,
     sha256: 'a'.repeat(64), byte_size: 1234, content_type: 'application/pdf',
     malware_scan_status: 'pending',
   });
@@ -118,10 +123,46 @@ test('India upload intent is a durable, tenant-fenced extension of the existing 
     WHERE site_id='${a.siteId}' AND object_key='kyc/${a.siteId}/identity_proof/${oldObject}';`),
   'aws_s3_mumbai:old-version:replaced_object',
   'the replacement retry records the exact old object version and provider');
+  const cleanEvent = randomUUID(), threatEvent = randomUUID();
+  const scan = (site: string, receipt: string, version: string, eventId: string, verdict: string) =>
+    `SELECT public.record_kyc_india_scan_v1('${site}','${receipt}','${version}',
+      '${eventId}','${verdict}','2026-11-01T12:00:00Z');`;
+  assert.match(owned.psqlExpectError(`UPDATE public.merchant_kyc_documents
+    SET metadata=jsonb_set(metadata,'{malware_scan_status}','"clean"'::jsonb)
+    WHERE site_id='${a.siteId}' AND document_type='identity_proof';`),
+  /current version-bound scanner receipt/, 'a direct metadata edit cannot forge a clean scan');
+  assert.equal(owned.psql(scan(a.siteId, newObject, 'new-version', cleanEvent, 'clean')), 'stale',
+    'the scanner cannot approve a receipt that completion has not retained');
+  owned.psql(`UPDATE public.kyc_private_object_cleanup_jobs
+    SET status='completed', outcome='retained', completed_at=now()
+    WHERE id='${newObject}';`);
+  assert.equal(owned.psql(scan(b.siteId, newObject, 'new-version', cleanEvent, 'clean')), 'stale');
+  assert.equal(owned.psql(scan(a.siteId, newObject, 'later-version', cleanEvent, 'clean')), 'stale');
+  assert.match(owned.psqlExpectError(asTenant(a.siteId,
+    scan(a.siteId, newObject, 'new-version', cleanEvent, 'clean'))),
+  /permission denied/, 'a merchant cannot claim a scanner verdict');
+  assert.equal(owned.psql(scan(a.siteId, oldObject, 'old-version', cleanEvent, 'clean')), 'stale',
+    'a late event for replaced evidence cannot approve the new document');
+  assert.equal(owned.psql(scan(a.siteId, newObject, 'new-version', cleanEvent, 'clean')), 'applied');
+  assert.equal(owned.psql(scan(a.siteId, newObject, 'new-version', cleanEvent, 'clean')), 'replay');
+  assert.equal(owned.psql(`SELECT metadata->>'malware_scan_status' FROM public.merchant_kyc_documents
+    WHERE site_id='${a.siteId}' AND document_type='identity_proof';`), 'clean');
+  assert.equal(owned.psql(scan(a.siteId, newObject, 'new-version', threatEvent, 'rejected')), 'applied',
+    'a later threat revokes clean evidence');
+  assert.equal(owned.psql(`SELECT status || ':' || (metadata->>'malware_scan_status')
+    FROM public.merchant_kyc_documents
+    WHERE site_id='${a.siteId}' AND document_type='identity_proof';`), 'needs_review:rejected');
+  assert.equal(owned.psql(scan(a.siteId, newObject, 'new-version', randomUUID(), 'clean')), 'unchanged',
+    'a later clean event cannot erase a threat');
+  assert.match(owned.psqlExpectError(scan(a.siteId, newObject, 'new-version', threatEvent, 'clean')),
+    /Conflicting replay/, 'an event ID cannot carry conflicting verdicts');
   assert.match(owned.psqlExpectError(rollback),
     /India KYC object evidence exists; retain versioned upload receipts/,
     'rollback preserves pending India upload receipts');
   assert.match(owned.psqlExpectError(providerIsolationRollback),
     /India KYC receipts exist; retain provider-isolated cleanup/,
     'a rollback cannot expose India receipts to the R2 sweeper');
+  assert.match(owned.psqlExpectError(scanRollback),
+    /India KYC evidence exists; retain scanner version fence/,
+    'the scanner receipt fence cannot be rolled back after India evidence');
 });
