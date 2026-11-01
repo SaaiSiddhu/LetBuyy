@@ -1,0 +1,22 @@
+{
+  "dateIst": "2026-11-01",
+  "scope": "Wave 6 branch source contracts and production storefront view sampling configuration",
+  "changes": [
+    "The Identity registration assertion now checks the awaited CSRF/auth header helper used by the canonical form.",
+    "The Cloudflare queue batch assertion covers the current complete handler and still checks one platform drain, batch persistence, metric write, and acknowledgement.",
+    "The buyer order assertion checks that store_id and the raw tax snapshot are omitted while a validated totals quote is projected.",
+    "The production Gateway Worker now declares the same explicit 0.1 storefront view sampling setting as default and staging.",
+    "Onboarding assertions check its actual Circuit default and the guard that preserves authored first-party themes when an industry is present."
+  ],
+  "checks": {
+    "focusedRegistrationQueueAndPerformance": { "passed": 23, "failed": 0, "skipped": 0 },
+    "focusedExperienceFlow": { "passed": 7, "failed": 0, "skipped": 0 },
+    "governanceGate": { "passed": 114, "failed": 0, "blocked": 0, "skipped": 0 },
+    "diffCheck": "passed"
+  },
+  "remaining": [
+    "The full behavioral suite was red in its earlier 3b6eff5b7 run and has not been rerun on this tree.",
+    "The production Worker setting is source only; no hosted configuration readback is claimed.",
+    "No live KYC provider, India AWS account, signed Razorpay callback, settlement statement, physical screen reader, or release acceptance is established."
+  ]
+}

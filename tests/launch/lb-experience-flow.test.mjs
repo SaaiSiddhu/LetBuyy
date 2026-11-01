@@ -71,24 +71,25 @@ test('B: the editor no longer defaults the theme name to Urban Kicks', () => {
   assert.match(editor, /useState\('LetBuyy Core'\)/);
 });
 
-// ── Stream C: industry onboarding -> server auto-apply ────────────────────────
+// ── Stream C: industry onboarding -> canonical first-party theme ──────────────
 test('C: onboarding captures an industry and sends it as survey.industry', () => {
   const onboarding = read(ONBOARDING);
   assert.match(onboarding, /ONBOARDING_INDUSTRIES/);
   assert.match(onboarding, /useState<string>\('general'\)/);
   assert.match(onboarding, /onChange=\{\(e\) => setIndustry\(e\.target\.value\)\}/);
   assert.match(onboarding, /survey: \{ industry \}/);
-  // recommended experience is surfaced before creation
-  assert.match(onboarding, /Recommended experience/);
+  // Onboarding now names its actual default first-party theme before creation.
+  assert.match(onboarding, /<span>Default theme<\/span>\s*<strong>Circuit<\/strong>/);
 });
 
-test('C: the gateway store-creation handler auto-applies the recommended experience', () => {
+test('C: store creation preserves first-party theme design and only overlays legacy Core', () => {
   const stores = read(STORES);
   const bindings = stores.match(/import\s*\{([^}]+)\}\s*from '@letbuyy\/theme-engine'/)?.[1].split(',').map(name => name.trim()) || [];
   for (const name of ['resolveExperienceForIndustry', 'applyExperienceToTemplateConfig', 'LETBUYY_CORE_THEME_SLUG']) assert.ok(bindings.includes(name), `Missing canonical experience binding: ${name}`);
   assert.match(stores, /resolveExperienceForIndustry\(industryHint \|\| null, experienceOverride\)/);
   assert.match(stores, /applyExperienceToTemplateConfig\(templateConfig, experience\)/);
-  // additive: only applies when an industry/override is present (no behaviour change otherwise)
-  assert.match(stores, /if \(industryHint \|\| experienceOverride\)/);
+  // An authored first-party design must not be overwritten by an industry overlay.
+  assert.match(stores, /const firstPartyDesign = firstPartyThemeListings\(\)\.some\(theme => theme\.slug === body\.theme_id\)/);
+  assert.match(stores, /if \(!firstPartyDesign && \(industryHint \|\| experienceOverride\)\)/);
   assert.match(stores, /template_config: templateConfig,/);
 });
