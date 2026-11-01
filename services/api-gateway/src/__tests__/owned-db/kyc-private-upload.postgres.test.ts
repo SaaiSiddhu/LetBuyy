@@ -595,6 +595,32 @@ test('canonical business edits atomically revoke only affected KYC evidence unti
         assert.equal(replacement.json?.data.document.evidence_scan_status, 'pending');
         assert.equal(objects.size, 1);
         assert.ok(!replacement.text.includes('private_object_key'));
+
+        // A changed bank proof cannot inherit approval of the old bank evidence.
+        const bankForm = new FormData();
+        bankForm.set('store_id', tenant.siteId);
+        bankForm.set('document_type', 'bank_proof');
+        bankForm.set('document_number_last4', '9876');
+        bankForm.set('file', new File([new TextEncoder().encode('%PDF-1.7\nnew synthetic bank proof')],
+            'new-bank.pdf', { type: 'application/pdf' }));
+        const bankHeaders: Record<string, string> = { ...await headers(), 'X-Idempotency-Key': randomUUID() };
+        delete bankHeaders['Content-Type'];
+        const bankReplacement = await profileGateway.request('/v1/kyc/documents/upload', {
+            method: 'POST', headers: bankHeaders, body: bankForm,
+        });
+        assert.equal(bankReplacement.status, 201, bankReplacement.text);
+        assert.equal(bankReplacement.json?.data.document.status, 'submitted');
+        assert.equal(bankReplacement.json?.data.document.evidence_scan_status, 'pending');
+        const bankAfter = await overview();
+        assert.equal(readDoc(bankAfter, 'bank_proof')?.status, 'submitted');
+        assert.equal(readDoc(bankAfter, 'bank_proof')?.verified_at, null);
+        assert.equal(readDoc(bankAfter, 'bank_proof')?.document_number_last4, '9876');
+        assert.notEqual(bankAfter.json?.data.overall_status, 'verified');
+        assert.equal(owned.psql(`SELECT provider_reference IS NULL AND verified_at IS NULL
+            AND metadata->>'provider_verified' IS DISTINCT FROM 'true'
+            AND metadata->>'malware_scan_status' = 'pending'
+            FROM merchant_kyc_documents WHERE site_id='${tenant.siteId}' AND document_type='bank_proof';`), 't');
+        assert.equal(objects.size, 2, 'the new bank and PAN proof remain private and site-bound');
         const unsafeRollback = readFileSync(new URL('../../../../../database/supabase/rollback/418_kyc_profile_change_revocation.rollback.sql', import.meta.url), 'utf8');
         assert.match(owned.psqlExpectError(unsafeRollback), /KYC evidence exists; retain profile-change revocation/);
     } finally {
