@@ -142,5 +142,6 @@ if (shouldRun("apps")) {
 }
 
 if (execute) {
-  run("node", ["infrastructure/scripts/deploy/verify-health-gates.mjs", `--environment=${environment}`]);
+  run("node", ["infrastructure/scripts/deploy/verify-health-gates.mjs", `--environment=${environment}`,
+    ...(shouldRun("workers") ? ["--require-merchant-razorpay-callback"] : [])]);
 }

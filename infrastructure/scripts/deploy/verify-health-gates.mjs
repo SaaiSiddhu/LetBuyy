@@ -1,9 +1,11 @@
 #!/usr/bin/env node
 import fs from "node:fs";
+import { verifyMerchantCallbackIngress } from "./merchant-callback-probe.mjs";
 
 const args = new Set(process.argv.slice(2));
 const environment = valueFor("--environment") || "production";
 const preflightOnly = args.has("--preflight");
+const requireMerchantCallback = args.has("--require-merchant-razorpay-callback");
 
 function valueFor(prefix) {
   const arg = process.argv.slice(2).find((candidate) => candidate.startsWith(`${prefix}=`));
@@ -81,6 +83,14 @@ for (const endpoint of endpoints) {
   } finally {
     clearTimeout(timeout);
   }
+}
+
+if (requireMerchantCallback) {
+  const webhookOrigin = environment === "production"
+    ? "https://webhooks.letbuyy.com"
+    : "https://webhooks.staging.letbuyy.com";
+  await verifyMerchantCallbackIngress(webhookOrigin);
+  console.log(`[health-gates] merchant Razorpay callback ingress present at ${webhookOrigin}`);
 }
 
 if (process.env.LETBUYY_OPERATIONS_TOKEN) {
