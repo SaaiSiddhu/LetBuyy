@@ -1,5 +1,9 @@
 # Hosted warehouse recovery — 1 November 2026
 
+## Subsequent staging execution
+
+The owner approved staging-only maintenance after this plan. Source `288cb3dfa…`, migration 414, staging API/BFF activation, protected web previews, actual SDK/Next backend checks and stock reconciliation are now recorded in [STAGING_WAREHOUSE_ACCEPTANCE.md](STAGING_WAREHOUSE_ACCEPTANCE.md). **414 committed once on staging; do not submit it again.** The earlier facts and execution steps below are the **pre-maintenance snapshot**, not the current staging status or an instruction to repeat execution. Production activation remains unapproved. Exact staging hosts await the missing `_vercel.letbuyy.com` TXT verification, and the approved single-key Turnstile transfer is deferred while the user uses Chrome.
+
 ## Candidate and scope
 
 The integrated backend/web candidate is `9b5b89437703cba8527b9e0ca32ca9a7aca495b8` on
