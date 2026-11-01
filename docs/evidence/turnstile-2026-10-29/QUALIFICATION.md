@@ -1,7 +1,8 @@
 # Qualification observations
 
-Source and provider observations are separate gates. No new application source
-or management credential is production-activated by this record.
+Source and provider observations are separate gates. The historical observations
+below culminate in the [production release record](RELEASE.md), including the
+retained failed full invocation, exact fixed-suite rerun and hosted limitations.
 
 The complete owned-database run at `d89e8ee81` executed 265 suites (2,131 passing
 checks, 30 failing checks in twelve suites, no skips). Its failures were retained

@@ -1,3 +1,4 @@
+import { validateMerchantMutationRequest } from '@/lib/api/request-origin'
 import { NextRequest, NextResponse } from 'next/server'
 import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
@@ -9,6 +10,8 @@ export async function PATCH(
     request: NextRequest,
     { params }: { params: Promise<{ store: string; rateId: string }> }
 ) {
+    const denied = validateMerchantMutationRequest(request, { requireKey: false })
+    if (denied) return denied
     try {
         const { store, rateId } = await params
         const resolved = await resolveOwnedStoreId(decodeURIComponent(store))
@@ -25,9 +28,11 @@ export async function PATCH(
 }
 
 export async function DELETE(
-    _request: NextRequest,
+    request: NextRequest,
     { params }: { params: Promise<{ store: string; rateId: string }> }
 ) {
+    const denied = validateMerchantMutationRequest(request, { requireKey: false })
+    if (denied) return denied
     try {
         const { store, rateId } = await params
         const resolved = await resolveOwnedStoreId(decodeURIComponent(store))

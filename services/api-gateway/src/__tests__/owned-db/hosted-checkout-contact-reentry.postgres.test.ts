@@ -48,7 +48,18 @@ const contact = (key: string, name = 'Synthetic original contact') => ({ idempot
 const delivery = (key: string, line1 = 'Synthetic original address') => ({ idempotency_key: key, shipping_method: 'standard', cod_requested: true,
     shipping_address: { line1, city: 'Bengaluru', state: 'Karnataka', state_code: '29', zip: '560001', country: 'IN' },
     shipping_quote: { shipping_rate_id: rateId, expected_shipping_amount: 20 } });
-function post(flow: Pick<Flow, 'cartId' | 'url'>, step: string, body: Record<string, unknown>) {
+async function post(flow: Pick<Flow, 'cartId' | 'url'>, step: string, body: Record<string, unknown>): ReturnType<Gateway['request']> {
+    // Successful delivery setup follows the buyer's quote -> review -> save journey.
+    // Refusal cases below use the raw worker when testing a missing/stale review.
+    if (step === 'delivery' && !body.expected_quote_fingerprint) {
+        const address = body.shipping_address as Record<string, unknown>;
+        const quote = await post(flow, 'quote', {
+            shipping_address: { country: address.country, state: address.state, state_code: address.state_code, zip: address.zip },
+            shipping_rate_id: (body.shipping_quote as Record<string, unknown>).shipping_rate_id,
+        });
+        assert.equal(quote.status, 200, quote.text);
+        body = { ...body, expected_quote_fingerprint: quote.json?.data?.quote?.fingerprint };
+    }
     return gateway.request(`/v1/checkout/${flow.cartId}/${step}?${new URL(flow.url).searchParams}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
 }
 function session(flow: Pick<Flow, 'cartId'>): Record<string, unknown> {

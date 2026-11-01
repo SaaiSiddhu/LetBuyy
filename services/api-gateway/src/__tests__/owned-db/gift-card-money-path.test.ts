@@ -43,7 +43,8 @@ const ownerEmail = `syn-gift-owner-${ownerId}@example.invalid`;
 let gateway: Gateway;
 
 before(async () => {
-    seedSyntheticTenant(psql, tenant, { gst: true });
+    seedSyntheticTenant(psql, tenant, { gst: true, taxRates: true });
+    psql(`UPDATE sites SET tax_inclusive=false WHERE id='${STORE_ID}';`);
     seedSyntheticTenant(psql, otherTenant);
     psql(`INSERT INTO users_custom(id,email,email_verified) VALUES ('${ownerId}','${ownerEmail}',true);
           UPDATE sites SET custom_user_id='${ownerId}' WHERE id='${STORE_ID}';`);
@@ -148,7 +149,7 @@ test('mounted merchant issue route returns a code only on first commit and refus
         VALUES ('${STORE_ID}', encode(extensions.digest('${randomUUID()}', 'sha256'), 'hex'),
             'TEST', 75, 75, 'INR', 'active', jsonb_build_object('issue_idempotency_key', '${key}'));`);
     assert.match(directDuplicate, /gift_card_accounts_site_issue_key_unique/);
-    const rollback = readFileSync('database/supabase/rollback/411_gift_card_issue_replay_integrity.rollback.sql', 'utf8');
+    const rollback = readFileSync('database/supabase/rollback/414_gift_card_issue_replay_integrity.rollback.sql', 'utf8');
     assert.match(psqlExpectError(rollback), /Cannot restore the unsafe gift-card issue RPC while cards exist/);
 });
 
@@ -305,6 +306,7 @@ test(
         psql(`
             INSERT INTO products (id, store_id, name, price, sku, is_active, created_at, updated_at)
             VALUES ('${productId}', '${STORE_ID}', 'T15 Autotest Product B ${suffix}', 200.00, 'T15-AUTOTEST-B-${suffix}', true, now(), now());
+            UPDATE products SET charge_tax=false WHERE id='${productId}';
         `);
         psql(`
             INSERT INTO inventory_levels (id, store_id, product_id, variant_id, location_id, available, reserved, committed_quantity, available_quantity, reserved_quantity, on_hand_quantity, created_at, updated_at)
@@ -407,6 +409,7 @@ test(
             psql(`
                 INSERT INTO products (id, store_id, name, price, sku, is_active, created_at, updated_at)
                 VALUES ('${pid}', '${STORE_ID}', 'T15 Race ${label} ${suffix}', 150.00, 'T15-RACE-${label}-${suffix}', true, now(), now());
+                UPDATE products SET charge_tax=false WHERE id='${pid}';
             `);
             psql(`
                 INSERT INTO inventory_levels (id, store_id, product_id, variant_id, location_id, available, reserved, committed_quantity, available_quantity, reserved_quantity, on_hand_quantity, created_at, updated_at)

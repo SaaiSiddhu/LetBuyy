@@ -18,7 +18,7 @@ export function MerchantBuyerConnection({request,destination,onCancel}:{request:
  async function submit(event:React.FormEvent){
   event.preventDefault();setLoading(true);setError(null)
   try{
-   const result=await fetch('/api/auth/login',{method:'POST',headers:{...getAuthHeaders(),'X-LetBuyy-Account-Intent':step==='sign-in'?'connect-buyer-start':'connect-buyer-confirm'},body:JSON.stringify(step==='sign-in'?{authorization,email:email.trim(),password,mfaCode,turnstileToken:token||''}:{authorization,code,consent})})
+   const result=await fetch('/api/auth/login',{method:'POST',headers:{...(await getAuthHeaders()),'X-LetBuyy-Account-Intent':step==='sign-in'?'connect-buyer-start':'connect-buyer-confirm'},body:JSON.stringify(step==='sign-in'?{authorization,email:email.trim(),password,mfaCode,turnstileToken:token||''}:{authorization,code,consent})})
    const body=await result.json() as {email?:string;error?:string;mfaRequired?:boolean}
    if(!result.ok){setError(body.error||'Unable to connect. Please try again.');if(body.mfaRequired)setMfaRequired(true);if(step==='sign-in'){widget.current?.reset();setToken(null)}return}
    setPassword('');setMfaCode('')
@@ -30,7 +30,7 @@ export function MerchantBuyerConnection({request,destination,onCancel}:{request:
   setLoading(true)
   try{
    {
-    const result=await fetch('/api/auth/login',{method:'POST',headers:{...getAuthHeaders(),'X-LetBuyy-Account-Intent':'connect-buyer-cancel'},body:JSON.stringify({authorization})})
+    const result=await fetch('/api/auth/login',{method:'POST',headers:{...(await getAuthHeaders()),'X-LetBuyy-Account-Intent':'connect-buyer-cancel'},body:JSON.stringify({authorization})})
     if(!result.ok){setError('Unable to finish cancellation. Try again, or close this page; the connection expires in 10 minutes.');return}
    }
    setPassword('');setCode('');onCancel()

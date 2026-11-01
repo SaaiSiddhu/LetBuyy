@@ -1,12 +1,14 @@
 import { Hono } from 'hono';
 import type { Context } from 'hono';
+import { z } from 'zod';
 import {
     CalculateTaxSchema,
     generateGstInvoice,
     type CalculateTaxInput,
 } from '@letbuyy/checkout-core';
 import type { Env } from '../index';
-import { HumanRequiredError } from '../lib/errors';
+import { AppError, HumanRequiredError } from '../lib/errors';
+import { resolveTenantContextForOrder } from '../lib/tenant-context';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { getSupabaseAdmin, success } from '../lib/supabase';
 import { validate } from '../middleware/validation';
@@ -117,27 +119,27 @@ router.post('/calculate', validate('json', CalculateTaxSchema), async (c) => {
 });
 
 router.get('/invoice/:orderId', async (c) => {
-    const auth = c.get('auth');
     const orderId = c.req.param('orderId');
+    if (!z.string().uuid().safeParse(orderId).success) {
+        return c.json({ error: { code: 'VALIDATION', message: 'A valid order reference is required.' } }, 400);
+    }
+    const tenant = await resolveTenantContextForOrder(c, orderId);
+    const siteId = tenant.siteId;
     const db = getSupabaseAdmin(c);
-    const customUser = await resolveCustomUser(db, auth.user);
 
     const { data: orderData, error: orderError } = await db
         .from('orders')
         .select('id, store_id, site_id, gst_invoice_number, gst_invoice')
         .eq('id', orderId)
+        .eq('store_id', siteId)
+        .is('deleted_at', null)
         .maybeSingle();
 
-    if (orderError) return c.json({ error: { code: 'DB_ERROR', message: orderError.message } }, 500);
+    if (orderError) throw new AppError('The tax invoice could not be loaded. Please retry.', 503, 'TAX_INVOICE_UNAVAILABLE');
 
     const order = orderData as OrderTaxRow | null;
     if (!order) {
         return c.json({ error: { code: 'NOT_FOUND', message: 'Order not found' } }, 404);
-    }
-
-    const siteId = order.site_id || order.store_id || null;
-    if (!customUser || !siteId || !(await verifySiteOwnership(db, siteId, customUser.id, auth.user.storeId))) {
-        return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
 
     const { data: invoiceData, error: invoiceError } = await db
@@ -160,7 +162,7 @@ router.get('/invoice/:orderId', async (c) => {
         if (isMissingTaxSchemaError(invoiceError)) {
             return c.json({ error: { code: 'TAX_SCHEMA_MISSING', message: 'Tax invoice tables are not available in this environment.' } }, 503);
         }
-        return c.json({ error: { code: 'DB_ERROR', message: invoiceError.message } }, 500);
+        throw new AppError('The tax invoice could not be loaded. Please retry.', 503, 'TAX_INVOICE_UNAVAILABLE');
     }
 
     const invoice = invoiceData as GstInvoiceRow | null;

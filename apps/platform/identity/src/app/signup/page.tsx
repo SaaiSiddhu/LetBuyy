@@ -261,7 +261,7 @@ function SignupContent() {
         try {
             const res = await fetch('/api/auth/signup', {
                 method: 'POST',
-                headers: getAuthHeaders(),
+                headers: (await getAuthHeaders()),
                 body: JSON.stringify({
                     email: email.trim(),
                     turnstileToken,
@@ -364,7 +364,7 @@ function SignupContent() {
         try {
             const res = await fetch('/api/auth/verify-otp', {
                 method: 'POST',
-                headers: getAuthHeaders(),
+                headers: (await getAuthHeaders()),
                 body: JSON.stringify({
                     email: email.trim(),
                     otp: otpCode,
@@ -404,7 +404,7 @@ function SignupContent() {
         try {
             const res = await fetch('/api/auth/signup', {
                 method: 'POST',
-                headers: getAuthHeaders(),
+                headers: (await getAuthHeaders()),
                 body: JSON.stringify({
                     email: email.trim(),
                     turnstileToken,
@@ -442,7 +442,7 @@ function SignupContent() {
         try {
             const res = await fetch('/api/auth/set-password', {
                 method: 'POST',
-                headers: getAuthHeaders(),
+                headers: (await getAuthHeaders()),
                 body: JSON.stringify({
                     password,
                     userId,

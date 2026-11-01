@@ -1,3 +1,4 @@
+import type { ShippingCapabilities, ShippingProfile, CreateShippingProfileInput, UpdateShippingProfileInput } from '@letbuyy/shared-types';
 import {CollectionListQuerySchema,type CollectionListQueryInput} from '@letbuyy/shared-types';
 import { StorefrontDirectoryPayloadSchema, type StorefrontDirectoryPayload } from '@letbuyy/shared-types';
 import {CollectionListPageSchema} from '@letbuyy/shared-types';
@@ -3371,6 +3372,7 @@ export type ShippingLabelRate = {
 };
 export type ShippingLabelProviderModeResponse = {
   provider_mode: 'sandbox' | 'live';
+  capabilities: ShippingCapabilities;
 };
 export type CreatePayoutStatementInput = {
   store_id: string;
@@ -3520,6 +3522,8 @@ export type RollbackThemeReleaseInput = {
 };
 export type CreateOrderInput = Pick<Order, 'store_id' | 'line_items' | 'currency'> & NewRecord<Order>;
 export type StorefrontCreateOrderInput = {
+  /** Server quote comparison; never client-supplied money authority. */
+  expectedQuoteFingerprint?: string;
   customer: {
     name: string;
     email: string;
@@ -5353,9 +5357,17 @@ export class LetbuyyApiClient {
   };
 
   readonly shipping = {
+    profiles: {
+      list: (query: ShippingTaxListQuery, options?: LetbuyyRequestOptions) =>
+        this.requestSettingsList<ShippingProfile>('/shipping-tax/shipping/profiles', query, options),
+      create: (input: CreateShippingProfileInput, options?: LetbuyyRequestOptions) =>
+        this.requestData<ShippingProfile>('/shipping-tax/shipping/profiles', { ...options, method: 'POST', body: input }),
+      update: (id: string, input: UpdateShippingProfileInput, options?: LetbuyyRequestOptions) =>
+        this.requestData<ShippingProfile>(`/shipping-tax/shipping/profiles/${encodePathSegment(id)}`, { ...options, method: 'PATCH', body: input }),
+    },
     zones: {
       list: (query: ShippingTaxListQuery, options?: LetbuyyRequestOptions) =>
-        this.requestData<ShippingZone[]>('/shipping-tax/shipping/zones', { ...options, query }),
+        this.requestSettingsList<ShippingZone>('/shipping-tax/shipping/zones', query, options),
       create: (input: CreateShippingZoneInput, options?: LetbuyyRequestOptions) =>
         this.requestData<ShippingZone>('/shipping-tax/shipping/zones', { ...options, method: 'POST', body: input }),
       update: (id: string, input: UpdateShippingZoneInput, options?: LetbuyyRequestOptions) =>
@@ -5365,7 +5377,7 @@ export class LetbuyyApiClient {
     },
     rates: {
       list: (query: ShippingTaxListQuery, options?: LetbuyyRequestOptions) =>
-        this.requestData<ShippingRate[]>('/shipping-tax/shipping', { ...options, query }),
+        this.requestSettingsList<ShippingRate>('/shipping-tax/shipping', query, options),
       create: (input: CreateShippingRateInput, options?: LetbuyyRequestOptions) =>
         this.requestData<ShippingRate>('/shipping-tax/shipping', { ...options, method: 'POST', body: input }),
       update: (id: string, input: UpdateShippingRateInput, options?: LetbuyyRequestOptions) =>
@@ -5377,7 +5389,7 @@ export class LetbuyyApiClient {
 
   readonly taxes = {
     list: (query: ShippingTaxListQuery, options?: LetbuyyRequestOptions) =>
-      this.requestData<TaxRate[]>('/shipping-tax/taxes', { ...options, query }),
+      this.requestSettingsList<TaxRate>('/shipping-tax/taxes', query, options),
     create: (input: CreateTaxRateInput, options?: LetbuyyRequestOptions) =>
       this.requestData<TaxRate>('/shipping-tax/taxes', { ...options, method: 'POST', body: input }),
     update: (id: string, input: UpdateTaxRateInput, options?: LetbuyyRequestOptions) =>
@@ -5720,6 +5732,19 @@ export class LetbuyyApiClient {
 
   health(options?: LetbuyyRequestOptions): Promise<HealthResponse> {
     return this.request<HealthResponse>('/health', { ...options, versioned: false });
+  }
+
+  /** Settings screens need the complete bounded configuration, never a hidden first page.
+   * Explicit page requests remain paged; the default composes at most 1,000 records. */
+  private async requestSettingsList<T>(path: string, query: ShippingTaxListQuery, options?: LetbuyyRequestOptions): Promise<T[]> {
+    if (query.page !== undefined) return (await this.requestPaginated<T>(path, { ...options, query })).data;
+    const rows: T[] = [];
+    for (let page=1; page<=10; page++) {
+      const result = await this.requestPaginated<T>(path, { ...options, query: { ...query, page, limit: 100 } });
+      rows.push(...result.data);
+      if (!result.has_more) return rows;
+    }
+    throw new Error('Settings exceed the complete-view limit. Use the paginated settings API.');
   }
 
   async requestData<T>(path: string, options?: LetbuyyRequestOptions): Promise<T> {

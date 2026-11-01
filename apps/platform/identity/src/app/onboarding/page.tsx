@@ -307,7 +307,7 @@ export default function OnboardingPage() {
             try {
                 const response = await fetch('/api/auth/create-store', {
                     method: 'PUT',
-                    headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
+                    headers: { ...(await getAuthHeaders()), 'Content-Type': 'application/json' },
                     body: JSON.stringify(draft),
                 })
                 const payload = await response.json() as {
@@ -485,7 +485,7 @@ export default function OnboardingPage() {
             }).catch(() => null)
             const res = await fetch('/api/auth/create-store', {
                 method: 'POST',
-                headers: getAuthHeaders(),
+                headers: (await getAuthHeaders()),
                 body: JSON.stringify({
                     siteType,
                     storeName: name,

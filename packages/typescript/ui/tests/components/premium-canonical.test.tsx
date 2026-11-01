@@ -1,7 +1,7 @@
 import React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
-import { Badge, Banner, Card, FormProtectionProvider, MetricCard, PageHeader, SaveBar, Section } from '../../src';
+import { Badge, Banner, Card, FormProtectionProvider, MetricCard, PageHeader, ProviderModeBadge, SaveBar, Section } from '../../src';
 import { letbuyySurfaceTokens } from '../../src/tokens';
 
 function contrast(a: string, b: string) {
@@ -11,6 +11,15 @@ function contrast(a: string, b: string) {
 }
 
 describe('premium canonical admin compositions', () => {
+    it('distinguishes a disconnected provider from live, sandbox and unknown mock execution', () => {
+        const view = render(<ProviderModeBadge mode="unavailable" />);
+        expect(screen.getByText('Not connected').getAttribute('data-provider-mode')).toBe('unavailable');
+        expect(screen.queryByText('Live')).toBeNull();
+        view.rerender(<ProviderModeBadge mode="unrecognized" />);
+        expect(screen.getByText('Mock').getAttribute('data-provider-mode')).toBe('mock');
+        view.rerender(<ProviderModeBadge mode="sandbox" />);
+        expect(screen.getByText('Sandbox').getAttribute('data-provider-mode')).toBe('sandbox');
+    });
     it('uses compact status chips and quiet inline alerts in the admin surface', () => {
         const admin = letbuyySurfaceTokens.admin.light;
         expect(contrast(admin['--lb-component-badge-success-text'], admin['--lb-component-badge-success-bg'])).toBeGreaterThanOrEqual(4.5);

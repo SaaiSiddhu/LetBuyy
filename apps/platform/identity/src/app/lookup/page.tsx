@@ -236,7 +236,7 @@ function LookupContent() {
         try {
             const res = await fetch('/api/auth/lookup', {
                 method: 'POST',
-                headers: getAuthHeaders(),
+                headers: (await getAuthHeaders()),
                 body: JSON.stringify({ email: email.trim() }),
             })
 
@@ -286,7 +286,7 @@ function LookupContent() {
         try {
             const res = await fetch('/api/auth/login', {
                 method: 'POST',
-                headers: getAuthHeaders(),
+                headers: (await getAuthHeaders()),
                 body: JSON.stringify({
                     email: email.trim(),
                     password,
@@ -336,7 +336,7 @@ function LookupContent() {
         try {
             const response = await fetch('/api/auth/send-magic', {
                 method: 'POST',
-                headers: getAuthHeaders(),
+                headers: (await getAuthHeaders()),
                 body: JSON.stringify({
                     email: email.trim(),
                     turnstileToken: currentToken,
@@ -379,7 +379,7 @@ function LookupContent() {
         try {
             const res = await fetch('/api/auth/lookup', {
                 method: 'POST',
-                headers: getAuthHeaders(),
+                headers: (await getAuthHeaders()),
                 body: JSON.stringify({ email: accountEmail }),
             })
             const data = await res.json().catch(() => null) as {

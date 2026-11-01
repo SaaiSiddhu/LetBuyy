@@ -16,8 +16,10 @@ let keys: IdentityKeys;
 let gateway: Gateway;
 before(async () => {
     keys = await newIdentityKeys();
-    seedSyntheticTenant(psql, site, { gst: true });
-    seedSyntheticTenant(psql, otherSite, { gst: true });
+    // These fixtures place taxable orders through the current checkout writer.
+    // Registration alone must not silently supply a guessed GST rate.
+    seedSyntheticTenant(psql, site, { gst: true, taxRates: true });
+    seedSyntheticTenant(psql, otherSite, { gst: true, taxRates: true });
     gateway = new Gateway(gatewayEnv(owned, keys));
 });
 afterEach(async () => { await gateway.settle(); });

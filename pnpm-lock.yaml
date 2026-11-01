@@ -532,6 +532,9 @@ importers:
       '@letbuyy/auth-core':
         specifier: workspace:*
         version: link:../../../packages/auth-core
+      '@letbuyy/checkout-core':
+        specifier: workspace:*
+        version: link:../../../packages/checkout-core
       '@letbuyy/cms-core':
         specifier: workspace:*
         version: link:../../../packages/cms-core

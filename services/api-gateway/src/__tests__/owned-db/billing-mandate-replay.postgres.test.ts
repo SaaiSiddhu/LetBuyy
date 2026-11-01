@@ -17,7 +17,7 @@ before(async () => {
     owned.psql(`INSERT INTO users_custom(id,email,email_verified) VALUES ('${ownerId}','${ownerEmail}',true);
         UPDATE sites SET custom_user_id='${ownerId}' WHERE id='${tenant.siteId}';`);
     gateway = new Gateway(gatewayEnv(owned, await newIdentityKeys(), {
-        RAZORPAY_KEY_ID: 'rzp_live_synthetic_never_contacted',
+        RAZORPAY_KEY_ID: `synthetic-never-contacted-${randomUUID()}`,
         RAZORPAY_KEY_SECRET: 'synthetic-never-contacted',
     }));
 });

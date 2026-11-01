@@ -300,9 +300,13 @@ test('buyer selects actual saved storefront rate and completes normal hosted COD
     assert.equal(rows[0].rate_id, codRateId, 'persisted order is bound to the reviewed COD rate');
     assert.equal(Number(rows[0].amount), 20);
     assert.equal(rows[0].payment_method, 'cod');
-    const receipt=JSON.parse(owned.psql(`SELECT json_build_object('coupon',coupon_code,'discount',discount,'coupon_discount',coupon_discount,'subtotal',subtotal,'shipping',shipping_cost,'tax',tax,'total',total) FROM orders WHERE id='${rows[0].order_id}';`));
+    const receipt=JSON.parse(owned.psql(`SELECT json_build_object('coupon',coupon_code,'discount',discount,'coupon_discount',coupon_discount,'subtotal',subtotal,'shipping',shipping_cost,'tax',tax,'total',total,'quote',tax_snapshot) FROM orders WHERE id='${rows[0].order_id}';`));
     assert.equal(receipt.coupon,'SYNTHETIC10');assert.equal(Number(receipt.discount),19.9);assert.equal(Number(receipt.coupon_discount),19.9);
-    assert.equal(Math.round(Number(receipt.total)*100),Math.round((Number(receipt.subtotal)+Number(receipt.shipping)+Number(receipt.tax)-Number(receipt.discount))*100));
+    assert.equal(receipt.quote.price_includes_tax,true,'the buyer keeps the merchant\'s inclusive-price setting');
+    assert.equal(receipt.quote.included_tax_minor,2732);
+    assert.equal(receipt.quote.added_tax_minor,0,'included GST is not charged a second time');
+    assert.equal(Math.round(Number(receipt.total)*100),19910,'199 - 19.90 coupon + 20 delivery = 199.10');
+    assert.equal(Math.round(Number(receipt.total)*100),receipt.quote.total_minor);
 
     assert.equal(owned.psql(`SELECT count(*) FROM outbox_events WHERE store_id='${site.siteId}' AND aggregate_id='${rows[0].order_id}' AND event_type='order.paid';`), '0', 'an unpaid COD order is not announced as paid');
     assert.equal(notificationJobs.length, 0, 'an unpaid COD order does not queue a paid-order email');

@@ -1,3 +1,4 @@
+import { CheckoutTotalsQuoteSchema } from '@letbuyy/shared-types';
 // Canonical order history at this storefront, scoped by signed site and explicit
 // buyer_order_links. The browser cannot select another store or buyer principal.
 import { NextRequest, NextResponse } from 'next/server';
@@ -36,6 +37,8 @@ export async function GET(request: NextRequest) {
         }
         const upstreamOrder = payload.data.order as Record<string, unknown>;
         const order = Object.fromEntries(ORDER_FIELDS.filter((field) => Object.hasOwn(upstreamOrder, field)).map((field) => [field, upstreamOrder[field]]));
+        const quote = CheckoutTotalsQuoteSchema.safeParse(upstreamOrder.totals_quote);
+        if (quote.success) order.totals_quote = quote.data;
         if (Array.isArray(order.items)) {
             order.items = order.items.map((value) => {
                 if (!value || typeof value !== 'object' || Array.isArray(value)) return {};

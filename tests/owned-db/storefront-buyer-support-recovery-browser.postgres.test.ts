@@ -1,7 +1,9 @@
 // Synthetic local test credentials only: owned disposable accounts, stub provider identifiers,
 // and public challenge test fixtures. Never use these values for a real account or live provider.
 // Exact value hashes are reviewed in config/governance/secret-scan-exceptions.json.
-// Real normal Identity/PKCE cookies, Commerce BFF, production Gateway and owned PG.
+// Real normal Identity/PKCE cookies, production-built Identity/Commerce BFF,
+// production Gateway and owned PG. The release gate must exercise built route
+// manifests rather than Next development's on-demand route compilation.
 // Official Turnstile test transport is a separate provider fixture, not anti-bot acceptance.
 // No screenshots, input/body/cookie dumps, bearer injection or UI HTTP interception.
 import assert from 'node:assert/strict';
@@ -33,9 +35,9 @@ test('normal web support boundaries preserve one action across committed loss, r
  try{
   adapter=createServer(async(req,res)=>{const chunks:Buffer[]=[];for await(const x of req)chunks.push(Buffer.from(x));const body=Buffer.concat(chunks).toString();const headers=new Headers();for(const[k,v]of Object.entries(req.headers))if(typeof v==='string'&&!['host','connection','content-length','transfer-encoding','accept-encoding'].includes(k))headers.set(k,v);try{const result=await gateway.request(req.url??'/',{method:req.method,headers,...(body?{body}:{})});calls.push({path:new URL(req.url??'/',origin).pathname,status:result.status});res.writeHead(result.status,Object.fromEntries(result.headers.entries()));res.end(result.text);}catch{res.writeHead(500);res.end('{}');}});
   await new Promise<void>(r=>adapter!.listen(0,'127.0.0.1',r));const api=`http://127.0.0.1:${(adapter.address() as {port:number}).port}/v1`;
-  identity=startOwnedClientRuntime(owned,'identity-next',{port:identityPort,env:{LETBUYY_API_URL:api,INTERNAL_API_SECRET:INTERNAL_SECRET,LETBUYY_IDENTITY_ISSUER:identityOrigin,LETBUYY_IDENTITY_PRIVATE_JWK:JSON.stringify({...await exportJWK(keys.privateKey),alg:'ES256',kid:keys.kid}),NEXT_PUBLIC_TURNSTILE_SITE_KEY:'1x00000000000000000000AA',TURNSTILE_SECRET_KEY:'1x0000000000000000000000000000000AA',LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false',NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false'}});
+  identity=startOwnedClientRuntime(owned,'identity-next-production',{port:identityPort,env:{LETBUYY_API_URL:api,INTERNAL_API_SECRET:INTERNAL_SECRET,LETBUYY_IDENTITY_ISSUER:identityOrigin,LETBUYY_IDENTITY_PRIVATE_JWK:JSON.stringify({...await exportJWK(keys.privateKey),alg:'ES256',kid:keys.kid}),NEXT_PUBLIC_TURNSTILE_SITE_KEY:'1x00000000000000000000AA',TURNSTILE_SECRET_KEY:'1x0000000000000000000000000000000AA',LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false',NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false'}});
   await ready(identityOrigin,'/api/buyer/login',identity);
-  commerce=startOwnedClientRuntime(owned,'commerce-next',{port:commercePort,env:{LETBUYY_API_BASE_URL:api,NEXT_PUBLIC_API_URL:api,NEXT_PUBLIC_ACCOUNTS_URL:identityOrigin,INTERNAL_API_SECRET:INTERNAL_SECRET,NEXT_PUBLIC_STORE_ROOT_DOMAIN:'localhost'}});
+  commerce=startOwnedClientRuntime(owned,'commerce-next-production',{port:commercePort,env:{LETBUYY_API_BASE_URL:api,NEXT_PUBLIC_API_URL:api,NEXT_PUBLIC_ACCOUNTS_URL:identityOrigin,INTERNAL_API_SECRET:INTERNAL_SECRET,NEXT_PUBLIC_STORE_ROOT_DOMAIN:'localhost'}});
   await ready(`http://localhost:${commercePort}`,'/api/buyer-auth/session',commerce);
   browser=await chromium.launch({headless:true,args:['--host-resolver-rules=MAP *.localhost 127.0.0.1']});
   let context=await browser.newContext();let page=await context.newPage();page.setDefaultTimeout(30_000);page.setDefaultNavigationTimeout(90_000);
@@ -139,6 +141,6 @@ test('normal web support boundaries preserve one action across committed loss, r
   assert.equal((await context.request.get(origin+`/api/buyer/support/tickets/${ticket}/messages`)).status(),404);
   assert.equal((await context.request.post(origin+'/api/buyer/support/tickets',{headers:headers(key,buyerB),data:{action:'recover',key}})).status(),404);
   await context.close();
- }catch(error){console.log(JSON.stringify({diagnostic:'n6_web_stage',stage,calls:calls.slice(-12)}));throw new Error(`Browser stage ${stage} failed: ${String((error as Error).message).split('\n')[0].replace(/https?:\/\/\S+/g,'[local URL]')}`);}
+ }catch(error){const assertion=error as {actual?:unknown;expected?:unknown;code?:unknown};console.log(JSON.stringify({diagnostic:'n6_web_stage',stage,calls:calls.slice(-12),assertionActual:typeof assertion.actual==='number'?assertion.actual:undefined,assertionExpected:typeof assertion.expected==='number'?assertion.expected:undefined,assertionCode:typeof assertion.code==='string'?assertion.code:undefined}));throw new Error(`Browser stage ${stage} failed: ${String((error as Error).message).split('\n')[0].replace(/https?:\/\/\S+/g,'[local URL]')}`);}
  finally{await browser?.close();await stopOwnedClientRuntime(commerce);await stopOwnedClientRuntime(identity);await gateway.settle();if(adapter){adapter.closeAllConnections();await new Promise<void>(r=>adapter!.close(()=>r()));}}
 });

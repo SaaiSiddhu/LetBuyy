@@ -183,7 +183,8 @@ export function normalizeProviderMode(value: unknown): ProviderMode {
     return 'mock';
 }
 
-const providerModePresentation: Record<ProviderMode, { label: string; variant: StatusVariant; description: string }> = {
+const providerModePresentation: Record<ProviderMode | 'unavailable', { label: string; variant: StatusVariant; description: string }> = {
+    unavailable: { label: 'Not connected', variant: 'warning', description: 'Provider not connected — this service is unavailable' },
     // A real provider, real money.
     live: { label: 'Live', variant: 'success', description: 'Live provider — real transactions' },
     // A real provider on test credentials.
@@ -207,7 +208,9 @@ export interface ProviderModeBadgeProps extends Omit<BadgeProps, 'label' | 'vari
  * foreground contrast failure the app-local badge shipped (1.93:1 / 2.07:1).
  */
 export function ProviderModeBadge({ mode, ...props }: ProviderModeBadgeProps) {
-    const resolved = normalizeProviderMode(mode);
+    // Explicit setup absence is different from a simulated provider. Unknown
+    // input still follows the existing fail-closed mock presentation.
+    const resolved = mode === 'unavailable' ? 'unavailable' : normalizeProviderMode(mode);
     const presentation = providerModePresentation[resolved];
 
     return (

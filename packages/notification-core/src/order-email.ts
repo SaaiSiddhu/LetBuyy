@@ -9,6 +9,7 @@ export const OrderEmailSnapshotSchema = z.object({
   order: OrderSchema.pick({ id: true, store_id: true, order_number: true, customer_name: true,
     status: true, payment_status: true, fulfillment_status: true, currency: true, subtotal: true, discount_amount: true,
     shipping_amount: true, tax_amount: true, total: true, coupon_code: true, tracking_number: true }).extend({
+      tax_included_amount: z.number().nonnegative().optional(),
       line_items: z.array(LineItemSchema.pick({ name: true, quantity: true, total: true })).max(250),
       metadata: z.object({ refund_status: z.string().max(80), return_status: z.string().max(80) }).strict(),
     }),
@@ -49,7 +50,7 @@ export function renderOrderLifecycleEmail(input: unknown) {
     ...order.line_items.map(item => [`${item.name} × ${item.quantity}`, amount(item.total)] as [string, string]),
     ['Subtotal', amount(order.subtotal)],
     ...(order.discount_amount > 0 ? [[order.coupon_code ? `Coupon (${order.coupon_code})` : 'Discount', `−${amount(order.discount_amount)}`] as [string, string]] : []),
-    ['Shipping', amount(order.shipping_amount)], ['Tax', amount(order.tax_amount)], ['Final total', amount(order.total)],
+    ['Shipping', amount(order.shipping_amount)], [order.tax_included_amount ? 'GST (includes tax already in prices)' : 'Tax', amount(order.tax_amount)], ['Final total', amount(order.total)],
     ...(order.tracking_number ? [['Tracking number', order.tracking_number] as [string, string]] : []),
   ];
   const greeting = order.customer_name ? `Hello ${order.customer_name},` : 'Hello,';

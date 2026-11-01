@@ -4,26 +4,29 @@ import { useReadRequest } from '@/lib/api/use-read-request'
 
 import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
-import { Badge, Banner, Button, Card, ConfirmDialog, Globe, Input, normalizeProviderMode, Plus, ProviderModeBadge, Section, Skeleton, Truck, useToast, type ProviderMode } from '@letbuyy/ui'
+import { Badge, Banner, Button, Card, ConfirmDialog,  Globe, Input, Plus, ProviderModeBadge, Section, Skeleton, Truck, useToast } from '@letbuyy/ui'
+import type { ShippingZone as CanonicalShippingZone, ShippingRate as CanonicalShippingRate } from '@letbuyy/shared-types'
+import { CreateShippingRateSchema, UpdateShippingRateSchema } from '@letbuyy/checkout-core'
 import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import { SettingsPane } from '@/components/settings/SettingsPane'
+import { ShippingProfiles } from '@/components/settings/ShippingProfiles'
+import { ShippingCapabilitiesSchema, ShippingProfileSchema, type ShippingProfile } from '@letbuyy/shared-types'
 
-interface ShippingZone {
-    id: string
-    name: string
-    countries: string[]
-}
-
-interface ShippingRate {
-    id: string
-    zone_id: string
-    name: string
-    price: number
-    min_order_amount: number | null
-}
+type ShippingZone = Pick<CanonicalShippingZone, 'id' | 'name' | 'countries' | 'states' | 'zip_codes' | 'cod_enabled' | 'profile_id'>
+type ShippingRate = Pick<CanonicalShippingRate, 'id' | 'zone_id' | 'name' | 'price' | 'type' | 'min_order_amount' | 'max_order_amount' | 'min_weight_grams' | 'max_weight_grams' | 'estimated_days_min' | 'estimated_days_max' | 'cod_enabled' | 'is_active'>
 
 interface AddRateFormState {
     zoneId: string
+    id?: string
+    type: ShippingRate['type']
+    min_order_amount: string
+    max_order_amount: string
+    min_weight_grams: string
+    max_weight_grams: string
+    estimated_days_min: string
+    estimated_days_max: string
+    cod_enabled: boolean
+    is_active: boolean
     name: string
     price: string
     saving: boolean
@@ -73,6 +76,8 @@ function normalizeZones(value: unknown): ShippingZone[] {
             id: zone.id,
             name: readString(zone.name, 'Unnamed zone'),
             countries: normalizeCountries(zone.countries),
+            states: normalizeCountries(zone.states), zip_codes: normalizeCountries(zone.zip_codes),
+            cod_enabled: zone.cod_enabled !== false, profile_id: typeof zone.profile_id === 'string' ? zone.profile_id : null,
         }]
     })
 }
@@ -89,8 +94,24 @@ function normalizeRates(value: unknown): ShippingRate[] {
             name: readString(rate.name, 'Delivery rate'),
             price: coerceNumber(rate.price),
             min_order_amount: rate.min_order_amount == null ? null : coerceNumber(rate.min_order_amount),
+            max_order_amount: rate.max_order_amount == null ? null : coerceNumber(rate.max_order_amount),
+            min_weight_grams: rate.min_weight_grams == null ? null : coerceNumber(rate.min_weight_grams),
+            max_weight_grams: rate.max_weight_grams == null ? null : coerceNumber(rate.max_weight_grams),
+            estimated_days_min: rate.estimated_days_min == null ? null : coerceNumber(rate.estimated_days_min),
+            estimated_days_max: rate.estimated_days_max == null ? null : coerceNumber(rate.estimated_days_max),
+            type: rate.type === 'weight_based' || rate.type === 'price_based' || rate.type === 'free' ? rate.type : 'flat',
+            cod_enabled: rate.cod_enabled !== false, is_active: rate.is_active !== false,
         }]
     })
+}
+
+const rangeFields = ['min_order_amount', 'max_order_amount', 'min_weight_grams', 'max_weight_grams', 'estimated_days_min', 'estimated_days_max'] as const
+const rangeLabels = ['Minimum order (₹)', 'Maximum order (₹)', 'Minimum weight (g)', 'Maximum weight (g)', 'Earliest delivery (days)', 'Latest delivery (days)']
+function rateForm(zoneId: string, rate?: ShippingRate): AddRateFormState {
+    return { zoneId, id: rate?.id, name: rate?.name || '', price: String(rate?.price ?? 0), type: rate?.type || 'flat',
+        cod_enabled: rate?.cod_enabled ?? true, is_active: rate?.is_active ?? true,
+        ...Object.fromEntries(rangeFields.map(field => [field, rate?.[field] == null ? '' : String(rate[field])])) as Record<typeof rangeFields[number], string>,
+        saving: false, error: null }
 }
 
 interface ZoneMetricProps {
@@ -128,12 +149,16 @@ export default function ShippingSettingsPage() {
     const [loadError, setLoadError] = useState<string | null>(null)
     const [zones, setZones] = useState<ShippingZone[]>([])
     const [rates, setRates] = useState<ShippingRate[]>([])
-    // See orders/page.tsx: unresolved resolves to 'mock', never null/sandbox.
-    const [providerMode, setProviderMode] = useState<ProviderMode>('mock')
+    const [profiles,setProfiles]=useState<ShippingProfile[]>([])
+    const [providerMode,setProviderMode]=useState<'unavailable' | null>(null)
+    const [formProfile,setFormProfile]=useState('')
     const [formMode, setFormMode] = useState<FormMode>(null)
     const [editingId, setEditingId] = useState<string | null>(null)
     const [formName, setFormName] = useState('')
-    const [formCountries, setFormCountries] = useState('')
+    const [formCountries, setFormCountries] = useState('India')
+    const [formStates, setFormStates] = useState('')
+    const [formPins, setFormPins] = useState('')
+    const [formCod, setFormCod] = useState(true)
     const [formError, setFormError] = useState<string | null>(null)
     const [saveState, setSaveState] = useState<SaveState>('saved')
     const [zoneToDelete, setZoneToDelete] = useState<ShippingZone | null>(null)
@@ -164,7 +189,14 @@ export default function ShippingSettingsPage() {
             const data = isRecord(payload?.data) ? payload.data : {}
             setZones(normalizeZones(data.zones))
             setRates(normalizeRates(data.rates))
-            setProviderMode(normalizeProviderMode(data.provider_mode))
+            const checked=ShippingProfileSchema.array().safeParse(data.profiles)
+            if(!checked.success)throw new Error('Shipping profiles could not be verified. Please reload settings.')
+            setProfiles(checked.data)
+            if (!ShippingCapabilitiesSchema.safeParse(data.capabilities).success) {
+                throw new Error('Carrier setup status could not be verified. Please reload settings.')
+            }
+            if (data.provider_mode !== 'unavailable') throw new Error('Carrier connection status could not be verified. Please reload settings.')
+            setProviderMode(data.provider_mode)
         } catch (error) {
             if (!request.isCurrent()) return
             const message = error instanceof Error ? error.message : 'Unable to load shipping settings'
@@ -187,7 +219,11 @@ export default function ShippingSettingsPage() {
         setFormMode(null)
         setEditingId(null)
         setFormName('')
-        setFormCountries('')
+        setFormCountries('India')
+        setFormStates('')
+        setFormPins('')
+        setFormCod(true)
+        setFormProfile('')
         setFormError(null)
         setSaveState('saved')
     }, [])
@@ -196,7 +232,11 @@ export default function ShippingSettingsPage() {
         setFormMode('add')
         setEditingId(null)
         setFormName('')
-        setFormCountries('')
+        setFormCountries('India')
+        setFormStates('')
+        setFormPins('')
+        setFormCod(true)
+        setFormProfile('')
         setFormError(null)
         setSaveState('unsaved')
     }, [])
@@ -206,6 +246,10 @@ export default function ShippingSettingsPage() {
         setEditingId(zone.id)
         setFormName(zone.name)
         setFormCountries((zone.countries || []).join(', '))
+        setFormStates((zone.states || []).join(', '))
+        setFormPins((zone.zip_codes || []).join(', '))
+        setFormCod(zone.cod_enabled)
+        setFormProfile(zone.profile_id || '')
         setFormError(null)
         setSaveState('unsaved')
     }, [])
@@ -249,7 +293,7 @@ export default function ShippingSettingsPage() {
             const response = await fetch(endpoint, {
                 method: formMode === 'edit' ? 'PATCH' : 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, countries }),
+                body: JSON.stringify({ name, countries, states: formStates.split(',').map(value => value.trim()).filter(Boolean), zip_codes: formPins.split(',').map(value => value.trim()).filter(Boolean), cod_enabled: formCod, profile_id:formProfile || null }),
             })
             const payload = (await response.json().catch(() => null)) as ShippingPayload | null
 
@@ -275,7 +319,7 @@ export default function ShippingSettingsPage() {
                 variant: 'critical',
             })
         }
-    }, [editingId, formCountries, formMode, formName, loadData, notify, resetForm, saveState, store])
+    }, [editingId, formCountries, formStates, formPins, formCod, formProfile, formMode, formName, loadData, notify, resetForm, saveState, store])
 
     const handleConfirmDelete = useCallback(async () => {
         if (!zoneToDelete || deletingId) return
@@ -317,8 +361,12 @@ export default function ShippingSettingsPage() {
         const name = addRateForm.name.trim()
         const price = parseFloat(addRateForm.price)
 
-        if (!name || Number.isNaN(price) || price < 0) {
-            setAddRateForm(prev => prev ? { ...prev, error: 'Enter a valid rate name and price (0 for free).' } : null)
+        const bounds = Object.fromEntries(rangeFields.map(field => [field, addRateForm[field] === '' ? (addRateForm.id ? null : undefined) : Number(addRateForm[field])]))
+        const command = { name, price: addRateForm.type === 'free' ? 0 : price, type: addRateForm.type,
+            cod_enabled: addRateForm.cod_enabled, is_active: addRateForm.is_active, ...bounds }
+        const parsed = addRateForm.id ? UpdateShippingRateSchema.safeParse(command) : CreateShippingRateSchema.safeParse({ ...command, zone_id: addRateForm.zoneId })
+        if (!parsed.success) {
+            setAddRateForm(prev => prev ? { ...prev, error: parsed.error.issues[0]?.message || 'Review the rate settings.' } : null)
             return
         }
 
@@ -326,11 +374,11 @@ export default function ShippingSettingsPage() {
 
         try {
             const response = await fetch(
-                `/api/stores/${encodeURIComponent(store)}/shipping/rates`,
+                `/api/stores/${encodeURIComponent(store)}/shipping/rates${addRateForm.id ? `/${encodeURIComponent(addRateForm.id)}` : ''}`,
                 {
-                    method: 'POST',
+                    method: addRateForm.id ? 'PATCH' : 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ zone_id: addRateForm.zoneId, name, price, type: 'flat' }),
+                    body: JSON.stringify(parsed.data),
                 }
             )
             const payload = (await response.json().catch(() => null)) as ShippingPayload | null
@@ -339,7 +387,7 @@ export default function ShippingSettingsPage() {
 
             setAddRateForm(null)
             await loadData({ quiet: true })
-            notify({ title: 'Shipping rate added', description: `${name} will appear in checkout.`, variant: 'success' })
+            notify({ title: addRateForm.id ? 'Shipping rate updated' : 'Shipping rate added', description: `${name} will appear in checkout.`, variant: 'success' })
         } catch (error) {
             const message = error instanceof Error ? error.message : 'Unable to add rate'
             setAddRateForm(prev => prev ? { ...prev, saving: false, error: message } : null)
@@ -419,6 +467,7 @@ export default function ShippingSettingsPage() {
                     </Banner>
                 )}
 
+                <ShippingProfiles key={store} store={store} profiles={profiles} onChanged={()=>loadData({quiet:true})}/>
                 {formError && (
                     <Banner variant="critical" title="Shipping zone needs attention">
                         {formError}
@@ -433,8 +482,8 @@ export default function ShippingSettingsPage() {
                     />
                     <ZoneMetric
                         icon={<Globe className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                        label="Country groups"
-                        value={`${zones.reduce((total, zone) => total + (zone.countries?.length || 0), 0)} countries`}
+                        label="Countries"
+                        value={`${new Set(zones.flatMap(zone => zone.countries.map(country => ['in','india'].includes(country.toLowerCase()) ? 'IN' : country.toUpperCase()))).size} configured`}
                     />
                     <ZoneMetric
                         icon={<Truck className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
@@ -443,39 +492,46 @@ export default function ShippingSettingsPage() {
                     />
                 </div>
 
-                <div className="flex flex-wrap items-center justify-between gap-[var(--lb-space-3)] rounded-lg border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-4)]">
-                    <div className="min-w-0">
-                        <p className="m-0 text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)] uppercase leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
-                            Carrier provider
-                        </p>
-                        <p className="m-0 mt-[var(--lb-space-1)] text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
-                            Shipping labels and fulfillment rates
-                        </p>
+                <Card><Section title="How you fulfill orders" description="Delivery prices at checkout are separate from courier booking charges and COD remittance.">
+                    <div className="mb-[var(--lb-space-3)] flex items-center gap-[var(--lb-space-2)]"><span className="text-sm font-medium">Carrier connection</span><ProviderModeBadge mode={providerMode} /></div>
+                    <div className="grid gap-[var(--lb-space-3)] lg:grid-cols-3">
+                        {[
+                            { name: 'Manual shipping', status: 'Available', description: 'Use your own courier or delivery team. Configure the zones and rates below, then add real tracking details when fulfilling orders.' },
+                            { name: 'LetBuyy Shipping', status: 'Integration pending', description: 'Built-in carrier booking through LetBuyy. Carrier agreement, billing terms, pickup access and real shipment verification must be completed before activation.' },
+                            { name: 'Your Shiprocket account', status: 'Integration pending', description: 'Connect your own account through the first-party Shiprocket app once available. Your account will own courier charges, pickup locations and carrier remittance.' },
+                        ].map(method => <div key={method.name} className="space-y-[var(--lb-space-2)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] p-[var(--lb-space-4)]">
+                            <h3 className="font-semibold">{method.name}</h3>
+                            <Badge label={method.status} variant={method.status === 'Available' ? 'success' : 'warning'} />
+                            <p className="text-sm text-[var(--lb-color-text-subdued)]">{method.description}</p>
+                        </div>)}
                     </div>
-                    <ProviderModeBadge mode={providerMode} />
-                </div>
+                </Section></Card>
 
                 {formMode && (
                     <Card>
                         <Section
                             title={formMode === 'edit' ? 'Edit shipping zone' : 'Add shipping zone'}
-                            description="Group countries into delivery zones so checkout can show the right shipping options."
+                            description="Configure Indian delivery coverage. Empty state and PIN lists cover all addresses within India."
                         >
                             <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
+                                <label className="space-y-[var(--lb-space-2)]"><span className="block text-sm font-medium">Shipping profile</span><select aria-label="Shipping profile" value={formProfile} onChange={event=>setFormProfile(event.target.value)} className="w-full rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-3)]"><option value="">Store default / general products</option>{profiles.map(profile=><option key={profile.id} value={profile.id}>{profile.name}</option>)}</select></label>
                                 <Input
                                     label="Zone name"
                                     value={formName}
                                     onChange={(event) => setFormName(event.target.value)}
-                                    placeholder="e.g. Domestic, International"
+                                    placeholder="e.g. South India"
                                     helperText="Use a merchant-friendly name for fulfilment teams."
                                 />
                                 <Input
                                     label="Countries"
                                     value={formCountries}
                                     onChange={(event) => setFormCountries(event.target.value)}
-                                    placeholder="e.g. India, Nepal, Sri Lanka"
-                                    helperText="Separate country names with commas."
+                                    placeholder="India"
+                                    helperText="India is supported. International delivery is unavailable." disabled
                                 />
+                                <Input label="States" value={formStates} onChange={event => setFormStates(event.target.value)} helperText="Comma-separated state names or numeric GST state codes. Empty covers all states." />
+                                <Input label="PIN codes" value={formPins} onChange={event => setFormPins(event.target.value)} helperText="Comma-separated six-digit PINs. Empty covers every PIN in the selected states." />
+                                <label><Input unstyled type="checkbox" checked={formCod} onChange={event => setFormCod(event.target.checked)} /> Allow cash on delivery in this zone</label>
                             </div>
                             <div className="flex flex-wrap gap-[var(--lb-space-2)]">
                                 <Button type="button" onClick={() => void handleSaveZone()} loading={saveState === 'saving'}>
@@ -504,7 +560,7 @@ export default function ShippingSettingsPage() {
                             <EmptyState scene="shipping"
                                 icon={<Truck className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                                 title="No shipping zones configured"
-                                body="Create zones for domestic, regional, or international delivery so checkout can offer the right rates."
+                                body="Create Indian delivery zones and add rates so checkout can offer delivery to eligible addresses."
                                 primaryAction={!formMode ? <Button type="button" onClick={startAdd}>Add zone</Button> : undefined}
                             />
                         ) : (
@@ -523,12 +579,12 @@ export default function ShippingSettingsPage() {
                                                         <Badge label={`${zoneRates.length} rate${zoneRates.length === 1 ? '' : 's'}`} variant={zoneRates.length > 0 ? 'success' : 'warning'} />
                                                     </div>
                                                     <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
-                                                        {formatCountries(zone.countries || [])}
+                                                        {formatCountries(zone.countries || [])} · {zone.states.length ? zone.states.join(', ') : 'All states'} · {zone.zip_codes.length ? `${zone.zip_codes.length} PIN codes` : 'All PIN codes'}
                                                     </p>
                                                 </div>
                                                 <div className="flex flex-wrap gap-[var(--lb-space-2)]">
                                                     <Button type="button" variant="secondary" size="sm"
-                                                        onClick={() => setAddRateForm(isAddingRateHere ? null : { zoneId: zone.id, name: '', price: '', saving: false, error: null })}
+                                                        onClick={() => setAddRateForm(isAddingRateHere ? null : rateForm(zone.id))}
                                                         disabled={Boolean(formMode)}
                                                     >
                                                         {isAddingRateHere ? 'Cancel' : 'Add rate'}
@@ -547,11 +603,12 @@ export default function ShippingSettingsPage() {
                                                 <div className="ml-[var(--lb-space-2)] divide-y divide-[var(--lb-color-border)] rounded-lg border border-[var(--lb-color-border)]">
                                                     {zoneRates.map(rate => (
                                                         <div key={rate.id} className="flex items-center justify-between gap-[var(--lb-space-3)] px-[var(--lb-space-3)] py-[var(--lb-space-2)]">
-                                                            <span className="text-[var(--lb-font-size-body)] text-[var(--lb-color-text)]">{rate.name}</span>
+                                                            <div className="text-[var(--lb-font-size-body)] text-[var(--lb-color-text)]"><span className="block">{rate.name}</span><span className="block text-xs text-[var(--lb-color-text-subdued)]">{rate.type.replace('_', ' ')} · {rate.is_active ? 'Active' : 'Inactive'} · {rate.cod_enabled ? 'COD enabled' : 'Prepaid only'}{rate.estimated_days_min != null ? ` · ${rate.estimated_days_min}–${rate.estimated_days_max ?? rate.estimated_days_min} days (estimate)` : ''}</span></div>
                                                             <div className="flex items-center gap-[var(--lb-space-3)]">
                                                                 <span className="text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] text-[var(--lb-color-text)]">
                                                                     {rate.price === 0 ? 'Free' : `₹${rate.price.toLocaleString('en-IN')}`}
                                                                 </span>
+                                                                <Button type="button" variant="secondary" size="sm" onClick={() => setAddRateForm(rateForm(zone.id, rate))}>Edit rate</Button>
                                                                 <Button type="button" variant="destructive" size="sm"
                                                                     onClick={() => void handleDeleteRate(rate.id, rate.name)}
                                                                     disabled={deletingRateId === rate.id}
@@ -585,8 +642,12 @@ export default function ShippingSettingsPage() {
                                                             type="number"
                                                             min={0}
                                                         />
+                                                        <label className="space-y-2"><span className="block text-sm">Rate type</span><select aria-label="Rate type" className="rounded-lg border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-3" value={addRateForm.type} onChange={event => setAddRateForm(previous => previous ? { ...previous, type: event.target.value as ShippingRate['type'] } : null)}><option value="flat">Flat rate</option><option value="free">Free delivery</option><option value="price_based">Order value range</option><option value="weight_based">Weight range</option></select></label>
+                                                        {rangeFields.map((field, index) => <Input key={field} label={rangeLabels[index]} type="number" min={0} step={field.includes('amount') ? '0.01' : '1'} value={addRateForm[field]} onChange={event => setAddRateForm(previous => previous ? { ...previous, [field]: event.target.value } : null)} helperText="Optional. Empty means no limit." />)}
+                                                        <label><Input unstyled type="checkbox" checked={addRateForm.cod_enabled} onChange={event => setAddRateForm(previous => previous ? { ...previous, cod_enabled: event.target.checked } : null)} /> Cash on delivery</label>
+                                                        <label><Input unstyled type="checkbox" checked={addRateForm.is_active} onChange={event => setAddRateForm(previous => previous ? { ...previous, is_active: event.target.checked } : null)} /> Active</label>
                                                         <Button type="button" onClick={() => void handleAddRate()} loading={addRateForm.saving}>
-                                                            Add rate
+                                                            {addRateForm.id ? 'Save rate' : 'Add rate'}
                                                         </Button>
                                                     </div>
                                                 </div>

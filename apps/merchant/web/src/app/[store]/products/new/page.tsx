@@ -29,6 +29,7 @@ import {
     normalizeProductSnapshot,
 } from '@/lib/product-form-state'
 import { VariantFactsEditor } from '@/components/products/VariantFactsEditor'
+import { ShippingProfilePicker } from '@/components/products/ShippingProfilePicker'
 import { editVariantFacts, rebaseVariantFacts, variantFactsBaselineKnown, variantFactsValue } from '@/lib/variant-facts-draft'
 import { NicheFactsEditor } from '@/components/products/NicheFactsEditor'
 import { ApparelFactsEditor } from '@/components/products/ApparelFactsEditor'
@@ -131,6 +132,7 @@ export default function AddProductPage() {
     const [isPhysical, setIsPhysical] = useState(defaultProductSnapshot.isPhysical)
     const [weight, setWeight] = useState(defaultProductSnapshot.weight)
     const [weightUnit, setWeightUnit] = useState(defaultProductSnapshot.weightUnit)
+    const [shippingProfileId,setShippingProfileId]=useState<string|undefined>(undefined)
     const [countryOfOrigin, setCountryOfOrigin] = useState(defaultProductSnapshot.countryOfOrigin)
     const [importerDetails, setImporterDetails] = useState(defaultProductSnapshot.importerDetails)
     const [hsCode, setHsCode] = useState(defaultProductSnapshot.hsCode)
@@ -217,6 +219,7 @@ export default function AddProductPage() {
         isPhysical,
         weight,
         weightUnit,
+        shippingProfileId,
         countryOfOrigin,
         importerDetails,
         hsCode,
@@ -263,6 +266,7 @@ export default function AddProductPage() {
         vendor,
         weight,
         weightUnit,
+        shippingProfileId,
     ])
 
     const currentSignature = useMemo(() => createFormSignature(currentSnapshot), [currentSnapshot])
@@ -337,6 +341,7 @@ export default function AddProductPage() {
         setIsPhysical(snapshot.isPhysical)
         setWeight(snapshot.weight)
         setWeightUnit(snapshot.weightUnit)
+        setShippingProfileId(snapshot.shippingProfileId)
         setCountryOfOrigin(snapshot.countryOfOrigin)
         setImporterDetails(snapshot.importerDetails)
         setHsCode(snapshot.hsCode)
@@ -1124,6 +1129,7 @@ export default function AddProductPage() {
 
                     <Card>
                         <Section title="Shipping" description="Collect fulfillment and customs information for physical products.">
+                            <ShippingProfilePicker store={store} value={shippingProfileId} onChange={setShippingProfileId}/>
                             <CheckboxControl checked={isPhysical} onChange={setIsPhysical}>
                                 This is a physical product
                             </CheckboxControl>

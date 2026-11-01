@@ -142,6 +142,6 @@ test('Task 003 hosted checkout live origin is human-required, not auto-cut over'
 test('signed hosted delivery options use storefront quotes for storefront carts and preserve per-rate COD eligibility', () => {
     const deliveryOptionsRoute = routeSource.slice(routeSource.indexOf("checkoutRouter.get('/:cartId/delivery-options'"), routeSource.indexOf("checkoutRouter.post('/:cartId/contact'"));
     assert.match(deliveryOptionsRoute, /sales_origin === 'marketplace'[\s\S]*checkoutDeliveryOptions/);
-    assert.match(deliveryOptionsRoute, /listStorefrontShippingRates\(db, verified\.handoff\.siteId, address, subtotalMinor\)/);
+    assert.match(deliveryOptionsRoute, /listStorefrontShippingRates\(db, verified\.handoff\.siteId, address, subtotalMinor, checkoutOrderItems\(verified\.handoff\.cart\)\)/);
     assert.match(deliveryOptionsRoute, /cod_available: rate\.cod_available/);
 });

@@ -1,4 +1,5 @@
 'use client';
+import { CheckoutTotalsQuoteSchema, type CheckoutTotalsQuote } from '@letbuyy/shared-types';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -7,6 +8,7 @@ import { readOrderItemFactSnapshot, savedOrderOptions } from '@/lib/order-fact-r
 import { useWishlist } from '@/context/wishlist-context';
 
 interface OrderDetail {
+    totals_quote?: CheckoutTotalsQuote;
     id: string;
     order_number?: string | null;
     status?: string | null;
@@ -90,6 +92,7 @@ export default function OrderDetailClient({ subdomain, id }: { subdomain: string
     if (signedOut) return <main className="mx-auto max-w-3xl space-y-4 p-6"><h1 className="text-2xl font-bold">Sign in to view this order</h1><p>Your linked orders are private to your LetBuyy account.</p><a className="inline-flex rounded-xl px-4 py-3 font-semibold" style={{ backgroundColor: 'var(--primary)', color: 'var(--lb-color-text-inverse, white)' }} href={`/api/buyer-auth/start?return_to=${encodeURIComponent(`${basePath}/account/orders/${id}`)}`}>Continue with LetBuyy</a><Link className="block underline" href={`${basePath}/account/orders`}>Back to orders</Link></main>;
     if (message || !order) return <main className="mx-auto max-w-3xl space-y-4 p-6"><h1 className="text-2xl font-bold">Order unavailable</h1><p role="alert">{message || 'This order is unavailable.'}</p><Link className="underline" href={`${basePath}/account/orders`}>Back to orders</Link></main>;
 
+    const quote = CheckoutTotalsQuoteSchema.safeParse(order.totals_quote);
     const items = Array.isArray(order.items) ? order.items : [];
     const address = order.shipping_address && typeof order.shipping_address === 'object'
         ? Object.values(order.shipping_address).filter((part) => typeof part === 'string' && part.trim()).join(', ')
@@ -111,7 +114,7 @@ export default function OrderDetailClient({ subdomain, id }: { subdomain: string
                     {order.subtotal != null && <div className="flex justify-between"><dt>Subtotal</dt><dd>{formatMoney(order.subtotal, order.currency)}</dd></div>}
                     {(order.coupon_code || Number(order.discount) > 0) && <div className="flex justify-between"><dt>{order.coupon_code ? `Coupon (${order.coupon_code})` : 'Discount'}</dt><dd>−{formatMoney(order.discount, order.currency)}</dd></div>}
                     {order.shipping_cost != null && <div className="flex justify-between"><dt>Shipping</dt><dd>{formatMoney(order.shipping_cost, order.currency)}</dd></div>}
-                    {order.tax != null && <div className="flex justify-between"><dt>Tax</dt><dd>{formatMoney(order.tax, order.currency)}</dd></div>}
+                    {order.tax != null && <div className="flex justify-between"><dt>{quote.success && quote.data.included_tax_minor > 0 ? 'GST (includes tax already in prices)' : 'Tax'}</dt><dd>{formatMoney(order.tax, order.currency)}</dd></div>}
                     <div className="flex justify-between border-t pt-2 text-base font-bold"><dt>Final total</dt><dd>{formatMoney(order.total, order.currency)}</dd></div>
                 </dl>
             </section>
