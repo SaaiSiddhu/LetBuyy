@@ -88,7 +88,7 @@ export default function ForgotPasswordPage() {
         try {
             const res = await fetch('/api/auth/send-reset', {
                 method: 'POST',
-                headers: getAuthHeaders(),
+                headers: (await getAuthHeaders()),
                 body: JSON.stringify({
                     email: email.trim(),
                     turnstileToken,
