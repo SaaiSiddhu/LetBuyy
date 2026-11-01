@@ -542,13 +542,14 @@ void main() {
       });
       await tester.pumpAndSettle();
       expect(find.textContaining('Private upload is unavailable.'), findsOneWidget);
-      expect(tester.widget<FloatingActionButton>(find.byType(FloatingActionButton)).onPressed, isNull);
+      expect(find.text('Add document'), findsNothing);
       expect(tester.widget<TextButton>(find.byKey(const ValueKey('record-reference-bank_proof'))).onPressed, isNull);
       expect(f.calls.where((r) => r.method == 'POST'), isEmpty);
       await tester.tap(find.byTooltip('Refresh'));
       await tester.pump();
       await replyWidget(tester, f, overview('store-a', status: 'in_progress'));
       await tester.pumpAndSettle();
+      expect(find.text('Add document'), findsOneWidget);
       expect(tester.widget<FloatingActionButton>(find.byType(FloatingActionButton)).onPressed, isNotNull);
     },
   );
@@ -937,20 +938,24 @@ void main() {
       await tester.pumpWidget(f.screen());
       await tester.pump();
       expect(find.text('Private document upload'), findsOneWidget);
+      expect(find.text('Checking private upload availability.'), findsOneWidget);
       expect(find.text('Camera'), findsNothing);
       expect(find.text('Gallery'), findsNothing);
       expect(find.text('Submit'), findsNothing);
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
+      expect(find.text('Add document'), findsNothing);
       await replyWidget(tester, f, {}, status: 403);
       await tester.pumpAndSettle();
       expect(
         find.text('You do not have access to verification for this store.'),
         findsOneWidget,
       );
+      expect(find.text('Add document'), findsNothing);
       await tester.tap(find.text('Retry'));
       await tester.pump();
       await replyWidget(tester, f, overview('store-a'));
       await tester.pumpAndSettle();
+      expect(find.text('Add document'), findsOneWidget);
       expect(find.text('retained-proof.png'), findsNothing);
       expect(find.textContaining('retained-proof.png'), findsOneWidget);
       expect(
@@ -961,6 +966,33 @@ void main() {
         f.calls.every((r) => r.method == 'GET' && r.path.endsWith('/kyc')),
         isTrue,
       );
+    },
+  );
+
+  testWidgets(
+    'provider outage presents Retry without an unavailable upload action',
+    (tester) async {
+      final f = Fixture();
+      await tester.pumpWidget(f.screen());
+      await tester.pump();
+      await replyWidget(tester, f, {}, status: 503);
+      await tester.pumpAndSettle();
+      expect(
+        find.text('Verification details are temporarily unavailable.'),
+        findsOneWidget,
+      );
+      expect(
+        find.text('Verification is unavailable. Retry to check whether private upload is available.'),
+        findsOneWidget,
+      );
+      expect(find.text('Retry'), findsOneWidget);
+      expect(find.text('Add document'), findsNothing);
+      await tester.tap(find.text('Retry'));
+      await tester.pump();
+      await replyWidget(tester, f, overview('store-a', status: 'in_progress'));
+      await tester.pumpAndSettle();
+      expect(find.text('Add document'), findsOneWidget);
+      expect(f.calls.where((r) => r.method == 'POST'), isEmpty);
     },
   );
 

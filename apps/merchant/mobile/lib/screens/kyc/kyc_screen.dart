@@ -253,6 +253,11 @@ class _KycScreenState extends State<KycScreen> {
   @override
   Widget build(BuildContext context) {
     final colors = AppThemeColors.of(context);
+    final canAddDocument =
+        !_loading &&
+        _error == null &&
+        _storeId != null &&
+        _overview?['private_upload_available'] == true;
 
     return Scaffold(
       backgroundColor: colors.card,
@@ -269,25 +274,24 @@ class _KycScreenState extends State<KycScreen> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed:
-            _loading ||
-                _referenceOpen ||
-                _storeId == null ||
-                _error != null ||
-                _overview?['private_upload_available'] != true
-            ? null
-            : () => _showReferenceDialog(),
-        icon: const Icon(Icons.edit_note),
-        label: const Text('Add document'),
-      ),
+      floatingActionButton: canAddDocument
+          ? FloatingActionButton.extended(
+              onPressed: _referenceOpen ? null : () => _showReferenceDialog(),
+              icon: const Icon(Icons.edit_note),
+              label: const Text('Add document'),
+            )
+          : null,
       body: Column(
         children: [
           ListTile(
             leading: const Icon(Icons.lock_outline),
             title: const Text('Private document upload'),
             subtitle: Text(
-              _overview?['private_upload_available'] == false
+              _loading
+                  ? 'Checking private upload availability.'
+                  : _error != null
+                  ? 'Verification is unavailable. Retry to check whether private upload is available.'
+                  : _overview?['private_upload_available'] == false
                   ? 'Private upload is unavailable. Your saved status remains visible; retry later.'
                   : 'Upload verification documents here. A private upload awaits a security scan before provider review.',
             ),
