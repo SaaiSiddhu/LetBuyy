@@ -70,6 +70,7 @@ const REQUIRED_DOCUMENTS: Array<{ document_type: MerchantKycDocumentType; title:
     { document_type: 'bank_proof', title: 'Bank proof', required: true },
     { document_type: 'address_proof', title: 'Business address proof', required: true },
     { document_type: 'gst_certificate', title: 'GST certificate', required: false },
+    { document_type: 'identity_proof', title: 'Identity proof', required: false },
 ];
 
 function requiredDocuments(isGstRegistered: boolean) {

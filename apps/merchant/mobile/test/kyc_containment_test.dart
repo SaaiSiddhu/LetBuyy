@@ -33,6 +33,7 @@ Map<String, dynamic> overview(
     {
       'document_type': 'bank_proof',
       'title': 'Bank proof',
+      'required': true,
       'status': 'verified',
     },
   ],
@@ -479,6 +480,8 @@ void main() {
       await tester.pump();
       await replyWidget(tester, f, overview('store-a'));
       await tester.pumpAndSettle();
+      expect(find.text('Verification documents'), findsOneWidget);
+      expect(find.text('Required · Verified'), findsOneWidget);
       await openReference(tester);
       await tester.runAsync(() async {
         await tester.tap(find.widgetWithText(FilledButton, 'Upload document'));

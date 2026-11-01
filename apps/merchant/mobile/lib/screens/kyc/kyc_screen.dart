@@ -309,7 +309,7 @@ class _KycScreenState extends State<KycScreen> {
                             _StatusPanel(overview: overview),
                             const SizedBox(height: 16),
                             Text(
-                              'Required documents',
+                              'Verification documents',
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
@@ -461,15 +461,19 @@ class _RequirementTile extends StatelessWidget {
     final status = referenceRecorded
         ? 'submitted'
         : item['status']?.toString() ?? 'draft';
+    final requirement = item['required'] == true
+        ? 'Required'
+        : item['required'] == false
+        ? 'Optional'
+        : null;
+    final progress = referenceRecorded
+        ? 'Reference recorded · Upload required'
+        : _statusTitle(status);
     return ListTile(
       contentPadding: EdgeInsets.zero,
       leading: Icon(_statusIcon(status), color: _statusColor(status)),
       title: Text(item['title']?.toString() ?? 'Document'),
-      subtitle: Text(
-        referenceRecorded
-            ? 'Reference recorded · Upload required'
-            : _statusTitle(status),
-      ),
+      subtitle: Text(requirement == null ? progress : '$requirement · $progress'),
       trailing: TextButton(
         key: ValueKey('record-reference-${item['document_type']}'),
         onPressed: onRecord,

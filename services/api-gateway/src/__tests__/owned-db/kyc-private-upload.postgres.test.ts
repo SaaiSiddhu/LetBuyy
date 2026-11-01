@@ -338,6 +338,8 @@ test('KYC API follows canonical GST registration when declaring required evidenc
         const before = await overview();
         assert.equal(before.status, 200, before.text);
         assert.equal(gstRequirement(before)?.required, false);
+        assert.equal(before.json?.data.required_documents.find((item: { document_type: string }) =>
+            item.document_type === 'identity_proof')?.required, false);
         for (const documentType of ['business_pan', 'bank_proof', 'address_proof']) {
             owned.psql(`INSERT INTO merchant_kyc_documents(site_id,document_type,document_number_last4,status,
                 provider,provider_mode,provider_reference,metadata,verified_at)

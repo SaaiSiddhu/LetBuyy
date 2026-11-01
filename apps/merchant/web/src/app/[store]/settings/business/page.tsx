@@ -473,12 +473,8 @@ export default function BusinessSettingsPage() {
             { document_type: 'bank_proof', title: 'Bank proof', required: true, status: null },
             { document_type: 'address_proof', title: 'Business address proof', required: true, status: null },
             { document_type: 'gst_certificate', title: 'GST certificate', required: false, status: null },
+            { document_type: 'identity_proof', title: 'Identity proof', required: false, status: null },
         ])
-    // Aadhaar / identity proof is an optional KYC step the gateway accepts but
-    // does not list as required — surface it so merchants can complete it.
-    const renderDocs: KycRequirement[] = requiredDocs.some((d) => d.document_type === 'identity_proof')
-        ? requiredDocs
-        : [...requiredDocs, { document_type: 'identity_proof', title: 'Identity proof', required: false, status: docByType.get('identity_proof')?.status ?? null }]
 
     return (
         <SettingsPane
@@ -595,7 +591,7 @@ export default function BusinessSettingsPage() {
                     </div>
 
                     <div className="settings-business-kyc-list">
-                        {renderDocs.map((req) => {
+                        {requiredDocs.map((req) => {
                             const meta = DOC_META[req.document_type]
                             const DocIcon = meta.Icon
                             const existing = docByType.get(req.document_type)
