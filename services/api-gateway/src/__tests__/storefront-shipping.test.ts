@@ -58,8 +58,9 @@ test('public storefront quote and final order use the locked, reviewed seller ra
 test('buyer checkout requires an explicit returned rate and submits its reviewed amount', () => {
     assert.match(checkoutClient, /fetch\('\/api\/shipping\/rates'/);
     assert.match(checkoutClient, /if \(!selectedRateId \|\| !selectedRate\)/);
-    assert.match(checkoutClient, /shippingRateId: selectedRate\?\.id \?\? null/);
-    assert.match(checkoutClient, /shippingAmountMinor: selectedRate\?\.amount_minor \?\? null/);
+    assert.match(checkoutClient, /shipping_quote: selectedRate\?\.id \? \{/);
+    assert.match(checkoutClient, /shipping_rate_id: selectedRate\.id/);
+    assert.match(checkoutClient, /expected_shipping_amount: selectedRate\.amount_minor \/ 100/);
     assert.match(checkoutClient, /selectedRate\?\.cod_available/);
     assert.doesNotMatch(checkoutClient, /amount:\s*method\s*===\s*['"]express['"]\s*\?\s*99/);
 });
