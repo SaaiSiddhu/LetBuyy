@@ -5,7 +5,8 @@ import { randomUUID } from 'node:crypto';
 import { requireOwnedDatabase } from './owned-db-support';
 import { Gateway, gatewayEnv, newIdentityKeys, signedIdentityHeaders, tapRest } from './gateway-harness';
 import { newSyntheticTenant, seedSyntheticTenant } from './synthetic-tenant';
-import { drainKycPrivateObjectCleanup } from '../../lib/kyc-private-object-cleanup';
+import { drainKycPrivateObjectCleanup, reserveKycPrivateObject } from '../../lib/kyc-private-object-cleanup';
+import { getSupabaseAdminFromEnv } from '../../lib/supabase';
 import worker from '../../index';
 
 const owned = requireOwnedDatabase();
@@ -37,11 +38,15 @@ test('KYC file upload remains private, tenant-owned and pending provider evidenc
       UPDATE sites SET custom_user_id='${owner}' WHERE id='${tenant.siteId}';
       UPDATE sites SET custom_user_id='${other}' WHERE id='${otherTenant.siteId}';`);
     const objects = new Map<string, Uint8Array>();
+    let putCalls = 0;
     let pauseUploads: (() => Promise<void>) | null = null;
     let failDeleteKey: string | null = null;
     let failDeleteCount = 0;
     const bucket = {
         put: async (key: string, bytes: Uint8Array) => {
+            putCalls += 1;
+            assert.equal(owned.psql(`SELECT status FROM kyc_private_object_cleanup_jobs WHERE object_key='${key}';`),
+                'pending', 'a durable cleanup receipt exists before private bytes reach R2');
             if (pauseUploads) await pauseUploads();
             objects.set(key, bytes);
         },
@@ -85,6 +90,41 @@ test('KYC file upload remains private, tenant-owned and pending provider evidenc
     assert.ok(!first.text.includes('private_object_key'));
     assert.ok(!first.text.includes('kyc/'));
     assert.equal(objects.size, 1);
+    const currentKey = JSON.parse(owned.psql(`SELECT metadata::text FROM merchant_kyc_documents
+        WHERE site_id='${tenant.siteId}' AND document_type='business_pan';`)).private_object_key as string;
+    assert.equal(owned.psql(`SELECT purpose || ':' || status || ':' || outcome FROM kyc_private_object_cleanup_jobs
+        WHERE object_key='${currentKey}';`), 'upload_reservation:completed:retained');
+    // Reproduce an interrupted upload after R2 put but before its evidence row.
+    const abandonedKey = `kyc/${tenant.siteId}/business_pan/${randomUUID()}`;
+    await reserveKycPrivateObject(getSupabaseAdminFromEnv(gateway.env), tenant.siteId, abandonedKey);
+    objects.set(abandonedKey, new TextEncoder().encode('%PDF-1.7\ninterrupted'));
+    owned.psql(`UPDATE kyc_private_object_cleanup_jobs SET next_attempt_at=now()
+        WHERE object_key='${abandonedKey}';`);
+    const abandonedCleanup = await drainKycPrivateObjectCleanup(gateway.env);
+    assert.equal(abandonedCleanup.deleted, 1, 'the retry worker removes abandoned private bytes');
+    assert.equal(objects.has(abandonedKey), false);
+    assert.equal(owned.psql(`SELECT status || ':' || outcome FROM kyc_private_object_cleanup_jobs
+        WHERE object_key='${abandonedKey}';`), 'completed:deleted');
+    // Reproduce a crash after the evidence row commits but before its receipt closes.
+    owned.psql(`UPDATE kyc_private_object_cleanup_jobs SET status='pending', outcome=NULL, completed_at=NULL,
+        next_attempt_at=now() WHERE object_key='${currentKey}';`);
+    const retainedCleanup = await drainKycPrivateObjectCleanup(gateway.env);
+    assert.equal(retainedCleanup.deleted, 0, 'the retry worker preserves a current document');
+    assert.equal(objects.has(currentKey), true);
+    assert.equal(owned.psql(`SELECT status || ':' || outcome FROM kyc_private_object_cleanup_jobs
+        WHERE object_key='${currentKey}';`), 'completed:retained');
+    owned.psql(`ALTER TABLE public.kyc_private_object_cleanup_jobs
+        ADD CONSTRAINT kyc_receipt_outage_fixture CHECK (purpose <> 'upload_reservation') NOT VALID;`);
+    try {
+        const objectCount = objects.size;
+        const putCallCount = putCalls;
+        const receiptOutage = await upload(tenant.siteId, pdf());
+        assert.equal(receiptOutage.status, 500, 'an unavailable cleanup receipt fails the upload closed');
+        assert.equal(putCalls, putCallCount, 'the failed receipt never calls private storage');
+        assert.equal(objects.size, objectCount, 'no private bytes are written without a durable receipt');
+    } finally {
+        owned.psql('ALTER TABLE public.kyc_private_object_cleanup_jobs DROP CONSTRAINT kyc_receipt_outage_fixture;');
+    }
     const asAuthenticatedOwner = (sql: string) => owned.script(
         `SET ROLE authenticated; SET request.jwt.claim.sub = '${owner}'; ${sql}`);
     const ownerOverview = await gateway.request(`/v1/kyc?store_id=${tenant.siteId}`, {
@@ -126,6 +166,8 @@ test('KYC file upload remains private, tenant-owned and pending provider evidenc
     assert.equal(objects.has(priorKey), false);
     assert.equal(owned.psql(`SELECT status FROM kyc_private_object_cleanup_jobs WHERE object_key='${priorKey}';`),
         'completed', 'an immediate successful delete closes its durable cleanup record');
+    assert.equal(owned.psql(`SELECT purpose || ':' || outcome FROM kyc_private_object_cleanup_jobs
+        WHERE object_key='${priorKey}';`), 'replaced_object:deleted');
     const oldKeyReplay = await upload(tenant.siteId, pdf(), firstKey);
     assert.equal(oldKeyReplay.status, 409, 'a completed upload key must remain consumed after a newer document replaces it');
     assert.equal(oldKeyReplay.json?.error?.code, 'KYC_UPLOAD_SUPERSEDED');

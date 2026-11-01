@@ -7,6 +7,7 @@ interface CleanupJob {
     id: string;
     site_id: string;
     object_key: string;
+    purpose: 'replaced_object' | 'upload_reservation';
     attempts: number;
 }
 
@@ -21,11 +22,24 @@ async function isUnreferenced(db: KycDatabase, siteId: string, key: string): Pro
     return !(data || []).some(row => row.metadata?.private_object_key === key);
 }
 
-/** Queue an object whose database write failed and whose immediate R2 delete also failed. */
-export async function queueUnreferencedKycObject(db: KycDatabase, siteId: string, key: string): Promise<void> {
+/** A durable receipt must exist before R2 can contain the new private object. */
+export async function reserveKycPrivateObject(db: KycDatabase, siteId: string, key: string): Promise<void> {
     if (!isOwnedKycKey(siteId, key)) throw new Error('KYC cleanup refused an unowned object key');
-    const { error } = await db.from('kyc_private_object_cleanup_jobs').insert({ site_id: siteId, object_key: key });
-    if (error && error.code !== '23505') throw new Error('KYC private cleanup receipt could not be saved');
+    const { error } = await db.from('kyc_private_object_cleanup_jobs').insert({
+        site_id: siteId, object_key: key, purpose: 'upload_reservation',
+        // An upload in progress must not race its own cleanup worker.
+        next_attempt_at: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
+    });
+    if (error) throw new Error('KYC private cleanup receipt could not be saved');
+}
+
+/** If this receipt update fails, cron will see the live reference and retain it. */
+export async function markKycPrivateObjectRetained(db: KycDatabase, siteId: string, key: string): Promise<boolean> {
+    if (!isOwnedKycKey(siteId, key)) throw new Error('KYC cleanup refused an unowned object key');
+    const { error } = await db.from('kyc_private_object_cleanup_jobs')
+        .update({ status: 'completed', outcome: 'retained', completed_at: new Date().toISOString() })
+        .eq('site_id', siteId).eq('object_key', key).eq('purpose', 'upload_reservation').eq('status', 'pending');
+    return !error;
 }
 
 /** A successful immediate delete is idempotent; the durable job covers a failed receipt update. */
@@ -41,7 +55,7 @@ export async function tryDeleteReplacedKycObject(
         return false;
     }
     const { error } = await db.from('kyc_private_object_cleanup_jobs')
-        .update({ status: 'completed', completed_at: new Date().toISOString() })
+        .update({ status: 'completed', outcome: 'deleted', completed_at: new Date().toISOString() })
         .eq('site_id', siteId).eq('object_key', key).eq('status', 'pending');
     // If this write fails, scheduled deletion safely repeats the idempotent R2 delete.
     return !error;
@@ -65,11 +79,17 @@ export async function drainKycPrivateObjectCleanup(env: Env, limit = 20): Promis
         try {
             if (!isOwnedKycKey(job.site_id, job.object_key)) throw new Error('Unowned KYC object key');
             if (!await isUnreferenced(db, job.site_id, job.object_key)) {
-                throw new Error('KYC object is still referenced');
+                if (job.purpose !== 'upload_reservation') throw new Error('Replaced KYC object is still referenced');
+                const { error: retainedError } = await db.from('kyc_private_object_cleanup_jobs')
+                    .update({ status: 'completed', outcome: 'retained', completed_at: new Date().toISOString() })
+                    .eq('id', job.id).eq('site_id', job.site_id)
+                    .eq('purpose', 'upload_reservation').eq('status', 'pending');
+                if (retainedError) throw new Error('KYC retention receipt update failed');
+                continue;
             }
             await bucket.delete(job.object_key);
             const { error: updateError } = await db.from('kyc_private_object_cleanup_jobs')
-                .update({ status: 'completed', completed_at: new Date().toISOString() })
+                .update({ status: 'completed', outcome: 'deleted', completed_at: new Date().toISOString() })
                 .eq('id', job.id).eq('site_id', job.site_id).eq('status', 'pending');
             if (updateError) throw new Error('KYC cleanup receipt update failed');
             deleted += 1;

@@ -7,7 +7,7 @@ import { IdempotencyExecutionAdapter } from '../execution/idempotency-execution.
 import { getSupabaseAdmin, success } from '../lib/supabase';
 import { resolveTenantContextForOwnedSite } from '../lib/tenant-context';
 import { acceptsLiveKycApproval, effectiveKycDocumentStatus, hasLiveProviderEvidence } from '../lib/kyc-evidence-status';
-import { queueUnreferencedKycObject, tryDeleteReplacedKycObject } from '../lib/kyc-private-object-cleanup';
+import { markKycPrivateObjectRetained, reserveKycPrivateObject, tryDeleteReplacedKycObject } from '../lib/kyc-private-object-cleanup';
 import { validate } from '../middleware/validation';
 import {
     createKycVerificationAdapter,
@@ -346,6 +346,7 @@ router.post('/documents/upload', bodyLimit({ maxSize: 6 * 1024 * 1024 }), async 
     }
     const key = `kyc/${tenant.siteId}/${input.data.document_type}/${crypto.randomUUID()}`;
     try {
+        await reserveKycPrivateObject(db, tenant.siteId, key);
         await bucket.put(key, bytes, { httpMetadata: { contentType, contentDisposition: 'attachment' } });
         const now = new Date().toISOString();
         const values = {
@@ -380,10 +381,12 @@ router.post('/documents/upload', bodyLimit({ maxSize: 6 * 1024 * 1024 }), async 
             if (result.error || !result.data) throw new Error('KYC document save failed');
             document = result.data as KycDocumentRow;
         } catch (error) {
-            try { await bucket.delete(key); }
-            catch { await queueUnreferencedKycObject(db, tenant.siteId, key); }
+            // The pre-write reservation survives either an R2 deletion outage
+            // or a worker crash between put and this catch block.
+            await tryDeleteReplacedKycObject(db, bucket, tenant.siteId, key);
             throw error;
         }
+        await markKycPrivateObjectRetained(db, tenant.siteId, key);
         const oldKey = prior?.metadata?.private_object_key;
         if (typeof oldKey === 'string' && oldKey.startsWith(`kyc/${tenant.siteId}/`)) {
             // The row-update trigger queued this exact old key in the same

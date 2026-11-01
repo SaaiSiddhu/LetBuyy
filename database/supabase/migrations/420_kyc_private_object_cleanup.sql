@@ -19,7 +19,13 @@ CREATE TABLE public.kyc_private_object_cleanup_jobs (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   site_id uuid NOT NULL REFERENCES public.sites(id) ON DELETE RESTRICT,
   object_key text NOT NULL UNIQUE,
+  purpose text NOT NULL DEFAULT 'replaced_object' CHECK (purpose IN ('replaced_object', 'upload_reservation')),
   status text NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'completed')),
+  outcome text CHECK (outcome IN ('deleted', 'retained')),
+  CONSTRAINT kyc_private_cleanup_completion CHECK (
+    (status = 'pending' AND outcome IS NULL AND completed_at IS NULL) OR
+    (status = 'completed' AND outcome IS NOT NULL AND completed_at IS NOT NULL)
+  ),
   attempts integer NOT NULL DEFAULT 0 CHECK (attempts >= 0),
   next_attempt_at timestamptz NOT NULL DEFAULT now(),
   completed_at timestamptz,
@@ -50,10 +56,10 @@ CREATE TRIGGER kyc_private_cleanup_updated_at
 -- service-only RPC is the reviewed exception to the Gateway's tenant query
 -- guard; every subsequent read and update carries the discovered site_id.
 CREATE FUNCTION public.list_due_kyc_private_cleanup_v1(p_limit integer DEFAULT 20)
-RETURNS TABLE(id uuid, site_id uuid, object_key text, attempts integer)
+RETURNS TABLE(id uuid, site_id uuid, object_key text, purpose text, attempts integer)
 LANGUAGE sql SECURITY DEFINER STABLE
 SET search_path = pg_catalog, public AS $fn$
-  SELECT j.id, j.site_id, j.object_key, j.attempts
+  SELECT j.id, j.site_id, j.object_key, j.purpose, j.attempts
     FROM public.kyc_private_object_cleanup_jobs AS j
    WHERE j.status = 'pending' AND j.deleted_at IS NULL
      AND j.next_attempt_at <= now()
@@ -77,7 +83,10 @@ BEGIN
   END IF;
   INSERT INTO public.kyc_private_object_cleanup_jobs(site_id, object_key)
   VALUES (OLD.site_id, old_key)
-  ON CONFLICT (object_key) DO NOTHING;
+  ON CONFLICT (object_key) DO UPDATE SET
+    purpose = 'replaced_object', status = 'pending', outcome = NULL,
+    completed_at = NULL, next_attempt_at = now(), attempts = 0
+  WHERE public.kyc_private_object_cleanup_jobs.site_id = EXCLUDED.site_id;
   RETURN NEW;
 END $fn$;
 
