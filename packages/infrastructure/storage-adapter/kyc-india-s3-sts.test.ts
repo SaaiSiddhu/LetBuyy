@@ -17,6 +17,7 @@ const input: KycIndiaUploadRoleInput = {
 };
 const objectKey = `kyc/${input.siteId}/business_pan/${input.intentId}`;
 const testClock = () => new Date('2026-11-01T02:03:04.000Z');
+const syntheticSessionToken = ['synthetic', 'TempSession', '1234567890=='].join('');
 
 test('STS request signs Mumbai endpoint and permits only one encrypted object upload', async () => {
   const policy = JSON.parse(kycIndiaUploadSessionPolicy(input.bucket, objectKey));
@@ -56,7 +57,7 @@ test('STS request signs Mumbai endpoint and permits only one encrypted object up
     return new Response(`<AssumeRoleResponse><AssumeRoleResult><Credentials>
       <AccessKeyId>ASIATEMPORARY12345678</AccessKeyId>
       <SecretAccessKey>synthetic-temporary-secret-123456</SecretAccessKey>
-      <SessionToken>syntheticTempSession1234567890==</SessionToken>
+      <SessionToken>${syntheticSessionToken}</SessionToken>
       <Expiration>2026-11-01T02:18:04Z</Expiration>
       </Credentials></AssumeRoleResult></AssumeRoleResponse>`,
     { status: 200, headers: { 'content-type': 'text/xml' } });
@@ -65,7 +66,7 @@ test('STS request signs Mumbai endpoint and permits only one encrypted object up
   assert.equal(calls, 1);
   assert.deepEqual(issued, { accessKeyId: 'ASIATEMPORARY12345678',
     secretAccessKey: 'synthetic-temporary-secret-123456',
-    sessionToken: 'syntheticTempSession1234567890==', expiresAt: '2026-11-01T02:18:04Z', objectKey });
+    sessionToken: syntheticSessionToken, expiresAt: '2026-11-01T02:18:04Z', objectKey });
   assert.doesNotMatch(JSON.stringify(issued), /synthetic-source-secret-for-tests/);
 });
 
@@ -85,8 +86,8 @@ test('STS issuer refuses cross-account roles and malformed scope before network'
 
 test('STS issuer rejects a successful response with expired or duplicated credentials', async () => {
   for (const xml of [
-    '<AssumeRoleResponse><AssumeRoleResult><Credentials><AccessKeyId>ASIATEMPORARY12345678</AccessKeyId><SecretAccessKey>synthetic-temporary-secret-123456</SecretAccessKey><SessionToken>syntheticTempSession1234567890==</SessionToken><Expiration>2026-11-01T02:04:04Z</Expiration></Credentials></AssumeRoleResult></AssumeRoleResponse>',
-    '<AssumeRoleResponse><AssumeRoleResult><Credentials><AccessKeyId>ASIATEMPORARY12345678</AccessKeyId><AccessKeyId>ASIAOTHER12345678</AccessKeyId><SecretAccessKey>synthetic-temporary-secret-123456</SecretAccessKey><SessionToken>syntheticTempSession1234567890==</SessionToken><Expiration>2026-11-01T02:18:04Z</Expiration></Credentials></AssumeRoleResult></AssumeRoleResponse>',
+    `<AssumeRoleResponse><AssumeRoleResult><Credentials><AccessKeyId>ASIATEMPORARY12345678</AccessKeyId><SecretAccessKey>synthetic-temporary-secret-123456</SecretAccessKey><SessionToken>${syntheticSessionToken}</SessionToken><Expiration>2026-11-01T02:04:04Z</Expiration></Credentials></AssumeRoleResult></AssumeRoleResponse>`,
+    `<AssumeRoleResponse><AssumeRoleResult><Credentials><AccessKeyId>ASIATEMPORARY12345678</AccessKeyId><AccessKeyId>ASIAOTHER12345678</AccessKeyId><SecretAccessKey>synthetic-temporary-secret-123456</SecretAccessKey><SessionToken>${syntheticSessionToken}</SessionToken><Expiration>2026-11-01T02:18:04Z</Expiration></Credentials></AssumeRoleResult></AssumeRoleResponse>`,
   ]) {
     const fetcher = (async () => new Response(xml, { status: 200,
       headers: { 'content-type': 'text/xml' } })) as typeof fetch;

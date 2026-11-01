@@ -261,6 +261,9 @@ export interface Env {
     KYC_INDIA_STS_ACCESS_KEY_ID?: string;
     KYC_INDIA_STS_SECRET_ACCESS_KEY?: string;
     KYC_INDIA_STS_SESSION_TOKEN?: string;
+    KYC_INDIA_HEAD_ACCESS_KEY_ID?: string;
+    KYC_INDIA_HEAD_SECRET_ACCESS_KEY?: string;
+    KYC_INDIA_HEAD_SESSION_TOKEN?: string;
     /** Approved server-only private-original profile. No default account/binding activation. */
     REEL_CUSTODY_PROFILE?: string;
     REEL_ORIGINALS_BUCKET?: R2Bucket;

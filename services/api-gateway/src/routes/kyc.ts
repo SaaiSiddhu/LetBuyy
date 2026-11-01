@@ -10,6 +10,7 @@ import { acceptsLiveKycApproval, effectiveKycDocumentStatus, hasLiveProviderEvid
 import { hasIsolatedKycPrivateBucket, markKycPrivateObjectRetained, reserveKycPrivateObject, tryDeleteReplacedKycObject } from '../lib/kyc-private-object-cleanup';
 import { validate } from '../middleware/validation';
 import { createIndiaUploadIntent } from '../execution/kyc-india-upload-intent.adapter';
+import { completeIndiaUpload } from '../execution/kyc-india-upload-complete.adapter';
 import {
     createKycVerificationAdapter,
     type MerchantKycDocumentStatus,
@@ -42,6 +43,11 @@ const IndiaUploadIntentSchema = StoreQuerySchema.extend({
     content_type: z.enum(['application/pdf', 'image/jpeg', 'image/png']),
     byte_size: z.number().int().min(1).max(5 * 1024 * 1024),
     sha256_hex: z.string().regex(/^[a-f0-9]{64}$/),
+});
+
+const IndiaUploadCompletionSchema = StoreQuerySchema.extend({
+    receipt_id: z.string().uuid(),
+    version_id: z.string().min(1).max(1024).refine(value => value !== 'null' && !/[\u0000-\u001f\u007f]/.test(value)),
 });
 
 const SubmitKycDocumentSchema = StoreQuerySchema.extend({
@@ -305,6 +311,22 @@ router.post('/documents/upload-intent', async (c, next) => {
     const input = c.get('validatedBody') as z.infer<typeof IndiaUploadIntentSchema>;
     const tenant = await resolveTenantContextForOwnedSite(c, input.store_id);
     return c.json(success(await createIndiaUploadIntent(c.env, tenant, input, key)), 201);
+});
+
+router.post('/documents/upload-complete', async (c, next) => {
+    if (c.env.ENVIRONMENT !== 'test' || c.env.KYC_INDIA_UPLOAD_ENABLED !== 'true') {
+        return c.json({ error: { code: 'KYC_INDIA_UPLOAD_UNAVAILABLE',
+            message: 'Private document upload is unavailable. Please retry later.' } }, 503);
+    }
+    await next();
+}, validate('json', IndiaUploadCompletionSchema), async (c) => {
+    const key = c.req.header('X-Idempotency-Key');
+    if (!key || key.length < 8 || key.length > 160) {
+        return c.json({ error: { code: 'IDEMPOTENCY_KEY_REQUIRED', message: 'A valid idempotency key is required.' } }, 400);
+    }
+    const input = c.get('validatedBody') as z.infer<typeof IndiaUploadCompletionSchema>;
+    const tenant = await resolveTenantContextForOwnedSite(c, input.store_id);
+    return c.json(success(await completeIndiaUpload(c.env, getSupabaseAdmin(c), tenant, input, key)), 201);
 });
 
 // The R2-shaped private store is an owned-test fixture only. Deployed uploads

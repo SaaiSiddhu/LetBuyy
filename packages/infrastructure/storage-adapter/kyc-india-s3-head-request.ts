@@ -83,5 +83,6 @@ export async function headKycIndiaS3Object(
   const response = await fetcher(`https://${host}${path}?${query}`, {
     method: 'HEAD', headers: requestHeaders, redirect: 'manual', signal: AbortSignal.timeout(5000),
   });
+  if (response.status >= 500) throw new Error('KYC_INDIA_S3_HEAD_UNAVAILABLE');
   return verifyKycIndiaS3Head(input, response);
 }

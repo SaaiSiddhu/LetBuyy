@@ -18,6 +18,7 @@ export interface IndiaUploadIntentInput {
 
 interface ReceiptRow {
     id: string;
+    created_by: string;
     status: string;
     expected_sha256_hex: string;
     expected_bytes: number;
@@ -60,7 +61,7 @@ export async function createIndiaUploadIntent(env: Env, tenant: TenantContext,
             [id, tenant.siteId, `kyc/${tenant.siteId}/${input.document_type}/${id}`,
                 input.document_type, input.sha256_hex, input.byte_size, input.content_type,
                 input.document_number_last4, idempotencyKey, tenant.userId]);
-            const rows = await tx.unsafe(`SELECT id,status,expected_sha256_hex,expected_bytes,
+            const rows = await tx.unsafe(`SELECT id,created_by,status,expected_sha256_hex,expected_bytes,
                 expected_content_type,reference_last4,intent_expires_at,
                 (intent_expires_at <= now()) AS expired
                 FROM public.kyc_private_object_cleanup_jobs
@@ -76,7 +77,8 @@ export async function createIndiaUploadIntent(env: Env, tenant: TenantContext,
         if (error instanceof TenantTransactionUnavailableError) unavailable();
         unavailable();
     }
-    if (row.expected_sha256_hex !== input.sha256_hex || Number(row.expected_bytes) !== input.byte_size
+    if (row.created_by !== tenant.userId
+        || row.expected_sha256_hex !== input.sha256_hex || Number(row.expected_bytes) !== input.byte_size
         || row.expected_content_type !== input.content_type
         || row.reference_last4 !== input.document_number_last4 || row.status !== 'pending' || row.expired) {
         throw new AppError('This upload key is already used or expired. Choose a new key and retry.', 409, 'KYC_INDIA_UPLOAD_CONFLICT');

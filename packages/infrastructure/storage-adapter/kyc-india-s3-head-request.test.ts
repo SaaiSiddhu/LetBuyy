@@ -72,4 +72,7 @@ test('backend HEAD refuses unsafe identifiers before network and mismatched prov
   assert.equal(calls, 0);
   await assert.rejects(headKycIndiaS3Object(input, fetcher), /KYC_INDIA_S3_HEAD_INVALID/);
   assert.equal(calls, 1);
+  await assert.rejects(headKycIndiaS3Object(input,
+    (async () => new Response(null, { status: 503 })) as typeof fetch),
+  /KYC_INDIA_S3_HEAD_UNAVAILABLE/);
 });
