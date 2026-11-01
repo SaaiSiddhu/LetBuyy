@@ -94,7 +94,9 @@ before(async () => {
     });
     await new Promise<void>(resolve => checkoutTls!.listen(0, '127.0.0.1', resolve));
     checkoutTlsPort = (checkoutTls.address() as { port: number }).port;
-    gateway = new Gateway(gatewayEnv(owned, keys, { ...proxy.env(), ENVIRONMENT: 'local',
+    // The synthetic KYC bucket is test-only; local auth still needs the owned
+    // email sink. No deployed environment uses this mixed fixture configuration.
+    gateway = new Gateway(gatewayEnv(owned, keys, { ...proxy.env(), ENVIRONMENT: 'test', APP_ENV: 'local',
         LETBUYY_IDENTITY_ISSUER: identityOrigin, NEXT_PUBLIC_STORE_ROOT_DOMAIN: 'localhost', CHECKOUT_ORIGIN: `https://checkout.localhost:${checkoutTlsPort}`,
         CHECKOUT_SIGNING_SECRET: crypto.randomUUID() + crypto.randomUUID(),
         KYC_UPLOAD_ENABLED: 'true',
@@ -509,6 +511,24 @@ test('Business disables private uploads on an unavailable KYC binding and recove
     await expect(pan.getByRole('button', { name: 'Upload document' })).toBeEnabled();
 });
 
+test('Merchant KYC proxy checks closed intake before parsing an upload body', { timeout: 180_000 }, async t => {
+    const f = await fixture('kyc-proxy-closed'); t.after(() => f.context.close());
+    await signIn(f.page, f.email);
+    gateway.env.KYC_UPLOAD_ENABLED = 'false';
+    t.after(() => { gateway.env.KYC_UPLOAD_ENABLED = 'true'; });
+    const before = privateKycObjects.size;
+    const response = await f.page.request.post(
+        `${merchantOrigin}/api/stores/${f.tenant.subdomain}/kyc/upload`,
+        { data: 'not-a-valid-multipart-document', headers: {
+            'content-type': 'multipart/form-data; boundary=missing',
+            'x-idempotency-key': crypto.randomUUID(),
+        } },
+    );
+    assert.equal(response.status(), 503, await response.text());
+    assert.equal((await response.json() as { error?: { code?: string } }).error?.code, 'KYC_UPLOAD_UNAVAILABLE');
+    assert.equal(privateKycObjects.size, before, 'closed intake cannot write a fixture object');
+});
+
 test('Merchant order detail renders generated order and immutable GST invoice numbers after a Business edit', { timeout: 180_000 }, async t => {
     const f = await fixture('merchant-invoice', { gst: true, taxRates: true }); t.after(() => f.context.close());
     const { orderId } = seedSyntheticOrder(owned.psql, f.tenant);
@@ -592,7 +612,7 @@ test('mobile-width dark Merchant Business shows private KYC scan rejection and r
         pan.getByRole('button', { name: 'Upload document' }).click(),
     ]);
     assert.equal(response.status(), 201, 'normal mobile-width Merchant upload reaches private Gateway evidence route');
-    await expect(pan.getByText('Security scan pending')).toBeVisible();
+    await expect(pan.getByText('No scan result yet')).toBeVisible();
     const key = owned.psql(`SELECT metadata->>'private_object_key' FROM merchant_kyc_documents
         WHERE site_id='${f.tenant.siteId}' AND document_type='business_pan';`);
     assert.ok(key.startsWith(`kyc/${f.tenant.siteId}/`) && privateKycObjects.has(key));
@@ -616,7 +636,7 @@ test('mobile-width dark Merchant Business shows private KYC scan rejection and r
         pan.getByRole('button', { name: 'Resubmit document' }).click(),
     ]);
     assert.equal(replacement.status(), 201);
-    await expect(pan.getByText('Security scan pending')).toBeVisible();
+    await expect(pan.getByText('No scan result yet')).toBeVisible();
     const newKey = owned.psql(`SELECT metadata->>'private_object_key' FROM merchant_kyc_documents
         WHERE site_id='${f.tenant.siteId}' AND document_type='business_pan';`);
     assert.notEqual(newKey, key);

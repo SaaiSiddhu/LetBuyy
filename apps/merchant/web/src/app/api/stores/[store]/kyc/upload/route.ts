@@ -31,6 +31,24 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         const { store } = await params
         const resolved = await resolveOwnedStoreId(decodeURIComponent(store))
         if (resolved.error) return resolved.error
+        // Check the canonical Gateway admission state before boundedForm reads
+        // sensitive bytes into the Vercel runtime. The Gateway checks again
+        // when the upload arrives, so a later pause also fails closed.
+        const availability = await merchantApiFetch(
+            `/kyc?${new URLSearchParams({ store_id: resolved.storeId })}`,
+            { requireSession: true },
+        )
+        if (!availability.ok) {
+            return NextResponse.json(await availability.json().catch(() => null), { status: availability.status })
+        }
+        const availabilityBody = await availability.json().catch(() => null) as
+            | { data?: { private_upload_available?: boolean } } | null
+        if (availabilityBody?.data?.private_upload_available !== true) {
+            return NextResponse.json({ error: {
+                code: 'KYC_UPLOAD_UNAVAILABLE',
+                message: 'Private document upload is unavailable. Please retry later.',
+            } }, { status: 503 })
+        }
         const length = Number(request.headers.get('content-length') || 0)
         if (length > MAX_REQUEST_BYTES) return NextResponse.json({ error: { code: 'KYC_FILE_TOO_LARGE', message: 'Choose a document under 5 MB.' } }, { status: 413 })
         const form = await boundedForm(request).catch(() => null)

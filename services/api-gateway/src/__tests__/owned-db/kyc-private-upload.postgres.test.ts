@@ -417,6 +417,23 @@ test('KYC file upload remains private, tenant-owned and pending provider evidenc
         }, deployedR2Env);
         assert.equal(denied.status, 503, denied.text);
         assert.equal(denied.json?.error?.code, 'KYC_UPLOAD_UNAVAILABLE');
+        let bodyPulls = 0;
+        const unreadBody = new ReadableStream<Uint8Array>({
+            pull(controller) {
+                bodyPulls += 1;
+                controller.enqueue(new Uint8Array([1, 2, 3]));
+                controller.close();
+            },
+        }, { highWaterMark: 0 });
+        const unreadHeaders = await signedIdentityHeaders(owner, `kyc-${owner}@example.invalid`, tenant.siteId);
+        unreadHeaders['X-Idempotency-Key'] = randomUUID();
+        unreadHeaders['Content-Type'] = 'multipart/form-data; boundary=synthetic';
+        const unread = await gateway.request('/v1/kyc/documents/upload', {
+            method: 'POST', headers: unreadHeaders, body: unreadBody, duplex: 'half',
+        } as RequestInit, deployedR2Env);
+        assert.equal(unread.status, 503, unread.text);
+        assert.equal(unread.json?.error?.code, 'KYC_UPLOAD_UNAVAILABLE');
+        assert.equal(bodyPulls, 0, `${environment} must reject a streaming KYC body before reading it`);
         await assert.rejects(drainKycPrivateObjectCleanup(deployedR2Env), /unavailable outside isolated owned tests/);
         assert.equal(objects.size, 1, `${environment} must not write or delete the existing mock object`);
     }

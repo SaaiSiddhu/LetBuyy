@@ -283,7 +283,13 @@ router.post('/documents', validate('json', SubmitKycDocumentSchema), async (c) =
 // The R2-shaped private store is an owned-test fixture only. Deployed uploads
 // stay closed until India-resident storage and scanning are integrated. No public
 // URL or object key is returned to the merchant, storefront, or provider adapter.
-router.post('/documents/upload', bodyLimit({ maxSize: 6 * 1024 * 1024 }), async (c) => {
+// Deny deployed intake before bodyLimit can read a streaming multipart body.
+router.post('/documents/upload', async (c, next) => {
+    if (!privateUploadAvailable(c.env)) return c.json({ error: {
+        code: 'KYC_UPLOAD_UNAVAILABLE', message: 'Private document upload is unavailable. Please retry later.',
+    } }, 503);
+    await next();
+}, bodyLimit({ maxSize: 6 * 1024 * 1024 }), async (c) => {
     const idempotencyKey = c.req.header('X-Idempotency-Key');
     if (!idempotencyKey || idempotencyKey.length < 8 || idempotencyKey.length > 160) {
         return c.json({ error: { code: 'IDEMPOTENCY_KEY_REQUIRED', message: 'A valid idempotency key is required.' } }, 400);
