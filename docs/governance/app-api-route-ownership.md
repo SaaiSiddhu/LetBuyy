@@ -200,3 +200,12 @@ review reason, then streams the Gateway-approved private file as a no-store,
 non-sniffable attachment. The Gateway retains site/document permission, audit,
 scan verdict, private object access and provider decision authority. Neither
 Next route writes the database, approves KYC, or grants payout eligibility.
+
+### 1 November 2026 — India KYC direct upload candidate
+
+Inventory233→235 adds two Merchant `gateway-proxy` routes for KYC upload
+intent and exact-version completion. Both resolve the currently owned site and
+forward JSON to the Gateway. The browser sends file bytes directly to the
+signed Mumbai S3 host; neither Next route parses or forwards the file.
+The Gateway retains tenant, receipt, object-version, scan, and provider authority.
+These routes are test-only at the Gateway and do not open real-document intake.

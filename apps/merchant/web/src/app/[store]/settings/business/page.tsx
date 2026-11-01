@@ -66,6 +66,7 @@ interface KycOverview {
     overall_status: KycOverallStatus
     provider_mode: 'sandbox' | 'live'
     private_upload_available: boolean
+    india_direct_upload_available?: boolean
     required_documents: KycRequirement[]
     documents: KycDocument[]
     next_action: string | null
@@ -94,6 +95,27 @@ interface BusinessForm {
 
 type SaveState = 'saved' | 'unsaved' | 'saving'
 type ApiPayload = { data?: unknown; error?: string | { message?: string } }
+
+interface IndiaUploadTicket {
+    receipt_id: string
+    method: 'POST'
+    url: string
+    fields: Record<string, string>
+    maximum_object_bytes: number
+}
+
+function indiaUploadTicket(value: unknown): IndiaUploadTicket {
+    if (!isRecord(value) || typeof value.receipt_id !== 'string' || value.method !== 'POST'
+        || typeof value.url !== 'string' || !isRecord(value.fields)
+        || typeof value.maximum_object_bytes !== 'number') throw new Error('Upload ticket is unavailable. Retry later.')
+    const url = new URL(value.url)
+    if (url.protocol !== 'https:' || !/^[a-z0-9][a-z0-9-]*\.s3\.ap-south-1\.amazonaws\.com$/.test(url.hostname)
+        || url.pathname !== '/' || url.search || url.username || url.password
+        || Object.values(value.fields).some(field => typeof field !== 'string')) {
+        throw new Error('Upload ticket is invalid. Retry later.')
+    }
+    return value as unknown as IndiaUploadTicket
+}
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -408,7 +430,7 @@ export default function BusinessSettingsPage() {
     const submitDocument = useCallback(async (type: KycDocumentType) => {
         const input = docInputs[type] || { last4: '' }
         const file = docFiles[type]
-        if (!kyc?.private_upload_available) {
+        if (!kyc?.private_upload_available && !kyc?.india_direct_upload_available) {
             notify({ title: 'Private upload unavailable', description: 'Your saved status remains visible. Retry when private document storage is available.', variant: 'warning' })
             return
         }
@@ -420,20 +442,62 @@ export default function BusinessSettingsPage() {
             notify({ title: 'Choose a document', description: 'Upload a PDF, JPEG, or PNG proof under 5 MB.', variant: 'warning' })
             return
         }
+        if (file.size < 1 || file.size > 5 * 1024 * 1024
+            || !['application/pdf', 'image/jpeg', 'image/png'].includes(file.type)) {
+            notify({ title: 'Choose another document', description: 'Use a PDF, JPEG, or PNG under 5 MB.', variant: 'warning' })
+            return
+        }
         setDocBusy((cur) => ({ ...cur, [type]: true }))
         try {
-            const form = new FormData()
-            form.set('document_type', type)
-            form.set('document_number_last4', input.last4.trim())
-            form.set('file', file)
-            const res = await fetch(`/api/stores/${encodeURIComponent(store)}/kyc/upload`, {
-                method: 'POST',
-                body: form,
-            })
-            const payload = await res.json().catch(() => null) as ApiPayload | null
-            if (!res.ok) throw new Error(getPayloadError(payload, 'Unable to submit document'))
-            if (isRecord(payload?.data) && isRecord((payload.data as Record<string, unknown>).overview)) {
-                setKyc((payload.data as { overview: KycOverview }).overview)
+            const path = `/api/stores/${encodeURIComponent(store)}/kyc`
+            if (kyc?.india_direct_upload_available) {
+                // File bytes travel from the browser to S3 Mumbai. The app
+                // receives only a digest, receipt, and opaque object version.
+                const bytes = await file.arrayBuffer()
+                const hash = await crypto.subtle.digest('SHA-256', bytes)
+                const sha256 = Array.from(new Uint8Array(hash), byte => byte.toString(16).padStart(2, '0')).join('')
+                const key = crypto.randomUUID()
+                const intentResponse = await fetch(`${path}/upload-intent`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Idempotency-Key': key },
+                    body: JSON.stringify({ document_type: type, document_number_last4: input.last4.trim(),
+                        content_type: file.type, byte_size: file.size, sha256_hex: sha256 }),
+                })
+                const intentPayload = await intentResponse.json().catch(() => null) as ApiPayload | null
+                if (!intentResponse.ok) throw new Error(getPayloadError(intentPayload, 'Unable to prepare document upload'))
+                const ticket = indiaUploadTicket(intentPayload?.data)
+                if (file.size > ticket.maximum_object_bytes) throw new Error('Document exceeds the upload limit.')
+                const s3Form = new FormData()
+                for (const [name, value] of Object.entries(ticket.fields)) s3Form.set(name, value)
+                s3Form.set('file', file)
+                const uploaded = await fetch(ticket.url, {
+                    method: 'POST', body: s3Form, credentials: 'omit', redirect: 'error',
+                })
+                if (uploaded.status !== 201) throw new Error('Private storage did not accept the document. Retry upload.')
+                const versionId = uploaded.headers.get('x-amz-version-id')
+                if (!versionId || versionId === 'null') throw new Error('Private storage did not return a version. Retry upload.')
+                const completion = await fetch(`${path}/upload-complete`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Idempotency-Key': key },
+                    body: JSON.stringify({ receipt_id: ticket.receipt_id, version_id: versionId }),
+                })
+                const completionPayload = await completion.json().catch(() => null) as ApiPayload | null
+                if (!completion.ok) throw new Error(getPayloadError(completionPayload, 'Unable to confirm document upload'))
+                const statusResponse = await fetch(path, { cache: 'no-store' })
+                const statusPayload = await statusResponse.json().catch(() => null) as ApiPayload | null
+                if (!statusResponse.ok || !isRecord(statusPayload?.data)) {
+                    throw new Error('Document was received, but current status could not be loaded. Refresh status before retrying.')
+                }
+                setKyc(statusPayload.data as unknown as KycOverview)
+            } else {
+                const form = new FormData()
+                form.set('document_type', type)
+                form.set('document_number_last4', input.last4.trim())
+                form.set('file', file)
+                const res = await fetch(`${path}/upload`, { method: 'POST', body: form })
+                const payload = await res.json().catch(() => null) as ApiPayload | null
+                if (!res.ok) throw new Error(getPayloadError(payload, 'Unable to submit document'))
+                if (isRecord(payload?.data) && isRecord((payload.data as Record<string, unknown>).overview)) {
+                    setKyc((payload.data as { overview: KycOverview }).overview)
+                }
             }
             setDocInputs((cur) => ({ ...cur, [type]: { last4: '' } }))
             setDocFiles((cur) => ({ ...cur, [type]: null }))
@@ -444,7 +508,7 @@ export default function BusinessSettingsPage() {
         } finally {
             setDocBusy((cur) => ({ ...cur, [type]: false }))
         }
-    }, [docFiles, docInputs, kyc?.private_upload_available, notify, store])
+    }, [docFiles, docInputs, kyc?.private_upload_available, kyc?.india_direct_upload_available, notify, store])
 
     const refreshDocument = useCallback(async (doc: KycDocument) => {
         const operation = `${store}:${doc.id}:${doc.updated_at || ''}`
@@ -524,10 +588,12 @@ export default function BusinessSettingsPage() {
 
             {/* ── Verification status ───────────────────────────────────────── */}
             {kyc && overall && (
-                <Banner variant={!kyc.private_upload_available ? 'warning' : kyc.provider_mode === 'sandbox' ? 'info' : overall.variant}
-                    title={!kyc.private_upload_available ? 'Private uploads unavailable' : kyc.provider_mode === 'sandbox' ? 'Sandbox verification' : overall.title}>
-                    {!kyc.private_upload_available
+                <Banner variant={!kyc.private_upload_available && !kyc.india_direct_upload_available ? 'warning' : kyc.provider_mode === 'sandbox' ? 'info' : overall.variant}
+                    title={!kyc.private_upload_available && !kyc.india_direct_upload_available ? 'Private uploads unavailable' : kyc.india_direct_upload_available ? 'India upload test' : kyc.provider_mode === 'sandbox' ? 'Sandbox verification' : overall.title}>
+                    {!kyc.private_upload_available && !kyc.india_direct_upload_available
                         ? kyc.next_action || 'Your saved status remains visible. Retry later.'
+                        : kyc.india_direct_upload_available
+                        ? 'Direct private upload is available in this test environment. A received file remains pending security scan and provider review; it cannot enable live payouts.'
                         : kyc.provider_mode === 'sandbox'
                         ? kyc.next_action || 'Sandbox uploads are not provider reviewed and cannot enable live payouts.'
                         : kyc.next_action || 'Complete the required documents below to verify your business.'}
@@ -664,7 +730,7 @@ export default function BusinessSettingsPage() {
                                             <Input
                                                 label={meta.last4Label}
                                                 value={input.last4}
-                                                disabled={!kyc?.private_upload_available}
+                                                disabled={!kyc?.private_upload_available && !kyc?.india_direct_upload_available}
                                                 onChange={(e) => setDocInput(req.document_type, { last4: e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4) })}
                                                 placeholder="••••"
                                                 maxLength={4}
@@ -673,12 +739,12 @@ export default function BusinessSettingsPage() {
                                             <label className="settings-business-kyc-upload">
                                                 <span>Document file</span>
                                                 <input key={`${req.document_type}-${existing?.updated_at || 'new'}`} type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
-                                                    disabled={busy || !kyc?.private_upload_available}
+                                                    disabled={busy || (!kyc?.private_upload_available && !kyc?.india_direct_upload_available)}
                                                     onChange={(event) => setDocFiles((cur) => ({ ...cur, [req.document_type]: event.target.files?.[0] || null }))}
                                                     aria-label={`Upload ${meta.title}`} />
                                             </label>
                                             <div className="settings-business-kyc-actions">
-                                                <Button variant="primary" onClick={() => void submitDocument(req.document_type)} loading={busy} disabled={!kyc?.private_upload_available}>
+                                                <Button variant="primary" onClick={() => void submitDocument(req.document_type)} loading={busy} disabled={!kyc?.private_upload_available && !kyc?.india_direct_upload_available}>
                                                     {isVerified ? 'Replace verified document' : existing ? 'Resubmit document' : 'Upload document'}
                                                 </Button>
                                             </div>

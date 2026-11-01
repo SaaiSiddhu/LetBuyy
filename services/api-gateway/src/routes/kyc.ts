@@ -25,6 +25,13 @@ function privateUploadAvailable(env: Env): boolean {
     return env.KYC_UPLOAD_ENABLED === 'true' && hasIsolatedKycPrivateBucket(env);
 }
 
+function indiaDirectUploadAvailable(env: Env): boolean {
+    return env.ENVIRONMENT === 'test' && env.KYC_INDIA_UPLOAD_ENABLED === 'true'
+        && Boolean(env.KYC_INDIA_BUCKET && env.KYC_INDIA_ACCOUNT_ID && env.KYC_INDIA_UPLOAD_ROLE_ARN
+            && env.KYC_INDIA_STS_ACCESS_KEY_ID && env.KYC_INDIA_STS_SECRET_ACCESS_KEY
+            && env.KYC_INDIA_HEAD_ACCESS_KEY_ID && env.KYC_INDIA_HEAD_SECRET_ACCESS_KEY);
+}
+
 const DocumentTypeSchema = z.enum([
     'business_pan',
     'gst_certificate',
@@ -284,8 +291,8 @@ router.get('/', validate('query', StoreQuerySchema), async (c) => {
     const tenant = await resolveTenantContextForOwnedSite(c, query.store_id);
     const rows = await loadDocuments(db, tenant.siteId);
     const isGstRegistered = await loadGstRegistration(db, tenant.siteId);
-    return c.json(success(buildOverview(tenant.siteId, rows, providerMode(c.env), isGstRegistered,
-        privateUploadAvailable(c.env))));
+    return c.json(success({ ...buildOverview(tenant.siteId, rows, providerMode(c.env), isGstRegistered,
+        privateUploadAvailable(c.env)), india_direct_upload_available: indiaDirectUploadAvailable(c.env) }));
 });
 
 router.post('/documents', validate('json', SubmitKycDocumentSchema), async (c) => {

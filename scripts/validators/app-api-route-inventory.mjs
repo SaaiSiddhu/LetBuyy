@@ -129,7 +129,10 @@ export function classifyAppApiRoute(file) {
 // Wave 6 private KYC evidence: Merchant's bounded document-upload transport and
 // Console's stepped-up, audited evidence download transport are gateway-proxy.
 // Storage, scan verdict, provider approval and disclosure authority remain Gateway-owned.
-export const APP_API_ROUTE_RATCHET = 233;
+// Wave 6 India candidate: two JSON-only Merchant proxies forward the owned
+// upload intent and exact-version completion. Document bytes go directly from
+// the browser to Mumbai S3; both proxies remain gateway-proxy.
+export const APP_API_ROUTE_RATCHET = 235;
 
 export function ownershipCounts(routes) {
   const counts = new Map();

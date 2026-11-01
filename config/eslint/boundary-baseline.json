@@ -111,6 +111,8 @@
     "apps/merchant/web/src/app/api/stores/[store]/inventory/reservations/route.ts",
     "apps/merchant/web/src/app/api/stores/[store]/kyc/documents/[documentId]/refresh/route.ts",
     "apps/merchant/web/src/app/api/stores/[store]/kyc/route.ts",
+    "apps/merchant/web/src/app/api/stores/[store]/kyc/upload-complete/route.ts",
+    "apps/merchant/web/src/app/api/stores/[store]/kyc/upload-intent/route.ts",
     "apps/merchant/web/src/app/api/stores/[store]/kyc/upload/route.ts",
     "apps/merchant/web/src/app/api/stores/[store]/localization/locales/[localeId]/route.ts",
     "apps/merchant/web/src/app/api/stores/[store]/localization/locales/route.ts",

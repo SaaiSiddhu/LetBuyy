@@ -180,6 +180,8 @@ test('real Gateway issues only an owned, durable, exact-key test ticket and refu
     const readHeaders = await signedIdentityHeaders(owner, `owner-${owner}@example.invalid`, a.siteId);
     const overview = await gateway.request(`/v1/kyc?store_id=${a.siteId}`, { headers: readHeaders });
     assert.equal(overview.status, 200, overview.text);
+    assert.equal(overview.json?.data?.india_direct_upload_available, true);
+    assert.equal(overview.json?.data?.private_upload_available, false);
     assert.equal(overview.json?.data?.overall_status, 'in_progress');
     assert.equal(overview.json?.data?.documents?.[0]?.evidence_scan_status, 'pending');
     assert.doesNotMatch(overview.text, /private_object_key|private_object_version_id|private_upload_receipt_id|sha256|kyc\//);
