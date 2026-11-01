@@ -12,10 +12,28 @@ function compareCursorText(a: string, b: string): number {
     return a < b ? -1 : a > b ? 1 : 0;
 }
 
-export function orderCustomerSummaries(summaries: CommerceCustomerSummary[]): CommerceCustomerSummary[] {
+export type CustomerSummarySort = 'name' | 'email' | 'phone' | 'total_orders' | 'total_spent' | 'last_order_at' | 'status';
+
+function sortValue(summary: CommerceCustomerSummary, sort: CustomerSummarySort): string | number {
+    switch (sort) {
+        case 'name': return summary.full_name || summary.customer_email;
+        case 'email': return summary.customer_email;
+        case 'phone': return summary.customer_phone || '';
+        case 'total_orders': return summary.total_orders;
+        case 'total_spent': return summary.total_spent;
+        case 'status': return summary.status;
+        case 'last_order_at': return customerCursorValue(summary);
+    }
+}
+
+export function orderCustomerSummaries(summaries: CommerceCustomerSummary[], sort: CustomerSummarySort = 'last_order_at', order: 'asc' | 'desc' = 'desc'): CommerceCustomerSummary[] {
     return [...summaries].sort((a, b) => {
-        const dateCompare = compareCursorText(customerCursorValue(b), customerCursorValue(a));
-        if (dateCompare !== 0) return dateCompare;
+        const aValue = sortValue(a, sort);
+        const bValue = sortValue(b, sort);
+        const compared = typeof aValue === 'number' && typeof bValue === 'number'
+            ? aValue - bValue
+            : compareCursorText(String(aValue).toLowerCase(), String(bValue).toLowerCase());
+        if (compared !== 0) return order === 'asc' ? compared : -compared;
         return compareCursorText(String(a.id || a.customer_email), String(b.id || b.customer_email));
     });
 }
@@ -63,4 +81,30 @@ export function customerCursorPage(
         ? encodeCustomerCursor(pageRows[pageRows.length - 1])
         : null;
     return { rows: pageRows, nextCursor };
+}
+
+export function customerSortedPage(
+    summaries: CommerceCustomerSummary[],
+    query: { cursor?: string; page: number; limit: number; sort: CustomerSummarySort; order: 'asc' | 'desc' },
+): { rows: CommerceCustomerSummary[]; nextCursor: string | null } {
+    let start = (query.page - 1) * query.limit;
+    if (query.cursor) {
+        try {
+            const cursor = JSON.parse(atob(query.cursor)) as Record<string, unknown>;
+            if (cursor.sort !== query.sort || cursor.order !== query.order || typeof cursor.id !== 'string') {
+                return { rows: [], nextCursor: null };
+            }
+            const index = summaries.findIndex(summary => String(summary.id || summary.customer_email) === cursor.id);
+            if (index < 0) return { rows: [], nextCursor: null };
+            start = index + 1;
+        } catch {
+            return { rows: [], nextCursor: null };
+        }
+    }
+    const rows = summaries.slice(start, start + query.limit);
+    const last = rows[rows.length - 1];
+    const nextCursor = last && start + rows.length < summaries.length
+        ? btoa(JSON.stringify({ id: String(last.id || last.customer_email), sort: query.sort, order: query.order }))
+        : null;
+    return { rows, nextCursor };
 }

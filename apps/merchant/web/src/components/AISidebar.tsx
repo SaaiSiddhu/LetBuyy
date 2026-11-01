@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import type { StoreData } from './AdminShell'
-import { Banner, Button, MaterialIcon, Skeleton } from '@letbuyy/ui'
+import { ArrowRight, Banner, Bot, Button, CheckCircle2, Skeleton, X } from '@letbuyy/ui'
 import { useReadRequest } from '@/lib/api/use-read-request'
 import { MerchantNavigationLink } from './MerchantNavigationLink'
 
@@ -151,12 +151,12 @@ export default function AISidebar({ store, storeData, onClose }: AISidebarProps)
             {/* Header */}
             <div className="admin-ai-panel-header">
                 <div className="admin-ai-panel-title">
-                    <MaterialIcon name="assistant" className="admin-ai-panel-title-icon" size={18} />
+                    <Bot className="admin-ai-panel-title-icon" size={18} aria-hidden="true" />
                     Setup assistant
                 </div>
                 <div className="admin-ai-panel-actions">
                     <Button unstyled type="button" onClick={onClose} title="Close" aria-label="Close setup assistant">
-                        <MaterialIcon name="close" size={18} />
+                        <X size={18} aria-hidden="true" />
                     </Button>
                 </div>
             </div>
@@ -205,7 +205,7 @@ export default function AISidebar({ store, storeData, onClose }: AISidebarProps)
                                         className="admin-ai-todo-link"
                                     >
                                         Go
-                                        <MaterialIcon name="arrow_right" size={12} />
+                                        <ArrowRight size={12} aria-hidden="true" />
                                     </MerchantNavigationLink>
                                 )}
                             </div>
@@ -214,8 +214,8 @@ export default function AISidebar({ store, storeData, onClose }: AISidebarProps)
 
                     {!loading && completedCount === todos.length && todos.length > 0 && (
                         <div className="admin-ai-complete" role="status">
-                            <MaterialIcon name="check_circle" size={16} />
-                            <span>All setup tasks complete. Your site is ready.</span>
+                            <CheckCircle2 size={16} aria-hidden="true" />
+                            <span>All listed setup checks are complete.</span>
                         </div>
                     )}
                 </div>

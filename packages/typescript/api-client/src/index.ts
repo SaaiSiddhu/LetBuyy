@@ -2605,6 +2605,7 @@ export interface CustomerListQuery extends StoreScopedQuery {
   email?: string;
   phone?: string;
   has_orders?: boolean;
+  view?: 'all' | 'active' | 'has-orders' | 'high-value' | 'new';
 }
 
 export interface NotificationListQuery extends ListQuery {
@@ -3254,6 +3255,7 @@ export type UpdateCollectionInput = Partial<Pick<Collection, 'title' | 'descript
 export type CreateProductCategoryInput = Pick<ProductCategory, 'store_id' | 'name'> & NewRecord<ProductCategory>;
 export type UpdateProductCategoryInput = NewRecord<ProductCategory>;
 export type CreateGiftCardInput = Pick<GiftCard, 'store_id' | 'initial_value'> & {
+  idempotency_key?: string;
   currency?: string;
   expires_at?: string | null;
   recipient_email?: string | null;
@@ -3276,8 +3278,10 @@ export interface GiftCardLifecycleItem {
   redemption_count?: number;
 }
 export interface GiftCardIssued extends GiftCardLifecycleItem {
-  // The plaintext code is returned exactly once, at issuance.
-  code: string;
+  // Only a newly committed issuance reveals its plaintext code. An idempotent
+  // replay returns the existing card without a code the server cannot recover.
+  code?: string;
+  replayed?: boolean;
 }
 export interface GiftCardBalanceResult {
   found: boolean;
@@ -3787,9 +3791,8 @@ export type RecoverSubscriptionPaymentInput = {
 };
 
 // ── Billing payment methods (how the merchant pays LetBuyy) ──────────────────
-// A billing mandate is a Razorpay UPI AutoPay authorization. LetBuyy is not an
-// RBI-licensed payment aggregator, so card/UPI credentials are never stored here —
-// Razorpay (the licensed PA) holds them and we keep only the mandate reference.
+// Current billing mandate creation is a sandbox record, not a provider-issued
+// UPI AutoPay authorization. Live activation requires a separate verified flow.
 export type BillingMandate = {
   id: string;
   provider: string;
@@ -3805,10 +3808,9 @@ export type BillingMandate = {
 };
 export type CreateBillingMandateInput = {
   store_id: string;
-  plan_slug?: 'free' | 'starter' | 'business' | 'enterprise';
+  plan_slug: 'launch' | 'growth' | 'scale' | 'commerce_os';
   billing_period?: SubscriptionBillingPeriod;
   provider_mode?: 'sandbox' | 'live';
-  upi_vpa?: string;
   idempotency_key: string;
   metadata?: Record<string, unknown>;
 };
@@ -4979,7 +4981,7 @@ export class LetbuyyApiClient {
       list: (query: Pick<StoreScopedQuery, 'store_id'>, options?: LetbuyyRequestOptions) =>
         this.requestData<GiftCardLifecycleItem[]>('/products/gift-cards', { ...options, query }),
       create: (input: CreateGiftCardInput, options?: LetbuyyRequestOptions) =>
-        this.requestData<GiftCardIssued>('/products/gift-cards', { ...options, method: 'POST', body: input }),
+        this.requestData<GiftCardIssued>('/products/gift-cards', { ...options, method: 'POST', body: input, idempotencyKey: input.idempotency_key ?? options?.idempotencyKey }),
       balance: (query: { store_id: string; code: string }, options?: LetbuyyRequestOptions) =>
         this.requestData<GiftCardBalanceResult>('/products/gift-cards/balance', { ...options, query }),
       transactions: (id: string, query: Pick<StoreScopedQuery, 'store_id'>, options?: LetbuyyRequestOptions) =>

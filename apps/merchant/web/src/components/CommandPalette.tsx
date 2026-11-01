@@ -2,24 +2,30 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useMerchantRouter as useRouter } from './MerchantNavigationProvider'
-import { Button, Input, MaterialIcon, Search } from '@letbuyy/ui'
+import { Button, Input, ListFilter, Search, X, useFocusTrap } from '@letbuyy/ui'
+import { MerchantSidebarIcon } from './MerchantSidebarIcon'
 import { getMerchantCommandItems, normalizeSiteType, type MerchantCommandItem } from './merchantNavigation'
 
 interface CommandPaletteProps {
     store: string
     storeName: string
     siteType: string
+    appPlatformEnabled: boolean
     onClose: () => void
 }
 
 const searchChips = ['Apps', 'Customers', 'Orders', 'Products', 'Sales channels']
 
-export default function CommandPalette({ store, storeName, siteType, onClose }: CommandPaletteProps) {
+export default function CommandPalette({ store, storeName, siteType, appPlatformEnabled, onClose }: CommandPaletteProps) {
     const [query, setQuery] = useState('')
     const [highlighted, setHighlighted] = useState(0)
-    const [entityResult, setEntityResult] = useState<{ scope: string; commands: MerchantCommandItem[] } | null>(null)
+    const [entityResult, setEntityResult] = useState<{ scope: string; commands: MerchantCommandItem[]; failedSources: number } | null>(null)
+    const [retry, setRetry] = useState(0)
     const inputRef = useRef<HTMLInputElement>(null)
+    const modalRef = useRef<HTMLDivElement>(null)
     const router = useRouter()
+
+    useFocusTrap(modalRef, { active: true, initialFocusRef: inputRef })
 
     // Focus input on mount
     useEffect(() => {
@@ -36,12 +42,14 @@ export default function CommandPalette({ store, storeName, siteType, onClose }: 
     }, [onClose])
 
     const normalizedSiteType = normalizeSiteType(siteType)
-    const allCommands = getMerchantCommandItems(siteType, store)
+    const allCommands = getMerchantCommandItems(siteType, store, appPlatformEnabled)
 
     // Filter
     const normalizedQuery = query.trim().toLowerCase()
     const searchScope = JSON.stringify([store, normalizedSiteType, normalizedQuery])
-    const entityCommands = entityResult?.scope === searchScope ? entityResult.commands : []
+    const currentEntityResult = entityResult?.scope === searchScope ? entityResult : null
+    const entityCommands = currentEntityResult?.commands ?? []
+    const searchingEntities = normalizedSiteType === 'store' && normalizedQuery.length >= 2 && !currentEntityResult
     const routeCommands = normalizedQuery
         ? allCommands.filter((command) => command.keywords.some((keyword) => keyword.includes(normalizedQuery)))
         : []
@@ -72,9 +80,9 @@ export default function CommandPalette({ store, storeName, siteType, onClose }: 
         const controller = new AbortController()
 
         async function loadEntityCommands() {
-            const commands = await searchStoreEntities(store, normalizedQuery, controller.signal)
+            const result = await searchStoreEntities(store, normalizedQuery, controller.signal)
             if (!controller.signal.aborted) {
-                setEntityResult({ scope: searchScope, commands })
+                setEntityResult({ scope: searchScope, ...result })
             }
         }
 
@@ -82,11 +90,12 @@ export default function CommandPalette({ store, storeName, siteType, onClose }: 
         const timer = setTimeout(() => { void loadEntityCommands() }, 250)
 
         return () => { clearTimeout(timer); controller.abort() }
-    }, [normalizedQuery, normalizedSiteType, store, searchScope])
+    }, [normalizedQuery, normalizedSiteType, store, searchScope, retry])
 
     // Keyboard navigation
     useEffect(() => {
         function handleKey(e: KeyboardEvent) {
+            if (e.target instanceof HTMLElement && e.target.closest('button')) return
             if (e.key === 'ArrowDown') {
                 e.preventDefault()
                 setHighlighted((h) => Math.min(h + 1, flatItems.length - 1))
@@ -106,15 +115,21 @@ export default function CommandPalette({ store, storeName, siteType, onClose }: 
 
     return (
         <div className="admin-cmd-overlay" onClick={onClose}>
-            <div className="admin-cmd-modal" onClick={(e) => e.stopPropagation()}>
+            <div ref={modalRef} className="admin-cmd-modal" role="dialog" aria-modal="true" aria-label="Search merchant workspace" onClick={(e) => e.stopPropagation()}>
                 {/* Search input */}
                 <div className="admin-cmd-header">
                     <div className="admin-cmd-input-wrapper">
-                        <MaterialIcon name="search" />
+                        <Search className="letbuyy-icon" aria-hidden="true" />
                         <Input unstyled
                             ref={inputRef}
                             className="admin-cmd-input"
                             type="text"
+                            aria-label="Search merchant workspace"
+                            role="combobox"
+                            aria-autocomplete="list"
+                            aria-controls="merchant-command-results"
+                            aria-expanded={flatItems.length > 0}
+                            aria-activedescendant={flatItems[highlighted] ? `merchant-command-option-${highlighted}` : undefined}
                             placeholder="Search"
                             value={query}
                             onChange={(e) => {
@@ -127,16 +142,16 @@ export default function CommandPalette({ store, storeName, siteType, onClose }: 
                             }}
                             autoComplete="off"
                         />
-                        <Button unstyled className="admin-cmd-filter" type="button" aria-label="Filter search">
-                            <MaterialIcon name="filter_list" />
-                        </Button>
+                        <span className="admin-cmd-filter" aria-hidden="true">
+                            <ListFilter className="letbuyy-icon" />
+                        </span>
                         <Button unstyled className="admin-cmd-close-mobile" type="button" onClick={onClose} aria-label="Close search">
-                            <MaterialIcon name="close" />
+                            <X className="letbuyy-icon" aria-hidden="true" />
                         </Button>
                     </div>
 
                     <div className="admin-cmd-chips" aria-label="Search categories">
-                        {searchChips.map((chip) => (
+                        {searchChips.filter(chip => appPlatformEnabled || chip !== 'Apps').map((chip) => (
                             <Button unstyled
                                 key={chip}
                                 type="button"
@@ -154,7 +169,13 @@ export default function CommandPalette({ store, storeName, siteType, onClose }: 
                 </div>
 
                 {/* Results */}
-                <div className="admin-cmd-results">
+                {currentEntityResult && currentEntityResult.failedSources > 0 && (
+                    <div className="admin-cmd-search-warning" role="status">
+                        {currentEntityResult.failedSources === 3 ? 'Live search is unavailable.' : 'Some live results could not load.'}
+                        <Button unstyled type="button" onClick={() => { setEntityResult(null); setRetry(value => value + 1) }}>Retry live search</Button>
+                    </div>
+                )}
+                <div id="merchant-command-results" className="admin-cmd-results" role="listbox" aria-label="Search results">
                     {normalizedQuery.length === 0 ? (
                         <div className="admin-cmd-empty-state">
                             <Search aria-hidden="true" />
@@ -163,28 +184,32 @@ export default function CommandPalette({ store, storeName, siteType, onClose }: 
                     ) : flatItems.length === 0 ? (
                         <div className="admin-cmd-empty-state">
                             <Search aria-hidden="true" />
-                            <p>No results for “{query.trim()}”</p>
+                            <p>{searchingEntities ? 'Searching live records…' : currentEntityResult?.failedSources ? 'No navigation matches. Live records could not be fully searched.' : `No results for “${query.trim()}”`}</p>
                         </div>
                     ) : (
                         Object.entries(sections).map(([section, items]) => (
-                            <div key={section}>
+                            <div key={section} role="group" aria-label={section}>
                                 <div className="admin-cmd-section">{section}</div>
                                 {items.map((item) => {
                                     const idx = flatItems.indexOf(item)
                                     return (
-                                        <div
-                                            key={item.label}
+                                        <Button unstyled
+                                            key={`${item.href}:${idx}`}
+                                            id={`merchant-command-option-${idx}`}
+                                            type="button"
+                                            role="option"
+                                            aria-selected={idx === highlighted}
                                             className={`admin-cmd-item ${idx === highlighted ? 'highlighted' : ''}`}
                                             onMouseEnter={() => setHighlighted(idx)}
                                             onClick={() => handleSelect(item)}
                                         >
-                                            <MaterialIcon name={item.icon} />
+                                            <MerchantSidebarIcon name={item.icon} />
                                             <span className="admin-cmd-item-label">{item.label}</span>
                                             <span className="admin-cmd-item-meta">
                                                 {item.shortcut && <kbd className="admin-cmd-item-shortcut">{item.shortcut}</kbd>}
                                                 <span className="admin-cmd-item-path">{item.pathHint}</span>
                                             </span>
-                                        </div>
+                                        </Button>
                                     )
                                 })}
                             </div>
@@ -221,44 +246,35 @@ interface CustomerSearchRow {
     customer_email?: unknown
 }
 
-async function searchStoreEntities(store: string, query: string, signal: AbortSignal): Promise<MerchantCommandItem[]> {
+interface LiveSearchResult {
+    commands: MerchantCommandItem[]
+    failedSources: number
+}
+
+async function searchStoreEntities(store: string, query: string, signal: AbortSignal): Promise<LiveSearchResult> {
     const encodedStore = encodeURIComponent(store)
-    const [products, orders, customers] = await Promise.all([
-        fetchJsonRows<ProductSearchRow>(`/api/stores/${encodedStore}/products?status=all&limit=12&sort=created_at&order=desc`, signal),
+    const results = await Promise.allSettled([
+        fetchJsonRows<ProductSearchRow>(`/api/stores/${encodedStore}/products?status=all&limit=6&search=${encodeURIComponent(query)}`, signal),
         fetchJsonRows<OrderSearchRow>(`/api/stores/${encodedStore}/orders?status=all&payment_status=all&limit=6&search=${encodeURIComponent(query)}`, signal),
         fetchJsonRows<CustomerSearchRow>(`/api/stores/${encodedStore}/customers?limit=6&search=${encodeURIComponent(query)}`, signal),
     ])
+    const [products, orders, customers] = results.map(result => result.status === 'fulfilled' ? result.value : []) as [ProductSearchRow[], OrderSearchRow[], CustomerSearchRow[]]
 
-    return [
+    return { commands: [
         ...products
-            .filter((product) => productMatches(product, query))
             .slice(0, 6)
             .map((product) => productCommand(store, product)),
         ...orders.slice(0, 6).map((order) => orderCommand(store, order)),
         ...customers.slice(0, 6).map((customer) => customerCommand(store, customer)),
-    ]
+    ], failedSources: results.filter(result => result.status === 'rejected').length }
 }
 
 async function fetchJsonRows<T>(url: string, signal: AbortSignal): Promise<T[]> {
-    try {
-        const response = await fetch(url, { signal, cache: 'no-store' })
-        const payload = await response.json().catch(() => null) as { data?: unknown } | null
-        return response.ok && Array.isArray(payload?.data) ? payload.data as T[] : []
-    } catch {
-        return []
-    }
-}
-
-function productMatches(product: ProductSearchRow, query: string) {
-    const haystack = [
-        readString(product.name),
-        readString(product.vendor),
-        readString(product.product_type),
-        readString(product.category),
-        readString(product.status),
-    ].join(' ').toLowerCase()
-
-    return haystack.includes(query)
+    const response = await fetch(url, { signal, cache: 'no-store' })
+    if (!response.ok) throw new Error(`Live search failed (${response.status})`)
+    const payload = await response.json() as { data?: unknown }
+    if (!Array.isArray(payload?.data)) throw new Error('Invalid live search response')
+    return payload.data as T[]
 }
 
 function productCommand(store: string, product: ProductSearchRow): MerchantCommandItem {
@@ -284,7 +300,7 @@ function orderCommand(store: string, order: OrderSearchRow): MerchantCommandItem
     return {
         label,
         icon: 'shopping_cart',
-        href: `/${store}/orders`,
+        href: readString(order.id) ? `/${store}/orders/${encodeURIComponent(readString(order.id))}` : `/${store}/orders`,
         section: 'Orders',
         pathHint: customer || '/orders',
         keywords: [label, orderNumber, customer, readString(order.status)].filter(Boolean).map((value) => value.toLowerCase()),
@@ -298,7 +314,7 @@ function customerCommand(store: string, customer: CustomerSearchRow): MerchantCo
     return {
         label: name || email || 'Customer',
         icon: 'customers',
-        href: `/${store}/customers`,
+        href: email ? `/${store}/customers/${encodeURIComponent(email)}` : `/${store}/customers`,
         section: 'Customers',
         pathHint: email || '/customers',
         keywords: [name, email, readString(customer.id)].filter(Boolean).map((value) => value.toLowerCase()),

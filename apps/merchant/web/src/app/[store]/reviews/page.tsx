@@ -3,10 +3,10 @@
 import { useReadRequest } from '@/lib/api/use-read-request'
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import Image from 'next/image'
 import { useParams } from 'next/navigation'
 import { REVIEW_MODERATION_STATUS_PRESENTATION, presentStatus } from '@letbuyy/shared-types'
-import { Avatar, Badge, BadgeCheck, Banner, Button, Card, CheckCircle2, ConfirmDialog, EmptyState, MessageSquare, Page, PageHeader, RefreshCw, Section, ShieldCheck, Skeleton, Star, StatusPresentationBadge, Table, Trash2, useToast, XCircle, type TableColumn } from '@letbuyy/ui'
+import { Avatar, Badge, BadgeCheck, Banner, Button, Card, CheckCircle2, ConfirmDialog, MessageSquare, Page, PageHeader, RefreshCw, Section, ShieldCheck, Skeleton, Star, StatusPresentationBadge, Table, Trash2, useToast, XCircle, type TableColumn } from '@letbuyy/ui'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import { formatIndiaDate as formatDate } from '@letbuyy/ui/formatting'
 
 interface Review {
@@ -324,16 +324,7 @@ export default function ReviewsPage() {
 
     const isMainEmpty = !loadError && filter === 'all'
     const emptyState = (
-        <EmptyState
-            illustration={isMainEmpty ? (
-                <Image
-                    src="/Emptystate Illustration/Product-Review.png"
-                    alt=""
-                    width={200}
-                    height={200}
-                    aria-hidden="true"
-                />
-            ) : undefined}
+        <EmptyState scene="reviews"
             icon={!isMainEmpty ? (
                 <MessageSquare className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
             ) : undefined}

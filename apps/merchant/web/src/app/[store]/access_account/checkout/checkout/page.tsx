@@ -18,7 +18,7 @@ interface PageProps {
 
 export default async function CheckoutPage({ params, searchParams }: PageProps) {
     const { store } = await params
-    const { plan: planSlug, bp, site_type } = await searchParams
+    const { plan: planSlug, bp } = await searchParams
 
     // Auth
     const user = await getSessionUser()
@@ -27,17 +27,13 @@ export default async function CheckoutPage({ params, searchParams }: PageProps) 
     const storeData = await getStoreForUser(store, user.id)
     if (!storeData) return notFound()
 
-    const siteType = site_type || storeData.site_type || 'store'
+    const siteType = storeData.site_type
     const billingPeriod = bp === 'YEARLY' ? 'yearly' : 'monthly'
 
     let plan: SubscriptionPlan | null = null
     if (planSlug) {
-        try {
-            const plans = await createMerchantApiClient().payments.plans({ site_type: siteType, slug: planSlug, store_id: storeData.id })
-            plan = plans[0] || null
-        } catch {
-            plan = null
-        }
+        const plans = await createMerchantApiClient().payments.plans({ site_type: siteType, slug: planSlug, store_id: storeData.id })
+        plan = plans.find((candidate) => candidate.slug === planSlug && candidate.site_type === siteType) || null
     }
 
     // No valid plan in the catalog — send the merchant back to plan selection.

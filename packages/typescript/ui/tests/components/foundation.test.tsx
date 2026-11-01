@@ -165,6 +165,21 @@ describe('@letbuyy/ui foundation smoke coverage', () => {
         await expectAxeClean(container);
     });
 
+    it('keeps banner actions separate from the message and keyboard accessible', async () => {
+        const retry = vi.fn();
+        const { container } = renderInSystem(
+            <Banner title="Themes could not load" variant="critical" action={<Button variant="secondary" onClick={retry}>Retry</Button>}>
+                The request timed out.
+            </Banner>,
+        );
+        const banner = screen.getByRole('alert');
+        expect(within(banner).getByText('The request timed out.')).toBeTruthy();
+        fireEvent.click(within(banner).getByRole('button', { name: 'Retry' }));
+        expect(retry).toHaveBeenCalledOnce();
+        expect(banner.className).toContain('--lb-component-banner-danger-text');
+        await expectAxeClean(container);
+    });
+
     it('renders Input helper and error states', async () => {
         const { container, rerender } = renderInSystem(
             <Input label="Store name" helperText="Shown to shoppers" />,
@@ -657,6 +672,55 @@ describe('@letbuyy/ui foundation smoke coverage', () => {
         expect(screen.getAllByText('Kurta').length).toBeGreaterThan(0);
         expect(screen.getAllByText('Status: Active').length).toBeGreaterThan(0);
         await expectAxeClean(container);
+    });
+
+    it('keeps table search, view, columns, selection, and pagination in one workspace', async () => {
+        window.localStorage.removeItem('test.table.products');
+        const onSearch = vi.fn();
+        const onView = vi.fn();
+        const onPage = vi.fn();
+        const rows = [
+            { id: 'one', name: 'Kurta', status: 'Active', inventory: 4 },
+            { id: 'two', name: 'Notebook', status: 'Draft', inventory: 8 },
+        ];
+        const columns = [
+            { key: 'name', header: 'Product' },
+            { key: 'status', header: 'Status' },
+            { key: 'inventory', header: 'Inventory' },
+        ];
+        const { container } = renderInSystem(
+            <Table rows={rows} columns={columns} search={{ label: 'Search products', value: '', onChange: onSearch }}
+                filterContent={<span>Category filter</span>}
+                savedViews={[{ label: 'All', value: 'all' }, { label: 'Draft', value: 'draft' }]}
+                activeView="all" onViewChange={onView} preferencesKey="test.table.products"
+                bulkActions={[{ label: 'Archive', onAction: vi.fn() }]}
+                pagination={{ page: 1, pageSize: 25, total: 27, onPageChange: onPage, itemLabel: 'products' }} />,
+        );
+
+        fireEvent.focus(screen.getByRole('searchbox', { name: 'Search products' }));
+        expect(screen.getByRole('dialog', { name: 'Search filters' })).toBeTruthy();
+        expect(screen.queryByRole('button', { name: 'Filters' })).toBeNull();
+        fireEvent.change(screen.getByRole('searchbox', { name: 'Search products' }), { target: { value: 'Kurta' } });
+        expect(onSearch).toHaveBeenCalledWith('Kurta');
+        fireEvent.change(screen.getByRole('combobox', { name: 'Table view' }), { target: { value: 'draft' } });
+        expect(onView).toHaveBeenCalledWith('draft');
+        fireEvent.click(screen.getAllByLabelText('Select row 1')[0]);
+        expect(screen.getByText('1 selected')).toBeTruthy();
+        fireEvent.click(screen.getByRole('checkbox', { name: 'Show selected only' }));
+        expect(within(container.querySelector('table')!).queryByText('Notebook')).toBeNull();
+        fireEvent.click(screen.getByRole('button', { name: 'Sort and columns' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Hide Status column' }));
+        expect(within(container.querySelector('table')!).queryByRole('columnheader', { name: 'Status' })).toBeNull();
+        expect(window.localStorage.getItem('test.table.products')).toContain('status');
+        const drag = screen.getByRole('button', { name: /Drag Inventory column/ });
+        fireEvent.dragStart(drag, { dataTransfer: { effectAllowed: 'move', setData: vi.fn() } });
+        fireEvent.dragOver(screen.getByText('Status', { selector: 'span' }));
+        fireEvent.drop(screen.getByText('Status', { selector: 'span' }));
+        expect(JSON.parse(window.localStorage.getItem('test.table.products') || '{}').order).toEqual(['name', 'inventory', 'status']);
+        fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+        expect(onPage).toHaveBeenCalledWith(2);
+        await expectAxeClean(container);
+        window.localStorage.removeItem('test.table.products');
     });
 
     it('renders canonical 1.0 replacements without deprecated warnings', () => {

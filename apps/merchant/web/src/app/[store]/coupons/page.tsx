@@ -3,7 +3,6 @@
 import { useReadRequest } from '@/lib/api/use-read-request'
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import Image from 'next/image'
 import { useParams } from 'next/navigation'
 import type { Coupon as SharedCoupon } from '@letbuyy/shared-types'
 import { Button, Input, Table,
@@ -11,7 +10,6 @@ import { Button, Input, Table,
     Banner,
     Card,
     ConfirmDialog,
-    EmptyState,
     IndianRupee,
     Page,
     PageHeader,
@@ -25,6 +23,7 @@ import { Button, Input, Table,
     Trash2,
     useToast,
 } from '@letbuyy/ui'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import { formatIndiaDate } from '@letbuyy/ui/formatting'
 
 type CouponDiscountKind = SharedCoupon['type'] | 'fixed_amount'
@@ -503,16 +502,7 @@ export default function CouponsPage() {
                     description="Toggle status, edit eligibility, or remove expired discounts."
                 >
                     {coupons.length === 0 && !showForm ? (
-                        <EmptyState
-                            illustration={
-                                <Image
-                                    src="/Emptystate Illustration/Coupons.png"
-                                    alt=""
-                                    width={200}
-                                    height={200}
-                                    aria-hidden="true"
-                                />
-                            }
+                        <EmptyState scene="coupons"
                             title="No coupons yet"
                             body="Create discount codes to offer promotions to your customers."
                             primaryAction={<Button onClick={startCreate}><Plus className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />Create coupon</Button>}

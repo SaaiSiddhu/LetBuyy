@@ -12,7 +12,6 @@ import { Button, Input,
     Calendar,
     Card,
     ConfirmDialog,
-    EmptyState,
     ExternalLink,
     Page,
     PageHeader,
@@ -26,6 +25,7 @@ import { Button, Input,
     Trash2,
     useToast,
 } from '@letbuyy/ui'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 
 interface Certification {
     id: string
@@ -404,7 +404,7 @@ export default function CertificationsPage() {
             {items.length === 0 && !showForm ? (
                 <Card>
                     <Section title="Certifications">
-                        <EmptyState
+                        <EmptyState scene="certifications"
                             icon={<Award className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                             title="No certifications yet"
                             body="Add certificates, issuers, IDs, and verification links to make your resume more credible."

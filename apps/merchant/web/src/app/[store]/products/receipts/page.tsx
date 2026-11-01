@@ -9,7 +9,6 @@ import {
     Banner,
     Button,
     Card,
-    EmptyState,
     Input,
     Page,
     PageHeader,
@@ -19,6 +18,7 @@ import {
     useToast,
     type StatusVariant,
 } from '@letbuyy/ui'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import { formatIndiaDate } from '@letbuyy/ui/formatting'
 
 // ── types ─────────────────────────────────────────────────────────────────────
@@ -262,7 +262,7 @@ export default function InventoryReceiptsPage() {
                         </div>
                     ) : !error && rows.length === 0 ? (
                         <div className="p-[var(--lb-space-6)]">
-                            <EmptyState
+                            <EmptyState scene="receipts"
                                 kind="inventory"
                                 title="No receipts found"
                                 body={

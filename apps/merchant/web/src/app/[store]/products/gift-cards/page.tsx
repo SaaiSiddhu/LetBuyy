@@ -2,11 +2,12 @@
 
 import { useReadRequest } from '@/lib/api/use-read-request'
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { GIFT_CARD_STATUS_PRESENTATION, presentStatus } from '@letbuyy/shared-types'
 import { formatInrCurrency } from '@letbuyy/ui/formatting'
-import { Badge, Banner, Button, Card, Copy, CreditCard, Drawer, EmptyState, Eye, IndianRupee, Input, Lock, Mail, Page, PageHeader, Plus, RefreshCw, SaveBar, Section, ShieldCheck, Skeleton, StatusPresentationBadge, Table, useToast } from '@letbuyy/ui'
+import { Badge, Banner, Button, Card, Copy, CreditCard, Drawer, Eye, IndianRupee, Input, Lock, Mail, Page, PageHeader, Plus, RefreshCw, SaveBar, Section, ShieldCheck, Skeleton, StatusPresentationBadge, Table, useToast } from '@letbuyy/ui'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 
 interface GiftCard {
     id: string
@@ -57,6 +58,16 @@ interface IssuedCard {
     recipient_email: string | null
 }
 
+interface IssueIntent {
+    intentId: string
+    initialValue: number
+    recipientEmail: string
+}
+
+function issueStorageKey(store: string) {
+    return `letbuyy:gift-card-issue:${store}`
+}
+
 const emptyValue = ''
 
 function getErrorMessage(payload: unknown, fallback: string) {
@@ -75,18 +86,25 @@ function getErrorMessage(payload: unknown, fallback: string) {
 }
 
 function normalizeGiftCard(row: Record<string, unknown>): GiftCard {
+    const initialValue = Number(row.initial_value)
+    const balance = Number(row.balance)
+    if (typeof row.id !== 'string' || !row.id || typeof row.code_last4 !== 'string' ||
+        !Number.isFinite(initialValue) || !Number.isFinite(balance) ||
+        typeof row.status !== 'string' || !row.status) {
+        throw new Error('Gift card data is incomplete. Refresh this page before taking action.')
+    }
     return {
-        id: String(row.id || ''),
-        code_last4: String(row.code_last4 || ''),
-        initial_value: Number(row.initial_value || 0),
-        balance: Number(row.balance || 0),
+        id: row.id,
+        code_last4: row.code_last4,
+        initial_value: initialValue,
+        balance,
         currency: String(row.currency || 'INR'),
-        status: String(row.status || 'active'),
+        status: row.status,
         fraud_hold_reason: typeof row.fraud_hold_reason === 'string' ? row.fraud_hold_reason : null,
         expires_at: typeof row.expires_at === 'string' ? row.expires_at : null,
         created_at: typeof row.created_at === 'string' ? row.created_at : '',
         recipient_email: typeof row.recipient_email === 'string' ? row.recipient_email : null,
-        redemption_count: Number(row.redemption_count || 0),
+        redemption_count: Number.isFinite(Number(row.redemption_count)) ? Number(row.redemption_count) : Number.NaN,
     }
 }
 
@@ -114,6 +132,8 @@ function ledgerLabel(entryType: string) {
 
 export default function GiftCardsPage() {
     const { store } = useParams<{ store: string }>()
+    const currentStoreRef = useRef(store)
+    currentStoreRef.current = store
     const { notify } = useToast()
     const [giftCards, setGiftCards] = useState<GiftCard[]>([])
     const [loading, setLoading] = useState(true)
@@ -122,11 +142,13 @@ export default function GiftCardsPage() {
     const [newValue, setNewValue] = useState(emptyValue)
     const [recipientEmail, setRecipientEmail] = useState(emptyValue)
     const [creating, setCreating] = useState(false)
+    const [issueIntent, setIssueIntent] = useState<IssueIntent | null>(null)
     const [issuedCard, setIssuedCard] = useState<IssuedCard | null>(null)
     const [statusBusyId, setStatusBusyId] = useState<string | null>(null)
     const [txCard, setTxCard] = useState<GiftCard | null>(null)
     const [txData, setTxData] = useState<CardTransactions | null>(null)
     const [txLoading, setTxLoading] = useState(false)
+    const [txError, setTxError] = useState<string | null>(null)
 
     const beginLoadGiftCards = useReadRequest(store)
     const loadGiftCards = useCallback(async () => {
@@ -145,9 +167,8 @@ export default function GiftCardsPage() {
                 throw new Error(getErrorMessage(payload, 'Unable to load gift cards'))
             }
 
-            const nextGiftCards = Array.isArray(payload?.data)
-                ? payload.data.map((row: Record<string, unknown>) => normalizeGiftCard(row)).filter((card: GiftCard) => card.id)
-                : []
+            if (!Array.isArray(payload?.data)) throw new Error('Gift card list response is incomplete.')
+            const nextGiftCards = payload.data.map((row: Record<string, unknown>) => normalizeGiftCard(row))
             setGiftCards(nextGiftCards)
         } catch (error) {
             if (!request.isCurrent()) return
@@ -168,6 +189,26 @@ export default function GiftCardsPage() {
         void loadGiftCards()
     }, [loadGiftCards])
 
+    useEffect(() => {
+        setIssueIntent(null)
+        setCreating(false)
+        setShowCreate(false)
+        setNewValue(emptyValue)
+        setRecipientEmail(emptyValue)
+        try {
+            const saved = JSON.parse(sessionStorage.getItem(issueStorageKey(store)) || 'null') as IssueIntent | null
+            if (saved && typeof saved.intentId === 'string' && Number.isFinite(saved.initialValue) &&
+                saved.initialValue > 0 && typeof saved.recipientEmail === 'string') {
+                setIssueIntent(saved)
+                setNewValue(String(saved.initialValue))
+                setRecipientEmail(saved.recipientEmail)
+                setShowCreate(true)
+            }
+        } catch {
+            // Session storage is optional; an in-page retry still retains the intent.
+        }
+    }, [store])
+
     const parsedValue = Number.parseFloat(newValue)
     const hasValidValue = Number.isFinite(parsedValue) && parsedValue > 0
     const hasUnsavedCreate = showCreate && newValue.trim() !== emptyValue
@@ -178,6 +219,11 @@ export default function GiftCardsPage() {
         setNewValue(emptyValue)
         setRecipientEmail(emptyValue)
     }, [])
+
+    const clearIssueIntent = useCallback(() => {
+        setIssueIntent(null)
+        try { sessionStorage.removeItem(issueStorageKey(store)) } catch { /* optional storage */ }
+    }, [store])
 
     const handleCreate = useCallback(async () => {
         if (creating) return
@@ -191,7 +237,18 @@ export default function GiftCardsPage() {
             return
         }
 
+        const email = recipientEmail.trim()
+        const intent = issueIntent ?? { intentId: crypto.randomUUID(), initialValue: value, recipientEmail: email }
+        if (intent.initialValue !== value || intent.recipientEmail !== email) {
+            notify({ title: 'Finish the pending issue first', description: 'Review or retry the previous gift card request before changing its value or recipient.', variant: 'warning' })
+            return
+        }
+
+        setIssueIntent(intent)
+        try { sessionStorage.setItem(issueStorageKey(store), JSON.stringify(intent)) } catch { /* in-page retry remains available */ }
+
         setCreating(true)
+        let knownRejected = false
 
         try {
             const response = await fetch(`/api/stores/${encodeURIComponent(store)}/gift-cards`, {
@@ -199,45 +256,69 @@ export default function GiftCardsPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     initial_value: value,
-                    recipient_email: recipientEmail.trim() || undefined,
+                    recipient_email: email || undefined,
+                    intent_id: intent.intentId,
                 }),
             })
             const payload = await response.json().catch(() => null)
+            if (currentStoreRef.current !== store) return
 
             if (!response.ok) {
+                if (response.status === 400) {
+                    knownRejected = true
+                    clearIssueIntent()
+                }
+                if (response.status === 409) {
+                    clearIssueIntent()
+                    resetCreateForm()
+                    await loadGiftCards()
+                    notify({ title: 'Gift card request conflict', description: 'This request belongs to an existing card with different details. Review the list before creating another.', variant: 'warning' })
+                    return
+                }
                 throw new Error(getErrorMessage(payload, 'Unable to issue gift card'))
             }
 
             const issued = payload?.data as Record<string, unknown> | undefined
-            const code = typeof issued?.code === 'string' ? issued.code : ''
-            if (code) {
-                setIssuedCard({
-                    id: String(issued?.id || ''),
-                    code,
-                    code_last4: String(issued?.code_last4 || ''),
-                    balance: Number(issued?.balance || value),
-                    currency: String(issued?.currency || 'INR'),
-                    recipient_email: typeof issued?.recipient_email === 'string' ? issued.recipient_email : (recipientEmail.trim() || null),
-                })
+            if (issued?.replayed === true) {
+                clearIssueIntent()
+                resetCreateForm()
+                await loadGiftCards()
+                notify({ title: 'Gift card was already issued', description: 'This request created one card. Its code was only available in the original response; review the list before issuing another.', variant: 'warning' })
+                return
             }
+            const code = typeof issued?.code === 'string' ? issued.code : ''
+            if (!code || typeof issued?.id !== 'string' || !issued.id ||
+                !Number.isFinite(Number(issued.balance))) {
+                await loadGiftCards()
+                notify({ title: 'Check gift card status', description: 'The issue response was incomplete. Review the list, then retry this same request to resolve its outcome.', variant: 'warning' })
+                return
+            }
+            setIssuedCard({
+                id: issued.id,
+                code,
+                code_last4: typeof issued.code_last4 === 'string' ? issued.code_last4 : '',
+                balance: Number(issued.balance),
+                currency: String(issued.currency || 'INR'),
+                recipient_email: typeof issued.recipient_email === 'string' ? issued.recipient_email : (email || null),
+            })
+            clearIssueIntent()
             resetCreateForm()
             notify({
                 title: 'Gift card issued',
-                description: `${formatInrCurrency(value, { maximumFractionDigits: 0 }) || '₹0'} gift card is ready to share.`,
+                description: `${formatInrCurrency(value, { maximumFractionDigits: 0 })} gift card is ready to share.`,
                 variant: 'success',
             })
             await loadGiftCards()
         } catch (error) {
+            if (currentStoreRef.current !== store) return
             const message = error instanceof Error ? error.message : 'Unable to issue gift card'
-            notify({
-                title: 'Could not issue gift card',
-                description: message,
-                variant: 'critical',
-            })
+            notify(knownRejected
+                ? { title: 'Could not issue gift card', description: message, variant: 'critical' }
+                : { title: 'Gift card outcome needs review', description: `${message} Review the list and retry this same request before creating another.`, variant: 'warning' })
         } finally {
-            setCreating(false)
+            if (currentStoreRef.current === store) setCreating(false)
         }
-    }, [creating, loadGiftCards, newValue, notify, recipientEmail, resetCreateForm, store])
+    }, [clearIssueIntent, creating, issueIntent, loadGiftCards, newValue, notify, recipientEmail, resetCreateForm, store])
 
     const copyCode = useCallback(async (code: string) => {
         try {
@@ -277,6 +358,7 @@ export default function GiftCardsPage() {
     const openTransactions = useCallback(async (card: GiftCard) => {
         setTxCard(card)
         setTxData(null)
+        setTxError(null)
         setTxLoading(true)
         try {
             const response = await fetch(`/api/stores/${encodeURIComponent(store)}/gift-cards/${encodeURIComponent(card.id)}`, {
@@ -287,18 +369,23 @@ export default function GiftCardsPage() {
                 throw new Error(getErrorMessage(payload, 'Unable to load transactions'))
             }
             const data = payload?.data as Record<string, unknown> | undefined
+            if (!data || data.found !== true || !Array.isArray(data.ledger) ||
+                !Array.isArray(data.redemptions) || !Number.isFinite(Number(data.balance)) ||
+                typeof data.status !== 'string') {
+                throw new Error('Gift card history response is incomplete.')
+            }
             setTxData({
-                found: Boolean(data?.found),
-                code_last4: typeof data?.code_last4 === 'string' ? data.code_last4 : card.code_last4,
-                balance: Number(data?.balance ?? card.balance),
-                status: typeof data?.status === 'string' ? data.status : card.status,
-                ledger: Array.isArray(data?.ledger) ? (data.ledger as LedgerEntry[]) : [],
-                redemptions: Array.isArray(data?.redemptions) ? (data.redemptions as Redemption[]) : [],
+                found: true,
+                code_last4: typeof data.code_last4 === 'string' ? data.code_last4 : card.code_last4,
+                balance: Number(data.balance),
+                status: data.status,
+                ledger: data.ledger as LedgerEntry[],
+                redemptions: data.redemptions as Redemption[],
             })
         } catch (error) {
             const message = error instanceof Error ? error.message : 'Unable to load transactions'
             notify({ title: 'Could not load transactions', description: message, variant: 'critical' })
-            setTxData({ found: false, ledger: [], redemptions: [] })
+            setTxError(message)
         } finally {
             setTxLoading(false)
         }
@@ -334,7 +421,7 @@ export default function GiftCardsPage() {
         {
             key: 'redemption_count',
             header: 'Redemptions',
-            render: (row: GiftCard) => String(row.redemption_count || 0),
+            render: (row: GiftCard) => Number.isFinite(row.redemption_count) ? String(row.redemption_count) : '—',
         },
         {
             key: 'created_at',
@@ -439,8 +526,8 @@ export default function GiftCardsPage() {
                 >
                     <div className="flex flex-col gap-[var(--lb-space-2)]">
                         <p>
-                            This is the only time the full code is shown. Share it with the customer
-                            {issuedCard.recipient_email ? ` (also emailed to ${issuedCard.recipient_email})` : ''}.
+                            This is the only time the full code is shown. Share it with the customer.
+                            {issuedCard.recipient_email ? ` Delivery to ${issuedCard.recipient_email} may be queued; confirm it separately.` : ''}
                         </p>
                         <div className="flex flex-wrap items-center gap-[var(--lb-space-2)]">
                             <code className="rounded-md bg-[var(--lb-color-surface-subdued)] px-[var(--lb-space-3)] py-[var(--lb-space-2)] text-[var(--lb-font-size-body)] tracking-wider text-[var(--lb-color-text)]">
@@ -461,6 +548,11 @@ export default function GiftCardsPage() {
                         title="Issue a new gift card"
                         description="A unique gift card code is generated automatically after issuing."
                     >
+                        {issueIntent && (
+                            <Banner variant="warning" title="Issue request awaiting confirmation">
+                                Review the gift card list, then retry this request to resolve its outcome. The value and recipient are held for this request.
+                            </Banner>
+                        )}
                         <div className="grid gap-[var(--lb-space-4)] md:grid-cols-[minmax(0,320px)_minmax(0,320px)_1fr] md:items-end">
                             <Input
                                 label="Initial value"
@@ -470,7 +562,7 @@ export default function GiftCardsPage() {
                                 value={newValue}
                                 onChange={(event) => setNewValue(event.target.value)}
                                 placeholder="500"
-                                disabled={creating}
+                                disabled={creating || Boolean(issueIntent)}
                                 leftIcon={<IndianRupee className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                                 helperText="Value must be greater than zero."
                             />
@@ -480,9 +572,9 @@ export default function GiftCardsPage() {
                                 value={recipientEmail}
                                 onChange={(event) => setRecipientEmail(event.target.value)}
                                 placeholder="friend@example.com"
-                                disabled={creating}
+                                disabled={creating || Boolean(issueIntent)}
                                 leftIcon={<Mail className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                                helperText="When set, the code is emailed to the recipient."
+                                helperText="When set, email delivery is requested; confirm delivery separately."
                             />
                             <div className="flex flex-wrap gap-[var(--lb-space-2)]">
                                 <Button
@@ -494,9 +586,14 @@ export default function GiftCardsPage() {
                                     <Plus className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
                                     Issue gift card
                                 </Button>
-                                <Button type="button" variant="secondary" onClick={resetCreateForm} disabled={creating}>
+                                <Button type="button" variant="secondary" onClick={() => setShowCreate(false)} disabled={creating}>
                                     Cancel
                                 </Button>
+                                {issueIntent && (
+                                    <Button type="button" variant="secondary" disabled={creating || loading || Boolean(loadError)} onClick={() => { clearIssueIntent(); resetCreateForm() }}>
+                                        Start a different issue after review
+                                    </Button>
+                                )}
                             </div>
                         </div>
                     </Section>
@@ -510,7 +607,7 @@ export default function GiftCardsPage() {
                     action={<Badge label={`${giftCards.length} total`} variant="info" />}
                 >
                     {giftCards.length === 0 ? (
-                        <EmptyState
+                        <EmptyState scene="gift-cards"
                             icon={<CreditCard className="h-[var(--lb-size-icon-lg)] w-[var(--lb-size-icon-lg)]" aria-hidden="true" />}
                             title="Sell or issue gift cards"
                             body="Gift cards can drive sales, attract new customers, and give shoppers a balance to redeem at checkout."
@@ -526,7 +623,7 @@ export default function GiftCardsPage() {
                             rows={giftCards}
                             columns={columns}
                             emptyState={(
-                                <EmptyState
+                                <EmptyState scene="gift-cards"
                                     icon={<CreditCard className="h-[var(--lb-size-icon-lg)] w-[var(--lb-size-icon-lg)]" aria-hidden="true" />}
                                     title="No gift cards found"
                                     body="Issue a gift card to create a redeemable balance."
@@ -539,17 +636,22 @@ export default function GiftCardsPage() {
 
             <Drawer
                 open={Boolean(txCard)}
-                onClose={() => { setTxCard(null); setTxData(null) }}
+                onClose={() => { setTxCard(null); setTxData(null); setTxError(null) }}
                 title={txCard ? `Gift card •••• ${txCard.code_last4}` : 'Gift card'}
                 description="Ledger and redemption history for this gift card."
             >
                 {txLoading ? (
                     <Skeleton variant="table" lines={6} />
+                ) : txError ? (
+                    <Banner variant="critical" title="Gift card history could not be loaded"
+                        action={txCard ? <Button variant="secondary" size="sm" onClick={() => void openTransactions(txCard)}>Retry</Button> : undefined}>
+                        {txError}
+                    </Banner>
                 ) : txData && txData.found ? (
                     <div className="flex flex-col gap-[var(--lb-space-5)]">
                         <div className="flex flex-wrap items-center gap-[var(--lb-space-3)]">
-                            <Badge label={`Balance ${formatInrCurrency(txData.balance || 0, { maximumFractionDigits: 0 }) || '₹0'}`} variant="info" />
-                            <StatusPresentationBadge presentation={presentStatus(GIFT_CARD_STATUS_PRESENTATION, txData.status || 'active')} />
+                            <Badge label={`Balance ${formatInrCurrency(txData.balance, { maximumFractionDigits: 0 }) ?? '—'}`} variant="info" />
+                            <StatusPresentationBadge presentation={presentStatus(GIFT_CARD_STATUS_PRESENTATION, txData.status || 'unknown')} />
                         </div>
 
                         <div>
@@ -562,7 +664,7 @@ export default function GiftCardsPage() {
                                         <li key={entry.id} className="flex items-center justify-between gap-[var(--lb-space-3)] border-b border-[var(--lb-color-border-subdued)] pb-[var(--lb-space-2)]">
                                             <span>{ledgerLabel(entry.entry_type)}</span>
                                             <span className="text-[var(--lb-color-text-subdued)]">{entry.created_at ? new Date(entry.created_at).toLocaleString('en-IN') : ''}</span>
-                                            <span>{formatInrCurrency(entry.amount, { maximumFractionDigits: 0 }) || '₹0'}</span>
+                                            <span>{formatInrCurrency(entry.amount, { maximumFractionDigits: 0 }) ?? '—'}</span>
                                         </li>
                                     ))}
                                 </ul>
@@ -579,7 +681,7 @@ export default function GiftCardsPage() {
                                         <li key={redemption.id} className="flex items-center justify-between gap-[var(--lb-space-3)] border-b border-[var(--lb-color-border-subdued)] pb-[var(--lb-space-2)]">
                                             <span>Order {redemption.order_id?.slice(0, 8) || '—'}</span>
                                             <Badge label={statusLabel(redemption.status)} variant={redemption.status === 'committed' ? 'success' : 'default'} />
-                                            <span>{formatInrCurrency(redemption.amount, { maximumFractionDigits: 0 }) || '₹0'}</span>
+                                            <span>{formatInrCurrency(redemption.amount, { maximumFractionDigits: 0 }) ?? '—'}</span>
                                         </li>
                                     ))}
                                 </ul>
@@ -587,7 +689,7 @@ export default function GiftCardsPage() {
                         </div>
                     </div>
                 ) : (
-                    <EmptyState
+                    <EmptyState scene="gift-cards"
                         icon={<CreditCard className="h-[var(--lb-size-icon-lg)] w-[var(--lb-size-icon-lg)]" aria-hidden="true" />}
                         title="No transactions"
                         body="This gift card has no ledger or redemption history yet."

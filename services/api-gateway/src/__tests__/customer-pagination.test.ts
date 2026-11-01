@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import type { CommerceCustomerSummary } from '@letbuyy/commerce-core';
 import { buildCustomerSummaries, ListCustomersQuery } from '@letbuyy/commerce-core';
-import { customerCursorPage, orderCustomerSummaries } from '../lib/customer-pagination';
+import { customerCursorPage, customerSortedPage, orderCustomerSummaries } from '../lib/customer-pagination';
 
 const customersRouteSource = readFileSync(new URL('../routes/customers.ts', import.meta.url), 'utf8');
 const customerPaginationSource = readFileSync(new URL('../lib/customer-pagination.ts', import.meta.url), 'utf8');
@@ -75,6 +75,17 @@ test('customer cursor helper paginates a large sorted list without overlap', () 
     const ids = [...first.rows, ...second.rows, ...third.rows].map((row) => row.id);
     assert.equal(new Set(ids).size, 125);
     assert.deepEqual(ids, ordered.map((row) => row.id));
+});
+
+test('customer sorted pages preserve the selected order across cursor and page navigation', () => {
+    const ordered = orderCustomerSummaries(Array.from({ length: 65 }, (_, index) => summary(index + 1)), 'total_spent', 'asc');
+    const first = customerSortedPage(ordered, { page: 1, limit: 25, sort: 'total_spent', order: 'asc' });
+    const second = customerSortedPage(ordered, { page: 1, limit: 25, sort: 'total_spent', order: 'asc', cursor: first.nextCursor || undefined });
+    const third = customerSortedPage(ordered, { page: 3, limit: 25, sort: 'total_spent', order: 'asc' });
+    assert.deepEqual(first.rows, ordered.slice(0, 25));
+    assert.deepEqual(second.rows, ordered.slice(25, 50));
+    assert.deepEqual(third.rows, ordered.slice(50));
+    assert.equal(third.nextCursor, null);
 });
 
 test('customer cursor ordering and continuation agree for equal-date email IDs with punctuation', () => {

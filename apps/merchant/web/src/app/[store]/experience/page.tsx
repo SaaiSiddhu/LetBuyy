@@ -11,7 +11,6 @@ import { Button, Input,
     Calendar,
     Card,
     ConfirmDialog,
-    EmptyState,
     MapPin,
     Page,
     PageHeader,
@@ -25,6 +24,7 @@ import { Button, Input,
     Trash2,
     useToast,
 } from '@letbuyy/ui'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 
 interface Experience {
     id: string
@@ -412,7 +412,7 @@ export default function ExperiencePage() {
             {items.length === 0 && !showForm ? (
                 <Card>
                     <Section title="Work history">
-                        <EmptyState
+                        <EmptyState scene="experience"
                             icon={<Briefcase className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                             title="No experience yet"
                             body="Add roles, companies, dates, and achievements to create a trustworthy professional timeline."

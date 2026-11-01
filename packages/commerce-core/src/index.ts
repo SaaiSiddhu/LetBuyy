@@ -268,6 +268,9 @@ export const ListCustomersQuery = PaginationQuery.extend({
   search: z.string().max(200).optional(),
   tag: z.string().max(50).optional(),
   has_orders: QueryBooleanSchema.removeDefault().optional(),
+  view: z.enum(['all', 'active', 'has-orders', 'high-value', 'new']).optional(),
+  sort: z.enum(['name', 'email', 'phone', 'total_orders', 'total_spent', 'last_order_at', 'status']).optional(),
+  order: z.enum(['asc', 'desc']).optional(),
 });
 
 export const StoreScopedQuerySchema = z.object({
@@ -315,6 +318,7 @@ export const UpdateCollectionSchema = z
 
 export const CreateGiftCardSchema = z.object({
   store_id: UuidSchema,
+  idempotency_key: z.string().trim().min(8).max(200).optional(),
   initial_value: z.coerce.number().positive().max(999999),
   currency: z.string().length(3).toUpperCase().default('INR'),
   expires_at: z.string().datetime().optional().nullable(),

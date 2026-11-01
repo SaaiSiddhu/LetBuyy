@@ -68,6 +68,7 @@ test('shell authorizes the current store and renders before its optional switche
             isQueryCostRateLimited: () => false,
         },
         '@/components/AdminShell': { default: () => null },
+        '@/lib/app-platform-flag': { isAppPlatformEnabled: () => false },
         '@/lib/public-urls': { getMerchantSignInUrl: () => '/login' },
         'next/headers': { headers: async () => new Headers() },
     });
@@ -98,6 +99,7 @@ test('optional switcher failure is explicit and sanitized without bypassing curr
             getUserStores: async () => { throw new Error('Private backend diagnostic'); },
         },
         '@/components/AdminShell': { default: () => null },
+        '@/lib/app-platform-flag': { isAppPlatformEnabled: () => false },
         '@/lib/public-urls': { getMerchantSignInUrl: () => '/login' },
         'next/headers': { headers: async () => new Headers() },
     });
@@ -130,7 +132,7 @@ test('dashboard launches setup and metrics together and shares its recent produc
     const result = page({ params: Promise.resolve({ store: 'alpha' }) });
     await tick();
     const started = [...calls];
-    gate.resolve({ data: [{ id: 'product-a', name: 'Notebook', status: 'draft' }], total: 3, summary: { products: 3 }, breakdown: {} });
+    gate.resolve({ data: [{ id: 'product-a', name: 'Notebook', status: 'draft' }], total: 3, summary: { products: 3, revenue: { value: 0, change_pct: 0 }, orders: { value: 0, change_pct: 0 }, avg_order_value: 0 }, breakdown: {} });
     const rendered = await result;
     assert.ok(started.includes('dashboard') && started.includes('orders'), 'metrics must start while setup reads are pending');
     assert.equal(calls.filter(name => name === 'products').length, 1, 'the same all-status catalogue population serves setup and recent activity');
@@ -359,6 +361,18 @@ test('best-effort logout bounds a stalled identity request and still clears only
     assert.equal((await response.json()).redirectTo, 'https://identity.example.invalid/lookup');
 });
 
+test('logout never reports success when the local session cookie cannot be cleared', async () => {
+    const { POST } = load('../src/app/api/auth/logout/route.ts', {
+        'next/server': { NextResponse: { json: Response.json } },
+        'next/headers': { cookies: async () => ({ get: () => undefined, set: () => { throw new Error('cookie write failed'); } }) },
+        '@letbuyy/auth-core': { LETBUYY_MERCHANT_SESSION_COOKIE: 'lb_session' },
+        '@/lib/public-urls': { getAccountsUrl: () => 'https://identity.example.invalid', getAdminUrl: () => 'https://merchant.example.invalid' },
+    }, { process: { env: { NODE_ENV: 'development' } }, console: { error: () => {} } });
+    const response = await POST();
+    assert.equal(response.status, 503);
+    assert.equal((await response.json()).success, false);
+});
+
 function exportRoute(file, exports, fetch = () => { throw new Error('unexpected file fetch'); }, resolve = async () => ({ storeId: 'owned-a' }), originGuard = () => null) {
     return load(file, {
         'next/server': { NextResponse: { json: Response.json } },
@@ -503,6 +517,7 @@ test('shell starts both mandatory reads concurrently and still refuses a store w
             getUserStores: async () => [],
         },
         '@/components/AdminShell': { default: () => null },
+        '@/lib/app-platform-flag': { isAppPlatformEnabled: () => false },
         '@/lib/public-urls': publicUrls(), 'next/headers': { headers: async () => new Headers() },
     });
     const pending = layout({ children: null, params: Promise.resolve({ store: 'alpha' }) });
@@ -519,6 +534,7 @@ test('a revoked session resumes the original path and never renders authorized s
         'next/navigation': { notFound() { throw new Error('not-found'); }, redirect(url) { throw new Error(url); } },
         '@/lib/auth/session': { getSessionUser: async () => null, getStoreForUser: async () => store, getUserStores: () => { throw new Error('must not load for a signed-out actor'); } },
         '@/components/AdminShell': { default: () => null },
+        '@/lib/app-platform-flag': { isAppPlatformEnabled: () => false },
         '@/lib/public-urls': urls,
         'next/headers': { headers: async () => new Headers({ [urls.MERCHANT_RETURN_PATH_HEADER]: '/alpha/products?status=draft' }) },
     });

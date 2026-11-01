@@ -4,7 +4,8 @@ import { useReadRequest } from '@/lib/api/use-read-request'
 
 import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
-import { Badge, Banner, Button, Card, ConfirmDialog, EmptyState, Globe, Input, normalizeProviderMode, Plus, ProviderModeBadge, Section, Skeleton, Truck, useToast, type ProviderMode } from '@letbuyy/ui'
+import { Badge, Banner, Button, Card, ConfirmDialog, Globe, Input, normalizeProviderMode, Plus, ProviderModeBadge, Section, Skeleton, Truck, useToast, type ProviderMode } from '@letbuyy/ui'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import { SettingsPane } from '@/components/settings/SettingsPane'
 
 interface ShippingZone {
@@ -500,7 +501,7 @@ export default function ShippingSettingsPage() {
                         )}
                     >
                         {zones.length === 0 ? (
-                            <EmptyState
+                            <EmptyState scene="shipping"
                                 icon={<Truck className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                                 title="No shipping zones configured"
                                 body="Create zones for domestic, regional, or international delivery so checkout can offer the right rates."

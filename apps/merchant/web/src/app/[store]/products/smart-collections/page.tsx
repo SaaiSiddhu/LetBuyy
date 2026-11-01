@@ -9,7 +9,6 @@ import {
     Banner,
     Button,
     Card,
-    EmptyState,
     Input,
     MaterialIcon,
     Modal,
@@ -22,6 +21,7 @@ import {
     useToast,
     type SelectOption,
 } from '@letbuyy/ui'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import { slugifyCmsTitle as slugify } from '@letbuyy/cms-core'
 import type {
     SmartCollection,
@@ -518,7 +518,7 @@ export default function SmartCollectionsPage() {
                     {loading ? (
                         <Skeleton variant="table" lines={4} />
                     ) : collections.length === 0 ? (
-                        <EmptyState
+                        <EmptyState scene="smart-collections"
                             kind="collections"
                             title="No smart collections yet"
                             body="Smart collections automatically include products that match the conditions you define — no manual curation needed."

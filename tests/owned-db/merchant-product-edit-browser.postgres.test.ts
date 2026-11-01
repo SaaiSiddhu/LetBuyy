@@ -153,6 +153,56 @@ test('production navigation preserves the shell and settles useful nonzero catal
     }finally{profileReads=null;await page.close();}
 });
 
+test('desktop, tablet, and phone keep the canonical shell and settings navigation usable',{timeout:150000},async()=>{
+    const page=await ownerA.newPage();
+    try{
+        await page.setViewportSize({width:1440,height:900});
+        await page.goto(`${merchantOrigin}/${site.subdomain}/products`);
+        await expect(page.getByRole('heading',{name:'Products',exact:true}).first()).toBeVisible();
+        const bounds=async()=>page.evaluate(()=>{
+            const rail=document.querySelector<HTMLElement>('#admin-nav-drawer');
+            const sheet=document.querySelector<HTMLElement>('#admin-page-scroll');
+            const settings=document.querySelector<HTMLElement>('.settings-sidebar');
+            const content=document.querySelector<HTMLElement>('.settings-content');
+            return {
+                rail:rail?{...rail.getBoundingClientRect().toJSON(),visible:getComputedStyle(rail).display!=='none'}:null,
+                page:sheet?{...sheet.getBoundingClientRect().toJSON(),visible:getComputedStyle(sheet).display!=='none'}:null,
+                settings:settings?{...settings.getBoundingClientRect().toJSON(),visible:getComputedStyle(settings).display!=='none'}:null,
+                content:content?{...content.getBoundingClientRect().toJSON(),visible:getComputedStyle(content).display!=='none'}:null,
+                viewport:innerWidth,
+            };
+        });
+        const desktop=await bounds();
+        assert(desktop.rail?.visible&&desktop.page?.visible);
+        assert(desktop.rail.right<=desktop.page.left+1,'desktop rail must not cover the content plane');
+        await page.getByRole('button',{name:'Collapse sidebar'}).click();
+        await expect(page.getByRole('button',{name:'Expand sidebar'})).toBeVisible();
+        assert((await bounds()).rail!.width<=60,'desktop collapse must create an icon rail');
+        await page.getByRole('button',{name:'Expand sidebar'}).click();
+
+        await page.setViewportSize({width:900,height:900});
+        await page.goto(`${merchantOrigin}/${site.subdomain}/settings/general`);
+        await expect(page.getByRole('heading',{name:'General',exact:true}).first()).toBeVisible();
+        const tablet=await bounds();
+        assert(tablet.rail?.visible&&tablet.settings?.visible&&tablet.content?.visible);
+        assert(tablet.rail.width<=60,'tablet must use the compact primary rail');
+        assert(tablet.rail.right<=tablet.settings.left+1,'tablet primary rail must stay beside settings');
+        assert(tablet.settings.right<=tablet.content.left+1,'tablet settings navigation must stay beside content');
+        assert(tablet.content.right<=tablet.viewport+1,'tablet content must fit the viewport');
+
+        await page.setViewportSize({width:390,height:844});
+        await expect(page.getByRole('button',{name:'Open menu'})).toBeVisible();
+        const phone=await bounds();
+        assert(!phone.rail?.visible&&phone.page?.visible,'phone content must be visible before opening navigation');
+        await page.getByRole('button',{name:'Open menu'}).click();
+        await expect(page.getByRole('dialog',{name:'Settings navigation'})).toBeVisible();
+        await page.keyboard.press('Escape');
+        await expect(page.getByRole('dialog',{name:'Settings navigation'})).toHaveCount(0);
+        await expect(page.getByRole('heading',{name:'General',exact:true}).first()).toBeVisible();
+        checkpoints.push('desktop_tablet_phone_shell_settings_navigation_geometry_and_phone_escape');
+    }finally{await page.close();}
+});
+
 test('production AI and operations pages settle complete large-history values',{timeout:150000},async()=>{
     const source=crypto.randomUUID(),destination=crypto.randomUUID();
     const supplierA=crypto.randomUUID(),supplierB=crypto.randomUUID(),receiptProduct=product().id;

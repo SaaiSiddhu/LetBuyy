@@ -5,7 +5,6 @@ import { useReadRequest } from '@/lib/api/use-read-request'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
-import Image from 'next/image'
 import {
     Section,
     Card,
@@ -13,7 +12,6 @@ import {
     Banner,
     Button,
     CreditCard,
-    EmptyState,
     FileText,
     Info,
     Plus,
@@ -23,6 +21,7 @@ import {
     type TableSavedView,
     useToast,
 } from '@letbuyy/ui'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import { formatInrCurrency, formatUsLongDate, formatUsShortDate } from '@letbuyy/ui/formatting'
 import { SettingsPane } from '@/components/settings/SettingsPane'
 import { FoundingMerchantCard } from '@/components/founding/FoundingMerchantCard'
@@ -40,10 +39,10 @@ interface InvoiceRow {
 }
 
 interface UpcomingBill {
-    amount_minor: number
+    amount_minor: number | null
     due_date: string | null
     currency: string
-    billing_period: string
+    billing_period: string | null
     plan: string | null
 }
 
@@ -65,7 +64,7 @@ const billViews: TableSavedView[] = [
     { label: 'Unpaid', value: 'unpaid' },
 ]
 
-const PAID_STATUSES = new Set(['paid', 'succeeded', 'issued', 'active'])
+const PAID_STATUSES = new Set(['paid', 'succeeded'])
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -83,57 +82,65 @@ function readString(value: unknown, fallback = '') {
 }
 
 function coerceNumber(value: unknown) {
-    const amount = typeof value === 'number' ? value : typeof value === 'string' ? Number(value) : 0
-    return Number.isFinite(amount) ? amount : 0
+    const amount = typeof value === 'number' ? value : typeof value === 'string' && value.trim() ? Number(value) : Number.NaN
+    return Number.isFinite(amount) ? amount : Number.NaN
 }
 
 function normalizeMandates(value: unknown): BillingMandateView[] {
-    if (!Array.isArray(value)) return []
-    return value.flatMap((m) => {
-        if (!isRecord(m) || typeof m.id !== 'string') return []
+    if (!Array.isArray(value)) throw new Error('Billing mandate list response is incomplete.')
+    return value.map((m) => {
+        if (!isRecord(m) || typeof m.id !== 'string' || !m.id ||
+            typeof m.provider !== 'string' || typeof m.status !== 'string' ||
+            typeof m.plan_slug !== 'string' || typeof m.billing_period !== 'string') {
+            throw new Error('Billing mandate data is incomplete.')
+        }
         const mode = m.provider_mode === 'live' ? 'live' : m.provider_mode === 'sandbox' ? 'sandbox' : null
-        return [{
+        return {
             id: m.id,
-            provider: readString(m.provider, 'upi_autopay'),
+            provider: m.provider,
             provider_mode: mode,
-            status: readString(m.status, 'pending_provider'),
-            plan_slug: readString(m.plan_slug, 'starter'),
-            billing_period: readString(m.billing_period, 'monthly'),
+            status: m.status,
+            plan_slug: m.plan_slug,
+            billing_period: m.billing_period,
             amount_minor: coerceNumber(m.amount_minor),
             currency: readString(m.currency, 'INR'),
-        }]
+        }
     })
 }
 
 function normalizeInvoices(value: unknown): InvoiceRow[] {
-    if (!Array.isArray(value)) return []
-    return value.flatMap((inv) => {
-        if (!isRecord(inv) || typeof inv.id !== 'string') return []
+    if (!Array.isArray(value)) throw new Error('Invoice history response is incomplete.')
+    return value.map((inv) => {
+        if (!isRecord(inv) || typeof inv.id !== 'string' || !inv.id) throw new Error('Invoice data is incomplete.')
         const total = inv.total_amount ?? inv.amount
-        return [{
+        if (!Number.isFinite(coerceNumber(total)) || typeof inv.payment_status !== 'string') throw new Error('Invoice amount or status is unavailable.')
+        return {
             id: inv.id,
             invoice_number: typeof inv.invoice_number === 'string' ? inv.invoice_number : null,
             amount: coerceNumber(total),
-            status: readString(inv.payment_status, 'pending'),
+            status: inv.payment_status,
             billing_period: typeof inv.billing_period === 'string' ? inv.billing_period : null,
             created_at: typeof inv.created_at === 'string' ? inv.created_at : null,
-        }]
+        }
     })
 }
 
 function normalizeBilling(value: unknown): BillingData {
-    const data = isRecord(value) ? value : {}
+    if (!isRecord(value) || !isRecord(value.trial) || !isRecord(value.upcoming) || !isRecord(value.profile)) {
+        throw new Error('Billing response is incomplete.')
+    }
+    const data = value
     const sub = isRecord(data.subscription) ? data.subscription : null
     const trial = isRecord(data.trial) ? data.trial : {}
-    const upcoming = isRecord(data.upcoming) ? data.upcoming : {}
-    const profile = isRecord(data.profile) ? data.profile : {}
+    const upcoming = data.upcoming as Record<string, unknown>
+    const profile = data.profile as Record<string, unknown>
 
     return {
         subscription: sub
             ? {
-                plan: readString(sub.plan, 'current'),
-                status: readString(sub.status, 'active'),
-                billing_period: readString(sub.billing_period, 'monthly'),
+                plan: readString(sub.plan),
+                status: readString(sub.status, 'unknown'),
+                billing_period: readString(sub.billing_period),
                 current_period_end: readString(sub.current_period_end),
             }
             : null,
@@ -142,10 +149,10 @@ function normalizeBilling(value: unknown): BillingData {
             ends_at: typeof trial.ends_at === 'string' ? trial.ends_at : null,
         },
         upcoming: {
-            amount_minor: coerceNumber(upcoming.amount_minor),
+            amount_minor: Number.isFinite(coerceNumber(upcoming.amount_minor)) ? coerceNumber(upcoming.amount_minor) : null,
             due_date: typeof upcoming.due_date === 'string' ? upcoming.due_date : null,
             currency: readString(upcoming.currency, 'INR'),
-            billing_period: readString(upcoming.billing_period, 'monthly'),
+            billing_period: typeof upcoming.billing_period === 'string' ? upcoming.billing_period : null,
             plan: typeof upcoming.plan === 'string' ? upcoming.plan : null,
         },
         mandates: normalizeMandates(data.mandates),
@@ -205,7 +212,7 @@ export default function BillingSettingsPage() {
     useEffect(() => { void loadData() }, [loadData])
 
     const invoiceColumns = useMemo<TableColumn<InvoiceRow>[]>(() => [
-        { key: 'created_at', header: 'Date', render: (inv) => formatUsShortDate(inv.created_at, { emptyValue: 'Recently' }) },
+        { key: 'created_at', header: 'Date', render: (inv) => formatUsShortDate(inv.created_at, { emptyValue: '—' }) },
         {
             key: 'invoice_number',
             header: 'Invoice',
@@ -214,12 +221,12 @@ export default function BillingSettingsPage() {
         {
             key: 'billing_period',
             header: 'Period',
-            render: (inv) => <span className="billing-bill-period">{inv.billing_period || 'One-time'}</span>,
+            render: (inv) => <span className="billing-bill-period">{inv.billing_period || '—'}</span>,
         },
         {
             key: 'amount',
             header: 'Amount',
-            render: (inv) => <span className="billing-bill-amount">{formatInrCurrency(inv.amount / 100, { minimumFractionDigits: 2 })}</span>,
+            render: (inv) => <span className="billing-bill-amount">{formatInrCurrency(inv.amount / 100, { minimumFractionDigits: 2 }) ?? '—'}</span>,
         },
         {
             key: 'status',
@@ -255,10 +262,21 @@ export default function BillingSettingsPage() {
         )
     }
 
-    const billing = data || normalizeBilling(null)
+    if (!data) {
+        return (
+            <SettingsPane navigationKey="billing" title="Billing" description="Your subscription and invoice history." store={store}>
+                <Banner variant="critical" title="Billing could not load"
+                    action={<Button variant="secondary" onClick={() => void loadData()}>Retry</Button>}>
+                    {loadError || 'Billing data is unavailable.'}
+                </Banner>
+            </SettingsPane>
+        )
+    }
+
+    const billing = data
     const hasActiveMandate = billing.mandates.some((m) => m.status === 'active')
-    const isTrial = !billing.subscription
-    const upcomingAmount = formatInrCurrency(billing.upcoming.amount_minor / 100, { minimumFractionDigits: 2 }) || '₹0.00'
+    const isTrial = billing.trial.status === 'active' || billing.trial.status === 'trialing'
+    const upcomingAmount = billing.upcoming.amount_minor === null ? 'Amount not quoted' : formatInrCurrency(billing.upcoming.amount_minor / 100, { minimumFractionDigits: 2 }) ?? 'Amount unavailable'
     const upcomingDate = formatUsLongDate(billing.upcoming.due_date, { emptyValue: 'Not scheduled' })
 
     return (
@@ -301,7 +319,7 @@ export default function BillingSettingsPage() {
                     <span className="billing-stat-icon billing-stat-icon--rupee">₹</span>
                     <div className="billing-stat-body">
                         <span className="billing-stat-label">Paid to date</span>
-                        <span className="billing-stat-value">{formatInrCurrency(totalPaid / 100, { minimumFractionDigits: 2 })}</span>
+                        <span className="billing-stat-value">{formatInrCurrency(totalPaid / 100, { minimumFractionDigits: 2 }) ?? '—'}</span>
                     </div>
                 </Card>
                 <Card className="billing-stat-card">
@@ -314,28 +332,30 @@ export default function BillingSettingsPage() {
                 <Card className="billing-stat-card">
                     <span className="billing-stat-icon billing-stat-icon--ok"><CreditCard className="letbuyy-icon" aria-hidden="true" /></span>
                     <div className="billing-stat-body">
-                        <span className="billing-stat-label">Payment methods</span>
+                        <span className="billing-stat-label">Billing mandates</span>
                         <span className="billing-stat-value">{billing.mandates.length}</span>
                     </div>
                 </Card>
             </div>
 
-            {/* ── Upcoming bill ─────────────────────────────────────────────── */}
-            <Section variant="grouped" title="Upcoming bill" >
+            {/* ── Billing period ────────────────────────────────────────────── */}
+            <Section variant="grouped" title="Current billing period" >
                 <div className="billing-upcoming">
                     <div className="billing-upcoming-main">
-                        <span className="billing-upcoming-amount">{upcomingAmount} <small>INR</small></span>
+                        <span className="billing-upcoming-amount">{upcomingAmount}</span>
                         <span className="billing-upcoming-meta">
                             {isTrial
-                                ? `Free trial — no charge. Trial ends ${formatUsLongDate(billing.trial.ends_at, { emptyValue: 'soon' })}.`
-                                : `Next bill on ${upcomingDate} · ${billing.upcoming.plan || 'plan'} (${billing.upcoming.billing_period}).`}
+                                ? `Trial ends ${formatUsLongDate(billing.trial.ends_at, { emptyValue: 'on a date not available here' })}. Any next charge needs a confirmed quote.`
+                                : billing.subscription
+                                    ? `Current period ends ${upcomingDate}. The next charge has not been quoted.`
+                                    : 'No active subscription or scheduled charge is confirmed.'}
                         </span>
                     </div>
                     <div className="billing-upcoming-actions">
-                        {!hasActiveMandate && (
+                        {!hasActiveMandate && billing.subscription && (
                             <Button onClick={() => setAddOpen(true)}>
                                 <Plus className="letbuyy-icon" aria-hidden="true" />
-                                Add payment method
+                                Create test mandate
                             </Button>
                         )}
                         <Button variant="secondary" onClick={() => router.push(`/${store}/settings/plan`)}>
@@ -343,10 +363,10 @@ export default function BillingSettingsPage() {
                         </Button>
                     </div>
                 </div>
-                {!hasActiveMandate && !isTrial && (
+                {!hasActiveMandate && billing.subscription && (
                     <div className="billing-upcoming-warn">
                         <Info className="letbuyy-icon" aria-hidden="true" />
-                        <span>Add a payment method to keep your subscription on auto-renewal and avoid interruption.</span>
+                        <span>No active billing mandate is shown. Live AutoPay requires provider activation and verification.</span>
                     </div>
                 )}
                 <div className="billing-upcoming-foot">
@@ -355,10 +375,10 @@ export default function BillingSettingsPage() {
             </Section>
 
             {/* ── Payment method ────────────────────────────────────────────── */}
-            <Section variant="grouped" title="Payment method" >
+            <Section variant="grouped" title="Billing mandates" >
 
                     <div className="settings-general-hint">
-                        How you pay for your LetBuyy subscription. Storefront payment methods (how you collect from
+                        This section currently supports sandbox mandate records. Storefront payment methods (how you collect from
                         customers) are managed in <Link href={`/${store}/settings/payments`} className="settings-business-link">Payments</Link>.
                     </div>
                     <BillingPaymentMethods
@@ -382,20 +402,9 @@ export default function BillingSettingsPage() {
                     activeView={billFilter}
                     onViewChange={(v) => setBillFilter(v as BillFilter)}
                     emptyState={
-                        <EmptyState
+                        <EmptyState scene="billing"
                             title="Your past bills will appear here"
                             body="Invoices show up after your first paid subscription cycle."
-                            illustration={
-                                billFilter === 'all' ? (
-                                    <Image
-                                        src="/Emptystate Illustration/Pastbill.png"
-                                        alt=""
-                                        width={200}
-                                        height={200}
-                                        aria-hidden="true"
-                                    />
-                                ) : undefined
-                            }
                             icon={billFilter !== 'all' ? <FileText className="letbuyy-icon" aria-hidden="true" /> : undefined}
                         />
                     }

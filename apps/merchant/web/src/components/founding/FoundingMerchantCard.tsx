@@ -52,6 +52,8 @@ export function FoundingMerchantCard() {
         ?? null
     const lockedMonthly = lockedPaise != null ? formatInrCurrency(lockedPaise / 100) : null
     const planLabel = status.allocation?.plan_slug === 'growth' ? 'Growth' : 'Launch'
+    const benefits = status.allocation?.benefits
+    const priceLocked = status.price_lock_enabled && benefits?.price_lock === true
     const joined = status.founding_allocated_at
         ? new Date(status.founding_allocated_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
         : null
@@ -61,7 +63,7 @@ export function FoundingMerchantCard() {
             <div className="flex flex-col gap-[var(--lb-space-4)] p-[var(--lb-space-5)]">
                 <div className="flex flex-wrap items-center justify-between gap-[var(--lb-space-3)]">
                     <h3 className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">
-                        🏆 Founding Merchant #{status.founding_number}
+                        🏆 Founding Merchant{typeof status.founding_number === 'number' ? ` #${status.founding_number}` : ''}
                     </h3>
                     {status.allocation_source ? (
                         <Badge label={status.allocation_source} variant="info" />
@@ -69,16 +71,18 @@ export function FoundingMerchantCard() {
                 </div>
 
                 <p className="m-0 text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text-subdued)]">
-                    {lockedMonthly
-                        ? `${planLabel} price locked forever at ${lockedMonthly}/month. Future price changes will never affect you.`
-                        : 'Your founding price is locked for life. Future price changes will never affect you.'}
+                    {priceLocked && lockedMonthly
+                        ? `${planLabel} founding price: ${lockedMonthly}/month. Your price lock is active.`
+                        : priceLocked
+                            ? 'Your founding price lock is active. Review your current amount in Billing.'
+                            : 'Your founding merchant status is active. Review your current benefits and plan in Billing.'}
                 </p>
 
                 <div className="flex flex-wrap gap-[var(--lb-space-2)]">
-                    <Badge label="Price Locked Forever" variant="success" />
-                    <Badge label="Priority Support" variant="default" />
-                    <Badge label="Early Access" variant="default" />
-                    <Badge label="Feature Preview" variant="default" />
+                    {priceLocked && <Badge label="Price lock active" variant="success" />}
+                    {benefits?.priority_support === true && <Badge label="Priority Support" variant="default" />}
+                    {benefits?.early_access === true && <Badge label="Early Access" variant="default" />}
+                    {benefits?.feature_preview === true && <Badge label="Feature Preview" variant="default" />}
                 </div>
 
                 {joined ? (

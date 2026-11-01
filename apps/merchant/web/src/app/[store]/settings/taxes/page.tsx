@@ -10,7 +10,6 @@ import { Button, Input,
     Card,
     ClipboardList,
     ConfirmDialog,
-    EmptyState,
     Globe,
     IndianRupee,
     Plus,
@@ -22,6 +21,7 @@ import { Button, Input,
     Truck,
     useToast,
 } from '@letbuyy/ui'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import { SettingsPane } from '@/components/settings/SettingsPane'
 
 interface TaxRate {
@@ -625,7 +625,7 @@ export default function TaxesSettingsPage() {
                         )}
                     >
                         {taxRates.length === 0 ? (
-                            <EmptyState
+                            <EmptyState scene="taxes"
                                 icon={<Tag className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                                 title="No tax rates configured"
                                 body="Add GST, state, or duty rates so checkout can calculate taxes consistently."

@@ -4,15 +4,8 @@ import { LetbuyyThemeProvider, ThemeScript } from "@letbuyy/ui";
 import "./globals.css";
 
 const letbuyySans = localFont({
-  src: "../../../../../packages/typescript/ui/assets/fonts/geist-sans-latin.woff2",
+  src: "../../../../../packages/typescript/ui/assets/fonts/inter-variable.woff2",
   variable: "--font-letbuyy-sans",
-  display: "swap",
-  weight: "100 900",
-});
-
-const letbuyyDisplay = localFont({
-  src: "../../../../../packages/typescript/ui/assets/fonts/geist-sans-latin-ext.woff2",
-  variable: "--font-letbuyy-display",
   display: "swap",
   weight: "100 900",
 });
@@ -24,7 +17,7 @@ const letbuyyMono = localFont({
   weight: "100 900",
 });
 
-const fontVariables = `${letbuyySans.variable} ${letbuyyDisplay.variable} ${letbuyyMono.variable}`;
+const fontVariables = `${letbuyySans.variable} ${letbuyyMono.variable}`;
 
 export const metadata: Metadata = {
   title: "LetBuyy Admin",

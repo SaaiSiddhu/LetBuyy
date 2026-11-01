@@ -10,7 +10,6 @@ import { Button, Input, Table,
     BookOpen,
     Card,
     ConfirmDialog,
-    EmptyState,
     FileText,
     Page,
     PageHeader,
@@ -26,6 +25,7 @@ import { Button, Input, Table,
     Trash2,
     useToast,
 } from '@letbuyy/ui'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import { formatIndiaDate } from '@letbuyy/ui/formatting'
 import type { TableColumn } from '@letbuyy/ui'
 import { slugifyCmsTitle as slugify } from '@letbuyy/cms-core'
@@ -343,7 +343,7 @@ export default function PostsPage() {
 
     const renderPostTable = useCallback((items: Post[]) => (
         items.length === 0 ? (
-            <EmptyState
+            <EmptyState scene="posts"
                 icon={<BookOpen className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                 title="No posts in this view"
                 body="Switch views or create a new post to start building your blog."
@@ -545,7 +545,7 @@ export default function PostsPage() {
                     description="Filter, edit, and archive blog content."
                 >
                     {posts.length === 0 ? (
-                        <EmptyState
+                        <EmptyState scene="posts"
                             icon={<BookOpen className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                             title="No blog posts yet"
                             body="Publish announcements, product stories, guides, or portfolio updates from one place."
