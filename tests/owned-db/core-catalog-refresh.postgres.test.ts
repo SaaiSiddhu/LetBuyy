@@ -8,11 +8,19 @@ import {createLetbuyyCoreLiquidThemeBundleFixture} from '../../packages/theme-en
 import {requireOwnedDatabase} from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
 const owned=requireOwnedDatabase();
 test('fully migrated Core catalog carries current canonical section definitions',()=>{
- const actual=JSON.parse(owned.psql("SELECT (default_template->'liquidBundle')::text FROM themes WHERE slug='letbuyy-core';"));
- const expected=createLetbuyyCoreLiquidThemeBundleFixture();
+ const actual=JSON.parse(owned.psql("SELECT (default_template->'liquidBundle')::text FROM themes WHERE slug='letbuyy-core';")) as {sections:Record<string,unknown>;renderer:{engine:string};package:{slug:string}};
+ const frozen=createLetbuyyCoreLiquidThemeBundleFixture();
  // Compare canonicalized JSON too: PostgreSQL jsonb sorts keys differently from TS insertion order.
  const stable=(value:unknown):string=>JSON.stringify(value,(_key,item)=>item&&typeof item==='object'&&!Array.isArray(item)?Object.fromEntries(Object.entries(item).sort(([a],[b])=>a.localeCompare(b))):item);
- const differences=Object.keys(expected.sections).filter(key=>stable(actual.sections[key])!==stable(expected.sections[key]));
+ // The factory is deliberately frozen at the admitted pre-426 bytes. Fresh
+ // databases apply the guarded 426 catalog footer patch after that seed.
+ const migration=readFileSync('database/supabase/migrations/426_core_public_contact_footer.sql','utf8');
+ const source=migration.match(/v_from jsonb := \$corefooterjson\$(.*?)\$corefooterjson\$::jsonb;/s);
+ const target=migration.match(/v_to jsonb := \$corefooterjson\$(.*?)\$corefooterjson\$::jsonb;/s);
+ assert.ok(source&&target,'migration 426 must declare exact source and target footers');
+ assert.equal(stable(JSON.parse(source[1]) as unknown),stable(frozen.sections.footer),'426 must start from the frozen factory footer');
+ const expectedSections:Record<string,unknown>={...frozen.sections,footer:JSON.parse(target[1]) as unknown};
+ const differences=Object.keys(expectedSections).filter(key=>stable(actual.sections[key])!==stable(expectedSections[key]));
  console.info('OWNED_CORE_CATALOG '+JSON.stringify({sectionCount:Object.keys(actual.sections).length,differences,renderer:actual.renderer.engine,package:actual.package.slug}));
  assert.deepEqual(differences,[],'fresh installations must use the actual current canonical section definitions');
 });
