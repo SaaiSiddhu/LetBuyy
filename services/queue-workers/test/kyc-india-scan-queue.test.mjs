@@ -49,6 +49,7 @@ test('signed Mumbai SQS pull applies exact event and ACKs after durable RPC', as
     if (target === 'AmazonSQS.ReceiveMessage') {
       order.push('receive');
       assert.equal(body.QueueUrl, env.KYC_INDIA_SCAN_QUEUE_URL);
+      assert.equal(body.VisibilityTimeout, 300);
       return Response.json({ Messages: [{ ReceiptHandle: 'synthetic-handle', Body: JSON.stringify(event()) }] });
     }
     assert.equal(target, 'AmazonSQS.DeleteMessage');
@@ -85,6 +86,18 @@ test('forged, blocked and DB-failed events stay unacknowledged', async () => {
     }), { received: 1, applied: 0, acknowledged: 0, retry: 1 });
     assert.equal(rpcCalls, expectedCalls);
   }
+});
+
+test('early scanner result remains in SQS until the upload receipt is attached', async () => {
+  let deleteCalls = 0;
+  const fetcher = async (_url, options) => {
+    if (options.headers['x-amz-target'] === 'AmazonSQS.DeleteMessage') deleteCalls++;
+    return Response.json({ Messages: [{ ReceiptHandle: 'early-handle', Body: JSON.stringify(event()) }] });
+  };
+  const result = await consumeKycIndiaScanQueue(env, fetcher, clock,
+    async () => ({ data: 'pending', error: null }));
+  assert.deepEqual(result, { received: 1, applied: 0, acknowledged: 0, retry: 1 });
+  assert.equal(deleteCalls, 0);
 });
 
 test('cross-account queue and SQS outage fail closed', async () => {

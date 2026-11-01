@@ -91,7 +91,9 @@ export async function consumeKycIndiaScanQueue(env: KycIndiaScanQueueEnv,
   const config = configuration(env);
   const response = await sqsRequest(env, 'ReceiveMessage', {
     QueueUrl: config.queueUrl, MaxNumberOfMessages: 5,
-    VisibilityTimeout: 60, WaitTimeSeconds: 0,
+    // Five-minute visibility bounds retry pressure while preserving the
+    // one-hour upload-completion window with an appropriately sized AWS DLQ.
+    VisibilityTimeout: 300, WaitTimeSeconds: 0,
     MessageSystemAttributeNames: ['ApproximateReceiveCount'],
   }, fetcher, clock);
   if (!response || typeof response !== 'object' || Array.isArray(response)) unavailable();
@@ -113,6 +115,12 @@ export async function consumeKycIndiaScanQueue(env: KycIndiaScanQueueEnv,
         p_site: event.siteId, p_receipt: event.receiptId, p_version: event.versionId,
         p_event: event.eventId, p_verdict: event.verdict, p_scanned_at: event.scannedAt,
       });
+      // The scanner can beat upload-complete. Keep this message until the
+      // receipt is attached, or AWS redrives it for investigation.
+      if (!error && data === 'pending') {
+        result.retry++;
+        continue;
+      }
       if (error || !['applied', 'replay', 'unchanged', 'stale'].includes(String(data))) unavailable();
       if (data === 'applied') result.applied++;
       await sqsRequest(env, 'DeleteMessage', {

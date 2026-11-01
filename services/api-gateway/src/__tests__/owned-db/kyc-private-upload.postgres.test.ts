@@ -26,6 +26,9 @@ test('KYC file upload remains private, tenant-owned and pending provider evidenc
     const scanRollback = readFileSync(new URL('../../../../../database/supabase/rollback/423_kyc_india_scanner_verdict.rollback.sql', import.meta.url), 'utf8');
     const indiaCleanupMigration = readFileSync(new URL('../../../../../database/supabase/migrations/424_kyc_india_cleanup_due.sql', import.meta.url), 'utf8');
     const indiaCleanupRollback = readFileSync(new URL('../../../../../database/supabase/rollback/424_kyc_india_cleanup_due.rollback.sql', import.meta.url), 'utf8');
+    const earlyScanMigration = readFileSync(new URL('../../../../../database/supabase/migrations/425_kyc_india_early_scan_retry.sql', import.meta.url), 'utf8');
+    const earlyScanRollback = readFileSync(new URL('../../../../../database/supabase/rollback/425_kyc_india_early_scan_retry.rollback.sql', import.meta.url), 'utf8');
+    owned.psql(earlyScanRollback);
     owned.psql(indiaCleanupRollback);
     owned.psql(scanRollback);
     owned.psql(isolationRollback);
@@ -45,6 +48,7 @@ test('KYC file upload remains private, tenant-owned and pending provider evidenc
     owned.psql(isolationMigration);
     owned.psql(scanMigration);
     owned.psql(indiaCleanupMigration);
+    owned.psql(earlyScanMigration);
     assert.match(owned.psqlExpectError(`UPDATE merchant_kyc_documents
         SET metadata=jsonb_build_object('private_object_key', 'kyc/${preflightTenant.siteId}/business_pan/forged')
         WHERE site_id='${preflightTenant.siteId}' AND document_type='identity_proof';`),
