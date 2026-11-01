@@ -1,0 +1,30 @@
+{
+  "status": "ADMITTED_V200_SOURCE_RECOVERED_RUNTIME_CUTOVER_UNQUALIFIED",
+  "date": "2026-11-02",
+  "admissionManifest": "docs/implementation/niche-theme-programme/release-v2/proposals/9b2e045a696940bc80ead069c5b8b74ea45bc74b971e7cded2138d087a630d8b/manifest.json",
+  "recoveryManifest": "docs/implementation/niche-theme-programme/release-v2/recovered-admitted-source/recovery-manifest.json",
+  "recovery": {
+    "unreachableGitBlobsExamined": 6594,
+    "exactAdmittedSourcesRecoveredFromBlobs": 17,
+    "exactAdmittedSourcesAlreadyInRepositorySnapshots": 4,
+    "originalSourcesVerified": 21,
+    "originalThemeSourceFiles": 20,
+    "originalLockfile": "not recovered from reachable history or examined unreachable blobs"
+  },
+  "reproduction": {
+    "command": "node --import tsx scripts/governance/check-admitted-theme-v200-source.mjs",
+    "result": "HISTORICAL_FACTORY_PARITY_ONLY",
+    "frozenDefaultBundles": { "match": 10, "total": 10 },
+    "admittedV200Bundles": { "match": 9, "total": 9 },
+    "mismatches": []
+  },
+  "versionedRuntimeTrial": {
+    "method": "An uncommitted trial routed bare 2.0.0 factory selection to adapted recovered theme/discovery modules while keeping current successor modules.",
+    "bundleParity": "9/9 admitted 2.0.0 bundles matched",
+    "typecheck": "passed after building the existing shared-types prerequisite",
+    "themeEngineTests": { "tests": 2214, "pass": 2194, "fail": 20, "skipped": 0 },
+    "finding": "Newer successor tests and builders assume later search, filter, typography, and heading changes inside the nominal 2.0.0 base. A production cutover requires moving those behaviors to explicit successor versions and requalifying their deltas against the admitted 2.0.0 base.",
+    "disposition": "Trial runtime imports and adapted modules removed. No active factory, admitted release, database migration, or published merchant snapshot was changed."
+  },
+  "qualification": "Exact historical package reproduction is proven, but current runtime promotion and reviewed successor source pins are not. The historical theme promotion gate remains red; no green behavioral gate or Wave 6 release is claimed."
+}
