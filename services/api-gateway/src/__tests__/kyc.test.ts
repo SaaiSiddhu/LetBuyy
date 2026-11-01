@@ -119,6 +119,31 @@ test('sandbox and provider-unavailable records never complete business verificat
     assert.equal(status(), 'needs_review', 'an untrusted old approval must agree with its Needs review document badge');
 });
 
+test('GST registration makes its certificate a required KYC approval without reviving an optional rejection', () => {
+    const documents = ['business_pan', 'bank_proof', 'address_proof'].map((document_type) => ({
+        document_type,
+        status: 'verified',
+        provider_mode: 'live',
+        provider: 'signzy',
+        provider_reference: `synthetic-${document_type}`,
+        metadata: { provider_verified: true, private_object_key: `kyc/site/${document_type}/fixture`, malware_scan_status: 'clean' },
+    }));
+    const rows = documents as unknown as Parameters<typeof deriveKycOverallStatus>[0];
+    assert.equal(deriveKycOverallStatus(rows, false), 'verified');
+    assert.equal(deriveKycOverallStatus(rows, true), 'in_progress',
+        'a later GST registration must require its certificate before the business remains verified');
+    documents.push({
+        document_type: 'gst_certificate', status: 'verified', provider_mode: 'live', provider: 'signzy',
+        provider_reference: 'synthetic-gst',
+        metadata: { provider_verified: true, private_object_key: 'kyc/site/gst_certificate/fixture', malware_scan_status: 'clean' },
+    });
+    assert.equal(deriveKycOverallStatus(rows, true), 'verified');
+    documents[3]!.status = 'rejected';
+    assert.equal(deriveKycOverallStatus(rows, true), 'rejected');
+    assert.equal(deriveKycOverallStatus(rows, false), 'verified',
+        'a rejected optional GST certificate does not block an unregistered merchant');
+});
+
 test('a provider status alone cannot authorize a stored KYC verified timestamp', () => {
     const evidence = {
         status: 'submitted' as const,

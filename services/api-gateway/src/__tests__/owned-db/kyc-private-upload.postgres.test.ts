@@ -318,3 +318,59 @@ test('live-mode provider outage stays pending after clean private evidence and e
         await liveGateway.settle();
     }
 });
+
+test('KYC API follows canonical GST registration when declaring required evidence and overall status', async () => {
+    const tenant = newSyntheticTenant('kyc-gst-registration');
+    seedSyntheticTenant(owned.psql, tenant);
+    const owner = randomUUID(), email = `kyc-gst-${owner}@example.invalid`;
+    owned.psql(`INSERT INTO users_custom(id,email,email_verified,full_name) VALUES
+        ('${owner}','${email}',true,'Synthetic GST KYC owner');
+        UPDATE sites SET custom_user_id='${owner}' WHERE id='${tenant.siteId}';`);
+    const registrationGateway = new Gateway(gatewayEnv(owned, await newIdentityKeys(), {
+        KYC_PROVIDER_MODE: 'live', KYC_PROVIDER: 'signzy',
+    }));
+    const overview = async () => registrationGateway.request(`/v1/kyc?store_id=${tenant.siteId}`, {
+        method: 'GET', headers: await signedIdentityHeaders(owner, email, tenant.siteId),
+    });
+    const gstRequirement = (result: Awaited<ReturnType<typeof overview>>) =>
+        result.json?.data.required_documents.find((item: { document_type: string }) => item.document_type === 'gst_certificate');
+    try {
+        const before = await overview();
+        assert.equal(before.status, 200, before.text);
+        assert.equal(gstRequirement(before)?.required, false);
+        for (const documentType of ['business_pan', 'bank_proof', 'address_proof']) {
+            owned.psql(`INSERT INTO merchant_kyc_documents(site_id,document_type,document_number_last4,status,
+                provider,provider_mode,provider_reference,metadata,verified_at)
+                VALUES ('${tenant.siteId}','${documentType}','1234','verified','signzy','live',
+                'fixture-${documentType}',jsonb_build_object('provider_verified',true,'private_object_key',
+                'kyc/${tenant.siteId}/${documentType}/fixture','malware_scan_status','clean'),now());`);
+        }
+        const unregistered = await overview();
+        assert.equal(unregistered.status, 200, unregistered.text);
+        assert.equal(unregistered.json?.data.overall_status, 'verified');
+        owned.psql(`UPDATE sites SET gstin='27ABCDE1234F1Z5',gst_state_code='27' WHERE id='${tenant.siteId}';`);
+        const registeredMissingCertificate = await overview();
+        assert.equal(registeredMissingCertificate.status, 200, registeredMissingCertificate.text);
+        assert.equal(gstRequirement(registeredMissingCertificate)?.required, true);
+        assert.equal(registeredMissingCertificate.json?.data.overall_status, 'in_progress');
+        assert.match(registeredMissingCertificate.json?.data.next_action || '', /remaining required documents/i);
+        owned.psql(`INSERT INTO merchant_kyc_documents(site_id,document_type,document_number_last4,status,
+            provider,provider_mode,provider_reference,metadata,verified_at)
+            VALUES ('${tenant.siteId}','gst_certificate','1234','verified','signzy','live',
+            'fixture-gst',jsonb_build_object('provider_verified',true,'private_object_key',
+            'kyc/${tenant.siteId}/gst_certificate/fixture','malware_scan_status','clean'),now());`);
+        const registeredComplete = await overview();
+        assert.equal(registeredComplete.status, 200, registeredComplete.text);
+        assert.equal(registeredComplete.json?.data.overall_status, 'verified');
+        owned.psql(`UPDATE merchant_kyc_documents SET status='rejected',verified_at=NULL
+            WHERE site_id='${tenant.siteId}' AND document_type='gst_certificate';`);
+        const registeredRejected = await overview();
+        assert.equal(registeredRejected.json?.data.overall_status, 'rejected');
+        owned.psql(`UPDATE sites SET gstin=NULL,gst_state_code=NULL WHERE id='${tenant.siteId}';`);
+        const unregisteredAgain = await overview();
+        assert.equal(gstRequirement(unregisteredAgain)?.required, false);
+        assert.equal(unregisteredAgain.json?.data.overall_status, 'verified');
+    } finally {
+        await registrationGateway.settle();
+    }
+});

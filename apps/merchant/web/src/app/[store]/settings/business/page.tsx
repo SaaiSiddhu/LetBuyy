@@ -139,7 +139,7 @@ const DOC_META: Record<KycDocumentType, { title: string; Icon: LucideIcon; hint:
     gst_certificate: {
         title: 'GST certificate',
         Icon: FileText,
-        hint: 'Required only if your business is GST-registered. Enables GST tax invoices.',
+        hint: 'Required for business verification when GST-registered. GST invoices use your saved supplier and tax details.',
         last4Label: 'Last 4 of GSTIN',
         last4Hint: 'Last 4 characters of your GSTIN',
     },

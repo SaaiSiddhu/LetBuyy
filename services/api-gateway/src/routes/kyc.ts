@@ -72,6 +72,18 @@ const REQUIRED_DOCUMENTS: Array<{ document_type: MerchantKycDocumentType; title:
     { document_type: 'gst_certificate', title: 'GST certificate', required: false },
 ];
 
+function requiredDocuments(isGstRegistered: boolean) {
+    return REQUIRED_DOCUMENTS.map((item) => item.document_type === 'gst_certificate'
+        ? { ...item, required: isGstRegistered } : item);
+}
+
+async function loadGstRegistration(db: ReturnType<typeof getSupabaseAdmin>, siteId: string): Promise<boolean> {
+    const { data, error } = await db.from('sites').select('gstin')
+        .eq('id', siteId).is('deleted_at', null).maybeSingle();
+    if (error || !data) throw new AppError('Business registration is unavailable.', 503, 'KYC_BUSINESS_REGISTRATION_UNAVAILABLE');
+    return typeof data.gstin === 'string' && data.gstin.trim().length > 0;
+}
+
 function providerMode(env: Env): MerchantKycProviderMode {
     return env.KYC_PROVIDER_MODE === 'live' ? 'live' : 'sandbox';
 }
@@ -112,27 +124,27 @@ function serializeDocument(row: KycDocumentRow) {
     };
 }
 
-export function deriveKycOverallStatus(rows: KycDocumentRow[]) {
-    if (rows.some((row) => effectiveKycDocumentStatus(row) === 'rejected')) return 'rejected';
+export function deriveKycOverallStatus(rows: KycDocumentRow[], isGstRegistered = false) {
     const byType = new Map(rows.map((row) => [row.document_type, row]));
-    const required = REQUIRED_DOCUMENTS.filter((item) => item.required);
+    const required = requiredDocuments(isGstRegistered).filter((item) => item.required);
+    const requiredRows = required.map((item) => byType.get(item.document_type)).filter((row): row is KycDocumentRow => Boolean(row));
+    if (requiredRows.some((row) => effectiveKycDocumentStatus(row) === 'rejected')) return 'rejected';
     if (required.every((item) => {
         const row = byType.get(item.document_type);
         return Boolean(row && hasLiveProviderEvidence(row));
     })) return 'verified';
-    if (rows.some((row) => effectiveKycDocumentStatus(row) === 'needs_review')) return 'needs_review';
-    if (rows.some((row) => effectiveKycDocumentStatus(row) === 'submitted')) return 'in_progress';
-    return 'not_started';
+    if (requiredRows.some((row) => effectiveKycDocumentStatus(row) === 'needs_review')) return 'needs_review';
+    return rows.length > 0 ? 'in_progress' : 'not_started';
 }
 
-function nextAction(status: string, rows: KycDocumentRow[], mode: MerchantKycProviderMode): string {
+function nextAction(status: string, rows: KycDocumentRow[], mode: MerchantKycProviderMode, isGstRegistered: boolean): string {
     if (status === 'verified') return 'Business verification is complete.';
     if (status === 'rejected') return 'Review the rejected document and submit an updated proof.';
     if (rows.some((row) => row.metadata?.private_object_key && row.metadata.malware_scan_status === 'rejected'))
         return 'A document failed its security scan. Replace that file to continue verification.';
     if (rows.length === 0) return 'Upload business PAN, bank proof, and address proof privately.';
     const byType = new Map(rows.map((row) => [row.document_type, row]));
-    if (REQUIRED_DOCUMENTS.some((item) => item.required && !byType.get(item.document_type)?.metadata?.private_object_key))
+    if (requiredDocuments(isGstRegistered).some((item) => item.required && !byType.get(item.document_type)?.metadata?.private_object_key))
         return mode === 'sandbox'
             ? 'Upload the remaining required documents privately. Sandbox uploads are not provider reviewed and cannot enable live payouts.'
             : 'Upload the remaining required documents privately. Reference digits alone are not verification evidence.';
@@ -147,21 +159,21 @@ function nextAction(status: string, rows: KycDocumentRow[], mode: MerchantKycPro
     return 'Submit business PAN, bank proof, and address proof.';
 }
 
-function buildOverview(siteId: string, rows: KycDocumentRow[], mode: MerchantKycProviderMode) {
+function buildOverview(siteId: string, rows: KycDocumentRow[], mode: MerchantKycProviderMode, isGstRegistered: boolean) {
     const byType = new Map(rows.map((row) => [row.document_type, row]));
-    const derived = deriveKycOverallStatus(rows);
+    const derived = deriveKycOverallStatus(rows, isGstRegistered);
     const status = mode === 'sandbox' && derived === 'verified' ? 'in_progress' : derived;
     return {
         site_id: siteId,
         overall_status: status,
         provider_mode: mode,
-        required_documents: REQUIRED_DOCUMENTS.map((item) => ({
+        required_documents: requiredDocuments(isGstRegistered).map((item) => ({
             ...item,
             status: byType.get(item.document_type)
                 ? serializeDocument(byType.get(item.document_type)!).status : null,
         })),
         documents: rows.map(serializeDocument),
-        next_action: nextAction(status, rows, mode),
+        next_action: nextAction(status, rows, mode, isGstRegistered),
     };
 }
 
@@ -243,7 +255,8 @@ router.get('/', validate('query', StoreQuerySchema), async (c) => {
     const db = getSupabaseAdmin(c);
     const tenant = await resolveTenantContextForOwnedSite(c, query.store_id);
     const rows = await loadDocuments(db, tenant.siteId);
-    return c.json(success(buildOverview(tenant.siteId, rows, providerMode(c.env))));
+    const isGstRegistered = await loadGstRegistration(db, tenant.siteId);
+    return c.json(success(buildOverview(tenant.siteId, rows, providerMode(c.env), isGstRegistered)));
 });
 
 router.post('/documents', validate('json', SubmitKycDocumentSchema), async (c) => {
@@ -286,6 +299,7 @@ router.post('/documents/upload', bodyLimit({ maxSize: 6 * 1024 * 1024 }), async 
 
     const db = getSupabaseAdmin(c);
     const tenant = await resolveTenantContextForOwnedSite(c, input.data.store_id);
+    const isGstRegistered = await loadGstRegistration(db, tenant.siteId);
     const { data: existing, error: lookupError } = await db.from('merchant_kyc_documents').select('*')
         .eq('site_id', tenant.siteId).eq('document_type', input.data.document_type).is('deleted_at', null).maybeSingle();
     if (lookupError) throw new Error('KYC document lookup failed');
@@ -314,7 +328,7 @@ router.post('/documents/upload', bodyLimit({ maxSize: 6 * 1024 * 1024 }), async 
         if (claim.kind === 'claimed') await idempotency.complete({ id: claim.id,
             responseBody: { success: true, data: { document_id: prior.id } }, statusCode: 201,
             resourceType: 'merchant_kyc_document', resourceId: prior.id });
-        return c.json(success({ document: serializeDocument(prior), overview: buildOverview(tenant.siteId, rows, providerMode(c.env)) }), 200);
+        return c.json(success({ document: serializeDocument(prior), overview: buildOverview(tenant.siteId, rows, providerMode(c.env), isGstRegistered) }), 200);
     }
     if (claim.kind === 'replay') {
         return c.json({ error: { code: 'KYC_UPLOAD_SUPERSEDED', message: 'This upload was replaced by a newer document. Reload its status.' } }, 409);
@@ -363,7 +377,7 @@ router.post('/documents/upload', bodyLimit({ maxSize: 6 * 1024 * 1024 }), async 
         await idempotency.complete({ id: claim.id,
             responseBody: { success: true, data: { document_id: document.id } }, statusCode: 201,
             resourceType: 'merchant_kyc_document', resourceId: document.id });
-        return c.json(success({ document: serializeDocument(document), overview: buildOverview(tenant.siteId, rows, providerMode(c.env)) }), 201);
+        return c.json(success({ document: serializeDocument(document), overview: buildOverview(tenant.siteId, rows, providerMode(c.env), isGstRegistered) }), 201);
     } catch (error) {
         await idempotency.fail(claim.id);
         throw error;
@@ -377,6 +391,7 @@ router.post('/documents/:id/refresh', validate('query', StoreQuerySchema), async
     if (!document) {
         return c.json({ error: { code: 'KYC_DOCUMENT_NOT_FOUND', message: 'KYC document not found' } }, 404);
     }
+    const isGstRegistered = await loadGstRegistration(db, tenant.siteId);
     // A live provider must never receive an unscanned or historical reference-only
     // document. The merchant can refresh the truthful current status while the
     // trusted scanner is pending or has rejected the file, without a paid lookup.
@@ -386,7 +401,7 @@ router.post('/documents/:id/refresh', validate('query', StoreQuerySchema), async
         const rows = await loadDocuments(db, tenant.siteId);
         return c.json(success({
             document: serializeDocument(document),
-            overview: buildOverview(tenant.siteId, rows, providerMode(c.env)),
+            overview: buildOverview(tenant.siteId, rows, providerMode(c.env), isGstRegistered),
         }));
     }
     const verification = await verifyWithProvider(c.env, {
@@ -439,7 +454,7 @@ router.post('/documents/:id/refresh', validate('query', StoreQuerySchema), async
     const rows = await loadDocuments(db, tenant.siteId);
     return c.json(success({
         document: serializeDocument(data as unknown as KycDocumentRow),
-        overview: buildOverview(tenant.siteId, rows, providerMode(c.env)),
+        overview: buildOverview(tenant.siteId, rows, providerMode(c.env), isGstRegistered),
     }));
 });
 
