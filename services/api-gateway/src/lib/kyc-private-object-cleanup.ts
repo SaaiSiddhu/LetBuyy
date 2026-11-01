@@ -30,6 +30,14 @@ async function isUnreferenced(db: KycDatabase, siteId: string, key: string): Pro
     return !(data || []).some(row => row.metadata?.private_object_key === key);
 }
 
+async function isR2Receipt(db: KycDatabase, siteId: string, key: string): Promise<boolean> {
+    const { data, error } = await db.from('kyc_private_object_cleanup_jobs')
+        .select('storage_provider').eq('site_id', siteId).eq('object_key', key)
+        .is('deleted_at', null).maybeSingle();
+    if (error) throw new Error('KYC receipt provider lookup failed');
+    return data?.storage_provider === 'r2_fixture';
+}
+
 /** A durable receipt must exist before R2 can contain the new private object. */
 export async function reserveKycPrivateObject(db: KycDatabase, siteId: string, key: string): Promise<void> {
     if (!isOwnedKycKey(siteId, key)) throw new Error('KYC cleanup refused an unowned object key');
@@ -57,6 +65,7 @@ export async function tryDeleteReplacedKycObject(
 ): Promise<boolean> {
     if (!isOwnedKycKey(siteId, key)) throw new Error('KYC cleanup refused an unowned object key');
     try {
+        if (!await isR2Receipt(db, siteId, key)) return false;
         if (!await isUnreferenced(db, siteId, key)) return false;
         await bucket.delete(key);
     } catch {
@@ -88,6 +97,9 @@ export async function drainKycPrivateObjectCleanup(env: Env, limit = 20): Promis
     for (const job of jobs) {
         try {
             if (!isOwnedKycKey(job.site_id, job.object_key)) throw new Error('Unowned KYC object key');
+            // Defend even if the SQL filter has not deployed yet: an R2 sweep
+            // can never mark an S3 version deleted or issue an R2 delete for it.
+            if (!await isR2Receipt(db, job.site_id, job.object_key)) continue;
             if (!await isUnreferenced(db, job.site_id, job.object_key)) {
                 if (job.purpose !== 'upload_reservation') throw new Error('Replaced KYC object is still referenced');
                 const { error: retainedError } = await db.from('kyc_private_object_cleanup_jobs')

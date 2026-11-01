@@ -18,6 +18,12 @@ after(async () => { await gateway?.settle(); });
 test('KYC file upload remains private, tenant-owned and pending provider evidence', async () => {
     const cleanupMigration = readFileSync(new URL('../../../../../database/supabase/migrations/420_kyc_private_object_cleanup.sql', import.meta.url), 'utf8');
     const cleanupRollback = readFileSync(new URL('../../../../../database/supabase/rollback/420_kyc_private_object_cleanup.rollback.sql', import.meta.url), 'utf8');
+    const indiaMigration = readFileSync(new URL('../../../../../database/supabase/migrations/421_kyc_india_upload_intent.sql', import.meta.url), 'utf8');
+    const indiaRollback = readFileSync(new URL('../../../../../database/supabase/rollback/421_kyc_india_upload_intent.rollback.sql', import.meta.url), 'utf8');
+    const isolationMigration = readFileSync(new URL('../../../../../database/supabase/migrations/422_kyc_r2_india_provider_isolation.sql', import.meta.url), 'utf8');
+    const isolationRollback = readFileSync(new URL('../../../../../database/supabase/rollback/422_kyc_r2_india_provider_isolation.rollback.sql', import.meta.url), 'utf8');
+    owned.psql(isolationRollback);
+    owned.psql(indiaRollback);
     owned.psql(cleanupRollback);
     const preflightTenant = newSyntheticTenant('kyc-preflight');
     seedSyntheticTenant(owned.psql, preflightTenant);
@@ -29,6 +35,8 @@ test('KYC file upload remains private, tenant-owned and pending provider evidenc
     owned.psql(`UPDATE merchant_kyc_documents SET metadata='{}'::jsonb
         WHERE site_id='${preflightTenant.siteId}' AND document_type='identity_proof';`);
     owned.psql(cleanupMigration);
+    owned.psql(indiaMigration);
+    owned.psql(isolationMigration);
     assert.match(owned.psqlExpectError(`UPDATE merchant_kyc_documents
         SET metadata=jsonb_build_object('private_object_key', 'kyc/${preflightTenant.siteId}/business_pan/forged')
         WHERE site_id='${preflightTenant.siteId}' AND document_type='identity_proof';`),

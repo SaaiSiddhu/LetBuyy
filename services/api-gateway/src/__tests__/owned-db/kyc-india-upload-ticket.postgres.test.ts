@@ -6,6 +6,8 @@ import { closePooledSqlClients } from '@letbuyy/infrastructure/pooled-sql-adapte
 import { requireOwnedDatabase, startOwnedPooledSqlProxy,
   type OwnedPooledSqlProxy } from './owned-db-support';
 import { newSyntheticTenant, seedSyntheticTenant } from './synthetic-tenant';
+import { drainKycPrivateObjectCleanup, tryDeleteReplacedKycObject } from '../../lib/kyc-private-object-cleanup';
+import { getSupabaseAdminFromEnv } from '../../lib/supabase';
 
 const owned = requireOwnedDatabase();
 let gateway: Gateway;
@@ -115,11 +117,32 @@ test('real Gateway issues only an owned, durable, exact-key test ticket and refu
     assert.equal(first.json?.data?.fields?.['x-amz-checksum-sha256'],
       Buffer.from('aa'.repeat(32), 'hex').toString('base64'));
     assert.doesNotMatch(first.text, /synthetic-(sts-source|temporary)-secret/);
+    const orphanId = randomUUID();
+    const orphanKey = `kyc/${a.siteId}/bank_proof/${orphanId}`;
+    owned.psql(`INSERT INTO kyc_private_object_cleanup_jobs
+      (id,site_id,object_key,purpose,storage_provider,document_type,expected_sha256_hex,
+       expected_bytes,expected_content_type,reference_last4,upload_idempotency_key,
+       created_at,intent_expires_at,next_attempt_at,created_by,updated_by)
+      VALUES ('${orphanId}','${a.siteId}','${orphanKey}','upload_reservation','aws_s3_mumbai',
+       'bank_proof','${'a'.repeat(64)}',1234,'application/pdf','1234','${randomUUID()}',
+       now()-interval '10 minutes',now()-interval '7 minutes',now()-interval '4 minutes',
+       '${owner}','${owner}');`);
+    let wrongProviderDeletes = 0;
+    const r2Bucket = { delete: async () => { wrongProviderDeletes++; } } as unknown as R2Bucket;
+    const r2Env = { ...env, KYC_PRIVATE_BUCKET: r2Bucket };
+    assert.equal(await tryDeleteReplacedKycObject(getSupabaseAdminFromEnv(r2Env), r2Bucket,
+      a.siteId, orphanKey), false, 'direct R2 deletion refuses an S3 receipt');
+    const wrongProviderSweep = await drainKycPrivateObjectCleanup(r2Env);
+    assert.equal(wrongProviderSweep.scanned, 0, 'the SQL due-list excludes India receipts');
+    assert.equal(wrongProviderSweep.deleted, 0);
+    assert.equal(wrongProviderDeletes, 0);
+    assert.equal(owned.psql(`SELECT status FROM kyc_private_object_cleanup_jobs WHERE id='${orphanId}';`), 'pending');
     const same = await request();
     assert.equal(same.status, 201, same.text);
     assert.equal(same.json?.data?.receipt_id, first.json?.data?.receipt_id);
     assert.equal(owned.psql(`SELECT count(*) FROM kyc_private_object_cleanup_jobs
-      WHERE site_id='${a.siteId}' AND storage_provider='aws_s3_mumbai';`), '1');
+      WHERE site_id='${a.siteId}' AND storage_provider='aws_s3_mumbai'
+        AND document_type='business_pan';`), '1');
     const changed = await request(a.siteId, { ...input, sha256_hex: 'b'.repeat(64) });
     assert.equal(changed.status, 409, changed.text);
     const staff = await request(a.siteId, input, randomUUID(), other);

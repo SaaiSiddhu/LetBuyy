@@ -8,6 +8,8 @@ import { newSyntheticTenant, seedSyntheticTenant } from './synthetic-tenant';
 const owned = requireOwnedDatabase();
 const forward = readFileSync(new URL('../../../../../database/supabase/migrations/421_kyc_india_upload_intent.sql', import.meta.url), 'utf8');
 const rollback = readFileSync(new URL('../../../../../database/supabase/rollback/421_kyc_india_upload_intent.rollback.sql', import.meta.url), 'utf8');
+const providerIsolation = readFileSync(new URL('../../../../../database/supabase/migrations/422_kyc_r2_india_provider_isolation.sql', import.meta.url), 'utf8');
+const providerIsolationRollback = readFileSync(new URL('../../../../../database/supabase/rollback/422_kyc_r2_india_provider_isolation.rollback.sql', import.meta.url), 'utf8');
 
 function intent(siteId: string, id: string, key: string, documentType = 'business_pan'): string {
   return `INSERT INTO public.kyc_private_object_cleanup_jobs
@@ -26,8 +28,10 @@ function asTenant(siteId: string, statement: string): string {
 
 test('India upload intent is a durable, tenant-fenced extension of the existing receipt', () => {
   // The paired rollback is reversible only before real India evidence exists.
+  owned.psql(providerIsolationRollback);
   owned.psql(rollback);
   owned.psql(forward);
+  owned.psql(providerIsolation);
 
   const a = newSyntheticTenant('kyc-india-a');
   const b = newSyntheticTenant('kyc-india-b');
@@ -117,4 +121,7 @@ test('India upload intent is a durable, tenant-fenced extension of the existing 
   assert.match(owned.psqlExpectError(rollback),
     /India KYC object evidence exists; retain versioned upload receipts/,
     'rollback preserves pending India upload receipts');
+  assert.match(owned.psqlExpectError(providerIsolationRollback),
+    /India KYC receipts exist; retain provider-isolated cleanup/,
+    'a rollback cannot expose India receipts to the R2 sweeper');
 });

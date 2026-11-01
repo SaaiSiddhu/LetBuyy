@@ -93,6 +93,10 @@ router.get('/sites/:siteId/documents/:documentId/file', async (c) => {
     if (error) throw new AppError('KYC evidence is unavailable.', 503, 'KYC_REVIEW_UNAVAILABLE');
     if (!data) throw new AppError('KYC evidence was not found.', 404, 'KYC_DOCUMENT_NOT_FOUND');
     const row = data as KycRow;
+    if (row.metadata?.private_storage_provider !== undefined
+        && row.metadata.private_storage_provider !== 'r2_fixture') {
+        throw new AppError('India private evidence review is not available yet.', 503, 'KYC_INDIA_REVIEW_UNAVAILABLE');
+    }
     const key = row.metadata?.private_object_key;
     if (typeof key !== 'string' || !key.startsWith(`kyc/${siteId}/${row.document_type}/`))
         throw new AppError('Private evidence is unavailable.', 503, 'KYC_PRIVATE_EVIDENCE_UNAVAILABLE');

@@ -63,6 +63,30 @@ test('a current stepped-up Console operator can audit and download only the requ
     assert.match(file.headers.get('content-disposition') || '', /^attachment;/);
     assert.match(file.headers.get('cache-control') || '', /no-store/);
     assert.equal(objectReads, 1);
+    const indiaReceipt = crypto.randomUUID();
+    const indiaDocument = crypto.randomUUID();
+    const indiaKey = `kyc/${other.siteId}/business_pan/${indiaReceipt}`;
+    owned.psql(`INSERT INTO kyc_private_object_cleanup_jobs
+        (id,site_id,object_key,purpose,storage_provider,document_type,expected_sha256_hex,
+         expected_bytes,expected_content_type,reference_last4,upload_idempotency_key,
+         intent_expires_at,next_attempt_at,object_version_id,head_verified_at,
+         status,outcome,completed_at,created_by,updated_by)
+      VALUES ('${indiaReceipt}','${other.siteId}','${indiaKey}','upload_reservation','aws_s3_mumbai',
+        'business_pan','${'a'.repeat(64)}',1234,'application/pdf','1234','${crypto.randomUUID()}',
+        now()+interval '3 minutes',now()+interval '6 minutes','synthetic-version',now(),
+        'completed','retained',now(),'${reviewer.id}','${reviewer.id}');
+      INSERT INTO merchant_kyc_documents(id,site_id,document_type,status,provider,provider_mode,
+        document_number_last4,metadata) VALUES ('${indiaDocument}','${other.siteId}',
+        'business_pan','submitted','letbuyy_sandbox_kyc','sandbox','1234',
+        '{"private_storage_provider":"aws_s3_mumbai","private_object_key":"${indiaKey}",
+          "private_object_version_id":"synthetic-version","sha256":"${'a'.repeat(64)}",
+          "byte_size":1234,"content_type":"application/pdf","malware_scan_status":"clean"}'::jsonb);`);
+    const indiaFile = await gateway.request(
+        `/v1/internal/console/kyc/sites/${other.siteId}/documents/${indiaDocument}/file?reason=${reason}`,
+        { headers: reviewer.headers });
+    assert.equal(indiaFile.status, 503, 'R2 review must refuse a Mumbai S3 document even when marked clean');
+    assert.equal(indiaFile.json?.error?.code, 'KYC_INDIA_REVIEW_UNAVAILABLE');
+    assert.equal(objectReads, 1, 'the R2 bucket is never asked for India evidence');
     env.ENVIRONMENT = 'staging';
     const wrongRegionRead = await gateway.request(filePath, { headers: reviewer.headers });
     assert.equal(wrongRegionRead.status, 503, 'deployed R2 must not release India-only document bytes');

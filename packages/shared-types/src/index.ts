@@ -1102,6 +1102,7 @@ export const MerchantKycOverviewSchema = z.object({
   overall_status: MerchantKycOverallStatusSchema,
   provider_mode: MerchantKycProviderModeSchema,
   private_upload_available: z.boolean(),
+  india_direct_upload_available: z.boolean().optional(),
   required_documents: z.array(MerchantKycRequirementSchema).default([]),
   documents: z.array(MerchantKycDocumentSchema).default([]),
   next_action: z.string().optional().nullable(),

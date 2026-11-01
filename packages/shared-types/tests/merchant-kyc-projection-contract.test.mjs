@@ -31,12 +31,14 @@ test('merchant KYC projection accepts PostgREST timestamps and explicit upload a
     overall_status: 'in_progress',
     provider_mode: 'sandbox',
     private_upload_available: false,
+    india_direct_upload_available: false,
     required_documents: [{ document_type: 'business_pan', title: 'Business PAN', required: true, status: 'submitted' }],
     documents: [document],
     next_action: 'Private document upload is unavailable.',
   };
   assert.deepEqual(MerchantKycOverviewSchema.parse(overview), overview);
   assert.equal(MerchantKycOverviewSchema.safeParse({ ...overview, private_upload_available: undefined }).success, false);
+  assert.equal(MerchantKycOverviewSchema.safeParse({ ...overview, india_direct_upload_available: 'true' }).success, false);
 });
 
 test('merchant KYC projection rejects private storage and legacy link fields', () => {
