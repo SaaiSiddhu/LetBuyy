@@ -119,7 +119,8 @@ test('KYC file upload remains private, tenant-owned and pending provider evidenc
         const objectCount = objects.size;
         const putCallCount = putCalls;
         const receiptOutage = await upload(tenant.siteId, pdf());
-        assert.equal(receiptOutage.status, 500, 'an unavailable cleanup receipt fails the upload closed');
+        assert.equal(receiptOutage.status, 503, 'an unavailable cleanup receipt fails the upload closed');
+        assert.equal(receiptOutage.json?.error?.code, 'KYC_RECEIPT_UNAVAILABLE');
         assert.equal(putCalls, putCallCount, 'the failed receipt never calls private storage');
         assert.equal(objects.size, objectCount, 'no private bytes are written without a durable receipt');
     } finally {

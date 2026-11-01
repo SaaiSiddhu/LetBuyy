@@ -1,4 +1,5 @@
 import type { Env } from '../index';
+import { AppError } from './errors';
 import { getSupabaseAdminFromEnv } from './supabase';
 
 type KycDatabase = ReturnType<typeof getSupabaseAdminFromEnv>;
@@ -30,7 +31,8 @@ export async function reserveKycPrivateObject(db: KycDatabase, siteId: string, k
         // An upload in progress must not race its own cleanup worker.
         next_attempt_at: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
     });
-    if (error) throw new Error('KYC private cleanup receipt could not be saved');
+    if (error) throw new AppError('Private document upload receipts are unavailable. Please retry later.',
+        503, 'KYC_RECEIPT_UNAVAILABLE');
 }
 
 /** If this receipt update fails, cron will see the live reference and retain it. */
