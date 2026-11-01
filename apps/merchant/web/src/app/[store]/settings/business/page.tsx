@@ -724,13 +724,13 @@ export default function BusinessSettingsPage() {
                         <div className="settings-business-fee-row">
                             <span className="settings-business-fee-icon settings-business-fee-icon--muted"><CreditCard className="letbuyy-icon" aria-hidden="true" /></span>
                             <div className="settings-business-fee-body">
-                                <span className="settings-business-fee-label">Payment gateway fees (Razorpay)</span>
+                                <span className="settings-business-fee-label">Payment provider charges</span>
                                 <span className="settings-business-fee-desc">
-                                    Your own Razorpay account&apos;s standard fees (plus 18% GST) are deducted by Razorpay at settlement. Configure keys in{' '}
+                                    Your provider applies charges under your own agreement. Check its statement for actual fees and taxes. Configure your account in{' '}
                                     <Link href={`/${store}/settings/payments`} className="settings-business-link">Payments</Link>.
                                 </span>
                             </div>
-                            <span className="settings-business-fee-value settings-business-fee-value--muted">At cost</span>
+                            <span className="settings-business-fee-value settings-business-fee-value--muted">See statement</span>
                         </div>
 
                         <div className="settings-business-fee-row settings-business-fee-row--net">
