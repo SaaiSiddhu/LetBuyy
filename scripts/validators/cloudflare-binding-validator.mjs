@@ -62,6 +62,19 @@ for (const worker of manifest?.workers || []) {
   const text = readFile(worker.config);
   const kycBucketNames = [];
   const publicBucketNames = [];
+  const defaultSection = text.split(/\n\[env\.staging\]/)[0];
+  const defaultR2Blocks = arrayTableBlocks(defaultSection, "r2_buckets");
+  const defaultPublicBlock = defaultR2Blocks.find((block) => stringValue(block, "binding") === "R2_BUCKET");
+  const defaultKycBlock = defaultR2Blocks.find((block) => stringValue(block, "binding") === "KYC_PRIVATE_BUCKET");
+  if (defaultPublicBlock) publicBucketNames.push(stringValue(defaultPublicBlock, "bucket_name"));
+  if (defaultKycBlock) {
+    const privateName = stringValue(defaultKycBlock, "bucket_name");
+    const publicName = defaultPublicBlock ? stringValue(defaultPublicBlock, "bucket_name") : "";
+    reporter.assert(Boolean(privateName && publicName && privateName !== publicName),
+      `KYC private R2 bucket must name a different bucket from public media: ${worker.config} default`);
+    kycBucketNames.push(privateName);
+  }
+  const environmentKycBucketNames = [];
 
   for (const environment of ["staging", "production"]) {
     const expected = worker.environments?.[environment];
@@ -130,6 +143,7 @@ for (const worker of manifest?.workers || []) {
       reporter.assert(Boolean(privateName && publicName && privateName !== publicName),
         `KYC private R2 bucket must name a different bucket from public media: ${worker.config} ${environment}`);
       kycBucketNames.push(privateName);
+      environmentKycBucketNames.push(privateName);
     }
 
     const d1Blocks = arrayTableBlocks(envSection, `env.${environment}.d1_databases`);
@@ -167,8 +181,8 @@ for (const worker of manifest?.workers || []) {
       reporter.assert(!hasArrayTable(envSection, `env.${environment}.services`), `Wrangler env has unowned service bindings: ${worker.config} ${environment}`);
     }
   }
-  if (kycBucketNames.length === 2) {
-    reporter.assert(kycBucketNames[0] !== kycBucketNames[1],
+  if (environmentKycBucketNames.length === 2) {
+    reporter.assert(environmentKycBucketNames[0] !== environmentKycBucketNames[1],
       `KYC staging and production must use separate R2 buckets: ${worker.config}`);
   }
   for (const privateName of kycBucketNames) {
