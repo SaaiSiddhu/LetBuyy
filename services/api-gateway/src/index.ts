@@ -253,6 +253,14 @@ export interface Env {
     KYC_PRIVATE_BUCKET?: R2Bucket;
     /** Explicit admission after India-only private storage, scanner, and retention approval. */
     KYC_UPLOAD_ENABLED?: 'true' | 'false';
+    /** Owned-test only until Mumbai storage, scanner and privacy gates pass. */
+    KYC_INDIA_UPLOAD_ENABLED?: 'true' | 'false';
+    KYC_INDIA_BUCKET?: string;
+    KYC_INDIA_ACCOUNT_ID?: string;
+    KYC_INDIA_UPLOAD_ROLE_ARN?: string;
+    KYC_INDIA_STS_ACCESS_KEY_ID?: string;
+    KYC_INDIA_STS_SECRET_ACCESS_KEY?: string;
+    KYC_INDIA_STS_SESSION_TOKEN?: string;
     /** Approved server-only private-original profile. No default account/binding activation. */
     REEL_CUSTODY_PROFILE?: string;
     REEL_ORIGINALS_BUCKET?: R2Bucket;

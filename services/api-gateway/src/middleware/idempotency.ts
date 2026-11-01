@@ -207,7 +207,9 @@ export const protectedMutationIdempotency = createMiddleware<{ Bindings: Env }>(
     // Multipart KYC evidence cannot pass through the JSON-body receipt layer.
     // The route hashes its verified file bytes and claims the canonical
     // site-scoped receipt before writing to the private object bucket.
-    const routeOwnedKycUpload = method === 'POST' && orderPath === '/kyc/documents/upload';
+    // The India ticket has its own durable tenant-fenced intent. HTTP replay
+    // would return an expired S3 policy and bypass fresh ownership checks.
+    const routeOwnedKycUpload = method === 'POST' && ['/kyc/documents/upload', '/kyc/documents/upload-intent'].includes(orderPath);
     // Refresh must recheck current ownership and evidence on every retry. An
     // outer cached 200 would return an old approval after resubmission and
     // bypass the route's site/evidence-bound provider receipt.

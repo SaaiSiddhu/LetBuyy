@@ -9,6 +9,7 @@ import { resolveTenantContextForOwnedSite } from '../lib/tenant-context';
 import { acceptsLiveKycApproval, effectiveKycDocumentStatus, hasLiveProviderEvidence } from '../lib/kyc-evidence-status';
 import { hasIsolatedKycPrivateBucket, markKycPrivateObjectRetained, reserveKycPrivateObject, tryDeleteReplacedKycObject } from '../lib/kyc-private-object-cleanup';
 import { validate } from '../middleware/validation';
+import { createIndiaUploadIntent } from '../execution/kyc-india-upload-intent.adapter';
 import {
     createKycVerificationAdapter,
     type MerchantKycDocumentStatus,
@@ -33,6 +34,14 @@ const DocumentTypeSchema = z.enum([
 
 const StoreQuerySchema = z.object({
     store_id: z.string().uuid(),
+});
+
+const IndiaUploadIntentSchema = StoreQuerySchema.extend({
+    document_type: DocumentTypeSchema,
+    document_number_last4: z.string().trim().regex(/^[A-Za-z0-9]{2,4}$/),
+    content_type: z.enum(['application/pdf', 'image/jpeg', 'image/png']),
+    byte_size: z.number().int().min(1).max(5 * 1024 * 1024),
+    sha256_hex: z.string().regex(/^[a-f0-9]{64}$/),
 });
 
 const SubmitKycDocumentSchema = StoreQuerySchema.extend({
@@ -278,6 +287,24 @@ router.post('/documents', validate('json', SubmitKycDocumentSchema), async (c) =
     // cannot represent a submitted document or authorize provider review.
     return c.json({ error: { code: 'KYC_PRIVATE_UPLOAD_REQUIRED',
         message: 'Upload the document privately to submit it for verification.' } }, 410);
+});
+
+// Only the owned-test environment may issue tickets until an India-hosted
+// bucket, trusted scanner, cleanup, and private review are deployed together.
+router.post('/documents/upload-intent', async (c, next) => {
+    if (c.env.ENVIRONMENT !== 'test' || c.env.KYC_INDIA_UPLOAD_ENABLED !== 'true') {
+        return c.json({ error: { code: 'KYC_INDIA_UPLOAD_UNAVAILABLE',
+            message: 'Private document upload is unavailable. Please retry later.' } }, 503);
+    }
+    await next();
+}, validate('json', IndiaUploadIntentSchema), async (c) => {
+    const key = c.req.header('X-Idempotency-Key');
+    if (!key || key.length < 8 || key.length > 160) {
+        return c.json({ error: { code: 'IDEMPOTENCY_KEY_REQUIRED', message: 'A valid idempotency key is required.' } }, 400);
+    }
+    const input = c.get('validatedBody') as z.infer<typeof IndiaUploadIntentSchema>;
+    const tenant = await resolveTenantContextForOwnedSite(c, input.store_id);
+    return c.json(success(await createIndiaUploadIntent(c.env, tenant, input, key)), 201);
 });
 
 // The R2-shaped private store is an owned-test fixture only. Deployed uploads
