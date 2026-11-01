@@ -708,7 +708,8 @@ export default function BusinessSettingsPage() {
                                             </div>
                                             <span className="settings-business-kyc-hint">{meta.hint}</span>
                                         </div>
-                                        <span className={`settings-business-status settings-business-status--${sMeta.tone}`}>
+                                        <span role="status" aria-live="polite" aria-atomic="true"
+                                            className={`settings-business-status settings-business-status--${sMeta.tone}`}>
                                             <SIcon className="letbuyy-icon" aria-hidden="true" />
                                             {sMeta.label}
                                         </span>

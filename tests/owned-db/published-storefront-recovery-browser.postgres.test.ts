@@ -658,7 +658,7 @@ test('Merchant KYC proxy denies closed intake, then sends India file bytes direc
         assert.equal(response.request().postData()?.includes('Synthetic Mumbai browser upload proof'), false,
             'file bytes cannot transit the Merchant proxy');
     }
-    await expect(pan.getByText('No scan result yet')).toBeVisible();
+    await expect(pan.getByRole('status')).toHaveText(/No scan result yet/);
     assert.equal(stsCalls, 1);
     assert.equal(browserPosts, 1);
     assert.equal(headCalls, 1);
@@ -693,7 +693,7 @@ test('Merchant KYC proxy denies closed intake, then sends India file bytes direc
         (metadata->>'private_object_version_id')||'|'||(metadata->>'provider_verified')
         FROM merchant_kyc_documents WHERE site_id='${f.tenant.siteId}' AND document_type='business_pan';`),
         `1234|${firstObjectKey}|${versionId}|false`, 'storage outage leaves existing private evidence unchanged');
-    await expect(pan.getByText('No scan result yet')).toBeVisible();
+    await expect(pan.getByRole('status')).toHaveText(/No scan result yet/);
 
     const replacementCompletionPromise = f.page.waitForResponse(item =>
         new URL(item.url()).pathname === `/api/stores/${f.tenant.subdomain}/kyc/upload-complete`
@@ -706,7 +706,7 @@ test('Merchant KYC proxy denies closed intake, then sends India file bytes direc
     ]);
     assert.equal(retryIntent.status(), 201, await retryIntent.text());
     assert.equal(retryCompletion.status(), 201, await retryCompletion.text());
-    await expect(pan.getByText('No scan result yet')).toBeVisible();
+    await expect(pan.getByRole('status')).toHaveText(/No scan result yet/);
     assert.equal(browserPosts, 3);
     assert.equal(headCalls, 2);
     const replacementObjectKey = owned.psql(`SELECT metadata->>'private_object_key' FROM merchant_kyc_documents
@@ -814,7 +814,7 @@ test('mobile-width dark Merchant Business shows private KYC scan rejection and r
     owned.psql(`UPDATE merchant_kyc_documents SET metadata=jsonb_set(metadata,'{malware_scan_status}','"rejected"'::jsonb)
         WHERE site_id='${f.tenant.siteId}' AND document_type='business_pan';`);
     await f.page.reload();
-    await expect(pan.getByText('Security scan failed')).toBeVisible();
+    await expect(pan.getByRole('status')).toHaveText(/Security scan failed/);
     await expect(f.page.getByText('A document failed its security scan. Replace that file to continue verification.')).toBeVisible();
     await pan.getByLabel('Last 4 of PAN', { exact: true }).fill('1234');
     await pan.getByLabel('Upload Business PAN').setInputFiles({ name: 'replacement-pan.pdf', mimeType: 'application/pdf',
@@ -825,7 +825,7 @@ test('mobile-width dark Merchant Business shows private KYC scan rejection and r
         pan.getByRole('button', { name: 'Resubmit document' }).click(),
     ]);
     assert.equal(replacement.status(), 201);
-    await expect(pan.getByText('No scan result yet')).toBeVisible();
+    await expect(pan.getByRole('status')).toHaveText(/No scan result yet/);
     const newKey = owned.psql(`SELECT metadata->>'private_object_key' FROM merchant_kyc_documents
         WHERE site_id='${f.tenant.siteId}' AND document_type='business_pan';`);
     assert.notEqual(newKey, key);
