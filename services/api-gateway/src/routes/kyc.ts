@@ -160,7 +160,8 @@ function nextAction(status: string, rows: KycDocumentRow[], mode: MerchantKycPro
     return 'Submit business PAN, bank proof, and address proof.';
 }
 
-function buildOverview(siteId: string, rows: KycDocumentRow[], mode: MerchantKycProviderMode, isGstRegistered: boolean) {
+function buildOverview(siteId: string, rows: KycDocumentRow[], mode: MerchantKycProviderMode,
+    isGstRegistered: boolean, privateUploadAvailable: boolean) {
     const byType = new Map(rows.map((row) => [row.document_type, row]));
     const derived = deriveKycOverallStatus(rows, isGstRegistered);
     const status = mode === 'sandbox' && derived === 'verified' ? 'in_progress' : derived;
@@ -168,13 +169,16 @@ function buildOverview(siteId: string, rows: KycDocumentRow[], mode: MerchantKyc
         site_id: siteId,
         overall_status: status,
         provider_mode: mode,
+        private_upload_available: privateUploadAvailable,
         required_documents: requiredDocuments(isGstRegistered).map((item) => ({
             ...item,
             status: byType.get(item.document_type)
                 ? serializeDocument(byType.get(item.document_type)!).status : null,
         })),
         documents: rows.map(serializeDocument),
-        next_action: nextAction(status, rows, mode, isGstRegistered),
+        next_action: !privateUploadAvailable && status !== 'verified'
+            ? 'Private document upload is unavailable. Your saved status remains visible; retry later.'
+            : nextAction(status, rows, mode, isGstRegistered),
     };
 }
 
@@ -257,7 +261,8 @@ router.get('/', validate('query', StoreQuerySchema), async (c) => {
     const tenant = await resolveTenantContextForOwnedSite(c, query.store_id);
     const rows = await loadDocuments(db, tenant.siteId);
     const isGstRegistered = await loadGstRegistration(db, tenant.siteId);
-    return c.json(success(buildOverview(tenant.siteId, rows, providerMode(c.env), isGstRegistered)));
+    return c.json(success(buildOverview(tenant.siteId, rows, providerMode(c.env), isGstRegistered,
+        Boolean(c.env.KYC_PRIVATE_BUCKET))));
 });
 
 router.post('/documents', validate('json', SubmitKycDocumentSchema), async (c) => {
@@ -329,7 +334,8 @@ router.post('/documents/upload', bodyLimit({ maxSize: 6 * 1024 * 1024 }), async 
         if (claim.kind === 'claimed') await idempotency.complete({ id: claim.id,
             responseBody: { success: true, data: { document_id: prior.id } }, statusCode: 201,
             resourceType: 'merchant_kyc_document', resourceId: prior.id });
-        return c.json(success({ document: serializeDocument(prior), overview: buildOverview(tenant.siteId, rows, providerMode(c.env), isGstRegistered) }), 200);
+        return c.json(success({ document: serializeDocument(prior), overview: buildOverview(tenant.siteId, rows,
+            providerMode(c.env), isGstRegistered, true) }), 200);
     }
     if (claim.kind === 'replay') {
         return c.json({ error: { code: 'KYC_UPLOAD_SUPERSEDED', message: 'This upload was replaced by a newer document. Reload its status.' } }, 409);
@@ -378,7 +384,8 @@ router.post('/documents/upload', bodyLimit({ maxSize: 6 * 1024 * 1024 }), async 
         await idempotency.complete({ id: claim.id,
             responseBody: { success: true, data: { document_id: document.id } }, statusCode: 201,
             resourceType: 'merchant_kyc_document', resourceId: document.id });
-        return c.json(success({ document: serializeDocument(document), overview: buildOverview(tenant.siteId, rows, providerMode(c.env), isGstRegistered) }), 201);
+        return c.json(success({ document: serializeDocument(document), overview: buildOverview(tenant.siteId, rows,
+            providerMode(c.env), isGstRegistered, true) }), 201);
     } catch (error) {
         await idempotency.fail(claim.id);
         throw error;
@@ -402,7 +409,8 @@ router.post('/documents/:id/refresh', validate('query', StoreQuerySchema), async
         const rows = await loadDocuments(db, tenant.siteId);
         return c.json(success({
             document: serializeDocument(document),
-            overview: buildOverview(tenant.siteId, rows, providerMode(c.env), isGstRegistered),
+            overview: buildOverview(tenant.siteId, rows, providerMode(c.env), isGstRegistered,
+                Boolean(c.env.KYC_PRIVATE_BUCKET)),
         }));
     }
     const verification = await verifyWithProvider(c.env, {
@@ -455,7 +463,8 @@ router.post('/documents/:id/refresh', validate('query', StoreQuerySchema), async
     const rows = await loadDocuments(db, tenant.siteId);
     return c.json(success({
         document: serializeDocument(data as unknown as KycDocumentRow),
-        overview: buildOverview(tenant.siteId, rows, providerMode(c.env), isGstRegistered),
+        overview: buildOverview(tenant.siteId, rows, providerMode(c.env), isGstRegistered,
+            Boolean(c.env.KYC_PRIVATE_BUCKET)),
     }));
 });
 

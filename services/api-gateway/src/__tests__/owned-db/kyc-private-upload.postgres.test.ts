@@ -70,6 +70,7 @@ test('KYC file upload remains private, tenant-owned and pending provider evidenc
     });
     assert.equal(ownerOverview.status, 200, 'positive control: the site owner reads sanitized KYC status through the Gateway');
     assert.equal(ownerOverview.json?.data.documents[0]?.status, 'submitted');
+    assert.equal(ownerOverview.json?.data.private_upload_available, true);
     assert.equal(ownerOverview.json?.data.documents[0]?.evidence_scan_status, 'pending');
     assert.equal(ownerOverview.json?.data.documents[0]?.provider_unavailable, false);
     assert.match(ownerOverview.json?.data.next_action || '', /not provider reviewed/);
@@ -224,6 +225,12 @@ test('KYC file upload remains private, tenant-owned and pending provider evidenc
     const form = new FormData(); form.set('store_id', tenant.siteId); form.set('document_type', 'bank_proof'); form.set('document_number_last4', '1234'); form.set('file', pdf());
     const unavailable = await gateway.request('/v1/kyc/documents/upload', { method: 'POST', headers, body: form }, noBucket);
     assert.equal(unavailable.status, 503, unavailable.text);
+    const unavailableOverview = await gateway.request(`/v1/kyc?store_id=${tenant.siteId}`, {
+        method: 'GET', headers: await signedIdentityHeaders(owner, `kyc-${owner}@example.invalid`, tenant.siteId),
+    }, noBucket);
+    assert.equal(unavailableOverview.status, 200, unavailableOverview.text);
+    assert.equal(unavailableOverview.json?.data.private_upload_available, false);
+    assert.match(unavailableOverview.json?.data.next_action || '', /Private document upload is unavailable/);
 });
 
 test('live-mode provider outage stays pending after clean private evidence and exposes only redacted status', async () => {
@@ -328,6 +335,10 @@ test('KYC API follows canonical GST registration when declaring required evidenc
         UPDATE sites SET custom_user_id='${owner}' WHERE id='${tenant.siteId}';`);
     const registrationGateway = new Gateway(gatewayEnv(owned, await newIdentityKeys(), {
         KYC_PROVIDER_MODE: 'live', KYC_PROVIDER: 'signzy',
+        KYC_PRIVATE_BUCKET: {
+            put: async () => undefined,
+            delete: async () => undefined,
+        },
     }));
     const overview = async () => registrationGateway.request(`/v1/kyc?store_id=${tenant.siteId}`, {
         method: 'GET', headers: await signedIdentityHeaders(owner, email, tenant.siteId),

@@ -64,6 +64,7 @@ interface KycRequirement {
 interface KycOverview {
     overall_status: KycOverallStatus
     provider_mode: 'sandbox' | 'live'
+    private_upload_available: boolean
     required_documents: KycRequirement[]
     documents: KycDocument[]
     next_action: string | null
@@ -392,6 +393,10 @@ export default function BusinessSettingsPage() {
     const submitDocument = useCallback(async (type: KycDocumentType) => {
         const input = docInputs[type] || { last4: '' }
         const file = docFiles[type]
+        if (!kyc?.private_upload_available) {
+            notify({ title: 'Private upload unavailable', description: 'Your saved status remains visible. Retry when private document storage is available.', variant: 'warning' })
+            return
+        }
         if (!/^[A-Za-z0-9]{2,4}$/.test(input.last4.trim())) {
             notify({ title: 'Add a reference', description: 'Enter only the final 2–4 reference characters.', variant: 'warning' })
             return
@@ -424,7 +429,7 @@ export default function BusinessSettingsPage() {
         } finally {
             setDocBusy((cur) => ({ ...cur, [type]: false }))
         }
-    }, [docFiles, docInputs, notify, store])
+    }, [docFiles, docInputs, kyc?.private_upload_available, notify, store])
 
     const refreshDocument = useCallback(async (doc: KycDocument) => {
         setDocBusy((cur) => ({ ...cur, [doc.document_type]: true }))
@@ -499,9 +504,11 @@ export default function BusinessSettingsPage() {
 
             {/* ── Verification status ───────────────────────────────────────── */}
             {kyc && overall && (
-                <Banner variant={kyc.provider_mode === 'sandbox' ? 'info' : overall.variant}
-                    title={kyc.provider_mode === 'sandbox' ? 'Sandbox verification' : overall.title}>
-                    {kyc.provider_mode === 'sandbox'
+                <Banner variant={!kyc.private_upload_available ? 'warning' : kyc.provider_mode === 'sandbox' ? 'info' : overall.variant}
+                    title={!kyc.private_upload_available ? 'Private uploads unavailable' : kyc.provider_mode === 'sandbox' ? 'Sandbox verification' : overall.title}>
+                    {!kyc.private_upload_available
+                        ? kyc.next_action || 'Your saved status remains visible. Retry later.'
+                        : kyc.provider_mode === 'sandbox'
                         ? kyc.next_action || 'Sandbox uploads are not provider reviewed and cannot enable live payouts.'
                         : kyc.next_action || 'Complete the required documents below to verify your business.'}
                 </Banner>
@@ -637,6 +644,7 @@ export default function BusinessSettingsPage() {
                                             <Input
                                                 label={meta.last4Label}
                                                 value={input.last4}
+                                                disabled={!kyc?.private_upload_available}
                                                 onChange={(e) => setDocInput(req.document_type, { last4: e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4) })}
                                                 placeholder="••••"
                                                 maxLength={4}
@@ -645,12 +653,12 @@ export default function BusinessSettingsPage() {
                                             <label className="settings-business-kyc-upload">
                                                 <span>Document file</span>
                                                 <input key={`${req.document_type}-${existing?.updated_at || 'new'}`} type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
-                                                    disabled={busy}
+                                                    disabled={busy || !kyc?.private_upload_available}
                                                     onChange={(event) => setDocFiles((cur) => ({ ...cur, [req.document_type]: event.target.files?.[0] || null }))}
                                                     aria-label={`Upload ${meta.title}`} />
                                             </label>
                                             <div className="settings-business-kyc-actions">
-                                                <Button variant="primary" onClick={() => void submitDocument(req.document_type)} loading={busy}>
+                                                <Button variant="primary" onClick={() => void submitDocument(req.document_type)} loading={busy} disabled={!kyc?.private_upload_available}>
                                                     {isVerified ? 'Replace verified document' : existing ? 'Resubmit document' : 'Upload document'}
                                                 </Button>
                                             </div>

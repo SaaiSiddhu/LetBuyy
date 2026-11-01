@@ -485,6 +485,29 @@ test('General and Business expose keyboard labels and recover an optional status
     await expect(pan.getByLabel('Upload Business PAN')).toBeFocused();
 });
 
+test('Business disables private uploads on an unavailable KYC binding and recovers after status reload', { timeout: 180_000 }, async t => {
+    const f = await fixture('kyc-binding-recovery'); t.after(() => f.context.close());
+    await signIn(f.page, f.email);
+    const statusPath = `**/api/stores/${f.tenant.subdomain}/kyc`;
+    await f.page.route(statusPath, async route => {
+        const upstream = await route.fetch();
+        const payload = await upstream.json() as { data: { private_upload_available: boolean; next_action: string } };
+        payload.data.private_upload_available = false;
+        payload.data.next_action = 'Private document upload is unavailable. Your saved status remains visible; retry later.';
+        await route.fulfill({ response: upstream, json: payload });
+    });
+    await f.page.goto(`${merchantOrigin}/${f.tenant.subdomain}/settings/business`);
+    await expect(f.page.getByRole('status').filter({ hasText: 'Private uploads unavailable' })).toBeVisible();
+    const pan = f.page.locator('.settings-business-kyc-item').filter({ hasText: 'Business PAN' }).first();
+    await expect(pan.getByLabel('Upload Business PAN')).toBeDisabled();
+    await expect(pan.getByRole('button', { name: 'Upload document' })).toBeDisabled();
+    await f.page.unroute(statusPath);
+    await f.page.reload();
+    await expect(f.page.getByRole('status').filter({ hasText: 'Sandbox verification' })).toBeVisible();
+    await expect(pan.getByLabel('Upload Business PAN')).toBeEnabled();
+    await expect(pan.getByRole('button', { name: 'Upload document' })).toBeEnabled();
+});
+
 test('Merchant order detail renders generated order and immutable GST invoice numbers after a Business edit', { timeout: 180_000 }, async t => {
     const f = await fixture('merchant-invoice', { gst: true, taxRates: true }); t.after(() => f.context.close());
     const { orderId } = seedSyntheticOrder(owned.psql, f.tenant);

@@ -200,6 +200,7 @@ class _KycScreenState extends State<KycScreen> {
         key == null ||
         stores == null ||
         _referenceOpen ||
+        _overview?['private_upload_available'] != true ||
         !_isCurrent(version, key))
       return;
     final service = context.read<KycService>();
@@ -270,7 +271,8 @@ class _KycScreenState extends State<KycScreen> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed:
-            _loading || _referenceOpen || _storeId == null || _error != null
+            _loading || _referenceOpen || _storeId == null || _error != null ||
+                _overview?['private_upload_available'] != true
             ? null
             : () => _showReferenceDialog(),
         icon: const Icon(Icons.edit_note),
@@ -278,12 +280,12 @@ class _KycScreenState extends State<KycScreen> {
       ),
       body: Column(
         children: [
-          const ListTile(
-            leading: Icon(Icons.lock_outline),
-            title: Text('Private document upload'),
-            subtitle: Text(
-              'Upload verification documents here. A private upload awaits a security scan before provider review.',
-            ),
+          ListTile(
+            leading: const Icon(Icons.lock_outline),
+            title: const Text('Private document upload'),
+            subtitle: Text(_overview?['private_upload_available'] == false
+                ? 'Private upload is unavailable. Your saved status remains visible; retry later.'
+                : 'Upload verification documents here. A private upload awaits a security scan before provider review.'),
           ),
           Expanded(
             child: _loading
@@ -326,7 +328,7 @@ class _KycScreenState extends State<KycScreen> {
                                           item['document_type'] &&
                                       _referenceOnly(doc),
                                 ),
-                                onRecord: _referenceOpen
+                                onRecord: _referenceOpen || overview['private_upload_available'] != true
                                     ? null
                                     : () => _showReferenceDialog(
                                         item['document_type']?.toString(),
@@ -391,6 +393,7 @@ class _StatusPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = AppThemeColors.of(context);
+    final uploadUnavailable = overview['private_upload_available'] == false;
     final hasReference = (overview['documents'] as List? ?? const [])
         .whereType<Map>()
         .any(_referenceOnly);
@@ -427,7 +430,10 @@ class _StatusPanel extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  hasReference
+                  uploadUnavailable
+                      ? overview['next_action']?.toString() ??
+                            'Private document upload is unavailable. Retry later.'
+                      : hasReference
                       ? 'Reference digits are not verification evidence. Upload a private document.'
                       : overview['provider_mode'] == 'sandbox'
                       ? overview['next_action']?.toString() ??

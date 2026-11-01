@@ -20,6 +20,7 @@ Map<String, dynamic> overview(
 }) => {
   'site_id': store,
   'provider_mode': 'sandbox',
+  'private_upload_available': true,
   'overall_status': status,
   'documents': [
     {
@@ -525,6 +526,30 @@ void main() {
         expect(request.data, isA<FormData>());
       }
       expect(f.calls.any((r) => r.path.contains('/upload')), isTrue);
+    },
+  );
+
+  testWidgets(
+    'unbound private storage disables uploads until a fresh status read reports recovery',
+    (tester) async {
+      final f = Fixture();
+      await tester.pumpWidget(f.screen());
+      await tester.pump();
+      await replyWidget(tester, f, {
+        ...overview('store-a', status: 'in_progress'),
+        'private_upload_available': false,
+        'next_action': 'Private document upload is unavailable. Your saved status remains visible; retry later.',
+      });
+      await tester.pumpAndSettle();
+      expect(find.textContaining('Private upload is unavailable.'), findsOneWidget);
+      expect(tester.widget<FloatingActionButton>(find.byType(FloatingActionButton)).onPressed, isNull);
+      expect(tester.widget<TextButton>(find.byKey(const ValueKey('record-reference-bank_proof'))).onPressed, isNull);
+      expect(f.calls.where((r) => r.method == 'POST'), isEmpty);
+      await tester.tap(find.byTooltip('Refresh'));
+      await tester.pump();
+      await replyWidget(tester, f, overview('store-a', status: 'in_progress'));
+      await tester.pumpAndSettle();
+      expect(tester.widget<FloatingActionButton>(find.byType(FloatingActionButton)).onPressed, isNotNull);
     },
   );
 
