@@ -6,6 +6,7 @@ import { requireOwnedDatabase } from './owned-db-support';
 import { Gateway, gatewayEnv, newIdentityKeys, signedIdentityHeaders, tapRest } from './gateway-harness';
 import { newSyntheticTenant, seedSyntheticTenant } from './synthetic-tenant';
 import { drainKycPrivateObjectCleanup } from '../../lib/kyc-private-object-cleanup';
+import worker from '../../index';
 
 const owned = requireOwnedDatabase();
 let gateway: Gateway;
@@ -137,9 +138,10 @@ test('KYC file upload remains private, tenant-owned and pending provider evidenc
     assert.equal(owned.psql(`SELECT attempts FROM kyc_private_object_cleanup_jobs WHERE object_key='${keyBeforeDeleteOutage}';`), '1');
     owned.psql(`UPDATE kyc_private_object_cleanup_jobs SET next_attempt_at=now()
         WHERE object_key='${keyBeforeDeleteOutage}';`);
-    const cleanup = await drainKycPrivateObjectCleanup(gateway.env);
-    assert.equal(cleanup.deleted, 1);
-    assert.equal(cleanup.deferred, 0);
+    const scheduledTasks: Promise<unknown>[] = [];
+    worker.scheduled({ cron: '*/15 * * * *', scheduledTime: Date.now() } as ScheduledController,
+        gateway.env, { waitUntil(work: Promise<unknown>) { scheduledTasks.push(Promise.resolve(work)); } } as ExecutionContext);
+    await Promise.all(scheduledTasks);
     assert.equal(objects.size, 1, 'scheduled retry removes only the unreferenced old object');
     assert.equal(owned.psql(`SELECT status FROM kyc_private_object_cleanup_jobs WHERE object_key='${keyBeforeDeleteOutage}';`),
         'completed');
