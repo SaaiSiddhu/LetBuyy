@@ -13,6 +13,7 @@ import { internalPerimeter } from './middleware/internal-perimeter';
 import { AppError, formatAppError } from './lib/errors';
 import { getSupabaseAdminFromEnv } from './lib/supabase';
 import { drainKycPrivateObjectCleanup } from './lib/kyc-private-object-cleanup';
+import { drainKycIndiaObjectCleanup } from './lib/kyc-india-object-cleanup';
 import { resolveCredentialedCorsOrigin } from './lib/cors';
 import type { RazorpayOrderSearchResult } from '@letbuyy/infrastructure/razorpay-adapter';
 import storesRouter from './routes/stores';
@@ -269,6 +270,11 @@ export interface Env {
     KYC_INDIA_REVIEW_ACCESS_KEY_ID?: string;
     KYC_INDIA_REVIEW_SECRET_ACCESS_KEY?: string;
     KYC_INDIA_REVIEW_SESSION_TOKEN?: string;
+    /** Owned-test only until Mumbai bucket, IAM, retention and deletion proof pass. */
+    KYC_INDIA_CLEANUP_ENABLED?: 'true' | 'false';
+    KYC_INDIA_CLEANUP_ACCESS_KEY_ID?: string;
+    KYC_INDIA_CLEANUP_SECRET_ACCESS_KEY?: string;
+    KYC_INDIA_CLEANUP_SESSION_TOKEN?: string;
     /** Approved server-only private-original profile. No default account/binding activation. */
     REEL_CUSTODY_PROFILE?: string;
     REEL_ORIGINALS_BUCKET?: R2Bucket;
@@ -994,6 +1000,22 @@ async function runScheduledDispatch(controller: ScheduledController, env: Env): 
                 level: 'error', service: 'letbuyy-api', route: 'scheduled.kyc_private_cleanup',
                 method: 'CRON', status_code: 500,
                 error: 'Private KYC cleanup retry failed',
+            }));
+        }
+    }
+    if (env.KYC_INDIA_CLEANUP_ENABLED === 'true') {
+        try {
+            const cleanup = await drainKycIndiaObjectCleanup(env);
+            if (cleanup.scanned > 0) console.info(JSON.stringify({
+                level: 'info', service: 'letbuyy-api', route: 'scheduled.kyc_india_cleanup',
+                method: 'CRON', status_code: cleanup.deferred > 0 ? 207 : 200,
+                ...cleanup,
+            }));
+        } catch {
+            console.error(JSON.stringify({
+                level: 'error', service: 'letbuyy-api', route: 'scheduled.kyc_india_cleanup',
+                method: 'CRON', status_code: 500,
+                error: 'Private India KYC cleanup retry failed',
             }));
         }
     }

@@ -12,6 +12,8 @@ const providerIsolation = readFileSync(new URL('../../../../../database/supabase
 const providerIsolationRollback = readFileSync(new URL('../../../../../database/supabase/rollback/422_kyc_r2_india_provider_isolation.rollback.sql', import.meta.url), 'utf8');
 const scanForward = readFileSync(new URL('../../../../../database/supabase/migrations/423_kyc_india_scanner_verdict.sql', import.meta.url), 'utf8');
 const scanRollback = readFileSync(new URL('../../../../../database/supabase/rollback/423_kyc_india_scanner_verdict.rollback.sql', import.meta.url), 'utf8');
+const cleanupForward = readFileSync(new URL('../../../../../database/supabase/migrations/424_kyc_india_cleanup_due.sql', import.meta.url), 'utf8');
+const cleanupRollback = readFileSync(new URL('../../../../../database/supabase/rollback/424_kyc_india_cleanup_due.rollback.sql', import.meta.url), 'utf8');
 
 function intent(siteId: string, id: string, key: string, documentType = 'business_pan'): string {
   return `INSERT INTO public.kyc_private_object_cleanup_jobs
@@ -30,12 +32,14 @@ function asTenant(siteId: string, statement: string): string {
 
 test('India upload intent is a durable, tenant-fenced extension of the existing receipt', () => {
   // The paired rollback is reversible only before real India evidence exists.
+  owned.psql(cleanupRollback);
   owned.psql(scanRollback);
   owned.psql(providerIsolationRollback);
   owned.psql(rollback);
   owned.psql(forward);
   owned.psql(providerIsolation);
   owned.psql(scanForward);
+  owned.psql(cleanupForward);
 
   const a = newSyntheticTenant('kyc-india-a');
   const b = newSyntheticTenant('kyc-india-b');
@@ -165,4 +169,7 @@ test('India upload intent is a durable, tenant-fenced extension of the existing 
   assert.match(owned.psqlExpectError(scanRollback),
     /India KYC evidence exists; retain scanner version fence/,
     'the scanner receipt fence cannot be rolled back after India evidence');
+  assert.match(owned.psqlExpectError(cleanupRollback),
+    /India KYC receipts exist; retain version-aware cleanup/,
+    'version-aware deletion cannot be removed after upload intents exist');
 });
