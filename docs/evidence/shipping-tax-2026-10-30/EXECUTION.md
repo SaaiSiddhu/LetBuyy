@@ -293,14 +293,21 @@ Read-only diagnosis established that the active, unexpired cart's accepted
 product version was 16 and the live product version was 17; the variant remained
 available at the same ₹3 price. This is the existing stale-fact guard, not proof
 of a variant-pricing regression. The guard was not weakened, the cart was not
-edited through the database and no checkout was forced. macOS locked before the
-normal cart-review/reacceptance journey could be completed, so that custom-cart
-recovery remains explicitly unobserved. The initial diagnostic's undefined
-column refusal and the corrected read-only diagnostic are retained separately.
+edited through the database and no checkout was forced. macOS initially locked
+before normal cart review could finish. After the owner unlocked it, the ordinary
+quantity edit committed at two items and was restored to the original one item,
+awaiting each acknowledgement. Size M / Blue and the ₹3 subtotal were preserved.
+A fresh signed handoff then accepted the saved ₹49 delivery rate: subtotal ₹3,
+delivery ₹49, added tax ₹0, total ₹52. Selecting free delivery recalculated the
+total to ₹3. Back to Cart again preserved the original one item/options/₹3.
+Thus both the stale-fact refusal and deliberate review/reacceptance recovery are
+observed in production; no guard change or direct cart/database edit was needed.
+No address, payment or order was submitted. The initial diagnostic's undefined
+column refusal and corrected diagnostic remain retained alongside
+`shipping411-snaz-browser-recovery-20261101.json`.
 
 **Still unobserved/open:** the production Merchant session expired and requires
 the owner's private sign-in before final signed-in Shipping/Taxes UI readback.
-The Mac must also be unlocked to finish the observed Snaz stale-cart recovery.
 GitHub CI remains billing-blocked, full hosted staging sign-in is unconfigured,
 and real Razorpay sandbox capture/refund with the new tax quote is unobserved.
 Shiprocket connector/platform execution, carrier billing/pickup/booking/tracking
