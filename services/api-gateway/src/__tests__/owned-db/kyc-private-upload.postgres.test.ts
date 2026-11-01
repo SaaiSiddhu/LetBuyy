@@ -485,11 +485,18 @@ test('live mode without an explicitly selected provider reports outage instead o
             assert.equal(uploaded.json?.data.document.provider, 'unconfigured');
             assert.equal(uploaded.json?.data.document.provider_mode, 'live');
             assert.equal(uploaded.json?.data.document.status, 'submitted');
+            assert.equal(uploaded.json?.data.document.provider_unavailable, true);
         }
         assert.equal(objects.size, 3);
         owned.psql(`UPDATE merchant_kyc_documents
             SET metadata=jsonb_set(metadata,'{malware_scan_status}','"clean"'::jsonb)
             WHERE site_id='${tenant.siteId}';`);
+        const afterScan = await liveGateway.request(`/v1/kyc?store_id=${tenant.siteId}`, {
+            method: 'GET', headers: await signedIdentityHeaders(owner, email, tenant.siteId),
+        });
+        assert.equal(afterScan.status, 200, afterScan.text);
+        assert.match(afterScan.json?.data.next_action || '', /provider is unavailable/i,
+            'a clean scan must not leave an unconfigured provider looking like active review');
         const panId = owned.psql(`SELECT id FROM merchant_kyc_documents
             WHERE site_id='${tenant.siteId}' AND document_type='business_pan';`);
         const refreshed = await liveGateway.request(`/v1/kyc/documents/${panId}/refresh?store_id=${tenant.siteId}`, {
