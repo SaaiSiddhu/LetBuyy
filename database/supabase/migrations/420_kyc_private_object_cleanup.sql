@@ -15,6 +15,17 @@ BEGIN
   END IF;
 END $preflight$;
 
+-- Keep the preflight guarantee true after deployment. A service-side bug or
+-- privileged import must not point a KYC row at another site's R2 namespace.
+ALTER TABLE public.merchant_kyc_documents
+  ADD CONSTRAINT merchant_kyc_private_object_key_owned_check CHECK (
+    NOT coalesce(metadata ? 'private_object_key', false) OR (
+      jsonb_typeof(metadata->'private_object_key') = 'string' AND
+      metadata->>'private_object_key' ~
+        ('^kyc/' || site_id::text || '/' || document_type || '/[A-Za-z0-9_-]{1,160}$')
+    )
+  );
+
 CREATE TABLE public.kyc_private_object_cleanup_jobs (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   site_id uuid NOT NULL REFERENCES public.sites(id) ON DELETE RESTRICT,

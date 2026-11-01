@@ -27,6 +27,16 @@ test('KYC file upload remains private, tenant-owned and pending provider evidenc
     owned.psql(`UPDATE merchant_kyc_documents SET metadata='{}'::jsonb
         WHERE site_id='${preflightTenant.siteId}' AND document_type='identity_proof';`);
     owned.psql(cleanupMigration);
+    assert.match(owned.psqlExpectError(`UPDATE merchant_kyc_documents
+        SET metadata=jsonb_build_object('private_object_key', 'kyc/${preflightTenant.siteId}/business_pan/forged')
+        WHERE site_id='${preflightTenant.siteId}' AND document_type='identity_proof';`),
+    /merchant_kyc_private_object_key_owned_check/,
+    'a later privileged write cannot relabel an identity document as a PAN object');
+    assert.match(owned.psqlExpectError(`UPDATE merchant_kyc_documents
+        SET metadata='{"private_object_key":"kyc/another-site/identity_proof/forged"}'::jsonb
+        WHERE site_id='${preflightTenant.siteId}' AND document_type='identity_proof';`),
+    /merchant_kyc_private_object_key_owned_check/,
+    'a later privileged write cannot reference another site private namespace');
     const tenant = newSyntheticTenant('kyc-upload');
     const otherTenant = newSyntheticTenant('kyc-other');
     seedSyntheticTenant(owned.psql, tenant);

@@ -9,6 +9,9 @@ BEGIN
   END IF;
 END $guard$;
 
+ALTER TABLE public.merchant_kyc_documents
+  DROP CONSTRAINT IF EXISTS merchant_kyc_private_object_key_owned_check;
+
 DROP TRIGGER IF EXISTS merchant_kyc_queue_replaced_private_object_v1
   ON public.merchant_kyc_documents;
 DROP FUNCTION IF EXISTS public.queue_replaced_kyc_private_object_v1();
