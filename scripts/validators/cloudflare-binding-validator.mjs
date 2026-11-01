@@ -60,6 +60,8 @@ for (const key of ["vars", "kv_namespaces", "r2_buckets", "queues", "durable_obj
 for (const worker of manifest?.workers || []) {
   reporter.assert(exists(worker.config), `Missing Worker wrangler config: ${worker.config}`);
   const text = readFile(worker.config);
+  const kycBucketNames = [];
+  const publicBucketNames = [];
 
   for (const environment of ["staging", "production"]) {
     const expected = worker.environments?.[environment];
@@ -119,6 +121,16 @@ for (const worker of manifest?.workers || []) {
       reporter.assert(r2Blocks.some((block) => stringValue(block, "binding") === binding), `Wrangler env missing R2 binding ${binding}: ${worker.config} ${environment}`);
     }
     reporter.assert(r2Blocks.length === (expected?.r2Buckets || []).length, `Wrangler env R2 binding count must match ownership manifest: ${worker.config} ${environment}`);
+    const kycBlock = r2Blocks.find((block) => stringValue(block, "binding") === "KYC_PRIVATE_BUCKET");
+    const publicBlock = r2Blocks.find((block) => stringValue(block, "binding") === "R2_BUCKET");
+    if (publicBlock) publicBucketNames.push(stringValue(publicBlock, "bucket_name"));
+    if (kycBlock) {
+      const privateName = stringValue(kycBlock, "bucket_name");
+      const publicName = publicBlock ? stringValue(publicBlock, "bucket_name") : "";
+      reporter.assert(Boolean(privateName && publicName && privateName !== publicName),
+        `KYC private R2 bucket must name a different bucket from public media: ${worker.config} ${environment}`);
+      kycBucketNames.push(privateName);
+    }
 
     const d1Blocks = arrayTableBlocks(envSection, `env.${environment}.d1_databases`);
     for (const binding of expected?.d1Databases || []) {
@@ -154,6 +166,14 @@ for (const worker of manifest?.workers || []) {
     if ((expected?.serviceBindings || []).length === 0) {
       reporter.assert(!hasArrayTable(envSection, `env.${environment}.services`), `Wrangler env has unowned service bindings: ${worker.config} ${environment}`);
     }
+  }
+  if (kycBucketNames.length === 2) {
+    reporter.assert(kycBucketNames[0] !== kycBucketNames[1],
+      `KYC staging and production must use separate R2 buckets: ${worker.config}`);
+  }
+  for (const privateName of kycBucketNames) {
+    reporter.assert(!publicBucketNames.includes(privateName),
+      `KYC private R2 bucket must not reuse any public media bucket: ${worker.config}`);
   }
 }
 

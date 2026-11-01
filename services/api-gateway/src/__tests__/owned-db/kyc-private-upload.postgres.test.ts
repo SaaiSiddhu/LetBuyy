@@ -369,6 +369,28 @@ test('KYC file upload remains private, tenant-owned and pending provider evidenc
     assert.equal(unavailableOverview.status, 200, unavailableOverview.text);
     assert.equal(unavailableOverview.json?.data.private_upload_available, false);
     assert.match(unavailableOverview.json?.data.next_action || '', /Private document upload is unavailable/);
+    const aliasedEnv = { ...gateway.env, R2_BUCKET: gateway.env.KYC_PRIVATE_BUCKET };
+    const aliasedOverview = await gateway.request(`/v1/kyc?store_id=${tenant.siteId}`, {
+        method: 'GET', headers: await signedIdentityHeaders(owner, `kyc-${owner}@example.invalid`, tenant.siteId),
+    }, aliasedEnv);
+    assert.equal(aliasedOverview.status, 200, aliasedOverview.text);
+    assert.equal(aliasedOverview.json?.data.private_upload_available, false,
+        'the public media binding cannot double as KYC storage');
+    const aliasedForm = new FormData();
+    aliasedForm.set('store_id', tenant.siteId);
+    aliasedForm.set('document_type', 'bank_proof');
+    aliasedForm.set('document_number_last4', '1234');
+    aliasedForm.set('file', pdf());
+    const aliasedHeaders = await signedIdentityHeaders(owner, `kyc-${owner}@example.invalid`, tenant.siteId);
+    delete aliasedHeaders['Content-Type'];
+    aliasedHeaders['X-Idempotency-Key'] = randomUUID();
+    const aliasedUpload = await gateway.request('/v1/kyc/documents/upload', {
+        method: 'POST', headers: aliasedHeaders, body: aliasedForm,
+    }, aliasedEnv);
+    assert.equal(aliasedUpload.status, 503, aliasedUpload.text);
+    assert.equal(aliasedUpload.json?.error?.code, 'KYC_UPLOAD_UNAVAILABLE');
+    await assert.rejects(drainKycPrivateObjectCleanup(aliasedEnv), /aliases public media storage/);
+    assert.equal(objects.size, 1, 'a public alias never receives or deletes private evidence');
     const pausedEnv = { ...gateway.env, KYC_UPLOAD_ENABLED: 'false' as const };
     const pausedOverview = await gateway.request(`/v1/kyc?store_id=${tenant.siteId}`, {
         method: 'GET', headers: await signedIdentityHeaders(owner, `kyc-${owner}@example.invalid`, tenant.siteId),

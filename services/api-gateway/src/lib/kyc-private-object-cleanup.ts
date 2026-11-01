@@ -12,6 +12,11 @@ interface CleanupJob {
     attempts: number;
 }
 
+/** Reject a direct alias of the public media binding before any private write or delete. */
+export function hasIsolatedKycPrivateBucket(env: Env): boolean {
+    return Boolean(env.KYC_PRIVATE_BUCKET && env.KYC_PRIVATE_BUCKET !== env.R2_BUCKET);
+}
+
 function isOwnedKycKey(siteId: string, key: string): boolean {
     return new RegExp(`^kyc/${siteId}/(?:business_pan|gst_certificate|bank_proof|address_proof|identity_proof)/[A-Za-z0-9_-]{1,160}$`).test(key);
 }
@@ -69,6 +74,7 @@ export async function drainKycPrivateObjectCleanup(env: Env, limit = 20): Promis
 }> {
     const bucket = env.KYC_PRIVATE_BUCKET;
     if (!bucket) return { scanned: 0, deleted: 0, deferred: 0 };
+    if (!hasIsolatedKycPrivateBucket(env)) throw new Error('KYC private bucket aliases public media storage');
     const db = getSupabaseAdminFromEnv(env);
     const { data, error } = await db.rpc('list_due_kyc_private_cleanup_v1', {
         p_limit: Math.min(Math.max(limit, 1), 50),

@@ -7,7 +7,7 @@ import { IdempotencyExecutionAdapter } from '../execution/idempotency-execution.
 import { getSupabaseAdmin, success } from '../lib/supabase';
 import { resolveTenantContextForOwnedSite } from '../lib/tenant-context';
 import { acceptsLiveKycApproval, effectiveKycDocumentStatus, hasLiveProviderEvidence } from '../lib/kyc-evidence-status';
-import { markKycPrivateObjectRetained, reserveKycPrivateObject, tryDeleteReplacedKycObject } from '../lib/kyc-private-object-cleanup';
+import { hasIsolatedKycPrivateBucket, markKycPrivateObjectRetained, reserveKycPrivateObject, tryDeleteReplacedKycObject } from '../lib/kyc-private-object-cleanup';
 import { validate } from '../middleware/validation';
 import {
     createKycVerificationAdapter,
@@ -20,7 +20,7 @@ import {
 const router = new Hono<{ Bindings: Env }>();
 
 function privateUploadAvailable(env: Env): boolean {
-    return env.KYC_UPLOAD_ENABLED === 'true' && Boolean(env.KYC_PRIVATE_BUCKET);
+    return env.KYC_UPLOAD_ENABLED === 'true' && hasIsolatedKycPrivateBucket(env);
 }
 
 const DocumentTypeSchema = z.enum([
