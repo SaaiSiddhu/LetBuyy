@@ -1,0 +1,39 @@
+{
+  "status": "DEFAULT_FACTORY_RECOVERED_V2_PROMOTION_RED",
+  "date": "2026-11-02",
+  "admittedManifest": "docs/implementation/niche-theme-programme/release-v2/proposals/9b2e045a696940bc80ead069c5b8b74ea45bc74b971e7cded2138d087a630d8b/manifest.json",
+  "repair": {
+    "themeBundleSourceSha256": "cdbad4b28277431a3ab06e56ed0ce16539e04837bb107f5f951a3df39a92ed76",
+    "themeRegistrySourceSha256": "df47c3ff4a6bfb0b4dfb56a49559249ab69d44f876bf1d422ecda385f09533ce",
+    "bothMatchAdmittedSourceHashes": true,
+    "reason": "The canonical Liquid renderer binds public site contact data into older footer section settings at render time. The later factory edits were redundant and changed the immutable default bundle bytes.",
+    "runtimeBinding": "packages/theme-engine/src/theme-renderer.ts:697",
+    "defaultFactoryDriftsBefore": 10,
+    "defaultFactoryDriftsAfter": 0,
+    "defaultFactoryCount": 10
+  },
+  "verification": {
+    "liquidFooterUnit": { "passed": 7, "failed": 0 },
+    "releaseGeneratorUnit": { "passed": 13, "failed": 0 },
+    "themeEngineTypecheck": "passed after building missing shared-types declarations",
+    "publishedStorefrontOwnedBrowser": {
+      "runId": "9912ec65acaf",
+      "suite": "tests/owned-db/published-storefront-recovery-browser.postgres.test.ts",
+      "passed": 11,
+      "failed": 0,
+      "cleanupFailures": 0,
+      "remainingContainers": 0,
+      "remainingNetworks": 0,
+      "remainingVolumes": 0,
+      "scope": "Disposable local Gateway, PostgREST, PostgreSQL and Chromium; no hosted custom domain or provider payment"
+    }
+  },
+  "remainingPromotionGate": {
+    "sourceHashDrifts": 22,
+    "unreviewedSourceHashDrifts": 18,
+    "admittedV2FactoryDrifts": 9,
+    "admittedV2FactoryCount": 9,
+    "admissionAndMigrationBytesChanged": false,
+    "decision": "Historical theme promotion is not admitted. Preserve immutable 2.0.0 artifacts and require a reviewed versioned source recovery or successor qualification before promotion."
+  }
+}
