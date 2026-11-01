@@ -1,6 +1,6 @@
 import '../../widgets/shared/warehouse_command_recovery.dart';
 import 'package:letbuyy_models/letbuyy_models.dart'
-    show warehouseOptionStatuses;
+    show warehouseOptionStatuses, WarehouseCommandIntent;
 import '../../widgets/shared/warehouse_list_filters.dart';
 import '../../services/api_client.dart' show ApiException;
 import '../../widgets/shared/merchant_store_view.dart';
@@ -411,7 +411,7 @@ class _InventoryLocationsScreenState extends State<InventoryLocationsScreen> {
     } catch (error) {
       if (_matches(view))
         _showSnackBar(
-          'The outcome could not be confirmed. Recover the saved original warehouse request before trying again.',
+          'Creation could not be confirmed. Check saved requests and current store access before trying again.',
           isError: true,
         );
     } finally {
@@ -484,6 +484,8 @@ class _LocationFormState extends State<_LocationForm> {
   final _country = TextEditingController(text: 'IN');
   bool _isDefault = false;
 
+  String? _validation;
+
   @override
   void dispose() {
     _name.dispose();
@@ -538,21 +540,29 @@ class _LocationFormState extends State<_LocationForm> {
               onChanged: (value) => setState(() => _isDefault = value),
             ),
             const SizedBox(height: 10),
+            if (_validation != null)
+              Text(_validation!, style: TextStyle(color: colors.error)),
             FilledButton.icon(
               onPressed: () {
-                if (_name.text.trim().isEmpty) return;
-                Navigator.pop(
-                  context,
-                  InventoryLocationInput(
-                    storeId: widget.storeId,
-                    name: _name.text,
-                    address: _address.text,
-                    city: _city.text,
-                    state: _state.text,
-                    country: _country.text,
-                    isDefault: _isDefault,
-                  ),
+                final input = InventoryLocationInput(
+                  storeId: widget.storeId,
+                  name: _name.text,
+                  address: _address.text,
+                  city: _city.text,
+                  state: _state.text,
+                  country: _country.text,
+                  isDefault: _isDefault,
                 );
+                try {
+                  WarehouseCommandIntent.location(input);
+                } on FormatException {
+                  setState(
+                    () => _validation =
+                        'Enter a location name and a two-letter country code. Check address field lengths.',
+                  );
+                  return;
+                }
+                Navigator.pop(context, input);
               },
               icon: const Icon(Icons.save_outlined),
               label: const Text('Create location'),

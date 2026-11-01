@@ -1,6 +1,6 @@
 import '../../widgets/shared/warehouse_command_recovery.dart';
 import 'package:letbuyy_models/letbuyy_models.dart'
-    show warehouseOptionStatuses;
+    show warehouseOptionStatuses, WarehouseCommandIntent;
 import '../../widgets/shared/warehouse_list_filters.dart';
 import '../../services/api_client.dart' show ApiException;
 import '../../widgets/shared/merchant_store_view.dart';
@@ -395,7 +395,7 @@ class _InventorySuppliersScreenState extends State<InventorySuppliersScreen> {
     } catch (error) {
       if (_matches(view))
         _showSnackBar(
-          'The outcome could not be confirmed. Recover the saved original warehouse request before trying again.',
+          'Creation could not be confirmed. Check saved requests and current store access before trying again.',
           isError: true,
         );
     } finally {
@@ -467,6 +467,8 @@ class _SupplierFormState extends State<_SupplierForm> {
   final _phone = TextEditingController();
   final _address = TextEditingController();
 
+  String? _validation;
+
   @override
   void dispose() {
     _name.dispose();
@@ -506,20 +508,28 @@ class _SupplierFormState extends State<_SupplierForm> {
             _field(_phone, 'Phone'),
             _field(_address, 'Address'),
             const SizedBox(height: 10),
+            if (_validation != null)
+              Text(_validation!, style: TextStyle(color: colors.error)),
             FilledButton.icon(
               onPressed: () {
-                if (_name.text.trim().isEmpty) return;
-                Navigator.pop(
-                  context,
-                  InventorySupplierInput(
-                    storeId: widget.storeId,
-                    name: _name.text,
-                    contactName: _contact.text,
-                    email: _email.text,
-                    phone: _phone.text,
-                    address: _address.text,
-                  ),
+                final input = InventorySupplierInput(
+                  storeId: widget.storeId,
+                  name: _name.text,
+                  contactName: _contact.text,
+                  email: _email.text,
+                  phone: _phone.text,
+                  address: _address.text,
                 );
+                try {
+                  WarehouseCommandIntent.supplier(input);
+                } on FormatException {
+                  setState(
+                    () => _validation =
+                        'Enter a supplier name, valid email, and contact details within their limits.',
+                  );
+                  return;
+                }
+                Navigator.pop(context, input);
               },
               icon: const Icon(Icons.save_outlined),
               label: const Text('Create supplier'),

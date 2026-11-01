@@ -299,7 +299,7 @@ END $effects$;
 -- Metadata creation shares this same immutable command owner. Old direct clients
 -- cannot bypass its receipt through raw Data API INSERT, including after rollback.
 DO $metadata_fence$
-DECLARE signature text; relation_row record; a record; shape text; role_sql text;
+DECLARE signature text; relation_row record; grant_row record; shape text; role_sql text;
 BEGIN
  FOREACH signature IN ARRAY ARRAY['public.inventory_locations','public.suppliers'] LOOP
   SELECT * INTO relation_row FROM pg_class WHERE oid=to_regclass(signature);
@@ -318,10 +318,10 @@ SELECT jsonb_build_object(
  )::text INTO shape FROM pg_class t WHERE t.oid=relation_row.oid;
   INSERT INTO public.migration_privilege_journal(migration,object_signature,grantee,privilege,action,object_oid,object_owner,object_definition_hash)
    VALUES('414',signature,pg_get_userbyid(relation_row.relowner),'WAREHOUSE METADATA TABLE FENCE','granted',relation_row.oid,relation_row.relowner,encode(sha256(convert_to(shape,'UTF8')),'hex'));
-  FOR a IN SELECT * FROM aclexplode(coalesce(relation_row.relacl,acldefault('r',relation_row.relowner))) WHERE privilege_type='INSERT' AND grantee<>relation_row.relowner LOOP
-   role_sql:=CASE WHEN a.grantee=0 THEN 'PUBLIC' ELSE quote_ident(pg_get_userbyid(a.grantee)) END;
+  FOR grant_row IN SELECT * FROM aclexplode(coalesce(relation_row.relacl,acldefault('r',relation_row.relowner))) WHERE privilege_type='INSERT' AND grantee<>relation_row.relowner LOOP
+   role_sql:=CASE WHEN grant_row.grantee=0 THEN 'PUBLIC' ELSE quote_ident(pg_get_userbyid(grant_row.grantee)) END;
    INSERT INTO public.migration_privilege_journal(migration,object_signature,grantee,privilege,action,object_oid,object_owner,object_definition_hash)
-    VALUES('414',signature,CASE WHEN a.grantee=0 THEN 'PUBLIC' ELSE pg_get_userbyid(a.grantee) END,'WAREHOUSE METADATA INSERT','revoked',relation_row.oid,relation_row.relowner,encode(sha256(convert_to(shape,'UTF8')),'hex'));
+    VALUES('414',signature,CASE WHEN grant_row.grantee=0 THEN 'PUBLIC' ELSE pg_get_userbyid(grant_row.grantee) END,'WAREHOUSE METADATA INSERT','revoked',relation_row.oid,relation_row.relowner,encode(sha256(convert_to(shape,'UTF8')),'hex'));
    EXECUTE format('REVOKE INSERT ON TABLE %s FROM %s',signature,role_sql);
   END LOOP;
  END LOOP;
