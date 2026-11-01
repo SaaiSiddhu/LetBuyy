@@ -2740,5 +2740,22 @@
     "flutter_pass": 750,
     "governance_pass": 114,
     "production_names_and_pending_commands_preserved": true
+  },
+  "staging_runtime_setup_20261101": {
+    "runtime_source_revision": "288cb3dfa02f8b0d2b650de7126504864b3c89b6",
+    "report": "STAGING_RUNTIME_SETUP.md",
+    "verifier_transfer_complete": true,
+    "own_generated_credential_bindings_sealed": 7,
+    "accounts_preview": "dpl_Fr4p9vCTyiy4ag3YkP8zDL3BRi2B",
+    "bff_version": "1c53075f-6e92-4a7c-ad63-530b0ff23572",
+    "verified_protected_staging_aliases": [
+      "admin-staging.letbuyy.com",
+      "accounts-staging.letbuyy.com"
+    ],
+    "production_unchanged": true,
+    "migration_414_resubmitted": false,
+    "normal_login_accepted": false,
+    "native_direct_protected_accounts_access_accepted": false,
+    "full_122_acceptance": false
   }
 }
