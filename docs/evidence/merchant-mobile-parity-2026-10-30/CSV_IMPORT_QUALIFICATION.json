@@ -1,0 +1,136 @@
+{
+  "status": "source-local-artifacts-qualified-hosted416-unapproved",
+  "sourceRevision": "9bffaca702c579ee675530a5242dd416d1059617",
+  "governance": {
+    "PASS": 114,
+    "FAIL": 0,
+    "BLOCKED": 0,
+    "SKIP": 0,
+    "NOT_APPLICABLE": 1
+  },
+  "tests": {
+    "merchantFlutter": 781,
+    "gatewayUnit": 2037,
+    "authQueue": 137,
+    "bffConsumer": 25,
+    "merchantWebPhases": [
+      545,
+      818,
+      295
+    ],
+    "ownedImportAndProduct": {
+      "runId": "770aec51870e",
+      "import": 18,
+      "atomicProduct": 90,
+      "cleanupEmpty": true
+    },
+    "tenantRegistryUnit": 75,
+    "actualTenantTables": {
+      "runId": "61b7b209b8fe",
+      "tests": 8,
+      "cleanupEmpty": true
+    },
+    "isolatedRedteam": {
+      "runId": "0dc651f09fc6",
+      "tests": 2,
+      "cleanupEmpty": true
+    }
+  },
+  "native": {
+    "builtSourceRevision": "212a8ecd9b4f949e9cb687535acb7fd3cd87f470",
+    "candidateRevision": "9bffaca702c579ee675530a5242dd416d1059617",
+    "nativeInputsIdentical": true,
+    "bytes": 219970939,
+    "sha256": "2ad363e50295122dc39ab2823c75c779b1a2392f8013bc7b458f1323538a61d7",
+    "interFontAssets": 9,
+    "fontLicenseVerified": true,
+    "turnstileTokenIsExistingNoncredentialHumanRequiredSentinel": true,
+    "otherTokenOrSecretDefinesEmpty": true,
+    "testFilesPackaged": false,
+    "configuredStagingBffAccountsAdminUrlsInKernel": true,
+    "installed": false,
+    "signing": "debug",
+    "hostedAcceptance": false,
+    "inspectionCorrections": [
+      "The actual license filename and prose case were corrected in the inspector.",
+      "The native API endpoint is the existing staging BFF, not the direct staging Gateway.",
+      "The configured Turnstile token slot is the canonical human-required sentinel."
+    ]
+  },
+  "api": {
+    "sourceRevision": "9bffaca702c579ee675530a5242dd416d1059617",
+    "runtime": "api-gateway",
+    "environment": "staging",
+    "dryRun": true,
+    "providerMutation": false,
+    "exit": 0,
+    "modules": {
+      "index.js": {
+        "bytes": 4844158,
+        "sha256": "3c6aee121550b145ba66254264e111005a150033e63a1ff267089d84db8c7762"
+      },
+      "e4cdc523e88360df8f26f17ea8c50d2f8ff1421b-argon2.wasm": {
+        "bytes": 6660,
+        "sha256": "83b5829d20b4312aca1a56819f95eef20492e058c70f282c9ed6929f579b20ed"
+      },
+      "c6f286e6f01e19f49c2439685e34a41f73cf8329-blake2b.wasm": {
+        "bytes": 7442,
+        "sha256": "b478c0d889d97d7a8db4d10501457ad78dd406d02dcb4c892c0d844805ef05bb"
+      }
+    },
+    "gzipMainBytes": 1232931
+  },
+  "queue": {
+    "sourceRevision": "212a8ecd9b4f949e9cb687535acb7fd3cd87f470",
+    "runtime": "queue-workers",
+    "environment": "staging",
+    "dryRun": true,
+    "providerMutation": false,
+    "exit": 0,
+    "modules": {
+      "index.js": {
+        "bytes": 1924412,
+        "sha256": "ef2a34acca9bc021f70fa8a1485fc28e6f923245988a05024a30dcca52b68458"
+      }
+    },
+    "gzipMainBytes": 494036,
+    "candidateRevision": "9bffaca702c579ee675530a5242dd416d1059617",
+    "runtimeInputsIdentical": true
+  },
+  "merchant": {
+    "status": "admitted-complete-frozen-staging-merchant-runtime",
+    "environment": "staging",
+    "sourceRevision": "9bffaca702c579ee675530a5242dd416d1059617",
+    "toolingSourceRevision": "9bffaca702c579ee675530a5242dd416d1059617",
+    "projectId": "prj_BkaBsf3h7TvKRMpmyYQWsVmfP38J",
+    "artifactTreeSha256": "40990807f2ae8df0e3b7dd3e85a635face8e19e9739a4476039946cc664f0011",
+    "artifactClosureSha256": "95797b7867c2d9f6bb38db16d511ed026bd6b79e40de0af84f14333f92622311",
+    "functionCount": 5,
+    "outputEntries": 984,
+    "externalReferences": 651,
+    "frozenRuntimePath": "/private/tmp/letbuyy-parity-continuation-20261101/merchant-csv416-9bffa-runtime",
+    "frozenRuntimeRevalidated": true,
+    "allRuntimeFilesSecretScanned": 1150,
+    "generatedSecretValuesAbsent": true,
+    "serverStaticBuildIdMatches": true,
+    "previous415ArtifactPreserved": true,
+    "productionWrite": false,
+    "admittedUtc": "2026-11-01T21:01:03.228243+00:00"
+  },
+  "retainedRehearsal": {
+    "runId": "702f4979573f",
+    "originalTables": 524,
+    "exactOriginalTables": 524,
+    "originalWarehouseReceipts": 13,
+    "managed416UpDownUp": true,
+    "backup": "existing pre415 encrypted staging archive, not fresh416",
+    "hostedConnection": false
+  },
+  "migrations": {
+    "forward": "20d4b5e223e5fca53625724af92bb852e800315dd4b22b1be3edf262d98554d5",
+    "rollback": "a8cdcff194a13e4c5b3395554d55d67db8df195214cb33bce68c4e1a8f947753"
+  },
+  "hosted416": false,
+  "productionActivation": false,
+  "all122Accepted": false
+}
