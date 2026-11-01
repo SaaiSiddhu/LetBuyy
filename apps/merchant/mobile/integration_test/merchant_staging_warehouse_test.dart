@@ -42,6 +42,8 @@ void main() {
       expect(fixture['published'], false);
       final namePrefix = fixture['namePrefix'] as String;
       expect(namePrefix.startsWith('Synthetic Native '), isTrue);
+      final expectedPincode = fixture['expectedPincode'] as String? ?? '560001';
+      expect(RegExp(r'^[0-9]{6}$').hasMatch(expectedPincode), isTrue);
       final owner = Map<String, dynamic>.from(fixture['owner'] as Map);
       final other = Map<String, dynamic>.from(fixture['otherOwner'] as Map);
       var actor = owner['id'] as String;
@@ -231,7 +233,7 @@ void main() {
             } else {
               await fill('City', 'Bengaluru');
               await fill('State', 'Karnataka');
-              await fill('Pincode (optional)', '560001');
+              await fill('Pincode (optional)', expectedPincode);
             }
             FocusManager.instance.primaryFocus?.unfocus();
             await tester.pump(const Duration(milliseconds: 500));
@@ -253,7 +255,7 @@ void main() {
               final raw = page.data.singleWhere(
                 (row) => row['id'] == matches.single.id,
               );
-              expect(raw['address']['pincode'], '560001');
+              expect(raw['address']['pincode'], expectedPincode);
             }
             expect(await inventory.pendingWarehouseCommand(site), isNull);
           });
