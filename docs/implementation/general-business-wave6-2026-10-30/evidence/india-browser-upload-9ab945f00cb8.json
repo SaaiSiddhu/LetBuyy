@@ -1,0 +1,33 @@
+{
+  "dateIst": "2026-11-01",
+  "scope": "Owned signed-in Merchant browser to Gateway to disposable Postgres with synthetic Mumbai AWS responses",
+  "runId": "9ab945f00cb8",
+  "suite": "tests/owned-db/published-storefront-recovery-browser.postgres.test.ts",
+  "result": {
+    "tests": 11,
+    "passed": 11,
+    "failed": 0,
+    "skipped": 0,
+    "cleanupFailures": 0,
+    "remainingOwnedContainers": 0,
+    "remainingOwnedNetworks": 0,
+    "remainingOwnedVolumes": 0
+  },
+  "verified": [
+    "Closed multipart intake denied before an object write",
+    "Signed-in Merchant sent PDF bytes to intercepted exact Mumbai S3 host only",
+    "Merchant upload-intent and completion proxies carried JSON without file bytes",
+    "Synthetic STS and version-specific signed HEAD yielded one retained receipt",
+    "Merchant displayed No scan result yet and Postgres retained sandbox unverified status"
+  ],
+  "notVerified": [
+    "Real AWS account, S3 POST, bucket CORS, object residency, GuardDuty scan, provider KYC, or live payouts",
+    "Hosted Merchant deployment or physical mobile upload"
+  ],
+  "relatedChecks": {
+    "securityHeadersContracts": "5/5 passed",
+    "merchantTypecheck": "passed",
+    "governanceGate": "114/114 passed",
+    "gitDiffCheck": "passed"
+  }
+}

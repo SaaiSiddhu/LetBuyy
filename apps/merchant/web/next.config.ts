@@ -112,7 +112,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/:path*',
-        headers: createSecurityHeaders(),
+        headers: createSecurityHeaders({ indiaUploadS3Bucket: process.env.KYC_INDIA_BUCKET }),
       },
     ];
   },

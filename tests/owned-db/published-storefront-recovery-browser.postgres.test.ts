@@ -136,7 +136,8 @@ before(async () => {
         NEXT_PUBLIC_TURNSTILE_SITE_KEY: '1x00000000000000000000AA', TURNSTILE_SECRET_KEY: '1x0000000000000000000000000000000AA',
         RESEND_API_KEY: '', LETBUYY_EMAIL_API_KEY: '' } }));
     clients.push(startOwnedClientRuntime(owned, 'merchant-next-production', { port: merchantPort, env: { ...common,
-        LETBUYY_API_BASE_URL: apiOrigin + '/v1', NEXT_PUBLIC_STOREFRONT_URL: commerceOrigin } }));
+        LETBUYY_API_BASE_URL: apiOrigin + '/v1', NEXT_PUBLIC_STOREFRONT_URL: commerceOrigin,
+        KYC_INDIA_BUCKET: 'letbuyy-kyc-mumbai-synthetic' } }));
     clients.push(startOwnedClientRuntime(owned, 'commerce-next-production', { port: commercePort, env: { ...common,
         CHECKOUT_ORIGIN: `https://checkout.localhost:${checkoutTlsPort}`,
         LETBUYY_API_BASE_URL: apiOrigin + '/v1', LETBUYY_API_URL: apiOrigin + '/v1',
@@ -511,7 +512,7 @@ test('Business disables private uploads on an unavailable KYC binding and recove
     await expect(pan.getByRole('button', { name: 'Upload document' })).toBeEnabled();
 });
 
-test('Merchant KYC proxy checks closed intake before parsing an upload body', { timeout: 180_000 }, async t => {
+test('Merchant KYC proxy denies closed intake, then sends India file bytes directly to Mumbai storage', { timeout: 240_000 }, async t => {
     const f = await fixture('kyc-proxy-closed'); t.after(() => f.context.close());
     await signIn(f.page, f.email);
     gateway.env.KYC_UPLOAD_ENABLED = 'false';
@@ -527,6 +528,135 @@ test('Merchant KYC proxy checks closed intake before parsing an upload body', { 
     assert.equal(response.status(), 503, await response.text());
     assert.equal((await response.json() as { error?: { code?: string } }).error?.code, 'KYC_UPLOAD_UNAVAILABLE');
     assert.equal(privateKycObjects.size, before, 'closed intake cannot write a fixture object');
+
+    const pdf = Buffer.from('%PDF-1.7\nSynthetic Mumbai browser upload proof\n');
+    const digest = createHash('sha256').update(pdf).digest();
+    const bucket = 'letbuyy-kyc-mumbai-synthetic';
+    const versionId = 'synthetic-version-1';
+    const indiaConfig = {
+        KYC_INDIA_UPLOAD_ENABLED: 'true', KYC_INDIA_BUCKET: bucket,
+        KYC_INDIA_ACCOUNT_ID: '123456789012',
+        KYC_INDIA_UPLOAD_ROLE_ARN: 'arn:aws:iam::123456789012:role/letbuyy-kyc-upload',
+        KYC_INDIA_STS_ACCESS_KEY_ID: 'SYNTHETICKEY12345678',
+        KYC_INDIA_STS_SECRET_ACCESS_KEY: 'synthetic-sts-source-secret-for-tests',
+        KYC_INDIA_HEAD_ACCESS_KEY_ID: 'SYNTHETICHEAD12345678',
+        KYC_INDIA_HEAD_SECRET_ACCESS_KEY: 'synthetic-head-secret-for-tests',
+    } as const;
+    const mutableEnv = gateway.env as unknown as Record<string, unknown>;
+    const priorConfig = Object.fromEntries(Object.keys(indiaConfig).map(key => [key, mutableEnv[key]]));
+    Object.assign(mutableEnv, indiaConfig);
+    t.after(() => { for (const key of Object.keys(indiaConfig)) mutableEnv[key] = priorConfig[key]; });
+
+    const originalFetch = globalThis.fetch;
+    let stsCalls = 0, headCalls = 0, browserPosts = 0;
+    let browserPostHasFile = false, browserPostHasScopedKey = false;
+    const browserUploadFailures: string[] = [];
+    f.page.on('requestfailed', request => {
+        if (request.url().includes(`${bucket}.s3.ap-south-1.amazonaws.com`)) {
+            browserUploadFailures.push(request.failure()?.errorText || 'unknown browser request failure');
+        }
+    });
+    f.page.on('console', message => {
+        if (message.type() === 'error' && /amazonaws|CORS|Content Security Policy|Failed to fetch/.test(message.text())) {
+            browserUploadFailures.push(`console:${['CORS', 'Content Security Policy', 'Failed to fetch', 'net::']
+                .filter(marker => message.text().includes(marker)).join('|') || 'browser error'}`);
+        }
+    });
+    globalThis.fetch = (async (url: RequestInfo | URL, init?: RequestInit) => {
+        const target = String(url);
+        if (target === 'https://sts.ap-south-1.amazonaws.com/') {
+            stsCalls++;
+            assert.equal(init?.method, 'POST');
+            const policy = JSON.parse(new URLSearchParams(String(init?.body)).get('Policy')!) as {
+                Statement: Array<{ Resource: string }>;
+            };
+            assert.match(policy.Statement[0].Resource,
+                new RegExp(`^arn:aws:s3:::${bucket}/kyc/${f.tenant.siteId}/business_pan/[a-f0-9-]{36}$`));
+            return new Response(`<AssumeRoleResponse><AssumeRoleResult><Credentials>
+                <AccessKeyId>ASIATEMPORARY12345678</AccessKeyId>
+                <SecretAccessKey>synthetic-temporary-secret-123456</SecretAccessKey>
+                <SessionToken>syntheticTempSession1234567890==</SessionToken>
+                <Expiration>${new Date(Date.now() + 15 * 60_000).toISOString()}</Expiration>
+                </Credentials></AssumeRoleResult></AssumeRoleResponse>`,
+                { status: 200, headers: { 'content-type': 'text/xml' } });
+        }
+        if (target.startsWith(`https://${bucket}.s3.ap-south-1.amazonaws.com/kyc/`)) {
+            headCalls++;
+            assert.equal(init?.method, 'HEAD');
+            assert.equal(new URL(target).searchParams.get('versionId'), versionId);
+            const headers = new Headers(init?.headers);
+            assert.equal(headers.get('x-amz-expected-bucket-owner'), '123456789012');
+            assert.equal(headers.get('x-amz-checksum-mode'), 'ENABLED');
+            return new Response(null, { status: 200, headers: {
+                'x-amz-version-id': versionId, 'content-length': String(pdf.length),
+                'content-type': 'application/pdf', 'x-amz-checksum-sha256': digest.toString('base64'),
+                'x-amz-server-side-encryption': 'AES256',
+            } });
+        }
+        if (/^https:\/\/[^/]*amazonaws\.com\//.test(target)) throw new Error('Unexpected synthetic AWS request');
+        return originalFetch(url, init);
+    }) as typeof fetch;
+    t.after(() => { globalThis.fetch = originalFetch; });
+
+    await f.page.route(`https://${bucket}.s3.ap-south-1.amazonaws.com/**`, async route => {
+        if (route.request().method() === 'OPTIONS') {
+            await route.fulfill({ status: 204, headers: {
+                'access-control-allow-origin': merchantOrigin,
+                'access-control-allow-methods': 'POST',
+                'access-control-allow-headers': '*',
+            } });
+            return;
+        }
+        assert.equal(route.request().method(), 'POST');
+        browserPosts++;
+        const body = route.request().postDataBuffer();
+        browserPostHasFile = Boolean(body?.includes(pdf));
+        browserPostHasScopedKey = Boolean(body?.includes(Buffer.from(`kyc/${f.tenant.siteId}/business_pan/`)));
+        await route.fulfill({ status: 201, headers: {
+            'access-control-allow-origin': merchantOrigin,
+            'access-control-expose-headers': 'x-amz-version-id',
+            'x-amz-version-id': versionId,
+        } });
+    });
+
+    await f.page.goto(`${merchantOrigin}/${f.tenant.subdomain}/settings/business`);
+    await expect(f.page.getByRole('status').filter({ hasText: 'India upload test' })).toBeVisible();
+    const pan = f.page.locator('.settings-business-kyc-item').filter({ hasText: 'Business PAN' }).first();
+    await pan.getByRole('textbox', { name: 'Last 4 of PAN' }).fill('1234');
+    await pan.getByLabel('Upload Business PAN').setInputFiles({ name: 'synthetic-pan.pdf', mimeType: 'application/pdf', buffer: pdf });
+    const completionPromise = f.page.waitForResponse(response =>
+        new URL(response.url()).pathname === `/api/stores/${f.tenant.subdomain}/kyc/upload-complete`
+            && response.request().method() === 'POST', { timeout: 30_000 })
+        .then(response => ({ response }), error => ({ error }));
+    const [intent] = await Promise.all([
+        f.page.waitForResponse(response => new URL(response.url()).pathname === `/api/stores/${f.tenant.subdomain}/kyc/upload-intent`
+            && response.request().method() === 'POST'),
+        pan.getByRole('button', { name: 'Upload document' }).click(),
+    ]);
+    assert.equal(intent.status(), 201, await intent.text());
+    const state = await completionPromise;
+    if ('error' in state) throw new Error(`Mumbai browser completion missing: posts=${browserPosts}, file=${browserPostHasFile}, scopedKey=${browserPostHasScopedKey}, failures=${browserUploadFailures.join(',')}, page=${(await f.page.locator('body').innerText()).slice(-500)}`, { cause: state.error });
+    const complete = state.response;
+    assert.equal(complete.status(), 201, await complete.text());
+    assert.equal(browserPostHasFile, true, 'the browser sends the selected file bytes to Mumbai S3');
+    assert.equal(browserPostHasScopedKey, true, 'the signed form contains this site and document key');
+    for (const response of [intent, complete]) {
+        assert.equal(response.request().headers()['content-type'], 'application/json');
+        assert.equal(response.request().postData()?.includes('Synthetic Mumbai browser upload proof'), false,
+            'file bytes cannot transit the Merchant proxy');
+    }
+    await expect(pan.getByText('No scan result yet')).toBeVisible();
+    assert.equal(stsCalls, 1);
+    assert.equal(browserPosts, 1);
+    assert.equal(headCalls, 1);
+    assert.equal(owned.psql(`SELECT status||'|'||provider_mode||'|'||(metadata->>'private_storage_provider')||'|'||
+        (metadata->>'private_object_version_id')||'|'||(metadata->>'malware_scan_status')||'|'||
+        (metadata->>'provider_verified') FROM merchant_kyc_documents
+        WHERE site_id='${f.tenant.siteId}' AND document_type='business_pan';`),
+        `submitted|sandbox|aws_s3_mumbai|${versionId}|pending|false`);
+    assert.equal(owned.psql(`SELECT status||'|'||outcome FROM kyc_private_object_cleanup_jobs
+        WHERE site_id='${f.tenant.siteId}' AND storage_provider='aws_s3_mumbai';`), 'completed|retained');
+    assert.doesNotMatch(await f.page.locator('body').innerText(), /kyc\/[^\s]+\/business_pan\/|synthetic-temporary|sha256_hex/);
 });
 
 test('Merchant order detail renders generated order and immutable GST invoice numbers after a Business edit', { timeout: 180_000 }, async t => {
