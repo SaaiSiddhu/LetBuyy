@@ -97,6 +97,7 @@ before(async () => {
     gateway = new Gateway(gatewayEnv(owned, keys, { ...proxy.env(), ENVIRONMENT: 'local',
         LETBUYY_IDENTITY_ISSUER: identityOrigin, NEXT_PUBLIC_STORE_ROOT_DOMAIN: 'localhost', CHECKOUT_ORIGIN: `https://checkout.localhost:${checkoutTlsPort}`,
         CHECKOUT_SIGNING_SECRET: crypto.randomUUID() + crypto.randomUUID(),
+        KYC_UPLOAD_ENABLED: 'true',
         KYC_PRIVATE_BUCKET: {
             put: async (key: string, bytes: Uint8Array) => { privateKycObjects.set(key, bytes); },
             delete: async (key: string) => { privateKycObjects.delete(key); },

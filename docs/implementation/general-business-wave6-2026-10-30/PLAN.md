@@ -7,6 +7,7 @@
 - `sites` is the one store record. General, Business, storefront preferences, web, and Flutter edit its canonical fields through the Gateway; `version` is the concurrency token. No second store table or profile authority is introduced.
 - The Commerce Next runtime renders the buyer site from the public Gateway projection and the canonical Liquid theme release. The editor draft and release pointer remain separate; a profile edit updates current public facts without rewriting an older order, invoice, notification snapshot, or theme release.
 - `merchant_kyc_documents` records evidence and provider decisions. Uploaded files belong only in a separately provisioned private bucket with scoped access, malware handling, retention, deletion, and audit controls. Document submission is never itself an approval.
+- KYC upload admission is explicitly closed until the private-storage decisions and staging checks in [KYC_STORAGE_PROVISIONING.md](./KYC_STORAGE_PROVISIONING.md) are complete. A bound private bucket alone does not open intake; closing intake preserves restricted review and orphan cleanup.
 - Merchant-owned Razorpay remains the payment and settlement rail. LetBuyy records and reconciles provider facts in its canonical ledger; it does not hold or disburse merchant funds.
 
 ## Ordered delivery

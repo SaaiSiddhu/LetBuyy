@@ -251,6 +251,8 @@ export interface Env {
     R2_BUCKET?: R2Bucket;
     /** Private identity and bank evidence. Never bind the public media bucket here. */
     KYC_PRIVATE_BUCKET?: R2Bucket;
+    /** Explicit admission after private storage, scanner, and retention approval. */
+    KYC_UPLOAD_ENABLED?: 'true' | 'false';
     /** Approved server-only private-original profile. No default account/binding activation. */
     REEL_CUSTODY_PROFILE?: string;
     REEL_ORIGINALS_BUCKET?: R2Bucket;

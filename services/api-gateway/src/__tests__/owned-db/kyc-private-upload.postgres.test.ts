@@ -67,7 +67,7 @@ test('KYC file upload remains private, tenant-owned and pending provider evidenc
             objects.delete(key);
         },
     };
-    gateway = new Gateway(gatewayEnv(owned, await newIdentityKeys(), { KYC_PRIVATE_BUCKET: bucket }));
+    gateway = new Gateway(gatewayEnv(owned, await newIdentityKeys(), { KYC_PRIVATE_BUCKET: bucket, KYC_UPLOAD_ENABLED: 'true' }));
     const legacyHeaders = await signedIdentityHeaders(owner, `kyc-${owner}@example.invalid`, tenant.siteId);
     legacyHeaders['X-Idempotency-Key'] = randomUUID();
     const legacy = await gateway.request('/v1/kyc/documents', { method: 'POST', headers: legacyHeaders,
@@ -366,6 +366,35 @@ test('KYC file upload remains private, tenant-owned and pending provider evidenc
     assert.equal(unavailableOverview.status, 200, unavailableOverview.text);
     assert.equal(unavailableOverview.json?.data.private_upload_available, false);
     assert.match(unavailableOverview.json?.data.next_action || '', /Private document upload is unavailable/);
+    const pausedEnv = { ...gateway.env, KYC_UPLOAD_ENABLED: 'false' as const };
+    const pausedOverview = await gateway.request(`/v1/kyc?store_id=${tenant.siteId}`, {
+        method: 'GET', headers: await signedIdentityHeaders(owner, `kyc-${owner}@example.invalid`, tenant.siteId),
+    }, pausedEnv);
+    assert.equal(pausedOverview.status, 200, pausedOverview.text);
+    assert.equal(pausedOverview.json?.data.private_upload_available, false,
+        'a bound bucket alone cannot admit private documents');
+    const pausedHeaders = await signedIdentityHeaders(owner, `kyc-${owner}@example.invalid`, tenant.siteId);
+    delete pausedHeaders['Content-Type'];
+    pausedHeaders['X-Idempotency-Key'] = randomUUID();
+    const pausedForm = new FormData();
+    pausedForm.set('store_id', tenant.siteId);
+    pausedForm.set('document_type', 'bank_proof');
+    pausedForm.set('document_number_last4', '1234');
+    pausedForm.set('file', pdf());
+    const pausedUpload = await gateway.request('/v1/kyc/documents/upload', {
+        method: 'POST', headers: pausedHeaders, body: pausedForm,
+    }, pausedEnv);
+    assert.equal(pausedUpload.status, 503, pausedUpload.text);
+    assert.equal(pausedUpload.json?.error?.code, 'KYC_UPLOAD_UNAVAILABLE');
+    assert.equal(objects.size, 1, 'pausing admission does not write a second object');
+    const pausedOrphanKey = `kyc/${tenant.siteId}/business_pan/${randomUUID()}`;
+    await reserveKycPrivateObject(getSupabaseAdminFromEnv(gateway.env), tenant.siteId, pausedOrphanKey);
+    objects.set(pausedOrphanKey, new TextEncoder().encode('%PDF-1.7\npre-pause-orphan'));
+    owned.psql(`UPDATE kyc_private_object_cleanup_jobs SET next_attempt_at=now()
+        WHERE object_key='${pausedOrphanKey}';`);
+    const pausedCleanup = await drainKycPrivateObjectCleanup(pausedEnv);
+    assert.equal(pausedCleanup.deleted, 1, 'cleanup continues while new uploads are paused');
+    assert.equal(objects.size, 1);
     const historicalUrl = 'https://example.invalid/legacy-identity-proof';
     owned.psql(`INSERT INTO merchant_kyc_documents
         (site_id,document_type,document_number_last4,status,provider,provider_mode,file_url,metadata)
@@ -404,7 +433,7 @@ test('canonical business edits atomically revoke only affected KYC evidence unti
         delete: async (key: string) => { objects.delete(key); },
     };
     const profileGateway = new Gateway(gatewayEnv(owned, await newIdentityKeys(), {
-        KYC_PROVIDER_MODE: 'live', KYC_PROVIDER: 'signzy', KYC_PRIVATE_BUCKET: bucket,
+        KYC_PROVIDER_MODE: 'live', KYC_PROVIDER: 'signzy', KYC_PRIVATE_BUCKET: bucket, KYC_UPLOAD_ENABLED: 'true',
     }));
     const headers = async () => signedIdentityHeaders(owner, `kyc-${owner}@example.invalid`, tenant.siteId);
     const overview = async () => profileGateway.request(`/v1/kyc?store_id=${tenant.siteId}`, {
@@ -496,6 +525,7 @@ test('live-mode provider outage stays pending after clean private evidence and e
     const objects = new Map<string, Uint8Array>();
     const liveGateway = new Gateway(gatewayEnv(owned, await newIdentityKeys(), {
         KYC_PROVIDER_MODE: 'live', KYC_PROVIDER: 'signzy', KYC_PROVIDER_API_KEY: 'synthetic-unapproved-key',
+        KYC_UPLOAD_ENABLED: 'true',
         KYC_PRIVATE_BUCKET: {
             put: async (key: string, bytes: Uint8Array) => { objects.set(key, bytes); },
             delete: async (key: string) => { objects.delete(key); },
@@ -589,6 +619,7 @@ test('live mode without an explicitly selected provider reports outage instead o
     const objects = new Map<string, Uint8Array>();
     const liveGateway = new Gateway(gatewayEnv(owned, await newIdentityKeys(), {
         KYC_PROVIDER_MODE: 'live',
+        KYC_UPLOAD_ENABLED: 'true',
         KYC_PRIVATE_BUCKET: {
             put: async (key: string, bytes: Uint8Array) => { objects.set(key, bytes); },
             delete: async (key: string) => { objects.delete(key); },
@@ -654,6 +685,7 @@ test('KYC API follows canonical GST registration when declaring required evidenc
         UPDATE sites SET custom_user_id='${owner}' WHERE id='${tenant.siteId}';`);
     const registrationGateway = new Gateway(gatewayEnv(owned, await newIdentityKeys(), {
         KYC_PROVIDER_MODE: 'live', KYC_PROVIDER: 'signzy',
+        KYC_UPLOAD_ENABLED: 'true',
         KYC_PRIVATE_BUCKET: {
             put: async () => undefined,
             delete: async () => undefined,

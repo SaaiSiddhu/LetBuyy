@@ -29,6 +29,7 @@ tag = "v1-runtime-coordinator"
 new_sqlite_classes = ["LetbuyyRuntimeDurableObject"]
 
 [vars]
+KYC_UPLOAD_ENABLED = "false"
 ENVIRONMENT = "staging"
 APP_ENV = "staging"
 NODE_ENV = "production"
@@ -122,6 +123,7 @@ invocation_logs = true
 crons = []
 
 [env.staging.vars]
+KYC_UPLOAD_ENABLED = "false"
 STOREFRONT_INTERNAL_PERIMETER = "bound-request-v1"
 MERCHANT_RAZORPAY_WEBHOOK_ORIGIN = "https://webhooks.staging.letbuyy.com"
 ENVIRONMENT = "staging"
@@ -244,6 +246,7 @@ invocation_logs = true
 crons = ["*/15 * * * *"]
 
 [env.production.vars]
+KYC_UPLOAD_ENABLED = "false"
 STOREFRONT_INTERNAL_PERIMETER = "bound-request-v1"
 MERCHANT_RAZORPAY_WEBHOOK_ORIGIN = "https://webhooks.letbuyy.com"
 ENVIRONMENT = "production"

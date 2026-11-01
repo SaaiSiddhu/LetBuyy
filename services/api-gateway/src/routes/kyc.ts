@@ -19,6 +19,10 @@ import {
 
 const router = new Hono<{ Bindings: Env }>();
 
+function privateUploadAvailable(env: Env): boolean {
+    return env.KYC_UPLOAD_ENABLED === 'true' && Boolean(env.KYC_PRIVATE_BUCKET);
+}
+
 const DocumentTypeSchema = z.enum([
     'business_pan',
     'gst_certificate',
@@ -266,7 +270,7 @@ router.get('/', validate('query', StoreQuerySchema), async (c) => {
     const rows = await loadDocuments(db, tenant.siteId);
     const isGstRegistered = await loadGstRegistration(db, tenant.siteId);
     return c.json(success(buildOverview(tenant.siteId, rows, providerMode(c.env), isGstRegistered,
-        Boolean(c.env.KYC_PRIVATE_BUCKET))));
+        privateUploadAvailable(c.env))));
 });
 
 router.post('/documents', validate('json', SubmitKycDocumentSchema), async (c) => {
@@ -284,7 +288,7 @@ router.post('/documents/upload', bodyLimit({ maxSize: 6 * 1024 * 1024 }), async 
         return c.json({ error: { code: 'IDEMPOTENCY_KEY_REQUIRED', message: 'A valid idempotency key is required.' } }, 400);
     }
     const bucket = c.env.KYC_PRIVATE_BUCKET;
-    if (!bucket) return c.json({ error: { code: 'KYC_UPLOAD_UNAVAILABLE', message: 'Private document upload is not configured. Please retry later.' } }, 503);
+    if (!bucket || !privateUploadAvailable(c.env)) return c.json({ error: { code: 'KYC_UPLOAD_UNAVAILABLE', message: 'Private document upload is unavailable. Please retry later.' } }, 503);
     const declaredLength = Number(c.req.header('content-length') || 0);
     if (declaredLength > 6 * 1024 * 1024) return c.json({ error: { code: 'KYC_FILE_TOO_LARGE', message: 'Choose a document under 5 MB.' } }, 413);
     let form: FormData;
@@ -339,7 +343,7 @@ router.post('/documents/upload', bodyLimit({ maxSize: 6 * 1024 * 1024 }), async 
             responseBody: { success: true, data: { document_id: prior.id } }, statusCode: 201,
             resourceType: 'merchant_kyc_document', resourceId: prior.id });
         return c.json(success({ document: serializeDocument(prior), overview: buildOverview(tenant.siteId, rows,
-            providerMode(c.env), isGstRegistered, true) }), 200);
+            providerMode(c.env), isGstRegistered, privateUploadAvailable(c.env)) }), 200);
     }
     if (claim.kind === 'replay') {
         return c.json({ error: { code: 'KYC_UPLOAD_SUPERSEDED', message: 'This upload was replaced by a newer document. Reload its status.' } }, 409);
@@ -398,7 +402,7 @@ router.post('/documents/upload', bodyLimit({ maxSize: 6 * 1024 * 1024 }), async 
             responseBody: { success: true, data: { document_id: document.id } }, statusCode: 201,
             resourceType: 'merchant_kyc_document', resourceId: document.id });
         return c.json(success({ document: serializeDocument(document), overview: buildOverview(tenant.siteId, rows,
-            providerMode(c.env), isGstRegistered, true) }), 201);
+            providerMode(c.env), isGstRegistered, privateUploadAvailable(c.env)) }), 201);
     } catch (error) {
         await idempotency.fail(claim.id);
         throw error;
@@ -428,7 +432,7 @@ router.post('/documents/:id/refresh', validate('query', StoreQuerySchema), async
         return c.json(success({
             document: serializeDocument(document),
             overview: buildOverview(tenant.siteId, rows, providerMode(c.env), isGstRegistered,
-                Boolean(c.env.KYC_PRIVATE_BUCKET)),
+                privateUploadAvailable(c.env)),
         }));
     }
     // Claim before any provider call. The upload key changes on resubmission,
@@ -456,7 +460,7 @@ router.post('/documents/:id/refresh', validate('query', StoreQuerySchema), async
         return success({
             document: serializeDocument(current),
             overview: buildOverview(tenant.siteId, rows, providerMode(c.env), isGstRegistered,
-                Boolean(c.env.KYC_PRIVATE_BUCKET)),
+                privateUploadAvailable(c.env)),
         });
     };
     // A receipt only suppresses the repeated provider call; the merchant always

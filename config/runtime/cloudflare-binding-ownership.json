@@ -23,6 +23,7 @@
         "staging": {
           "workerName": "letbuyy-api-staging",
           "vars": [
+            "KYC_UPLOAD_ENABLED",
             "ENVIRONMENT",
             "APP_ENV",
             "NODE_ENV",
@@ -72,6 +73,7 @@
         "production": {
           "workerName": "letbuyy-api",
           "vars": [
+            "KYC_UPLOAD_ENABLED",
             "ENVIRONMENT",
             "APP_ENV",
             "NODE_ENV",

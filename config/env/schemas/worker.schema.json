@@ -354,6 +354,12 @@
     "R2_BUCKET": {
       "type": "string"
     },
+    "KYC_UPLOAD_ENABLED": {
+      "enum": [
+        "true",
+        "false"
+      ]
+    },
     "CUSTOMER_SESSION_SECRET": {
       "type": "string"
     },
