@@ -28,6 +28,21 @@ const DeviceTokenDeleteSchema = z.object({
     token: z.string().trim().min(1).max(4096),
 });
 
+const NotificationPreferenceUpdateSchema = z.object({
+    store_id: z.string().uuid().nullable().optional(),
+    channel: z.enum(['email', 'in_app', 'sms', 'push', 'whatsapp']),
+    category: z.string().trim().min(1).max(120),
+    enabled: z.boolean().optional(),
+}).strict();
+
+const DeliveryLogQuerySchema = z.object({
+    site_id: z.string().uuid().optional(),
+    channel: z.enum(['email', 'in_app', 'sms', 'push', 'whatsapp']).optional(),
+    status: z.enum(['queued', 'sent', 'failed', 'suppressed']).optional(),
+    page: z.string().regex(/^[1-9]\d*$/).default('1').transform(Number).pipe(z.number().int().safe().max(10_000)),
+    limit: z.string().regex(/^[1-9]\d*$/).default('25').transform(Number).pipe(z.number().int().safe().max(100)),
+});
+
 const WebhookCreateSchema = z.object({
     site_id: z.string().uuid(),
     name: z.string().trim().min(1).max(120),
@@ -223,9 +238,9 @@ router.get('/preferences', async (c) => {
 });
 
 // PUT /notifications/preferences — Upsert notification preferences
-router.put('/preferences', async (c) => {
+router.put('/preferences', validate('json', NotificationPreferenceUpdateSchema), async (c) => {
     const auth = c.get('auth');
-    const body = await c.req.json();
+    const body = c.get('validatedBody') as z.infer<typeof NotificationPreferenceUpdateSchema>;
     const db = getSupabaseAdmin(c);
 
     if (!body.channel || !body.category) {
@@ -400,14 +415,12 @@ router.post('/send', validate('json', NotificationSendSchema), async (c) => {
 });
 
 // GET /notifications/delivery-logs — Merchant-scoped notification delivery evidence
-router.get('/delivery-logs', async (c) => {
+router.get('/delivery-logs', validate('query', DeliveryLogQuerySchema), async (c) => {
     const auth = c.get('auth');
     const db = getSupabaseAdmin(c);
-    const siteId = c.req.query('site_id') || auth.user.storeId;
-    const channel = c.req.query('channel');
-    const status = c.req.query('status');
-    const page = Math.max(parseInt(c.req.query('page') || '1'), 1);
-    const limit = Math.min(Math.max(parseInt(c.req.query('limit') || '25'), 1), 100);
+    const filters = c.get('validatedQuery') as z.infer<typeof DeliveryLogQuerySchema>;
+    const siteId = filters.site_id || auth.user.storeId;
+    const { channel, status, page, limit } = filters;
     const offset = (page - 1) * limit;
 
     if (!siteId) {

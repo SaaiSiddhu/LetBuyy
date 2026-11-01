@@ -6,7 +6,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import { useParams } from 'next/navigation'
 import { PAGE_STATUS_PRESENTATION, presentStatus } from '@letbuyy/shared-types'
-import { Badge, Banner, Button, Card, ConfirmDialog, EmptyState, FileText, Input, ListChecks, Page, PageHeader, Plus, RefreshCw, SaveBar, Section, Select, Skeleton, StatusPresentationBadge, Table, Tabs, Textarea, Trash2, useToast } from '@letbuyy/ui'
+import { Badge, Banner, Button, Card, ConfirmDialog, FileText, Input, ListChecks, Page, PageHeader, Plus, RefreshCw, SaveBar, Section, Select, Skeleton, StatusPresentationBadge, Table, Tabs, Textarea, Trash2, useToast } from '@letbuyy/ui'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import { formatUsShortDate } from '@letbuyy/ui/formatting'
 import { slugifyCmsTitle as slugify } from '@letbuyy/cms-core'
 
@@ -597,7 +598,7 @@ export default function PagesPage() {
                 rows={visiblePages}
                 columns={pageColumns}
                 emptyState={(
-                    <EmptyState
+                    <EmptyState scene="store-pages"
                         icon={<FileText className="h-[var(--lb-size-icon-lg)] w-[var(--lb-size-icon-lg)]" aria-hidden="true" />}
                         title="No pages yet"
                         body="Create storefront content pages and publish them when shoppers should see them."
@@ -657,7 +658,7 @@ export default function PagesPage() {
                 rows={policies}
                 columns={policyColumns}
                 emptyState={(
-                    <EmptyState
+                    <EmptyState scene="store-pages"
                         icon={<FileText className="h-[var(--lb-size-icon-lg)] w-[var(--lb-size-icon-lg)]" aria-hidden="true" />}
                         title="No policies yet"
                         body="Create policies for privacy, refunds, shipping, terms, and support."
@@ -696,7 +697,7 @@ export default function PagesPage() {
                 )}
             >
                 {navItems.length === 0 ? (
-                    <EmptyState
+                    <EmptyState scene="store-pages"
                         icon={<ListChecks className="h-[var(--lb-size-icon-lg)] w-[var(--lb-size-icon-lg)]" aria-hidden="true" />}
                         title="No menu links"
                         body="Add links or publish pages with Show in main menu."

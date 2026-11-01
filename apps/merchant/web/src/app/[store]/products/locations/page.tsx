@@ -9,7 +9,6 @@ import {
     Banner,
     Button,
     Card,
-    EmptyState,
     Input,
     MaterialIcon,
     Modal,
@@ -23,6 +22,7 @@ import {
     useToast,
     type StatusVariant,
 } from '@letbuyy/ui'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import type { InventoryLocation } from '@letbuyy/api-client'
 
 // ── helpers ──────────────────────────────────────────────────────────────────
@@ -292,7 +292,7 @@ export default function LocationsPage() {
                             ))}
                         </div>
                     ) : locations.length === 0 ? (
-                        <EmptyState
+                        <EmptyState scene="locations"
                             title="No locations yet"
                             body="Add a warehouse or store to track inventory levels and receive purchase orders."
                             primaryAction={

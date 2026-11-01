@@ -1,12 +1,12 @@
 'use client'
 
 import { useState, useEffect, useCallback, useMemo } from 'react'
-import Image from 'next/image'
 import { useParams, useRouter } from 'next/navigation'
 import { useDebouncedValue, useReadRequest } from '@/lib/api/use-read-request'
 import { mapCustomer, type CustomerRow } from '@/lib/customers/list-row'
 import { formatIndiaDate as formatDate, formatInrCurrency } from '@letbuyy/ui/formatting'
-import { Button, Input, Table, Avatar, Badge, Banner, Card, EmptyState, MaterialIcon, Page, PageHeader, Search, Section, Skeleton, useToast, type TableColumn, type TableBulkAction } from '@letbuyy/ui'
+import { Button, Table, Avatar, Badge, Banner, Card, MaterialIcon, Page, PageHeader, useToast, type TableColumn, type TableBulkAction } from '@letbuyy/ui'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 
 type CustomerView = 'all' | 'active' | 'has-orders' | 'high-value' | 'new'
 type CustomerSortKey = 'name' | 'email' | 'phone' | 'total_orders' | 'total_spent' | 'last_order_at' | 'status'
@@ -16,6 +16,8 @@ interface CustomersPayload {
     data?: Array<Record<string, unknown>>
     meta?: {
         total?: number
+        has_next?: boolean
+        total_is_exact?: boolean
     }
     error?: unknown
     message?: unknown
@@ -53,60 +55,6 @@ function titleize(value: string | null | undefined) {
         .join(' ')
 }
 
-function isNewCustomer(customer: CustomerRow) {
-    if (!customer.created_at) return false
-    const createdAt = new Date(customer.created_at).getTime()
-    if (!createdAt) return false
-    const thirtyDays = 30 * 24 * 60 * 60 * 1000
-    return Date.now() - createdAt <= thirtyDays
-}
-
-function matchesCustomerView(customer: CustomerRow, view: CustomerView) {
-    switch (view) {
-        case 'active':
-            return ['active', 'enabled'].includes(customer.status.toLowerCase())
-        case 'has-orders':
-            return Number(customer.total_orders || 0) > 0
-        case 'high-value':
-            return Number(customer.total_spent || 0) >= 5000
-        case 'new':
-            return isNewCustomer(customer)
-        case 'all':
-        default:
-            return true
-    }
-}
-
-function customerSortValue(customer: CustomerRow, key: CustomerSortKey): string | number {
-    switch (key) {
-        case 'name':
-            return customer.full_name || customer.email || ''
-        case 'email':
-            return customer.email || ''
-        case 'phone':
-            return customer.phone || ''
-        case 'total_orders':
-            return Number(customer.total_orders || 0)
-        case 'total_spent':
-            return Number(customer.total_spent || 0)
-        case 'last_order_at':
-            return new Date(customer.last_order_at || '').getTime() || 0
-        case 'status':
-            return customer.status || ''
-        default:
-            return ''
-    }
-}
-
-function compareCustomerRows(a: CustomerRow, b: CustomerRow, key: CustomerSortKey, direction: SortDirection) {
-    const aValue = customerSortValue(a, key)
-    const bValue = customerSortValue(b, key)
-    const result = typeof aValue === 'number' && typeof bValue === 'number'
-        ? aValue - bValue
-        : String(aValue).localeCompare(String(bValue), undefined, { sensitivity: 'base' })
-    return direction === 'asc' ? result : -result
-}
-
 function customerStatusVariant(status: string) {
     const normalized = status.toLowerCase()
     if (['active', 'enabled'].includes(normalized)) return 'success'
@@ -120,14 +68,21 @@ export default function CustomersPage() {
     const { notify } = useToast()
 
     const [customers, setCustomers] = useState<CustomerRow[]>([])
+    const [totalCount, setTotalCount] = useState(0)
+    const [totalExact, setTotalExact] = useState(false)
+    const [hasNext, setHasNext] = useState(false)
+    const [page, setPage] = useState(1)
+    const [pageSize, setPageSize] = useState(25)
     const [loading, setLoading] = useState(true)
     const [searchQuery, setSearchQuery] = useState('')
     const appliedSearch = useDebouncedValue(searchQuery.trim())
-    const beginRead = useReadRequest(JSON.stringify([store, appliedSearch]))
     const [error, setError] = useState<string | null>(null)
     const [activeView, setActiveView] = useState<CustomerView>('all')
     const [sortKey, setSortKey] = useState<CustomerSortKey>('last_order_at')
     const [sortDirection, setSortDirection] = useState<SortDirection>('desc')
+    const beginRead = useReadRequest(JSON.stringify([store, appliedSearch, activeView, page, pageSize, sortKey, sortDirection]))
+
+    useEffect(() => { setPage(1) }, [appliedSearch, activeView])
 
     const loadCustomers = useCallback(async () => {
         const request = beginRead()
@@ -135,7 +90,14 @@ export default function CustomersPage() {
         setError(null)
 
         try {
-            const query = new URLSearchParams({ limit: '100' })
+            const query = new URLSearchParams({
+                page: String(page),
+                limit: String(pageSize),
+                view: activeView,
+                sort: sortKey,
+                order: sortDirection,
+                withCount: 'true',
+            })
             if (appliedSearch) query.set('search', appliedSearch)
 
             const response = await fetch(`/api/stores/${encodeURIComponent(store)}/customers?${query.toString()}`, {
@@ -147,35 +109,31 @@ export default function CustomersPage() {
 
             if (!response.ok) {
                 setCustomers([])
+                setTotalCount(0)
+                setHasNext(false)
                 setError(getErrorMessage(payload, 'Unable to load customers'))
                 return
             }
 
-            const rows = (Array.isArray(payload?.data) ? payload.data : []).map(mapCustomer)
+            if (!Array.isArray(payload?.data)) throw new Error('Customers response is incomplete')
+            const rows = payload.data.map(mapCustomer)
             setCustomers(rows)
+            setTotalCount(payload?.meta?.total ?? rows.length)
+            setTotalExact(payload?.meta?.total_is_exact === true)
+            setHasNext(payload?.meta?.has_next === true)
+            if (page > 1 && rows.length === 0) setPage(1)
         } catch {
             if (!request.isCurrent()) return
             setCustomers([])
+            setTotalCount(0)
+            setHasNext(false)
             setError('Unable to load customers')
         } finally {
             if (request.isCurrent()) setLoading(false)
         }
-    }, [store, appliedSearch, beginRead])
+    }, [store, appliedSearch, activeView, page, pageSize, sortKey, sortDirection, beginRead])
 
     useEffect(() => { loadCustomers() }, [loadCustomers])
-
-    const visibleCustomers = useMemo(() => {
-        return customers.filter(customer => matchesCustomerView(customer, activeView))
-    }, [activeView, customers])
-
-    const sortedCustomers = useMemo(() => {
-        return [...visibleCustomers].sort((a, b) => compareCustomerRows(a, b, sortKey, sortDirection))
-    }, [sortDirection, sortKey, visibleCustomers])
-
-    const activeFilters = [
-        activeView !== 'all' ? { label: `View: ${customerViews.find(view => view.value === activeView)?.label || activeView}`, onRemove: () => setActiveView('all') } : null,
-        appliedSearch ? { label: `Search: ${appliedSearch}`, onRemove: () => setSearchQuery('') } : null,
-    ].filter(Boolean) as Array<{ label: string; onRemove: () => void }>
 
     const handleSort = useCallback((key: string) => {
         const nextKey = key as CustomerSortKey
@@ -185,6 +143,7 @@ export default function CustomersPage() {
         }
         setSortKey(nextKey)
         setSortDirection(nextKey === 'last_order_at' || nextKey === 'total_spent' || nextKey === 'total_orders' ? 'desc' : 'asc')
+        setPage(1)
     }, [sortKey])
 
     const bulkActions = useMemo<Array<TableBulkAction<CustomerRow>>>(() => [
@@ -247,13 +206,13 @@ export default function CustomersPage() {
             key: 'total_orders',
             header: 'Orders',
             sortable: true,
-            render: (customer) => String(customer.total_orders || 0),
+            render: (customer) => Number.isSafeInteger(customer.total_orders) ? String(customer.total_orders) : '—',
         },
         {
             key: 'total_spent',
             header: 'Spent',
             sortable: true,
-            render: (customer) => formatInrCurrency(Number(customer.total_spent || 0)) || '-',
+            render: (customer) => typeof customer.total_spent === 'number' && Number.isFinite(customer.total_spent) ? formatInrCurrency(customer.total_spent) : '—',
         },
         {
             key: 'last_order_at',
@@ -276,16 +235,7 @@ export default function CustomersPage() {
 
     const isMainEmpty = !error && !searchQuery.trim() && activeView === 'all'
     const emptyState = (
-        <EmptyState
-            illustration={isMainEmpty ? (
-                <Image
-                    src="/Emptystate Illustration/Customers.png"
-                    alt=""
-                    width={200}
-                    height={200}
-                    aria-hidden="true"
-                />
-            ) : undefined}
+        <EmptyState scene="customers"
             icon={!isMainEmpty ? <MaterialIcon name={error ? 'error' : 'group'} /> : undefined}
             title={error ? 'Unable to load customers' : searchQuery.trim() || activeView !== 'all' ? 'No matching customers' : 'No customers yet'}
             body={error || (searchQuery.trim()
@@ -322,52 +272,29 @@ export default function CustomersPage() {
                 secondaryActions={[{ label: 'Orders', href: `/${store}/orders` }]}
             />
 
-            <Card>
-                <Section
-                    title="Customer list"
-                    description={`${sortedCustomers.length} ${sortedCustomers.length === 1 ? 'customer' : 'customers'} shown in the current view.`}
-                >
-                    <div className="flex flex-col gap-[var(--lb-space-4)]">
-                        <div className="grid gap-[var(--lb-space-3)] md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
-                            <Input
-                                label="Search customers"
-                                placeholder="Search by name, email, or phone"
-                                value={searchQuery}
-                                onChange={(event) => setSearchQuery(event.target.value)}
-                                leftIcon={<Search className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                            />
-                            <Button variant="secondary" onClick={loadCustomers}>
-                                <MaterialIcon name="sync" />
-                                Refresh
-                            </Button>
-                        </div>
-
-                        {error && customers.length > 0 && (
-                            <Banner title="Customer refresh failed" variant="critical">
-                                {error}
-                            </Banner>
-                        )}
-
-                        {loading ? (
-                            <Skeleton variant="table" lines={6} />
-                        ) : (
-                            <Table
-                                rows={sortedCustomers}
-                                columns={columns}
-                                emptyState={emptyState}
-                                savedViews={customerViews}
-                                activeView={activeView}
-                                onViewChange={(value) => setActiveView(value as CustomerView)}
-                                filterChips={activeFilters}
-                                bulkActions={bulkActions}
-                                sortKey={sortKey}
-                                sortDirection={sortDirection}
-                                onSort={handleSort}
-                                onRowClick={(customer) => router.push(`/${store}/customers/${encodeURIComponent(customer.email)}`)}
-                            />
-                        )}
-                    </div>
-                </Section>
+            <Card as="div" className="overflow-visible p-[var(--lb-density-card-padding)]">
+                {error && <Banner title="Customers unavailable" variant="critical">{error}</Banner>}
+                <Table
+                    rows={customers}
+                    columns={columns}
+                    loading={loading}
+                    appearance="flat"
+                    hideHeaderWhenEmpty={false}
+                    emptyState={emptyState}
+                    savedViews={customerViews}
+                    activeView={activeView}
+                    onViewChange={(value) => setActiveView(value as CustomerView)}
+                    search={{ label: 'Search customers', placeholder: 'Search by name, email, or phone', value: searchQuery, onChange: setSearchQuery }}
+                    filterContent={<div className="grid gap-[var(--lb-space-3)]"><strong className="text-[length:var(--lb-font-size-body)]">Customer records</strong><p className="text-[var(--lb-color-text-muted)]">Use the views to narrow customers by activity and value.</p><Button variant="secondary" size="sm" onClick={loadCustomers}><MaterialIcon name="sync" />Refresh customers</Button></div>}
+                    bulkActions={bulkActions}
+                    sortKey={sortKey}
+                    sortDirection={sortDirection}
+                    onSort={handleSort}
+                    preferencesKey={`letbuyy.table.customers:${store}`}
+                    selectionScopeKey={`${store}:${activeView}:${appliedSearch}:${page}:${pageSize}`}
+                    pagination={{ page, pageSize, total: totalExact ? totalCount : undefined, hasNext, itemLabel: 'customers', onPageChange: setPage, onPageSizeChange: size => { setPageSize(size); setPage(1) } }}
+                    onRowClick={(customer) => router.push(`/${store}/customers/${encodeURIComponent(customer.email)}`)}
+                />
             </Card>
         </Page>
     )

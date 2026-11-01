@@ -67,4 +67,3 @@ export const ShippingCapabilitiesSchema = z.object({
   carrier_booking_available: z.literal(false),
 });
 export type ShippingCapabilities = z.infer<typeof ShippingCapabilitiesSchema>;
-

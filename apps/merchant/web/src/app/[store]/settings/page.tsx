@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import {
     AppWindow,
-    Badge,
     Card,
     PageHeader,
     Section,
@@ -13,9 +12,10 @@ import {
     type LucideIcon,
 } from '@letbuyy/ui'
 import {
-    SETTINGS_NAV_ITEMS,
+    getSettingsNavigationGroups,
     type SettingsNavItem,
 } from '@/components/settings/settings-navigation'
+import { isAppPlatformEnabled } from '@/lib/app-platform-flag'
 
 interface PageProps {
     params: Promise<{ store: string }>
@@ -70,14 +70,12 @@ const PHASES: Array<{
 ]
 
 // Exclude the subscribe/checkout flow — it's a checkout transaction, not a settings section
-const DASHBOARD_ITEMS = SETTINGS_NAV_ITEMS.filter(i => i.href !== 'subscribe/checkout')
-
 export default async function SettingsDashboardPage({ params }: PageProps) {
     const { store } = await params
-
-    const totalCount = DASHBOARD_ITEMS.length
-    const availableCount = DASHBOARD_ITEMS.filter(i => i.status !== 'backend-needed').length
-    const pendingCount = totalCount - availableCount
+    const appPlatformEnabled = isAppPlatformEnabled()
+    const dashboardItems = getSettingsNavigationGroups(appPlatformEnabled)
+        .flatMap(group => group.items)
+        .filter(item => item.href !== 'subscribe/checkout')
 
     return (
         <div className="settings-dashboard">
@@ -85,21 +83,15 @@ export default async function SettingsDashboardPage({ params }: PageProps) {
             {/* ── Hero ── */}
             <Card className="settings-dashboard-hero">
                 <PageHeader identity="settings" recipe="settings" title="Dashboard" showIcon={false} description="Configure every aspect of your store — from payments and shipping to your custom domain and team. Use this guide to get ready for your first sale." showDescription />
-                <div className="settings-dashboard-hero-stats">
-                    <Badge label={`${availableCount} available now`} variant="success" />
-                    {pendingCount > 0 && <Badge label={`${pendingCount} coming soon`} variant="warning" />}
-                </div>
             </Card>
 
             {/* ── Setup phases grid ── */}
             <div className="settings-dashboard-phases">
                 {PHASES.map((phase) => {
                     const phaseItems = phase.itemHrefs
-                        .map(href => DASHBOARD_ITEMS.find(i => i.href === href))
+                        .map(href => dashboardItems.find(i => i.href === href))
                         .filter((item): item is SettingsNavItem => Boolean(item))
 
-                    const phaseAvailable = phaseItems.filter(i => i.status !== 'backend-needed').length
-                    const allReady = phaseAvailable === phaseItems.length
                     const PhaseIcon = phase.Icon
 
                     return (
@@ -107,10 +99,9 @@ export default async function SettingsDashboardPage({ params }: PageProps) {
                             key={phase.id}
                             className={`settings-dashboard-phase${phase.wide ? ' settings-dashboard-phase--wide' : ''}`}
                         >
-                            <Section title={phase.title} description={phase.description} action={
+                            <Section title={!appPlatformEnabled && phase.id === 'extensions' ? 'Custom data' : phase.title} description={!appPlatformEnabled && phase.id === 'extensions' ? 'Custom storefront data schemas are planned.' : phase.description} action={
                                 <span className="inline-flex items-center gap-[var(--lb-space-2)]">
                                     <span className="settings-dashboard-phase-icon"><PhaseIcon className="letbuyy-icon" aria-hidden="true" /></span>
-                                    <Badge aria-label={`${phaseAvailable} of ${phaseItems.length} settings available`} label={`${phaseAvailable}/${phaseItems.length}`} variant={allReady ? 'success' : 'warning'} />
                                 </span>
                             }>{null}</Section>
 
@@ -145,7 +136,7 @@ export default async function SettingsDashboardPage({ params }: PageProps) {
                                             <span className="settings-dashboard-task-desc">{item.description}</span>
                                         </span>
                                         <span className="settings-dashboard-task-cta">
-                                            Configure
+                                            Open
                                             <ChevronRight className="letbuyy-icon" aria-hidden="true" />
                                         </span>
                                     </Link>

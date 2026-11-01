@@ -1,28 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
+import { z } from 'zod'
 
-type BillingPlanSlug = 'free' | 'starter' | 'business' | 'enterprise'
-type BillingPeriod = 'monthly' | 'yearly'
-
-const PLAN_SLUGS: readonly BillingPlanSlug[] = ['free', 'starter', 'business', 'enterprise']
-
-function isPlanSlug(value: unknown): value is BillingPlanSlug {
-    return typeof value === 'string' && (PLAN_SLUGS as readonly string[]).includes(value)
-}
-
-function isBillingPeriod(value: unknown): value is BillingPeriod {
-    return value === 'monthly' || value === 'yearly'
-}
-
-function readString(value: unknown): string | null {
-    return typeof value === 'string' && value.trim() ? value.trim() : null
-}
+const AddMandateInputSchema = z.object({
+    plan_slug: z.enum(['launch', 'growth', 'scale', 'commerce_os']),
+    billing_period: z.enum(['monthly', 'yearly']),
+    intent_id: z.string().uuid(),
+}).strict()
 
 // GET /api/stores/[store]/billing
 // Returns everything the Shopify-style Billing surface needs:
 //  - subscription      : current plan + status (StoreSubscriptionState)
-//  - upcoming          : next bill amount + due date (computed, no fabrication)
+//  - upcoming          : known period end; next charge is unquoted
 //  - mandates          : billing payment methods (Razorpay UPI AutoPay)
 //  - invoices          : past bills (billing_history + GST invoice join)
 //  - profile           : GSTIN, GST state, legal name, currency (fixed INR)
@@ -49,33 +39,27 @@ export async function GET(
         const subscription = subscriptionState.subscription || null
         const trialEndsAt = subscriptionState.store?.trial_ends_at || null
         const trialStatus = subscriptionState.store?.trial_status || null
+        if (!Array.isArray(invoicesPayload.invoices) || !Array.isArray(mandatesPayload.mandates)) {
+            throw new Error('Billing history response is incomplete')
+        }
 
-        // Upcoming bill — the actual next charge. For an active subscription that is
-        // the last recorded charge (renews at the same amount); during trial it is ₹0
-        // due on the trial end date. Never an estimate or fabricated figure.
-        const upcoming = subscription
-            ? {
-                amount_minor: Number(subscription.amount_paid || 0),
-                due_date: subscription.current_period_end || null,
-                currency: 'INR',
-                billing_period: subscription.billing_period || 'monthly',
-                plan: subscription.plan || null,
-            }
-            : {
-                amount_minor: 0,
-                due_date: trialEndsAt,
-                currency: 'INR',
-                billing_period: 'monthly' as const,
-                plan: null,
-            }
+        // The current period end is known, but a future charge requires a fresh
+        // server quote. The last amount paid is not evidence of the next amount.
+        const upcoming = {
+            amount_minor: null,
+            due_date: subscription?.current_period_end || null,
+            currency: 'INR',
+            billing_period: subscription?.billing_period || null,
+            plan: subscription?.plan || null,
+        }
 
         return NextResponse.json({
             data: {
                 subscription,
                 trial: { status: trialStatus, ends_at: trialEndsAt },
                 upcoming,
-                mandates: mandatesPayload.mandates || [],
-                invoices: invoicesPayload.invoices || [],
+                mandates: mandatesPayload.mandates,
+                invoices: invoicesPayload.invoices,
                 profile: {
                     gstin: storeRecord.gstin || null,
                     gst_state_code: storeRecord.gst_state_code || null,
@@ -90,10 +74,7 @@ export async function GET(
 }
 
 // POST /api/stores/[store]/billing
-// Adds a billing payment method = authorises a Razorpay UPI AutoPay mandate.
-// LetBuyy is not an RBI-licensed payment aggregator, so no card/UPI credential is
-// stored here — Razorpay holds the instrument and we keep only the mandate handle.
-// Body: { plan_slug?, billing_period?, upi_vpa? } (sandbox in non-live environments).
+// Creates a sandbox billing mandate record for an explicitly selected plan.
 export async function POST(
     request: NextRequest,
     { params }: { params: Promise<{ store: string }> }
@@ -103,21 +84,25 @@ export async function POST(
         const resolved = await resolveOwnedStoreId(decodeURIComponent(store))
         if (resolved.error) return resolved.error
 
-        const body = (await request.json().catch(() => ({}))) as Record<string, unknown>
-        const planSlug: BillingPlanSlug = isPlanSlug(body.plan_slug) ? body.plan_slug : 'starter'
-        const billingPeriod: BillingPeriod = isBillingPeriod(body.billing_period) ? body.billing_period : 'monthly'
-        const upiVpa = readString(body.upi_vpa)
+        const parsed = AddMandateInputSchema.safeParse(await request.json().catch(() => null))
+        if (!parsed.success) {
+            return NextResponse.json({ error: { code: 'INVALID_BILLING_MANDATE', message: 'Choose a valid plan and billing period.' } }, { status: 400 })
+        }
+        const { plan_slug: planSlug, billing_period: billingPeriod, intent_id: intentId } = parsed.data
 
         const apiClient = createMerchantApiClient()
         const result = await apiClient.billing.mandates.create({
             store_id: resolved.storeId,
             plan_slug: planSlug,
             billing_period: billingPeriod,
-            ...(upiVpa ? { upi_vpa: upiVpa } : {}),
-            idempotency_key: `mandate:${resolved.storeId}:${crypto.randomUUID()}`,
+            idempotency_key: `mandate:${resolved.storeId}:${intentId}`,
         })
 
-        return NextResponse.json({ data: result }, { status: 201 })
+        if (result.mandate?.plan_slug !== planSlug || result.mandate?.billing_period !== billingPeriod) {
+            return NextResponse.json({ error: { code: 'MANDATE_INTENT_CONFLICT', message: 'This request key belongs to a different billing selection. Refresh billing before trying again.' } }, { status: 409 })
+        }
+
+        return NextResponse.json({ data: result }, { status: result.replayed ? 200 : 201 })
     } catch (err) {
         return merchantApiErrorResponse(err, 'Unable to add payment method')
     }

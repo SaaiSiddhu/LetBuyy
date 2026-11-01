@@ -9,7 +9,6 @@ import { Button, Input, Table,
     Banner,
     Card,
     ConfirmDialog,
-    EmptyState,
     LayoutGrid,
     Package,
     Page,
@@ -24,6 +23,7 @@ import { Button, Input, Table,
     Trash2,
     useToast,
 } from '@letbuyy/ui'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 
 type SaveState = 'saved' | 'unsaved' | 'saving'
 
@@ -403,7 +403,7 @@ export default function CategoriesPage() {
                     description="Review storefront visibility, product counts, and URL slugs."
                 >
                     {categories.length === 0 && !showForm ? (
-                        <EmptyState
+                        <EmptyState scene="categories"
                             icon={<LayoutGrid className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                             title="No categories yet"
                             body="Create categories to help shoppers browse your product catalog by intent, season, or collection."

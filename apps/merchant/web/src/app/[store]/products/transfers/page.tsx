@@ -11,7 +11,6 @@ import {
     Banner,
     Button,
     Card,
-    EmptyState,
     Input,
     MaterialIcon,
     Modal,
@@ -29,6 +28,7 @@ import {
     type SelectOption,
     type StatusVariant,
 } from '@letbuyy/ui'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import type {
     InventoryTransfer,
     InventoryLocation,
@@ -730,7 +730,7 @@ export default function TransfersPage() {
                             ))}
                         </div>
                     ) : transfers.length === 0 ? (
-                        <EmptyState
+                        <EmptyState scene="transfers"
                             icon={
                                 <RefreshCw
                                     className="h-[var(--lb-size-icon-lg)] w-[var(--lb-size-icon-lg)]"

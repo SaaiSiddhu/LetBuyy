@@ -9,7 +9,6 @@ import {
     Banner,
     Bell,
     Button,
-    EmptyState,
     Input,
     Mail,
     MessageSquare,
@@ -28,6 +27,7 @@ import {
     useToast,
     type StatusVariant,
 } from '@letbuyy/ui'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import { formatIndiaDateWithTime } from '@letbuyy/ui/formatting'
 import { SettingsPane } from '@/components/settings/SettingsPane'
 
@@ -72,7 +72,7 @@ interface DeliveryMeta {
 // The backend allows any channel/category pair; we surface the meaningful ones.
 // ---------------------------------------------------------------------------
 
-type NotificationChannel = 'email' | 'in_app' | 'sms' | 'push'
+type NotificationChannel = 'email' | 'in_app' | 'sms' | 'push' | 'whatsapp'
 
 interface PrefDef {
     channel: NotificationChannel
@@ -87,6 +87,7 @@ const CHANNEL_LABELS: Record<NotificationChannel, string> = {
     in_app: 'In-app',
     sms: 'SMS',
     push: 'Push',
+    whatsapp: 'WhatsApp',
 }
 
 const PREF_MATRIX: PrefDef[] = [
@@ -202,15 +203,15 @@ const CHANNEL_OPTIONS = [
     { value: 'in_app', label: 'In-app' },
     { value: 'sms', label: 'SMS' },
     { value: 'push', label: 'Push' },
+    { value: 'whatsapp', label: 'WhatsApp' },
 ]
 
 const STATUS_OPTIONS = [
     { value: '', label: 'All statuses' },
     { value: 'sent', label: 'Sent' },
-    { value: 'delivered', label: 'Delivered' },
+    { value: 'queued', label: 'Queued' },
     { value: 'suppressed', label: 'Suppressed' },
     { value: 'failed', label: 'Failed' },
-    { value: 'bounced', label: 'Bounced' },
 ]
 
 // ---------------------------------------------------------------------------
@@ -220,13 +221,16 @@ const STATUS_OPTIONS = [
 export default function NotificationsSettingsPage() {
     const { store } = useParams<{ store: string }>()
     const { notify } = useToast()
+    const activeStoreRef = useRef(store)
+    activeStoreRef.current = store
 
     // ── Preferences state ────────────────────────────────────────────────────
     const [prefsLoading, setPrefsLoading] = useState(true)
     const [prefsError, setPrefsError] = useState<string | null>(null)
     // Map of "channel::category" → enabled boolean (from DB)
     const [prefMap, setPrefMap] = useState<Map<string, boolean>>(new Map())
-    // Track in-flight toggles to show optimistic state without double-fire
+    const [savingKeys, setSavingKeys] = useState<Set<string>>(new Set())
+    // The ref closes the gap before React renders the disabled switch.
     const savingRef = useRef<Set<string>>(new Set())
 
     // ── Delivery log state ───────────────────────────────────────────────────
@@ -249,8 +253,9 @@ export default function NotificationsSettingsPage() {
 
     const beginPreferences = useReadRequest(store)
     const beginLogs = useReadRequest(store)
-    const loadPreferences = useCallback(async (signal?: AbortSignal) => {
+    const loadPreferences = useCallback(async (signal?: AbortSignal): Promise<Map<string, boolean> | null> => {
         const request = beginPreferences()
+        if (!request.isCurrent()) return null
         const readSignal = signal ? AbortSignal.any([signal, request.signal]) : request.signal
         setPrefsLoading(true)
         setPrefsError(null)
@@ -259,9 +264,9 @@ export default function NotificationsSettingsPage() {
                 `/api/stores/${encodeURIComponent(store)}/notifications/preferences`,
                 { cache: 'no-store', signal: readSignal },
             )
-            if (signal?.aborted || !request.isCurrent()) return
+            if (signal?.aborted || !request.isCurrent()) return null
             const json = (await res.json()) as { data?: unknown[]; error?: unknown }
-            if (signal?.aborted || !request.isCurrent()) return
+            if (signal?.aborted || !request.isCurrent()) return null
             if (!res.ok) {
                 const msg = isRecord(json.error) && typeof json.error.message === 'string'
                     ? json.error.message
@@ -270,16 +275,21 @@ export default function NotificationsSettingsPage() {
                         : 'Unable to load preferences'
                 throw new Error(msg)
             }
-            const rows = (json.data ?? [])
-                .filter(isRecord)
-                .map(normalizePreference)
+            if (!Array.isArray(json.data) || !json.data.every(row =>
+                isRecord(row) && typeof row.channel === 'string' && typeof row.category === 'string' && typeof row.enabled === 'boolean',
+            )) {
+                throw new Error('Preference response is incomplete')
+            }
+            const rows = json.data.map(row => normalizePreference(row as Record<string, unknown>))
             const nextMap = new Map<string, boolean>()
             rows.forEach((r) => nextMap.set(prefKey(r.channel, r.category), r.enabled))
             setPrefMap(nextMap)
+            return nextMap
         } catch (err) {
-            if (signal?.aborted || !request.isCurrent()) return
+            if (signal?.aborted || !request.isCurrent()) return null
             const msg = err instanceof Error ? err.message : 'Unable to load preferences'
             setPrefsError(msg)
+            return null
         } finally {
             if (!signal?.aborted && request.isCurrent()) setPrefsLoading(false)
         }
@@ -294,6 +304,7 @@ export default function NotificationsSettingsPage() {
         signal?: AbortSignal,
     ) => {
         const request = beginLogs()
+        if (!request.isCurrent()) return
         const readSignal = signal ? AbortSignal.any([signal, request.signal]) : request.signal
         setLogsLoading(true)
         setLogsError(null)
@@ -321,7 +332,13 @@ export default function NotificationsSettingsPage() {
                     : 'Unable to load delivery logs'
                 throw new Error(msg)
             }
-            const normalized = (json.data ?? []).filter(isRecord).map(normalizeLog)
+            if (!Array.isArray(json.data) || !json.data.every(row =>
+                isRecord(row) && typeof row.id === 'string' && typeof row.channel === 'string' && typeof row.category === 'string'
+                && typeof row.template_key === 'string' && typeof row.status === 'string' && typeof row.created_at === 'string',
+            )) {
+                throw new Error('Delivery log response is incomplete')
+            }
+            const normalized = json.data.map(row => normalizeLog(row as Record<string, unknown>))
             setLogs(normalized)
             setLogsMeta(json.meta ?? {
                 total: normalized.length,
@@ -353,15 +370,15 @@ export default function NotificationsSettingsPage() {
 
     const handleToggle = useCallback(async (def: PrefDef) => {
         const key = prefKey(def.channel, def.category)
-        if (savingRef.current.has(key)) return
+        const flightKey = `${store}::${key}`
+        if ([...savingRef.current].some(savedKey => savedKey.startsWith(`${store}::`)) || prefsLoading || prefsError) return
 
         const currentEnabled = prefMap.get(key) ?? true
         const nextEnabled = !currentEnabled
+        savingRef.current.add(flightKey)
+        setSavingKeys(previous => new Set(previous).add(flightKey))
 
-        // Optimistic update
-        setPrefMap((prev) => new Map(prev).set(key, nextEnabled))
-        savingRef.current.add(key)
-
+        let writeError: string | null = null
         try {
             const res = await fetch(
                 `/api/stores/${encodeURIComponent(store)}/notifications/preferences`,
@@ -376,26 +393,42 @@ export default function NotificationsSettingsPage() {
                 },
             )
             if (!res.ok) {
-                // Revert optimistic
-                setPrefMap((prev) => new Map(prev).set(key, currentEnabled))
                 const json = (await res.json().catch(() => null)) as Record<string, unknown> | null
                 const msg = isRecord(json?.error) && typeof json?.error.message === 'string'
                     ? json.error.message
                     : 'Could not save preference'
                 throw new Error(msg)
             }
-            notify({
-                title: nextEnabled ? 'Notification enabled' : 'Notification disabled',
-                description: `${def.label} turned ${nextEnabled ? 'on' : 'off'}.`,
-                variant: 'success',
-            })
         } catch (err) {
-            const msg = err instanceof Error ? err.message : 'Could not save preference'
-            notify({ title: 'Error', description: msg, variant: 'critical' })
-        } finally {
-            savingRef.current.delete(key)
+            writeError = err instanceof Error ? err.message : 'Could not save preference'
         }
-    }, [prefMap, store, notify])
+
+        // A lost PUT response may have committed. The fresh GET is the authority
+        // for both that case and an acknowledged write.
+        try {
+            const readback = await loadPreferences()
+            if (activeStoreRef.current !== store) return
+            if (readback?.get(key) === nextEnabled) {
+                notify({
+                    title: nextEnabled ? 'Notification enabled' : 'Notification disabled',
+                    description: `${def.label} is ${nextEnabled ? 'on' : 'off'} in the saved preferences.`,
+                    variant: 'success',
+                })
+            } else if (readback === null) {
+                setPrefsError('The preference could not be confirmed. Refresh preferences before changing it again.')
+                notify({ title: 'Preference unconfirmed', description: 'Refresh preferences to see the saved setting.', variant: 'critical' })
+            } else {
+                notify({ title: 'Preference not saved', description: writeError ?? 'The current saved setting did not match your change.', variant: 'critical' })
+            }
+        } finally {
+            savingRef.current.delete(flightKey)
+            setSavingKeys(previous => {
+                const next = new Set(previous)
+                next.delete(flightKey)
+                return next
+            })
+        }
+    }, [loadPreferences, prefMap, prefsError, prefsLoading, store, notify])
 
     // ── Log filters ──────────────────────────────────────────────────────────
 
@@ -417,6 +450,8 @@ export default function NotificationsSettingsPage() {
     }
 
     // ── Render ───────────────────────────────────────────────────────────────
+
+    const storeSaving = [...savingKeys].some(key => key.startsWith(`${store}::`))
 
     return (
         <SettingsPane
@@ -460,14 +495,14 @@ export default function NotificationsSettingsPage() {
                         </Banner>
                     )}
 
-                    {prefsLoading ? (
+                    {prefsError ? null : prefsLoading ? (
                         <Skeleton variant="text" lines={7} />
                     ) : (
                         <div className="grid gap-[var(--lb-space-3)]">
                             {PREF_MATRIX.map((def) => {
                                 const key = prefKey(def.channel, def.category)
                                 const enabled = prefMap.get(key) ?? true
-                                const isSaving = savingRef.current.has(key)
+                                const isSaving = savingKeys.has(`${store}::${key}`)
                                 const inputId = `notif-pref-${key}`
                                 return (
                                     <div
@@ -500,7 +535,7 @@ export default function NotificationsSettingsPage() {
                                             <Switch
                                                 id={inputId}
                                                 checked={enabled}
-                                                disabled={isSaving}
+                                                disabled={storeSaving || isSaving}
                                                 onCheckedChange={() => void handleToggle(def)}
                                                 aria-label={`Toggle ${def.label}`}
                                             />
@@ -588,10 +623,10 @@ export default function NotificationsSettingsPage() {
                         </Banner>
                     )}
 
-                    {logsLoading ? (
+                    {logsError ? null : logsLoading ? (
                         <Skeleton variant="text" lines={6} />
                     ) : logs.length === 0 ? (
-                        <EmptyState
+                        <EmptyState scene="notifications"
                             kind="generic"
                             title="No delivery logs"
                             body={

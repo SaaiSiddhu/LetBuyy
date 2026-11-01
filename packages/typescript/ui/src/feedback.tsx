@@ -29,38 +29,26 @@ import { cx } from './utils';
 
 export type StatusVariant = 'default' | 'info' | 'success' | 'warning' | 'critical';
 
-/**
- * Sonner-style "rich colours" for the badge/pill too — the same solid,
- * saturated fill + white text as Toast and Banner, not a soft pastel tint
- * with a matching border. A status chip (Live, Primary, SSL not connected,
- * Needs DNS setup, …) is read at a glance in a dense list; a solid fill
- * reads as a deliberate status of record, where a low-contrast tint reads
- * as decoration. `default` is the one non-semantic tone — a neutral/brand
- * chip (role labels, counts) — so its fill is the LIVE merchant primary
- * token, not a fixed colour; see badgeSolid.defaultBg in tokens.ts.
- */
-const BADGE_ICON_CLASS = 'h-[11px] w-[11px] shrink-0';
-
-const statusStyles: Record<StatusVariant, { bg: string; icon: React.ReactNode }> = {
+const statusStyles: Record<StatusVariant, { bg: string; text: string }> = {
     default: {
-        bg: 'bg-[var(--lb-component-badge-solid-default-bg)]',
-        icon: <Info className={BADGE_ICON_CLASS} aria-hidden="true" />,
+        bg: 'bg-[var(--lb-component-badge-accent-bg)]',
+        text: 'text-[color:var(--lb-component-badge-accent-text)]',
     },
     info: {
-        bg: 'bg-[var(--lb-component-badge-solid-info-bg)]',
-        icon: <Info className={BADGE_ICON_CLASS} aria-hidden="true" />,
+        bg: 'bg-[var(--lb-component-badge-info-bg)]',
+        text: 'text-[color:var(--lb-component-badge-info-text)]',
     },
     success: {
-        bg: 'bg-[var(--lb-component-badge-solid-success-bg)]',
-        icon: <CheckCircle2 className={BADGE_ICON_CLASS} aria-hidden="true" />,
+        bg: 'bg-[var(--lb-component-badge-success-bg)]',
+        text: 'text-[color:var(--lb-component-badge-success-text)]',
     },
     warning: {
-        bg: 'bg-[var(--lb-component-badge-solid-warning-bg)]',
-        icon: <AlertTriangle className={BADGE_ICON_CLASS} aria-hidden="true" />,
+        bg: 'bg-[var(--lb-component-badge-warning-bg)]',
+        text: 'text-[color:var(--lb-component-badge-warning-text)]',
     },
     critical: {
-        bg: 'bg-[var(--lb-component-badge-solid-danger-bg)]',
-        icon: <AlertCircle className={BADGE_ICON_CLASS} aria-hidden="true" />,
+        bg: 'bg-[var(--lb-component-badge-danger-bg)]',
+        text: 'text-[color:var(--lb-component-badge-danger-text)]',
     },
 };
 
@@ -75,13 +63,13 @@ export function Badge({ label, variant = 'default', className = '', ...props }: 
     return (
         <span
             className={cx(
-                'inline-flex items-center gap-[3px] rounded-[var(--lb-radius-full)] px-[var(--lb-space-2)] py-[1px] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-component-badge-solid-text)]',
+                'inline-flex items-center rounded-[6px] px-[var(--lb-space-2)] py-[2px] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-caption)]',
                 style.bg,
+                style.text,
                 className,
             )}
             {...props}
         >
-            {style.icon}
             {label}
         </span>
     );
@@ -244,62 +232,53 @@ export interface BannerProps extends React.HTMLAttributes<HTMLDivElement> {
     action?: React.ReactNode;
 }
 
-/**
- * Sonner/toast-style "rich colours" for the inline banner too — a solid,
- * saturated fill with white text, not the soft pastel-tint-plus-border
- * `statusStyles` gives Badge. A page-level alert (payment failed, inventory
- * couldn't load) is the highest-attention surface on the page; it should
- * never look like it's blending into a form hint.
- */
-const bannerSolidStyles: Record<Exclude<StatusVariant, 'default'>, { bg: string; icon: React.ReactNode }> = {
+const bannerStyles: Record<Exclude<StatusVariant, 'default'>, { bg: string; text: string; actionText: string; border: string; icon: React.ReactNode }> = {
     info: {
-        bg: 'bg-[var(--lb-component-banner-solid-info-bg)]',
+        bg: 'bg-[var(--lb-component-banner-info-bg)]',
+        text: 'text-[color:var(--lb-component-banner-info-text)]',
+        actionText: '[&_button]:text-[color:var(--lb-component-banner-info-text)]',
+        border: 'border-[color:var(--lb-component-banner-info-border)]',
         icon: <Info className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
     },
     success: {
-        bg: 'bg-[var(--lb-component-banner-solid-success-bg)]',
+        bg: 'bg-[var(--lb-component-banner-success-bg)]',
+        text: 'text-[color:var(--lb-component-banner-success-text)]',
+        actionText: '[&_button]:text-[color:var(--lb-component-banner-success-text)]',
+        border: 'border-[color:var(--lb-component-banner-success-border)]',
         icon: <CheckCircle2 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
     },
     warning: {
-        bg: 'bg-[var(--lb-component-banner-solid-warning-bg)]',
+        bg: 'bg-[var(--lb-component-banner-warning-bg)]',
+        text: 'text-[color:var(--lb-component-banner-warning-text)]',
+        actionText: '[&_button]:text-[color:var(--lb-component-banner-warning-text)]',
+        border: 'border-[color:var(--lb-component-banner-warning-border)]',
         icon: <AlertTriangle className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
     },
     critical: {
-        bg: 'bg-[var(--lb-component-banner-solid-danger-bg)]',
+        bg: 'bg-[var(--lb-component-banner-danger-bg)]',
+        text: 'text-[color:var(--lb-component-banner-danger-text)]',
+        actionText: '[&_button]:text-[color:var(--lb-component-banner-danger-text)]',
+        border: 'border-[color:var(--lb-component-banner-danger-border)]',
         icon: <AlertCircle className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
     },
 };
 
-/**
- * Callers pass `action={<Button variant="secondary">Retry</Button>}` — that
- * button's normal "secondary" styling assumes a neutral/white page
- * background, which reads as flat/wrong on the solid fill above. Rather than
- * asking every call site to special-case the button when it's inside a
- * Banner, shadow the secondary-button tokens for this subtree only: any
- * `Button variant="secondary"` rendered inside picks up a translucent-white
- * "ghost on solid colour" treatment automatically.
- */
-const bannerActionStyle = {
-    '--lb-component-button-secondary-bg': 'var(--lb-component-banner-solid-action-bg)',
-    '--lb-component-button-secondary-border': 'var(--lb-component-banner-solid-action-border)',
-    '--lb-component-button-secondary-text': 'var(--lb-component-banner-solid-action-text)',
-    '--lb-component-button-secondary-hover': 'var(--lb-component-banner-solid-action-hover)',
-} as React.CSSProperties;
-
 export function Banner({ title, children, variant = 'info', action, className = '', ...props }: BannerProps) {
-    const style = bannerSolidStyles[variant];
+    const style = bannerStyles[variant];
 
     return (
         <div
             className={cx(
-                'flex items-start gap-[var(--lb-space-2)] rounded-[var(--lb-radius-md)] p-[var(--lb-space-3)] text-[color:var(--lb-component-banner-solid-text)] shadow-[var(--lb-shadow-sm)]',
+                'flex flex-wrap items-start gap-[var(--lb-space-2)] rounded-[var(--lb-radius-md)] border p-[var(--lb-space-3)] text-[color:var(--lb-color-text)] [&_button]:h-auto [&_button]:min-h-0 [&_button]:rounded-none [&_button]:border-0 [&_button]:bg-transparent [&_button]:px-0 [&_button]:py-[var(--lb-space-1)] [&_button]:font-[var(--lb-font-weight-semibold)] [&_button]:shadow-none [&_button]:underline [&_button]:underline-offset-2 [&_button:hover]:bg-transparent [&_button:hover]:opacity-80',
                 style.bg,
+                style.border,
+                style.actionText,
                 className,
             )}
             role={variant === 'critical' ? 'alert' : 'status'}
             {...props}
         >
-            <div className="mt-[1px] shrink-0 text-[length:var(--lb-density-action-icon-size)]">
+            <div className={cx('mt-[1px] shrink-0 text-[length:var(--lb-density-action-icon-size)]', style.text)}>
                 {style.icon}
             </div>
             <div className="min-w-0 flex-1 space-y-[2px]">
@@ -308,12 +287,12 @@ export function Banner({ title, children, variant = 'info', action, className = 
                         {title}
                     </h3>
                 )}
-                <div className="text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] opacity-[var(--lb-component-feedback-description-opacity,0.9)]">
+                <div className="text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)]">
                     {children}
                 </div>
             </div>
             {action && (
-                <div className="shrink-0" style={bannerActionStyle}>
+                <div className="ml-auto shrink-0">
                     {action}
                 </div>
             )}

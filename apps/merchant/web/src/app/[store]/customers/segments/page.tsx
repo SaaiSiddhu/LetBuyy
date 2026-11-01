@@ -10,7 +10,6 @@ import {
     Button,
     Card,
     Drawer,
-    EmptyState,
     Input,
     MaterialIcon,
     NumberField,
@@ -22,6 +21,7 @@ import {
     Switch,
     useToast,
 } from '@letbuyy/ui'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import { formatIndiaDate } from '@letbuyy/ui/formatting'
 
 // ---------------------------------------------------------------------------
@@ -696,7 +696,7 @@ export default function CustomerSegmentsPage() {
             ) : segments.length === 0 ? (
                 <Card>
                     <Section>
-                        <EmptyState
+                        <EmptyState scene="segments"
                             icon={<MaterialIcon name="group_work" />}
                             title="No segments yet"
                             body="Create a segment to group customers by status, tags, spend, order count, or last order date."

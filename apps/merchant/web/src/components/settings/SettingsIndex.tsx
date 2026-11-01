@@ -1,7 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { Badge, EmptyState, Settings } from '@letbuyy/ui'
+import { Badge, Settings } from '@letbuyy/ui'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import type { SettingsNavGroup, SettingsNavItem } from './settings-navigation'
 
 interface SettingsIndexProps {
@@ -24,7 +25,7 @@ export function SettingsIndex({ store, groups, activePathname, onNavigate }: Set
 
     if (!hasResults) {
         return (
-            <EmptyState
+            <EmptyState scene="settings-search"
                 icon={<Settings className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                 title="No settings found"
                 body="Try a different search term or clear the search to see every setting."

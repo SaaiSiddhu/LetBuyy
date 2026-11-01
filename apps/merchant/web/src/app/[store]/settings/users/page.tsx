@@ -1,6 +1,7 @@
 'use client'
 
 import { useReadRequest } from '@/lib/api/use-read-request'
+import { MerchantEmptyArtwork } from '@/components/empty-states/MerchantEmptyState'
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
@@ -423,7 +424,7 @@ export default function UsersSettingsPage() {
 
                         {employees.length === 0 ? (
                             <div className="users-empty">
-                                <span className="users-empty-icon"><Users className="letbuyy-icon" aria-hidden="true" /></span>
+                                <MerchantEmptyArtwork scene="staff" compact />
                                 <div className="users-empty-copy">
                                     <span className="users-empty-title">No staff members yet</span>
                                     <span className="users-empty-desc">Add team members when you are ready to share product, order, or fulfilment work.</span>

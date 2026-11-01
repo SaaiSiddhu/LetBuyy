@@ -3,9 +3,9 @@ import {
     Badge,
     Card,
     Code2,
-    EmptyState,
     Section,
 } from '@letbuyy/ui'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import { SettingsPane } from './SettingsPane'
 
 interface BackendNeededPaneProps {
@@ -67,7 +67,7 @@ export function BackendNeededPane({
                     description="WS9 is limited to frontend settings architecture, so missing contracts are documented instead of fabricated."
                     action={<Badge label="Backend needed" variant="warning" />}
                 >
-                    <EmptyState
+                    <EmptyState scene="backend-contract"
                         icon={<Code2 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                         title="This settings pane is ready for a backend contract"
                         body={requirement}

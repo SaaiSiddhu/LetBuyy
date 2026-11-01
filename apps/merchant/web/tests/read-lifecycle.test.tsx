@@ -38,6 +38,7 @@ const readPages = {
     storefrontPages: () => import('../src/app/[store]/online-store/pages/page'),
     segments: () => import('../src/app/[store]/customers/segments/page'),
     inventory: () => import('../src/app/[store]/products/inventory/page'),
+    giftCards: () => import('../src/app/[store]/products/gift-cards/page'),
     planSettings: () => import('../src/app/[store]/settings/plan/page'),
     themeUpdate: () => import('../src/app/[store]/online-store/themes/update/UpdatePageClient'),
 
@@ -90,7 +91,7 @@ type Transport = (url: string, init?: RequestInit) => Promise<Response>
 
 async function mount(kind: ContentPage | 'orders' | 'customers' | 'analytics' | 'search' | 'notifications' | 'purchasing' | 'transfers' | 'assistant' | 'themeLibrary' | 'previewUpdate' | 'loyalty' | 'checkoutDomain' | 'connectDomain', transport: Transport) {
     const dom = new JSDOM('<!doctype html><div id="root"></div>', { url: 'http://localhost/alpha/orders' })
-    const domGlobals = ['window', 'document', 'navigator', 'self', 'localStorage', 'MutationObserver', 'HTMLElement', 'Element']
+    const domGlobals = ['window', 'document', 'navigator', 'self', 'localStorage', 'sessionStorage', 'MutationObserver', 'HTMLElement', 'Element']
     const previous = Object.fromEntries([...domGlobals, 'fetch'].map(name => [name, Object.getOwnPropertyDescriptor(globalThis, name)]))
     for (const name of domGlobals) Object.defineProperty(globalThis, name, {
         configurable: true, writable: true, value: name === 'window' || name === 'self' ? dom.window : dom.window[name],
@@ -122,7 +123,7 @@ async function mount(kind: ContentPage | 'orders' | 'customers' | 'analytics' | 
         await act(async () => root.render(
             <AppRouterContext.Provider value={router}><PathParamsContext.Provider value={{ store }}>
                 <ToastProvider duration={0}><MerchantSecurityContext.Provider value={{ actorId, store }}>
-                    <Component initialDomain="shop.example.invalid" onConnected={() => completions++} actorId={actorId} currentVersionId="current-version" availableVersionId="next-version" themeSlug="synthetic-theme" storeId={kind === 'previewUpdate' ? store : kind === 'themeLibrary' ? null : 'site-a'} store={store} storeName="Synthetic Store" siteType="store" onClose={() => {}} storeData={{ id: 'site-a', name: 'Synthetic Store', store_name: 'Synthetic Store', subdomain: store, site_type: 'store', status: 'draft', trial_ends_at: null, trial_status: null, theme_id: 'modern', theme_settings: null, custom_domain: null }} />
+                    <Component initialDomain="shop.example.invalid" onConnected={() => completions++} actorId={actorId} currentVersionId="current-version" availableVersionId="next-version" themeSlug="synthetic-theme" storeId={kind === 'previewUpdate' ? store : kind === 'themeLibrary' ? null : 'site-a'} store={store} storeName="Synthetic Store" siteType="store" appPlatformEnabled={false} onClose={() => {}} storeData={{ id: 'site-a', name: 'Synthetic Store', store_name: 'Synthetic Store', subdomain: store, site_type: 'store', status: 'draft', trial_ends_at: null, trial_status: null, theme_id: 'modern', theme_settings: null, custom_domain: null }} />
                 </MerchantSecurityContext.Provider></ToastProvider>
             </PathParamsContext.Provider></AppRouterContext.Provider>,
         ))
@@ -133,6 +134,23 @@ async function mount(kind: ContentPage | 'orders' | 'customers' | 'analytics' | 
         completions: () => completions,
         text: () => dom.window.document.body.textContent || '',
         controls: () => [...dom.window.document.querySelectorAll('input,textarea,select,[role="switch"]')].map((node: Element) => ({ value: (node as HTMLInputElement).value, checked: (node as HTMLInputElement).checked, ariaChecked: node.getAttribute('aria-checked') })),
+        switchState(label: string) {
+            const element = dom.window.document.querySelector(`[role="switch"][aria-label="${label}"]`) as HTMLButtonElement | null
+            return element ? { checked: element.getAttribute('aria-checked'), disabled: element.disabled } : null
+        },
+        async toggle(label: string) {
+            const element = dom.window.document.querySelector(`[role="switch"][aria-label="${label}"]`) as HTMLButtonElement | null
+            assert.ok(element, `Missing switch ${label}`)
+            await act(async () => element.click())
+        },
+        async setNumber(value: string) {
+            const input = dom.window.document.querySelector('input[type="number"]') as HTMLInputElement
+            assert.ok(input, 'number input')
+            await act(async () => {
+                Object.getOwnPropertyDescriptor(dom.window.HTMLInputElement.prototype, 'value')!.set!.call(input, value)
+                input.dispatchEvent(new dom.window.Event('input', { bubbles: true }))
+            })
+        },
         async type(value: string) {
             const input = dom.window.document.querySelector('input[placeholder*="Search"]') as HTMLInputElement
             assert.ok(input, 'real search input')
@@ -143,7 +161,7 @@ async function mount(kind: ContentPage | 'orders' | 'customers' | 'analytics' | 
         },
         async pause(ms = 300) { await act(async () => { await new Promise(done => setTimeout(done, ms)) }) },
         async click(label: string) {
-            const button = [...dom.window.document.querySelectorAll('button')].find(item => item.textContent?.trim() === label)
+            const button = [...dom.window.document.querySelectorAll('button')].find(item => item.textContent?.trim() === label || item.getAttribute('aria-label') === label)
             assert.ok(button, `Missing button ${label}: ${dom.window.document.body.textContent}`)
             await act(async () => button.click())
         },
@@ -204,26 +222,146 @@ test('command search waits for typing to pause before its three bounded resource
     } finally { await h.close() }
 })
 
-test('failed and partial notifications settle with retry rather than false empty success', async () => {
-    for (const partial of [false, true]) {
-        const h = await mount('notifications', async () => partial
-            ? Response.json({ data: [], meta: { partial: true } }) : json(null, 503))
+test('command search keeps healthy record matches while reporting and retrying failed sources', async () => {
+    const calls: string[] = []
+    const h = await mount('search', async url => {
+        calls.push(url)
+        if (url.includes('/orders?')) return json([{ id: 'order-a', order_number: 'CHECKPOINT-42', status: 'open' }])
+        return json(null, 503)
+    })
+    try {
+        await h.type('checkpoint')
+        await h.pause(350)
+        assert.match(h.text(), /Some live results could not load/)
+        assert.match(h.text(), /Order CHECKPOINT-42/)
+        assert.match(h.text(), /Retry live search/)
+        assert.match(calls.find(url => url.includes('/products?'))!, /search=checkpoint/)
+        assert.match(h.text(), /CHECKPOINT-42/)
+        const before = calls.length
+        await h.click('Retry live search')
+        await h.pause(350)
+        assert.equal(calls.length, before + 3)
+    } finally { await h.close() }
+})
+
+test('frozen app platform is omitted from navigation, search and shortcuts', async () => {
+    const { getMerchantNavigation, getMerchantCommandItems, resolveKeyboardShortcut } = await import('../src/components/merchantNavigation')
+    const { getSettingsNavigationGroups } = await import('../src/components/settings/settings-navigation')
+    assert.equal(getMerchantNavigation('store').some(item => item.path === 'apps'), false)
+    assert.equal(getMerchantCommandItems('store', 'alpha').some(item => item.href === '/alpha/apps'), false)
+    assert.equal(resolveKeyboardShortcut('store', 'g x'), null)
+    assert.equal(getSettingsNavigationGroups().flatMap(group => group.items).some(item => item.href === 'apps'), false)
+    assert.equal(getMerchantNavigation('store', true).some(item => item.path === 'apps'), true)
+    assert.equal(resolveKeyboardShortcut('store', 'g x', true), 'apps')
+})
+
+test('failed and malformed notification reads offer retry rather than false empty success', async () => {
+    for (const malformed of [false, true]) {
+        const h = await mount('notifications', async () => malformed
+            ? Response.json({ data: [], meta: null }) : json(null, 503))
         try {
-            assert.match(h.text(), /Notifications could not be fully loaded/)
+            assert.match(h.text(), /Notifications unavailable/)
             assert.match(h.text(), /Retry/)
             assert.doesNotMatch(h.text(), /All caught up/)
         } finally { await h.close() }
     }
 })
 
+test('gift card lost response retries one intent and treats replay as an existing card', async () => {
+    const issues: Array<{ intent_id: string; initial_value: number }> = []
+    const h = await mount('giftCards', async (_url, init) => {
+        if (init?.method === 'POST') {
+            issues.push(JSON.parse(String(init.body)))
+            if (issues.length === 1) throw new Error('Network response lost')
+            return Response.json({ data: { id: 'card-a', replayed: true, balance: 500 } }, { status: 200 })
+        }
+        return json([])
+    })
+    try {
+        await h.click('New gift card')
+        await h.setNumber('500')
+        await h.click('Issue gift card')
+        assert.match(h.text(), /Issue request awaiting confirmation/)
+        assert.equal(issues.length, 1)
+        await h.click('Issue gift card')
+        assert.equal(issues.length, 2)
+        assert.equal(issues[0].intent_id, issues[1].intent_id)
+        assert.equal(issues[0].initial_value, 500)
+        assert.doesNotMatch(h.text(), /Gift card issued — copy the code now/)
+        assert.doesNotMatch(h.text(), /Issue request awaiting confirmation/)
+    } finally { await h.close() }
+})
+
 test('notification results from a retired store cannot replace the current store', async () => {
     const old = deferred<Response>()
-    const h = await mount('notifications', async url => url.includes('/alpha/') ? old.promise : json([]))
+    const emptyInbox = Response.json({ data: [], meta: { page: 1, total: 0, has_more: false } })
+    const h = await mount('notifications', async url => url.includes('/alpha/') ? old.promise : emptyInbox.clone())
     try {
         await h.render('beta')
-        await act(async () => old.resolve(json([{ id: 'old', icon: 'mail', title: 'PRIVATE OLD STORE', time: 'Now', unread: true }])))
+        await act(async () => old.resolve(Response.json({ data: [{ id: 'old', title: 'PRIVATE OLD STORE', is_read: false, created_at: new Date().toISOString() }], meta: { page: 1, total: 1, has_more: false } })))
         assert.doesNotMatch(h.text(), /PRIVATE OLD STORE/)
         assert.match(h.text(), /All caught up/)
+    } finally { await h.close() }
+})
+
+test('mark all read waits for persisted success and reloads the canonical inbox', async () => {
+    let saved = false
+    let writes = 0
+    const h = await mount('notifications', async (_url, init) => {
+        if (init?.method === 'POST') { writes++; saved = true; return json({ marked_all: true }) }
+        return Response.json({ data: [{ id: 'notice-a', title: 'Order received', is_read: saved, created_at: new Date().toISOString() }], meta: { page: 1, total: 1, has_more: false } })
+    })
+    try {
+        assert.match(h.text(), /Order received/)
+        await h.click('Mark all read')
+        assert.equal(writes, 1)
+        assert.doesNotMatch(h.text(), /Mark all read/)
+        assert.match(h.text(), /View all notifications/)
+    } finally { await h.close() }
+})
+
+test('notification readback failure after a saved update does not claim notices are unchanged', async () => {
+    let reads = 0
+    let writes = 0
+    const h = await mount('notifications', async (_url, init) => {
+        if (init?.method === 'POST') { writes++; return json({ marked_all: true }) }
+        reads++
+        return reads === 1
+            ? Response.json({ data: [{ id: 'notice-a', title: 'Order received', is_read: false, created_at: new Date().toISOString() }], meta: { page: 1, total: 1, has_more: false } })
+            : json(null, 503)
+    })
+    try {
+        await h.click('Mark all read')
+        assert.equal(writes, 1)
+        assert.match(h.text(), /Refresh to check their current read state/)
+        assert.doesNotMatch(h.text(), /not changed|could not be saved/)
+    } finally { await h.close() }
+})
+
+test('unconfirmed notification write asks for a read before retry', async () => {
+    const h = await mount('notifications', async (_url, init) => init?.method === 'POST'
+        ? json(null, 503)
+        : Response.json({ data: [{ id: 'notice-a', title: 'Order received', is_read: false, created_at: new Date().toISOString() }], meta: { page: 1, total: 1, has_more: false } }))
+    try {
+        await h.click('Mark all read')
+        assert.match(h.text(), /read update could not be confirmed/)
+        assert.match(h.text(), /Refresh notifications before retrying/)
+    } finally { await h.close() }
+})
+
+test('account-wide unread state stays actionable when the visible page is already read', async () => {
+    let saved = false
+    const h = await mount('notifications', async (_url, init) => {
+        if (init?.method === 'POST') { saved = true; return json({ marked_all: true }) }
+        return Response.json({
+            data: [{ id: 'notice-a', title: 'Earlier notice', is_read: true, created_at: new Date().toISOString() }],
+            meta: { page: 1, total: 6, has_more: true, unread_count: saved ? 0 : 1 },
+        })
+    })
+    try {
+        assert.match(h.text(), /Mark all read/)
+        await h.click('Mark all read')
+        assert.doesNotMatch(h.text(), /Mark all read/)
     } finally { await h.close() }
 })
 
@@ -270,6 +408,17 @@ test('setup assistant uses one maintained snapshot and keeps unknown checks dist
     } finally { await h.close() }
 })
 
+test('setup assistant completion describes only the checks it actually loaded', async () => {
+    const h = await mount('assistant', async () => json({
+        productsCount: 3, shippingZonesCount: 1, paymentConfigured: true,
+        themeCustomized: true, domainConfigured: true, published: true,
+    }))
+    try {
+        assert.match(h.text(), /All listed setup checks are complete/)
+        assert.doesNotMatch(h.text(), /Your site is ready/)
+    } finally { await h.close() }
+})
+
 for (const kind of Object.keys(contentPages) as ContentPage[]) {
     test(`${kind} discards a slow retired read without replacing the new store's rows`, async () => {
         const old = deferred<Response>(), signals: AbortSignal[] = []
@@ -312,13 +461,133 @@ test('theme library starts alongside catalog metadata and never flashes false em
 })
 
 function settingsResponse(url: string) {
-    if (url.includes('/settings')) return json({ id: 'site-a', name: 'Current store', business_profile: {}, site_settings: {} })
+    if (url.includes('/settings')) return json({ id: 'site-a', version: 1, name: 'Current store', business_profile: {}, site_settings: {} })
     if (url.includes('/navigation')) return json({ items: [] })
     if (url.includes('/localization')) return json({ locales: [], default_locale: 'en', currency: 'INR', timezone: 'Asia/Kolkata' })
     if (url.endsWith('/kyc')) return json({ overall_status: 'not_started', provider_mode: 'sandbox', required_documents: [], documents: [] })
-    if (url.endsWith('/commission')) return json({ currency: 'INR', schedule: { commission_bps: 0, gst_bps: 1800 }, summary: { gross_amount_minor: 0 } })
+    if (url.endsWith('/commission')) return json({ currency: 'INR', schedule: { commission_bps: 0, gst_bps: 1800 }, summary: { gross_amount_minor: 0, commission_amount_minor: 0, gst_amount_minor: 0, net_payable_minor: 0 } })
     return json([])
 }
+
+test('notification preferences hide switches when the authoritative read is unavailable', async () => {
+    const h = await mount('notificationSettings', async url => url.endsWith('/notifications/preferences')
+        ? Response.json({ error: { message: 'Preference store unavailable' } }, { status: 503 })
+        : settingsResponse(url))
+    try {
+        assert.match(h.text(), /Could not load preferences/)
+        assert.equal(h.switchState('Toggle Order emails'), null)
+    } finally { await h.close() }
+})
+
+test('malformed successful notification reads do not default to enabled switches or no logs', async () => {
+    const h = await mount('notificationSettings', async url => url.endsWith('/notifications/preferences')
+        ? Response.json({ success: true })
+        : url.includes('/notifications/delivery-logs') ? Response.json({ success: true }) : settingsResponse(url))
+    try {
+        assert.match(h.text(), /Preference response is incomplete/)
+        assert.match(h.text(), /Delivery log response is incomplete/)
+        assert.equal(h.switchState('Toggle Order emails'), null)
+        assert.doesNotMatch(h.text(), /No delivery logs/)
+    } finally { await h.close() }
+})
+
+test('notification preference lost write response is resolved by saved readback', async () => {
+    let enabled = true, reads = 0, writes = 0
+    const h = await mount('notificationSettings', async (url, init) => {
+        if (url.endsWith('/notifications/preferences')) {
+            if (init?.method === 'PUT') { writes++; enabled = false; throw new Error('response lost') }
+            reads++
+            return json([{ id: 'pref', channel: 'email', category: 'orders', enabled }])
+        }
+        return settingsResponse(url)
+    })
+    try {
+        assert.equal(h.switchState('Toggle Order emails')?.checked, 'true')
+        await h.toggle('Toggle Order emails')
+        assert.equal(h.switchState('Toggle Order emails')?.checked, 'false', h.text())
+        assert.equal(writes, 1)
+        assert.equal(reads, 2)
+        assert.match(h.text(), /Notification disabled/)
+    } finally { await h.close() }
+})
+
+test('notification preference readback failure cannot leave an optimistic success state', async () => {
+    let reads = 0
+    const h = await mount('notificationSettings', async (url, init) => {
+        if (url.endsWith('/notifications/preferences')) {
+            if (init?.method === 'PUT') return json({ channel: 'email', category: 'orders', enabled: false })
+            reads++
+            return reads === 1 ? json([{ id: 'pref', channel: 'email', category: 'orders', enabled: true }])
+                : Response.json({ error: { message: 'Readback unavailable' } }, { status: 503 })
+        }
+        return settingsResponse(url)
+    })
+    try {
+        await h.toggle('Toggle Order emails')
+        assert.match(h.text(), /The preference could not be confirmed/)
+        assert.equal(h.switchState('Toggle Order emails'), null)
+    } finally { await h.close() }
+})
+
+test('notification preference rejected write keeps the last saved value', async () => {
+    let reads = 0
+    const h = await mount('notificationSettings', async (url, init) => {
+        if (url.endsWith('/notifications/preferences')) {
+            if (init?.method === 'PUT') return Response.json({ error: { message: 'Write denied' } }, { status: 403 })
+            reads++
+            return json([{ id: 'pref', channel: 'email', category: 'orders', enabled: true }])
+        }
+        return settingsResponse(url)
+    })
+    try {
+        await h.toggle('Toggle Order emails')
+        assert.equal(h.switchState('Toggle Order emails')?.checked, 'true')
+        assert.equal(reads, 2)
+        assert.match(h.text(), /Write denied/)
+    } finally { await h.close() }
+})
+
+test('notification log refresh failure hides previously loaded rows and does not show a false empty state', async () => {
+    let logReads = 0
+    const h = await mount('notificationSettings', async url => {
+        if (url.includes('/notifications/delivery-logs')) {
+            logReads++
+            return logReads === 1
+                ? json([{ id: 'log-1', channel: 'email', category: 'orders', template_key: 'previous-template', status: 'sent', created_at: '2026-10-21T00:00:00Z' }])
+                : Response.json({ error: { message: 'Delivery store unavailable' } }, { status: 503 })
+        }
+        if (url.endsWith('/notifications/preferences')) return json([])
+        return settingsResponse(url)
+    })
+    try {
+        assert.match(h.text(), /previous-template/)
+        await h.click('Refresh delivery logs')
+        assert.match(h.text(), /Could not load delivery logs/)
+        assert.doesNotMatch(h.text(), /previous-template|No delivery logs/)
+    } finally { await h.close() }
+})
+
+test('a retired notification preference write cannot report success in the next store', async () => {
+    const oldWrite = deferred<Response>()
+    const h = await mount('notificationSettings', async (url, init) => {
+        if (url.endsWith('/notifications/preferences')) {
+            if (init?.method === 'PUT' && url.includes('/alpha/')) return oldWrite.promise
+            return json([{ id: 'pref', channel: 'email', category: 'orders', enabled: url.includes('/beta/') ? false : true }])
+        }
+        return settingsResponse(url)
+    })
+    try {
+        await h.toggle('Toggle Order emails')
+        await h.render('beta')
+        await h.pause(0)
+        assert.equal(h.switchState('Toggle Order emails')?.checked, 'false', h.text())
+        assert.equal(h.switchState('Toggle Order emails')?.disabled, false, 'an old store write must not block the new store')
+        await act(async () => oldWrite.resolve(json({ channel: 'email', category: 'orders', enabled: false })))
+        await h.pause(0)
+        assert.equal(h.switchState('Toggle Order emails')?.checked, 'false', h.text())
+        assert.doesNotMatch(h.text(), /Preference unconfirmed|Notification disabled/)
+    } finally { await h.close(); oldWrite.resolve(json({})) }
+})
 
 for (const kind of ['generalSettings','checkoutSettings','policySettings','notificationSettings','businessSettings','storefrontPages','segments'] as const) {
     test(`${kind} retires a previous store's response body even when transport ignores cancellation`, async () => {
@@ -446,7 +715,7 @@ test('inventory reaches later records through bounded pages instead of loading a
     const h = await mount('inventory', async url => {
         calls.push(url)
         const second = url.includes('page=2')
-        return Response.json({ data: [{ id: second ? 'b' : 'a', product_id: 'p', product_name: second ? 'Later stock level' : 'First stock level', available: 5 }], meta: { total: 101, has_next: !second } })
+        return Response.json({ data: [{ id: second ? 'b' : 'a', product_id: 'p', product_name: second ? 'Later stock level' : 'First stock level', available: 5, reserved: 0, incoming: 0, on_hand: 5, sellable: 5 }], meta: { total: 101, has_next: !second } })
     })
     try {
         assert.ok(h.text().includes('101 tracked'), h.text())

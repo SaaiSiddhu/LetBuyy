@@ -10,7 +10,6 @@ import { Button, Input,
     Card,
     ClipboardList,
     ConfirmDialog,
-    EmptyState,
     Globe,
     IndianRupee,
     Plus,
@@ -24,6 +23,7 @@ import { Button, Input,
 } from '@letbuyy/ui'
 import type { TaxRate as CanonicalTaxRate } from '@letbuyy/shared-types'
 import { GST_STATES } from '@letbuyy/checkout-core'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import { SettingsPane } from '@/components/settings/SettingsPane'
 
 type TaxRate = Pick<CanonicalTaxRate, 'id' | 'name' | 'rate' | 'country' | 'state' | 'hsn_code' | 'applies_to' | 'is_compound' | 'is_shipping' | 'priority' | 'is_active' | 'created_at'>
@@ -609,7 +609,7 @@ export default function TaxesSettingsPage() {
                         )}
                     >
                         {taxRates.length === 0 ? (
-                            <EmptyState
+                            <EmptyState scene="taxes"
                                 icon={<Tag className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                                 title="No tax rates configured"
                                 body="Add your applicable GST rates after completing the store’s registration details."

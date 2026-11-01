@@ -11,7 +11,6 @@ import { Button, Input,
     Calendar,
     Card,
     ConfirmDialog,
-    EmptyState,
     GraduationCap,
     Page,
     PageHeader,
@@ -25,6 +24,7 @@ import { Button, Input,
     Trash2,
     useToast,
 } from '@letbuyy/ui'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 
 interface Education {
     id: string
@@ -408,7 +408,7 @@ export default function EducationPage() {
             {items.length === 0 && !showForm ? (
                 <Card>
                     <Section title="Education">
-                        <EmptyState
+                        <EmptyState scene="education"
                             icon={<GraduationCap className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                             title="No education yet"
                             body="Add degrees, institutions, dates, grades, and achievements to complete your professional profile."

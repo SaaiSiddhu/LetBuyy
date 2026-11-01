@@ -187,6 +187,14 @@ export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
 
 export const SETTINGS_NAV_ITEMS = SETTINGS_NAV_GROUPS.flatMap((group) => group.items)
 
+export function getSettingsNavigationGroups(appPlatformEnabled = false): SettingsNavGroup[] {
+    if (appPlatformEnabled) return SETTINGS_NAV_GROUPS
+    return SETTINGS_NAV_GROUPS.map(group => ({
+        ...group,
+        items: group.items.filter(item => item.href !== 'apps'),
+    }))
+}
+
 export function getSettingsItemByPath(pathname: string | null | undefined, store: string) {
     if (!pathname) return null
     return SETTINGS_NAV_ITEMS.find((item) => {

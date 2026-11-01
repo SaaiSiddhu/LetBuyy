@@ -212,7 +212,10 @@ export const protectedMutationIdempotency = createMiddleware<{ Bindings: Env }>(
     // outer cached 200 would return an old approval after resubmission and
     // bypass the route's site/evidence-bound provider receipt.
     const routeOwnedKycRefresh = method === 'POST' && /^\/kyc\/documents\/[^/]+\/refresh$/.test(orderPath);
-    if (routeOwnedKycUpload || routeOwnedKycRefresh || routeOwnedCollectionMembership || routeOwnedInventoryAdjustment || routeOwnedSubscriptionCheckout || routeOwnedProductReceipt || routeOwnedMoneyClaim || credentialCommand || routeOwnedOrderReceipt || !MUTATION_METHODS.has(method) || !isProtectedMutationPath(c.req.path, method)) {
+    // The gift-card RPC owns a serialised, site-bound issue receipt. HTTP replay
+    // would return its one-time code again and skip the route's live owner check.
+    const routeOwnedGiftCardIssue = method === 'POST' && orderPath === '/products/gift-cards';
+    if (routeOwnedKycUpload || routeOwnedKycRefresh || routeOwnedGiftCardIssue || routeOwnedCollectionMembership || routeOwnedInventoryAdjustment || routeOwnedSubscriptionCheckout || routeOwnedProductReceipt || routeOwnedMoneyClaim || credentialCommand || routeOwnedOrderReceipt || !MUTATION_METHODS.has(method) || !isProtectedMutationPath(c.req.path, method)) {
         await next();
         return;
     }

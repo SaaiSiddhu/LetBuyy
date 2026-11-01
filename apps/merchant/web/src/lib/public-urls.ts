@@ -12,18 +12,29 @@ function trimTrailingSlash(value: string): string {
     return value.replace(/\/+$/, '')
 }
 
+function configuredPublicOrigin(value: string | undefined, fallback: string): string {
+    const url = new URL(value?.trim() || fallback)
+    const loopback = ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname)
+    if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password || url.search || url.hash || url.pathname !== '/'
+        || (!loopback && url.protocol !== 'https:')
+        || (process.env.NODE_ENV === 'production' && loopback && process.env.LETBUYY_OWNED_CLIENT_RUNTIME !== '1')) {
+        throw new Error('Invalid public application origin')
+    }
+    return url.origin
+}
+
 function appendPath(baseUrl: string, path = ''): string {
     if (!path) return baseUrl
     return `${baseUrl}${path.startsWith('/') ? path : `/${path}`}`
 }
 
 export function getAccountsUrl(path = ''): string {
-    const baseUrl = trimTrailingSlash(process.env.NEXT_PUBLIC_ACCOUNTS_URL || DEFAULT_ACCOUNTS_URL)
+    const baseUrl = configuredPublicOrigin(process.env.NEXT_PUBLIC_ACCOUNTS_URL, DEFAULT_ACCOUNTS_URL)
     return appendPath(baseUrl, path)
 }
 
 export function getAdminUrl(): string {
-    return trimTrailingSlash(process.env.NEXT_PUBLIC_ADMIN_URL || DEFAULT_ADMIN_URL)
+    return configuredPublicOrigin(process.env.NEXT_PUBLIC_ADMIN_URL, DEFAULT_ADMIN_URL)
 }
 
 export const MERCHANT_RETURN_PATH_HEADER = 'x-letbuyy-merchant-return-path'
@@ -85,8 +96,6 @@ export function getStorefrontStoreUrl(subdomain: string): string {
 }
 
 export function getThemeMarketplaceUrl(path = '/themes'): string {
-    const baseUrl = trimTrailingSlash(
-        process.env.NEXT_PUBLIC_THEME_MARKETPLACE_URL || DEFAULT_THEME_MARKETPLACE_URL
-    )
+    const baseUrl = configuredPublicOrigin(process.env.NEXT_PUBLIC_THEME_MARKETPLACE_URL, DEFAULT_THEME_MARKETPLACE_URL)
     return appendPath(baseUrl, path)
 }

@@ -121,6 +121,10 @@ function compareValue(value: unknown): string | boolean {
 
 export function toSubscriptionPlanView(plan: SubscriptionPlan): SubscriptionPlanView {
     const record = plan as SubscriptionPlan & Record<string, unknown>
+    if (!plan.slug || !plan.name || !Number.isFinite(plan.price_monthly_inr) || !Number.isFinite(plan.price_yearly_inr)
+        || plan.price_monthly_inr < 0 || plan.price_yearly_inr < 0) {
+        throw new Error('Subscription catalog returned an incomplete plan')
+    }
 
     return {
         id: plan.id || plan.slug,
@@ -130,94 +134,21 @@ export function toSubscriptionPlanView(plan: SubscriptionPlan): SubscriptionPlan
         is_popular: booleanField(record, 'is_popular'),
         price_monthly_inr: plan.price_monthly_inr,
         price_yearly_inr: plan.price_yearly_inr,
-        gmv_percentage: 0,
+        gmv_percentage: typeof plan.gmv_percentage === 'number' ? plan.gmv_percentage : 0,
         promo_price_inr: plan.promo_price_inr || 0,
         promo_months: plan.promo_months || 0,
         promo_label: nullableStringField(record, 'promo_label'),
         features: featureViews(record.features),
         compare_features: compareFeatureViews(record.compare_features),
         requires_contact: plan.requires_contact,
-        status: stringField(record, 'status', 'available'),
-        purchasable: typeof record.purchasable === 'boolean' ? record.purchasable : true,
+        status: stringField(record, 'status', plan.is_active ? 'available' : 'coming_soon'),
+        purchasable: typeof record.purchasable === 'boolean' ? record.purchasable : plan.is_active,
         founding_price_inr: typeof record.founding_price_inr === 'number' ? record.founding_price_inr : 0,
     }
 }
 
-// ── Positioning layer (static copy keyed by plan slug) ───────────────────────
-// Catalog data (prices/features/matrix) stays the source of truth in `plans`.
-// These are shared positioning maps consumed by the pricing surfaces. No prices.
-
-export interface RevenueStageView {
-    range: string
-    examples: string[]
-}
-
-export const REVENUE_STAGE: Record<string, RevenueStageView> = {
-    launch: { range: '₹0–₹50k / month', examples: ['New online stores', 'Side businesses', 'First-time entrepreneurs'] },
-    growth: { range: '₹50k–₹5L / month', examples: ['Growing D2C brands', 'Active marketing campaigns', 'Small teams'] },
-    scale: { range: '₹5L–₹50L / month', examples: ['Multi-channel brands', 'Warehouse operations', 'Established businesses'] },
-    commerce_os: { range: '₹50L+ / month', examples: ['Multi-store operators', 'B2B + DTC businesses', 'Large commerce organizations'] },
-}
-
-// Catalog-driven competitor benchmark (extensible: add more competitors later).
-export interface CompetitorBenchmark {
-    name: string
-    entryPlan: string
-    annualSavings: string
-    rows: Array<{ feature: string; competitor: string; letbuyy: string }>
-}
-
-export const COMPETITOR_BENCHMARKS: Record<string, CompetitorBenchmark> = {
-    shopify: {
-        name: 'Shopify',
-        entryPlan: 'Basic',
-        annualSavings: '₹20,000+',
-        rows: [
-            { feature: 'Monthly price', competitor: '₹1,994', letbuyy: '₹299' },
-            { feature: 'Commission', competitor: 'Variable fees', letbuyy: '0% forever' },
-            { feature: 'UPI payments', competitor: 'Limited', letbuyy: 'Native' },
-            { feature: 'GST invoices', competitor: 'Additional setup', letbuyy: 'Built in' },
-            { feature: 'AI features', competitor: 'Add-ons', letbuyy: 'Included' },
-            { feature: 'Custom commerce stack', competitor: 'Limited', letbuyy: 'Native' },
-            { feature: 'India-first commerce', competitor: 'Partial', letbuyy: 'Built for Bharat' },
-        ],
-    },
-}
-
-export const COMMERCE_OS_HIGHLIGHTS: Array<{ label: string; icon: string }> = [
-    { label: 'LCIS intelligence layer', icon: 'analytics' },
-    { label: 'Executive Center', icon: 'trending_up' },
-    { label: 'Operations Center', icon: 'dashboard' },
-    { label: 'Multi-store management', icon: 'store' },
-    { label: 'B2B catalogs', icon: 'inventory_2' },
-    { label: 'AI Copilot', icon: 'smart_toy' },
-    { label: 'Enterprise automations', icon: 'flash_on' },
-    { label: 'Dedicated success manager', icon: 'support' },
-]
-
-export const TRUST_INDICATORS: Array<{ icon: string; label: string }> = [
-    { icon: 'currency_rupee', label: '0% commission forever' },
-    { icon: 'language', label: 'India-first commerce platform' },
-    { icon: 'lock', label: 'GST invoices & private KYC uploads' },
-    { icon: 'smart_toy', label: 'AI-native architecture' },
-]
-
-// Subscription checkout offers ("you feel lucky" bonuses) shown in the
-// Shopify-style "offers included" accordion. Informational/marketing — distinct
-// from coupon codes (which are DB-driven and discount the charge server-side).
-export const SUBSCRIPTION_OFFERS: Array<{ title: string; body: string }> = [
-    {
-        title: 'Domain credit',
-        body: 'Earn ₹1,500 in subscription credits toward future bills when you connect a custom domain. Terms apply.',
-    },
-    {
-        title: 'Onboarding bonus',
-        body: 'Bonus AI credits + a free store-setup review in your first 30 days on any paid plan. Terms apply.',
-    },
-]
-
 /** Annual saving (in paise) of paying yearly vs monthly. */
 export function planAnnualSavingMinor(monthlyMinor: number, yearlyMinor: number): number {
-    if (!monthlyMinor || !yearlyMinor || yearlyMinor >= monthlyMinor) return 0
+    if (!Number.isFinite(monthlyMinor) || !Number.isFinite(yearlyMinor) || monthlyMinor <= 0 || yearlyMinor < 0 || yearlyMinor >= monthlyMinor) return 0
     return (monthlyMinor - yearlyMinor) * 12
 }

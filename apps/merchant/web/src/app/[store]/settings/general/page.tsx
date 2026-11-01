@@ -2,7 +2,7 @@
 
 import { useReadRequest } from '@/lib/api/use-read-request'
 
-import { getStorefrontRootDomain } from '@/lib/public-urls'
+import { getAccountsUrl, getStorefrontRootDomain } from '@/lib/public-urls'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { DEFAULT_ADMIN_LOCALE, SUPPORTED_ADMIN_LOCALES, getAdminLocaleOptions, normalizeAdminLocale } from '@/lib/i18n/admin-locales'
@@ -357,7 +357,7 @@ export default function GeneralSettingsPage() {
             const payload = await res.json().catch(() => null) as ApiPayload | null
             if (!res.ok) throw new Error(getPayloadError(payload, 'Unable to delete store'))
             notify({ title: 'Store deletion started', description: 'Redirecting to your workspace…', variant: 'success' })
-            window.location.href = process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'https://accounts.letbuyy.com'
+            window.location.href = getAccountsUrl()
         } catch (err) {
             const msg = err instanceof Error ? err.message : 'Unable to delete store'
             setDeleting(false)

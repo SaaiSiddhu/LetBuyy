@@ -2,122 +2,142 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
-import { Banner, Button, Bell, EmptyState, MaterialIcon, Skeleton } from '@letbuyy/ui'
-import { useReadRequest } from '@/lib/api/use-read-request'
+import type { NotificationInboxItem } from '@letbuyy/api-client'
+import { Banner, Bell, Button, Skeleton } from '@letbuyy/ui'
+import { MerchantNavigationLink } from './MerchantNavigationLink'
+import { MerchantEmptyState } from './empty-states/MerchantEmptyState'
+import { useReadRequest } from '../lib/api/use-read-request'
 
-interface Notification {
-    id: string
-    icon: string
-    title: string
-    time: string
-    unread: boolean
+interface InboxResponse {
+    data: NotificationInboxItem[]
+    meta: { page: number; total: number; has_more: boolean; unread_count: number | null }
 }
 
-export default function NotificationsPanel() {
+function timeAgo(date: string): string {
+    const timestamp = new Date(date).getTime()
+    if (!Number.isFinite(timestamp)) return 'Time unavailable'
+    const minutes = Math.max(0, Math.floor((Date.now() - timestamp) / 60_000))
+    if (minutes < 1) return 'Just now'
+    if (minutes < 60) return `${minutes} minute${minutes === 1 ? '' : 's'} ago`
+    const hours = Math.floor(minutes / 60)
+    if (hours < 24) return `${hours} hour${hours === 1 ? '' : 's'} ago`
+    const days = Math.floor(hours / 24)
+    return `${days} day${days === 1 ? '' : 's'} ago`
+}
+
+/** User-wide inbox: notices are persisted, so read state survives refresh and store switches. */
+export default function NotificationsPanel({ fullPage = false }: { fullPage?: boolean }) {
     const { store } = useParams<{ store: string }>()
-    const [notifications, setNotifications] = useState<Notification[]>([])
+    const [notifications, setNotifications] = useState<NotificationInboxItem[]>([])
+    const [page, setPage] = useState(1)
+    const [total, setTotal] = useState(0)
+    const [hasMore, setHasMore] = useState(false)
+    const [accountUnreadCount, setAccountUnreadCount] = useState<number | null>(null)
     const [loading, setLoading] = useState(true)
-    const [loadedStore, setLoadedStore] = useState<string | null>(null)
-    const [error, setError] = useState(false)
-    const beginRead = useReadRequest(store)
+    const [loadedScope, setLoadedScope] = useState<string | null>(null)
+    const [error, setError] = useState<string | null>(null)
+    const [marking, setMarking] = useState(false)
+    const scope = `${store}:${page}:${fullPage}`
+    const beginRead = useReadRequest(scope)
+    const endpoint = `/api/stores/${encodeURIComponent(store)}/notifications`
 
     const load = useCallback(async () => {
         const request = beginRead()
         setLoading(true)
-        setError(false)
+        setError(null)
         try {
-            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/notifications`, { cache: 'no-store', signal: request.signal })
-            const payload = await response.json()
+            const response = await fetch(`${endpoint}?page=${page}&limit=${fullPage ? 20 : 5}`, {
+                cache: 'no-store', signal: request.signal,
+            })
+            if (!response.ok) throw new Error('Notifications are temporarily unavailable.')
+            const payload = await response.json() as InboxResponse
             if (!request.isCurrent()) return
-            if (!response.ok) throw new Error('Notifications unavailable')
-            setNotifications(Array.isArray(payload.data) ? payload.data : [])
-            setError(payload.meta?.partial === true)
+            if (!Array.isArray(payload.data) || !payload.meta) throw new Error('Invalid inbox response.')
+            setNotifications(payload.data)
+            setTotal(payload.meta.total)
+            setHasMore(payload.meta.has_more)
+            setAccountUnreadCount(typeof payload.meta.unread_count === 'number'
+                && Number.isSafeInteger(payload.meta.unread_count) && payload.meta.unread_count >= 0
+                ? payload.meta.unread_count : null)
         } catch {
             if (!request.isCurrent()) return
-            setNotifications([])
-            setError(true)
+            setError('Notifications could not be loaded. Refresh to check their current read state.')
         } finally {
-            if (request.isCurrent()) { setLoadedStore(store); setLoading(false) }
+            if (request.isCurrent()) { setLoadedScope(scope); setLoading(false) }
         }
-    }, [store, beginRead])
+    }, [beginRead, endpoint, fullPage, page, scope])
+
     useEffect(() => { void load() }, [load])
 
-    const unreadCount = notifications.filter((n) => n.unread).length
+    const unreadCount = accountUnreadCount ?? notifications.filter(notification => !notification.is_read).length
 
-    const markAllRead = () => {
-        setNotifications((prev) => prev.map((n) => ({ ...n, unread: false })))
-    }
-
-    if (loading || loadedStore !== store) {
-        return (
-            <div className="admin-notifications-dropdown">
-                <div className="admin-notifications-header">
-                    <h3>Notifications</h3>
-                </div>
-                <div className="admin-notifications-loading" aria-label="Loading notifications">
-                    <Skeleton variant="text" lines={2} />
-                </div>
-            </div>
-        )
+    const markAllRead = async () => {
+        if (marking) return
+        setMarking(true)
+        setError(null)
+        try {
+            const response = await fetch(endpoint, { method: 'POST', cache: 'no-store' })
+            if (!response.ok) throw new Error('Read state could not be saved.')
+            await load()
+        } catch {
+            setError('The read update could not be confirmed. Refresh notifications before retrying.')
+        } finally {
+            setMarking(false)
+        }
     }
 
     return (
-        <div className="admin-notifications-dropdown">
-            {/* Header */}
+        <div id={fullPage ? undefined : 'admin-notifications-panel'} className={fullPage ? 'admin-notifications-page' : 'admin-notifications-dropdown'}>
             <div className="admin-notifications-header">
-                <h3>
-                    Notifications
-                    {unreadCount > 0 && (
-                        <span className="ml-[var(--lb-space-2)] inline-flex min-w-[var(--lb-size-icon-inline)] items-center justify-center rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary)] px-[var(--lb-space-2)] py-[1px] align-middle text-[11px] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-inverse)]">
-                            {unreadCount}
-                        </span>
-                    )}
-                </h3>
-                {unreadCount > 0 && (
-                    <Button unstyled onClick={markAllRead}>Mark all read</Button>
+                <div>
+                    <h3>Notifications</h3>
+                    {fullPage && <p>Alerts for your account across your stores.</p>}
+                </div>
+                {unreadCount > 0 && !error && (
+                    <Button unstyled type="button" disabled={marking || loading} onClick={() => void markAllRead()}>
+                        {marking ? 'Saving…' : 'Mark all read'}
+                    </Button>
                 )}
             </div>
 
-            {error && (
-                <Banner variant="warning" title="Notifications could not be fully loaded" action={<Button variant="secondary" onClick={() => void load()}>Retry</Button>}>
-                    Try loading notifications again.
-                </Banner>
-            )}
+            {error && <Banner variant="warning" title="Notifications unavailable" action={<Button variant="secondary" onClick={() => void load()}>Retry</Button>}>{error}</Banner>}
 
-            {/* List */}
-            {notifications.length > 0 ? (
+            {(loading || loadedScope !== scope) ? (
+                <div className="admin-notifications-loading" aria-label="Loading notifications"><Skeleton variant="text" lines={2} /></div>
+            ) : notifications.length > 0 ? (
                 <>
                     <div className="admin-notifications-list">
-                        {notifications.map((notif) => (
-                            <div
-                                key={notif.id}
-                                className={`admin-notification-item ${notif.unread ? 'unread' : ''}`}
-                            >
-                                <div className="admin-notification-icon">
-                                    <MaterialIcon name={notif.icon} />
-                                </div>
+                        {notifications.map(notification => (
+                            <div key={notification.id} className={`admin-notification-item ${notification.is_read ? '' : 'unread'}`}>
+                                <div className="admin-notification-icon"><Bell size={16} aria-hidden="true" /></div>
                                 <div className="admin-notification-content">
-                                    <div className="admin-notification-title">
-                                        {notif.title}
-                                    </div>
-                                    <div className="admin-notification-time">
-                                        {notif.time}
-                                    </div>
+                                    <div className="admin-notification-title">{notification.title}</div>
+                                    {notification.message && <div>{notification.message}</div>}
+                                    <div className="admin-notification-time">{timeAgo(notification.created_at)}</div>
                                 </div>
                             </div>
                         ))}
                     </div>
-                    <div className="admin-notifications-footer">
-                        <Button unstyled>View all notifications</Button>
-                    </div>
+                    {fullPage ? (
+                        <div className="admin-notifications-footer">
+                            <span>Page {page} · {total} notifications</span>
+                            <Button variant="secondary" disabled={page === 1} onClick={() => setPage(value => value - 1)}>Previous</Button>
+                            <Button variant="secondary" disabled={!hasMore} onClick={() => setPage(value => value + 1)}>Next</Button>
+                        </div>
+                    ) : null}
                 </>
             ) : !error ? (
-                <EmptyState
+                <MerchantEmptyState scene="notifications"
                     icon={<Bell className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                     title="All caught up"
-                    body="New orders, customer activity, and store alerts will appear here."
+                    body="New account alerts will appear here."
                 />
             ) : null}
+            {!fullPage && !loading && loadedScope === scope && (
+                <div className="admin-notifications-footer">
+                    <MerchantNavigationLink href={`/${store}/notifications`}>View all notifications</MerchantNavigationLink>
+                </div>
+            )}
         </div>
     )
 }

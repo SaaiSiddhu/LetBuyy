@@ -10,7 +10,6 @@ import { Button,
     Banner,
     Card,
     ConfirmDialog,
-    EmptyState,
     Mail,
     MessageSquare,
     Page,
@@ -23,6 +22,7 @@ import { Button,
     X,
     useToast,
 } from '@letbuyy/ui'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import { formatIndiaDateWithTime as formatDate } from '@letbuyy/ui/formatting'
 
 interface Submission {
@@ -285,7 +285,7 @@ export default function ContactPage() {
             {items.length === 0 ? (
                 <Card>
                     <Section title="Inbox">
-                        <EmptyState
+                        <EmptyState scene="contact"
                             icon={<MessageSquare className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                             title="No contact submissions yet"
                             body="Messages sent through your storefront contact form will appear here with reply and moderation actions."
