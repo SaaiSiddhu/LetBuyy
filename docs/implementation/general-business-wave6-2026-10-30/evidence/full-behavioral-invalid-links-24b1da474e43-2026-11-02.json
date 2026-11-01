@@ -1,0 +1,31 @@
+{
+  "status": "INVALID_ENVIRONMENT_NOT_ACCEPTANCE",
+  "date": "2026-11-02",
+  "sourceCommitAtStart": "fd325a232",
+  "ownedRunnerId": "24b1da474e43",
+  "command": "node scripts/governance/test-behavioral.mjs --with-contracts --report /private/tmp/letbuyy-wave6-final-behavioral-fd325a232.json",
+  "reportedTotals": { "tests": 4183, "passed": 3972, "failed": 196, "skipped": 15 },
+  "groups": {
+    "pure": { "tests": 3145, "passed": 3120, "failed": 10, "skipped": 15 },
+    "postgresOwned": { "tests": 320, "passed": 320, "failed": 0 },
+    "gatewayDatabaseOwned": { "tests": 354, "passed": 169, "failed": 185, "failedSuites": 182 },
+    "contracts": { "tests": 364, "passed": 363, "failed": 1 }
+  },
+  "rootCause": "The prior governance run removed runtime-local generated node_modules links. The behavioral run began before the frozen offline install was restored. Gateway suite logs showed ERR_PACKAGE_IMPORT_NOT_DEFINED for #store-access-hashing.js at module load, before API assertions.",
+  "representativeFailedSuiteLog": "billing-mandate-replay.postgres.log",
+  "ownedCleanup": { "failures": 0, "remainingContainers": 0, "remainingNetworks": 0, "remainingVolumes": 0 },
+  "recovery": {
+    "install": "pnpm install --frozen-lockfile --offline passed",
+    "gatewayDependencyRestored": true,
+    "focusedGatewayOwnedRunId": "7667ec6632af",
+    "focusedGatewayPassed": 2,
+    "focusedGatewayFailed": 0,
+    "focusedGatewayCleanupComplete": true,
+    "liquidCommerceContractPassed": 2,
+    "liquidCommerceContractFailed": 0,
+    "coreFooterGeneratorPassed": 3,
+    "coreFooterGeneratorFailed": 0,
+    "migration426BytesChanged": false
+  },
+  "remaining": "A fresh complete behavioral gate on the restored install is required; this invalid run cannot qualify any Wave 6 journey."
+}

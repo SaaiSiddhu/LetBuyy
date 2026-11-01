@@ -13,20 +13,37 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const oldBundle = JSON.parse(readFileSync(resolve(root, 'database/supabase/seeds/generated/letbuyy-core-liquid-bundle.json'), 'utf8'));
 const newBundle = createLetbuyyCoreLiquidThemeBundleFixture();
 const before = oldBundle.sections.footer;
-const after = newBundle.sections.footer;
+const current = newBundle.sections.footer;
 const stable = value => JSON.stringify(value, (_key, item) =>
   item && typeof item === 'object' && !Array.isArray(item)
     ? Object.fromEntries(Object.entries(item).sort(([a], [b]) => a.localeCompare(b)))
     : item);
-if (!before || !after || stable({ ...before, source: '' }) !== stable({ ...after, source: '' })) {
-  throw new Error('Core footer metadata changed; review a separate catalog migration');
+if (!before || !current || stable(before) !== stable(current)) {
+  throw new Error('Frozen Core footer factory changed; review a separate catalog release');
 }
-if (stable(before) === stable(after)) throw new Error('Core footer has no public-contact change');
 for (const section of Object.keys(newBundle.sections)) {
   if (section !== 'footer' && stable(newBundle.sections[section]) !== stable(oldBundle.sections[section])) {
     throw new Error(`Core section ${section} changed; review a separate catalog migration`);
   }
 }
+// Migration 426 is a versioned catalog patch. Keep the package factory and
+// migration 368 seed byte-identical to their admitted versions; changing those
+// factories would also mutate every frozen default theme bundle.
+const originalContact = [
+  '      {% if section.settings.contactEmail != blank %}<p><a href="mailto:{{ section.settings.contactEmail }}">{{ section.settings.contactEmail }}</a></p>{% endif %}',
+  '      {% if section.settings.contactPhone != blank %}<p><a href="tel:{{ section.settings.contactPhone }}">{{ section.settings.contactPhone }}</a></p>{% endif %}',
+].join('\n');
+const publicContact = [
+  '      {% assign contact_email = section.settings.contactEmail | default: shop.contact_email %}',
+  '      {% if contact_email == "help@letbuyy.com" %}{% assign contact_email = shop.contact_email %}{% endif %}',
+  '      {% assign contact_phone = section.settings.contactPhone | default: shop.contact_phone %}',
+  '      {% if contact_email != blank %}<p><a href="mailto:{{ contact_email }}">{{ contact_email }}</a></p>{% endif %}',
+  '      {% if contact_phone != blank %}<p><a href="tel:{{ contact_phone }}">{{ contact_phone }}</a></p>{% endif %}',
+].join('\n');
+if (typeof before.source !== 'string' || before.source.split(originalContact).length !== 2) {
+  throw new Error('Frozen Core footer contact block changed; review a separate catalog migration');
+}
+const after = { ...before, source: before.source.replace(originalContact, publicContact) };
 const json = value => {
   const serialized = JSON.stringify(value);
   if (serialized.includes('$corefooterjson$')) throw new Error('Unsafe Core footer delimiter');
