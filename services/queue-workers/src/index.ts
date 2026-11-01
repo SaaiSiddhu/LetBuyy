@@ -19,6 +19,7 @@ import { runMerchantSessionJtiConsumptionSweeper } from './merchant-session-jti-
 import { runSloTelemetryEmitter } from './slo-telemetry';
 import { runMoneyLedgerReconciliation } from './money-ledger-reconciliation';
 import { runLoyaltyEarnSweeper } from './loyalty-earn';
+import { consumeKycIndiaScanQueue } from './kyc-india-scan-queue';
 
 type QueuePayload = {
   messageId?: string;
@@ -48,7 +49,7 @@ interface NormalizedQueueDelivery {
 }
 
 export interface Env extends SupabaseServiceEnv, PushProviderEnv {
-  ENVIRONMENT: 'development' | 'staging' | 'production';
+  ENVIRONMENT: 'development' | 'test' | 'staging' | 'production';
   APP_ENV?: string;
   NODE_ENV?: string;
   DEPLOYMENT_ENV?: string;
@@ -72,6 +73,14 @@ export interface Env extends SupabaseServiceEnv, PushProviderEnv {
   RESEND_API_KEY?: string;
   STAFF_INVITATION_SIGNING_SECRET?: string;
   RESEND_FROM_EMAIL?: string;
+  KYC_INDIA_SCAN_QUEUE_ENABLED?: string;
+  KYC_INDIA_SCAN_QUEUE_URL?: string;
+  KYC_INDIA_ACCOUNT_ID?: string;
+  KYC_INDIA_BUCKET?: string;
+  KYC_INDIA_GUARDDUTY_PLAN_ARN?: string;
+  KYC_INDIA_SQS_ACCESS_KEY_ID?: string;
+  KYC_INDIA_SQS_SECRET_ACCESS_KEY?: string;
+  KYC_INDIA_SQS_SESSION_TOKEN?: string;
 }
 
 class QueueProcessingError extends Error {
@@ -653,6 +662,15 @@ export default {
   },
   async scheduled(controller, env, ctx) {
     const cron = controller.cron || 'manual';
+    if (env.ENVIRONMENT === 'test' && env.KYC_INDIA_SCAN_QUEUE_ENABLED === 'true') {
+      ctx.waitUntil(consumeKycIndiaScanQueue(env)
+        .then(result => writeQueueLog(result.retry ? 'error' : 'info', {
+          route: 'scheduled.kyc_india_scan', status: result.retry ? 'retry' : 'completed', result,
+        }))
+        .catch(() => writeQueueLog('error', {
+          route: 'scheduled.kyc_india_scan', status: 'unavailable',
+        })));
+    }
     // Dedicated minute tick recovers lost wakeups and due retries within the
     // invitation lifetime. Other established sweepers retain their own cadence.
     ctx.waitUntil(consumeNotificationJobs(env,`scheduled:notifications:${cron}:${Date.now()}`)
