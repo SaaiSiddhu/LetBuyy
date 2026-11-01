@@ -149,7 +149,7 @@ function CheckEmailContent() {
                 : type === 'password_reset' ? '/api/auth/send-reset' : '/api/auth/signup'
             const response = await fetch(endpoint, {
                 method: 'POST',
-                headers: getAuthHeaders(),
+                headers: (await getAuthHeaders()),
                 body: JSON.stringify({ email, turnstileToken: currentToken }),
             })
             const payload = await response.json().catch(() => null) as {

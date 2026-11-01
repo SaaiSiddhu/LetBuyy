@@ -42,7 +42,7 @@ function RecoverForm() {
         try {
             const res = await fetch('/api/buyer/recover/send', {
                 method: 'POST',
-                headers: getAuthHeaders(),
+                headers: (await getAuthHeaders()),
                 body: JSON.stringify({ email: email.trim(), turnstileToken: turnstileToken || undefined }),
             })
             if (!res.ok) {
@@ -65,7 +65,7 @@ function RecoverForm() {
         try {
             const res = await fetch('/api/buyer/recover/confirm', {
                 method: 'POST',
-                headers: getAuthHeaders(),
+                headers: (await getAuthHeaders()),
                 body: JSON.stringify({ email: email.trim(), code: code.trim(), password }),
             })
             if (!res.ok) {
