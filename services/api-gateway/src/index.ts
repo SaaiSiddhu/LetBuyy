@@ -249,9 +249,9 @@ export interface Env {
     ASSET_PUBLIC_BASE_URL?: string;
     UPLOAD_PUBLIC_BASE_URL?: string;
     R2_BUCKET?: R2Bucket;
-    /** Private identity and bank evidence. Never bind the public media bucket here. */
+    /** Owned-test mock only. India-only KYC bytes require a different storage adapter before deployed intake. */
     KYC_PRIVATE_BUCKET?: R2Bucket;
-    /** Explicit admission after private storage, scanner, and retention approval. */
+    /** Explicit admission after India-only private storage, scanner, and retention approval. */
     KYC_UPLOAD_ENABLED?: 'true' | 'false';
     /** Approved server-only private-original profile. No default account/binding activation. */
     REEL_CUSTODY_PROFILE?: string;

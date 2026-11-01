@@ -158,10 +158,10 @@ function nextAction(status: string, rows: KycDocumentRow[], mode: MerchantKycPro
     if (rows.some((row) => row.metadata?.profile_change_requires_resubmission === true))
         return 'Business details changed. Replace the affected document so it can be reviewed again.';
     if (mode === 'sandbox' && rows.some((row) => row.metadata?.private_object_key && row.metadata.malware_scan_status !== 'clean'))
-        return 'Sandbox upload received. Security scan pending. It is not provider reviewed and cannot enable live payouts.';
+        return 'Sandbox upload received. No security scan result or provider review has been recorded; live payouts remain unavailable.';
     if (mode === 'sandbox' && rows.length > 0) return 'Sandbox uploads are stored for testing only. They are not provider reviewed and cannot enable live payouts.';
     if (rows.some((row) => row.metadata?.private_object_key && row.metadata.malware_scan_status !== 'clean'))
-        return 'A security scan is pending before provider review can begin.';
+        return 'No security scan result is available. Provider review is blocked until the evidence passes a trusted scan.';
     if (rows.some((row) => row.metadata?.provider_unavailable)) return 'Verification provider is unavailable. Your submission remains pending; retry later.';
     if (status === 'needs_review') return 'A submitted document needs review.';
     if (status === 'in_progress') return 'Your submitted documents are awaiting provider review.';
@@ -280,8 +280,9 @@ router.post('/documents', validate('json', SubmitKycDocumentSchema), async (c) =
         message: 'Upload the document privately to submit it for verification.' } }, 410);
 });
 
-// Evidence stays in a dedicated private R2 bucket. No public URL or object key
-// is returned to the merchant, storefront, or provider adapter.
+// The R2-shaped private store is an owned-test fixture only. Deployed uploads
+// stay closed until India-resident storage and scanning are integrated. No public
+// URL or object key is returned to the merchant, storefront, or provider adapter.
 router.post('/documents/upload', bodyLimit({ maxSize: 6 * 1024 * 1024 }), async (c) => {
     const idempotencyKey = c.req.header('X-Idempotency-Key');
     if (!idempotencyKey || idempotencyKey.length < 8 || idempotencyKey.length > 160) {

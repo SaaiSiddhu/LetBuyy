@@ -63,6 +63,11 @@ test('a current stepped-up Console operator can audit and download only the requ
     assert.match(file.headers.get('content-disposition') || '', /^attachment;/);
     assert.match(file.headers.get('cache-control') || '', /no-store/);
     assert.equal(objectReads, 1);
+    env.ENVIRONMENT = 'staging';
+    const wrongRegionRead = await gateway.request(filePath, { headers: reviewer.headers });
+    assert.equal(wrongRegionRead.status, 503, 'deployed R2 must not release India-only document bytes');
+    assert.equal(objectReads, 1);
+    env.ENVIRONMENT = 'test';
     const quarantined = await gateway.request(`/v1/internal/console/kyc/sites/${tenant.siteId}/documents/${staleDocumentId}/file?reason=${reason}`, { headers: reviewer.headers });
     assert.equal(quarantined.status, 503, 'a row without a private object is unavailable');
     owned.psql(`UPDATE merchant_kyc_documents SET metadata=metadata-'malware_scan_status'

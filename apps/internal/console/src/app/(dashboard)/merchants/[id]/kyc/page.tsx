@@ -66,7 +66,7 @@ export default async function MerchantKycReviewPage({ params, searchParams }: Pa
                         </div>
                         <div className="flex items-center gap-3">
                             <StatusPill value={row.status} />
-                            <StatusPill value={`scan ${row.malware_scan_status}`} />
+                            <StatusPill value={row.malware_scan_status === 'pending' ? 'no scan result' : `scan ${row.malware_scan_status}`} />
                             {row.has_private_upload && row.malware_scan_status === 'clean' ?
                                 <a href={`/api/kyc-evidence/${id}/${row.id}?reason=${encodeURIComponent(reason)}`}
                                     className="text-sm font-medium text-[var(--lb-color-primary)] underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]">

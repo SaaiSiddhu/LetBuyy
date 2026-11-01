@@ -12,9 +12,11 @@ interface CleanupJob {
     attempts: number;
 }
 
-/** Reject a direct alias of the public media binding before any private write or delete. */
+/** R2 is a synthetic owned-test store only. India-only evidence must not enter a
+ * deployed R2 bucket, whose APAC placement does not establish India residency. */
 export function hasIsolatedKycPrivateBucket(env: Env): boolean {
-    return Boolean(env.KYC_PRIVATE_BUCKET && env.KYC_PRIVATE_BUCKET !== env.R2_BUCKET);
+    return env.ENVIRONMENT === 'test'
+        && Boolean(env.KYC_PRIVATE_BUCKET && env.KYC_PRIVATE_BUCKET !== env.R2_BUCKET);
 }
 
 function isOwnedKycKey(siteId: string, key: string): boolean {
@@ -74,7 +76,7 @@ export async function drainKycPrivateObjectCleanup(env: Env, limit = 20): Promis
 }> {
     const bucket = env.KYC_PRIVATE_BUCKET;
     if (!bucket) return { scanned: 0, deleted: 0, deferred: 0 };
-    if (!hasIsolatedKycPrivateBucket(env)) throw new Error('KYC private bucket aliases public media storage');
+    if (!hasIsolatedKycPrivateBucket(env)) throw new Error('KYC R2 storage is unavailable outside isolated owned tests');
     const db = getSupabaseAdminFromEnv(env);
     const { data, error } = await db.rpc('list_due_kyc_private_cleanup_v1', {
         p_limit: Math.min(Math.max(limit, 1), 50),

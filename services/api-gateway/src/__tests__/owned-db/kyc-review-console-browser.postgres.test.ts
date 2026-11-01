@@ -28,7 +28,7 @@ test('signed-in Console reviewer sees redacted KYC evidence and downloads only a
         await page.getByLabel('Reason', { exact: true }).fill('Reviewing submitted PAN evidence');
         await page.getByRole('button', { name: 'Review documents' }).click();
         await expect(page.getByText('business pan')).toBeVisible();
-        await expect(page.getByText('scan pending')).toBeVisible();
+        await expect(page.getByText('no scan result')).toBeVisible();
         await expect(page.getByRole('link', { name: 'Download evidence' })).toHaveCount(0);
         assert.ok(!await page.locator('body').innerText().then(text => text.includes(privateKey) || text.includes('private-digest')));
 

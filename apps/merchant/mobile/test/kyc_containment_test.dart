@@ -514,7 +514,7 @@ void main() {
       });
       await tester.pumpAndSettle();
       expect(
-        find.text('Private document received. Security scan pending.'),
+        find.text('Private document received. No security scan result yet.'),
         findsOneWidget,
       );
       expect(find.text('Verification pending'), findsOneWidget);
@@ -571,7 +571,7 @@ void main() {
         findsOneWidget,
       );
       expect(
-        find.text('Private document received. Security scan pending.'),
+        find.text('Private document received. No security scan result yet.'),
         findsNothing,
       );
     },
@@ -626,7 +626,7 @@ void main() {
       expect(tester.takeException(), isNull);
       expect(f.service.overview, isNull);
       expect(
-        find.text('Private document received. Security scan pending.'),
+        find.text('Private document received. No security scan result yet.'),
         findsNothing,
       );
     },
@@ -711,7 +711,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Store access changed'), findsOneWidget);
       expect(
-        find.text('Private document received. Security scan pending.'),
+        find.text('Private document received. No security scan result yet.'),
         findsNothing,
       );
       expect(f.service.overview, isNull);
@@ -925,7 +925,7 @@ void main() {
       await tester.pump();
       await replyWidget(tester, f, pending);
       await tester.pumpAndSettle();
-      expect(find.textContaining('Security scan pending'), findsOneWidget);
+      expect(find.textContaining('No scan result yet'), findsOneWidget);
       expect(find.textContaining('not provider reviewed'), findsOneWidget);
       expect(find.text('Verified'), findsNothing);
     },

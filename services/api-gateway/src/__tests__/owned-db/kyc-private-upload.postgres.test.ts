@@ -5,6 +5,7 @@ import { randomUUID } from 'node:crypto';
 import { MerchantKycOverviewSchema } from '@letbuyy/shared-types';
 import { requireOwnedDatabase } from './owned-db-support';
 import { Gateway, gatewayEnv, newIdentityKeys, signedIdentityHeaders, tapRest } from './gateway-harness';
+import { createTestAdmissionCoordinator } from '../helpers/admission-coordinator';
 import { newSyntheticTenant, seedSyntheticTenant } from './synthetic-tenant';
 import { drainKycPrivateObjectCleanup, reserveKycPrivateObject } from '../../lib/kyc-private-object-cleanup';
 import { getSupabaseAdminFromEnv } from '../../lib/supabase';
@@ -389,8 +390,36 @@ test('KYC file upload remains private, tenant-owned and pending provider evidenc
     }, aliasedEnv);
     assert.equal(aliasedUpload.status, 503, aliasedUpload.text);
     assert.equal(aliasedUpload.json?.error?.code, 'KYC_UPLOAD_UNAVAILABLE');
-    await assert.rejects(drainKycPrivateObjectCleanup(aliasedEnv), /aliases public media storage/);
+    await assert.rejects(drainKycPrivateObjectCleanup(aliasedEnv), /unavailable outside isolated owned tests/);
     assert.equal(objects.size, 1, 'a public alias never receives or deletes private evidence');
+    for (const environment of ['staging', 'production']) {
+        const deployedR2Env = {
+            ...gateway.env,
+            ENVIRONMENT: environment,
+            RUNTIME_COORDINATOR: createTestAdmissionCoordinator(),
+        };
+        const overview = await gateway.request(`/v1/kyc?store_id=${tenant.siteId}`, {
+            method: 'GET', headers: await signedIdentityHeaders(owner, `kyc-${owner}@example.invalid`, tenant.siteId),
+        }, deployedR2Env);
+        assert.equal(overview.status, 200, overview.text);
+        assert.equal(overview.json?.data.private_upload_available, false,
+            `${environment} cannot admit KYC bytes to an R2 bucket`);
+        const headers = await signedIdentityHeaders(owner, `kyc-${owner}@example.invalid`, tenant.siteId);
+        delete headers['Content-Type'];
+        headers['X-Idempotency-Key'] = randomUUID();
+        const form = new FormData();
+        form.set('store_id', tenant.siteId);
+        form.set('document_type', 'bank_proof');
+        form.set('document_number_last4', '1234');
+        form.set('file', pdf());
+        const denied = await gateway.request('/v1/kyc/documents/upload', {
+            method: 'POST', headers, body: form,
+        }, deployedR2Env);
+        assert.equal(denied.status, 503, denied.text);
+        assert.equal(denied.json?.error?.code, 'KYC_UPLOAD_UNAVAILABLE');
+        await assert.rejects(drainKycPrivateObjectCleanup(deployedR2Env), /unavailable outside isolated owned tests/);
+        assert.equal(objects.size, 1, `${environment} must not write or delete the existing mock object`);
+    }
     const pausedEnv = { ...gateway.env, KYC_UPLOAD_ENABLED: 'false' as const };
     const pausedOverview = await gateway.request(`/v1/kyc?store_id=${tenant.siteId}`, {
         method: 'GET', headers: await signedIdentityHeaders(owner, `kyc-${owner}@example.invalid`, tenant.siteId),
@@ -583,7 +612,7 @@ test('live-mode provider outage stays pending after clean private evidence and e
         assert.equal(pendingScan.status, 200, pendingScan.text);
         assert.equal(pendingScan.json?.data.document.evidence_scan_status, 'pending');
         assert.equal(pendingScan.json?.data.document.provider_unavailable, false);
-        assert.match(pendingScan.json?.data.overview.next_action || '', /security scan is pending/i);
+        assert.match(pendingScan.json?.data.overview.next_action || '', /no security scan result is available/i);
         assert.equal(owned.psql(`SELECT metadata ? 'provider_checked_at' FROM merchant_kyc_documents
             WHERE id='${panId}';`), 'f', 'a pending scan cannot reach provider verification');
         owned.psql(`UPDATE merchant_kyc_documents SET metadata=jsonb_set(metadata,'{malware_scan_status}','"rejected"'::jsonb)

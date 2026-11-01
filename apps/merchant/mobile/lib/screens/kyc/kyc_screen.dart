@@ -241,7 +241,7 @@ class _KycScreenState extends State<KycScreen> {
         setState(() => _overview = service.overview);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Private document received. Security scan pending.'),
+            content: Text('Private document received. No security scan result yet.'),
           ),
         );
       }
@@ -293,7 +293,7 @@ class _KycScreenState extends State<KycScreen> {
                   ? 'Verification is unavailable. Retry to check whether private upload is available.'
                   : _overview?['private_upload_available'] == false
                   ? 'Private upload is unavailable. Your saved status remains visible; retry later.'
-                  : 'Upload verification documents here. A private upload awaits a security scan before provider review.',
+                  : 'Upload verification documents here. A trusted security scan must pass before provider review.',
             ),
           ),
           Expanded(
@@ -644,7 +644,7 @@ String _documentProgressTitle(Map<String, dynamic> document, String status) {
   if (status != 'submitted') return _statusTitle(status);
   switch (document['evidence_scan_status']) {
     case 'pending':
-      return 'Security scan pending';
+      return 'No scan result yet';
   }
   if (document['provider_unavailable'] == true) return 'Provider unavailable';
   if (document['provider_mode'] == 'sandbox') return 'Sandbox received';

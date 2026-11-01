@@ -5,6 +5,7 @@ import { AppError } from '../../lib/errors';
 import { getSupabaseAdmin, success } from '../../lib/supabase';
 import { requireConsolePermission } from '../../identity-foundation/console-approval-repository';
 import { effectiveKycDocumentStatus, type KycEvidenceStatusRow } from '../../lib/kyc-evidence-status';
+import { hasIsolatedKycPrivateBucket } from '../../lib/kyc-private-object-cleanup';
 
 const router = new Hono<{ Bindings: Env }>();
 
@@ -84,7 +85,8 @@ router.get('/sites/:siteId/documents/:documentId/file', async (c) => {
     const { state } = await requireConsolePermission(c, 'merchant:pii', true);
     const { siteId, documentId, reason } = parsed.data;
     const bucket = c.env.KYC_PRIVATE_BUCKET;
-    if (!bucket) throw new AppError('Private evidence storage is unavailable.', 503, 'KYC_PRIVATE_STORAGE_UNAVAILABLE');
+    if (!bucket || !hasIsolatedKycPrivateBucket(c.env))
+        throw new AppError('Private evidence storage is unavailable.', 503, 'KYC_PRIVATE_STORAGE_UNAVAILABLE');
     const { data, error } = await getSupabaseAdmin(c).from('merchant_kyc_documents')
         .select('id,site_id,document_type,status,provider,provider_mode,provider_reference,document_number_last4,submitted_at,updated_at,metadata')
         .eq('id', documentId).eq('site_id', siteId).is('deleted_at', null).maybeSingle();

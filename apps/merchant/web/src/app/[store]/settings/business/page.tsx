@@ -169,7 +169,7 @@ function displayDocumentStatus(status: KycDocumentStatus, document: KycDocument 
         return { label: 'Upload required', Icon: AlertTriangle, tone: 'review' }
     if (mode === 'sandbox' && status === 'verified') return { label: 'Sandbox reference', Icon: Info, tone: 'submitted' }
     if (status !== 'submitted') return STATUS_META[status]
-    if (document?.evidence_scan_status === 'pending') return { label: 'Security scan pending', Icon: Clock, tone: 'submitted' }
+    if (document?.evidence_scan_status === 'pending') return { label: 'No scan result yet', Icon: Clock, tone: 'submitted' }
     if (document?.provider_unavailable) return { label: 'Provider unavailable', Icon: AlertTriangle, tone: 'review' }
     if (mode === 'sandbox') return { label: 'Sandbox received', Icon: Info, tone: 'submitted' }
     return STATUS_META.submitted
@@ -437,7 +437,7 @@ export default function BusinessSettingsPage() {
             }
             setDocInputs((cur) => ({ ...cur, [type]: { last4: '' } }))
             setDocFiles((cur) => ({ ...cur, [type]: null }))
-            notify({ title: 'Document received', description: `${DOC_META[type].title} is pending a security scan. This does not authorize payouts.`, variant: 'success' })
+            notify({ title: 'Document received', description: `${DOC_META[type].title} is stored privately. No security scan result is available yet; this does not authorize payouts.`, variant: 'success' })
         } catch (err) {
             const msg = err instanceof Error ? err.message : 'Unable to submit document'
             notify({ title: 'Submission failed', description: msg, variant: 'critical' })

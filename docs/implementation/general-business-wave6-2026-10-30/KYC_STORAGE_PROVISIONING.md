@@ -1,37 +1,34 @@
-# Private KYC storage provisioning gate
+# Private KYC storage and scanning gate
 
-**Status: decision and account access pending. No bucket was created, bound, or exposed.** This is the reviewable storage gate for [Wave 6](./PLAN.md), not permission to accept real PAN, bank, address, or identity files.
+**Status: real-document intake closed.** On 2026-11-01 the owner required both KYC document storage and malware scanning to remain in India. No India-region storage account, scanner, retention policy, or deployed upload path has been accepted. This is a provisioning and verification plan, not approval to collect PAN, bank, address, or identity files.
 
-## Current account observation
+## Current implementation boundary
 
-- On 2026-11-01, the one account authenticated in this worktree's Wrangler session returned Cloudflare API code `10042` (“Please enable R2 through the Cloudflare Dashboard”) for a read-only bucket list. Read-only deployment lookups returned `10007` (“Worker does not exist on your account”) for both `letbuyy-api-staging` and `letbuyy-api`. The repository's `wrangler.toml` does not pin an account ID. **This does not prove that LetBuyy's deployed Cloudflare account has R2 disabled or lacks buckets.** Confirm the intended account before changing billing, storage, or bindings.
-- The committed Gateway config binds public `R2_BUCKET` media in default, staging, and production environments. It has no `KYC_PRIVATE_BUCKET` binding. The Gateway now requires both a distinct private bucket **and** explicit `KYC_UPLOAD_ENABLED=true` before accepting new documents. With the switch false, status stays readable and the bucket remains available for cleanup and restricted review.
-- The Gateway now rejects a direct runtime alias where `KYC_PRIVATE_BUCKET` and public `R2_BUCKET` are the same binding object. Its cleanup drain also refuses that alias before any delete. The Cloudflare binding validator rejects a future Wrangler configuration that gives private and public bindings the same `bucket_name` in the default, staging, or production Worker, including reuse across environments. Deployed binding values and private/public access controls still require verification in the intended Cloudflare account before enabling intake.
+- The existing `KYC_PRIVATE_BUCKET` is a Cloudflare R2-shaped **owned-test fixture only**. The Gateway rejects its use for deployed upload, cleanup, and Console download even if `KYC_UPLOAD_ENABLED=true`; the binding validator rejects `KYC_PRIVATE_BUCKET` in default, staging, and production Wrangler manifests. Public `R2_BUCKET` continues to serve ordinary media and must never hold KYC bytes.
+- Owned tests cover file type/size checks, tenant ownership, idempotent receipt reservation, private object metadata, redacted reads, replacement/orphan cleanup, and reviewer access with step-up, reason, scan verdict, and audit. They do not prove India residency, a trusted scan, production retention, or provider verification.
+- The upload route currently receives file bytes through the Cloudflare Gateway before writing the fixture. An India-region bucket alone would not establish that the entire real-document path meets the owner's India-only requirement. The approved implementation must document and test upload transit, temporary storage, logs, scanner, event delivery, download, backups, and deletion.
+- A read-only Wrangler check on 2026-11-01 reached an account that returned `10042` for R2 bucket listing and `10007` for the named Gateway Workers. The repository does not pin an account ID. That observation does not establish the deployed LetBuyy account's resources and is no longer a KYC storage selection criterion.
 
-## Decisions required before provisioning
+## India-region candidate and decisions
 
-| Decision | Required owner/security answer | Why it gates creation |
-|---|---|---|
-| Cloudflare account | Exact account that owns the deployed Gateway Workers and whose R2 service is enabled | The local Wrangler identity cannot be assumed to be that account. |
-| Data location | Whether India-only storage/processing is required for KYC bytes | Cloudflare's `apac` location hint is **best effort**, not an India residency guarantee. Its documented R2 jurisdictions are EU, US, and FedRAMP; no India jurisdiction is listed. If India-only is required, approve a suitable storage provider and architecture change before collecting documents. |
-| Retention and deletion | Periods for pending, rejected, approved, replaced, and abandoned files; deletion requests; legal holds | A guessed bucket-wide expiry could destroy current evidence. A bucket lock could prevent the existing immediate replacement cleanup. |
-| Malware scanning | Scanner/operator, verdict authentication, quarantine rules, retry/outage behavior, and audit trail | Uploaded bytes currently remain `pending`; no trusted production scanner can mark them clean. |
-| KYC processor | Contracted provider, permitted data transfer, callback signature/idempotency, and bank ownership checks | A private upload is evidence received, never verification or payout eligibility. |
+AWS S3 in Mumbai (`ap-south-1`) with same-region GuardDuty Malware Protection for S3 is the first candidate to evaluate. [S3 region placement](https://docs.aws.amazon.com/en_in/AmazonS3/latest/userguide/Welcome.html), the [Mumbai endpoint](https://docs.aws.amazon.com/general/latest/gr/s3.html), and [GuardDuty's S3 scanner](https://docs.aws.amazon.com/guardduty/latest/ug/gdu-malware-protection-s3.html) describe the relevant platform capabilities. No AWS account, contract, cost, region configuration, or successful upload has been verified here. Security and privacy owners must approve the complete data flow, including any processing outside India, before provider setup or real files.
 
-## Approved implementation sequence after those decisions
+| Gate | Evidence required before staging intake |
+|---|---|
+| Account and region | Owner-controlled AWS account, staging and production S3 buckets in `ap-south-1`, exact account/bucket/region readback, least-privilege IAM, encryption and private access, and explicit denial of cross-region replication or export. |
+| Upload path | A signed, short-lived, site/document-bound upload or equivalent India-only ingress; content length/type/hash checks; no real bytes in Cloudflare Worker memory, logs, queues, or public media; safe abort and retry behavior. |
+| Scanner | GuardDuty plan scoped to the Mumbai buckets (or another approved India-only scanner), trusted verdict ingestion with exact bucket/key/version binding and replay control. Only a completed no-threat verdict may become `clean`; pending, threat, unsupported, skipped, error, and outage remain blocked. |
+| Private review | Step-up Console permission, reason, audit-before-byte-read, same-site/current-document check, India-only download path, and no public URL or accidental key/digest disclosure. |
+| Retention | Approved periods for pending, rejected, approved, replaced, and abandoned evidence; deletion requests and legal holds; lifecycle and cleanup behavior proven without removing current evidence. |
+| KYC processor | Signed agreement, permitted document transfer and residency terms, PAN/GST/bank ownership response contract, callback authentication, idempotency, rejection and resubmission behavior. Cashfree Secure ID has no account yet. |
 
-1. Confirm the Cloudflare account and R2 entitlement. Record the account ID in managed deployment configuration without putting credentials or personal documents in source or chat.
-2. Create separate staging and production buckets with approved geography and names. Keep both private: no `r2.dev` public URL and no custom domain. Cloudflare says R2 buckets are private by default, but verify both settings after creation.
-3. Apply the approved retention/lifecycle design and check its interaction with replacement cleanup, audit records, and any legal hold. Do not set a blanket expiry while policy is undecided.
-4. Add `KYC_PRIVATE_BUCKET` to each intended Gateway Wrangler environment and its binding-ownership manifest. Keep `KYC_UPLOAD_ENABLED=false` through deployment. Never alias the existing public `R2_BUCKET`.
-5. In staging, prove authenticated owner upload, private `put/get/delete`, blocked public access, scanner pending/clean/rejected/outage, stepped-up reviewer download and audit, orphan/replacement cleanup on an idle scheduled tick, and failure/retry readback. Use synthetic documents until privacy and provider terms permit real ones.
-6. Turn on staging intake only after security/privacy sign-off; record the exact config and deployment SHA. Production intake and a live payout canary require the contracted KYC and Razorpay evidence plus the Wave 6 finance/security/owner gates.
+## Implementation and acceptance sequence
 
-**Safe rollback:** set `KYC_UPLOAD_ENABLED=false` to stop new intake while preserving the bucket binding for existing evidence, reviewer access, and cleanup. Do not empty the bucket, disable its only access path, or roll back a migration that has cleanup records without a reviewed retention and recovery plan.
+1. Confirm the AWS account and written India-only data-flow decision. Keep all real upload flags off while account, bucket, scanner, and retention work proceeds.
+2. Implement one deployed India-region private-storage adapter in the canonical Gateway/Console path. Keep the R2-shaped object store confined to owned tests; do not create a second live KYC storage system.
+3. Use India-only ingress for real bytes. Bind the upload session to the authenticated site, document type, file digest/size and expiry; verify the completed object before creating or updating the canonical evidence row. Preserve idempotency and orphan/replacement cleanup.
+4. Ingest authenticated scanner results for the exact current object version. Block provider review and reviewer download until a trusted clean verdict exists; handle duplicate, late, forged, and outage events without upgrading status.
+5. Run synthetic staging journeys for web/mobile upload, tenant denial, file and scan failures, reviewer download, orphan/replacement cleanup, outage/retry, and retention. Record account, region, deployed SHA, bucket policy, scan event and database readback. Only then seek security/privacy approval to accept real staging documents.
+6. Contract and integrate the KYC and payment providers, then pass all eight Wave 6 journeys and finance/security/owner live-canary gates. A file upload or clean malware scan is never proof of identity or bank ownership.
 
-## Product constraints verified from primary sources
-
-- [R2 data location](https://developers.cloudflare.com/r2/reference/data-location/): `apac` is a location hint; jurisdictional restrictions are separate and the listed jurisdictions do not include India.
-- [R2 public buckets](https://developers.cloudflare.com/r2/buckets/public-buckets/): buckets are private by default; `r2.dev` and custom domains are explicit public-access controls.
-- [R2 object lifecycles](https://developers.cloudflare.com/r2/buckets/object-lifecycles/) and [bucket locks](https://developers.cloudflare.com/r2/buckets/bucket-locks/): expiration is asynchronous and lock rules can defer deletion.
-- [R2 data security](https://developers.cloudflare.com/r2/reference/data-security/): R2 encrypts objects and metadata at rest and uses TLS in transit; these properties do not resolve data-location or retention decisions.
+**Safe pause:** keep real upload admission disabled while preserving the approved India-region storage, scanning, review, and cleanup access for any already accepted evidence. Do not delete current documents or roll back evidence migrations without a reviewed recovery and retention plan.
