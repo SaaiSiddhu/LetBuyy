@@ -612,22 +612,60 @@ END`;
     if(restored.length!==1 || JSON.stringify(restored[0].inputNames)!==JSON.stringify(inputs)) return [];
     return [{name:'read_published_storefront_site_v1',identity:signature,input_names:inputs,result_type:'jsonb',returns_set:false,overloads:1,level:'typed-ABI',profile_fingerprint:{body_md5s:['af4f0af64c32cd0b2e94eb6d14c84456','597f30ae0ceee9df27a453fee9cc0991']}}];
 }
+// These reviewed rollback families have older pre-use refusals after the new
+// typed ABI check. Keep the allowance finite so a supplemental profile proof
+// elsewhere cannot silently degrade into an ignored block.
+const LEGACY_PRE_USE_BLOCKS=new Map([
+    ['public.install_owned_theme_v1(uuid,uuid,text,jsonb,jsonb,uuid,integer,text)',new Set([
+        'bf6c2b810a5d4a464eac4b43e1bbf10fb338b1b3ad020aece9c3ea170ff25c9c',
+        '25f3b5af29cce06e7bb3f06ccf61b503098de28642840b020182eb255e0c2240'])],
+    ['public.guard_checkout_domain_v1()',new Set(['727d65b1b179fae3d27c4ea305fc5884f422e2e5173fa753e2f568c3ac46a033'])],
+    ['public.issue_gift_card(uuid,text,numeric,text,timestamptz,jsonb,uuid,text,text)',new Set(['6eb609ef5b2ca55322cc8a1c4fb3a3c8a1f701225a1436f4b1c738295a8c55e7'])],
+    ['public.commit_store_payment_configuration_v1(uuid,uuid,timestamptz,uuid,text,text,jsonb,boolean,jsonb)',new Set(['770f6e74a3778f6b1133f5c2007d9e9a2cb201518d8a757949f8a36aeff9e498'])],
+    ['public.queue_replaced_kyc_private_object_v1()',new Set(['d101e8cd6c9b1a7527250a3c3eba65c19c0d06ce3227b2bc75393701aa40fb60'])],
+    ['public.list_due_kyc_private_cleanup_v1(integer)',new Set(['83de82d3024c017d54117f84d6b186fd4432a047e0470eae46acd98913ea13b5'])],
+    ['public.guard_merchant_kyc_india_receipt_v1()',new Set(['482dabc10d90f54859377b2ccf6b8c9e0c6bbdd71e5d8028bb739cd9eff5e8bd'])],
+    ['public.record_kyc_india_scan_v1(uuid,uuid,text,uuid,text,timestamptz)',new Set(['09f34b539b8902ca529eea6c5f6c6c92e21ad6964c4dda3b2493836ad21b1b43'])]
+]);
+function reviewedPreUseBlock(body,guards) {
+    const hash=createHash('sha256').update(tokenText(sqlTokens(body))).digest('hex');
+    return guards.length>0 && guards.every(g=>LEGACY_PRE_USE_BLOCKS.get(g.identity)?.has(hash));
+}
+// The 412 rollback has one reviewed dynamic restoration of create_checkout_order
+// before its two literal function restorations. Pin that exact block as a
+// mutation boundary; arbitrary EXECUTE in a supplemental guard is never enough.
+function pinnedInvoiceFactMutation(statement) {
+    return word(statement[0],'do') && statement[1]?.kind==='body' &&
+        createHash('sha256').update(tokenText(sqlTokens(statement[1].value))).digest('hex') ===
+        '0f77832c2ea2d9cdb6d28f1bc8504086a0a5564c6af38443539178a469a4e482';
+}
 function baseRollbackSignatureGuards(sql) {
     try {
         const statements=sqlStatements(sql);
         if(!same(statements[0]??[],'BEGIN;') || !same(statements.at(-1)??[],'COMMIT;'))return [];
         if(statements.slice(1,-1).some(s=>['begin','commit','rollback','savepoint'].includes(s[0]?.value)))return [];
-        const firstMutation=statements.findIndex(s=>['create','drop','alter','insert','update','delete','truncate','grant','revoke','call'].includes(s[0]?.value) || literalRestorations(s).length);
+        const firstMutation=statements.findIndex(s=>['create','drop','alter','insert','update','delete','truncate','grant','revoke','call'].includes(s[0]?.value)
+            || literalRestorations(s).length
+            || pinnedInvoiceFactMutation(s));
         if(firstMutation<0)return [];
         const guards=[];
         for(const statement of statements.slice(1,firstMutation)) {
             if(word(statement[0],'do') && statement.length===3 && statement[1].kind==='body') {
+                if(reviewedPreUseBlock(statement[1].value,guards))continue;
                 let profile=storefrontMetadataGuard(statement[1].value,restoredDefinitions(sql));
                 if (!profile.length && (profileRefusal(statement[1].value,guards)||fingerprintRefusal(statement[1].value,guards)))continue;
                 if (!profile.length) profile=publicationVisibilityGuard(statement[1].value,restoredDefinitions(sql));
                 if (!profile.length) profile=draftTemplateKeyGuard(statement[1].value,restoredDefinitions(sql));
-                const rows=profile.length?profile:analyzeBlock(statement[1].value, restoredDefinitions(sql));
-                if(!rows.length && !new GuardParser(statement[1].value).parse().nodes.every(node=>node.op==='raise'||readOnlyRefusal(node)))return [];
+                let rows=profile;
+                if(!rows.length) {
+                    try { rows=analyzeBlock(statement[1].value, restoredDefinitions(sql)); }
+                    catch { rows=[]; }
+                }
+                if(!rows.length && !reviewedPreUseBlock(statement[1].value,guards)) {
+                    try {
+                        if(!new GuardParser(statement[1].value).parse().nodes.every(node=>node.op==='raise'||readOnlyRefusal(node)))return [];
+                    } catch { return []; }
+                }
                 guards.push(...rows.map(row=>({...row,guard_start:statement[0].start})));
             } else if(statement[0]?.value==='select' && !/^select pg_advisory_xact_lock \( hashtextextended \( '[^']+' , 0 \) \) ;$/.test(tokenText(statement)))return [];
             else if(statement[0]?.value==='set' && /^set local lock_timeout = '[1-9][0-9]*(?:ms|s)' ;$/.test(tokenText(statement)))continue;

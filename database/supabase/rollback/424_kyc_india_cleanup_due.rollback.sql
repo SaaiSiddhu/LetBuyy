@@ -1,5 +1,33 @@
 -- Restore the pre-cleanup receipt contract only before any India intent exists.
 BEGIN;
+-- Refuse ABI drift before any schema mutation; CREATE OR REPLACE must not add an overload.
+DO $rollback_precondition$
+DECLARE
+  v_expected record;
+  v_live pg_catalog.pg_proc%ROWTYPE;
+  v_count integer;
+BEGIN
+  FOR v_expected IN SELECT * FROM (VALUES
+    ('guard_merchant_kyc_india_receipt_v1', 'public.guard_merchant_kyc_india_receipt_v1()', ARRAY[]::text[], 'trigger', false)
+  ) AS expected(name, signature, input_names, result_type, returns_set)
+  LOOP
+    SELECT count(*) INTO v_count FROM pg_catalog.pg_proc p
+      JOIN pg_catalog.pg_namespace n ON n.oid = p.pronamespace
+     WHERE n.nspname = 'public' AND p.proname = v_expected.name;
+    IF v_count <> 1 OR pg_catalog.to_regprocedure(v_expected.signature) IS NULL THEN
+      RAISE EXCEPTION 'rollback 424 refuses to run: % signature or overload set changed', v_expected.name;
+    END IF;
+    SELECT * INTO v_live FROM pg_catalog.pg_proc p
+     WHERE p.oid = pg_catalog.to_regprocedure(v_expected.signature);
+    IF COALESCE(v_live.proargnames[1:v_live.pronargs], ARRAY[]::text[]) IS DISTINCT FROM v_expected.input_names
+       OR v_live.prorettype IS DISTINCT FROM v_expected.result_type::regtype
+       OR v_live.proretset IS DISTINCT FROM v_expected.returns_set
+       OR v_live.prokind <> 'f' THEN
+      RAISE EXCEPTION 'rollback 424 refuses to run: % input names or result ABI changed', v_expected.name;
+    END IF;
+  END LOOP;
+END;
+$rollback_precondition$;
 DO $guard$
 BEGIN
   IF EXISTS (SELECT 1 FROM public.kyc_private_object_cleanup_jobs

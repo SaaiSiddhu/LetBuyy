@@ -41,7 +41,7 @@ const PROFILE_GUARDED = [
     '411_authoritative_checkout_gst.rollback.sql',
 ];
 
-const CANDIDATE_GUARDED = [280,285,288,291,293,294,296,303,305,411];
+const CANDIDATE_GUARDED = [280,285,288,291,293,294,296,303,305,401,410,411,412,414,416,421,422,424,425];
 
 const rollbackFiles = () => readdirSync(rollbackDir).filter((n) => n.endsWith('.sql')).sort();
 const read = (name) => readFileSync(join(rollbackDir, name), 'utf8');
@@ -138,7 +138,7 @@ test('candidate guards bind every restored ABI and precede any schema or functio
         assert.match(sql,/^BEGIN;$/m);
         assert.match(sql,/^COMMIT;$/m);
     }
-    assert.equal(restorers,17);
+    assert.equal(restorers,27);
 });
 
 test('current Console, staff and subscription rollback guards bind all live signatures before mutation', () => {
@@ -847,4 +847,25 @@ test('current cart snapshot rollback retains four complete ABI proofs and refuse
   assert.ok(original.includes(before),before);
   assert.deepEqual(guardedRestorations(original.replace(before,after)),[],before);
  }
+});
+
+test('Wave 6 pre-use refusals cannot hide a write or user RPC after a typed guard',()=>{
+    const sql=read('410_checkout_custom_host_derivation.rollback.sql');
+    assert.deepEqual(guardedRestorations(sql),['guard_checkout_domain_v1']);
+    const oldBlock='DO $$ BEGIN';
+    for(const injected of [
+        'PERFORM public.unknown_mutation();',
+        "EXECUTE 'DROP FUNCTION public.guard_checkout_domain_v1()';",
+        'UPDATE public.site_domains SET purpose=purpose;',
+        'SELECT public.unknown_mutation();',
+        'COMMIT;'
+    ]) {
+        const changed=sql.replace(oldBlock,()=>oldBlock+' '+injected);
+        assert.notEqual(changed,sql);
+        assert.deepEqual(guardedRestorations(changed),[],injected);
+    }
+    const invoice=read('412_invoice_checkout_fact_parity.rollback.sql');
+    assert.deepEqual(guardedRestorations(invoice),['issue_gst_invoice','capture_order_lifecycle_email_v1']);
+    assert.deepEqual(guardedRestorations(invoice.replace('EXECUTE d;','EXECUTE d; EXECUTE d;')),[],
+        'the dynamic invoice rollback boundary must stay exactly pinned');
 });
