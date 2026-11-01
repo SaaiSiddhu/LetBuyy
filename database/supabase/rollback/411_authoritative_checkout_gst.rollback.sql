@@ -1,5 +1,37 @@
 -- Pre-use schema rollback only. Used financial snapshots must be preserved.
 BEGIN;
+-- The rollback restores four historical order writers. Refuse any later ABI
+-- before the first schema change so CREATE OR REPLACE cannot add an overload.
+DO $rollback_precondition$
+DECLARE
+  v_expected record;
+  v_live pg_catalog.pg_proc%ROWTYPE;
+  v_count integer;
+BEGIN
+  FOR v_expected IN SELECT * FROM (VALUES
+    ('create_checkout_order', 'public.create_checkout_order(uuid,text,text,text,jsonb,jsonb,text,text,text,text,text,text,uuid,text,uuid,numeric,text,jsonb,uuid,bigint)', ARRAY['p_store_id','p_customer_name','p_customer_email','p_customer_phone','p_shipping_address','p_items','p_payment_method','p_notes','p_coupon_code','p_gift_card_code','p_shipping_method','p_idempotency_key','p_actor_id','p_request_id','p_shipping_rate_id','p_tax_amount','p_place_of_supply_state','p_tax_lines','p_buyer_account_id','p_loyalty_points']::text[], 'jsonb', false),
+    ('create_storefront_checkout_order_with_delivery_rate', 'public.create_storefront_checkout_order_with_delivery_rate(uuid,text,text,text,jsonb,jsonb,text,text,text,text,text,text,uuid,text,uuid,numeric,text,jsonb,uuid,integer,numeric)', ARRAY['p_store_id','p_customer_name','p_customer_email','p_customer_phone','p_shipping_address','p_items','p_payment_method','p_notes','p_coupon_code','p_gift_card_code','p_shipping_method','p_idempotency_key','p_actor_id','p_request_id','p_shipping_rate_id','p_tax_amount','p_place_of_supply_state','p_tax_lines','p_buyer_account_id','p_buyer_session_epoch','p_expected_shipping_amount']::text[], 'jsonb', false),
+    ('create_marketplace_checkout_order', 'public.create_marketplace_checkout_order(uuid,text,text,text,jsonb,jsonb,text,text,text,text,text,text,uuid,text,uuid,numeric,text,jsonb,uuid,integer)', ARRAY['p_store_id','p_customer_name','p_customer_email','p_customer_phone','p_shipping_address','p_items','p_payment_method','p_notes','p_coupon_code','p_gift_card_code','p_shipping_method','p_idempotency_key','p_actor_id','p_request_id','p_shipping_rate_id','p_tax_amount','p_place_of_supply_state','p_tax_lines','p_buyer_account_id','p_buyer_session_epoch']::text[], 'jsonb', false),
+    ('create_marketplace_checkout_order_with_delivery_rate', 'public.create_marketplace_checkout_order_with_delivery_rate(uuid,text,text,text,jsonb,jsonb,text,text,text,text,text,text,uuid,text,uuid,numeric,text,jsonb,uuid,integer,numeric)', ARRAY['p_store_id','p_customer_name','p_customer_email','p_customer_phone','p_shipping_address','p_items','p_payment_method','p_notes','p_coupon_code','p_gift_card_code','p_shipping_method','p_idempotency_key','p_actor_id','p_request_id','p_shipping_rate_id','p_tax_amount','p_place_of_supply_state','p_tax_lines','p_buyer_account_id','p_buyer_session_epoch','p_expected_shipping_amount']::text[], 'jsonb', false)
+  ) AS expected(name, signature, input_names, result_type, returns_set)
+  LOOP
+    SELECT count(*) INTO v_count FROM pg_catalog.pg_proc p
+      JOIN pg_catalog.pg_namespace n ON n.oid = p.pronamespace
+     WHERE n.nspname = 'public' AND p.proname = v_expected.name;
+    IF v_count <> 1 OR pg_catalog.to_regprocedure(v_expected.signature) IS NULL THEN
+      RAISE EXCEPTION 'rollback 411 refuses to run: % signature or overload set changed', v_expected.name;
+    END IF;
+    SELECT * INTO v_live FROM pg_catalog.pg_proc p
+     WHERE p.oid = pg_catalog.to_regprocedure(v_expected.signature);
+    IF COALESCE(v_live.proargnames[1:v_live.pronargs], ARRAY[]::text[]) IS DISTINCT FROM v_expected.input_names
+       OR v_live.prorettype IS DISTINCT FROM v_expected.result_type::regtype
+       OR v_live.proretset IS DISTINCT FROM v_expected.returns_set
+       OR v_live.prokind <> 'f' THEN
+      RAISE EXCEPTION 'rollback 411 refuses to run: % input names or result ABI changed', v_expected.name;
+    END IF;
+  END LOOP;
+END;
+$rollback_precondition$;
 ALTER TABLE public.shipping_zones DROP CONSTRAINT shipping_zone_profile_same_site_v1;
 DO $$ BEGIN
   IF EXISTS(SELECT 1 FROM public.orders WHERE tax_snapshot<>'{}'::jsonb) THEN

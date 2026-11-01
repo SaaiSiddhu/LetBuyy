@@ -35,9 +35,13 @@ const GUARDED = [
 // Rollbacks written after this phase are held to the forward rule below. Earlier files are covered
 // by the explicit list above; raising this number is not a fix.
 const RATCHET_FROM_EXCLUSIVE = 245;
-const PROFILE_GUARDED = ['388_cart_order_fact_snapshots.rollback.sql'];
+// These use the stronger finite typed-ABI guard checked by guardedRestorations.
+const PROFILE_GUARDED = [
+    '388_cart_order_fact_snapshots.rollback.sql',
+    '411_authoritative_checkout_gst.rollback.sql',
+];
 
-const CANDIDATE_GUARDED = [280,285,288,291,293,294,296,303,305];
+const CANDIDATE_GUARDED = [280,285,288,291,293,294,296,303,305,411];
 
 const rollbackFiles = () => readdirSync(rollbackDir).filter((n) => n.endsWith('.sql')).sort();
 const read = (name) => readFileSync(join(rollbackDir, name), 'utf8');
@@ -134,7 +138,7 @@ test('candidate guards bind every restored ABI and precede any schema or functio
         assert.match(sql,/^BEGIN;$/m);
         assert.match(sql,/^COMMIT;$/m);
     }
-    assert.equal(restorers,13);
+    assert.equal(restorers,17);
 });
 
 test('current Console, staff and subscription rollback guards bind all live signatures before mutation', () => {

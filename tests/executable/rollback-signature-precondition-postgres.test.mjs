@@ -66,6 +66,7 @@ const CANDIDATE_ROLLBACKS = new Map([
     [324, '324_canonical_merchant_staff_invitations'],
     [328, '328_subscription_checkout_source'],
     [329, '329_approved_operator_mfa_reset'],
+    [411, '411_authoritative_checkout_gst'],
 ]);
 const ALL_SNAPSHOTS = new Map([...GUARDED_ROLLBACKS, ...CANDIDATE_ROLLBACKS]);
 
@@ -207,7 +208,7 @@ test('every candidate restorer refuses an extra overload, changed typed ABI, inp
             checked += 1;
         }
     }
-    assert.equal(checked,20,'each of the 20 current restored signatures receives real database drift/negative controls, including both intentional MFA overloads');
+    assert.equal(checked,24,'each of the 24 current restored signatures receives real database drift/negative controls, including both intentional MFA overloads');
 });
 
 test('the database starts clean: exactly one create_checkout_order, taking 20 parameters', { skip }, () => {
