@@ -186,7 +186,7 @@ test('read transport adds a finite deadline, composes caller cancellation, and l
         'next/headers': { cookies: async () => ({ get: () => undefined }) },
         'next/server': { NextResponse: { json: Response.json } },
         '@letbuyy/api-client': { resolveLetbuyyApiBaseUrl: () => 'http://gateway.invalid/v1' },
-        '@letbuyy/auth-core': { LETBUYY_MERCHANT_SESSION_COOKIE: 'lb_session' },
+        '@letbuyy/auth-core': { resolveLetbuyyPlatformCookieNames: () => ({ session: 'lb_session' }) },
     }, {
         fetch: async (url, init) => { calls.push({ url, init }); return Response.json({}); },
         AbortSignal: { timeout: ms => { deadlines.push(ms); return AbortSignal.timeout(ms); }, any: signals => AbortSignal.any(signals) },
@@ -329,7 +329,7 @@ test('best-effort logout bounds a stalled identity request and still clears only
     const { POST } = load('../src/app/api/auth/logout/route.ts', {
         'next/server': { NextResponse: { json: Response.json } },
         'next/headers': { cookies: async () => ({ get: () => ({ value: 'synthetic-session' }), set: (...args) => cleared.push(args) }) },
-        '@letbuyy/auth-core': { LETBUYY_MERCHANT_SESSION_COOKIE: 'lb_session' },
+        '@letbuyy/auth-core': { resolveLetbuyyPlatformCookieNames: () => ({ session: 'lb_session' }) },
         '@/lib/public-urls': { getAccountsUrl: (path = '') => 'https://identity.example.invalid' + path, getAdminUrl: () => 'https://merchant.example.invalid' },
     }, {
         process: { env: { NODE_ENV: 'development' } },
@@ -462,7 +462,7 @@ function publicUrls() {
 test('sign-in return uses the configured app origin and preserves the merchant path/query', () => {
     const { proxy } = load('../src/proxy.ts', {
         'next/server': { NextResponse: { redirect: value => Response.redirect(value, 307), next: () => new Response() } },
-        '@letbuyy/auth-core': { LETBUYY_MERCHANT_SESSION_COOKIE: 'lb_session', verifyLetbuyySessionCookieValue: () => ({ accepted: false }) },
+        '@letbuyy/auth-core': { resolveLetbuyyPlatformCookieNames: () => ({ session: 'lb_session' }), verifyLetbuyySessionCookieValue: () => ({ accepted: false }) },
         '@/lib/public-urls': publicUrls(),
     });
     const request = new NextRequest('http://127.0.0.1:9141/snazz/products?status=draft', { headers: { host: 'untrusted.example.invalid', 'x-forwarded-host': 'untrusted.example.invalid' } });
@@ -485,7 +485,7 @@ test('private proxy overwrites forged return context with the actual route', () 
     const urls = publicUrls();
     const { proxy } = load('../src/proxy.ts', {
         'next/server': { NextResponse: { next: value => value } },
-        '@letbuyy/auth-core': { LETBUYY_MERCHANT_SESSION_COOKIE: 'lb_session', verifyLetbuyySessionCookieValue: () => ({ accepted: true }) },
+        '@letbuyy/auth-core': { resolveLetbuyyPlatformCookieNames: () => ({ session: 'lb_session' }), verifyLetbuyySessionCookieValue: () => ({ accepted: true }) },
         '@/lib/public-urls': urls,
     });
     const request = new NextRequest('http://127.0.0.1:9141/alpha/products?status=draft', { headers: { [urls.MERCHANT_RETURN_PATH_HEADER]: '//foreign.example.invalid' } });

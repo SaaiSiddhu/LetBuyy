@@ -4,13 +4,20 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/store_model.dart';
 import '../services/store_service.dart';
 import '../services/api_client.dart';
+import '../config/app_config.dart';
 
 class StoreContext extends ChangeNotifier {
-  StoreContext({required StoreService storeService, SharedPreferences? prefs})
-    : _storeService = storeService,
-      _prefs = prefs;
+  StoreContext({
+    required StoreService storeService,
+    SharedPreferences? prefs,
+    String environment = AppConfig.environment,
+  }) : _storeService = storeService,
+       _prefs = prefs,
+       _selectedStoreIdKey = environment == 'staging'
+           ? 'letbuyy.selected_store_id.staging'
+           : 'letbuyy.selected_store_id';
 
-  static const String _selectedStoreIdKey = 'letbuyy.selected_store_id';
+  final String _selectedStoreIdKey;
 
   final StoreService _storeService;
   SharedPreferences? _prefs;
@@ -226,8 +233,11 @@ class StoreContext extends ChangeNotifier {
     final prefs = await _preferences();
     _checkEpoch(epoch);
     final savedId = prefs.getString(_selectedStoreIdKey);
-    final targetId = _selectedStore?.id ??
-        (savedId?.isNotEmpty == true ? savedId : _storeService.currentStore?.id);
+    final targetId =
+        _selectedStore?.id ??
+        (savedId?.isNotEmpty == true
+            ? savedId
+            : _storeService.currentStore?.id);
     final selected = stores.firstWhere(
       (store) => store.id == targetId,
       orElse: () => stores.first,

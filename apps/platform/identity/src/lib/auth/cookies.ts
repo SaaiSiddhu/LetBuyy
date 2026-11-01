@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers'
 import { SignJWT, jwtVerify } from 'jose'
-import { LETBUYY_MERCHANT_SESSION_COOKIE } from '@letbuyy/auth-core'
+import { resolveLetbuyyPlatformCookieNames } from '@letbuyy/auth-core'
 import { isProductionIdentityRuntime } from '@/lib/dev-auth-bypass'
 
 /**
@@ -39,18 +39,11 @@ function getLegacySigningKey(): Uint8Array | null {
     if (value.length < 16) return null
     return new TextEncoder().encode(value)
 }
-const PASSWORD_SET_INTENT_COOKIE = 'lb_password_set_intent'
 const PASSWORD_SET_INTENT_TTL_SECONDS = 15 * 60
 const ACCOUNTS_COOKIE_TTL_SECONDS = 90 * 24 * 60 * 60
 
 // Cookie names
-export const COOKIE_NAMES = {
-    session: LETBUYY_MERCHANT_SESSION_COOKIE,
-    csrf: 'letbuyy_csrf',
-    accounts: 'lb_accounts',
-    device: 'lb_device',
-    passwordSetIntent: PASSWORD_SET_INTENT_COOKIE,
-} as const
+export const COOKIE_NAMES = resolveLetbuyyPlatformCookieNames(process.env.NEXT_PUBLIC_ENV)
 
 /**
  * Platform (merchant/staff/partner) session realm.

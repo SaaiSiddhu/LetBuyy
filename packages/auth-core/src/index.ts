@@ -135,6 +135,18 @@ export const AUTH_TOKEN_EXPIRY_MS: Record<AuthTokenType, number> = {
 export const AUTH_OTP_EXPIRY_MS = 10 * 60 * 1000;
 export const AUTH_SESSION_DURATION_MS = 30 * 24 * 60 * 60 * 1000;
 export const LETBUYY_MERCHANT_SESSION_COOKIE = 'lb_session';
+/** One platform session contract, with isolated names for the staging deployment. */
+export function resolveLetbuyyPlatformCookieNames(environment?: string) {
+  const suffix = environment?.trim().toLowerCase() === 'staging' ? '_staging' : '';
+  return {
+    session: `${LETBUYY_MERCHANT_SESSION_COOKIE}${suffix}`,
+    csrf: `letbuyy_csrf${suffix}`,
+    legacyCsrf: `lb_csrf${suffix}`,
+    accounts: `lb_accounts${suffix}`,
+    device: `lb_device${suffix}`,
+    passwordSetIntent: `lb_password_set_intent${suffix}`,
+  } as const;
+}
 export const LETBUYY_CUSTOMER_SESSION_COOKIE = 'lb_customer_session';
 /**
  * Marketplace buyer session (D-8, 2026-09-05).

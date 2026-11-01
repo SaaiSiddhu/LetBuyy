@@ -21,6 +21,7 @@ class ApiClient {
     RequestIdFactory? requestIdFactory,
     ApiUnauthorizedHandler? unauthorizedHandler,
     bool attachSessionCookie = false,
+    String sessionCookieName = 'lb_session',
     Dio? dio,
     Duration connectTimeout = const Duration(seconds: 30),
     Duration receiveTimeout = const Duration(seconds: 30),
@@ -35,10 +36,17 @@ class ApiClient {
        _requestIdFactory = requestIdFactory,
        _unauthorizedHandler = unauthorizedHandler,
        _attachSessionCookie = attachSessionCookie,
+       _sessionCookieName = sessionCookieName,
        _maxRetries = maxRetries,
        _dio = dio ?? Dio() {
     if (baseUrl.trim().isEmpty) {
       throw ArgumentError('LetBuyy API client requires a baseUrl');
+    }
+    if (!const {
+      'lb_session',
+      'lb_session_staging',
+    }.contains(sessionCookieName)) {
+      throw ArgumentError('Unsupported Merchant session cookie name');
     }
 
     final trimmedBase = _trimTrailingSlash(baseUrl.trim());
@@ -66,6 +74,7 @@ class ApiClient {
         defaultHeaders: _defaultHeaders,
         requestIdFactory: _requestIdFactory,
         attachSessionCookie: _attachSessionCookie,
+        sessionCookieName: _sessionCookieName,
         contextVersionProvider: _contextVersionProvider,
       ),
     );
@@ -129,6 +138,7 @@ class ApiClient {
   final RequestIdFactory? _requestIdFactory;
   final ApiUnauthorizedHandler? _unauthorizedHandler;
   final bool _attachSessionCookie;
+  final String _sessionCookieName;
   final Dio _dio;
   final int _maxRetries;
 
@@ -153,6 +163,7 @@ class ApiClient {
     RequestIdFactory? requestIdFactory,
     ApiUnauthorizedHandler? unauthorizedHandler,
     bool? attachSessionCookie,
+    String? sessionCookieName,
     Dio? dio,
     int? maxRetries,
   }) {
@@ -168,6 +179,7 @@ class ApiClient {
       requestIdFactory: requestIdFactory ?? _requestIdFactory,
       unauthorizedHandler: unauthorizedHandler ?? _unauthorizedHandler,
       attachSessionCookie: attachSessionCookie ?? _attachSessionCookie,
+      sessionCookieName: sessionCookieName ?? _sessionCookieName,
       dio: dio ?? Dio(),
       maxRetries: maxRetries ?? _maxRetries,
     );
@@ -3798,6 +3810,7 @@ class _AuthHeaderInterceptor extends Interceptor {
     required this.defaultHeaders,
     required this.requestIdFactory,
     required this.attachSessionCookie,
+    required this.sessionCookieName,
     required this.contextVersionProvider,
   });
 
@@ -3808,6 +3821,7 @@ class _AuthHeaderInterceptor extends Interceptor {
   final Map<String, String> defaultHeaders;
   final RequestIdFactory? requestIdFactory;
   final bool attachSessionCookie;
+  final String sessionCookieName;
   final Object? Function()? contextVersionProvider;
 
   @override
@@ -3840,7 +3854,8 @@ class _AuthHeaderInterceptor extends Interceptor {
         options.headers['X-LetBuyy-Session-Token'] = token;
         options.headers['Cookie'] = _appendCookieHeader(
           options.headers['Cookie']?.toString(),
-          'lb_session=$token',
+          sessionCookieName,
+          token,
         );
       }
     }
@@ -3877,10 +3892,19 @@ class _AuthHeaderInterceptor extends Interceptor {
   }
 }
 
-String _appendCookieHeader(String? existing, String cookie) {
-  if (existing == null || existing.trim().isEmpty) return cookie;
-  if (existing.contains('lb_session=')) return existing;
-  return '$existing; $cookie';
+String _appendCookieHeader(String? existing, String name, String token) {
+  final parts = (existing ?? '')
+      .split(';')
+      .map((value) => value.trim())
+      .where(
+        (value) =>
+            value.isNotEmpty &&
+            !const {
+              'lb_session',
+              'lb_session_staging',
+            }.contains(value.split('=').first),
+      );
+  return [...parts, '$name=$token'].join('; ');
 }
 
 String _requestIdFromResponse(Response<Object?> response) {

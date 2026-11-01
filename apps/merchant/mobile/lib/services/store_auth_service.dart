@@ -103,20 +103,35 @@ class StoreAuthService extends ChangeNotifier {
     TurnstileTokenProvider? turnstileTokenProvider,
     FlutterSecureStorage? secureStorage,
     http.Client? httpClient,
+    String sessionCookieName = 'lb_session',
+    String csrfCookieName = 'letbuyy_csrf',
   }) : _api = api,
+       _sessionCookieName = sessionCookieName,
+       _csrfCookieName = csrfCookieName,
        _identityBaseUrl = _trimTrailingSlash(identityBaseUrl),
        _mobileBffBaseUrl = mobileBffBaseUrl == null
            ? null
            : _trimTrailingSlash(mobileBffBaseUrl),
        _turnstileTokenProvider = turnstileTokenProvider,
        _secureStorage = secureStorage ?? const FlutterSecureStorage(),
-       _http = httpClient ?? http.Client();
+       _http = httpClient ?? http.Client() {
+    if (!const {
+          'lb_session',
+          'lb_session_staging',
+        }.contains(sessionCookieName) ||
+        csrfCookieName !=
+            (sessionCookieName == 'lb_session_staging'
+                ? 'letbuyy_csrf_staging'
+                : 'letbuyy_csrf')) {
+      throw ArgumentError('Merchant session and CSRF namespaces must match.');
+    }
+  }
 
-  static const _sessionTokenKey = 'lb_session';
-  static const _sessionUserKey = 'lb_session_user';
-  static const _sessionExpiresAtKey = 'lb_session_expires_at';
-  static const _csrfCookieName = 'letbuyy_csrf';
-  static const _sessionCookieName = 'lb_session';
+  String get _sessionTokenKey => _sessionCookieName;
+  String get _sessionUserKey => '${_sessionCookieName}_user';
+  String get _sessionExpiresAtKey => '${_sessionCookieName}_expires_at';
+  final String _csrfCookieName;
+  final String _sessionCookieName;
 
   final ApiClient _api;
   final String _identityBaseUrl;
@@ -503,10 +518,12 @@ class StoreAuthService extends ChangeNotifier {
     }
   }
 
-  String? _csrfFromJar() =>
-      _identityCookies[_csrfCookieName] ??
-      _identityCookies['__Host-letbuyy_csrf'] ??
-      _identityCookies['lb_csrf'];
+  String? _csrfFromJar() => _sessionCookieName == 'lb_session_staging'
+      ? (_identityCookies[_csrfCookieName] ??
+            _identityCookies['lb_csrf_staging'])
+      : (_identityCookies[_csrfCookieName] ??
+            _identityCookies['__Host-letbuyy_csrf'] ??
+            _identityCookies['lb_csrf']);
 
   String _cookieHeader({Map<String, String> extra = const {}}) {
     final cookies = <String, String>{..._identityCookies, ...extra};

@@ -5,6 +5,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:uuid/uuid.dart';
 
 import 'api_client.dart';
+import '../config/app_config.dart';
 
 typedef MerchantSecurityContext = ({
   String actorId,
@@ -36,11 +37,14 @@ class PendingSecurityCommand {
 class SecurityCommandStore {
   SecurityCommandStore({
     FlutterSecureStorage storage = const FlutterSecureStorage(),
-  }) : _storage = storage;
+    String environment = AppConfig.environment,
+  }) : _storage = storage,
+       _namespace = environment == 'staging' ? 'staging:' : '';
   final FlutterSecureStorage _storage;
+  final String _namespace;
   static Future<void>? _tail;
   String _name(MerchantSecurityContext c, String command) =>
-      'letbuyy.security.command.v1:${c.actorId}:${c.storeId}:$command';
+      'letbuyy.security.command.v1:$_namespace${c.actorId}:${c.storeId}:$command';
   static Object? _ordered(Object? value) => value is Map
       ? {
           for (final key

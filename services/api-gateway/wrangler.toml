@@ -158,7 +158,7 @@ WHATSAPP_PROVIDER = "letbuyy_sandbox"
 REQUEST_LOG_SAMPLE_RATE = "0.02"
 RUNTIME_NAME = "LetBuyy API Staging"
 PRIMARY_REGION = "ap-south-1"
-EDGE_SCOPE = "global-edge"
+# EDGE_SCOPE uses the existing global-edge default; preserve the Free-plan secret budget.
 ASSET_PUBLIC_BASE_URL = "https://cdn-staging.letbuyy.com"
 UPLOAD_PUBLIC_BASE_URL = "https://api-staging.letbuyy.com/assets"
 CHECKOUT_ORIGIN = "https://checkout-staging.letbuyy.com"

@@ -79,7 +79,14 @@ void main() {
       GoogleFonts.config.allowRuntimeFetching = true;
       late final StoreAuthService authService;
       final cacheService = await CacheService.open(
-        actorIdProvider: () => authService.currentUser?.id,
+        actorIdProvider: () {
+          final actor = authService.currentUser?.id;
+          return actor == null
+              ? null
+              : AppConfig.environment == 'staging'
+              ? 'staging:$actor'
+              : actor;
+        },
       );
 
       // Shared API gateway client injected into all services.
@@ -93,6 +100,7 @@ void main() {
         unauthorizedHandler: (exception) =>
             authService.handleUnauthorized(exception),
         attachSessionCookie: true,
+        sessionCookieName: AppConfig.sessionCookieName,
         headers: const {'X-Client': 'flutter-builder'},
         requestIdFactory: () =>
             'flutter-builder-${DateTime.now().microsecondsSinceEpoch}',
@@ -101,6 +109,8 @@ void main() {
         api: apiClient,
         identityBaseUrl: AppConfig.identityBaseUrl,
         mobileBffBaseUrl: AppConfig.bffBaseUrl,
+        sessionCookieName: AppConfig.sessionCookieName,
+        csrfCookieName: AppConfig.csrfCookieName,
         turnstileTokenProvider: () => AppConfig.turnstileToken,
       );
       final nativePush = NativePushService(

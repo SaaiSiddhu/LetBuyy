@@ -2,6 +2,11 @@
 class AppConfig {
   AppConfig._();
 
+  static String get sessionCookieName =>
+      environment == 'staging' ? 'lb_session_staging' : 'lb_session';
+  static String get csrfCookieName =>
+      environment == 'staging' ? 'letbuyy_csrf_staging' : 'letbuyy_csrf';
+
   /// Checked before restoring a session or constructing authenticated clients.
   /// A staging label must never turn production defaults into a test backend.
   static String? endpointConfigurationError({
