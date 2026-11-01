@@ -1,0 +1,133 @@
+{
+  "status": "FULL_RUN_RED_FOUR_FOCUSED_REPAIRS_GREEN",
+  "date": "2026-11-02",
+  "command": "pnpm run test",
+  "fullRun": {
+    "exitCode": 1,
+    "tests": 5746,
+    "pass": 5725,
+    "fail": 6,
+    "skipped": 15,
+    "source": {
+      "tests": 3163,
+      "pass": 3148,
+      "fail": 0,
+      "skipped": 15
+    },
+    "postgres": {
+      "suites": 63,
+      "tests": 320,
+      "pass": 320,
+      "fail": 0
+    },
+    "gatewayDatabase": {
+      "suites": 218,
+      "tests": 1899,
+      "pass": 1894,
+      "fail": 5
+    },
+    "contracts": {
+      "tests": 364,
+      "pass": 363,
+      "fail": 1
+    },
+    "ownedRunner": {
+      "runId": "21230636decb",
+      "suites": 281,
+      "tests": 2219,
+      "pass": 2214,
+      "fail": 5,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "failures": [
+      "merchant-money-approval.postgres",
+      "niche-theme-promotion.postgres",
+      "storefront-web-onboarding-browser.postgres",
+      "subscription-checkout-browser.postgres",
+      "native-core-storefront-browser.postgres",
+      "workspace-test-runner contract"
+    ]
+  },
+  "focusedRepairs": [
+    {
+      "name": "merchant-money-approval",
+      "runId": "ba5d57b84627",
+      "tests": 23,
+      "pass": 23,
+      "fail": 0,
+      "skipped": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    {
+      "name": "storefront-web-onboarding-browser",
+      "runId": "bb80348914db",
+      "tests": 1,
+      "pass": 1,
+      "fail": 0,
+      "skipped": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    {
+      "name": "subscription-checkout-browser",
+      "runId": "316902bf2a76",
+      "tests": 1,
+      "pass": 1,
+      "fail": 0,
+      "skipped": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    {
+      "name": "native-core-storefront-browser",
+      "runId": "372738ce5406",
+      "tests": 1,
+      "pass": 1,
+      "fail": 0,
+      "skipped": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    }
+  ],
+  "contractRerun": {
+    "command": "node --import tsx --test tests/contracts/*.test.ts",
+    "tests": 364,
+    "pass": 364,
+    "fail": 0,
+    "skipped": 0
+  },
+  "remainingRedGate": "niche-theme-promotion requires historical default and 2.0.0 bundle parity plus reviewed source provenance; see theme-promotion-drift-2026-11-02.json",
+  "qualification": "Focused green reruns do not rewrite the earlier full-run result. A fresh complete run on the final source is still required before claiming a green behavioral gate. Provider, hosted, physical-device and human gates remain open."
+}

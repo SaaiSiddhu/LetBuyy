@@ -128,7 +128,8 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
   const [created]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname==='/api/auth/create-store'&&r.request().method()==='POST'),page.getByRole('button',{name:'Create My Site',exact:true}).click()]);assert.equal(created.status(),200);
   await page.waitForURL(u=>u.origin===merchantOrigin&&u.pathname===`/${subdomain}/access_account/checkout/select-plan`,{timeout:60_000});await expect(page.getByRole('region',{name:'Available plans'})).toBeVisible();
   const store=JSON.parse(owned.psql(`SELECT jsonb_build_object('count',count(*),'trial_days',max(EXTRACT(EPOCH FROM (trial_ends_at-trial_started_at))/86400),'theme',max(theme_id),'status',max(status))::text FROM sites WHERE custom_user_id=(SELECT id FROM users_custom WHERE email='${email}') AND subdomain='${subdomain}';`));assert.equal(store.count,1);assert.equal(store.trial_days,14,'existing persisted trial policy is preserved');assert.equal(store.status,'draft');
-  await page.goto(`${merchantOrigin}/${subdomain}/dashboard`);await expect(page.getByRole('heading',{name:'Where do you want to start?',exact:true})).toBeVisible();
+  await page.goto(`${merchantOrigin}/${subdomain}/dashboard`);await expect(page.getByRole('heading',{name:'Finish setting up Synthetic Public Store',exact:true})).toBeVisible();
+  await expect(page.getByRole('complementary',{name:'Storefront publication status'})).toContainText('Draft — not visible to visitors');
   const siteId=owned.psql(`SELECT id FROM sites WHERE subdomain='${subdomain}';`),productName='Synthetic Native Variant Product';
   assert.equal(store.theme,'letbuyy-forge','Circuit remains the approved new-store default');
   assert.equal(owned.psql(`SELECT template_config->'liquidBundle'->'package'->>'slug' FROM sites WHERE id='${siteId}';`),'letbuyy-forge');
@@ -176,7 +177,7 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
   const [rateSaved]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname.endsWith('/shipping/rates')&&r.request().method()==='POST'),page.getByRole('button',{name:'Add rate',exact:true}).last().click()]);assert.equal(rateSaved.status(),201);
   stage='merged-theme-workspace';console.info('OWNED_NATIVE_STAGE merged-theme-workspace');await page.goto(`${merchantOrigin}/${subdomain}/online-store/themes`);
   await expect(page.getByRole('region',{name:'Discover themes',exact:true})).toBeVisible();
-  await expect(page.locator('article[aria-label$="catalog theme"]')).toHaveCount(10);
+  await expect(page.getByRole('region',{name:'Discover themes',exact:true}).locator('article[aria-label$=" theme"]')).toHaveCount(5);
   // This journey qualifies the retained Core compatibility package, not the
   // new-store default. Grant only a labelled synthetic upload entitlement and
   // install the real bundle through the normal file input; no store/theme SQL seed.
