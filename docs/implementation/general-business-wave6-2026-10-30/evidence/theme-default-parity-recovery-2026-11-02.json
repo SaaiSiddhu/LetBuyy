@@ -30,7 +30,10 @@
   },
   "remainingPromotionGate": {
     "sourceHashDrifts": 22,
-    "unreviewedSourceHashDrifts": 18,
+    "sourceHashDriftsWithoutValidSuccessor": 20,
+    "unlistedSuccessors": 17,
+    "successorsWithWrongAdmittedHash": 2,
+    "successorsWithWrongCurrentHash": 1,
     "admittedV2FactoryDrifts": 9,
     "admittedV2FactoryCount": 9,
     "admissionAndMigrationBytesChanged": false,
