@@ -115,3 +115,4 @@ export { assumeKycIndiaUploadRole, kycIndiaUploadSessionPolicy,
   type KycIndiaUploadRoleInput, type KycIndiaUploadCredentials } from './kyc-india-s3-sts';
 export { parseKycIndiaGuardDutyEvent, type KycIndiaGuardDutyExpectation,
   type KycIndiaScanResult } from './kyc-india-guardduty-event';
+export { signKycIndiaS3ReviewUrl, type KycIndiaS3ReviewUrlInput } from './kyc-india-s3-review-url';

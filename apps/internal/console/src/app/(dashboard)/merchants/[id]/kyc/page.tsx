@@ -69,6 +69,7 @@ export default async function MerchantKycReviewPage({ params, searchParams }: Pa
                             <StatusPill value={row.malware_scan_status === 'pending' ? 'no scan result' : `scan ${row.malware_scan_status}`} />
                             {row.has_private_upload && row.malware_scan_status === 'clean' ?
                                 <a href={`/api/kyc-evidence/${id}/${row.id}?reason=${encodeURIComponent(reason)}`}
+                                    rel="noreferrer"
                                     className="text-sm font-medium text-[var(--lb-color-primary)] underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]">
                                     Download evidence
                                 </a> : null}

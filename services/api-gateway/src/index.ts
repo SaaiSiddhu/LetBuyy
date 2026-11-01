@@ -264,6 +264,11 @@ export interface Env {
     KYC_INDIA_HEAD_ACCESS_KEY_ID?: string;
     KYC_INDIA_HEAD_SECRET_ACCESS_KEY?: string;
     KYC_INDIA_HEAD_SESSION_TOKEN?: string;
+    /** Owned-test reviewer ticket only until India storage, IAM and privacy gates pass. */
+    KYC_INDIA_REVIEW_ENABLED?: 'true' | 'false';
+    KYC_INDIA_REVIEW_ACCESS_KEY_ID?: string;
+    KYC_INDIA_REVIEW_SECRET_ACCESS_KEY?: string;
+    KYC_INDIA_REVIEW_SESSION_TOKEN?: string;
     /** Approved server-only private-original profile. No default account/binding activation. */
     REEL_CUSTODY_PROFILE?: string;
     REEL_ORIGINALS_BUCKET?: R2Bucket;

@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { consoleApiBaseUrl } from '@/lib/console-api';
 import { requireConsoleApiSession } from '@/lib/console-api-auth';
 import { CONSOLE_SESSION_COOKIE } from '@/lib/console-session';
+import { safeKycIndiaReviewRedirect } from '@/lib/kyc-india-review-redirect';
 
 const RequestSchema = z.object({
     siteId: z.string().uuid(),
@@ -32,6 +33,14 @@ export async function GET(request: NextRequest, context: {
         });
     } catch {
         return NextResponse.json({ error: 'Private evidence is temporarily unavailable.' }, { status: 503 });
+    }
+    if (upstream.status === 302) {
+        const location = safeKycIndiaReviewRedirect(upstream.headers.get('location'), siteId);
+        if (!location) return NextResponse.json({ error: 'Private evidence ticket is invalid.' }, { status: 503 });
+        return new Response(null, { status: 302, headers: {
+            Location: location, 'Cache-Control': 'private, no-store, max-age=0',
+            'Referrer-Policy': 'no-referrer', 'X-Content-Type-Options': 'nosniff',
+        } });
     }
     if (!upstream.ok || !upstream.body)
         return NextResponse.json({ error: 'Private evidence cannot be downloaded.' },

@@ -1,5 +1,6 @@
 import { verifyKycIndiaS3Head, type KycIndiaS3HeadExpectation,
   type KycIndiaS3VerifiedObject } from './kyc-india-s3-head';
+import { kycIndiaHex, signKycIndiaS3String } from './kyc-india-sigv4';
 
 /** Backend-only, version-pinned S3 HEAD. Credentials must never reach a browser. */
 export interface KycIndiaS3HeadRequest extends KycIndiaS3HeadExpectation {
@@ -19,24 +20,6 @@ const BUCKET = /^(?=.{3,63}$)[a-z0-9](?:[a-z0-9-]*[a-z0-9])$/;
 const EMPTY_SHA256 = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';
 
 function invalid(): never { throw new Error('KYC_INDIA_S3_HEAD_REQUEST_INVALID'); }
-
-async function hmac(key: Uint8Array, value: string): Promise<Uint8Array> {
-  const imported = await crypto.subtle.importKey('raw', key as BufferSource,
-    { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
-  return new Uint8Array(await crypto.subtle.sign('HMAC', imported, new TextEncoder().encode(value)));
-}
-
-function hex(bytes: Uint8Array): string {
-  return Array.from(bytes, byte => byte.toString(16).padStart(2, '0')).join('');
-}
-
-async function sign(secret: string, date: string, stringToSign: string): Promise<string> {
-  let key = await hmac(new TextEncoder().encode(`AWS4${secret}`), date);
-  key = await hmac(key, 'ap-south-1');
-  key = await hmac(key, 's3');
-  key = await hmac(key, 'aws4_request');
-  return hex(await hmac(key, stringToSign));
-}
 
 export async function headKycIndiaS3Object(
   input: KycIndiaS3HeadRequest,
@@ -73,11 +56,11 @@ export async function headKycIndiaS3Object(
   const signedHeaders = Object.keys(headers).sort().join(';');
   const canonicalHeaders = Object.keys(headers).sort().map(name => `${name}:${headers[name]}\n`).join('');
   const canonicalRequest = `HEAD\n${path}\n${query}\n${canonicalHeaders}\n${signedHeaders}\n${EMPTY_SHA256}`;
-  const canonicalHash = hex(new Uint8Array(await crypto.subtle.digest('SHA-256',
+  const canonicalHash = kycIndiaHex(new Uint8Array(await crypto.subtle.digest('SHA-256',
     new TextEncoder().encode(canonicalRequest))));
   const scope = `${date}/ap-south-1/s3/aws4_request`;
   const stringToSign = `AWS4-HMAC-SHA256\n${amzDate}\n${scope}\n${canonicalHash}`;
-  headers.authorization = `AWS4-HMAC-SHA256 Credential=${input.accessKeyId}/${scope}, SignedHeaders=${signedHeaders}, Signature=${await sign(input.secretAccessKey, date, stringToSign)}`;
+  headers.authorization = `AWS4-HMAC-SHA256 Credential=${input.accessKeyId}/${scope}, SignedHeaders=${signedHeaders}, Signature=${await signKycIndiaS3String(input.secretAccessKey, date, stringToSign)}`;
 
   const { host: _canonicalHost, ...requestHeaders } = headers;
   const response = await fetcher(`https://${host}${path}?${query}`, {
