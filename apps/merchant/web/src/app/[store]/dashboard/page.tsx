@@ -189,19 +189,28 @@ async function loadDashboardHomeData(
             ...recentOrders.map((order) => orderActivity(order)),
             ...recentProducts.map((product) => productActivity(product)),
         ]
+            .filter((item): item is DashboardActivity => item !== null)
             .sort((first, second) => timestampValue(second.timestamp) - timestampValue(first.timestamp))
             .slice(0, 5)
 
+        const completeSummary = summary
+            && Number.isFinite(summary.revenue?.value)
+            && Number.isFinite(summary.revenue?.change_pct)
+            && Number.isFinite(summary.orders?.value)
+            && Number.isFinite(summary.orders?.change_pct)
+            && Number.isFinite(summary.avg_order_value)
+            && Number.isFinite(summary.products)
+
         return {
-            totalRevenue: summary?.revenue?.value || 0,
-            revenueChangePct: summary?.revenue?.change_pct || 0,
-            totalOrders: summary?.orders?.value || 0,
-            ordersChangePct: summary?.orders?.change_pct || 0,
-            totalProducts: summary?.products || recentProductsPayload?.total || 0,
-            avgOrderValue: summary?.avg_order_value || 0,
+            totalRevenue: completeSummary ? summary.revenue.value : 0,
+            revenueChangePct: completeSummary ? summary.revenue.change_pct : 0,
+            totalOrders: completeSummary ? summary.orders.value : 0,
+            ordersChangePct: completeSummary ? summary.orders.change_pct : 0,
+            totalProducts: completeSummary ? summary.products : 0,
+            avgOrderValue: completeSummary ? summary.avg_order_value : 0,
             ordersByStatus: ordersBreakdown?.breakdown || {},
             recentActivity,
-            analyticsAvailable: Boolean(analyticsPayload),
+            analyticsAvailable: Boolean(completeSummary),
         }
     } catch {
         return emptyDashboardHomeData()
@@ -222,11 +231,12 @@ function emptyDashboardHomeData(): DashboardHomeData {
     }
 }
 
-function orderActivity(order: Order): DashboardActivity {
+function orderActivity(order: Order): DashboardActivity | null {
+    if (!order.id || !order.order_number || !order.status || !Number.isFinite(order.total)) return null
     const customer = order.customer_name || order.customer_email || order.customer_phone || 'Customer'
-    const amount = formatInrCurrency(order.total || 0, { maximumFractionDigits: 0 }) || '₹0'
-    const orderId = order.id || crypto.randomUUID()
-    const orderNumber = order.order_number || orderId.slice(0, 8)
+    const amount = formatInrCurrency(order.total, { maximumFractionDigits: 0 })
+    const orderId = order.id
+    const orderNumber = order.order_number
 
     return {
         id: `order-${orderId}`,
@@ -236,14 +246,15 @@ function orderActivity(order: Order): DashboardActivity {
         timestamp: order.created_at || null,
         href: 'orders',
         icon: 'receipt_long',
-        badgeLabel: titleize(order.status || 'pending'),
-        badgeVariant: statusVariant(order.status || 'pending'),
+        badgeLabel: titleize(order.status),
+        badgeVariant: statusVariant(order.status),
     }
 }
 
-function productActivity(product: ProductListSummary): DashboardActivity {
-    const status = product.status || (product.is_active ? 'active' : 'draft')
-    const productId = product.id || crypto.randomUUID()
+function productActivity(product: ProductListSummary): DashboardActivity | null {
+    if (!product.id || !product.name || !product.status) return null
+    const status = product.status
+    const productId = product.id
 
     return {
         id: `product-${productId}`,

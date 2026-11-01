@@ -3,14 +3,11 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import {
-    COMMERCE_OS_HIGHLIGHTS,
-    COMPETITOR_BENCHMARKS,
-    REVENUE_STAGE,
-    TRUST_INDICATORS,
     planAnnualSavingMinor,
     type SubscriptionPlanView,
 } from '@/lib/billing/plan-ui'
 import { Button, Input, MaterialIcon } from '@letbuyy/ui'
+import { MerchantEmptyArtwork } from '@/components/empty-states/MerchantEmptyState'
 
 interface SelectPlanClientProps {
     plans: SubscriptionPlanView[]
@@ -80,7 +77,6 @@ export default function SelectPlanClient({
 
     const compareFeatures = plans.find(p => p.compare_features?.length > 0)?.compare_features || []
     const planSlugs = plans.map(p => p.slug)
-    const shopify = COMPETITOR_BENCHMARKS.shopify
     const compareColumnCount = Math.min(Math.max(plans.length, 1), 6)
     const compareRowClassName = `select-plan-compare-row select-plan-compare-row--${compareColumnCount}`
 
@@ -104,20 +100,6 @@ export default function SelectPlanClient({
                             : 'Everything you need to run your business'}
                 </h1>
 
-                <div className="select-plan-highlights" aria-label="Plan highlights">
-                    {[
-                        { icon: 'language', text: 'Custom domain' },
-                        { icon: 'auto_awesome', text: 'AI built-in' },
-                        { icon: 'monitoring', text: '24/7 monitoring' },
-                        { icon: 'currency_rupee', text: 'Indian INR pricing' },
-                    ].map((highlight, index) => (
-                        <div key={index} className="select-plan-highlight">
-                            <MaterialIcon name={highlight.icon} size={16} className="select-plan-primary-icon" />
-                            <span>{highlight.text}</span>
-                        </div>
-                    ))}
-                </div>
-
                 <div className="select-plan-toggle" role="group" aria-label="Billing period">
                     {(['monthly', 'yearly'] as const).map(period => (
                         <Button unstyled
@@ -128,7 +110,6 @@ export default function SelectPlanClient({
                             aria-pressed={billingPeriod === period}
                         >
                             {period === 'monthly' ? 'Monthly' : 'Annual'}
-                            {period === 'yearly' && <span className="select-plan-save-badge">Save 20%</span>}
                         </Button>
                     ))}
                 </div>
@@ -138,7 +119,7 @@ export default function SelectPlanClient({
                 <section className={cx('select-plan-grid', plans.length <= 2 && 'select-plan-grid--compact')} aria-label="Available plans">
                     {plans.map(plan => {
                         const price = billingPeriod === 'monthly' ? plan.price_monthly_inr : plan.price_yearly_inr
-                        const hasPromo = plan.promo_price_inr > 0 && plan.promo_months > 0
+                        const hasPromo = billingPeriod === 'monthly' && plan.promo_price_inr > 0 && plan.promo_months > 0
                         const isCurrent = currentPlan === plan.slug
                         const isPopular = plan.is_popular
                         const isFree = plan.price_monthly_inr === 0 && plan.price_yearly_inr === 0 && !plan.requires_contact
@@ -160,9 +141,6 @@ export default function SelectPlanClient({
                                 <div className="select-plan-card-heading">
                                     <h2>{plan.name}</h2>
                                     <p>{plan.tagline}</p>
-                                    {REVENUE_STAGE[plan.slug] && !isComingSoon && (
-                                        <p className="select-plan-card-stage">For {REVENUE_STAGE[plan.slug].range}</p>
-                                    )}
                                 </div>
 
                                 <div className="select-plan-price-block">
@@ -238,9 +216,9 @@ export default function SelectPlanClient({
                 </section>
             ) : (
                 <section className="select-plan-empty" aria-live="polite">
-                    <MaterialIcon name="credit_card" size={48} className="select-plan-empty-icon" />
-                    <h2>Plans are loading...</h2>
-                    <p>The plans database has not been set up yet. Contact support if this persists.</p>
+                    <div className="flex justify-center"><MerchantEmptyArtwork scene="plans" /></div>
+                    <h2>No plans available</h2>
+                    <p>Plan options are temporarily unavailable. Please try again later or contact support.</p>
                 </section>
             )}
 
@@ -348,65 +326,6 @@ export default function SelectPlanClient({
                                 {showCompare ? 'See fewer features' : 'See all features'}
                             </Button>
                         </div>
-                    </div>
-                </section>
-            )}
-
-            {shopify && (
-                <section className="lb-switch" aria-label="Why switch to LetBuyy">
-                    <div className="lb-switch-glow" aria-hidden="true" />
-
-                    <div className="lb-switch-head">
-                        <div className="lb-switch-head-copy">
-                            <span className="lb-switch-eyebrow">Why switch from {shopify.name}</span>
-                            <h2 className="lb-switch-title">Everything {shopify.name} charges extra for, included.</h2>
-                            <p className="lb-switch-subtitle">The same store, for a fraction of the cost — with zero commission, forever.</p>
-                        </div>
-                        <div className="lb-switch-savings" role="figure" aria-label={`Save ${shopify.annualSavings} per year versus ${shopify.name} ${shopify.entryPlan}`}>
-                            <span className="lb-switch-savings-num">{shopify.annualSavings}</span>
-                            <span className="lb-switch-savings-label">saved every year vs {shopify.name} {shopify.entryPlan}</span>
-                        </div>
-                    </div>
-
-                    <div className="lb-switch-bento">
-                        {shopify.rows.map((row, index) => (
-                            <div key={index} className="lb-switch-cell">
-                                <span className="lb-switch-cell-feature">{row.feature}</span>
-                                <span className="lb-switch-cell-transform">
-                                    <span className="lb-switch-from">{row.competitor}</span>
-                                    <MaterialIcon name="arrow_forward" size={14} className="lb-switch-arrow" />
-                                    <span className="lb-switch-to">
-                                        <MaterialIcon name="check_circle" size={15} className="lb-switch-check" />
-                                        {row.letbuyy}
-                                    </span>
-                                </span>
-                            </div>
-                        ))}
-                    </div>
-
-                    <div className="lb-switch-os">
-                        <span className="lb-switch-os-eyebrow">Commerce OS</span>
-                        <h3 className="lb-switch-os-title">More than a store. Your Commerce Operating System.</h3>
-                        <p className="lb-switch-os-sub">Unify storefronts, operations, intelligence, AI, B2B, analytics, and execution inside one platform.</p>
-                        <div className="lb-switch-os-grid">
-                            {COMMERCE_OS_HIGHLIGHTS.map((item, index) => (
-                                <div key={index} className="lb-switch-os-item">
-                                    <span className="lb-switch-os-chip">
-                                        <MaterialIcon name={item.icon} size={16} className="lb-switch-os-icon" />
-                                    </span>
-                                    <span>{item.label}</span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    <div className="lb-switch-trust">
-                        {TRUST_INDICATORS.map((indicator, index) => (
-                            <span key={index} className="lb-switch-trust-item">
-                                <MaterialIcon name={indicator.icon} size={15} className="lb-switch-trust-icon" />
-                                {indicator.label}
-                            </span>
-                        ))}
                     </div>
                 </section>
             )}

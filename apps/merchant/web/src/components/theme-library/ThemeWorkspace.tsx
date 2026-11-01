@@ -1,32 +1,30 @@
 'use client';
 import { MerchantNavigationLink as Link } from '@/components/MerchantNavigationLink';
+import { MerchantEmptyArtwork } from '@/components/empty-states/MerchantEmptyState';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useReadRequest } from '@/lib/api/use-read-request';
 import type { ThemeCatalogItem } from '@letbuyy/api-client';
-import { Badge, Banner, Button, Card, PageHeader, Dropdown, ExternalLink, Eye, MoreHorizontal, Modal, Palette, Input, Select, Skeleton, Store, Upload, useToast } from '@letbuyy/ui';
-import { getEditorPreviewBaseUrl, getStorefrontBaseUrl, getStorefrontStoreUrl } from '@/lib/public-urls';
+import { Badge, Banner, Button, Card, PageHeader, Dropdown, ExternalLink, Eye, MoreHorizontal, Modal, Palette, Input, Skeleton, Store, useToast } from '@letbuyy/ui';
+import { getStorefrontBaseUrl, getStorefrontStoreUrl } from '@/lib/public-urls';
 import { ThemeLibraryWorkspace } from './ThemeLibraryWorkspace';
 import { StorefrontVisibility } from './StorefrontVisibility';
 import { addMarketplaceTheme } from '@/lib/themes/marketplace-contract';
+import { catalogArtworkUrl } from '@/lib/themes/catalog-artwork';
 import styles from './theme-workspace.module.css';
 function errorMessage(payload: {
     error?: string | {
         message?: string;
     };
 }, fallback: string) { return typeof payload.error === 'string' ? payload.error : payload.error?.message || fallback; }
-export function ThemeWorkspace({ marketplace = false }: {
-    marketplace?: boolean;
-}) {
+export function ThemeWorkspace({ view = 'overview' }: { view?: 'overview' | 'library' }) {
     const { store } = useParams<{
         store: string;
     }>();
     const [themes, setThemes] = useState<ThemeCatalogItem[]>([]), [current, setCurrent] = useState<ThemeCatalogItem | null>(null);
     const [storeId, setStoreId] = useState<string | null>(null), [status, setStatus] = useState('draft');
     const [loading, setLoading] = useState(true), [error, setError] = useState(''), [busy, setBusy] = useState<string | null>(null);
-    const [revision, setRevision] = useState(0), [search, setSearch] = useState(''), [category, setCategory] = useState('all');
-    const [storefrontRevision, setStorefrontRevision] = useState(0);
-    const [publicPreview, setPublicPreview] = useState<{ store: string; visible: boolean } | null>(null);
+    const [revision, setRevision] = useState(0);
     const [preview, setPreview] = useState<ThemeCatalogItem | null>(null);
     const fileInput = useRef<HTMLInputElement>(null);
     const { notify } = useToast();
@@ -37,7 +35,7 @@ export function ThemeWorkspace({ marketplace = false }: {
         setLoading(true);
         setError('');
         try {
-            const response = await fetch(`/api/themes?store_name=${encodeURIComponent(store)}`, { cache: 'no-store', signal: request.signal }), payload = await response.json();
+            const response = await fetch(`/api/themes?store_name=${encodeURIComponent(store)}&sort=portfolio&limit=5`, { cache: 'no-store', signal: request.signal }), payload = await response.json();
             if (!request.isCurrent()) return;
             if (!response.ok)
                 throw new Error(errorMessage(payload, 'The theme catalog could not load.'));
@@ -93,51 +91,71 @@ export function ThemeWorkspace({ marketplace = false }: {
             setBusy(null);
         }
     };
-    const categories = [...new Set(themes.map(theme => theme.category?.toLowerCase()).filter(Boolean))];
-    const filtered = themes.filter(theme => (category === 'all' || theme.category?.toLowerCase() === category) && `${theme.name} ${theme.description} ${theme.tags?.join(' ')}`.toLowerCase().includes(search.toLowerCase()));
-    const storefront = getStorefrontStoreUrl(store), storefrontFrame = new URL(`/store/${encodeURIComponent(store)}`, getEditorPreviewBaseUrl()).toString(), editor = (slug: string) => `/${store}/online-store/themes/${encodeURIComponent(slug)}/editor`;
+    const storefront = getStorefrontStoreUrl(store), editor = (slug: string) => `/${store}/online-store/themes/${encodeURIComponent(slug)}/editor`;
+    const overviewHref = `/${store}/online-store/themes`;
+    const libraryHref = `${overviewHref}?view=library`;
+    const currentArtwork = current ? catalogArtworkUrl(current) : null;
     return <div className={styles.workspace}>
-  <PageHeader recipe="workbench" title={marketplace ? 'Theme marketplace' : 'Online Store'} icon={<Store aria-hidden="true" className="letbuyy-icon"/>} overflowAction={<div className={styles.actions}>
-   {marketplace ? <Link href={`/${store}/online-store/themes`}>Back to themes</Link> : <StorefrontVisibility key={store} store={store} onLoaded={(loadedStore, visible) => setPublicPreview({ store: loadedStore, visible })} onChanged={() => { setStorefrontRevision(value => value + 1); void load(); }}/>}
-   <a className="themes-button themes-button-secondary" href={storefront} target="_blank" rel="noreferrer"><ExternalLink size={14} aria-hidden="true"/>View store</a>
-   <Dropdown align="end" trigger={<Button variant="secondary" aria-label="More online store actions"><MoreHorizontal size={16}/></Button>} items={[
-            { id: 'preferences', label: 'Storefront preferences', onSelect: () => { router.push(`/${store}/online-store/preferences`); } },
-            { id: 'marketplace', label: 'Browse theme marketplace', onSelect: () => { router.push(`/${store}/online-store/themes/marketplace`); } },
-        ]}/></div>}/>
-  {error && <Banner variant="critical" title="Themes could not load">{error}<Button variant="secondary" onClick={() => void load()}>Retry</Button></Banner>}
-  {!error && <>
-  {!marketplace && <>{loading ? <Skeleton variant="card"/> : <Card className={styles.hero} aria-label="Current theme">
-   <div className={styles.heroMedia}>{current && publicPreview?.store === store && publicPreview.visible ? <iframe key={`${current.slug}:${storefrontRevision}`} title="Current storefront" src={storefrontFrame} loading="lazy" sandbox="allow-scripts allow-same-origin allow-forms" className="theme-current-storefront-frame"/> : current ? <div className={styles.empty}><Palette size={32}/><h2>{status === 'published' ? 'Preview your saved design' : 'Your store is not live yet'}</h2><p>Open the theme editor to preview your saved design.</p></div> : <div className={styles.empty}><Palette size={32}/><h2>Make your store your own</h2><p>Choose a design below and add it to your theme library.</p></div>}</div>
-   <div className={styles.heroFooter}><div><h2>{current?.name || 'No current theme'}{current && <Badge label={status === 'published' ? 'Current theme' : 'Unpublished'} variant={status === 'published' ? 'success' : 'default'}/>}</h2><p>{current ? `Version ${current.version || '1.0'} · ${status === 'published' ? 'Published design' : 'Your store is not live yet'}` : 'Adding a theme keeps it private until you publish.'}</p></div>
-    {current && <div className={styles.actions}><Dropdown align="end" trigger={<Button variant="secondary" aria-label="More current theme actions" disabled={!!busy}><MoreHorizontal size={16}/></Button>} items={[
-                        { id: 'duplicate', label: 'Duplicate', onSelect: () => void duplicateCurrent() },
-                        { id: 'editor', label: 'Customize', onSelect: () => { router.push(editor(current.slug)); } },
-                        { id: 'recovery', label: 'Updates and recovery', onSelect: () => { router.push(`/${store}/online-store/themes/update?themeSlug=${encodeURIComponent(current.slug)}`); } },
-                        { id: 'preferences', label: 'Storefront visibility', onSelect: () => { router.push(`/${store}/online-store/preferences`); } },
-                    ]}/><Link className="themes-button themes-button-primary" href={editor(current.slug)}>Edit theme</Link></div>}
-   </div></Card>}
-   {storeId ? <ThemeLibraryWorkspace key={revision} store={store} storeId={storeId} onChanged={() => { setStorefrontRevision(value => value + 1); void load(); }}/> : <Skeleton variant="card"/>}
-  </>}
-  <section className={styles.section} aria-label={marketplace ? 'Theme marketplace catalog' : 'Discover themes'}>
-   <div className={styles.sectionHeader}><div><h2>{marketplace ? 'Find your next look' : 'Discover themes'}</h2><p className={styles.muted}>Ten distinct storefront designs, all free to add. Preview each theme with sample products before making it your own.</p></div><div className={styles.actions}>
-    {!marketplace && <Link className="themes-button themes-button-secondary" href={`/${store}/online-store/themes/marketplace`}>Visit Theme Store<ExternalLink size={14} aria-hidden="true"/></Link>}
-    <Button variant="secondary" disabled={!!busy || !storeId} onClick={() => fileInput.current?.click()}><Upload size={14} aria-hidden="true"/>{busy === 'import' ? 'Importing…' : 'Import theme'}</Button>
-    <Input unstyled type="file" ref={fileInput} accept="application/json,.json" hidden onChange={async (event) => { const file = event.target.files?.[0]; if (!file)
-        return; try {
-        await install(undefined, JSON.parse(await file.text()));
-    }
-    catch {
-        notify({ title: 'Choose a valid JSON theme package', variant: 'critical' });
-    } }}/>
-   </div></div>
-   <div className={styles.filters}><Input unstyled aria-label="Search themes" placeholder="Search themes" value={search} onChange={event => setSearch(event.target.value)}/><Select unstyled aria-label="Filter themes by category" value={category} onChange={event => setCategory(event.target.value)} options={[{ value: 'all', label: 'All categories' }, ...categories.map(value => ({ value: value || '', label: value ? value[0].toUpperCase() + value.slice(1) : '' }))]}/><span className={styles.muted}>{filtered.length} themes</span></div>
-   {loading ? <div className={styles.grid}><Skeleton variant="card"/><Skeleton variant="card"/></div> : <div className={styles.grid}>{filtered.map(theme => <article key={theme.id} className={styles.card} aria-label={`${theme.name} catalog theme`}>
-    <Button unstyled className={styles.previewButton} onClick={() => setPreview(theme)} aria-label={`Preview ${theme.name}`}><img src={theme.thumbnail_url || '/theme-previews/summit.svg'} alt={`${theme.name} sample storefront preview`} width={1274} height={796} loading="lazy" decoding="async"/></Button>
-    <div className={styles.cardFooter}><div><h3>{theme.name}</h3><div className={styles.cardMeta}><span className={styles.muted}>by {'LetBuyy'}</span><Badge label="Free" variant="default"/></div><p>{theme.description}</p><span className={styles.muted}>Version {theme.version || '1.0'}</span></div>{theme.installed ? <Link className="themes-button themes-button-secondary" href={editor(theme.slug)}>Customize</Link> : <Button variant="secondary" aria-label={`Add ${theme.name}`} disabled={!!busy || !storeId || !theme.is_active} onClick={() => void install(theme.slug)}>{busy === theme.slug ? 'Adding…' : 'Add'}</Button>}</div>
-   </article>)}</div>}
-   {!loading && !filtered.length && <div className={styles.empty}><Palette size={24}/><h3>No themes found</h3><p>Try another name or category.</p><Button variant="secondary" onClick={() => { setSearch(''); setCategory('all'); }}>Clear filters</Button></div>}
-  </section>
-  </>}
-  <Modal open={!!preview} onClose={() => setPreview(null)} title={preview ? `${preview.name} theme` : 'Theme preview'} className={styles.previewModal}><div className={styles.previewDetail}>{preview && <><img src={preview.thumbnail_url || '/theme-previews/summit.svg'} alt={`${preview.name} storefront preview`}/><p>{preview.description}</p><p className={styles.muted}>{preview.slug === 'letbuyy-sense' ? 'Threadline 2.0.0 · Actual package preview with sample merchandise. Supply campaign photographs, collections and garment facts for your own store.' : 'Open the interactive preview to explore this theme with sample content.'}</p><div className={styles.actions}><a className="themes-button themes-button-secondary" href={`${getStorefrontBaseUrl()}/theme-preview/${encodeURIComponent(preview.slug)}`} target="_blank" rel="noreferrer"><Eye size={14}/>Open interactive preview</a>{preview.installed ? <Link className="themes-button themes-button-primary" href={editor(preview.slug)}>Customize</Link> : <Button variant="primary" disabled={!!busy} onClick={() => void install(preview.slug)}>{busy === preview.slug ? 'Adding…' : 'Add to theme library'}</Button>}</div></>}</div></Modal>
- </div>;
+        <PageHeader recipe="workbench" title="Online Store" icon={<Store aria-hidden="true" className="letbuyy-icon" />} overflowAction={<div className={styles.actions}>
+            <StorefrontVisibility key={store} store={store} onChanged={() => void load()} />
+            <a className="themes-button themes-button-secondary" href={storefront} target="_blank" rel="noreferrer"><ExternalLink size={14} aria-hidden="true" />View store</a>
+            <Dropdown align="end" trigger={<Button variant="secondary" size="icon" aria-label="More online store actions"><MoreHorizontal size={16} /></Button>} items={[
+                { id: 'library', label: 'Manage themes', onSelect: () => router.push(libraryHref) },
+                { id: 'marketplace', label: 'Explore all themes', onSelect: () => router.push(`${overviewHref}/marketplace`) },
+                { id: 'import', label: 'Import theme', disabled: !storeId || !!busy, onSelect: () => fileInput.current?.click() },
+                { id: 'preferences', label: 'Storefront preferences', onSelect: () => router.push(`/${store}/online-store/preferences`) },
+            ]} />
+        </div>} />
+
+        <Input unstyled type="file" ref={fileInput} accept="application/json,.json" hidden aria-label="Import theme package" onChange={async (event) => {
+            const file = event.target.files?.[0];
+            if (!file) return;
+            try { await install(undefined, JSON.parse(await file.text())); }
+            catch { notify({ title: 'Choose a valid JSON theme package', variant: 'critical' }); }
+        }} />
+
+        {error && <Banner variant="critical" title="Themes could not load" action={<Button variant="secondary" onClick={() => void load()}>Retry</Button>}>{error}</Banner>}
+
+        {!error && view === 'library' && <section className={styles.libraryView} aria-label="Your theme library">
+            <div className={styles.sectionHeader}>
+                <div><h2>Your themes</h2><p className={styles.muted}>Manage saved designs and choose what to publish.</p></div>
+                <Link className="themes-button themes-button-secondary" href={overviewHref}>Back to overview</Link>
+            </div>
+            {storeId ? <ThemeLibraryWorkspace key={revision} store={store} storeId={storeId} onChanged={() => void load()} /> : loading ? <Skeleton variant="card" /> : null}
+        </section>}
+
+        {!error && view === 'overview' && <>
+            {loading ? <Skeleton variant="card" /> : <Card className={styles.hero} aria-label="Current theme">
+                <div className={styles.heroMedia}>
+                    {currentArtwork ? <><img src={currentArtwork} alt={`${current?.name} theme artwork`} width={1274} height={796} /><span className={styles.artworkLabel}>Theme artwork · Preview saved design in editor</span></>
+                        : <div className={styles.heroPlaceholder}><Palette size={30} aria-hidden="true" /><h2>{current ? 'Preview your saved design' : 'Make your store your own'}</h2><p>{current ? 'Open the theme editor to see your saved changes.' : 'Choose a theme below to begin designing your storefront.'}</p></div>}
+                </div>
+                <div className={styles.heroFooter}>
+                    <div><h2>{current?.name || 'No current theme'}{current && <Badge label={status === 'published' ? 'Current theme' : 'Unpublished'} variant={status === 'published' ? 'success' : 'default'} />}</h2><p>{current ? (status === 'published' ? 'Published design' : 'Your storefront is not published yet') : 'Adding a theme will not publish your store.'}</p></div>
+                    <div className={styles.actions}>
+                        <Link className="themes-button themes-button-secondary" href={libraryHref}>Manage themes</Link>
+                        {current && <><Dropdown align="end" trigger={<Button variant="secondary" size="icon" aria-label="More current theme actions" disabled={!!busy}><MoreHorizontal size={16} /></Button>} items={[
+                            { id: 'duplicate', label: 'Duplicate', onSelect: () => void duplicateCurrent() },
+                            { id: 'recovery', label: 'Updates and recovery', onSelect: () => router.push(`${overviewHref}/update?themeSlug=${encodeURIComponent(current.slug)}`) },
+                            { id: 'preferences', label: 'Storefront visibility', onSelect: () => router.push(`/${store}/online-store/preferences`) },
+                        ]} /><Link className="themes-button themes-button-primary" href={editor(current.slug)}>Edit theme</Link></>}
+                    </div>
+                </div>
+            </Card>}
+
+            <section className={styles.section} aria-label="Discover themes">
+                <div className={styles.sectionHeader}><div><h2>Discover themes</h2><p className={styles.muted}>Five storefront designs to get you started.</p></div><Link className="themes-button themes-button-secondary" href={`${overviewHref}/marketplace`}>Explore all themes</Link></div>
+                {loading ? <div className={styles.grid}><Skeleton variant="card" /><Skeleton variant="card" /><Skeleton variant="card" /></div>
+                    : themes.length ? <div className={styles.grid}>
+                        {themes.slice(0, 5).map(theme => <article key={theme.id} className={styles.card} aria-label={`${theme.name} theme`}>
+                            <Button unstyled className={styles.previewButton} onClick={() => setPreview(theme)} aria-label={`Preview ${theme.name}`}><img src={theme.thumbnail_url || '/theme-previews/summit.svg'} alt={`${theme.name} sample storefront preview`} width={1274} height={796} loading="lazy" decoding="async" /></Button>
+                            <div className={styles.cardFooter}><div><h3>{theme.name}</h3><p>by LetBuyy</p></div>{theme.installed ? <Link className="themes-button themes-button-secondary" href={editor(theme.slug)}>Customize</Link> : <Button size="sm" variant="secondary" aria-label={`Add ${theme.name}`} disabled={!!busy || !storeId || theme.is_active === false} onClick={() => void install(theme.slug)}>{busy === theme.slug ? 'Adding…' : 'Add'}</Button>}</div>
+                        </article>)}
+                        <div className={styles.exploreTile}><div><Store size={24} aria-hidden="true" /><h3>Explore more themes</h3><p>Find the right look for your store in the full theme collection.</p></div><Link className="themes-button themes-button-secondary" href={`${overviewHref}/marketplace`}>Explore all themes</Link></div>
+                    </div> : <Card className={styles.discoveryEmpty}><MerchantEmptyArtwork scene="themes" /><h3>No featured themes available</h3><p>Explore the theme collection or try again later.</p><Link className="themes-button themes-button-secondary" href={`${overviewHref}/marketplace`}>Explore all themes</Link></Card>}
+            </section>
+        </>}
+
+        <Modal open={!!preview} onClose={() => setPreview(null)} title={preview ? `${preview.name} theme` : 'Theme preview'} className={styles.previewModal}><div className={styles.previewDetail}>{preview && <><img src={preview.thumbnail_url || '/theme-previews/summit.svg'} alt={`${preview.name} storefront preview`} /><p>{preview.description}</p><p className={styles.muted}>This sample preview shows the theme design. Adding it keeps your current storefront unchanged until you publish.</p><div className={styles.actions}><a className="themes-button themes-button-secondary" href={`${getStorefrontBaseUrl()}/theme-preview/${encodeURIComponent(preview.slug)}`} target="_blank" rel="noreferrer"><Eye size={14} />Open interactive preview</a>{preview.installed ? <Link className="themes-button themes-button-primary" href={editor(preview.slug)}>Customize</Link> : <Button variant="primary" disabled={!!busy} onClick={() => void install(preview.slug)}>{busy === preview.slug ? 'Adding…' : 'Add to theme library'}</Button>}</div></>}</div></Modal>
+    </div>;
 }

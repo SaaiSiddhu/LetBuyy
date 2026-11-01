@@ -74,8 +74,9 @@ test('LB-11: the gateway issues + manages cards via RPC only (no direct canonica
 });
 
 test('LB-11: issuance returns the plaintext code exactly once and cuts over off the legacy table', () => {
-  // the issued plaintext code is attached to the response (one-time reveal)
-  assert.match(giftRoute, /issued = \{ \.\.\.\(data[\s\S]{0,40}\), code \}/);
+  // Only the newly committed issue response carries the generated code.
+  assert.match(giftRoute, /issued = result\.replayed === true \? result : \{ \.\.\.result, code \}/);
+  assert.match(giftRoute, /issued\.replayed === true \? 200 : 201/);
   // products.ts no longer writes the legacy gift_cards table; it delegates to the module
   assert.match(products, /registerGiftCardRoutes\(router\)/);
   assert.doesNotMatch(products, /\.from\('gift_cards'\)/);

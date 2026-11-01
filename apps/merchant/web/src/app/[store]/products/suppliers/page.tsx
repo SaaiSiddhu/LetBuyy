@@ -10,7 +10,6 @@ import {
     Banner,
     Button,
     Card,
-    EmptyState,
     Input,
     MaterialIcon,
     Modal,
@@ -23,6 +22,7 @@ import {
     useToast,
     type StatusVariant,
 } from '@letbuyy/ui'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import type { Supplier } from '@letbuyy/api-client'
 
 // ── helpers ──────────────────────────────────────────────────────────────────
@@ -284,7 +284,7 @@ export default function SuppliersPage() {
                             ))}
                         </div>
                     ) : suppliers.length === 0 ? (
-                        <EmptyState
+                        <EmptyState scene="suppliers"
                             title="No suppliers yet"
                             body="Add a supplier to link vendors to purchase orders and track inbound inventory."
                             primaryAction={

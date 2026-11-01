@@ -1,6 +1,7 @@
 'use client'
 
 import editorStyles from '@/components/theme-editor/editor-workspace.module.css'
+import { MerchantEmptyArtwork } from '@/components/empty-states/MerchantEmptyState'
 import { getStorefrontRootDomain } from '@/lib/public-urls'
 import { isUnchangedCoreDemoCategoryBlocks, isFirstPartyCoreBundleSlug } from '@letbuyy/theme-engine'
 import { useReadRequest } from '@/lib/api/use-read-request'
@@ -1865,7 +1866,7 @@ function VersionTree({
             </section>
             <TreeGroup label="Published versions">
                 {releases.length === 0 ? (
-                    <p className="theme-os-muted">No release history available.</p>
+                    <div className="flex items-center gap-2"><MerchantEmptyArtwork scene="theme-editor" compact /><p className="theme-os-muted">No release history available.</p></div>
                 ) : releases.map((release) => {
                     const version = releaseVersion(release)
                     return (

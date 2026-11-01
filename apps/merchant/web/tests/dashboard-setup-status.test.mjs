@@ -132,3 +132,21 @@ test('storefront URLs use tenant hosts for the canonical apex and preserve expli
     for(const key of keys) if(previous[key]===undefined) delete process.env[key]; else process.env[key]=previous[key]
   }
 })
+
+test('production public origins reject loopback except in the supervised owned browser runtime', () => {
+  const keys = ['NODE_ENV', 'LETBUYY_OWNED_CLIENT_RUNTIME', 'NEXT_PUBLIC_ACCOUNTS_URL', 'NEXT_PUBLIC_ADMIN_URL']
+  const previous = Object.fromEntries(keys.map(key => [key, process.env[key]]))
+  try {
+    process.env.NODE_ENV = 'production'
+    process.env.NEXT_PUBLIC_ACCOUNTS_URL = 'http://localhost:39101'
+    process.env.NEXT_PUBLIC_ADMIN_URL = 'http://localhost:39102'
+    delete process.env.LETBUYY_OWNED_CLIENT_RUNTIME
+    assert.throws(() => publicUrls.getAccountsUrl('/lookup'), /Invalid public application origin/)
+    assert.throws(() => publicUrls.getAdminUrl(), /Invalid public application origin/)
+    process.env.LETBUYY_OWNED_CLIENT_RUNTIME = '1'
+    assert.equal(publicUrls.getAccountsUrl('/lookup'), 'http://localhost:39101/lookup')
+    assert.equal(publicUrls.getAdminUrl(), 'http://localhost:39102')
+  } finally {
+    for (const key of keys) if (previous[key] === undefined) delete process.env[key]; else process.env[key] = previous[key]
+  }
+})

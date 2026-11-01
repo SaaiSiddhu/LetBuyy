@@ -9,7 +9,6 @@ import { Button,
     Banner,
     BarChart3,
     Card,
-    EmptyState,
     IndianRupee,
     MaterialIcon,
     MetricCard,
@@ -20,6 +19,7 @@ import { Button,
     Select,
     Skeleton,
 } from '@letbuyy/ui'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 
 interface AnalyticsData {
     totalOrders: number
@@ -169,7 +169,7 @@ export default function AnalyticsPage() {
                         <MetricCard
                             label="Average order value"
                             value={formatInrCurrency(data.avgOrderValue, { maximumFractionDigits: 0 }) || '₹0'}
-                            delta="Calculated from settled order data"
+                            delta="Paid revenue divided by orders in this period"
                             deltaTone="neutral"
                         />
                         <MetricCard
@@ -181,7 +181,7 @@ export default function AnalyticsPage() {
                     </div>
 
                     {!hasBusinessActivity && (
-                        <EmptyState
+                        <EmptyState scene="analytics"
                             icon={<BarChart3 className="h-[var(--lb-size-icon)] w-[var(--lb-size-icon)] text-[var(--lb-color-primary)]" />}
                             title="Analytics will appear after your first activity"
                             body="Add products, receive orders, and LetBuyy will summarize the performance signals here."
@@ -251,7 +251,7 @@ export default function AnalyticsPage() {
                                     ))}
                                 </div>
                             ) : (
-                                <EmptyState
+                                <EmptyState scene="analytics"
                                     icon={<MaterialIcon name="receipt_long" className="h-[var(--lb-size-icon)] w-[var(--lb-size-icon)] text-[var(--lb-color-primary)]" />}
                                     title="Monthly revenue is not available yet"
                                     body="The current analytics endpoint returns summary totals and order status counts. Monthly revenue buckets can be shown here when that field is populated."

@@ -169,6 +169,15 @@ const OVERALL_META: Record<KycOverallStatus, { title: string; variant: 'info' | 
 function isRecord(v: unknown): v is Record<string, unknown> {
     return Boolean(v && typeof v === 'object' && !Array.isArray(v))
 }
+function isCommissionOverview(value: unknown): value is CommissionOverview {
+    if (!isRecord(value) || !isRecord(value.schedule) || !isRecord(value.summary)) return false
+    const schedule = value.schedule
+    const summary = value.summary
+    return typeof value.currency === 'string'
+        && ['commission_bps', 'gst_bps'].every((key) => typeof schedule[key] === 'number' && Number.isFinite(schedule[key]))
+        && ['gross_amount_minor', 'commission_amount_minor', 'gst_amount_minor', 'net_payable_minor']
+            .every((key) => typeof summary[key] === 'number' && Number.isFinite(summary[key]))
+}
 function rs(record: Record<string, unknown>, key: string, fallback = '') {
     const v = record[key]
     return typeof v === 'string' ? v : fallback
@@ -231,7 +240,10 @@ export default function BusinessSettingsPage() {
         const failed: string[] = []
         await Promise.all([
             { endpoint: 'kyc', label: 'Verification status', apply: (data: Record<string, unknown>) => setKyc(data as unknown as KycOverview) },
-            { endpoint: 'commission', label: 'Settlement fees', apply: (data: Record<string, unknown>) => setCommission(data as unknown as CommissionOverview) },
+            { endpoint: 'commission', label: 'Settlement fees', apply: (data: Record<string, unknown>) => {
+                if (!isCommissionOverview(data)) throw new Error('Incomplete settlement fees')
+                setCommission(data)
+            } },
         ].map(async ({ endpoint, label, apply }) => {
             try {
                 const res = await fetch(`/api/stores/${encodeURIComponent(store)}/${endpoint}`, { cache: 'no-store', signal: readSignal })
@@ -423,7 +435,7 @@ export default function BusinessSettingsPage() {
 
     const docByType = new Map((kyc?.documents || []).map((d) => [d.document_type, d]))
     const overall = kyc ? OVERALL_META[kyc.overall_status] : null
-    const commissionBps = commission?.schedule?.commission_bps ?? 0
+    const commissionBps = commission?.schedule?.commission_bps
     const currency = commission?.currency || 'INR'
 
     const requiredDocs: KycRequirement[] = (kyc?.required_documents?.length
@@ -647,10 +659,10 @@ export default function BusinessSettingsPage() {
                             <span className="settings-business-fee-icon"><IndianRupee className="letbuyy-icon" aria-hidden="true" /></span>
                             <div className="settings-business-fee-body">
                                 <span className="settings-business-fee-label">LetBuyy platform commission</span>
-                                <span className="settings-business-fee-desc">We charge no commission on your sales — you keep 100% of your order value.</span>
+                                <span className="settings-business-fee-desc">LetBuyy does not charge a platform transaction fee. Payment provider fees and taxes may still apply.</span>
                             </div>
                             <span className="settings-business-fee-value settings-business-fee-value--zero">
-                                {(commissionBps / 100).toFixed(0)}%
+                                {typeof commissionBps === 'number' && Number.isFinite(commissionBps) ? `${(commissionBps / 100).toFixed(0)}%` : '—'}
                             </span>
                         </div>
 
@@ -658,30 +670,30 @@ export default function BusinessSettingsPage() {
                             <span className="settings-business-fee-icon settings-business-fee-icon--muted"><Tag className="letbuyy-icon" aria-hidden="true" /></span>
                             <div className="settings-business-fee-body">
                                 <span className="settings-business-fee-label">GST on platform commission</span>
-                                <span className="settings-business-fee-desc">18% GST applies only to platform commission. Since commission is 0%, this is nil.</span>
+                                <span className="settings-business-fee-desc">Tax on LetBuyy platform commission is shown in the current commission summary.</span>
                             </div>
-                            <span className="settings-business-fee-value">{formatInr(0, currency)}</span>
+                            <span className="settings-business-fee-value">{commission ? formatInr(commission.summary.gst_amount_minor, currency) : '—'}</span>
                         </div>
 
                         <div className="settings-business-fee-row">
                             <span className="settings-business-fee-icon settings-business-fee-icon--muted"><CreditCard className="letbuyy-icon" aria-hidden="true" /></span>
                             <div className="settings-business-fee-body">
-                                <span className="settings-business-fee-label">Payment gateway fees (Razorpay)</span>
+                                <span className="settings-business-fee-label">Payment provider fees</span>
                                 <span className="settings-business-fee-desc">
-                                    Your own Razorpay account&apos;s standard fees (plus 18% GST) are deducted by Razorpay at settlement. Configure keys in{' '}
+                                    Your connected provider may charge processing fees and applicable tax. Confirm the actual charges in your provider statement. Configure your connection in{' '}
                                     <Link href={`/${store}/settings/payments`} className="settings-business-link">Payments</Link>.
                                 </span>
                             </div>
-                            <span className="settings-business-fee-value settings-business-fee-value--muted">At cost</span>
+                            <span className="settings-business-fee-value settings-business-fee-value--muted">Provider statement</span>
                         </div>
 
                         <div className="settings-business-fee-row settings-business-fee-row--net">
                             <span className="settings-business-fee-icon"><CheckCircle2 className="letbuyy-icon" aria-hidden="true" /></span>
                             <div className="settings-business-fee-body">
-                                <span className="settings-business-fee-label">You receive</span>
-                                <span className="settings-business-fee-desc">Order value minus only your payment provider&apos;s fees. Settlements reach your verified bank account.</span>
+                                <span className="settings-business-fee-label">Actual settlement</span>
+                                <span className="settings-business-fee-desc">Check payout statements and your payment provider for the final settled amount and bank status.</span>
                             </div>
-                            <span className="settings-business-fee-value settings-business-fee-value--net">100%</span>
+                            <span className="settings-business-fee-value settings-business-fee-value--net">See payouts</span>
                         </div>
                     </div>
 
@@ -696,7 +708,7 @@ export default function BusinessSettingsPage() {
                                 <span className="settings-business-settlement-value">− {formatInr(commission.summary.commission_amount_minor, currency)}</span>
                             </div>
                             <div className="settings-business-settlement-item settings-business-settlement-item--total">
-                                <span className="settings-business-settlement-label">Net payable to you</span>
+                                <span className="settings-business-settlement-label">After platform commission and tax, before provider fees</span>
                                 <span className="settings-business-settlement-value">{formatInr(commission.summary.net_payable_minor, currency)}</span>
                             </div>
                         </div>
@@ -706,7 +718,7 @@ export default function BusinessSettingsPage() {
                         <Lock className="letbuyy-icon" aria-hidden="true" />
                         <span>
                             Track every payout under{' '}
-                            <Link href={`/${store}/settings/billing`} className="settings-business-link">Billing</Link>.
+                            <Link href={`/${store}/payouts`} className="settings-business-link">Payouts</Link>.
                             LetBuyy&apos;s 0% commission is permanent.
                         </span>
                     </div>

@@ -3,7 +3,8 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { useParams } from 'next/navigation'
 import { MERCHANT_PAYOUT_STATUS_PRESENTATION, MerchantPayoutListSchema, MerchantPayoutStatementSchema, presentStatus, type MerchantPayoutList, type MerchantPayoutStatement } from '@letbuyy/shared-types'
-import { Banner, Button, Card, EmptyState, MaterialIcon, Page, PageHeader, ProviderModeBadge, Section, Skeleton, StatusPresentationBadge, useToast } from '@letbuyy/ui'
+import { Banner, Button, Card, MaterialIcon, Page, PageHeader, ProviderModeBadge, Section, Skeleton, StatusPresentationBadge, useToast } from '@letbuyy/ui'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import { formatIndiaDate as formatDate } from '@letbuyy/ui/formatting'
 import { StepUpDialog, type StepUpResult } from '@/components/security/StepUpDialog'
 import { useMerchantSecurityContext } from '@/components/security/MerchantSecurityContext'
@@ -216,7 +217,7 @@ function PayoutStatements({ store, actorId }: { store: string; actorId: string }
     }, [store, actorId, releasingId, loadPayouts, notify])
 
     const emptyState = (
-        <EmptyState
+        <EmptyState scene="payouts"
             icon={<MaterialIcon name={error ? 'error' : 'account_balance'} />}
             title={error ? 'Unable to load payouts' : 'No payout statements yet'}
             body={error || 'There are no payout statements in this environment. Review your payment connection and verification status in Payments.'}

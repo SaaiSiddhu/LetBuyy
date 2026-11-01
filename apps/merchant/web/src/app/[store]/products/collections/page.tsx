@@ -1,11 +1,11 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import Image from 'next/image'
 import { useParams } from 'next/navigation'
 import { CollectionMembershipSnapshotSchema, CollectionMembershipProductSchema, ReplaceCollectionMembershipSchema, type ReplaceCollectionMembershipInput, CollectionSummarySchema, CollectionListPageSchema, type CollectionSummary } from '@letbuyy/shared-types'
 import { useMerchantSecurityContext } from '@/components/security/MerchantSecurityContext'
-import { Button, Input, Table, Avatar, Badge, Banner, Card, Checkbox, EmptyState, Package, Page, PageHeader, Plus, RefreshCw, SaveBar, Section, Skeleton, Textarea, useToast } from '@letbuyy/ui'
+import { Button, Input, Table, Avatar, Badge, Banner, Card, Checkbox, Package, Page, PageHeader, Plus, RefreshCw, SaveBar, Section, Skeleton, Textarea, useToast } from '@letbuyy/ui'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 
 type CollectionRow = CollectionSummary
 
@@ -85,10 +85,10 @@ const emptyManageState: ManageProductsState = {
 function normalizeProduct(row: Record<string, unknown>): ProductRow {
     return {
         id: String(row.id || ''),
-        name: String(row.name || 'Unnamed product'),
+        name: typeof row.name === 'string' && row.name.trim() ? row.name : 'Product name unavailable',
         thumbnail_url: typeof row.thumbnail_url === 'string' ? row.thumbnail_url : null,
-        price: typeof row.price === 'number' ? row.price : Number(row.price) || 0,
-        is_active: row.is_active !== false,
+        price: typeof row.price === 'number' && Number.isFinite(row.price) ? row.price : undefined,
+        is_active: typeof row.is_active === 'boolean' ? row.is_active : undefined,
     }
 }
 
@@ -513,16 +513,7 @@ export default function CollectionsPage() {
                         <Button variant="secondary" disabled={loading || Boolean(loadError) || !listMeta.has_next} onClick={() => void loadCollections(listMeta.page+1)}>Next collections</Button>
                     </nav>
                     {loadError ? <p role="status">Collection counts are unavailable. Retry the read before changing this collection.</p> : collections.length === 0 ? (
-                        <EmptyState
-                            illustration={
-                                <Image
-                                    src="/Emptystate Illustration/Collections Emptystatae.png"
-                                    alt=""
-                                    width={200}
-                                    height={200}
-                                    aria-hidden="true"
-                                />
-                            }
+                        <EmptyState scene="collections"
                             title={listMeta.total === 0 ? "No collections yet" : "No collections on this page"}
                             body={listMeta.total === 0 ? "Organize products into collections so shoppers can browse by theme, season, category, or campaign." : "Use the previous-page control to return to your collections."}
                             primaryAction={!showCreate && listMeta.total === 0 ? (
@@ -537,7 +528,7 @@ export default function CollectionsPage() {
                             rows={collections}
                             columns={columns}
                             emptyState={(
-                                <EmptyState
+                                <EmptyState scene="collections"
                                     icon={<Package className="h-[var(--lb-size-icon-lg)] w-[var(--lb-size-icon-lg)]" aria-hidden="true" />}
                                     title="No collections found"
                                     body="Create a collection to organize products for storefront browsing."
@@ -603,7 +594,7 @@ export default function CollectionsPage() {
                                 {manage.pageError && <Banner variant="critical" title="More products could not load">{manage.pageError}</Banner>}
                                 {manage.hasNext && <Button variant="secondary" onClick={() => void loadMoreProducts()} disabled={manage.loadingMore}>Load more products</Button>}
                                 {filteredManageProducts.length === 0 ? (
-                                    <EmptyState
+                                    <EmptyState scene="collections"
                                         icon={<Package className="h-[var(--lb-size-icon-lg)] w-[var(--lb-size-icon-lg)]" aria-hidden="true" />}
                                         title="No products found"
                                         body="Add products to this store to assign them to collections."

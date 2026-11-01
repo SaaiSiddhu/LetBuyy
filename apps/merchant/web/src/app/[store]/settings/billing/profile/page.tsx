@@ -45,21 +45,26 @@ function readString(value: unknown, fallback = '') {
 }
 
 function normalizeMandates(value: unknown): BillingMandateView[] {
-    if (!Array.isArray(value)) return []
-    return value.flatMap((m) => {
-        if (!isRecord(m) || typeof m.id !== 'string') return []
+    if (!Array.isArray(value)) throw new Error('Billing mandate list response is incomplete.')
+    return value.map((m) => {
+        if (!isRecord(m) || typeof m.id !== 'string' || !m.id ||
+            typeof m.provider !== 'string' || typeof m.status !== 'string' ||
+            typeof m.plan_slug !== 'string' || typeof m.billing_period !== 'string') {
+            throw new Error('Billing mandate data is incomplete.')
+        }
         const mode = m.provider_mode === 'live' ? 'live' : m.provider_mode === 'sandbox' ? 'sandbox' : null
-        const amount = typeof m.amount_minor === 'number' ? m.amount_minor : Number(m.amount_minor) || 0
-        return [{
+        const amount = m.amount_minor === null || m.amount_minor === undefined || m.amount_minor === ''
+            ? Number.NaN : Number(m.amount_minor)
+        return {
             id: m.id,
-            provider: readString(m.provider, 'upi_autopay'),
+            provider: m.provider,
             provider_mode: mode,
-            status: readString(m.status, 'pending_provider'),
-            plan_slug: readString(m.plan_slug, 'starter'),
-            billing_period: readString(m.billing_period, 'monthly'),
-            amount_minor: amount,
+            status: m.status,
+            plan_slug: m.plan_slug,
+            billing_period: m.billing_period,
+            amount_minor: Number.isFinite(amount) ? amount : Number.NaN,
             currency: readString(m.currency, 'INR'),
-        }]
+        }
     })
 }
 
@@ -90,8 +95,11 @@ export default function BillingProfilePage() {
             if (!request.isCurrent()) return
             if (!response.ok) throw new Error(getPayloadError(payload, 'Unable to load billing profile'))
 
-            const data = isRecord(payload?.data) ? payload.data : {}
-            const p = isRecord(data.profile) ? data.profile : {}
+            if (!isRecord(payload?.data) || !isRecord(payload.data.profile) || !Array.isArray(payload.data.mandates)) {
+                throw new Error('Billing profile response is incomplete.')
+            }
+            const data = payload.data
+            const p = data.profile as Record<string, unknown>
             const next: ProfileData = {
                 gstin: typeof p.gstin === 'string' ? p.gstin : null,
                 gst_state_code: typeof p.gst_state_code === 'string' ? p.gst_state_code : null,

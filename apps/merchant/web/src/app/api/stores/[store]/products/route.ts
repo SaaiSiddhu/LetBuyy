@@ -25,6 +25,7 @@ export async function GET(
             status: normalizeStatus(searchParams.get('status')),
             page: Number(searchParams.get('page') || '1'),
             limit: Number(searchParams.get('limit') || '100'),
+            withCount: searchParams.get('withCount') === 'true',
             sort: searchParams.get('sort') || 'created_at',
             order: searchParams.get('order') === 'asc' ? 'asc' : 'desc',
         }
@@ -43,6 +44,8 @@ export async function GET(
                 page: products.page,
                 per_page: products.limit,
                 has_next: products.has_more,
+                total_is_exact: products.total_is_exact,
+                next_cursor: products.next_cursor,
             },
         })
     } catch (err) {

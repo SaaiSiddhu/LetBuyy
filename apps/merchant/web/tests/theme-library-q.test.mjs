@@ -194,11 +194,14 @@ test('phase-q: ThemeLibraryCard uses aria-label for action menu buttons', () => 
     assert.match(src, /Dropdown/, 'ThemeLibraryCard must use Dropdown for action menu');
 });
 
-test('theme workspace exposes discovery and the library together as named regions', () => {
+test('theme workspace keeps overview discovery and the library as separate named views', () => {
     const src = read(`${MCP_BASE}/components/theme-library/ThemeWorkspace.tsx`);
-    assert.match(src, /aria-label=\{marketplace \? 'Theme marketplace catalog' : 'Discover themes'\}/);
+    assert.match(src, /view === 'overview'/);
+    assert.match(src, /aria-label="Discover themes"/);
+    assert.match(src, /view === 'library'/);
+    assert.match(src, /aria-label="Your theme library"/);
     assert.match(src, /<ThemeLibraryWorkspace/);
-    assert.doesNotMatch(src, /activeTab|role="tabpanel"/, 'discovery is no longer hidden behind a tab');
+    assert.doesNotMatch(src, /activeTab|role="tabpanel"/, 'overview and library use explicit routes');
 });
 
 // ── Page imports ThemeLibraryWorkspace ───────────────────────────────────────

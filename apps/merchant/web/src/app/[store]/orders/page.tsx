@@ -5,7 +5,8 @@ import { useParams, useRouter } from 'next/navigation'
 import { useDebouncedValue, useReadRequest } from '@/lib/api/use-read-request'
 import type { LineItem as SharedLineItem, Order as SharedOrder } from '@letbuyy/shared-types'
 import { ORDER_STATUS_PRESENTATION, ORDER_PAYMENT_STATUS_PRESENTATION, presentStatus } from '@letbuyy/shared-types'
-import { Badge, Banner, Button, Card, ConfirmDialog, EmptyState, Input, MaterialIcon, normalizeProviderMode, Page, PageHeader, ProviderModeBadge, Search, Section, Select, Skeleton, StatusPresentationBadge, Table, useToast, type ProviderMode, type TableBulkAction, type TableColumn } from '@letbuyy/ui'
+import { Badge, Banner, Button, Card, ConfirmDialog, Input, MaterialIcon, normalizeProviderMode, Page, PageHeader, ProviderModeBadge, Select, StatusPresentationBadge, Table, useToast, type ProviderMode, type TableBulkAction, type TableColumn } from '@letbuyy/ui'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import { formatIndiaDate as formatDate } from '@letbuyy/ui/formatting'
 import { StepUpDialog, type StepUpResult } from '@/components/security/StepUpDialog'
 
@@ -50,13 +51,15 @@ interface OrdersPayload {
     data?: OrderRow[] | OrderRow
     meta?: {
         total?: number
+        has_next?: boolean
+        total_is_exact?: boolean
     }
     error?: unknown
     message?: unknown
 }
 
 type OrderStatus = 'all' | 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'refunded'
-type OrderSortKey = 'order' | 'customer' | 'item_count' | 'payment_status' | 'status' | 'total' | 'created_at'
+type OrderSortKey = 'status' | 'total' | 'created_at'
 type SortDirection = 'asc' | 'desc'
 
 const statuses: Array<{ label: string; value: OrderStatus }> = [
@@ -106,34 +109,8 @@ function currency(amount: number) {
     return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(amount)
 }
 
-function orderSortValue(order: OrderRow, key: OrderSortKey): string | number {
-    switch (key) {
-        case 'order':
-            return order.order_number || order.id
-        case 'customer':
-            return order.customer_name || order.customer_email || ''
-        case 'item_count':
-            return Number(order.item_count || order.items?.length || 0)
-        case 'payment_status':
-            return order.payment_status || ''
-        case 'status':
-            return order.status || ''
-        case 'total':
-            return Number(order.total || 0)
-        case 'created_at':
-            return new Date(order.created_at || '').getTime() || 0
-        default:
-            return ''
-    }
-}
-
-function compareOrderRows(a: OrderRow, b: OrderRow, key: OrderSortKey, direction: SortDirection) {
-    const aValue = orderSortValue(a, key)
-    const bValue = orderSortValue(b, key)
-    const result = typeof aValue === 'number' && typeof bValue === 'number'
-        ? aValue - bValue
-        : String(aValue).localeCompare(String(bValue), undefined, { sensitivity: 'base' })
-    return direction === 'asc' ? result : -result
+function verifiedCurrency(amount: unknown) {
+    return typeof amount === 'number' && Number.isFinite(amount) ? currency(amount) : '—'
 }
 
 function addressPart(value: unknown) {
@@ -172,12 +149,18 @@ export default function OrdersPage() {
     const { notify } = useToast()
     const [orders, setOrders] = useState<OrderRow[]>([])
     const [totalCount, setTotalCount] = useState(0)
+    const [totalExact, setTotalExact] = useState(false)
+    const [hasNext, setHasNext] = useState(false)
+    const [page, setPage] = useState(1)
+    const [pageSize, setPageSize] = useState(25)
     const [loading, setLoading] = useState(true)
     const [filter, setFilter] = useState<OrderStatus>('all')
     const [paymentFilter, setPaymentFilter] = useState<string>('all')
     const [searchQuery, setSearchQuery] = useState('')
     const appliedSearch = useDebouncedValue(searchQuery.trim())
-    const beginRead = useReadRequest(JSON.stringify([store, filter, paymentFilter, appliedSearch]))
+    const [sortKey, setSortKey] = useState<OrderSortKey>('created_at')
+    const [sortDirection, setSortDirection] = useState<SortDirection>('desc')
+    const beginRead = useReadRequest(JSON.stringify([store, filter, paymentFilter, appliedSearch, page, pageSize, sortKey, sortDirection]))
     const [updatingId, setUpdatingId] = useState<string | null>(null)
 
     /**
@@ -211,8 +194,6 @@ export default function OrdersPage() {
     const [cancellingId, setCancellingId] = useState<string | null>(null)
     const [error, setError] = useState<string | null>(null)
     const [actionError, setActionError] = useState<string | null>(null)
-    const [sortKey, setSortKey] = useState<OrderSortKey>('created_at')
-    const [sortDirection, setSortDirection] = useState<SortDirection>('desc')
     // 'mock' until the fulfilment provider reports otherwise — an unresolved
     // provider must never start out looking like a working sandbox.
     const [fulfillmentProviderMode, setFulfillmentProviderMode] = useState<ProviderMode>('mock')
@@ -224,6 +205,8 @@ export default function OrdersPage() {
     const [refundStepUpOpen, setRefundStepUpOpen] = useState(false)
     const [refundLoading, setRefundLoading] = useState(false)
 
+    useEffect(() => { setPage(1) }, [filter, paymentFilter, appliedSearch])
+
     const loadOrders = useCallback(async () => {
         const request = beginRead()
         setLoading(true)
@@ -233,7 +216,11 @@ export default function OrdersPage() {
             const query = new URLSearchParams({
                 status: filter,
                 payment_status: paymentFilter,
-                limit: '50',
+                page: String(page),
+                limit: String(pageSize),
+                sort: sortKey,
+                order: sortDirection,
+                withCount: 'true',
             })
 
             if (appliedSearch) query.set('search', appliedSearch)
@@ -245,22 +232,30 @@ export default function OrdersPage() {
             if (!response.ok) {
                 setOrders([])
                 setTotalCount(0)
+                setTotalExact(false)
+                setHasNext(false)
                 setError(getErrorMessage(payload, 'Unable to load orders'))
                 return
             }
 
-            const rows = Array.isArray(payload?.data) ? payload.data : []
+            if (!Array.isArray(payload?.data)) throw new Error('Orders response is incomplete')
+            const rows = payload.data
             setOrders(rows)
-            setTotalCount(Number(payload?.meta?.total || rows.length || 0))
+            setTotalCount(typeof payload?.meta?.total === 'number' ? payload.meta.total : rows.length)
+            setTotalExact(Boolean(payload?.meta?.total_is_exact))
+            setHasNext(Boolean(payload?.meta?.has_next))
+            if (page > 1 && rows.length === 0) setPage(1)
         } catch {
             if (!request.isCurrent()) return
             setOrders([])
             setTotalCount(0)
+            setTotalExact(false)
+            setHasNext(false)
             setError('Unable to load orders')
         } finally {
             if (request.isCurrent()) setLoading(false)
         }
-    }, [store, filter, paymentFilter, appliedSearch, beginRead])
+    }, [store, filter, paymentFilter, appliedSearch, page, pageSize, sortKey, sortDirection, beginRead])
 
     useEffect(() => { loadOrders() }, [loadOrders])
 
@@ -495,21 +490,19 @@ export default function OrdersPage() {
     const activeFilters = [
         filter !== 'all' ? { label: `Status: ${titleize(filter)}`, onRemove: () => setFilter('all') } : null,
         paymentFilter !== 'all' ? { label: `Payment: ${titleize(paymentFilter)}`, onRemove: () => setPaymentFilter('all') } : null,
-        appliedSearch ? { label: `Search: ${appliedSearch}`, onRemove: () => setSearchQuery('') } : null,
     ].filter(Boolean) as Array<{ label: string; onRemove: () => void }>
-
-    const sortedOrders = useMemo(() => {
-        return [...orders].sort((a, b) => compareOrderRows(a, b, sortKey, sortDirection))
-    }, [orders, sortDirection, sortKey])
 
     const handleSort = useCallback((key: string) => {
         const nextKey = key as OrderSortKey
+        if (!['created_at', 'total', 'status'].includes(nextKey)) return
         if (nextKey === sortKey) {
             setSortDirection(current => current === 'asc' ? 'desc' : 'asc')
+            setPage(1)
             return
         }
         setSortKey(nextKey)
         setSortDirection(nextKey === 'created_at' ? 'desc' : 'asc')
+        setPage(1)
     }, [sortKey])
 
     const bulkActions = useMemo<Array<TableBulkAction<OrderRow>>>(() => [
@@ -528,7 +521,7 @@ export default function OrdersPage() {
     ], [bulkUpdateOrderStatus])
 
     const emptyState = (
-        <EmptyState
+        <EmptyState scene="orders"
             icon={<MaterialIcon name={error ? 'error' : 'receipt_long'} />}
             title={error ? 'Unable to load orders' : 'No orders yet'}
             body={error || (filter !== 'all' ? `No ${titleize(filter).toLowerCase()} orders found in this view.` : 'Orders will appear here once customers start purchasing.')}
@@ -554,7 +547,6 @@ export default function OrdersPage() {
         {
             key: 'order',
             header: 'Order',
-            sortable: true,
             render: (order) => (
                 <div className="space-y-[var(--lb-space-1)]">
                     <Button unstyled
@@ -578,7 +570,6 @@ export default function OrdersPage() {
         {
             key: 'customer',
             header: 'Customer',
-            sortable: true,
             render: (order) => (
                 <div className="space-y-[var(--lb-space-1)]">
                     <p className="m-0 font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text)]">
@@ -593,13 +584,11 @@ export default function OrdersPage() {
         {
             key: 'item_count',
             header: 'Items',
-            sortable: true,
-            render: (order) => String(order.item_count || order.items?.length || 0),
+            render: (order) => Number.isSafeInteger(order.item_count) ? String(order.item_count) : '—',
         },
         {
             key: 'payment_status',
             header: 'Payment',
-            sortable: true,
             render: (order) => <PaymentStatusBadge status={order.payment_status} method={order.payment_method} />,
         },
         {
@@ -612,7 +601,7 @@ export default function OrdersPage() {
             key: 'total',
             header: 'Total',
             sortable: true,
-            render: (order) => currency(Number(order.total || 0)),
+            render: (order) => verifiedCurrency(order.total),
         },
         {
             key: 'created_at',
@@ -680,58 +669,30 @@ export default function OrdersPage() {
                 secondaryActions={[{ label: 'Products', href: `/${store}/products` }]}
             />
 
-            <Card>
-                <Section
-                    title="Order queue"
-                        description={`${totalCount} ${totalCount === 1 ? 'order' : 'orders'} in the current view.`}
-                >
-                    <div className="flex flex-col gap-[var(--lb-space-4)]">
-                        <div className="grid gap-[var(--lb-space-3)] md:grid-cols-[minmax(0,1fr)_minmax(180px,240px)_auto] md:items-end">
-                            <Input
-                                label="Search orders"
-                                placeholder="Search order, customer email, or name"
-                                value={searchQuery}
-                                onChange={(event) => setSearchQuery(event.target.value)}
-                                leftIcon={<Search className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                            />
-                            <Select
-                                label="Payment"
-                                value={paymentFilter}
-                                options={paymentStatusOptions}
-                                onChange={(event) => setPaymentFilter(event.target.value)}
-                            />
-                            <Button variant="secondary" onClick={loadOrders}>
-                                <MaterialIcon name="sync" />
-                                Refresh
-                            </Button>
-                        </div>
-
-                        {actionError && (
-                            <Banner title="Order action failed" variant="critical">
-                                {actionError}
-                            </Banner>
-                        )}
-
-                        {loading ? (
-                            <Skeleton variant="table" lines={6} />
-                        ) : (
-                            <Table
-                                rows={sortedOrders}
-                                columns={columns}
-                                emptyState={emptyState}
-                                savedViews={statuses}
-                                activeView={filter}
-                                onViewChange={(value) => setFilter(value as OrderStatus)}
-                                filterChips={activeFilters}
-                                bulkActions={bulkActions}
-                                sortKey={sortKey}
-                                sortDirection={sortDirection}
-                                onSort={handleSort}
-                                onRowClick={(order) => router.push(`/${store}/orders/${encodeURIComponent(order.id)}`)}
-                            />
-                        )}
-                    </div>
-                </Section>
+            <Card as="div" className="overflow-visible p-[var(--lb-density-card-padding)]">
+                {actionError && <Banner title="Order action failed" variant="critical">{actionError}</Banner>}
+                <Table
+                    rows={orders}
+                    columns={columns}
+                    loading={loading}
+                    appearance="flat"
+                    hideHeaderWhenEmpty={false}
+                    emptyState={emptyState}
+                    savedViews={statuses}
+                    activeView={filter}
+                    onViewChange={(value) => setFilter(value as OrderStatus)}
+                    search={{ label: 'Search orders', placeholder: 'Search order number or customer', value: searchQuery, onChange: setSearchQuery }}
+                    filterContent={<div className="grid gap-[var(--lb-space-3)]"><strong className="text-[length:var(--lb-font-size-body)]">Filter orders</strong><Select label="Payment" value={paymentFilter} options={paymentStatusOptions} onChange={(event) => setPaymentFilter(event.target.value)} /><Button variant="secondary" size="sm" onClick={loadOrders}><MaterialIcon name="sync" />Refresh orders</Button></div>}
+                    filterChips={activeFilters}
+                    bulkActions={bulkActions}
+                    sortKey={sortKey}
+                    sortDirection={sortDirection}
+                    onSort={handleSort}
+                    preferencesKey={`letbuyy.table.orders:${store}`}
+                    selectionScopeKey={`${store}:${filter}:${paymentFilter}:${appliedSearch}:${page}:${pageSize}`}
+                    pagination={{ page, pageSize, total: totalExact ? totalCount : undefined, hasNext, itemLabel: 'orders', onPageChange: setPage, onPageSizeChange: (size) => { setPageSize(size); setPage(1) } }}
+                    onRowClick={(order) => router.push(`/${store}/orders/${encodeURIComponent(order.id)}`)}
+                />
             </Card>
 
             <ConfirmDialog
@@ -873,7 +834,7 @@ function OrderActions({
                     </span>
                     <Input
                         aria-label="Refund amount"
-                        placeholder={`Full amount (${currency(Number(order.total || 0))})`}
+                        placeholder={`Full amount (${verifiedCurrency(order.total)})`}
                         value={refundAmount}
                         onChange={(event) => onRefundAmountChange(event.target.value)}
                         type="number"
@@ -951,13 +912,13 @@ function OrderDetail({ order }: { order: OrderRow }) {
 
             <div className="flex justify-end">
                 <div className="grid w-full max-w-[var(--lb-size-tooltip-max-width)] gap-[var(--lb-space-2)] text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)]">
-                    <OrderAmountLine label="Subtotal" value={currency(order.subtotal || 0)} />
-                    <OrderAmountLine label="Shipping" value={currency(order.shipping_cost || 0)} />
-                    <OrderAmountLine label={order.coupon_code ? `Coupon (${order.coupon_code})` : 'Discount'} value={`-${currency(order.discount || 0)}`} />
-                    <OrderAmountLine label="Tax" value={currency(order.tax || 0)} />
+                    <OrderAmountLine label="Subtotal" value={verifiedCurrency(order.subtotal)} />
+                    <OrderAmountLine label="Shipping" value={verifiedCurrency(order.shipping_cost)} />
+                    <OrderAmountLine label={order.coupon_code ? `Coupon (${order.coupon_code})` : 'Discount'} value={typeof order.discount === 'number' && Number.isFinite(order.discount) ? `−${currency(order.discount)}` : '—'} />
+                    <OrderAmountLine label="Tax" value={verifiedCurrency(order.tax)} />
                     <div className="flex justify-between border-t border-[var(--lb-color-border)] pt-[var(--lb-space-2)] font-[var(--lb-font-weight-semibold)] text-[var(--lb-color-text)]">
                         <span>Total</span>
-                        <span>{currency(order.total || 0)}</span>
+                        <span>{verifiedCurrency(order.total)}</span>
                     </div>
                 </div>
             </div>

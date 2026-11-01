@@ -7,7 +7,6 @@ import {
     Button,
     Dropdown,
     type DropdownItem,
-    EmptyState,
     LogOut,
     MaterialIcon,
     Plus,
@@ -16,6 +15,7 @@ import {
     Tabs,
     type TabItem,
 } from '@letbuyy/ui'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import { SITE_STATUS_PRESENTATION, presentStatus } from '@letbuyy/shared-types'
 import { getAccountsUrl, getStorefrontRootDomain } from '@/lib/public-urls'
 
@@ -80,7 +80,7 @@ interface StoreListPanelProps {
 function StoreListPanel({ stores, emptyTitle, emptyBody, onOpen, onCreate }: StoreListPanelProps) {
     if (stores.length === 0) {
         return (
-            <EmptyState
+            <EmptyState scene="stores"
                 className="all-stores-empty-state"
                 icon={<Store className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                 title={emptyTitle}

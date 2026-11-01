@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { SubscriptionTaxSummarySchema, type SubscriptionTaxSummary } from '@letbuyy/api-client'
 import { useRouter } from 'next/navigation'
-import { SUBSCRIPTION_OFFERS, type SubscriptionPlanView } from '@/lib/billing/plan-ui'
+import { type SubscriptionPlanView } from '@/lib/billing/plan-ui'
 import { Button, Input, MaterialIcon } from '@letbuyy/ui'
 import { retainSubscriptionCheckoutIntent, completeSubscriptionCheckoutIntent, readPendingSubscriptionCheckoutIntent, PendingSubscriptionCheckoutError, type SubscriptionCheckoutIntent } from '@/lib/billing/subscription-checkout-intent'
 
@@ -425,19 +425,6 @@ export default function CheckoutClient({
                     {isFreePlan ? `Activate your ${plan.name} plan` : 'Complete your subscription'}
                 </h1>
 
-                <div className="select-plan-highlights" aria-label="Checkout assurances">
-                    {[
-                        { icon: 'lock', text: 'Secured by Razorpay' },
-                        { icon: 'currency_rupee', text: 'UPI, cards & netbanking' },
-                        { icon: 'receipt_long', text: 'GST invoice included' },
-                        { icon: 'autorenew', text: 'Cancel anytime' },
-                    ].map((highlight, index) => (
-                        <div key={index} className="select-plan-highlight">
-                            <MaterialIcon name={highlight.icon} size={16} className="select-plan-primary-icon" />
-                            <span>{highlight.text}</span>
-                        </div>
-                    ))}
-                </div>
             </section>
 
             <div className="checkout-grid">
@@ -605,7 +592,7 @@ export default function CheckoutClient({
                         </div>
 
                         <div className="checkout-amount-row">
-                            <span className="checkout-amount-label">Amount due today</span>
+                            <span className="checkout-amount-label">{serverQuote || isFreePlan ? 'Amount due today' : 'Estimated subtotal before tax'}</span>
                             <span className="checkout-amount-stack">
                                 {!serverQuote && appliedCoupon && discountDue > 0 && (
                                     <span className="checkout-amount-was">{formatRupees(baseDue)}</span>
@@ -657,28 +644,6 @@ export default function CheckoutClient({
                             ))}
                         </ol>}
 
-                        {!serverQuote && !isFreePlan && SUBSCRIPTION_OFFERS.length > 0 && (
-                            <>
-                                <div className="checkout-divider" />
-                                <details className="checkout-offers">
-                                    <summary className="checkout-offers-summary">
-                                        <span className="checkout-offers-head">
-                                            <MaterialIcon name="check_circle" size={16} className="checkout-offers-check" />
-                                            {SUBSCRIPTION_OFFERS.length} offers included
-                                        </span>
-                                        <MaterialIcon name="expand_more" size={18} className="checkout-offers-chevron" />
-                                    </summary>
-                                    <div className="checkout-offers-body">
-                                        {SUBSCRIPTION_OFFERS.map((offer, index) => (
-                                            <p key={index} className="checkout-offer">
-                                                <span className="checkout-offer-title">{offer.title}:</span> {offer.body}
-                                            </p>
-                                        ))}
-                                    </div>
-                                </details>
-                            </>
-                        )}
-
                         {error && (
                             <div className="checkout-error" role="alert">
                                 <MaterialIcon name="error" size={16} />
@@ -703,7 +668,7 @@ export default function CheckoutClient({
                             ) : (
                                 <>
                                     <MaterialIcon name="lock" size={18} />
-                                    {serverQuote ? 'Continue saved checkout' : 'Subscribe'} — {serverQuote ? formatMinor(serverQuote.tax.gross_minor) : formatRupees(finalDue)}
+                                    {serverQuote ? `Continue saved checkout — ${formatMinor(serverQuote.tax.gross_minor)}` : 'Continue to payment'}
                                 </>
                             )}
                         </Button>

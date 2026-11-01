@@ -98,7 +98,7 @@ export type { ConfirmDialogProps, DrawerProps, DropdownItem, DropdownProps, Moda
 
 // The same reference-counted lock the overlays use, for app chrome (nav drawers,
 // bottom sheets) that opens outside an <Overlay> and must not fight them.
-export { acquireScrollLock } from './overlay-hooks';
+export { acquireScrollLock, useFocusTrap } from './overlay-hooks';
 
 export { Checkbox, ChoiceList, Combobox, Radio, Select, Switch, Tabs } from './controls';
 export type {

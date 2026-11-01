@@ -1,6 +1,7 @@
 'use client'
 
 import { useReadRequest } from '@/lib/api/use-read-request'
+import { MerchantEmptyArtwork } from '@/components/empty-states/MerchantEmptyState'
 
 import { getStorefrontRootDomain } from '@/lib/public-urls'
 import { useCallback, useEffect, useMemo, useState } from 'react'
@@ -221,7 +222,7 @@ export default function DomainCenterPage() {
 
                     {domains.length === 0 && (
                         <div className="domains-empty">
-                            <span className="domains-empty-icon"><Globe className="letbuyy-icon" aria-hidden="true" /></span>
+                            <MerchantEmptyArtwork scene="domains" compact />
                             <div className="domains-empty-copy">
                                 <span className="domains-empty-title">No custom domain yet</span>
                                 <span className="domains-empty-desc">Connect a domain you own to brand your storefront with automatic HTTPS.</span>

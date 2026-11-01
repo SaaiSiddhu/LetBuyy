@@ -10,7 +10,6 @@ import {
     Banner,
     Button,
     Card,
-    EmptyState,
     MaterialIcon,
     Page,
     PageHeader,
@@ -19,6 +18,7 @@ import {
     useToast,
     Textarea,
 } from '@letbuyy/ui'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import {
     formatInrCurrency,
     formatIndiaDate,
@@ -107,15 +107,18 @@ function readBoolean(row: Record<string, unknown>, key: string): boolean {
 }
 
 function readNumber(row: Record<string, unknown>, key: string): number {
-    return Number(row[key] ?? 0)
+    const value = row[key]
+    if (value === null || value === undefined || value === '') return Number.NaN
+    const parsed = Number(value)
+    return Number.isFinite(parsed) ? parsed : Number.NaN
 }
 
 function mapOrderRow(raw: Record<string, unknown>): OrderRow {
     return {
         id: readString(raw, 'id'),
         order_number: readString(raw, 'order_number'),
-        status: readString(raw, 'status') || 'pending',
-        payment_status: readString(raw, 'payment_status') || 'pending',
+        status: readString(raw, 'status') || 'unknown',
+        payment_status: readString(raw, 'payment_status') || 'unknown',
         fulfillment_status: readNullableString(raw, 'fulfillment_status'),
         total: readNumber(raw, 'total'),
         created_at: readString(raw, 'created_at'),
@@ -167,7 +170,7 @@ function mapCustomerDetail(raw: Record<string, unknown>): CustomerDetail {
         first_name: readNullableString(raw, 'first_name'),
         last_name: readNullableString(raw, 'last_name'),
         phone: readNullableString(raw, 'phone'),
-        status: readString(raw, 'status') || 'active',
+        status: readString(raw, 'status') || 'unknown',
         accepts_marketing: readBoolean(raw, 'accepts_marketing'),
         tags: Array.isArray(raw.tags) ? (raw.tags as string[]).filter(t => typeof t === 'string') : [],
         notes: readNullableString(raw, 'notes'),
@@ -254,9 +257,9 @@ function ProfileCard({ customer }: { customer: CustomerDetail }) {
                         <DetailRow label="Phone" value={customer.phone} />
                         <DetailRow
                             label="Total spent"
-                            value={formatInrCurrency(customer.total_spent) ?? '₹0'}
+                            value={Number.isFinite(customer.total_spent) ? formatInrCurrency(customer.total_spent) : '—'}
                         />
-                        <DetailRow label="Total orders" value={String(customer.order_count)} />
+                        <DetailRow label="Total orders" value={Number.isFinite(customer.order_count) ? String(customer.order_count) : '—'} />
                         <DetailRow
                             label="First order"
                             value={formatIndiaDate(customer.first_order, { emptyValue: '—' })}
@@ -289,7 +292,7 @@ function OrderHistoryCard({
         return (
             <Card>
                 <Section title="Order history">
-                    <EmptyState
+                    <EmptyState scene="customer-detail"
                         icon={<MaterialIcon name="shopping_bag" />}
                         title="No orders yet"
                         body="Orders placed by this customer will appear here."
@@ -344,7 +347,7 @@ function AddressesCard({ addresses }: { addresses: AddressRow[] }) {
         return (
             <Card>
                 <Section title="Addresses">
-                    <EmptyState
+                    <EmptyState scene="customer-detail"
                         icon={<MaterialIcon name="location_on" />}
                         title="No addresses saved"
                         body="Addresses saved by this customer will appear here."
@@ -471,7 +474,7 @@ function NotesCard({
                     {loadingNotes ? (
                         <Skeleton variant="text" lines={3} />
                     ) : notes.length === 0 ? (
-                        <EmptyState
+                        <EmptyState scene="customer-detail"
                             icon={<MaterialIcon name="sticky_note_2" />}
                             title="No notes yet"
                             body="Notes you add will appear here."
@@ -649,7 +652,7 @@ export default function CustomerDetailPage() {
                 />
                 <Card>
                     <Section>
-                        <EmptyState
+                        <EmptyState scene="customer-detail"
                             icon={<MaterialIcon name="error" />}
                             title="Unable to load customer"
                             body={error ?? 'An unexpected error occurred.'}

@@ -5,7 +5,8 @@ import { useReadRequest } from '@/lib/api/use-read-request'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { PAGE_STATUS_PRESENTATION, presentStatus } from '@letbuyy/shared-types'
-import { Badge, Banner, Button, Card, ConfirmDialog, EmptyState, Eye, EyeOff, FileText, Input, Page, PageHeader, Plus, RefreshCw, SaveBar, Section, Select, Skeleton, StatusPresentationBadge, Table, Textarea, Trash2, useToast } from '@letbuyy/ui'
+import { Badge, Banner, Button, Card, ConfirmDialog, Eye, EyeOff, FileText, Input, Page, PageHeader, Plus, RefreshCw, SaveBar, Section, Select, Skeleton, StatusPresentationBadge, Table, Textarea, Trash2, useToast } from '@letbuyy/ui'
+import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import { formatIndiaDate as formatDate } from '@letbuyy/ui/formatting'
 import { slugifyCmsTitle as slugify } from '@letbuyy/cms-core'
 
@@ -412,7 +413,7 @@ export default function PagesPage() {
                     description="Publish, unpublish, or remove storefront pages."
                 >
                     {pages.length === 0 ? (
-                        <EmptyState
+                        <EmptyState scene="pages"
                             icon={<FileText className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                             title="No pages yet"
                             body="Create pages like About, Contact, FAQ, portfolio details, or service pages for your site."

@@ -124,13 +124,12 @@ export const SettlementProviderModeSchema = z.enum(['sandbox', 'live']);
 export const BillingProviderModeSchema = z.enum(['sandbox', 'live']);
 export const BillingMandateSchema = z.object({
   store_id: z.string().uuid(),
-  plan_slug: z.enum(['free', 'starter', 'business', 'enterprise']).default('starter'),
+  plan_slug: z.enum(['launch', 'growth', 'scale', 'commerce_os']),
   billing_period: z.enum(['monthly', 'yearly']).default('monthly'),
   provider_mode: BillingProviderModeSchema.default('sandbox'),
-  upi_vpa: z.string().trim().min(3).max(120).optional(),
   idempotency_key: z.string().trim().min(8).max(200),
   metadata: z.record(z.string(), z.unknown()).default({}),
-});
+}).strict();
 export const BillingSubscribeSchema = z.object({
   store_id: z.string().uuid(),
   plan_slug: z.enum(['free', 'starter', 'business', 'enterprise', 'launch', 'growth', 'scale', 'commerce_os']),
