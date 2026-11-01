@@ -188,3 +188,15 @@ and forwards only actual product references and the destination. PostgreSQL in
 the Gateway remains the sole authority for prices, GST, eligibility, profile
 mutations and immutable order/invoice facts. No local database or tax writer,
 provider call, account issuer or additional runtime is introduced.
+
+### 1 November 2026 — private KYC evidence transport
+
+Inventory231→233 adds two `gateway-proxy` routes, each listed in the ESLint
+boundary baseline. Merchant `stores/[store]/kyc/upload` resolves the currently
+owned site, bounds multipart bytes, and forwards only the selected document,
+last-four reference and stable receipt key to the Gateway. Console
+`kyc-evidence/[siteId]/[documentId]` requires its current stepped-up session and
+review reason, then streams the Gateway-approved private file as a no-store,
+non-sniffable attachment. The Gateway retains site/document permission, audit,
+scan verdict, private object access and provider decision authority. Neither
+Next route writes the database, approves KYC, or grants payout eligibility.

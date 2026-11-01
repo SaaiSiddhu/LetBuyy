@@ -126,7 +126,10 @@ export function classifyAppApiRoute(file) {
 // generation, current job access, expiry and R2 writes remain Gateway-owned.
 // Approved branded checkout: one owned-store, origin/key-guarded readiness proxy.
 // DNS/provider ownership, derivation, TLS and lifecycle remain in the Gateway.
-export const APP_API_ROUTE_RATCHET = 231;
+// Wave 6 private KYC evidence: Merchant's bounded document-upload transport and
+// Console's stepped-up, audited evidence download transport are gateway-proxy.
+// Storage, scan verdict, provider approval and disclosure authority remain Gateway-owned.
+export const APP_API_ROUTE_RATCHET = 233;
 
 export function ownershipCounts(routes) {
   const counts = new Map();

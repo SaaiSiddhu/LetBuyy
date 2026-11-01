@@ -19,7 +19,7 @@ test('real public Gateway refuses an unpinned direct Razorpay start even with gl
         'receipts', (SELECT count(*) FROM idempotency_keys WHERE site_id='${tenant.siteId}')
     )::text;`);
     const gateway = new Gateway(gatewayEnv(owned, await newIdentityKeys(), {
-        RAZORPAY_KEY_ID: 'rzp_test_globalfixture',
+        RAZORPAY_KEY_ID: 'rzp_test_ZZZZZZZZZZZZ',
         RAZORPAY_KEY_SECRET: 'synthetic-global-key',
     }));
     try {

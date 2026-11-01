@@ -29,7 +29,7 @@ const STORE = 'aaaaaaaa-0000-4000-8000-0000000000a1';
 const ORDER = 'bbbbbbbb-0000-4000-8000-0000000000b1';
 const KEY_SECRET = 'rzp-test-secret-for-route-tests-only';
 const SHARED_SECRET = 'different-shared-secret-must-not-verify';
-const STORE_KEY_ID = 'rzp_test_ownaccountroute';
+const STORE_KEY_ID = 'rzp_test_XXXXXXXXXXXX';
 const STORE_CREDENTIAL_ID = 'cccccccc-0000-4000-8000-0000000000c1';
 const ENCRYPTION_KEY = 'owned-route-test-encryption-key-2026';
 const INTERNAL_SECRET = 'internal-secret-for-route-tests-only';
@@ -50,7 +50,7 @@ function env(providerPayment: Json = {}): Env {
         ENVIRONMENT: 'test',
         SUPABASE_URL: POSTGREST_ORIGIN,
         SUPABASE_SERVICE_ROLE_KEY: 'test-service-role-key',
-        RAZORPAY_KEY_ID: 'rzp_test_shared_route',
+        RAZORPAY_KEY_ID: 'rzp_test_YYYYYYYYYYYY',
         RAZORPAY_KEY_SECRET: SHARED_SECRET,
         PAYMENT_CONFIG_ENCRYPTION_KEY: ENCRYPTION_KEY,
         HOSTED_RAZORPAY_TEST_ADAPTER: { fetchPayment: async () => ({
