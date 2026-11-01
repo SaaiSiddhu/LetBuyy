@@ -1,0 +1,30 @@
+{
+  "dateIst": "2026-11-01",
+  "scope": "Current-head SECURITY DEFINER role access and source validator after GST/invoice migrations",
+  "ownedPostgres": {
+    "runId": "a4be5f631d9c",
+    "suite": "services/api-gateway/src/__tests__/owned-db/final-definer-role-access.postgres.test.ts",
+    "tests": 6,
+    "passed": 6,
+    "failed": 0,
+    "skipped": 0,
+    "cleanupFailures": 0,
+    "remainingOwnedContainers": 0,
+    "remainingOwnedNetworks": 0,
+    "remainingOwnedVolumes": 0,
+    "scopeLimit": "The suite proves current-head effective Data API role denial in a disposable Postgres, not hosted database policy."
+  },
+  "sourceScanner": {
+    "finding": "Five exact reviewed dynamic CREATE OR REPLACE blocks in migrations 411 and 412 caused a conservative unknown-privilege event that marked 120 earlier functions as reopened.",
+    "change": "Pin the SHA-256 of those five immutable function-body rewrite blocks; any byte change returns the block to the unknown-privilege path.",
+    "tamperChecks": "Changing a pinned rewrite to a dynamic GRANT is detected in both migration 411 and 412 fixtures.",
+    "remainingNamedFindings": [
+      "public.issue_gst_invoice",
+      "public.issue_gift_card",
+      "public.revoke_kyc_on_profile_change_v1",
+      "public.queue_replaced_kyc_private_object_v1"
+    ],
+    "focusedRun": { "tests": 21, "passed": 20, "failed": 1, "skipped": 0 },
+    "interpretation": "The full current-head source closure assertion remains red for four definitions. A reversible named role-closure correction is still required; this receipt is not a green security gate."
+  }
+}

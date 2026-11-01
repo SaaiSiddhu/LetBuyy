@@ -50,6 +50,38 @@ test('every current post-256 definer is closed by name after its latest definiti
         'A forward correction may close immutable history, but every current definer needs named closure after its latest definition; a later grant reopens the failure. Actual signatures/roles are also proved in the full-chain owned lane.');
 });
 
+test('reviewed migration 411 function-body rewrites cannot hide a changed dynamic privilege statement', () => {
+    const earlier = readFileSync(join(migrationsDir, '257_buyer_email_challenges.sql'), 'utf8');
+    const original = readFileSync(join(migrationsDir, '411_authoritative_checkout_gst.sql'), 'utf8');
+    const migrations = sql411 => [
+        { number: 257, name: '257_buyer_email_challenges.sql', sql: earlier },
+        { number: 411, name: '411_authoritative_checkout_gst.sql', sql: sql411 },
+    ];
+    assert.deepEqual(currentDefinerClosureOffenders(migrations(original)), []);
+    const changed = original.replace('  EXECUTE definition;',
+        "  EXECUTE 'GRANT EXECUTE ON FUNCTION public.start_buyer_email_challenge(uuid,text) TO anon';");
+    assert.notEqual(changed, original, 'the dynamic statement must be changed in the test fixture');
+    assert.ok(currentDefinerClosureOffenders(migrations(changed)).includes(
+        '257_buyer_email_challenges.sql: public.start_buyer_email_challenge'));
+});
+
+test('reviewed migration 412 invoice rewrites cannot hide a changed dynamic privilege statement', () => {
+    const earlier = readFileSync(join(migrationsDir, '257_buyer_email_challenges.sql'), 'utf8');
+    const original = readFileSync(join(migrationsDir, '412_invoice_checkout_fact_parity.sql'), 'utf8');
+    const migrations = sql412 => [
+        { number: 257, name: '257_buyer_email_challenges.sql', sql: earlier },
+        { number: 412, name: '412_invoice_checkout_fact_parity.sql', sql: sql412 },
+    ];
+    assert.ok(!currentDefinerClosureOffenders(migrations(original)).includes(
+        '257_buyer_email_challenges.sql: public.start_buyer_email_challenge'),
+    'the reviewed rewrite must not reopen unrelated earlier functions');
+    const changed = original.replace('  EXECUTE d;',
+        "  EXECUTE 'GRANT EXECUTE ON FUNCTION public.start_buyer_email_challenge(uuid,text) TO anon';");
+    assert.notEqual(changed, original, 'the dynamic statement must be changed in the test fixture');
+    assert.ok(currentDefinerClosureOffenders(migrations(changed)).includes(
+        '257_buyer_email_challenges.sql: public.start_buyer_email_challenge'));
+});
+
 const mint=`CREATE OR REPLACE FUNCTION public.mint_things(p_site uuid) RETURNS void
  LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$ BEGIN NULL; END; $$;`;
 const close='REVOKE ALL ON FUNCTION public.mint_things(uuid) FROM PUBLIC, anon, authenticated;';
