@@ -71,11 +71,13 @@ function loadTypeScriptModule(sourcePath, requireMap) {
 const { z, zChain } = createZodStub();
 const customerSessionCore = loadTypeScriptModule('packages/auth-core/src/customer-session.ts', {});
 const storefrontAccessCore = loadTypeScriptModule(AUTH_CORE_STOREFRONT_ACCESS_SOURCE, {});
+const merchantBuyerConnectionCore = loadTypeScriptModule('packages/auth-core/src/merchant-buyer-connection.ts', { zod: { z } });
 const authCore = loadTypeScriptModule(AUTH_CORE_SOURCE, {
   zod: { z },
   '@letbuyy/shared-types': { EmailSchema: zChain },
   './customer-session': customerSessionCore,
   './storefront-access': storefrontAccessCore,
+  './merchant-buyer-connection': merchantBuyerConnectionCore,
 });
 const appEngine = loadTypeScriptModule(APP_ENGINE_SOURCE, {
   zod: { z },

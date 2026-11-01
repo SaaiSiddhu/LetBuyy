@@ -52,7 +52,7 @@ function catalogFixture(action) { return fixture((root, write) => {
 }); }
 test('relocated suites auto-discover once in the same gateway-db lane; devices never auto-discover', () => catalogFixture(root => {
     const catalog = discoverSuites(root);
-    assert.deepEqual(catalog.gatewayDb, [`${GATEWAY_DB_SUITE_DIR}/original.test.ts`, ...ROOT_GATEWAY_DB_SUITES]);
+    assert.deepEqual(catalog.gatewayDb, [`${GATEWAY_DB_SUITE_DIR}/original.test.ts`, ...ROOT_GATEWAY_DB_SUITES].sort());
     assert.ok(catalog.gatewayDb.every(isGatewayDatabaseSuite));
     assert.deepEqual(catalog.all, []);
     assert.ok(!catalog.gatewayDb.some(path => path.includes('owned-device')));
