@@ -271,7 +271,10 @@ class _KycScreenState extends State<KycScreen> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed:
-            _loading || _referenceOpen || _storeId == null || _error != null ||
+            _loading ||
+                _referenceOpen ||
+                _storeId == null ||
+                _error != null ||
                 _overview?['private_upload_available'] != true
             ? null
             : () => _showReferenceDialog(),
@@ -283,9 +286,11 @@ class _KycScreenState extends State<KycScreen> {
           ListTile(
             leading: const Icon(Icons.lock_outline),
             title: const Text('Private document upload'),
-            subtitle: Text(_overview?['private_upload_available'] == false
-                ? 'Private upload is unavailable. Your saved status remains visible; retry later.'
-                : 'Upload verification documents here. A private upload awaits a security scan before provider review.'),
+            subtitle: Text(
+              _overview?['private_upload_available'] == false
+                  ? 'Private upload is unavailable. Your saved status remains visible; retry later.'
+                  : 'Upload verification documents here. A private upload awaits a security scan before provider review.',
+            ),
           ),
           Expanded(
             child: _loading
@@ -328,7 +333,10 @@ class _KycScreenState extends State<KycScreen> {
                                           item['document_type'] &&
                                       _referenceOnly(doc),
                                 ),
-                                onRecord: _referenceOpen || overview['private_upload_available'] != true
+                                onRecord:
+                                    _referenceOpen ||
+                                        overview['private_upload_available'] !=
+                                            true
                                     ? null
                                     : () => _showReferenceDialog(
                                         item['document_type']?.toString(),
@@ -397,7 +405,8 @@ class _StatusPanel extends StatelessWidget {
     final hasReference = (overview['documents'] as List? ?? const [])
         .whereType<Map>()
         .any(_referenceOnly);
-    final status = hasReference ||
+    final status =
+        hasReference ||
             (overview['provider_mode'] == 'sandbox' &&
                 overview['overall_status'] == 'verified')
         ? 'in_progress'
@@ -475,15 +484,39 @@ class _RequirementTile extends StatelessWidget {
     final progress = referenceRecorded
         ? 'Reference recorded · Upload required'
         : _statusTitle(status);
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      leading: Icon(_statusIcon(status), color: _statusColor(status)),
-      title: Text(item['title']?.toString() ?? 'Document'),
-      subtitle: Text(requirement == null ? progress : '$requirement · $progress'),
-      trailing: TextButton(
-        key: ValueKey('record-reference-${item['document_type']}'),
-        onPressed: onRecord,
-        child: const Text('Upload document'),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(_statusIcon(status), color: _statusColor(status)),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(item['title']?.toString() ?? 'Document'),
+                    Text(
+                      requirement == null
+                          ? progress
+                          : '$requirement · $progress',
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton(
+              key: ValueKey('record-reference-${item['document_type']}'),
+              onPressed: onRecord,
+              child: const Text('Upload document'),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -601,7 +634,8 @@ String _statusTitle(String status) {
 }
 
 String _documentProgressTitle(Map<String, dynamic> document, String status) {
-  if (document['evidence_scan_status'] == 'rejected') return 'Security scan failed';
+  if (document['evidence_scan_status'] == 'rejected')
+    return 'Security scan failed';
   if (document['requires_resubmission'] == true) return 'Replace document';
   if (status != 'submitted') return _statusTitle(status);
   switch (document['evidence_scan_status']) {
@@ -773,11 +807,18 @@ class _ReferenceDialogState extends State<_ReferenceDialog> {
                 textCapitalization: TextCapitalization.characters,
               ),
               OutlinedButton.icon(
-                onPressed: _saving ? null : () async {
-                  final selected = await (widget.pickDocumentPhoto?.call()
-                      ?? ImagePicker().pickImage(source: ImageSource.gallery, imageQuality: 90));
-                  if (mounted && widget.isCurrent()) setState(() => _file = selected);
-                },
+                onPressed: _saving
+                    ? null
+                    : () async {
+                        final selected =
+                            await (widget.pickDocumentPhoto?.call() ??
+                                ImagePicker().pickImage(
+                                  source: ImageSource.gallery,
+                                  imageQuality: 90,
+                                ));
+                        if (mounted && widget.isCurrent())
+                          setState(() => _file = selected);
+                      },
                 icon: const Icon(Icons.upload_file),
                 label: Text(_file?.name ?? 'Choose document photo'),
               ),

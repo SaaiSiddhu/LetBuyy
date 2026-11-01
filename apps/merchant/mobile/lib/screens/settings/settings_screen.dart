@@ -307,6 +307,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                       ),
                       SettingsTile(
+                        icon: Icons.verified_user_outlined,
+                        title: 'Business verification',
+                        subtitle: 'Private KYC documents and review status',
+                        onTap: () =>
+                            Navigator.pushNamed(context, AppRoutes.kyc),
+                      ),
+                      SettingsTile(
                         icon: Icons.loyalty_outlined,
                         title: 'Loyalty',
                         subtitle: 'Customer points and reward settings',
@@ -516,8 +523,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
               color: colors.textPrimary,
             ),
           ),
-          const Spacer(),
-          StoreSwitcherButton(onChanged: _loadStore),
+          Expanded(
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: StoreSwitcherButton(onChanged: _loadStore),
+            ),
+          ),
         ],
       ),
     );

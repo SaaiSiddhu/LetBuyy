@@ -12,6 +12,7 @@ import '../../widgets/shared/merchant_media_picker.dart';
 import '../../widgets/shared/cached_merchant_image.dart';
 
 import '../../models/store_model.dart';
+import '../../theme/app_theme_colors.dart';
 
 /// Store details editing screen
 class StoreDetailsScreen extends StatefulWidget {
@@ -209,6 +210,7 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppThemeColors.of(context);
     if (_isLoading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
@@ -221,11 +223,11 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
     }
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: colors.bgStart,
       appBar: AppBar(
         title: const Text('Store Details'),
-        backgroundColor: AppColors.background,
-        surfaceTintColor: AppColors.background,
+        backgroundColor: colors.bgStart,
+        surfaceTintColor: colors.bgStart,
         actions: [
           if (_hasConflict)
             IconButton(
@@ -452,20 +454,20 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.grey[50],
+                color: colors.elevation1,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey[200]!),
+                border: Border.all(color: colors.cardBorder),
               ),
               child: Row(
                 children: [
-                  Icon(Icons.link_rounded, color: Colors.grey[600]),
+                  Icon(Icons.link_rounded, color: colors.textSecondary),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       '${_store?.subdomain ?? 'mystore'}.letbuyy.com',
                       style: TextStyle(
                         fontFamily: 'monospace',
-                        color: Colors.grey[700],
+                        color: colors.textPrimary,
                       ),
                     ),
                   ),
@@ -475,7 +477,7 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
             const SizedBox(height: 8),
             Text(
               'Subdomain cannot be changed after creation',
-              style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+              style: TextStyle(fontSize: 12, color: colors.textSecondary),
             ),
             const SizedBox(height: 100),
           ],
@@ -485,6 +487,7 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
   }
 
   Widget _buildLogoSection() {
+    final colors = AppThemeColors.of(context);
     return Center(
       child: Column(
         children: [
@@ -524,7 +527,7 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
           const SizedBox(height: 8),
           Text(
             'Tap to change logo',
-            style: TextStyle(color: Colors.grey[600], fontSize: 12),
+            style: TextStyle(color: colors.textSecondary, fontSize: 12),
           ),
         ],
       ),

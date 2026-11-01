@@ -99,11 +99,16 @@ class _HeroStoreCardState extends State<HeroStoreCard>
     HapticFeedback.mediumImpact();
     try {
       await Share.share(
-      '🏪 Check out ${widget.store.name} on LetBuyy!\n\n$_publicUrl',
-      subject: '${widget.store.name} - LetBuyy Store',
+        '🏪 Check out ${widget.store.name} on LetBuyy!\n\n$_publicUrl',
+        subject: '${widget.store.name} - LetBuyy Store',
       );
     } catch (_) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not open share options. Try again.')));
+      if (mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Could not open share options. Try again.'),
+          ),
+        );
     }
   }
 
@@ -799,14 +804,18 @@ class _CompactActionButtonState extends State<_CompactActionButton> {
                             : Colors.white,
                       ),
                     const SizedBox(width: 5),
-                    Text(
-                      widget.label,
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        color: widget.isPrimary
-                            ? mobile_tokens.LetbuyyColorTokens.brandPrimary
-                            : Colors.white,
+                    Flexible(
+                      child: Text(
+                        widget.label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: widget.isPrimary
+                              ? mobile_tokens.LetbuyyColorTokens.brandPrimary
+                              : Colors.white,
+                        ),
                       ),
                     ),
                   ],
@@ -871,7 +880,12 @@ class _QRCodeBottomSheetState extends State<_QRCodeBottomSheet> {
         subject: '${widget.storeName} - QR Code',
       );
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not share the QR image. Try again.')));
+      if (mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Could not share the QR image. Try again.'),
+          ),
+        );
     } finally {
       if (mounted) setState(() => _isSharing = false);
     }
