@@ -2,7 +2,8 @@ import 'dart:async';
 import 'dart:ui' show PlatformDispatcher;
 
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart'
+    show initializeLetbuyyTypography;
 import 'package:letbuyy_models/merchant_contracts.dart';
 import 'package:provider/provider.dart';
 
@@ -76,7 +77,7 @@ void main() {
         return;
       }
 
-      GoogleFonts.config.allowRuntimeFetching = true;
+      await initializeLetbuyyTypography();
       late final StoreAuthService authService;
       final cacheService = await CacheService.open(
         actorIdProvider: () {
