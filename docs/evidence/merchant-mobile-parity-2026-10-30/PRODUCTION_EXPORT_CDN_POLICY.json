@@ -1,0 +1,45 @@
+{
+  "zone": "letbuyy.store",
+  "action": "block",
+  "enabled": true,
+  "purpose": "Prevent direct unauthenticated CDN retrieval of private export jobs, sources and results; preserve the canonical authenticated Gateway download boundary.",
+  "environment": "production",
+  "description": "Production: block direct export objects",
+  "hostname": "cdn.letbuyy.store",
+  "bucket": "letbuyy-media-production",
+  "expression": "(http.host eq \"cdn.letbuyy.store\" and (url_decode(http.request.uri.path, \"r\") eq \"/exports\" or starts_with(url_decode(http.request.uri.path, \"r\"), \"/exports/\")))",
+  "status": "active-production-rule-and-owned-canary-paths-verified",
+  "approved": true,
+  "scope": [
+    "Read current production CDN policy metadata",
+    "Create two harmless synthetic canaries under a public and an export prefix; no merchant/customer payloads",
+    "If an exact private canary is anonymously readable, append only the reviewed hostname/path Block rule",
+    "Verify nonzero public delivery and denial of canonical/encoded private canary paths",
+    "Delete the exact two test objects and verify absence"
+  ],
+  "release_scope": "This proposal covers only the CDN restriction and controlled canaries. Application deployment, aliases, schema, original files, payment/provider operations and private storage cutover require their own authority.",
+  "rollback": "If the public control regresses, remove only the newly created rule after deleting the two owned canaries; preserve existing configuration.",
+  "stage_evidence": "STAGING_PRIVATE_EXPORTS.md",
+  "limitation": "Outer mitigation; complete permanent private storage separation before final production certification.",
+  "owner_approval": "Approve scoped production privacy check and guard (Recommended)",
+  "application_release_authorized": false,
+  "provider_rule_id": "2dfe2ddf5eb24682acc5ccf1ce53619d",
+  "exact_saved_expression_ui_readback": true,
+  "block_active_ui_readback": true,
+  "preserved_staging_rule_id": "448f40ff18614cafbbd72312d69f6458",
+  "before": {
+    "public": 200,
+    "private": 200,
+    "exactNonzeroBytes": true
+  },
+  "after": {
+    "public": 200,
+    "privateAndFourEncodedVariants": 403,
+    "privateBytesDisclosed": false
+  },
+  "ownedCanaryCount": 2,
+  "ownedCanariesAbsent": true,
+  "application_release_performed": false,
+  "schema_write": false,
+  "completedUtc": "2026-11-01T12:27:28.226265+00:00"
+}

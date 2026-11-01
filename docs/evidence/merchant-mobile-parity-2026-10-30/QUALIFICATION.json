@@ -2821,6 +2821,13 @@
       "overwritten": false,
       "local_merge_conflicts": 10,
       "current_alias_full_parity_accepted": false
+    },
+    "current_staging_challenge": {
+      "ownerApproved": true,
+      "retryAndCheckboxCompleted": true,
+      "observed": "Security check passed",
+      "credentialEntered": false,
+      "authenticatedLoginAccepted": false
     }
   },
   "staging_private_export_checkpoint": {
@@ -2841,7 +2848,7 @@
       "suppliers": 2,
       "device_ui": false
     },
-    "production_policy_approval_pending": true,
+    "production_policy_approval_pending": false,
     "permanent_private_storage_cutover_accepted": false,
     "durable_csv_import_accepted": false,
     "owned_object_absence_readbacks": 7,
@@ -2850,7 +2857,7 @@
   },
   "source_integration_checkpoint": {
     "report": "MERCHANT_SOURCE_INTEGRATION.md",
-    "status": "local-merge-renumbering-approved-awaiting-owned-database-and-governance",
+    "status": "source-local-qualified-and-artifacts-admitted-hosted415-maintenance-pending",
     "source_base": "bbb9aab758188b1f07fcc44ed9a60b15309e7328",
     "merge_head": "e4105581e3346041d71694d3db093eb713773e07",
     "conflicts_resolved": 10,
@@ -2867,8 +2874,8 @@
     "runtime_source_fingerprint": "594f35b0d3419ebe7da60bad03ca3c5a8417173499ef512c24a0831204485db3",
     "all_migration_sql_bytes_unchanged": true,
     "migration_renumbered": true,
-    "integrated_governance_accepted": false,
-    "owned_database_accepted": false,
+    "integrated_governance_accepted": true,
+    "owned_database_accepted": true,
     "merchant_deployed": false,
     "native_source_unchanged": true,
     "accounts_source_unchanged": true,
@@ -2878,6 +2885,38 @@
     "migration_numbering_owner_approved": true,
     "gift_card_migration": 415,
     "warehouse_migration": 414,
-    "migration_sql_bytes_preserved": true
+    "migration_sql_bytes_preserved": true,
+    "source_commit": "7b76ffed97e9f1f4c18e9dc0162ada3e7257ddd6",
+    "merge_committed": true,
+    "governance_pass": 114,
+    "owned_gateway_suites": 9,
+    "owned_gateway_pass": 95,
+    "redteam_isolated_top_level_cases_pass": 2,
+    "mixed_redteam_fixture_failure_retained": true,
+    "retained_staging_rehearsal_pass": true,
+    "retained_tables_exactly_preserved": 523,
+    "rehearsal_run": "a019dfea1199",
+    "gift_card_rollback_exact": true,
+    "owned_cleanup_empty": true,
+    "merchant_artifact_tree_sha256": "685cf603aa7ee1cb57b7f03745e1a12fad16cc99e938082bedf5011adda77f04",
+    "api_main_sha256": "34204b6c3396fb9c8771526b9cc4dd0a7ee60d6308bc318305dec333c13eeceb",
+    "hosted415_applied": false,
+    "hosted415_approval_pending": true
+  },
+  "latest_integrated_source": "7b76ffed97e9f1f4c18e9dc0162ada3e7257ddd6",
+  "production_export_privacy_checkpoint": {
+    "report": "PRODUCTION_PRIVATE_EXPORTS.md",
+    "policy": "PRODUCTION_EXPORT_CDN_POLICY.json",
+    "ownerApproved": true,
+    "ruleId": "2dfe2ddf5eb24682acc5ccf1ce53619d",
+    "exactUiReadback": true,
+    "beforePublicAndPrivate": 200,
+    "afterPublic": 200,
+    "afterCanonicalAndFourVariants": 403,
+    "canaryCount": 2,
+    "bothOriginAbsent": true,
+    "productionApplicationRelease": false,
+    "schemaWrite": false,
+    "permanentPrivateStorageAccepted": false
   }
 }

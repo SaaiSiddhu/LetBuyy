@@ -8,7 +8,7 @@
   "hostname": "cdn.letbuyy.store",
   "bucket": "letbuyy-media-production",
   "expression": "(http.host eq \"cdn.letbuyy.store\" and (url_decode(http.request.uri.path, \"r\") eq \"/exports\" or starts_with(url_decode(http.request.uri.path, \"r\"), \"/exports/\")))",
-  "status": "owner-approved-awaiting-two-canary-verification",
+  "status": "approved-and-activated-see-active-policy",
   "approved": true,
   "scope": [
     "Read current production CDN policy metadata",
@@ -22,5 +22,6 @@
   "stage_evidence": "STAGING_PRIVATE_EXPORTS.md",
   "limitation": "Outer mitigation; complete permanent private storage separation before final production certification.",
   "owner_approval": "Approve scoped production privacy check and guard (Recommended)",
-  "application_release_authorized": false
+  "application_release_authorized": false,
+  "active_policy": "PRODUCTION_EXPORT_CDN_POLICY.json"
 }
