@@ -108,3 +108,5 @@ export { transferPrivateOriginal, inspectPrivateOriginal, originalKey, privateOr
 
 export { signKycIndiaS3Post, type KycIndiaS3PostInput, type KycIndiaS3Post,
   type KycIndiaContentType } from './kyc-india-s3-post';
+export { verifyKycIndiaS3Head, type KycIndiaS3HeadExpectation,
+  type KycIndiaS3VerifiedObject } from './kyc-india-s3-head';
