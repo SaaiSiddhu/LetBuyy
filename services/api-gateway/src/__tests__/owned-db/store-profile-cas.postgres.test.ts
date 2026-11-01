@@ -45,6 +45,28 @@ test('two store editors cannot overwrite a cleared contact or cross tenant bound
     assert.equal(unauthorizedStaff.status, 403, unauthorizedStaff.text);
     assert.notEqual(owned.psql(`SELECT name FROM sites WHERE id='${first.siteId}';`), 'Forged staff name');
 
+    const merchantRead = async (siteId: string, actor: string, tokenSiteId: string) =>
+        gateway.request(`/v1/stores/${siteId}`, { headers:
+            await signedIdentityHeaders(actor, `profile-${actor}@example.invalid`, tokenSiteId) });
+    const ownerRead = await merchantRead(first.siteId, owner, first.siteId);
+    assert.equal(ownerRead.status, 200, ownerRead.text);
+    assert.equal(ownerRead.json?.data.business_profile.trade_name, 'Original');
+    const foreignRead = await merchantRead(second.siteId, owner, second.siteId);
+    assert.equal(foreignRead.status, 404, foreignRead.text);
+    assert.doesNotMatch(foreignRead.text, /profile-b|Synthetic other|business_profile/);
+    const wrongTokenSiteRead = await merchantRead(second.siteId, owner, first.siteId);
+    assert.equal(wrongTokenSiteRead.status, 404, wrongTokenSiteRead.text);
+    owned.psql(`INSERT INTO employees(user_id,email,role,store_id,status,is_active)
+        VALUES('${staff}','profile-${staff}@example.invalid','viewer','${first.siteId}','active',true);`);
+    const staffRead = await merchantRead(first.siteId, staff, first.siteId);
+    assert.equal(staffRead.status, 200, staffRead.text);
+    assert.equal(staffRead.json?.data.id, first.siteId);
+    assert.equal('business_profile' in staffRead.json!.data, false);
+    assert.equal('settings' in staffRead.json!.data, false);
+    assert.equal('invoice_address' in staffRead.json!.data, false);
+    const anonymousRead = await gateway.request(`/v1/stores/${first.siteId}`);
+    assert.equal(anonymousRead.status, 401, anonymousRead.text);
+
     const versionBeforeInvalid = Number(owned.psql(`SELECT version FROM sites WHERE id='${first.siteId}';`));
     for (const invalid of [
         { currency: 'USD' },
