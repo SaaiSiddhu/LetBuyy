@@ -47,6 +47,23 @@ test('actual Data API roles deny both RPCs while backend calls and the RLS helpe
  }
 });
 
+test('427 named closure is a reversible no-op on the closed catalog and refuses an unexpected open ACL',()=>{
+ const forward=readFileSync('database/supabase/migrations/427_attest_current_definer_role_closure.sql','utf8');
+ const rollback=readFileSync('database/supabase/rollback/427_attest_current_definer_role_closure.rollback.sql','utf8');
+ const before=snapshot();
+ owned.script(rollback);assert.deepEqual(snapshot(),before,'paired rollback preserves every current definer ACL');
+ owned.script(forward);assert.deepEqual(snapshot(),before,'replay preserves function bodies, owners, and ACLs');
+ const signature='public.issue_gst_invoice(uuid,uuid,text)';
+ owned.script(`GRANT EXECUTE ON FUNCTION ${signature} TO anon;`);
+ try{
+  assert.match(owned.psqlExpectError(forward),/427 refuses open Data API definer ACL/);
+  assert.match(owned.psqlExpectError(rollback),/427 rollback refuses open Data API definer ACL/);
+ }finally{
+  owned.script(`REVOKE ALL ON FUNCTION ${signature} FROM anon;`);
+ }
+ assert.deepEqual(snapshot(),before,'failed admission and cleanup leave the closed catalog unchanged');
+});
+
 test('current HEAD refuses historical 309 retirement without changing any authority',()=>{
  const saved=journal(),roles=snapshot();
  assert.match(sql.psqlExpectError(rollback),/refuses.*later|subsequent|later migration/i);
