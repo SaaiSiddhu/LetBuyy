@@ -208,7 +208,11 @@ export const protectedMutationIdempotency = createMiddleware<{ Bindings: Env }>(
     // The route hashes its verified file bytes and claims the canonical
     // site-scoped receipt before writing to the private object bucket.
     const routeOwnedKycUpload = method === 'POST' && orderPath === '/kyc/documents/upload';
-    if (routeOwnedKycUpload || routeOwnedCollectionMembership || routeOwnedInventoryAdjustment || routeOwnedSubscriptionCheckout || routeOwnedProductReceipt || routeOwnedMoneyClaim || credentialCommand || routeOwnedOrderReceipt || !MUTATION_METHODS.has(method) || !isProtectedMutationPath(c.req.path, method)) {
+    // Refresh must recheck current ownership and evidence on every retry. An
+    // outer cached 200 would return an old approval after resubmission and
+    // bypass the route's site/evidence-bound provider receipt.
+    const routeOwnedKycRefresh = method === 'POST' && /^\/kyc\/documents\/[^/]+\/refresh$/.test(orderPath);
+    if (routeOwnedKycUpload || routeOwnedKycRefresh || routeOwnedCollectionMembership || routeOwnedInventoryAdjustment || routeOwnedSubscriptionCheckout || routeOwnedProductReceipt || routeOwnedMoneyClaim || credentialCommand || routeOwnedOrderReceipt || !MUTATION_METHODS.has(method) || !isProtectedMutationPath(c.req.path, method)) {
         await next();
         return;
     }

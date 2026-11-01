@@ -393,6 +393,10 @@ router.post('/documents/upload', bodyLimit({ maxSize: 6 * 1024 * 1024 }), async 
 });
 
 router.post('/documents/:id/refresh', validate('query', StoreQuerySchema), async (c) => {
+    const idempotencyKey = c.req.header('X-Idempotency-Key');
+    if (!idempotencyKey || idempotencyKey.length < 8 || idempotencyKey.length > 160) {
+        return c.json({ error: { code: 'IDEMPOTENCY_KEY_REQUIRED', message: 'A valid idempotency key is required.' } }, 400);
+    }
     const db = getSupabaseAdmin(c);
     const tenant = await resolveTenantContextForOwnedSite(c, (c.get('validatedQuery') as StoreQuery).store_id);
     const document = await loadDocument(db, c.req.param('id'), tenant.siteId);
@@ -413,59 +417,100 @@ router.post('/documents/:id/refresh', validate('query', StoreQuerySchema), async
                 Boolean(c.env.KYC_PRIVATE_BUCKET)),
         }));
     }
-    const verification = await verifyWithProvider(c.env, {
+    // Claim before any provider call. The upload key changes on resubmission,
+    // even when the replacement has identical bytes and reference characters.
+    const idempotency = new IdempotencyExecutionAdapter(db);
+    const claim = await idempotency.begin({
         siteId: tenant.siteId,
-        documentId: document.id,
-        documentType: document.document_type,
-        documentNumberLast4: document.document_number_last4 || null,
-        fileUrl: document.file_url || null,
+        key: idempotencyKey,
+        scope: `kyc:document-refresh:${document.id}`,
+        requestBody: {
+            document_id: document.id,
+            upload_key: document.metadata?.idempotency_key || null,
+            sha256: document.metadata?.sha256 || null,
+        },
+        requestId: c.req.header('X-Request-ID') || null,
+        expiresInSeconds: 30 * 24 * 60 * 60,
     });
-    const now = new Date().toISOString();
-    const providerMetadata: Record<string, unknown> = verification.metadata;
-    const providerApproved = acceptsLiveKycApproval(document, verification);
-    const status = verification.status === 'verified' && !providerApproved
-        ? 'needs_review' : verification.status;
-    const { data, error } = await db
-        .from('merchant_kyc_documents')
-        .update({
-            status,
-            provider: verification.provider,
-            provider_mode: verification.providerMode,
-            provider_reference: verification.providerReference,
-            rejection_reason: verification.rejectionReason || null,
-            metadata: {
-                ...(document.metadata || {}),
-                // Provider output must not overwrite the private object pointer,
-                // file digest, or trusted scanner verdict. Store only reviewed flags.
-                provider_unavailable: providerMetadata.provider_unavailable === true,
-                sandbox: verification.providerMode === 'sandbox',
-                manual_review_required: providerMetadata.manual_review_required === true
-                    || (verification.status === 'verified' && !providerApproved),
-                provider_checked_at: now,
-                // A pending/outage result revokes any previous provider approval.
-                provider_verified: providerApproved,
-            },
-            verified_at: providerApproved ? now : null,
-            rejected_at: status === 'rejected' ? now : null,
-            updated_by: tenant.userId,
-        })
-        .eq('id', document.id)
-        .eq('site_id', tenant.siteId)
-        // A new upload reuses this row. Never let a response for the previous
-        // evidence overwrite its object pointer, status, or provider decision.
-        .eq('updated_at', document.updated_at)
-        .is('deleted_at', null)
-        .select('*')
-        .maybeSingle();
+    if (claim.kind === 'claimed' && claim.id === 'dev-idempotency-id') {
+        throw new AppError('Verification receipts are unavailable. Please retry later.', 503, 'KYC_RECEIPT_UNAVAILABLE');
+    }
+    const currentResponse = async () => {
+        const current = await loadDocument(db, document.id, tenant.siteId);
+        if (!current) throw new AppError('KYC document not found', 404, 'KYC_DOCUMENT_NOT_FOUND');
+        const rows = await loadDocuments(db, tenant.siteId);
+        return success({
+            document: serializeDocument(current),
+            overview: buildOverview(tenant.siteId, rows, providerMode(c.env), isGstRegistered,
+                Boolean(c.env.KYC_PRIVATE_BUCKET)),
+        });
+    };
+    // A receipt only suppresses the repeated provider call; the merchant always
+    // receives the current redacted state, including later review decisions.
+    if (claim.kind === 'replay') return c.json(await currentResponse());
+    if (document.metadata?.refresh_idempotency_key === idempotencyKey) {
+        await idempotency.complete({ id: claim.id,
+            responseBody: { success: true, data: { document_id: document.id } }, statusCode: 200,
+            resourceType: 'merchant_kyc_document', resourceId: document.id });
+        return c.json(await currentResponse());
+    }
+    try {
+        const verification = await verifyWithProvider(c.env, {
+            siteId: tenant.siteId,
+            documentId: document.id,
+            documentType: document.document_type,
+            documentNumberLast4: document.document_number_last4 || null,
+            fileUrl: document.file_url || null,
+        });
+        const now = new Date().toISOString();
+        const providerMetadata: Record<string, unknown> = verification.metadata;
+        const providerApproved = acceptsLiveKycApproval(document, verification);
+        const status = verification.status === 'verified' && !providerApproved
+            ? 'needs_review' : verification.status;
+        const { data, error } = await db
+            .from('merchant_kyc_documents')
+            .update({
+                status,
+                provider: verification.provider,
+                provider_mode: verification.providerMode,
+                provider_reference: verification.providerReference,
+                rejection_reason: verification.rejectionReason || null,
+                metadata: {
+                    ...(document.metadata || {}),
+                    // Provider output must not overwrite the private object pointer,
+                    // file digest, or trusted scanner verdict. Store only reviewed flags.
+                    provider_unavailable: providerMetadata.provider_unavailable === true,
+                    sandbox: verification.providerMode === 'sandbox',
+                    manual_review_required: providerMetadata.manual_review_required === true
+                        || (verification.status === 'verified' && !providerApproved),
+                    provider_checked_at: now,
+                    refresh_idempotency_key: idempotencyKey,
+                    // A pending/outage result revokes any previous provider approval.
+                    provider_verified: providerApproved,
+                },
+                verified_at: providerApproved ? now : null,
+                rejected_at: status === 'rejected' ? now : null,
+                updated_by: tenant.userId,
+            })
+            .eq('id', document.id)
+            .eq('site_id', tenant.siteId)
+            // A new upload reuses this row. Never let a response for the previous
+            // evidence overwrite its object pointer, status, or provider decision.
+            .eq('updated_at', document.updated_at)
+            .is('deleted_at', null)
+            .select('*')
+            .maybeSingle();
 
-    if (error) throw new Error(`KYC document refresh failed: ${error.message}`);
-    if (!data) throw new AppError('This document changed during verification. Reload its current status.', 409, 'KYC_CONFLICT');
-    const rows = await loadDocuments(db, tenant.siteId);
-    return c.json(success({
-        document: serializeDocument(data as unknown as KycDocumentRow),
-        overview: buildOverview(tenant.siteId, rows, providerMode(c.env), isGstRegistered,
-            Boolean(c.env.KYC_PRIVATE_BUCKET)),
-    }));
+        if (error) throw new Error(`KYC document refresh failed: ${error.message}`);
+        if (!data) throw new AppError('This document changed during verification. Reload its current status.', 409, 'KYC_CONFLICT');
+        await idempotency.complete({ id: claim.id,
+            responseBody: { success: true, data: { document_id: document.id } }, statusCode: 200,
+            resourceType: 'merchant_kyc_document', resourceId: document.id });
+        return c.json(await currentResponse());
+    } catch (error) {
+        await idempotency.fail(claim.id);
+        throw error;
+    }
 });
 
 export default router;

@@ -2,7 +2,7 @@
 
 import { useReadRequest } from '@/lib/api/use-read-request'
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import {
@@ -228,6 +228,7 @@ export default function BusinessSettingsPage() {
     const [docInputs, setDocInputs] = useState<Record<string, { last4: string }>>({})
     const [docFiles, setDocFiles] = useState<Record<string, File | null>>({})
     const [docBusy, setDocBusy] = useState<Record<string, boolean>>({})
+    const refreshRetryKeys = useRef<Record<string, string>>({})
 
     const gstStates = useMemo(() => gstStateOptions(), [])
 
@@ -432,14 +433,19 @@ export default function BusinessSettingsPage() {
     }, [docFiles, docInputs, kyc?.private_upload_available, notify, store])
 
     const refreshDocument = useCallback(async (doc: KycDocument) => {
+        const operation = `${store}:${doc.id}:${doc.updated_at || ''}`
+        const retryKey = refreshRetryKeys.current[operation] ||= crypto.randomUUID()
         setDocBusy((cur) => ({ ...cur, [doc.document_type]: true }))
         try {
-            const res = await fetch(`/api/stores/${encodeURIComponent(store)}/kyc/documents/${doc.id}/refresh`, { method: 'POST' })
+            const res = await fetch(`/api/stores/${encodeURIComponent(store)}/kyc/documents/${doc.id}/refresh`, {
+                method: 'POST', headers: { 'X-Idempotency-Key': retryKey },
+            })
             const payload = await res.json().catch(() => null) as ApiPayload | null
             if (!res.ok) throw new Error(getPayloadError(payload, 'Unable to refresh status'))
             if (isRecord(payload?.data) && isRecord((payload.data as Record<string, unknown>).overview)) {
                 setKyc((payload.data as { overview: KycOverview }).overview)
             }
+            delete refreshRetryKeys.current[operation]
             notify({ title: 'Status refreshed', description: `${DOC_META[doc.document_type].title} status updated.`, variant: 'info' })
         } catch (err) {
             const msg = err instanceof Error ? err.message : 'Unable to refresh status'

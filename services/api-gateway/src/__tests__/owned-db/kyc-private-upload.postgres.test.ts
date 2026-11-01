@@ -144,12 +144,30 @@ test('KYC file upload remains private, tenant-owned and pending provider evidenc
     const winnerKey = JSON.parse(owned.psql(`SELECT metadata::text FROM merchant_kyc_documents WHERE site_id='${tenant.siteId}';`)).private_object_key;
     assert.equal(objects.size, 1);
     assert.equal(objects.has(winnerKey), true);
-    const refreshHeaders = await signedIdentityHeaders(owner, `kyc-${owner}@example.invalid`, tenant.siteId);
-    refreshHeaders['X-Idempotency-Key'] = randomUUID();
+    const refreshKey = randomUUID();
+    const refreshHeaders = async () => ({
+        ...await signedIdentityHeaders(owner, `kyc-${owner}@example.invalid`, tenant.siteId),
+        'X-Idempotency-Key': refreshKey,
+    });
+    const noRefreshKey = await signedIdentityHeaders(owner, `kyc-${owner}@example.invalid`, tenant.siteId);
+    const missingRefreshKey = await gateway.request(`/v1/kyc/documents/${replaced.json!.data.document.id}/refresh?store_id=${tenant.siteId}`,
+        { method: 'POST', headers: noRefreshKey });
+    assert.equal(missingRefreshKey.status, 400, missingRefreshKey.text);
     owned.psql(`UPDATE merchant_kyc_documents SET metadata = metadata || '{"provider_unavailable":true,"sandbox":false}'::jsonb
         WHERE site_id='${tenant.siteId}' AND document_type='business_pan';`);
-    const refreshed = await gateway.request(`/v1/kyc/documents/${replaced.json!.data.document.id}/refresh?store_id=${tenant.siteId}`, { method: 'POST', headers: refreshHeaders });
+    const refreshed = await gateway.request(`/v1/kyc/documents/${replaced.json!.data.document.id}/refresh?store_id=${tenant.siteId}`, { method: 'POST', headers: await refreshHeaders() });
     assert.equal(refreshed.status, 200, refreshed.text);
+    assert.equal(owned.psql(`SELECT status FROM idempotency_keys WHERE site_id='${tenant.siteId}'
+        AND scope='kyc:document-refresh:${replaced.json!.data.document.id}'
+        AND key='${refreshKey}';`), 'completed');
+    const checkedAt = owned.psql(`SELECT metadata->>'provider_checked_at' FROM merchant_kyc_documents
+        WHERE id='${replaced.json!.data.document.id}';`);
+    const refreshReplay = await gateway.request(`/v1/kyc/documents/${replaced.json!.data.document.id}/refresh?store_id=${tenant.siteId}`,
+        { method: 'POST', headers: await refreshHeaders() });
+    assert.equal(refreshReplay.status, 200, refreshReplay.text);
+    assert.equal(owned.psql(`SELECT metadata->>'provider_checked_at' FROM merchant_kyc_documents
+        WHERE id='${replaced.json!.data.document.id}';`), checkedAt,
+    'a completed refresh key must not perform another provider lookup or KYC write');
     assert.equal(refreshed.json?.data.document.has_private_upload, true);
     const refreshedMeta = JSON.parse(owned.psql(`SELECT metadata::text FROM merchant_kyc_documents WHERE site_id='${tenant.siteId}';`));
     assert.equal(objects.has(refreshedMeta.private_object_key), true);
@@ -184,6 +202,10 @@ test('KYC file upload remains private, tenant-owned and pending provider evidenc
             staleRefreshWaiting,
             new Promise<never>((_, reject) => setTimeout(() => reject(new Error('refresh did not reach its KYC write')), 15_000)),
         ]);
+        const concurrentRetry = await gateway.request(`/v1/kyc/documents/${replaced.json!.data.document.id}/refresh?store_id=${tenant.siteId}`,
+            { method: 'POST', headers: { ...await signedIdentityHeaders(owner, `kyc-${owner}@example.invalid`, tenant.siteId),
+                'X-Idempotency-Key': racingHeaders['X-Idempotency-Key'] } });
+        assert.equal(concurrentRetry.status, 409, concurrentRetry.text);
         // The status request has read the old row but has not reached Postgres.
         // Replace its evidence before allowing the old provider result to write.
         await new Promise((resolve) => setTimeout(resolve, 5));
@@ -197,6 +219,9 @@ test('KYC file upload remains private, tenant-owned and pending provider evidenc
     }
     assert.equal(latestUpload?.status, 201, latestUpload?.text);
     assert.equal(staleRefresh?.status, 409, staleRefresh?.text);
+    const supersededRefresh = await gateway.request(`/v1/kyc/documents/${replaced.json!.data.document.id}/refresh?store_id=${tenant.siteId}`,
+        { method: 'POST', headers: await refreshHeaders() });
+    assert.equal(supersededRefresh.status, 409, 'a prior refresh key cannot operate on replacement evidence');
     const newestMeta = JSON.parse(owned.psql(`SELECT metadata::text FROM merchant_kyc_documents WHERE site_id='${tenant.siteId}';`));
     assert.equal(newestMeta.private_object_key, [...objects.keys()][0]);
     assert.equal(newestMeta.provider_verified, undefined);

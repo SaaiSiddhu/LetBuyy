@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:uuid/uuid.dart';
 
 import 'api_client.dart';
 
@@ -21,6 +22,7 @@ class KycService extends ChangeNotifier {
   String? _boundStoreId;
   int _operationVersion = 0;
   Map<String, dynamic>? _overview;
+  final Map<String, String> _refreshRetryKeys = {};
 
   // The SDK owns this opaque account/store snapshot. It is not a credential.
   Object? captureRequestContext() => _api.captureRequestContext();
@@ -32,6 +34,7 @@ class KycService extends ChangeNotifier {
       _boundContext = current;
       _boundStoreId = null;
       _overview = null;
+      _refreshRetryKeys.clear();
       _isLoading = false;
       _operationVersion++;
     }
@@ -223,14 +226,20 @@ class KycService extends ChangeNotifier {
     String storeId, {
     ApiRequestOptions? options,
   }) async {
+    final current = documents.where((row) => row['id'] == documentId);
+    final revision = current.isEmpty ? '' : (current.first['updated_at'] ?? '');
+    final operationKey = '$storeId:$documentId:$revision';
+    final retryKey =
+        _refreshRetryKeys.putIfAbsent(operationKey, () => const Uuid().v4());
     final operation = _begin(storeId, options);
     try {
       final response = await _api.kyc.refreshDocument(
         documentId,
         storeId,
-        options: operation.options,
+        options: operation.options.copyWith(idempotencyKey: retryKey),
       );
       await _acceptMutation(response, operation);
+      _refreshRetryKeys.remove(operationKey);
       return response;
     } finally {
       _finish(operation);

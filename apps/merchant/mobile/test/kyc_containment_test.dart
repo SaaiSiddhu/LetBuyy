@@ -1017,6 +1017,10 @@ void main() {
       await tester.tap(find.byTooltip('Refresh status'));
       await tester.pump();
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
+      await awaitWidgetRequest(tester, f);
+      final firstRefreshKey =
+          f.calls.last.headers['X-Idempotency-Key'] as String?;
+      expect(firstRefreshKey, isNotEmpty);
       await replyWidget(tester, f, {}, status: 503);
       await tester.pumpAndSettle();
       expect(
@@ -1029,6 +1033,11 @@ void main() {
       await tester.tap(find.byTooltip('Refresh status'));
       await tester.pump();
       await awaitWidgetRequest(tester, f);
+      expect(
+        f.calls.last.headers['X-Idempotency-Key'],
+        firstRefreshKey,
+        reason: 'an uncertain provider result must retry with the same receipt',
+      );
       f.stores.change(actorId: 'actor-b', storeId: 'store-b');
       await tester.pump();
       await replyWidget(tester, f, {
