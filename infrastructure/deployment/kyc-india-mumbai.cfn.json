@@ -1,0 +1,266 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "LetBuyy private KYC evidence storage and malware scan delivery in Mumbai. Deploy only in ap-south-1 after account, privacy, and IAM review.",
+  "Parameters": {
+    "BucketName": {
+      "Type": "String",
+      "Description": "Globally unique private KYC bucket name; no periods so the exact Mumbai virtual-host endpoint has a valid TLS certificate.",
+      "MinLength": 3,
+      "MaxLength": 63,
+      "AllowedPattern": "^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$"
+    },
+    "MerchantOrigin": {
+      "Type": "String",
+      "Description": "Exact HTTPS Merchant web origin permitted to POST directly to this private bucket.",
+      "AllowedPattern": "^https://[a-z0-9][a-z0-9.-]*[a-z0-9]$"
+    },
+    "ScanRuleName": {
+      "Type": "String",
+      "Description": "Unique EventBridge rule name for this environment.",
+      "MinLength": 1,
+      "MaxLength": 64,
+      "AllowedPattern": "^[A-Za-z0-9_.-]+$"
+    }
+  },
+  "Resources": {
+    "PrivateEvidenceBucket": {
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain",
+      "Properties": {
+        "BucketName": { "Ref": "BucketName" },
+        "VersioningConfiguration": { "Status": "Enabled" },
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            { "ServerSideEncryptionByDefault": { "SSEAlgorithm": "AES256" } }
+          ]
+        },
+        "OwnershipControls": {
+          "Rules": [ { "ObjectOwnership": "BucketOwnerEnforced" } ]
+        },
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true
+        },
+        "CorsConfiguration": {
+          "CorsRules": [
+            {
+              "AllowedHeaders": [ "*" ],
+              "AllowedMethods": [ "POST" ],
+              "AllowedOrigins": [ { "Ref": "MerchantOrigin" } ],
+              "ExposedHeaders": [ "x-amz-version-id" ],
+              "MaxAge": 300
+            }
+          ]
+        },
+        "NotificationConfiguration": {
+          "EventBridgeConfiguration": { "EventBridgeEnabled": true }
+        },
+        "Tags": [
+          { "Key": "letbuyy:data-class", "Value": "kyc-sensitive" },
+          { "Key": "letbuyy:residency", "Value": "india-mumbai" }
+        ]
+      }
+    },
+    "PrivateEvidenceBucketPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": { "Ref": "PrivateEvidenceBucket" },
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "DenyPlaintextTransport",
+              "Effect": "Deny",
+              "Principal": "*",
+              "Action": "s3:*",
+              "Resource": [
+                { "Fn::GetAtt": [ "PrivateEvidenceBucket", "Arn" ] },
+                { "Fn::Sub": "${PrivateEvidenceBucket.Arn}/*" }
+              ],
+              "Condition": { "Bool": { "aws:SecureTransport": "false" } }
+            }
+          ]
+        }
+      }
+    },
+    "MalwareScanRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": { "Service": "malware-protection-plan.guardduty.amazonaws.com" },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "MumbaiKycMalwareScan",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Sid": "ManageGuardDutyS3EventRule",
+                  "Effect": "Allow",
+                  "Action": [ "events:PutRule", "events:DeleteRule", "events:PutTargets", "events:RemoveTargets" ],
+                  "Resource": { "Fn::Sub": "arn:aws:events:ap-south-1:${AWS::AccountId}:rule/DO-NOT-DELETE-AmazonGuardDutyMalwareProtectionS3*" },
+                  "Condition": {
+                    "StringLike": { "events:ManagedBy": "malware-protection-plan.guardduty.amazonaws.com" }
+                  }
+                },
+                {
+                  "Sid": "InspectGuardDutyS3EventRule",
+                  "Effect": "Allow",
+                  "Action": [ "events:DescribeRule", "events:ListTargetsByRule" ],
+                  "Resource": { "Fn::Sub": "arn:aws:events:ap-south-1:${AWS::AccountId}:rule/DO-NOT-DELETE-AmazonGuardDutyMalwareProtectionS3*" }
+                },
+                {
+                  "Sid": "ReadAndTagScannedVersions",
+                  "Effect": "Allow",
+                  "Action": [ "s3:GetObject", "s3:GetObjectVersion", "s3:GetObjectTagging", "s3:GetObjectVersionTagging", "s3:PutObjectTagging", "s3:PutObjectVersionTagging" ],
+                  "Resource": { "Fn::Sub": "${PrivateEvidenceBucket.Arn}/*" }
+                },
+                {
+                  "Sid": "EnableBucketEventsAndCheckOwnership",
+                  "Effect": "Allow",
+                  "Action": [ "s3:PutBucketNotification", "s3:GetBucketNotification", "s3:ListBucket" ],
+                  "Resource": { "Fn::GetAtt": [ "PrivateEvidenceBucket", "Arn" ] }
+                },
+                {
+                  "Sid": "PutGuardDutyValidationObject",
+                  "Effect": "Allow",
+                  "Action": "s3:PutObject",
+                  "Resource": { "Fn::Sub": "${PrivateEvidenceBucket.Arn}/malware-protection-resource-validation-object" }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "MalwareProtectionPlan": {
+      "Type": "AWS::GuardDuty::MalwareProtectionPlan",
+      "DependsOn": [ "PrivateEvidenceBucketPolicy" ],
+      "Properties": {
+        "ProtectedResource": {
+          "S3Bucket": {
+            "BucketName": { "Ref": "PrivateEvidenceBucket" },
+            "ObjectPrefixes": [ "kyc/" ]
+          }
+        },
+        "Role": { "Fn::GetAtt": [ "MalwareScanRole", "Arn" ] }
+      }
+    },
+    "ScanResultDeadLetterQueue": {
+      "Type": "AWS::SQS::Queue",
+      "Properties": {
+        "MessageRetentionPeriod": 1209600,
+        "SqsManagedSseEnabled": true
+      }
+    },
+    "ScanResultQueue": {
+      "Type": "AWS::SQS::Queue",
+      "Properties": {
+        "VisibilityTimeout": 300,
+        "MessageRetentionPeriod": 345600,
+        "SqsManagedSseEnabled": true,
+        "RedrivePolicy": {
+          "deadLetterTargetArn": { "Fn::GetAtt": [ "ScanResultDeadLetterQueue", "Arn" ] },
+          "maxReceiveCount": 12
+        }
+      }
+    },
+    "ScanResultQueuePolicy": {
+      "Type": "AWS::SQS::QueuePolicy",
+      "Properties": {
+        "Queues": [ { "Ref": "ScanResultQueue" } ],
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "OnlyThisGuardDutyRuleMaySend",
+              "Effect": "Allow",
+              "Principal": { "Service": "events.amazonaws.com" },
+              "Action": "sqs:SendMessage",
+              "Resource": { "Fn::GetAtt": [ "ScanResultQueue", "Arn" ] },
+              "Condition": {
+                "ArnEquals": { "aws:SourceArn": { "Fn::Sub": "arn:aws:events:ap-south-1:${AWS::AccountId}:rule/${ScanRuleName}" } },
+                "StringEquals": { "aws:SourceAccount": { "Ref": "AWS::AccountId" } }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "ScanResultRule": {
+      "Type": "AWS::Events::Rule",
+      "DependsOn": [ "ScanResultQueuePolicy", "ScanResultDeadLetterQueuePolicy" ],
+      "Properties": {
+        "Name": { "Ref": "ScanRuleName" },
+        "State": "ENABLED",
+        "EventPattern": {
+          "source": [ "aws.guardduty" ],
+          "detail-type": [ "GuardDuty Malware Protection Object Scan Result" ],
+          "account": [ { "Ref": "AWS::AccountId" } ],
+          "region": [ "ap-south-1" ],
+          "resources": [ { "Fn::GetAtt": [ "MalwareProtectionPlan", "Arn" ] } ],
+          "detail": {
+            "s3ObjectDetails": {
+              "bucketName": [ { "Ref": "PrivateEvidenceBucket" } ]
+            }
+          }
+        },
+        "Targets": [
+          {
+            "Id": "letbuyy-kyc-scan-results",
+            "Arn": { "Fn::GetAtt": [ "ScanResultQueue", "Arn" ] },
+            "RetryPolicy": {
+              "MaximumEventAgeInSeconds": 3600,
+              "MaximumRetryAttempts": 12
+            },
+            "DeadLetterConfig": {
+              "Arn": { "Fn::GetAtt": [ "ScanResultDeadLetterQueue", "Arn" ] }
+            }
+          }
+        ]
+      }
+    },
+    "ScanResultDeadLetterQueuePolicy": {
+      "Type": "AWS::SQS::QueuePolicy",
+      "Properties": {
+        "Queues": [ { "Ref": "ScanResultDeadLetterQueue" } ],
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "OnlyThisGuardDutyRuleMayDeadLetter",
+              "Effect": "Allow",
+              "Principal": { "Service": "events.amazonaws.com" },
+              "Action": "sqs:SendMessage",
+              "Resource": { "Fn::GetAtt": [ "ScanResultDeadLetterQueue", "Arn" ] },
+              "Condition": {
+                "ArnEquals": { "aws:SourceArn": { "Fn::Sub": "arn:aws:events:ap-south-1:${AWS::AccountId}:rule/${ScanRuleName}" } },
+                "StringEquals": { "aws:SourceAccount": { "Ref": "AWS::AccountId" } }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "BucketName": { "Value": { "Ref": "PrivateEvidenceBucket" } },
+    "BucketArn": { "Value": { "Fn::GetAtt": [ "PrivateEvidenceBucket", "Arn" ] } },
+    "GuardDutyPlanArn": { "Value": { "Fn::GetAtt": [ "MalwareProtectionPlan", "Arn" ] } },
+    "ScanQueueUrl": { "Value": { "Ref": "ScanResultQueue" } },
+    "ScanQueueArn": { "Value": { "Fn::GetAtt": [ "ScanResultQueue", "Arn" ] } },
+    "ScanDeadLetterQueueUrl": { "Value": { "Ref": "ScanResultDeadLetterQueue" } },
+    "ScanDeadLetterQueueArn": { "Value": { "Fn::GetAtt": [ "ScanResultDeadLetterQueue", "Arn" ] } }
+  }
+}

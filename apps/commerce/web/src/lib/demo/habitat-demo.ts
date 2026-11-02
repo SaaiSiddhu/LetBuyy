@@ -2,6 +2,7 @@
 import { FurnitureFactsSchema, FurnitureVariantFactsSchema, type ProductModel, type ProductVariant } from '@letbuyy/commerce-core';
 import { LiquidThemePackageBundleSchema } from '@letbuyy/theme-engine';
 import type { StoreNavigation } from '@letbuyy/tenant-core';
+import { isCatalogDemoVersion } from './catalog-demo-versions';
 
 const media = '/theme-assets/habitat/v2/';
 const chairId = '7b669c70-4100-4000-8000-000000000001';
@@ -57,7 +58,7 @@ export const HABITAT_DEMO_NAVIGATION: StoreNavigation = {
 /** Apply approved sample media/copy/resources to a clone of this selected preview document only. */
 export function withHabitatDemoContent(input: Record<string, unknown>): Record<string, unknown> {
   const bundle = LiquidThemePackageBundleSchema.parse(structuredClone(input.liquidBundle));
-  if (bundle.package.slug !== 'letbuyy-craft' || bundle.package.version !== '2.0.0') throw new Error('Habitat preview requires its selected versioned artifact');
+  if (bundle.package.slug !== 'letbuyy-craft' || !isCatalogDemoVersion(bundle.package.version)) throw new Error('Habitat preview requires its selected versioned artifact');
   for (const template of Object.values(bundle.templates)) for (const instance of Object.values(template.sections)) {
     if (instance.type === 'hero-banner') Object.assign(instance.settings, { image: media + 'room.webp', imageAlt: 'Aara chair and Nila table in a sunlit sample living room', caption: 'The living edit · Natural teak, soft linen', collection1: livingId, collection2: readingId, guideText: 'Read the measuring guide', guideLink: `/product/${chairId}#habitat-dimensions-habitat-product-selection` });
     if (instance.type === 'product-detail') Object.assign(instance.settings, { showRoomContext: true, contextMediaIndex: 2 });

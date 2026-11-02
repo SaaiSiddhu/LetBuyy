@@ -407,6 +407,62 @@ test('normal Merchant publication renders the saved Liquid heading on the real p
     assert.equal(new URL((await customBuyer.locator('link[rel="canonical"]').getAttribute('href')) || '').origin,
         'https://shop.merchant.test', 'custom-domain canonical metadata uses the store host');
     await expect(customBuyer.getByRole('link', { name: contactEmail }).first()).toBeVisible();
+
+    // General settings are mutable after a theme release is published. A later
+    // profile edit must reach both public hosts and the editor without silently
+    // creating or requiring another theme release; contact remains opt-in.
+    const updatedName = `Synthetic updated merchant ${f.tenant.subdomain}`;
+    const updatedTitle = `Updated SEO ${f.tenant.subdomain}`;
+    const updatedDescription = `Updated public storefront description for ${f.tenant.subdomain}.`;
+    const updatedContact = `updated-${f.tenant.subdomain}@example.invalid`;
+    await f.page.goto(`${merchantOrigin}/${f.tenant.subdomain}/settings/general`);
+    await expect(f.page.getByLabel('Store name', { exact: true })).toHaveValue(profileName);
+    await f.page.getByLabel('Store name', { exact: true }).fill(updatedName);
+    await f.page.getByLabel('SEO title', { exact: true }).fill(updatedTitle);
+    await f.page.getByLabel('SEO description', { exact: true }).fill(updatedDescription);
+    await f.page.getByLabel('Contact email', { exact: true }).fill(updatedContact);
+    await f.page.getByRole('switch', { name: 'Show these contact details on my storefront' }).click();
+    const [updatedProfileSave] = await Promise.all([
+        f.page.waitForResponse(response => new URL(response.url()).pathname === `/api/stores/${f.tenant.subdomain}/settings`
+            && response.request().method() === 'PATCH'),
+        f.page.getByRole('button', { name: 'Save', exact: true }).first().click(),
+    ]);
+    assert.equal(updatedProfileSave.status(), 200, 'published-store General edit reaches the canonical settings API');
+    assert.equal(owned.psql(`SELECT name||'|'||meta_title||'|'||meta_description||'|'||(business_profile->>'email')||'|'||(business_profile->>'public_contact_enabled')
+        FROM sites WHERE id='${f.tenant.siteId}';`),
+    `${updatedName}|${updatedTitle}|${updatedDescription}|${updatedContact}|false`,
+    'the canonical site row retains the new private contact and its public opt-out');
+    assert.equal(f.currentRelease(), secondRelease, 'a General edit leaves the published theme release unchanged');
+    await f.page.reload();
+    await expect(f.page.getByLabel('Store name', { exact: true })).toHaveValue(updatedName);
+    await expect(f.page.getByLabel('Contact email', { exact: true })).toHaveValue(updatedContact);
+    await openEditor(f);
+    await expect(f.page.frameLocator('iframe.te-preview-iframe').locator('body')).toContainText(updatedName);
+    await customBuyer.reload();
+    await expect(customBuyer).toHaveTitle(updatedTitle);
+    assert.equal(await customBuyer.locator('meta[name="description"]').getAttribute('content'), updatedDescription);
+    await expect(customBuyer.locator('body')).toContainText(updatedName);
+    await expect(customBuyer.getByRole('link', { name: updatedContact })).toHaveCount(0);
+    await expect(customBuyer.getByRole('link', { name: contactEmail })).toHaveCount(0);
+    const publicReload = await buyer.goto(f.publicUrl);
+    assert.equal(publicReload?.status(), 200);
+    await expect(buyer).toHaveTitle(updatedTitle);
+    assert.equal(await buyer.locator('meta[name="description"]').getAttribute('content'), updatedDescription);
+    await expect(buyer.getByRole('link', { name: updatedContact })).toHaveCount(0);
+
+    await f.page.goto(`${merchantOrigin}/${f.tenant.subdomain}/settings/general`);
+    await f.page.getByRole('switch', { name: 'Show these contact details on my storefront' }).click();
+    const [optInSave] = await Promise.all([
+        f.page.waitForResponse(response => new URL(response.url()).pathname === `/api/stores/${f.tenant.subdomain}/settings`
+            && response.request().method() === 'PATCH'),
+        f.page.getByRole('button', { name: 'Save', exact: true }).first().click(),
+    ]);
+    assert.equal(optInSave.status(), 200);
+    assert.equal(owned.psql(`SELECT business_profile->>'public_contact_enabled' FROM sites WHERE id='${f.tenant.siteId}';`), 'true');
+    assert.equal(f.currentRelease(), secondRelease, 'contact opt-in also leaves the published theme release unchanged');
+    await customBuyer.reload();
+    await expect(customBuyer.getByRole('link', { name: updatedContact }).first()).toBeVisible();
+    await expect(customBuyer.getByRole('link', { name: contactEmail })).toHaveCount(0);
 });
 
 test('two Merchant settings tabs report stale saves and preserve a cleared contact field', { timeout: 180_000 }, async t => {

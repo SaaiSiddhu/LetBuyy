@@ -2,6 +2,7 @@
 import type { ProductModel } from '@letbuyy/commerce-core';
 import { LiquidThemePackageBundleSchema } from '@letbuyy/theme-engine';
 import type { StoreNavigation } from '@letbuyy/tenant-core';
+import { isCatalogDemoVersion } from './catalog-demo-versions';
 
 const media = '/theme-assets/kindred/v2/';
 // Check fixtures against the canonical public model while retaining their exact facts.
@@ -31,7 +32,7 @@ export const KINDRED_DEMO_NAVIGATION: StoreNavigation = {
 /** Configure only labelled preview copies of this exact package; installed themes keep real bindings. */
 export function withKindredDemoContent(input:Record<string,unknown>):Record<string,unknown>{
  const bundle=LiquidThemePackageBundleSchema.parse(structuredClone(input.liquidBundle));
- if(bundle.package.slug!=='letbuyy-summit'||bundle.package.version!=='2.0.0')throw new Error('Kindred preview requires its exact v2 package.');
+ if(bundle.package.slug!=='letbuyy-summit'||!isCatalogDemoVersion(bundle.package.version))throw new Error('Kindred preview requires an admitted versioned package.');
  for(const t of Object.values(bundle.templates))for(const s of Object.values(t.sections)){
   if(s.type==='hero-banner')Object.assign(s.settings,{image:media+'little-pause-open.webp',imageAlt:'Synthetic Little Pause set: one mug, one notebook and one pen'});
   if(s.type==='category-grid')Object.assign(s.settings,Object.fromEntries(KINDRED_DEMO_COLLECTIONS.map((c,i)=>[`collection${i+1}`,c.id])));

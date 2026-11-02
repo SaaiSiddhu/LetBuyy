@@ -1,0 +1,44 @@
+{
+  "scope": "Complete local behavioral and contract gate on the migration-428 Wave 6 working tree",
+  "date": "2026-11-02",
+  "head_commit": "4e6df6546",
+  "working_tree_note": "The tested source includes staged, uncommitted Wave 6 and theme 2.1.0 changes; the head commit alone does not identify the tested tree.",
+  "command": "LETBUYY_EXECUTABLE_PG_JOBS=1 node scripts/governance/test-behavioral.mjs --with-contracts --report /private/tmp/letbuyy-wave6-428-corrected-full.json",
+  "result": {
+    "exit_code": 0,
+    "healthy": true,
+    "total_tests": 5753,
+    "passed": 5738,
+    "failed": 0,
+    "cancelled": 0,
+    "skipped": 15,
+    "pure_and_live": { "suites": 209, "passed": 3149, "failed": 0, "skipped": 15 },
+    "postgres_owned_clusters": { "suites": 63, "passed": 320, "failed": 0, "skipped": 0 },
+    "gateway_database_owned": { "suites": 220, "passed": 1905, "failed": 0, "skipped": 0 },
+    "contracts": { "passed": 364, "failed": 0, "skipped": 0 }
+  },
+  "owned_runner": {
+    "run_id": "db95f89e48fc",
+    "jobs": 1,
+    "database_suites": 283,
+    "database_assertions_passed": 2225,
+    "database_assertions_failed": 0,
+    "cleanup_failures": 0,
+    "remaining_containers": 0,
+    "remaining_networks": 0,
+    "remaining_volumes": 0,
+    "post_run_exact_label_docker_check": "No containers, networks, or volumes with com.letbuyy.executable-fixture.run-id=db95f89e48fc"
+  },
+  "artifact_sha256": {
+    "behavioral_json": "2484c93368006350d940ad606c4fa90d0f74ec72cebeb4de7bedb445bb9e3ef4",
+    "runner_json": "7b6181130cd14b8b4d0bf5e6dc165911d243131073e12bc1ef432f316e17218f",
+    "behavioral_log": "90ddb438210c3fcf2fb4a7ecc964de7c1e7ce5c395711c93af64057125a2aae7"
+  },
+  "limits": [
+    "The 15 skipped checks explicitly require human or live-provider inputs; a green local gate does not certify those paths.",
+    "Browser, database, AWS, Cashfree, and Razorpay provider responses in the owned suites are local or synthetic unless a separate receipt says otherwise.",
+    "No owner-controlled AWS Mumbai account or Cashfree SecureID sandbox account was ready when the owner was asked on 2026-11-02.",
+    "The FUCOMES own-account Razorpay test charge, provider callback, statement, and reconciliation were not executed in this run.",
+    "Hosted deployment, actual custom-domain DNS/TLS, physical assistive technology and mobile-device acceptance, and live payout approval remain open."
+  ]
+}

@@ -126,6 +126,8 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
         "merchant-store-discovery-grants.postgres.test.ts",
         "merchant-tenant-predicate.test.ts",
         "niche-theme-promotion.postgres.test.ts",
+        "niche-theme-v210-editor.postgres.test.ts",
+        "niche-theme-v210-promotion.postgres.test.ts",
         "operator-identity-exchange.postgres.test.ts",
         "operator-mutation-integrity.postgres.test.ts",
         "operator-overview-tenant-guard.postgres.test.ts",

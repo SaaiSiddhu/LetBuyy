@@ -449,6 +449,26 @@ function runSuite(suite, cluster) {
     return suite.kind === 'gateway-db' ? runGatewaySuite(suite, cluster) : runPostgresSuite(suite, cluster);
 }
 
+// Owned browser suites start local Next runtimes and may contact the official
+// Turnstile test endpoint. Keep those journeys sequential across DB clusters;
+// their assertions and normal login remain unchanged. The customer-profile
+// suite runs Chromium despite its historical name lacking "browser".
+let browserLane = Promise.resolve();
+function runScheduledSuite(suite, cluster) {
+    const browserSuite = suite.kind === 'gateway-db'
+        && (/browser/.test(suite.path) || suite.path.endsWith('/storefront-customer-profile.postgres.test.ts'));
+    if (!browserSuite) return runSuite(suite, cluster);
+    let release;
+    const next = new Promise((resolve) => { release = resolve; });
+    const previous = browserLane;
+    browserLane = next;
+    return (async () => {
+        await previous;
+        try { return await runSuite(suite, cluster); }
+        finally { release(); }
+    })();
+}
+
 async function startClusters(count) {
     for (let i = 0; i < count; i += 1) {
         const name = count > 1 ? `${containerBase}-${i + 1}` : containerBase;
@@ -548,7 +568,7 @@ async function main() {
                 while (!shuttingDown) {
                     const suite = queue.shift();
                     if (!suite) return;
-                    const result = await runSuite(suite, cluster);
+                    const result = await runScheduledSuite(suite, cluster);
                     results.push(result);
                     report_(suite, result);
                 }

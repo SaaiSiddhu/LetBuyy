@@ -1,0 +1,30 @@
+{
+  "scope": "Reviewable India-region infrastructure candidate for private KYC storage and scan-result delivery",
+  "date": "2026-11-02",
+  "owner_runtimes": ["services/api-gateway", "services/queue-workers"],
+  "artifact": "infrastructure/deployment/kyc-india-mumbai.cfn.json",
+  "result": {
+    "json_parse": "passed",
+    "static_contract_command": "node --import tsx --test tests/contracts/kyc-india-mumbai-stack.test.ts",
+    "static_contract_passed": 4,
+    "static_contract_failed": 0,
+    "git_diff_check": "passed"
+  },
+  "candidate_properties": [
+    "Private, versioned, SSE-S3 bucket with retained deletion policy, TLS-only bucket policy, no replication configuration, and exact Merchant HTTPS POST CORS",
+    "GuardDuty Malware Protection plan scoped to the kyc/ prefix in the same Mumbai stack",
+    "Exact-account and exact-rule EventBridge to encrypted SQS with retry and dead-letter queues",
+    "No AWS access keys, document bytes, or signed URLs in the template"
+  ],
+  "source_sha256": {
+    "cloudformation_json": "41c00d8865426753ecb45e2e03646691d7c70a5f7608678df203b7f2a4317c24",
+    "runbook": "54bbc46759de7cd3a1c0eb5d18091606939b81c9eb793b78ee24172cc2ce0df1",
+    "static_contract_test": "0e92785b2bc1a78a21b345d7ee8c3e9c64fac947c5b5d93e4eea7ba9499fc22d"
+  },
+  "not_verified": [
+    "No owner-controlled AWS account is ready; AWS validate-template, change-set review, GuardDuty ACTIVE state, real S3 and SQS operations, IAM principal denial checks, and cost acceptance have not run",
+    "The separate upload, HEAD, reviewer, cleanup, and polling principals and managed secrets are not provisioned by this candidate stack",
+    "Retention, plan and dead-letter alarms, signed provider verification, and a real India-only data-residency and scanning acceptance remain open",
+    "Gateway upload and worker scan polling remain test-only; real KYC intake and live payouts are closed"
+  ]
+}

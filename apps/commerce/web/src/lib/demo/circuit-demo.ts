@@ -2,6 +2,7 @@
 import { ElectronicsFactsSchema, type ProductModel } from '@letbuyy/commerce-core';
 import { LiquidThemePackageBundleSchema } from '@letbuyy/theme-engine';
 import type { StoreNavigation } from '@letbuyy/tenant-core';
+import { isCatalogDemoVersion } from './catalog-demo-versions';
 
 const media = '/theme-assets/circuit/v2/';
 const productId = (n: number) => `c1c01700-1000-4000-8000-${String(n).padStart(12, '0')}`;
@@ -55,7 +56,7 @@ export const CIRCUIT_DEMO_NAVIGATION = circuitDemoNavigation();
 /** Apply only to an explicitly selected Circuit v2 synthetic preview, never installation defaults. */
 export function withCircuitDemoContent(input: Record<string, unknown>): Record<string, unknown> {
   const parsed = LiquidThemePackageBundleSchema.safeParse(input.liquidBundle);
-  if (!parsed.success || parsed.data.package.slug !== 'letbuyy-forge' || parsed.data.package.version !== '2.0.0') return input;
+  if (!parsed.success || parsed.data.package.slug !== 'letbuyy-forge' || !isCatalogDemoVersion(parsed.data.package.version)) return input;
   const bundle = structuredClone(parsed.data);
   for (const instance of Object.values(bundle.templates.index.sections)) {
     if (instance.type === 'category-grid') Object.assign(instance.settings, { collection1: collectionId(1), collection2: collectionId(2), collection3: collectionId(3), collection4: collectionId(4) });

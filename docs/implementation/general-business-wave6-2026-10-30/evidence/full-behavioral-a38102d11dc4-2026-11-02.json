@@ -1,0 +1,48 @@
+{
+  "status": "RED_LOCAL_GATE_NOT_PRODUCTION_EVIDENCE",
+  "scope": "Complete local behavioral and contract gate on the Wave 6 working tree; no hosted, provider, or physical-device acceptance",
+  "sourceHead": "4e6df6546de288288a1b2a6c0b52c9ba8dd6657e",
+  "sourceState": "Uncommitted paired niche-theme migration 428 and test changes were present; this is a working-tree run, not a release commit",
+  "command": "node scripts/governance/test-behavioral.mjs --with-contracts --report /private/tmp/letbuyy-wave6-428-full-rerun.json",
+  "ownedRunnerId": "a38102d11dc4",
+  "result": {
+    "exitCode": 1,
+    "testsReported": 5724,
+    "assertionsPassed": 5705,
+    "assertionsFailed": 4,
+    "humanOrProviderSkips": 15,
+    "ownedSuiteInfrastructureFailuresBeforeAssertions": 3,
+    "pure": { "suites": 209, "passed": 3149, "failed": 0, "skipped": 15 },
+    "postgres": { "suites": 63, "passed": 320, "failed": 0 },
+    "gatewayDatabase": { "suites": 220, "assertionsPassed": 1872, "assertionsFailed": 4, "failedSuites": 7 },
+    "contracts": { "passed": 364, "failed": 0 },
+    "ownedCleanup": { "failures": 0, "remainingContainers": 0, "remainingNetworks": 0, "remainingVolumes": 0 }
+  },
+  "failedSuites": [
+    { "name": "merchant-mfa-browser.postgres", "observed": "Owned app readiness timed out" },
+    { "name": "merchant-mobile-screen-reads.postgres", "observed": "Owned REST sidecar readiness returned HTTP 401 before test assertions" },
+    { "name": "merchant-money-approval.postgres", "observed": "Owned REST sidecar readiness returned HTTP 401 before test assertions" },
+    { "name": "merchant-money-rollback.postgres", "observed": "Owned REST sidecar readiness returned HTTP 401 before test assertions" },
+    { "name": "merchant-payout-statements-browser.postgres", "observed": "Local sign-in page did not produce a Turnstile response field within 45 seconds" },
+    { "name": "shipping-tax-settings-browser.postgres", "observed": "Local sign-in page remained at Checking security and did not produce a Turnstile response field within 5 seconds" },
+    { "name": "native-core-storefront-browser.postgres", "observed": "Published store API calls returned 200 but browser content assertion was blank" }
+  ],
+  "qualifiedFromThisRun": [
+    "Theme catalog install passed 1/1 after streaming its large provenance readback",
+    "Historical niche theme promotion passed 5/5",
+    "Niche theme 2.1.0 promotion and editor journeys passed 1/1 each",
+    "KYC India intake and private-upload owned suites passed"
+  ],
+  "followup": {
+    "focusedSevenRunId": "b48305c08f3e",
+    "focusedSevenPassedSuites": 6,
+    "focusedSevenFailedSuites": 1,
+    "remainingFailure": "native-core-storefront-browser.postgres",
+    "diagnosticNativeCoreRunId": "6b0096b5eb5a",
+    "rootCause": "Selected 2.1.0 public catalog packages were rejected by the buyer demo dispatcher and four sample adapters pinned to 2.0.0",
+    "correctedNativeCoreRunId": "24b57f1aa4db",
+    "correctedNativeCorePassed": 1,
+    "correctedNativeCoreFailed": 0
+  },
+  "nextAction": "Complete a new full gate on the corrected source; this historical broad run remains red"
+}

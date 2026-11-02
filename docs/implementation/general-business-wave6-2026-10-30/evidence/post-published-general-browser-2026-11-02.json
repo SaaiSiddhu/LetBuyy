@@ -1,0 +1,33 @@
+{
+  "scope": "Owned local browser journey for General settings changed after a Liquid storefront release is already published",
+  "date": "2026-11-02",
+  "test": "tests/owned-db/published-storefront-recovery-browser.postgres.test.ts",
+  "run_id": "25dc47dfd1a9",
+  "result": {
+    "suites": 1,
+    "passed": 11,
+    "failed": 0,
+    "skipped": 0,
+    "wall_seconds": 176.7,
+    "cleanup_failures": 0,
+    "remaining_owned_containers": 0,
+    "remaining_owned_networks": 0,
+    "remaining_owned_volumes": 0
+  },
+  "verified": [
+    "Merchant General PATCH returned 200 after a theme release was published, and a fresh settings read returned the edited values",
+    "The canonical sites row held the updated name, SEO title, SEO description, private contact email, and public contact opt-out",
+    "The Merchant editor preview reflected the later name change while the published theme release id remained unchanged",
+    "The published buyer page on the store host and exact synthetic custom host reflected the later name and SEO metadata without a theme republish",
+    "The updated and previous contact links were absent while public contact was disabled; the new link appeared after opt-in while the old link remained absent"
+  ],
+  "artifact_sha256": {
+    "runner_json": "ce9e3ccffe67dfec0749e28a3e4f42213182295c75ef279b06bf8e50d6088b26",
+    "suite_log": "999eba86d669768046b3110ec15620da733a06173afa7ad5e6dd1c2c972bf79b"
+  },
+  "limits": [
+    "The custom host was an exact local synthetic TLS host, not external DNS or certificate issuance",
+    "Actual delivered email from a hosted provider remains unverified",
+    "This focused pass does not qualify the interrupted, red complete behavioral run or any live payout"
+  ]
+}
