@@ -51,6 +51,35 @@ test('canonical checkout commits one private intent with its relational items; r
   assert.equal(processed.at(-1).metadata.snapshot.order.payment_status,'pending');
 });
 
+test('a store rename reaches later orders without rewriting a queued buyer notification', async () => {
+  const f=fixture(),originalName=`Synthetic ${f.tenant.tag}`,renamed='Synthetic Renamed Merchant';
+  assert.equal(logs(f.orderId)[0].metadata.snapshot.store_name,originalName);
+  owned.script(`UPDATE sites SET name='${renamed}',store_name='${renamed}' WHERE id='${f.tenant.siteId}';`);
+  const laterOrderId=seedSyntheticOrder(owned.psql,f.tenant).orderId;
+  assert.equal(logs(f.orderId)[0].metadata.snapshot.store_name,originalName,'the older notification keeps its order-time merchant identity');
+  assert.equal(logs(laterOrderId)[0].metadata.snapshot.store_name,renamed,'a later order captures the new public merchant name');
+
+  const sent:Array<{subject:string;text:string;html:string}>=[];
+  await provider(async request=>{
+    const message=await request.json() as {subject:string;text:string;html:string};
+    sent.push(message);
+    return Response.json({id:`synthetic-rename-${sent.length}`});
+  },async()=>{
+    for(const orderId of [f.orderId,laterOrderId]){
+      const {job,worker}=await claimed(orderId);
+      assert.equal((await sendOrderLifecycleEmail(db,env,job,worker)).processed,true);
+    }
+  });
+  assert.equal(sent.length,2);
+  assert.match(sent[0]!.subject,new RegExp(originalName));
+  assert.match(sent[0]!.text,new RegExp(`Store: ${originalName}`));
+  assert.doesNotMatch(sent[0]!.html,new RegExp(renamed));
+  assert.match(sent[1]!.subject,new RegExp(renamed));
+  assert.match(sent[1]!.text,new RegExp(`Store: ${renamed}`));
+  assert.equal(logs(f.orderId)[0].status,'sent');
+  assert.equal(logs(laterOrderId)[0].status,'sent');
+});
+
 test('immutable saved coupon receipt renders escaped branded light/dark email without inventing refund/payment facts', () => {
   const f=fixture(); owned.script(`UPDATE orders SET status='shipped',subtotal=2,discount=1,coupon_code='OFF50',coupon_discount=1,total=1,tracking_number='SYN-TRACK' WHERE id='${f.orderId}';`);
   const snapshot=logs(f.orderId).at(-1).metadata.snapshot, rendered=renderOrderLifecycleEmail(snapshot);

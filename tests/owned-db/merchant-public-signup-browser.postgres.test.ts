@@ -76,12 +76,12 @@ test('public signup creates its account and first store through production apps'
    return (await fetch(path,{method:'POST',headers:{'Content-Type':'application/json','X-CSRF-Token':decodeURIComponent(token)},body:JSON.stringify(body)})).status;
   },{path,body});}
   assert.equal(await authPost('/api/auth/set-password',{password,email,userId:crypto.randomUUID()}),403,'a caller-supplied identity cannot replace verified intent');
-  async function enterOtp(code:string){for(let i=0;i<6;i++)await page!.getByLabel(`Digit ${i+1} of 6`,{exact:true}).fill(code[i]);}
-  // The production form automatically submits on the sixth digit.
+  async function enterOtp(code:string){await page!.getByLabel('Email verification code',{exact:true}).fill(code);await page!.getByRole('button',{name:'Verify',exact:true}).click();}
+  // The shared code input supports complete-code paste/autofill and explicit verification.
   const wrongReply=page.waitForResponse(r=>new URL(r.url()).pathname==='/api/auth/verify-otp'&&r.request().method()==='POST');
   await enterOtp(otp==='000000'?'111111':'000000');
   assert.equal((await wrongReply).status(),400);assert.equal(owned.psql(`SELECT email_verified FROM users_custom WHERE email='${email}';`),'f');
-  await expect(page.getByLabel('Digit 1 of 6',{exact:true})).toHaveValue('');
+  await expect(page.getByLabel('Email verification code',{exact:true})).toHaveValue('');
   const validReply=page.waitForResponse(r=>new URL(r.url()).pathname==='/api/auth/verify-otp'&&r.request().method()==='POST');
   await enterOtp(otp);assert.equal((await validReply).status(),200);
   await page.getByLabel('Password',{exact:true}).fill(password);await page.getByLabel('Confirm password',{exact:true}).fill(password);

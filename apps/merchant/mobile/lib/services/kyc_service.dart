@@ -1,4 +1,8 @@
+import 'dart:io';
+import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
+import 'package:uuid/uuid.dart';
 
 import 'api_client.dart';
 
@@ -9,10 +13,145 @@ typedef _KycOperation = ({
   ApiRequestOptions options,
 });
 
+typedef IndiaKycUploadPoster =
+    Future<String> Function(
+      Uri url,
+      Map<String, String> fields,
+      Uint8List bytes,
+      String filename,
+    );
+
+Future<String> _postIndiaKycObject(
+  Uri url,
+  Map<String, String> fields,
+  Uint8List bytes,
+  String filename,
+) async {
+  // A fresh client has no merchant token, cookies, or Gateway interceptors.
+  final client = http.Client();
+  try {
+    final request = http.MultipartRequest('POST', url)
+      ..followRedirects = false
+      ..fields.addAll(fields)
+      ..files.add(
+        http.MultipartFile.fromBytes('file', bytes, filename: filename),
+      );
+    final response = await client
+        .send(request)
+        .timeout(const Duration(seconds: 30));
+    final version = response.headers['x-amz-version-id'];
+    await response.stream.drain<void>();
+    if (response.statusCode != 201 ||
+        version == null ||
+        version.isEmpty ||
+        version == 'null') {
+      throw const ApiException(
+        message: 'Private storage did not return a versioned upload.',
+        statusCode: 503,
+        code: 'KYC_INDIA_OBJECT_UNCONFIRMED',
+      );
+    }
+    return version;
+  } finally {
+    client.close();
+  }
+}
+
+String _imageContentType(Uint8List bytes) {
+  if (bytes.length >= 8 &&
+      bytes[0] == 0x89 &&
+      bytes[1] == 0x50 &&
+      bytes[2] == 0x4e &&
+      bytes[3] == 0x47 &&
+      bytes[4] == 0x0d &&
+      bytes[5] == 0x0a &&
+      bytes[6] == 0x1a &&
+      bytes[7] == 0x0a)
+    return 'image/png';
+  if (bytes.length >= 3 &&
+      bytes[0] == 0xff &&
+      bytes[1] == 0xd8 &&
+      bytes[2] == 0xff) {
+    return 'image/jpeg';
+  }
+  throw const ApiException(
+    message: 'Choose a JPEG or PNG document photo.',
+    statusCode: 422,
+    code: 'KYC_FILE_TYPE_INVALID',
+  );
+}
+
+({Uri url, Map<String, String> fields, String receiptId}) _indiaTicket(
+  Map<String, dynamic> ticket,
+  String storeId,
+  String documentType,
+  int bytes,
+) {
+  final receiptId = ticket['receipt_id'];
+  final rawUrl = ticket['url'];
+  final rawFields = ticket['fields'];
+  final maximum = ticket['maximum_object_bytes'];
+  final expiry = DateTime.tryParse(ticket['expires_at']?.toString() ?? '');
+  if (ticket['method'] != 'POST' ||
+      receiptId is! String ||
+      !RegExp(r'^[a-f0-9-]{36}$', caseSensitive: false).hasMatch(receiptId) ||
+      rawUrl is! String ||
+      rawFields is! Map ||
+      maximum is! num ||
+      bytes > maximum ||
+      expiry == null ||
+      !expiry.isAfter(DateTime.now())) {
+    throw const ApiException(
+      message: 'Upload ticket is invalid or expired.',
+      statusCode: 503,
+      code: 'KYC_INDIA_TICKET_INVALID',
+    );
+  }
+  final url = Uri.tryParse(rawUrl);
+  if (url == null ||
+      url.scheme != 'https' ||
+      url.userInfo.isNotEmpty ||
+      url.hasPort ||
+      url.path != '/' ||
+      url.hasQuery ||
+      url.hasFragment ||
+      !RegExp(
+        r'^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]\.s3\.ap-south-1\.amazonaws\.com$',
+      ).hasMatch(url.host)) {
+    throw const ApiException(
+      message: 'Upload destination is invalid.',
+      statusCode: 503,
+      code: 'KYC_INDIA_DESTINATION_INVALID',
+    );
+  }
+  final fields = <String, String>{};
+  for (final entry in rawFields.entries) {
+    if (entry.key is! String || entry.value is! String) {
+      throw const ApiException(
+        message: 'Upload ticket fields are invalid.',
+        statusCode: 503,
+        code: 'KYC_INDIA_TICKET_INVALID',
+      );
+    }
+    fields[entry.key as String] = entry.value as String;
+  }
+  if (fields['key'] != 'kyc/$storeId/$documentType/$receiptId') {
+    throw const ApiException(
+      message: 'Upload ticket does not match this store.',
+      statusCode: 503,
+      code: 'KYC_INDIA_TICKET_SCOPE_MISMATCH',
+    );
+  }
+  return (url: url, fields: fields, receiptId: receiptId);
+}
+
 class KycService extends ChangeNotifier {
-  KycService({required ApiClient api}) : _api = api;
+  KycService({required ApiClient api, IndiaKycUploadPoster? postIndiaObject})
+    : _api = api,
+      _postIndiaObject = postIndiaObject ?? _postIndiaKycObject;
 
   final ApiClient _api;
+  final IndiaKycUploadPoster _postIndiaObject;
   bool _isLoading = false;
   bool _disposed = false;
   bool _contextBound = false;
@@ -20,6 +159,7 @@ class KycService extends ChangeNotifier {
   String? _boundStoreId;
   int _operationVersion = 0;
   Map<String, dynamic>? _overview;
+  final Map<String, String> _refreshRetryKeys = {};
 
   // The SDK owns this opaque account/store snapshot. It is not a credential.
   Object? captureRequestContext() => _api.captureRequestContext();
@@ -31,6 +171,7 @@ class KycService extends ChangeNotifier {
       _boundContext = current;
       _boundStoreId = null;
       _overview = null;
+      _refreshRetryKeys.clear();
       _isLoading = false;
       _operationVersion++;
     }
@@ -194,18 +335,114 @@ class KycService extends ChangeNotifier {
     }
   }
 
+  Future<Map<String, dynamic>> uploadDocument({
+    required String storeId,
+    required String documentType,
+    required String documentNumberLast4,
+    required File file,
+    ApiRequestOptions? options,
+  }) async {
+    final operation = _begin(storeId, options);
+    try {
+      // The screen disables unavailable uploads, but the service must also
+      // refuse them before reading or sending document bytes.
+      if (_overview?['india_direct_upload_available'] != true &&
+          _overview?['private_upload_available'] != true) {
+        throw const ApiException(
+          message:
+              'Private India upload is unavailable. Refresh status and retry.',
+          statusCode: 503,
+          code: 'KYC_UPLOAD_UNAVAILABLE',
+        );
+      }
+      late final Map<String, dynamic> response;
+      if (_overview?['india_direct_upload_available'] == true) {
+        final bytes = await file.readAsBytes();
+        _requireCurrent(operation);
+        if (bytes.isEmpty || bytes.length > 5 * 1024 * 1024) {
+          throw const ApiException(
+            message: 'Choose a document photo under 5 MB.',
+            statusCode: 413,
+            code: 'KYC_FILE_TOO_LARGE',
+          );
+        }
+        final contentType = _imageContentType(bytes);
+        final key = const Uuid().v4();
+        final requestOptions = operation.options.copyWith(idempotencyKey: key);
+        final intent = await _api.kyc.indiaUploadIntent({
+          'store_id': storeId,
+          'document_type': documentType,
+          'document_number_last4': documentNumberLast4,
+          'content_type': contentType,
+          'byte_size': bytes.length,
+          'sha256_hex': sha256.convert(bytes).toString(),
+        }, options: requestOptions);
+        _requireCurrent(operation);
+        final ticket = _indiaTicket(
+          intent,
+          storeId,
+          documentType,
+          bytes.length,
+        );
+        final version = await _postIndiaObject(
+          ticket.url,
+          ticket.fields,
+          bytes,
+          file.uri.pathSegments.last,
+        );
+        _requireCurrent(operation);
+        if (version.isEmpty ||
+            version == 'null' ||
+            version.length > 1024 ||
+            RegExp(r'[\x00-\x1f\x7f]').hasMatch(version)) {
+          throw const ApiException(
+            message: 'Private storage did not return a valid object version.',
+            statusCode: 503,
+            code: 'KYC_INDIA_OBJECT_UNCONFIRMED',
+          );
+        }
+        response = await _api.kyc.indiaUploadComplete({
+          'store_id': storeId,
+          'receipt_id': ticket.receiptId,
+          'version_id': version,
+        }, options: requestOptions);
+      } else {
+        response = await _api.kyc.uploadDocument(
+          storeId: storeId,
+          documentType: documentType,
+          documentNumberLast4: documentNumberLast4,
+          file: file,
+          options: operation.options,
+        );
+      }
+      await _acceptMutation(response, operation);
+      return response;
+    } finally {
+      _finish(operation);
+    }
+  }
+
   Future<Map<String, dynamic>> refreshDocument(
     String documentId,
     String storeId, {
     ApiRequestOptions? options,
   }) async {
+    final current = documents.where((row) => row['id'] == documentId);
+    final revision = current.isEmpty ? '' : (current.first['updated_at'] ?? '');
+    final operationKey = '$storeId:$documentId:$revision';
+    final retryKey = _refreshRetryKeys.putIfAbsent(
+      operationKey,
+      () => const Uuid().v4(),
+    );
     final operation = _begin(storeId, options);
     try {
       final response = await _api.kyc.refreshDocument(
         documentId,
-        options: operation.options,
+        storeId,
+        options: operation.options.copyWith(idempotencyKey: retryKey),
       );
       await _acceptMutation(response, operation);
+      _refreshRetryKeys.remove(operationKey);
       return response;
     } finally {
       _finish(operation);

@@ -16,6 +16,11 @@ class StoreAnalytics {
   final List<TrafficSourceEntry> trafficSources;
   final StoreAnalyticsComparison comparison;
 
+  /// Availability describes an observed server value, including a real zero.
+  /// A successful partial composite is not evidence that a missing metric is 0.
+  final bool summaryAvailable;
+  final bool viewsAvailable;
+
   StoreAnalytics({
     this.totalRevenue = 0,
     this.totalOrders = 0,
@@ -28,6 +33,8 @@ class StoreAnalytics {
     this.topProducts = const [],
     this.trafficSources = const [],
     this.comparison = const StoreAnalyticsComparison(),
+    this.summaryAvailable = true,
+    this.viewsAvailable = false,
   });
 
   factory StoreAnalytics.fromJson(Map<String, dynamic> json) {
@@ -38,6 +45,11 @@ class StoreAnalytics {
       totalViews: json['totalViews'] as int? ?? 0,
       averageOrderValue: (json['averageOrderValue'] as num?)?.toDouble() ?? 0,
       conversionRate: (json['conversionRate'] as num?)?.toDouble() ?? 0,
+      summaryAvailable:
+          json['totalRevenue'] is num &&
+          json['totalOrders'] is num &&
+          json['totalProducts'] is num,
+      viewsAvailable: json['totalViews'] is num,
       ordersByStatus: Map<String, int>.from(json['ordersByStatus'] ?? {}),
       dailyStats:
           (json['dailyStats'] as List?)
@@ -403,6 +415,13 @@ class AnalyticsService extends ChangeNotifier {
 
       _analytics = StoreAnalytics(
         totalRevenue: _number(revenueMetric['value']),
+        summaryAvailable:
+            revenueMetric['value'] is num &&
+            ordersMetric['value'] is num &&
+            summary['products'] is num &&
+            summary['avg_order_value'] is num,
+        viewsAvailable: summary['visitors'] is num,
+        totalViews: _integer(summary['visitors']),
         totalOrders: _integer(ordersMetric['value']),
         totalProducts: _integer(summary['products']),
         averageOrderValue: _number(summary['avg_order_value']),
@@ -452,25 +471,34 @@ class AnalyticsService extends ChangeNotifier {
         analyticsPayload['traffic_sources'],
       );
       final topProductRows = asJsonList(
-        analyticsPayload['top_products'],
+        analyticsPayload['top_products'] ?? const [],
       ).map((item) => asJsonMap(item)).toList(growable: false);
-      final summary = asJsonMap(dashboard['summary']);
-      final revenueMetric = asJsonMap(summary['revenue']);
-      final ordersMetric = asJsonMap(summary['orders']);
-      final ordersByStatus = _intMap(asJsonMap(orderBreakdown['breakdown']));
-      final dailyStats = asJsonList(revenue['chart'])
+      final summary = _jsonMapOrEmpty(dashboard['summary']);
+      final revenueMetric = _jsonMapOrEmpty(summary['revenue']);
+      final ordersMetric = _jsonMapOrEmpty(summary['orders']);
+      final ordersByStatus = _intMap(
+        _jsonMapOrEmpty(orderBreakdown['breakdown']),
+      );
+      final dailyStats = asJsonList(revenue['chart'] ?? const [])
           .map((item) => DailyStats.fromJson(asJsonMap(item)))
           .toList(growable: false);
 
       _analytics = StoreAnalytics(
         totalRevenue: _number(revenueMetric['value']),
+        summaryAvailable:
+            revenueMetric['value'] is num &&
+            ordersMetric['value'] is num &&
+            summary['products'] is num &&
+            summary['avg_order_value'] is num,
+        viewsAvailable: summary['visitors'] is num,
+        totalViews: _integer(summary['visitors']),
         totalOrders: _integer(ordersMetric['value']),
         totalProducts: _integer(summary['products']),
         averageOrderValue: _number(summary['avg_order_value']),
         ordersByStatus: ordersByStatus,
         dailyStats: dailyStats,
         topProducts: topProductRows.map(TopProduct.fromJson).toList(),
-        trafficSources: asJsonList(trafficSources['sources'])
+        trafficSources: asJsonList(trafficSources['sources'] ?? const [])
             .map((item) => TrafficSourceEntry.fromJson(asJsonMap(item)))
             .toList(growable: false),
         comparison: StoreAnalyticsComparison.fromGateway(

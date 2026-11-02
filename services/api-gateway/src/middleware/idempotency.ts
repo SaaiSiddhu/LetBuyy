@@ -6,6 +6,7 @@ import { IdempotencyExecutionAdapter } from '../execution/idempotency-execution.
 import { getSupabaseAdmin } from '../lib/supabase';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { assertStaffPermission } from './staff-permission';
+import {isWarehouseCommandPath,isProductImportCommandPath} from '@letbuyy/shared-types';
 
 type JsonValue = null | boolean | number | string | JsonValue[] | { [key: string]: JsonValue };
 type GatewayContext = Context<{ Bindings: Env }>;
@@ -200,14 +201,27 @@ export const protectedMutationIdempotency = createMiddleware<{ Bindings: Env }>(
         && ['/payments/subscription/order', '/payments/subscription/recover', '/payments/subscription/verify'].includes(orderPath);
     // Product PATCH owns an atomic actor/payload/version-bound receipt after live access checks.
     const routeOwnedInventoryAdjustment = method === 'POST' && orderPath === '/inventory/adjust';
+    // These warehouse commands and their stop protocol own immutable receipts in one transaction.
+    const routeOwnedWarehouseCommand = method === 'POST' && isWarehouseCommandPath(orderPath);
+    const routeOwnedProductImport = method === 'POST' && isProductImportCommandPath(orderPath);
     // Membership commands own live-owner/version/payload-bound SQL receipts.
     const routeOwnedCollectionMembership = method === 'PUT' && /^\/products\/collections\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/products$/i.test(orderPath);
     // Product PATCH owns an atomic actor/payload/version-bound receipt after live access checks.
     const routeOwnedProductReceipt = method === 'PATCH' && /^\/products\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(orderPath);
+    // Multipart KYC evidence cannot pass through the JSON-body receipt layer.
+    // The route hashes its verified file bytes and claims the canonical
+    // site-scoped receipt before writing to the private object bucket.
+    // India intent/completion use a durable tenant-fenced receipt. HTTP replay
+    // could return an expired S3 policy or bypass fresh ownership/version checks.
+    const routeOwnedKycUpload = method === 'POST' && ['/kyc/documents/upload', '/kyc/documents/upload-intent', '/kyc/documents/upload-complete'].includes(orderPath);
+    // Refresh must recheck current ownership and evidence on every retry. An
+    // outer cached 200 would return an old approval after resubmission and
+    // bypass the route's site/evidence-bound provider receipt.
+    const routeOwnedKycRefresh = method === 'POST' && /^\/kyc\/documents\/[^/]+\/refresh$/.test(orderPath);
     // The gift-card RPC owns a serialised, site-bound issue receipt. HTTP replay
     // would return its one-time code again and skip the route's live owner check.
     const routeOwnedGiftCardIssue = method === 'POST' && orderPath === '/products/gift-cards';
-    if (routeOwnedGiftCardIssue || routeOwnedCollectionMembership || routeOwnedInventoryAdjustment || routeOwnedSubscriptionCheckout || routeOwnedProductReceipt || routeOwnedMoneyClaim || credentialCommand || routeOwnedOrderReceipt || !MUTATION_METHODS.has(method) || !isProtectedMutationPath(c.req.path, method)) {
+    if (routeOwnedProductImport || routeOwnedWarehouseCommand || routeOwnedKycUpload || routeOwnedKycRefresh || routeOwnedGiftCardIssue || routeOwnedCollectionMembership || routeOwnedInventoryAdjustment || routeOwnedSubscriptionCheckout || routeOwnedProductReceipt || routeOwnedMoneyClaim || credentialCommand || routeOwnedOrderReceipt || !MUTATION_METHODS.has(method) || !isProtectedMutationPath(c.req.path, method)) {
         await next();
         return;
     }

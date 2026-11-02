@@ -1,0 +1,520 @@
+{
+  "suites": 25,
+  "tests": 289,
+  "passed": 289,
+  "failed": 0,
+  "results": [
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/final-definer-role-access.postgres.test.ts",
+      "kind": "gateway-db",
+      "code": 0,
+      "tests": 7,
+      "pass": 7,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "migrations": {
+        "throughMigration": null,
+        "appliedCount": 361,
+        "appliedHistorySha256": "f05f0c55daec60314f9a992f0232f38710843211fb68d6827d35f6f7890830da"
+      },
+      "rawReceiptDirectory": "/private/tmp/letbuyy-integrate-20261102"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/gift-card-money-path.test.ts",
+      "kind": "gateway-db",
+      "code": 0,
+      "tests": 7,
+      "pass": 7,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "migrations": {
+        "throughMigration": null,
+        "appliedCount": 361,
+        "appliedHistorySha256": "f05f0c55daec60314f9a992f0232f38710843211fb68d6827d35f6f7890830da"
+      },
+      "rawReceiptDirectory": "/private/tmp/letbuyy-integrate-20261102"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/kyc-india-cleanup.postgres.test.ts",
+      "kind": "gateway-db",
+      "code": 0,
+      "tests": 1,
+      "pass": 1,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "migrations": {
+        "throughMigration": null,
+        "appliedCount": 361,
+        "appliedHistorySha256": "f05f0c55daec60314f9a992f0232f38710843211fb68d6827d35f6f7890830da"
+      },
+      "rawReceiptDirectory": "/private/tmp/letbuyy-integrate-20261102"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/kyc-india-upload-intent.postgres.test.ts",
+      "kind": "gateway-db",
+      "code": 0,
+      "tests": 1,
+      "pass": 1,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "migrations": {
+        "throughMigration": null,
+        "appliedCount": 361,
+        "appliedHistorySha256": "f05f0c55daec60314f9a992f0232f38710843211fb68d6827d35f6f7890830da"
+      },
+      "rawReceiptDirectory": "/private/tmp/letbuyy-integrate-20261102"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/kyc-india-upload-ticket.postgres.test.ts",
+      "kind": "gateway-db",
+      "code": 0,
+      "tests": 1,
+      "pass": 1,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "migrations": {
+        "throughMigration": null,
+        "appliedCount": 361,
+        "appliedHistorySha256": "f05f0c55daec60314f9a992f0232f38710843211fb68d6827d35f6f7890830da"
+      },
+      "rawReceiptDirectory": "/private/tmp/letbuyy-integrate-20261102"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/kyc-private-upload.postgres.test.ts",
+      "kind": "gateway-db",
+      "code": 0,
+      "tests": 5,
+      "pass": 5,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "migrations": {
+        "throughMigration": null,
+        "appliedCount": 361,
+        "appliedHistorySha256": "f05f0c55daec60314f9a992f0232f38710843211fb68d6827d35f6f7890830da"
+      },
+      "rawReceiptDirectory": "/private/tmp/letbuyy-integrate-20261102"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/kyc-write-guard-rollback.postgres.test.ts",
+      "kind": "gateway-db",
+      "code": 0,
+      "tests": 2,
+      "pass": 2,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "migrations": {
+        "throughMigration": null,
+        "appliedCount": 361,
+        "appliedHistorySha256": "f05f0c55daec60314f9a992f0232f38710843211fb68d6827d35f6f7890830da"
+      },
+      "rawReceiptDirectory": "/private/tmp/letbuyy-integrate-20261102"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/managed-sandbox-payments.postgres.test.ts",
+      "kind": "gateway-db",
+      "code": 0,
+      "tests": 7,
+      "pass": 7,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "migrations": {
+        "throughMigration": null,
+        "appliedCount": 361,
+        "appliedHistorySha256": "f05f0c55daec60314f9a992f0232f38710843211fb68d6827d35f6f7890830da"
+      },
+      "rawReceiptDirectory": "/private/tmp/letbuyy-integrate-20261102"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/merchant-mobile-auth.postgres.test.ts",
+      "kind": "gateway-db",
+      "code": 0,
+      "tests": 14,
+      "pass": 14,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "migrations": {
+        "throughMigration": null,
+        "appliedCount": 361,
+        "appliedHistorySha256": "f05f0c55daec60314f9a992f0232f38710843211fb68d6827d35f6f7890830da"
+      },
+      "rawReceiptDirectory": "/private/tmp/letbuyy-integrate-20261102"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-recovery.postgres.test.ts",
+      "kind": "gateway-db",
+      "code": 0,
+      "tests": 46,
+      "pass": 46,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "migrations": {
+        "throughMigration": null,
+        "appliedCount": 361,
+        "appliedHistorySha256": "f05f0c55daec60314f9a992f0232f38710843211fb68d6827d35f6f7890830da"
+      },
+      "rawReceiptDirectory": "/private/tmp/letbuyy-integrate-20261102"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-rollback.postgres.test.ts",
+      "kind": "gateway-db",
+      "code": 0,
+      "tests": 5,
+      "pass": 5,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "migrations": {
+        "throughMigration": null,
+        "appliedCount": 361,
+        "appliedHistorySha256": "f05f0c55daec60314f9a992f0232f38710843211fb68d6827d35f6f7890830da"
+      },
+      "rawReceiptDirectory": "/private/tmp/letbuyy-integrate-20261102"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/niche-theme-promotion.postgres.test.ts",
+      "kind": "gateway-db",
+      "code": 0,
+      "tests": 5,
+      "pass": 5,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "migrations": {
+        "throughMigration": 431,
+        "appliedCount": 360,
+        "appliedHistorySha256": "26b94c4aa075119827c8a8ca1d8ab351b9e8991d44e4f218dd3397e3e5b8f902"
+      },
+      "rawReceiptDirectory": "/private/tmp/letbuyy-integrate-20261102"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/niche-theme-v210-editor.postgres.test.ts",
+      "kind": "gateway-db",
+      "code": 0,
+      "tests": 1,
+      "pass": 1,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "migrations": {
+        "throughMigration": null,
+        "appliedCount": 361,
+        "appliedHistorySha256": "f05f0c55daec60314f9a992f0232f38710843211fb68d6827d35f6f7890830da"
+      },
+      "rawReceiptDirectory": "/private/tmp/letbuyy-integrate-20261102"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/niche-theme-v210-promotion.postgres.test.ts",
+      "kind": "gateway-db",
+      "code": 0,
+      "tests": 1,
+      "pass": 1,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "migrations": {
+        "throughMigration": null,
+        "appliedCount": 361,
+        "appliedHistorySha256": "f05f0c55daec60314f9a992f0232f38710843211fb68d6827d35f6f7890830da"
+      },
+      "rawReceiptDirectory": "/private/tmp/letbuyy-integrate-20261102"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/pricing-provider-gates.postgres.test.ts",
+      "kind": "gateway-db",
+      "code": 0,
+      "tests": 1,
+      "pass": 1,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "migrations": {
+        "throughMigration": null,
+        "appliedCount": 361,
+        "appliedHistorySha256": "f05f0c55daec60314f9a992f0232f38710843211fb68d6827d35f6f7890830da"
+      },
+      "rawReceiptDirectory": "/private/tmp/letbuyy-integrate-20261102"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/product-atomic-edits.postgres.test.ts",
+      "kind": "gateway-db",
+      "code": 0,
+      "tests": 90,
+      "pass": 90,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "migrations": {
+        "throughMigration": null,
+        "appliedCount": 361,
+        "appliedHistorySha256": "f05f0c55daec60314f9a992f0232f38710843211fb68d6827d35f6f7890830da"
+      },
+      "rawReceiptDirectory": "/private/tmp/letbuyy-integrate-20261102"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/product-import-recovery.postgres.test.ts",
+      "kind": "gateway-db",
+      "code": 0,
+      "tests": 18,
+      "pass": 18,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "migrations": {
+        "throughMigration": null,
+        "appliedCount": 361,
+        "appliedHistorySha256": "f05f0c55daec60314f9a992f0232f38710843211fb68d6827d35f6f7890830da"
+      },
+      "rawReceiptDirectory": "/private/tmp/letbuyy-integrate-20261102"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/store-payment-keyring.postgres.test.ts",
+      "kind": "gateway-db",
+      "code": 0,
+      "tests": 5,
+      "pass": 5,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "migrations": {
+        "throughMigration": null,
+        "appliedCount": 361,
+        "appliedHistorySha256": "f05f0c55daec60314f9a992f0232f38710843211fb68d6827d35f6f7890830da"
+      },
+      "rawReceiptDirectory": "/private/tmp/letbuyy-integrate-20261102"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/store-payment-setup.postgres.test.ts",
+      "kind": "gateway-db",
+      "code": 0,
+      "tests": 15,
+      "pass": 15,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "migrations": {
+        "throughMigration": null,
+        "appliedCount": 361,
+        "appliedHistorySha256": "f05f0c55daec60314f9a992f0232f38710843211fb68d6827d35f6f7890830da"
+      },
+      "rawReceiptDirectory": "/private/tmp/letbuyy-integrate-20261102"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/theme-draft-cas.postgres.test.ts",
+      "kind": "gateway-db",
+      "code": 0,
+      "tests": 35,
+      "pass": 35,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "migrations": {
+        "throughMigration": 390,
+        "appliedCount": 319,
+        "appliedHistorySha256": "05923875c4313bfa84a975d78367808d98b884b03e410dc4899ad26a8e54d092"
+      },
+      "rawReceiptDirectory": "/private/tmp/letbuyy-integrate-20261102"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/theme-editor-template-keys.postgres.test.ts",
+      "kind": "gateway-db",
+      "code": 0,
+      "tests": 2,
+      "pass": 2,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "migrations": {
+        "throughMigration": 390,
+        "appliedCount": 319,
+        "appliedHistorySha256": "05923875c4313bfa84a975d78367808d98b884b03e410dc4899ad26a8e54d092"
+      },
+      "rawReceiptDirectory": "/private/tmp/letbuyy-integrate-20261102"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/theme-shared-groups.postgres.test.ts",
+      "kind": "gateway-db",
+      "code": 0,
+      "tests": 6,
+      "pass": 6,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "migrations": {
+        "throughMigration": 431,
+        "appliedCount": 360,
+        "appliedHistorySha256": "26b94c4aa075119827c8a8ca1d8ab351b9e8991d44e4f218dd3397e3e5b8f902"
+      },
+      "rawReceiptDirectory": "/private/tmp/letbuyy-integrate-20261102"
+    },
+    {
+      "path": "tests/executable/identity-auth-repair-postgres.test.mjs",
+      "kind": "postgres",
+      "code": 0,
+      "tests": 1,
+      "pass": 1,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "ownership": null,
+      "cleanup": null,
+      "migrations": null,
+      "rawReceiptDirectory": "/private/tmp/letbuyy-integrate-20261102"
+    },
+    {
+      "path": "tests/executable/tenant-redteam-postgres.test.mjs",
+      "kind": "postgres",
+      "code": 0,
+      "tests": 2,
+      "pass": 2,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "ownership": null,
+      "cleanup": null,
+      "migrations": null,
+      "rawReceiptDirectory": "/private/tmp/letbuyy-integrate-20261102"
+    },
+    {
+      "path": "tests/owned-db/money-ledger-reconciliation-traversal.postgres.test.ts",
+      "kind": "gateway-db",
+      "code": 0,
+      "tests": 11,
+      "pass": 11,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "migrations": {
+        "throughMigration": null,
+        "appliedCount": 361,
+        "appliedHistorySha256": "f05f0c55daec60314f9a992f0232f38710843211fb68d6827d35f6f7890830da"
+      },
+      "rawReceiptDirectory": "/private/tmp/letbuyy-integrate-20261102"
+    }
+  ],
+  "note": "Latest complete result per path; initial fixture-profile failures are preserved in original raw receipts."
+}

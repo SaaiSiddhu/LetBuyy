@@ -6,11 +6,13 @@ import '../../app/store_context.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import '../../services/store_service.dart';
+import '../../services/api_client.dart';
 import '../../widgets/shared/image_source_sheet.dart';
 import '../../widgets/shared/merchant_media_picker.dart';
 import '../../widgets/shared/cached_merchant_image.dart';
 
 import '../../models/store_model.dart';
+import '../../theme/app_theme_colors.dart';
 
 /// Store details editing screen
 class StoreDetailsScreen extends StatefulWidget {
@@ -28,16 +30,18 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
     r'^(0[1-9]|[12][0-9]|3[0-8]|97)$',
   );
   static final RegExp _invoicePrefixPattern = RegExp(r'^[A-Z0-9-]{1,20}$');
-  static final RegExp _countryPattern = RegExp(r'^[A-Z]{2}$');
   static final RegExp _indianPinPattern = RegExp(r'^[1-9][0-9]{5}$');
   static final RegExp _phonePattern = RegExp(r'^\+?[0-9][0-9\s-]{6,18}$');
 
   final _formKey = GlobalKey<FormState>();
   StoreModel? _store;
   bool _isLoading = true;
+  bool _isReloading = false;
   bool _isSaving = false;
   bool _hasChanges = false;
+  bool _hasConflict = false;
   bool _showValidationErrors = false;
+  String? _loadError;
 
   final _nameController = TextEditingController();
   final _taglineController = TextEditingController();
@@ -45,7 +49,6 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
   final _gstinController = TextEditingController();
   final _gstStateCodeController = TextEditingController();
   final _invoicePrefixController = TextEditingController();
-  final _invoiceNumberController = TextEditingController();
   final _invoiceFooterController = TextEditingController();
   final _invoiceLine1Controller = TextEditingController();
   final _invoiceLine2Controller = TextEditingController();
@@ -61,18 +64,66 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
     _loadStore();
   }
 
-  Future<void> _loadStore() async {
-    setState(() => _isLoading = true);
+  Future<void> _loadStore({bool forceFresh = false}) async {
+    setState(() {
+      if (forceFresh) {
+        _isReloading = true;
+      } else {
+        _isLoading = true;
+      }
+    });
     try {
-      final store = await context.read<StoreContext>().ensureSelectedStore();
+      final storeContext = context.read<StoreContext>();
+      final store = forceFresh && _store != null
+          ? await storeContext.reloadSelectedStore(_store!.id)
+          : await storeContext.ensureSelectedStore();
+      if (!mounted) return;
       setState(() {
         _store = store;
         _populateControllers(store);
+        _hasChanges = false;
+        _hasConflict = false;
+        _showValidationErrors = false;
+        _loadError = null;
       });
     } catch (e) {
       debugPrint('Error loading store: $e');
+      if (mounted) {
+        final accessLost =
+            e is ApiException &&
+            (e.statusCode == 401 ||
+                e.statusCode == 403 ||
+                e.statusCode == 404 ||
+                e.code == 'SESSION_CONTEXT_CHANGED');
+        if (accessLost || _store == null) {
+          setState(() {
+            _store = null;
+            _populateControllers(null);
+            _hasChanges = false;
+            _hasConflict = false;
+            _loadError = accessLost
+                ? 'Store access changed. Open settings again.'
+                : 'Could not load store details. Try again.';
+          });
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Could not reload current store details. Your edits are still here.',
+              ),
+            ),
+          );
+        }
+      }
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted)
+        setState(() {
+          if (forceFresh) {
+            _isReloading = false;
+          } else {
+            _isLoading = false;
+          }
+        });
     }
   }
 
@@ -100,6 +151,7 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
       setState(() {
         _store = updatedStore;
         _hasChanges = false;
+        _hasConflict = false;
         _showValidationErrors = false;
       });
 
@@ -108,6 +160,25 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
           context,
         ).showSnackBar(const SnackBar(content: Text('Store details saved.')));
       }
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      final stale = e.statusCode == 409 && e.code != 'SESSION_CONTEXT_CHANGED';
+      if (stale) setState(() => _hasConflict = true);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            stale
+                ? 'Store details changed elsewhere. Reload to discard these edits.'
+                : 'Could not save store details: ${e.message}',
+          ),
+          action: stale
+              ? SnackBarAction(
+                  label: 'Reload',
+                  onPressed: () => _loadStore(forceFresh: true),
+                )
+              : null,
+        ),
+      );
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -126,7 +197,6 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
     _gstinController.dispose();
     _gstStateCodeController.dispose();
     _invoicePrefixController.dispose();
-    _invoiceNumberController.dispose();
     _invoiceFooterController.dispose();
     _invoiceLine1Controller.dispose();
     _invoiceLine2Controller.dispose();
@@ -140,20 +210,42 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppThemeColors.of(context);
     if (_isLoading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
+    if (_loadError != null) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Store Details')),
+        body: Center(child: Text(_loadError!)),
+      );
+    }
+
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: colors.bgStart,
       appBar: AppBar(
         title: const Text('Store Details'),
-        backgroundColor: AppColors.background,
-        surfaceTintColor: AppColors.background,
+        backgroundColor: colors.bgStart,
+        surfaceTintColor: colors.bgStart,
         actions: [
+          if (_hasConflict)
+            IconButton(
+              tooltip: 'Reload current details',
+              onPressed: _isReloading
+                  ? null
+                  : () => _loadStore(forceFresh: true),
+              icon: _isReloading
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.refresh_rounded),
+            ),
           if (_hasChanges)
             TextButton.icon(
-              onPressed: _isSaving ? null : _save,
+              onPressed: _isSaving || _hasConflict ? null : _save,
               icon: _isSaving
                   ? const SizedBox(
                       width: 16,
@@ -207,6 +299,7 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
               hint: 'Registered business name',
               controller: _legalNameController,
               icon: Icons.business_center_rounded,
+              fieldKey: const ValueKey('store-details-legal-name-field'),
               textCapitalization: TextCapitalization.words,
               validator: (value) =>
                   _validateOptionalLength(value, label: 'Legal name', max: 200),
@@ -241,16 +334,6 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
               fieldKey: const ValueKey('store-details-invoice-prefix-field'),
               textCapitalization: TextCapitalization.characters,
               validator: _validateInvoicePrefix,
-            ),
-            const SizedBox(height: 16),
-            _buildField(
-              label: 'Next Invoice Number',
-              hint: '1',
-              controller: _invoiceNumberController,
-              icon: Icons.format_list_numbered_rounded,
-              fieldKey: const ValueKey('store-details-invoice-number-field'),
-              keyboardType: TextInputType.number,
-              validator: _validateInvoiceNumber,
             ),
             const SizedBox(height: 16),
             _buildField(
@@ -371,20 +454,24 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.grey[50],
+                color: colors.elevation1,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey[200]!),
+                border: Border.all(color: colors.cardBorder),
               ),
               child: Row(
                 children: [
-                  Icon(Icons.link_rounded, color: Colors.grey[600]),
+                  Icon(Icons.link_rounded, color: colors.textSecondary),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      '${_store?.subdomain ?? 'mystore'}.letbuyy.com',
+                      _store?.publicUrl.replaceFirst(
+                            RegExp(r'^https?://'),
+                            '',
+                          ) ??
+                          '',
                       style: TextStyle(
                         fontFamily: 'monospace',
-                        color: Colors.grey[700],
+                        color: colors.textPrimary,
                       ),
                     ),
                   ),
@@ -394,7 +481,7 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
             const SizedBox(height: 8),
             Text(
               'Subdomain cannot be changed after creation',
-              style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+              style: TextStyle(fontSize: 12, color: colors.textSecondary),
             ),
             const SizedBox(height: 100),
           ],
@@ -404,6 +491,7 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
   }
 
   Widget _buildLogoSection() {
+    final colors = AppThemeColors.of(context);
     return Center(
       child: Column(
         children: [
@@ -443,7 +531,7 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
           const SizedBox(height: 8),
           Text(
             'Tap to change logo',
-            style: TextStyle(color: Colors.grey[600], fontSize: 12),
+            style: TextStyle(color: colors.textSecondary, fontSize: 12),
           ),
         ],
       ),
@@ -506,6 +594,16 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
   Future<void> _pickLogo() async {
     final store = _store;
     if (store == null || _isSaving) return;
+    if (_hasConflict || _hasChanges) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Save or reload your store details before changing the logo.',
+          ),
+        ),
+      );
+      return;
+    }
 
     final picker = ImagePicker();
     final source = await showImageSourceSheet(context, title: 'Logo source');
@@ -549,20 +647,13 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
   }
 
   void _populateControllers(StoreModel? store) {
-    final businessProfile = store?.businessProfile ?? const {};
     final invoiceAddress = store?.invoiceAddress ?? const {};
     _nameController.text = store?.name ?? '';
     _taglineController.text = store?.tagline ?? '';
-    _legalNameController.text =
-        store?.legalName ?? _stringValue(businessProfile['legal_name']);
-    _gstinController.text =
-        store?.gstin ?? _stringValue(businessProfile['gstin']);
-    _gstStateCodeController.text =
-        store?.gstStateCode ?? _stringValue(businessProfile['gst_state_code']);
+    _legalNameController.text = store?.legalName ?? '';
+    _gstinController.text = store?.gstin ?? '';
+    _gstStateCodeController.text = store?.gstStateCode ?? '';
     _invoicePrefixController.text = store?.invoicePrefix ?? '';
-    _invoiceNumberController.text = store == null
-        ? ''
-        : store.invoiceNumberNext.toString();
     _invoiceFooterController.text = store?.invoiceFooter ?? '';
     _invoiceLine1Controller.text = _stringValue(invoiceAddress['line1']);
     _invoiceLine2Controller.text = _stringValue(invoiceAddress['line2']);
@@ -583,8 +674,8 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
     final invoicePrefix = _nullableText(
       _invoicePrefixController,
     )?.toUpperCase();
-    final invoiceNumber = int.tryParse(_invoiceNumberController.text.trim());
     final invoiceAddress = <String, dynamic>{
+      ..._store!.invoiceAddress,
       if (_nullableText(_invoiceLine1Controller) != null)
         'line1': _nullableText(_invoiceLine1Controller),
       if (_nullableText(_invoiceLine2Controller) != null)
@@ -602,19 +693,39 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
         'phone': _normalizedPhone(_invoicePhoneController),
     };
     final businessProfile = <String, dynamic>{
-      if (legalName != null) 'legal_name': legalName,
-      if (gstin != null) 'gstin': gstin,
-      if (gstStateCode != null) 'gst_state_code': gstStateCode,
+      for (final key in const [
+        'trade_name',
+        'entity_type',
+        'pan_last4',
+        'email',
+        'phone',
+        'website',
+        'public_contact_enabled',
+      ])
+        if (_store!.businessProfile.containsKey(key))
+          key: _store!.businessProfile[key],
     };
+    if (_nullableText(_invoiceLine1Controller) == null)
+      invoiceAddress.remove('line1');
+    if (_nullableText(_invoiceLine2Controller) == null)
+      invoiceAddress.remove('line2');
+    if (_nullableText(_invoiceCityController) == null)
+      invoiceAddress.remove('city');
+    if (_nullableText(_invoiceStateController) == null)
+      invoiceAddress.remove('state');
+    if (_nullableText(_invoiceZipController) == null)
+      invoiceAddress.remove('zip');
+    if (_nullableText(_invoicePhoneController) == null)
+      invoiceAddress.remove('phone');
 
     return {
+      'version': _store!.version,
       'name': _nameController.text.trim(),
       'tagline': _taglineController.text.trim(),
       'legal_name': legalName,
       'gstin': gstin,
       'gst_state_code': gstStateCode,
       'invoice_prefix': invoicePrefix,
-      'invoice_number_next': invoiceNumber ?? 1,
       'invoice_footer': _nullableText(_invoiceFooterController),
       'business_profile': businessProfile,
       'invoice_address': invoiceAddress,
@@ -688,17 +799,6 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
     return null;
   }
 
-  String? _validateInvoiceNumber(String? value) {
-    final text = value?.trim() ?? '';
-    if (text.isEmpty) return 'Enter the next invoice number.';
-    final number = int.tryParse(text);
-    if (number == null || number <= 0) {
-      return 'Enter a positive invoice number.';
-    }
-    if (number > 999999999) return 'Invoice number is too large.';
-    return null;
-  }
-
   String? _validatePostalCode(String? value) {
     final zip = value?.trim() ?? '';
     if (zip.isEmpty) return null;
@@ -713,10 +813,7 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
 
   String? _validateCountry(String? value) {
     final country = value?.trim().toUpperCase() ?? '';
-    if (country.isEmpty) return 'Enter a country code.';
-    if (!_countryPattern.hasMatch(country)) {
-      return 'Use a 2-letter country code.';
-    }
+    if (country != 'IN') return 'LetBuyy stores must be based in India.';
     return null;
   }
 

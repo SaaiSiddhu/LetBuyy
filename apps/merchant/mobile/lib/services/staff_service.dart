@@ -114,13 +114,18 @@ String? staffInvitationProof(String input) {
 }
 
 class StaffService extends ChangeNotifier {
-  StaffService({required ApiClient api}) : _api = api;
+  StaffService({
+    required ApiClient api,
+    String environment = AppConfig.environment,
+  }) : _api = api,
+       _namespace = environment == 'staging' ? '.staging' : '';
 
   final ApiClient _api;
   static const _storage = FlutterSecureStorage();
-  static const _pendingKey = 'letbuyy.staff.mutations.v1';
+  final String _namespace;
+  String get _pendingKey => 'letbuyy.staff.mutations.v1$_namespace';
   Future<void> _mutationTail = Future<void>.value();
-  static const _invitationKey = 'letbuyy.staff.pending-invitation.v1';
+  String get _invitationKey => 'letbuyy.staff.pending-invitation.v1$_namespace';
   String? _pendingInvitation;
   String? get pendingInvitation => _pendingInvitation;
 
@@ -155,9 +160,12 @@ class StaffService extends ChangeNotifier {
   Future<Map<String, dynamic>> acceptInvitation(String invitationId) async {
     final proof = _pendingInvitation;
     if (proof == null) throw StateError('Invitation link is missing.');
-    return _withRetryKey('accept:$invitationId', '', {
-      'token': proof,
-    }, (options) => _api.employees.acceptInvite(proof, options: options));
+    return _withRetryKey(
+      'accept:$invitationId',
+      '',
+      {'token': proof},
+      (options) => _api.employees.acceptInvite(proof, options: options),
+    );
   }
 
   Future<StaffInvitationResult> inviteStaff(
@@ -281,10 +289,12 @@ class StaffService extends ChangeNotifier {
   }
 
   Future<void> removeStaff(StaffMemberContract member) async {
-    await _withRetryKey('remove:${member.id}', member.storeId, {
-      'expected_updated_at': member.updatedAt,
-      'store_id': member.storeId,
-    }, (options) => _api.employees.remove(member.id, options: options));
+    await _withRetryKey(
+      'remove:${member.id}',
+      member.storeId,
+      {'expected_updated_at': member.updatedAt, 'store_id': member.storeId},
+      (options) => _api.employees.remove(member.id, options: options),
+    );
     _members = _members.where((item) => item.id != member.id).toList();
     notifyListeners();
   }

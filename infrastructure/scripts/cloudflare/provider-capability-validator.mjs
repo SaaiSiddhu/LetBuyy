@@ -17,7 +17,7 @@ function assert(condition, message) {
 }
 
 function commandOutput(command, commandArgs) {
-  const result = spawnSync(command, commandArgs, { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
+  const result = spawnSync(command, commandArgs, { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"], timeout: 60_000 });
   return {
     status: result.status ?? 1,
     stdout: (result.stdout || "").trim(),
@@ -46,8 +46,18 @@ if (execute) {
   if (environment === "production") {
     assert(process.env.LETBUYY_PROVIDER_MUTATION_APPROVED === "true", "Production provider mutation requires LETBUYY_PROVIDER_MUTATION_APPROVED=true");
   }
-  const whoami = commandOutput("pnpm", ["--dir", "services/api-gateway", "exec", "wrangler", "whoami"]);
+  // JSON mode verifies the same authenticated account without the optional
+  // membership-display request that can otherwise hold deployment indefinitely.
+  const whoami = commandOutput("pnpm", ["--dir", "services/api-gateway", "exec", "wrangler", "whoami", "--json"]);
   assert(whoami.status === 0, `wrangler whoami failed: ${whoami.stderr || "provider auth invalid"}`);
+  let identity;
+  try {
+    identity = JSON.parse(whoami.stdout);
+  } catch {
+    throw new Error("wrangler whoami must return valid authenticated account JSON");
+  }
+  assert(identity?.loggedIn === true, "wrangler account is not authenticated");
+  assert(Array.isArray(identity.accounts) && identity.accounts.some((account) => account?.id === process.env.CLOUDFLARE_ACCOUNT_ID), "Authenticated Cloudflare account does not match CLOUDFLARE_ACCOUNT_ID");
 }
 
 console.log(`[provider-capability-validator] ${environment} capabilities passed (${execute ? "execute" : "plan"} mode, wrangler ${wranglerVersion})`);

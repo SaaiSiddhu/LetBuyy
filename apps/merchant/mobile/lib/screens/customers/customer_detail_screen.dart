@@ -4,6 +4,7 @@ import 'package:letbuyy_models/letbuyy_models.dart';
 import 'package:provider/provider.dart';
 
 import '../../app/routes.dart';
+import '../../app/store_context.dart';
 import '../../services/customer_service.dart';
 import '../../services/order_service.dart';
 import '../../services/whatsapp_service.dart';
@@ -35,17 +36,40 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
   bool _isLoading = true;
   bool _isMutating = false;
   String? _error;
+  Object? _boundContext;
+  String? _boundSiteId;
+  int _loadGeneration = 0;
+
+  bool get _current =>
+      mounted &&
+      _boundSiteId != null &&
+      context.read<StoreContext>().requestContextKey == _boundContext &&
+      context.read<StoreContext>().selectedStoreId == _boundSiteId;
 
   late AppThemeColors colors;
 
   @override
   void initState() {
     super.initState();
-    _customer = widget.initialCustomer;
-    _loadCustomer(preferCached: true);
+    final stores = context.read<StoreContext>();
+    _boundContext = stores.requestContextKey;
+    _boundSiteId = stores.selectedStoreId;
+    _loadCustomer();
   }
 
-  Future<void> _loadCustomer({bool preferCached = false}) async {
+  Future<void> _loadCustomer() async {
+    if (!_current) return;
+    final generation = ++_loadGeneration;
+    bool currentLoad() => _current && generation == _loadGeneration;
+    if (widget.initialCustomer != null &&
+        widget.initialCustomer!.storeId != _boundSiteId) {
+      setState(() {
+        _customer = null;
+        _isLoading = false;
+        _error = 'Open this customer from the selected store.';
+      });
+      return;
+    }
     if (widget.email.trim().isEmpty) {
       setState(() {
         _isLoading = false;
@@ -61,36 +85,27 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
 
     try {
       final service = context.read<CustomerService>();
-      final initialStoreId = _customer?.storeId.trim();
-      final storeIdHint = initialStoreId == null || initialStoreId.isEmpty
-          ? null
-          : initialStoreId;
-      final cached = preferCached
-          ? _customer ??
-                service.cachedCustomerByEmail(
-                  widget.email,
-                  storeId: storeIdHint,
-                )
-          : null;
-      final customer =
-          cached ??
-          await service.fetchCustomerByEmail(
-            widget.email,
-            storeId: storeIdHint,
-          );
+      final customer = await service.fetchCustomerByEmail(
+        widget.email,
+        storeId: _boundSiteId,
+      );
+      if (!currentLoad()) return;
       final storeId = customer.storeId.trim();
       final addresses = await service.fetchAddresses(
         widget.email,
         storeId: storeId.isEmpty ? null : storeId,
       );
+      if (!currentLoad()) return;
       final notes = storeId.isEmpty
           ? const <Map<String, dynamic>>[]
           : await service.fetchNotes(widget.email, storeId: storeId);
+      if (!currentLoad()) return;
       final orders = await _loadRecentOrders(customer);
+      if (!currentLoad()) return;
       final whatsApp = storeId.isEmpty
           ? const _WhatsAppLoadResult()
           : await _loadWhatsApp(customer, storeId);
-      if (mounted) {
+      if (currentLoad()) {
         setState(() {
           _customer = customer;
           _addresses = addresses;
@@ -102,9 +117,15 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
         });
       }
     } catch (error) {
-      if (mounted) {
+      if (currentLoad()) {
         setState(() {
-          _error = error.toString();
+          _customer = null;
+          _addresses = [];
+          _orders = [];
+          _notes = [];
+          _whatsAppTimeline = [];
+          _error =
+              'Customer access could not be confirmed. Check your connection and retry.';
           _isLoading = false;
         });
       }
@@ -128,7 +149,7 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
         limit: 10,
       );
     } catch (_) {
-      return payloadOrders;
+      return const [];
     }
   }
 
@@ -142,6 +163,7 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
     try {
       final status = await service.fetchStatus(storeId);
       final available = status['available'] == true;
+      if (!_current) return const _WhatsAppLoadResult();
       final timeline = await service.fetchTimeline(
         storeId,
         customerEmail: customer.email,
@@ -154,8 +176,9 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
   }
 
   Future<void> _saveAddress(CustomerAddressContract? existing) async {
+    if (!_current) return;
     final request = await _showAddressDialog(existing);
-    if (request == null) return;
+    if (!_current || request == null) return;
 
     setState(() => _isMutating = true);
     try {
@@ -166,18 +189,23 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
         await service.updateAddress(widget.email, existing.id, request);
       }
       await _loadCustomer();
-      if (mounted) {
+      if (_current) {
         _showSnackBar(existing == null ? 'Address added' : 'Address updated');
       }
     } catch (error) {
-      if (mounted) _showSnackBar(error.toString(), isError: true);
+      if (_current)
+        _showSnackBar(
+          'Customer update could not be confirmed. Refresh before retrying.',
+          isError: true,
+        );
     } finally {
-      if (mounted) setState(() => _isMutating = false);
+      if (_current) setState(() => _isMutating = false);
     }
   }
 
   Future<void> _deleteAddress(CustomerAddressContract address) async {
-    final confirmed = await showDialog<bool>(
+    if (!_current) return;
+    final confirmed = await _showGuardedDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: colors.card,
@@ -206,7 +234,7 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
       ),
     );
 
-    if (confirmed != true) return;
+    if (!_current || confirmed != true) return;
 
     setState(() => _isMutating = true);
     try {
@@ -215,42 +243,51 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
         address.id,
       );
       await _loadCustomer();
-      if (mounted) _showSnackBar('Address deleted');
+      if (_current) _showSnackBar('Address deleted');
     } catch (error) {
-      if (mounted) _showSnackBar(error.toString(), isError: true);
+      if (_current)
+        _showSnackBar(
+          'Customer update could not be confirmed. Refresh before retrying.',
+          isError: true,
+        );
     } finally {
-      if (mounted) setState(() => _isMutating = false);
+      if (_current) setState(() => _isMutating = false);
     }
   }
 
   Future<void> _editCustomer() async {
+    if (!_current) return;
     final customer = _customer;
     if (customer == null) return;
     final storeId = customer.storeId.trim();
 
     final request = await _showCustomerDialog(customer);
-    if (request == null) return;
+    if (!_current || request == null) return;
 
     setState(() => _isMutating = true);
     try {
-      final updated = await context.read<CustomerService>().updateCustomer(
+      await context.read<CustomerService>().updateCustomer(
         widget.email,
         request,
         storeId: storeId.isEmpty ? null : storeId,
       );
       await _loadCustomer();
-      if (mounted) {
-        setState(() => _customer = updated);
+      if (_current) {
         _showSnackBar('Customer updated');
       }
     } catch (error) {
-      if (mounted) _showSnackBar(error.toString(), isError: true);
+      if (_current)
+        _showSnackBar(
+          'Customer update could not be confirmed. Refresh before retrying.',
+          isError: true,
+        );
     } finally {
-      if (mounted) setState(() => _isMutating = false);
+      if (_current) setState(() => _isMutating = false);
     }
   }
 
   Future<void> _addNote() async {
+    if (!_current) return;
     final customer = _customer;
     final storeId = customer?.storeId.trim() ?? '';
     if (storeId.isEmpty) {
@@ -259,7 +296,7 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
     }
 
     final note = await _showNoteDialog();
-    if (note == null || note.trim().isEmpty) return;
+    if (!_current || note == null || note.trim().isEmpty) return;
 
     setState(() => _isMutating = true);
     try {
@@ -269,15 +306,20 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
         note: note.trim(),
       );
       await _loadCustomer();
-      if (mounted) _showSnackBar('Note saved');
+      if (_current) _showSnackBar('Note saved');
     } catch (error) {
-      if (mounted) _showSnackBar(error.toString(), isError: true);
+      if (_current)
+        _showSnackBar(
+          'Customer update could not be confirmed. Refresh before retrying.',
+          isError: true,
+        );
     } finally {
-      if (mounted) setState(() => _isMutating = false);
+      if (_current) setState(() => _isMutating = false);
     }
   }
 
   Future<void> _editTags() async {
+    if (!_current) return;
     final customer = _customer;
     final storeId = customer?.storeId.trim() ?? '';
     if (customer == null || storeId.isEmpty) {
@@ -286,28 +328,32 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
     }
 
     final tags = await _showTagsDialog(_customerTags(customer));
-    if (tags == null) return;
+    if (!_current || tags == null) return;
 
     setState(() => _isMutating = true);
     try {
-      final updated = await context.read<CustomerService>().updateTags(
+      await context.read<CustomerService>().updateTags(
         widget.email,
         storeId: storeId,
         tags: tags,
       );
       await _loadCustomer();
-      if (mounted) {
-        setState(() => _customer = updated);
+      if (_current) {
         _showSnackBar('Tags updated');
       }
     } catch (error) {
-      if (mounted) _showSnackBar(error.toString(), isError: true);
+      if (_current)
+        _showSnackBar(
+          'Customer update could not be confirmed. Refresh before retrying.',
+          isError: true,
+        );
     } finally {
-      if (mounted) setState(() => _isMutating = false);
+      if (_current) setState(() => _isMutating = false);
     }
   }
 
   Future<void> _emailCustomer() async {
+    if (!_current) return;
     final customer = _customer;
     final storeId = customer?.storeId.trim() ?? '';
     if (storeId.isEmpty) {
@@ -316,7 +362,7 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
     }
 
     final request = await _showEmailDialog();
-    if (request == null) return;
+    if (!_current || request == null) return;
 
     setState(() => _isMutating = true);
     try {
@@ -326,20 +372,21 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
         subject: request['subject'] ?? '',
         message: request['message'] ?? '',
       );
-      if (mounted) _showSnackBar('Email sent');
+      if (_current) _showSnackBar('Email sent');
     } catch (_) {
-      if (mounted) {
+      if (_current) {
         _showSnackBar(
           'Customer email is unavailable right now.',
           isError: true,
         );
       }
     } finally {
-      if (mounted) setState(() => _isMutating = false);
+      if (_current) setState(() => _isMutating = false);
     }
   }
 
   Future<void> _whatsAppCustomer() async {
+    if (!_current) return;
     final customer = _customer;
     final storeId = customer?.storeId.trim() ?? '';
     final phone = customer?.phone?.trim() ?? '';
@@ -349,7 +396,7 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
     }
 
     final request = await _showWhatsAppDialog(customer);
-    if (request == null) return;
+    if (!_current || request == null) return;
 
     setState(() => _isMutating = true);
     try {
@@ -361,32 +408,34 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
         message: request['message'],
         variables: _whatsAppVariables(customer),
       );
+      if (!_current) return;
       final timeline = await context.read<WhatsAppService>().fetchTimeline(
         storeId,
         customerEmail: customer.email,
         customerPhone: phone,
       );
-      if (mounted) {
+      if (_current) {
         setState(() => _whatsAppTimeline = timeline);
         _showSnackBar('WhatsApp message queued');
       }
     } on WhatsAppUnavailableException {
-      if (mounted) {
+      if (_current) {
         _showSnackBar(
           'WhatsApp messages are unavailable right now.',
           isError: true,
         );
       }
     } catch (_) {
-      if (mounted) {
+      if (_current) {
         _showSnackBar('Could not send that WhatsApp message.', isError: true);
       }
     } finally {
-      if (mounted) setState(() => _isMutating = false);
+      if (_current) setState(() => _isMutating = false);
     }
   }
 
   Future<void> _mergeCustomer() async {
+    if (!_current) return;
     final customer = _customer;
     final storeId = customer?.storeId.trim() ?? '';
     if (storeId.isEmpty) {
@@ -395,7 +444,7 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
     }
 
     final targetEmail = await _showMergeDialog();
-    if (targetEmail == null || targetEmail.trim().isEmpty) return;
+    if (!_current || targetEmail == null || targetEmail.trim().isEmpty) return;
 
     setState(() => _isMutating = true);
     try {
@@ -404,19 +453,20 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
         storeId: storeId,
         targetEmail: targetEmail.trim(),
       );
-      if (!mounted) return;
+      if (!_current) return;
       _showSnackBar('Customer merged');
       Navigator.pop(context, {'merged_into': merged.email});
     } catch (_) {
-      if (mounted) {
+      if (_current) {
         _showSnackBar('Could not merge that customer.', isError: true);
       }
     } finally {
-      if (mounted) setState(() => _isMutating = false);
+      if (_current) setState(() => _isMutating = false);
     }
   }
 
   Future<void> _deleteCustomerProfile() async {
+    if (!_current) return;
     final customer = _customer;
     final storeId = customer?.storeId.trim() ?? '';
     if (storeId.isEmpty) {
@@ -424,7 +474,7 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
       return;
     }
 
-    final confirmed = await showDialog<bool>(
+    final confirmed = await _showGuardedDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: colors.card,
@@ -452,7 +502,7 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
         ],
       ),
     );
-    if (confirmed != true) return;
+    if (!_current || confirmed != true) return;
 
     setState(() => _isMutating = true);
     try {
@@ -460,21 +510,43 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
         widget.email,
         storeId: storeId,
       );
-      if (!mounted) return;
+      if (!_current) return;
       _showSnackBar('Customer deleted');
       Navigator.pop(context, {'deleted': true});
     } catch (_) {
-      if (mounted) {
+      if (_current) {
         _showSnackBar('Could not delete that customer.', isError: true);
       }
     } finally {
-      if (mounted) setState(() => _isMutating = false);
+      if (_current) setState(() => _isMutating = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     colors = AppThemeColors.of(context);
+    context.watch<StoreContext>();
+    if (!_current)
+      return Scaffold(
+        appBar: AppBar(title: const Text('Customer')),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Store access changed. Reopen the customer from the selected store.',
+                ),
+                TextButton(
+                  onPressed: () => Navigator.maybePop(context),
+                  child: const Text('Back to customers'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
 
     return Scaffold(
       backgroundColor: colors.bgStart,
@@ -517,7 +589,7 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
                   ),
                 ),
                 Text(
-                  widget.email,
+                  _customer == null ? '' : widget.email,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(color: colors.textSecondary, fontSize: 12),
@@ -525,16 +597,18 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
               ],
             ),
           ),
-          IconButton(
-            icon: Icon(Icons.edit_outlined, color: colors.textSecondary),
-            tooltip: 'Edit customer',
-            onPressed: _isMutating ? null : _editCustomer,
-          ),
-          IconButton(
-            icon: Icon(Icons.email_outlined, color: colors.textSecondary),
-            tooltip: 'Email customer',
-            onPressed: _isMutating ? null : _emailCustomer,
-          ),
+          if (_customer != null)
+            IconButton(
+              icon: Icon(Icons.edit_outlined, color: colors.textSecondary),
+              tooltip: 'Edit customer',
+              onPressed: _isMutating ? null : _editCustomer,
+            ),
+          if (_customer != null)
+            IconButton(
+              icon: Icon(Icons.email_outlined, color: colors.textSecondary),
+              tooltip: 'Email customer',
+              onPressed: _isMutating ? null : _emailCustomer,
+            ),
           if (_whatsAppAvailable &&
               (_customer?.phone?.trim().isNotEmpty ?? false))
             IconButton(
@@ -547,38 +621,42 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
             tooltip: 'Refresh',
             onPressed: _loadCustomer,
           ),
-          PopupMenuButton<String>(
-            tooltip: 'Customer actions',
-            icon: Icon(Icons.more_vert_rounded, color: colors.textSecondary),
-            enabled: !_isMutating,
-            color: colors.card,
-            onSelected: (value) {
-              if (value == 'merge') _mergeCustomer();
-              if (value == 'delete') _deleteCustomerProfile();
-            },
-            itemBuilder: (context) => [
-              PopupMenuItem(
-                value: 'merge',
-                child: Row(
-                  children: [
-                    Icon(Icons.call_merge_rounded, color: colors.textPrimary),
-                    const SizedBox(width: 10),
-                    Text('Merge', style: TextStyle(color: colors.textPrimary)),
-                  ],
+          if (_customer != null)
+            PopupMenuButton<String>(
+              tooltip: 'Customer actions',
+              icon: Icon(Icons.more_vert_rounded, color: colors.textSecondary),
+              enabled: !_isMutating,
+              color: colors.card,
+              onSelected: (value) {
+                if (value == 'merge') _mergeCustomer();
+                if (value == 'delete') _deleteCustomerProfile();
+              },
+              itemBuilder: (context) => [
+                PopupMenuItem(
+                  value: 'merge',
+                  child: Row(
+                    children: [
+                      Icon(Icons.call_merge_rounded, color: colors.textPrimary),
+                      const SizedBox(width: 10),
+                      Text(
+                        'Merge',
+                        style: TextStyle(color: colors.textPrimary),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              PopupMenuItem(
-                value: 'delete',
-                child: Row(
-                  children: [
-                    Icon(Icons.delete_outline_rounded, color: colors.error),
-                    const SizedBox(width: 10),
-                    Text('Delete', style: TextStyle(color: colors.error)),
-                  ],
+                PopupMenuItem(
+                  value: 'delete',
+                  child: Row(
+                    children: [
+                      Icon(Icons.delete_outline_rounded, color: colors.error),
+                      const SizedBox(width: 10),
+                      Text('Delete', style: TextStyle(color: colors.error)),
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
         ],
       ),
     );
@@ -1195,7 +1273,7 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
     );
     var isDefault = address?.isDefault ?? false;
 
-    return showDialog<Map<String, dynamic>>(
+    return _showGuardedDialog<Map<String, dynamic>>(
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
@@ -1283,7 +1361,7 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
     );
     var acceptsMarketing = customer.acceptsMarketing;
 
-    return showDialog<Map<String, dynamic>>(
+    return _showGuardedDialog<Map<String, dynamic>>(
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
@@ -1351,7 +1429,7 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
   Future<String?> _showNoteDialog() {
     final noteController = TextEditingController();
 
-    return showDialog<String>(
+    return _showGuardedDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: colors.card,
@@ -1390,7 +1468,7 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
   Future<List<String>?> _showTagsDialog(List<String> currentTags) {
     final tagsController = TextEditingController(text: currentTags.join(', '));
 
-    return showDialog<List<String>>(
+    return _showGuardedDialog<List<String>>(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: colors.card,
@@ -1431,7 +1509,7 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
     final subjectController = TextEditingController();
     final messageController = TextEditingController();
 
-    return showDialog<Map<String, String>>(
+    return _showGuardedDialog<Map<String, String>>(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: colors.card,
@@ -1485,7 +1563,7 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
     );
     var template = 'custom_message';
 
-    return showDialog<Map<String, String>>(
+    return _showGuardedDialog<Map<String, String>>(
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
@@ -1580,7 +1658,7 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
   Future<String?> _showMergeDialog() {
     final targetController = TextEditingController();
 
-    return showDialog<String>(
+    return _showGuardedDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: colors.card,
@@ -1652,7 +1730,33 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
     );
   }
 
+  Future<T?> _showGuardedDialog<T>({
+    required BuildContext context,
+    required WidgetBuilder builder,
+  }) {
+    return showDialog<T>(
+      context: context,
+      builder: (dialogContext) => Consumer<StoreContext>(
+        builder: (_, stores, __) => _current
+            ? builder(dialogContext)
+            : AlertDialog(
+                title: const Text('Store access changed'),
+                content: const Text(
+                  'Close this dialog and reopen the customer from the selected store.',
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(dialogContext),
+                    child: const Text('Close'),
+                  ),
+                ],
+              ),
+      ),
+    );
+  }
+
   void _showSnackBar(String message, {bool isError = false}) {
+    if (!_current) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),

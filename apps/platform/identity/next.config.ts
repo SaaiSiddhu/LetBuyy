@@ -65,7 +65,18 @@ const nextConfig: NextConfig = {
     return config;
   },
   async headers() {
-    return [{ source: '/:path*', headers: createSecurityHeaders({ frameAncestors: ["'none'"] }) }];
+    const privateHeaders = [
+      { key: 'Cache-Control', value: 'private, no-store' },
+      { key: 'Referrer-Policy', value: 'no-referrer' },
+      { key: 'X-Robots-Tag', value: 'noindex, nofollow, noarchive' },
+      { key: 'Content-Security-Policy', value: `default-src 'self'; script-src 'self' 'unsafe-inline'${process.env.NODE_ENV === 'development' ? " 'unsafe-eval'" : ''}; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src 'none'; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'` },
+    ];
+    return [
+      { source: '/:path*', headers: createSecurityHeaders({ frameAncestors: ["'none'"] }) },
+      { source: '/mobile/:path*', headers: privateHeaders },
+      { source: '/merchant/auth/callback', headers: privateHeaders },
+      { source: '/security', headers: privateHeaders },
+    ];
   },
 };
 

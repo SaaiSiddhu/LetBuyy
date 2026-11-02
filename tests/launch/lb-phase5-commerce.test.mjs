@@ -21,7 +21,8 @@ test('PO: merchant proxies exist, are ownership-checked, and delegate to the api
   const list = read('apps/merchant/web/src/app/api/stores/[store]/purchase-orders/route.ts');
   assert.match(list, /export async function GET/);
   assert.match(list, /export async function POST/);
-  assert.match(list, /resolveOwnedStoreId/);
+  assert.match(list, /merchantSecurityScope/);
+  assert.match(list, /merchantWarehouseScope/);
   assert.match(list, /inventory\.purchaseOrders\.(list|create)\(/);
   const receive = read('apps/merchant/web/src/app/api/stores/[store]/purchase-orders/[id]/receive/route.ts');
   assert.match(receive, /inventory\.purchaseOrders\.receive\(/);
@@ -35,7 +36,7 @@ test('PO: the page is REAL (consumes proxies, no stub/coming-soon text)', () => 
   // the dead stub language must be gone
   assert.doesNotMatch(page, /not available yet|coming soon|BackendNeededPane/i);
   // real create + receive flows
-  assert.match(page, /purchase-orders\/\$\{[^}]+\}\/receive/);
+  assert.match(page, /submitCommand\('purchase_order\.receive'/);
 });
 
 test('PO: reuses the existing backend — no new migration was added for it', () => {
@@ -58,7 +59,8 @@ test('5.5 api-client: transfers + inventory history/reserve/commit/release expos
 
 test('5.5 Transfers: proxies (list/create/ship/receive) ownership-checked + delegate; page is real', () => {
   const list = read('apps/merchant/web/src/app/api/stores/[store]/transfers/route.ts');
-  assert.match(list, /resolveOwnedStoreId/);
+  assert.match(list, /merchantSecurityScope/);
+  assert.match(list, /merchantWarehouseScope/);
   assert.match(list, /inventory\.transfers\.(list|create)\(/);
   assert.match(read('apps/merchant/web/src/app/api/stores/[store]/transfers/[id]/ship/route.ts'), /inventory\.transfers\.ship\(/);
   assert.match(read('apps/merchant/web/src/app/api/stores/[store]/transfers/[id]/receive/route.ts'), /inventory\.transfers\.receive\(/);
@@ -94,7 +96,7 @@ test('5.5 Navigation: the new commerce pages are linked (no dead navigation)', (
 test('5.75 RBAC: inventory write routes are guarded (12 commerce writes, dry-run-safe)', () => {
   const inv = read('services/api-gateway/src/routes/inventory.ts');
   assert.match(inv, /import \{ assertStaffPermission \} from '\.\.\/middleware\/staff-permission'/);
-  const hits = inv.match(/assertStaffPermission\(c, [^,]+, customUser\.id, 'products:write'\)/g) || [];
+  const hits = inv.match(/assertStaffPermission\(c,\s*[^,]+,\s*(?:customUser|actor)\.id,\s*'products:write'\)/g) || [];
   assert.ok(hits.length >= 12, `expected >=12 guarded inventory writes, found ${hits.length}`);
 });
 

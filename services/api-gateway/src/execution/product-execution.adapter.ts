@@ -154,8 +154,7 @@ export class ProductExecutionAdapter {
         await this.assertProductQuota(input.store_id);
 
         const data = await executeProductCreate(this.options.mutationEnv, input, userId);
-        const productId = String(data.id);
-        await this.recordProductUsage(input.store_id, 1, `product.create:${productId}`, userId, productId);
+        // Creation usage and its mandatory receipt now commit with the product.
         return data;
     }
 

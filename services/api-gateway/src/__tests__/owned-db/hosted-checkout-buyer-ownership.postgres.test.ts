@@ -332,7 +332,7 @@ test('normal Razorpay setup confirms its converted cart once for guest and authe
             if (webhookFirst) {
                 captured = true;
                 const transition = {
-                    orderId, provider: 'razorpay', paymentId: providerPaymentId, providerOrderId,
+                    orderId, storeId: site.siteId, provider: 'razorpay', paymentId: providerPaymentId, providerOrderId,
                     providerEventId: `native-webhook-first:${providerPaymentId}`,
                     idempotencyKey: `native-webhook-first:${providerPaymentId}`,
                 };

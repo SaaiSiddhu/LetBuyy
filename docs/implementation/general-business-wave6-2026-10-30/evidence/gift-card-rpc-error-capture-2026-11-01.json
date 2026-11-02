@@ -1,0 +1,28 @@
+{
+  "dateIst": "2026-11-01",
+  "scope": "Gift-card restoration after merchant cancellation and COD rejection/timeout",
+  "finding": "Both route handlers awaited restore_gift_card_on_refund but ignored the returned PostgREST error. A failed restoration therefore had no route-level failure signal.",
+  "change": "Both handlers now convert a returned RPC error into a sanitized exception caught by their existing best-effort warning path. The verified refund helper already inspected RPC errors.",
+  "checks": {
+    "launchAndMoneyGuard": { "passed": 12, "failed": 0, "skipped": 0 },
+    "gatewayTypecheck": "passed",
+    "governanceGate": "114 passed, 0 failed, 0 blocked, 0 skipped",
+    "ownedMoneyRun": {
+      "runId": "4a3256914dd5",
+      "suites": 2,
+      "passed": 32,
+      "failed": 0,
+      "skipped": 0,
+      "cleanupFailures": 0,
+      "remainingOwnedContainers": 0,
+      "remainingOwnedNetworks": 0,
+      "remainingOwnedVolumes": 0
+    },
+    "gitDiffCheck": "passed"
+  },
+  "notEstablished": [
+    "A route-level injected RPC failure and subsequent durable restoration retry",
+    "Hosted refund or COD cancellation against a real provider",
+    "A green broad behavioral suite on the edited tree"
+  ]
+}

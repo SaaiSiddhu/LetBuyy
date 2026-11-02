@@ -29,6 +29,7 @@ tag = "v1-runtime-coordinator"
 new_sqlite_classes = ["LetbuyyRuntimeDurableObject"]
 
 [vars]
+KYC_UPLOAD_ENABLED = "false"
 ENVIRONMENT = "staging"
 APP_ENV = "staging"
 NODE_ENV = "production"
@@ -122,11 +123,12 @@ invocation_logs = true
 crons = []
 
 [env.staging.vars]
+KYC_UPLOAD_ENABLED = "false"
 STOREFRONT_INTERNAL_PERIMETER = "bound-request-v1"
+MERCHANT_RAZORPAY_WEBHOOK_ORIGIN = "https://webhooks.staging.letbuyy.com"
 ENVIRONMENT = "staging"
 APP_ENV = "staging"
 NODE_ENV = "production"
-NEXT_PUBLIC_ENV = "staging"
 NEXT_PUBLIC_STORE_ROOT_DOMAIN = "letbuyy.store"
 CUSTOM_DOMAIN_CNAME_TARGET = "storefront-staging.letbuyy.store"
 WORKER_ENV = "staging"
@@ -158,7 +160,7 @@ WHATSAPP_PROVIDER = "letbuyy_sandbox"
 REQUEST_LOG_SAMPLE_RATE = "0.02"
 RUNTIME_NAME = "LetBuyy API Staging"
 PRIMARY_REGION = "ap-south-1"
-EDGE_SCOPE = "global-edge"
+# EDGE_SCOPE uses the existing global-edge default; preserve the Free-plan secret budget.
 ASSET_PUBLIC_BASE_URL = "https://cdn-staging.letbuyy.com"
 UPLOAD_PUBLIC_BASE_URL = "https://api-staging.letbuyy.com/assets"
 CHECKOUT_ORIGIN = "https://checkout-staging.letbuyy.com"
@@ -243,7 +245,9 @@ invocation_logs = true
 crons = ["*/15 * * * *"]
 
 [env.production.vars]
+KYC_UPLOAD_ENABLED = "false"
 STOREFRONT_INTERNAL_PERIMETER = "bound-request-v1"
+MERCHANT_RAZORPAY_WEBHOOK_ORIGIN = "https://webhooks.letbuyy.com"
 ENVIRONMENT = "production"
 APP_ENV = "production"
 NODE_ENV = "production"
@@ -260,6 +264,7 @@ FEATURE_AI_CREDIT_PURCHASE = "false"
 RATE_LIMIT_KV_FALLBACK = "off"
 STOREFRONT_CACHE = "on"
 STOREFRONT_POOLED_SQL = "on"
+STOREFRONT_VIEW_SAMPLE_RATE = "0.1"
 STOREFRONT_SEARCH_PROJECTION = "on"
 ANALYTICS_PROJECTION_READS = "on"
 PRODUCT_VARIANT_DIFF = "on"

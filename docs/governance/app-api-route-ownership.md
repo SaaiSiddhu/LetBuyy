@@ -188,3 +188,69 @@ and forwards only actual product references and the destination. PostgreSQL in
 the Gateway remains the sole authority for prices, GST, eligibility, profile
 mutations and immutable order/invoice facts. No local database or tax writer,
 provider call, account issuer or additional runtime is introduced.
+
+### 1 November 2026 — private KYC evidence transport
+
+Inventory231→233 adds two `gateway-proxy` routes, each listed in the ESLint
+boundary baseline. Merchant `stores/[store]/kyc/upload` resolves the currently
+owned site, bounds multipart bytes, and forwards only the selected document,
+last-four reference and stable receipt key to the Gateway. Console
+`kyc-evidence/[siteId]/[documentId]` requires its current stepped-up session and
+review reason, then streams the Gateway-approved private file as a no-store,
+non-sniffable attachment. The Gateway retains site/document permission, audit,
+scan verdict, private object access and provider decision authority. Neither
+Next route writes the database, approves KYC, or grants payout eligibility.
+
+### 1 November 2026 — India KYC direct upload candidate
+
+Inventory233→235 adds two Merchant `gateway-proxy` routes for KYC upload
+intent and exact-version completion. Both resolve the currently owned site and
+forward JSON to the Gateway. The browser sends file bytes directly to the
+signed Mumbai S3 host; neither Next route parses or forwards the file.
+The Gateway retains tenant, receipt, object-version, scan, and provider authority.
+These routes are test-only at the Gateway and do not open real-document intake.
+
+
+### Merchant warehouse request recovery — 31 October 2026
+
+The maintained route inventory and lint baseline advance together from **231 to
+232** for `apps/merchant/web/src/app/api/v1/stores/[store]/inventory/commands/stop/route.ts`.
+The existing Merchant `gateway-proxy` classification applies. The versioned route
+checks the browser Origin, current account, owned site and matching original
+body/header key, validates the canonical normalized request, and calls the typed
+Gateway SDK. It returns a private acknowledgement bound to the current actor/site.
+It has no database access, token issuance, provider call or local stock writer.
+
+The canonical `/v1/inventory/commands/stop` owner serializes with the original
+warehouse key: it returns an already-applied acknowledgement or stores a cancelled
+request acknowledgement that prevents delayed application. It does not undo an
+applied business stock movement. Those decisions and immutable receipts stay in
+Gateway/SQL. The six actual Next proxy/SDK paths have 55 local positive and
+Origin/account/site/key/receipt refusal tests; source qualification is distinct
+from hosted or device acceptance. The route freeze and inventory/baseline equality
+tests remain enforced for every class; no new exception or runtime is introduced.
+
+
+### Merchant warehouse protocol preflight — 31 October 2026
+
+The paired maintained inventory and lint baseline move **232 → 233** for
+`apps/merchant/web/src/app/api/v1/stores/[store]/inventory/commands/capabilities/route.ts`.
+This is another existing-class `gateway-proxy`, with current account/site binding,
+a no-store GET and typed Gateway descriptor forwarding. It neither accesses a
+database nor grants a permission lease or migration-readiness claim. New clients
+must confirm the guarded protocol before dispatch to prevent bootstrap into an
+older split-commit Gateway/BFF. Actual command authority/effects still live in the
+canonical Gateway/SQL owner. No new runtime, issuer or local stock writer is added.
+
+Merchant warehouse fresh detail reads (31 October 2026): `apps/merchant/web/src/app/api/stores/[store]/purchase-orders/[id]/route.ts` and `apps/merchant/web/src/app/api/stores/[store]/transfers/[id]/route.ts` are current-account, owned-site, no-store GET proxies in the existing `gateway-proxy` class. Validation and stock authority remain in Gateway/shared contracts. The maintained technical inventory becomes 235; the freeze validator remains unchanged.
+
+
+### Combined develop integration — 2 November 2026
+
+The union of the independently qualified branches contains **247** app API routes:
+the common 231 plus four KYC transports, four warehouse transports and eight
+Accounts native handoff transports. The complete inventory, ownership classes and
+ESLint baseline were regenerated together. Gateway remains the owner of KYC,
+stock and payment decisions; the existing Accounts issuer owns native exchange.
+No new runtime, route class, database writer or identity issuer is introduced.
+The smaller branch-local inventory totals above are historical receipts.

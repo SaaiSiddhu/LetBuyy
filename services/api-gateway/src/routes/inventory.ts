@@ -4,15 +4,15 @@ import { resolveMerchantResourceStoreIds } from '../lib/tenant-context';
 // ============================================================
 
 import { Hono } from 'hono';
-import { z } from 'zod';
-import { PaginationQuery, UuidSchema } from '@letbuyy/shared-types';
+import { InventoryReservationSchema, InventoryReceiptSchema, WarehouseLocationPageSchema,WarehouseSupplierPageSchema,WarehousePurchaseOrderSchema,WarehouseTransferSchema,WarehousePurchaseOrderPageSchema,WarehouseTransferPageSchema,
+ WAREHOUSE_COMMAND_PROTOCOL_HEADER,WAREHOUSE_COMMAND_PROTOCOL_VERSION,isWarehouseCommandPath } from '@letbuyy/shared-types';
 import type { Env } from '../index';
 import { executeInventoryAdjustment } from '../execution/inventory-adjustment.adapter';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { dbFailureBody, failureBody, getSupabaseAdmin, paginated, success } from '../lib/supabase';
 import { validate } from '../middleware/validation';
-import { IdempotencyExecutionAdapter } from '../execution/idempotency-execution.adapter';
+import { executeWarehouseCommand } from '../execution/warehouse-command.adapter';
 import { assertStaffPermission } from '../middleware/staff-permission';
 import {
     AdjustInventorySchema,
@@ -25,6 +25,12 @@ import {
     ReceiveTransferSchema,
     ReserveInventorySchema,
     ShipTransferSchema,
+    StopWarehouseCommandSchema,
+    prepareWarehouseCommand,
+    WarehouseOptionListQuerySchema,WarehouseDocumentScopeQuerySchema,WarehouseDocumentParamsSchema,WarehousePurchaseOrderListQuerySchema,WarehouseTransferListQuerySchema,
+    WarehouseCommandCapabilitiesQuerySchema,
+    type WarehouseCommandCapabilitiesQuery,
+    type StopWarehouseCommandInput,
     mapInventoryAdjustmentReason,
     mapInventoryLevelRecord,
     mapProductStockInventoryRecord,
@@ -42,11 +48,35 @@ import {
     type ShipTransferInput,
     type InventoryReservationActionInput,
     InventoryReservationActionSchema,
+    InventoryHistoryQuerySchema,
+    type InventoryHistoryQuery,
+    InventoryReservationListQuerySchema,
+    InventoryReceiptListQuerySchema,
+    type InventoryReservationListQuery,
+    type InventoryReceiptListQuery,
 } from '@letbuyy/commerce-core';
 
 const router = new Hono<{ Bindings: Env }>();
-const ReceiptPageQuery=PaginationQuery.pick({page:true,limit:true}).extend({store_id:UuidSchema.optional(),po_id:UuidSchema.optional(),transfer_id:UuidSchema.optional()})
-    .refine(q=>!q.po_id || !q.transfer_id,{message:'Choose a purchase order or a transfer filter'});
+router.use('*',async(c,next)=>{
+ if(c.req.method==='POST'&&isWarehouseCommandPath(c.req.path)&&c.req.header(WAREHOUSE_COMMAND_PROTOCOL_HEADER)!==WAREHOUSE_COMMAND_PROTOCOL_VERSION)
+  return c.json(failureBody('WAREHOUSE_CLIENT_UPGRADE_REQUIRED','Update the Merchant app before changing warehouse stock.'),426);
+ await next();
+});
+router.get('/command-capabilities',validate('query',WarehouseCommandCapabilitiesQuerySchema),async c=>{
+ c.header('Cache-Control','private, no-store');
+ const {store_id:storeId}=c.get('validatedQuery') as WarehouseCommandCapabilitiesQuery;
+ const db=getSupabaseAdmin(c),auth=c.get('auth'),actor=await resolveCustomUser(db,auth.user);
+ if(!actor||!await verifySiteOwnership(db,storeId,actor.id,auth.user.storeId))
+  return c.json(failureBody('FORBIDDEN','Your access to this store changed.'),403);
+ // This owner never falls back to the legacy split-commit writer. Missing SQL
+ // support fails closed at execution; this descriptor does not assert readiness.
+ return c.json(success({store_id:storeId,actor_id:actor.id,protocol_version:WAREHOUSE_COMMAND_PROTOCOL_VERSION,
+  effect_policy:'atomic_receipt_or_unavailable',stop_supported:true}));
+});
+function scopedInventoryPage<T>(rows: T[], total: number, page: number, limit: number, storeId?: string) {
+    const body = paginated(rows, total, page, limit);
+    return { ...body, meta: { ...body.meta, store_id: storeId ?? null } };
+}
 
 type ProductOwnerRow = {
     id: string;
@@ -233,182 +263,151 @@ async function emitInventoryEvent(
 // ── Routes ──────────────────────────────────────────────────
 
 // GET /inventory/locations — List inventory locations
-router.get('/locations', async (c) => {
-    const auth = c.get('auth');
-    const storeId = c.req.query('store_id');
-    const db = getSupabaseAdmin(c);
-    const customUser = await resolveCustomUser(db, auth.user);
-
-    if (!customUser) {
-        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+router.get('/locations',validate('query',WarehouseOptionListQuerySchema),async c=>{
+    c.header('Cache-Control','private, no-store');
+    const query=WarehouseOptionListQuerySchema.parse(c.get('validatedQuery'));
+    const db=getSupabaseAdmin(c),auth=c.get('auth'),actor=await resolveCustomUser(db,auth.user);
+    if(!actor||!await verifySiteOwnership(db,query.store_id,actor.id,auth.user.storeId))
+        return c.json(failureBody('FORBIDDEN','Your access to this store changed.'),403);
+    const buildRead=(head=false)=>{
+        let read=db.from('inventory_locations').select('*',{count:'exact',head}).eq('store_id',query.store_id).is('deleted_at',null);
+        if(query.status!=='all')read=read.eq('status',query.status);
+        if(query.search)read=read.ilike('name','%'+query.search.replace(/[\\%_]/g,'\\$&')+'%');
+        return read;
+    };
+    const offset=(query.page-1)*query.limit,ascending=query.sort==='name_asc';
+    let {data,error,count}=await buildRead().order('is_default',{ascending:false}).order('name',{ascending}).order('id',{ascending}).range(offset,offset+query.limit-1);
+    if(offset>0&&(error?.code==='PGRST103'||(!error&&Array.isArray(data)&&data.length===0&&count===null))){
+        const recovered=await buildRead(true);
+        if(recovered.error||recovered.count===null)return c.json(failureBody('WAREHOUSE_OPTIONS_UNVERIFIED','These warehouse choices could not be confirmed.'),503);
+        data=[];count=recovered.count;error=null;
     }
-
-    const ownedStoreIds = storeId
-        ? [storeId]
-        : await listOwnedStoreIds(db, customUser.id, auth.user.storeId);
-
-    if (storeId && !(await verifySiteOwnership(db, storeId, customUser.id, auth.user.storeId))) {
-        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
-    }
-
-    if (ownedStoreIds.length === 0) return c.json(success([]));
-
-    const query = db
-        .from('inventory_locations')
-        .select('*')
-        .in('store_id', ownedStoreIds);
-
-    const { data, error } = await query.order('is_default', { ascending: false });
-
-    if (isMissingTableError(error, 'inventory_locations')) {
-        return c.json(success([]));
-    }
-
-    if (error) {
-        return c.json(dbFailureBody(), 500);
-    }
-
-    return c.json(success(data || []));
+    if(error)return c.json(dbFailureBody(),500);
+    if(!Array.isArray(data)||count===null)return c.json(failureBody('WAREHOUSE_OPTIONS_UNVERIFIED','These warehouse choices could not be confirmed.'),503);
+    const body=scopedInventoryPage(data,count,query.page,query.limit,query.store_id);
+    const parsed=WarehouseLocationPageSchema.safeParse({...body,meta:{...body.meta,total_is_exact:true}});
+    if(!parsed.success)return c.json(failureBody('WAREHOUSE_OPTIONS_UNVERIFIED','These warehouse choices could not be confirmed.'),503);
+    return c.json(parsed.data);
 });
 
 // POST /inventory/locations — Create a new location
-router.post('/locations', validate('json', CreateLocationSchema), async (c) => {
-    const auth = c.get('auth');
-    const body = c.get('validatedBody') as CreateLocationInput;
-    const db = getSupabaseAdmin(c);
-    const customUser = await resolveCustomUser(db, auth.user);
-
-    if (!customUser) {
-        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
-    }
-    if (!(await verifySiteOwnership(db, body.store_id, customUser.id, auth.user.storeId))) {
-        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
-    }
-    const staffBlock = await assertStaffPermission(c, body.store_id, customUser.id, 'products:write');
-    if (staffBlock) return staffBlock;
-
-    const { data, error } = await db
-        .from('inventory_locations')
-        .insert({ store_id: body.store_id, name: body.name, is_default: body.is_default,
-            address: { address: body.address || '', city: body.city || '', state: body.state || '', country: body.country },
-            created_by: customUser.id, updated_by: customUser.id })
-        .select()
-        .single();
-
-    if (isMissingTableError(error, 'inventory_locations')) {
-        return c.json({
-            success: false,
-            error: {
-                code: 'INVENTORY_SCHEMA_MISSING',
-                message: 'Inventory locations are not available in this local database schema',
-            },
-        }, 503);
-    }
-
-    if (error) {
-        return c.json(dbFailureBody(), 500);
-    }
-
-    return c.json(success({ ...data, address: body.address || '', city: body.city || '', state: body.state || '', country: body.country }), 201);
+router.post('/locations',validate('json',CreateLocationSchema),async c=>{
+ c.header('Cache-Control','private, no-store');
+ const body=c.get('validatedBody') as CreateLocationInput,db=getSupabaseAdmin(c),auth=c.get('auth');
+ const actor=await resolveCustomUser(db,auth.user);
+ if(!actor||!await verifySiteOwnership(db,body.store_id,actor.id,auth.user.storeId))return c.json(failureBody('FORBIDDEN','Your access to this store changed.'),403);
+ const blocked=await assertStaffPermission(c,body.store_id,actor.id,'products:write');if(blocked)return blocked;
+ const intent=prepareWarehouseCommand('location.create',null,body);
+ const data=await executeWarehouseCommand(c.env,body.store_id,actor.id,body.idempotency_key,intent.operation,null,intent.command,requestId(c));
+ return c.json(success(data),201);
 });
 
 // GET /inventory/suppliers — List suppliers
-router.get('/suppliers', async (c) => {
-    const auth = c.get('auth');
-    const storeId = c.req.query('store_id');
-    const db = getSupabaseAdmin(c);
-    const customUser = await resolveCustomUser(db, auth.user);
-
-    if (!customUser) {
-        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+router.get('/suppliers',validate('query',WarehouseOptionListQuerySchema),async c=>{
+    c.header('Cache-Control','private, no-store');
+    const query=WarehouseOptionListQuerySchema.parse(c.get('validatedQuery'));
+    const db=getSupabaseAdmin(c),auth=c.get('auth'),actor=await resolveCustomUser(db,auth.user);
+    if(!actor||!await verifySiteOwnership(db,query.store_id,actor.id,auth.user.storeId))
+        return c.json(failureBody('FORBIDDEN','Your access to this store changed.'),403);
+    const buildRead=(head=false)=>{
+        let read=db.from('suppliers').select('*',{count:'exact',head}).eq('site_id',query.store_id).is('deleted_at',null);
+        if(query.status!=='all')read=read.eq('status',query.status);
+        if(query.search)read=read.ilike('name','%'+query.search.replace(/[\\%_]/g,'\\$&')+'%');
+        return read;
+    };
+    const offset=(query.page-1)*query.limit,ascending=query.sort==='name_asc';
+    let {data,error,count}=await buildRead().order('name',{ascending}).order('id',{ascending}).range(offset,offset+query.limit-1);
+    if(offset>0&&(error?.code==='PGRST103'||(!error&&Array.isArray(data)&&data.length===0&&count===null))){
+        const recovered=await buildRead(true);
+        if(recovered.error||recovered.count===null)return c.json(failureBody('WAREHOUSE_OPTIONS_UNVERIFIED','These warehouse choices could not be confirmed.'),503);
+        data=[];count=recovered.count;error=null;
     }
-
-    const ownedStoreIds = storeId
-        ? [storeId]
-        : await listOwnedStoreIds(db, customUser.id, auth.user.storeId);
-
-    if (storeId && !(await verifySiteOwnership(db, storeId, customUser.id, auth.user.storeId))) {
-        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
-    }
-
-    if (ownedStoreIds.length === 0) return c.json(success([]));
-
-    const { data, error } = await db
-        .from('suppliers')
-        .select('*')
-        .in('site_id', ownedStoreIds)
-        .is('deleted_at', null)
-        .order('name', { ascending: true });
-
-    if (isMissingTableError(error, 'suppliers')) return c.json(success([]));
-    if (error) return c.json(dbFailureBody(), 500);
-
-    return c.json(success(data || []));
+    if(error)return c.json(dbFailureBody(),500);
+    if(!Array.isArray(data)||count===null)return c.json(failureBody('WAREHOUSE_OPTIONS_UNVERIFIED','These warehouse choices could not be confirmed.'),503);
+    const body=scopedInventoryPage(data,count,query.page,query.limit,query.store_id);
+    const parsed=WarehouseSupplierPageSchema.safeParse({...body,meta:{...body.meta,total_is_exact:true}});
+    if(!parsed.success)return c.json(failureBody('WAREHOUSE_OPTIONS_UNVERIFIED','These warehouse choices could not be confirmed.'),503);
+    return c.json(parsed.data);
 });
 
 // POST /inventory/suppliers — Create supplier
-router.post('/suppliers', validate('json', CreateSupplierSchema), async (c) => {
-    const auth = c.get('auth');
-    const body = c.get('validatedBody') as CreateSupplierInput;
-    const db = getSupabaseAdmin(c);
-    const customUser = await resolveCustomUser(db, auth.user);
-
-    if (!customUser) return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
-    if (!(await verifySiteOwnership(db, body.store_id, customUser.id, auth.user.storeId))) {
-        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
-    }
-    const staffBlock = await assertStaffPermission(c, body.store_id, customUser.id, 'products:write');
-    if (staffBlock) return staffBlock;
-
-    const { data, error } = await db
-        .from('suppliers')
-        .insert({
-            site_id: body.store_id,
-            name: body.name,
-            contact_name: body.contact_name || null,
-            email: body.email || null,
-            phone: body.phone || null,
-            address: body.address || {},
-            created_by: customUser.id,
-        })
-        .select()
-        .single();
-
-    if (error) return c.json(dbFailureBody(), 500);
-    return c.json(success(data), 201);
+router.post('/suppliers',validate('json',CreateSupplierSchema),async c=>{
+ c.header('Cache-Control','private, no-store');
+ const body=c.get('validatedBody') as CreateSupplierInput,db=getSupabaseAdmin(c),auth=c.get('auth');
+ const actor=await resolveCustomUser(db,auth.user);
+ if(!actor||!await verifySiteOwnership(db,body.store_id,actor.id,auth.user.storeId))return c.json(failureBody('FORBIDDEN','Your access to this store changed.'),403);
+ const blocked=await assertStaffPermission(c,body.store_id,actor.id,'products:write');if(blocked)return blocked;
+ const intent=prepareWarehouseCommand('supplier.create',null,body);
+ const data=await executeWarehouseCommand(c.env,body.store_id,actor.id,body.idempotency_key,intent.operation,null,intent.command,requestId(c));
+ return c.json(success(data),201);
 });
 
 // GET /inventory/purchase-orders — List purchase orders
-router.get('/purchase-orders', async (c) => {
-    const auth = c.get('auth');
-    const storeId = c.req.query('store_id');
-    const db = getSupabaseAdmin(c);
-    const customUser = await resolveCustomUser(db, auth.user);
-
-    if (!customUser) return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
-
-    const ownedStoreIds = storeId
-        ? [storeId]
-        : await listOwnedStoreIds(db, customUser.id, auth.user.storeId);
-    if (storeId && !(await verifySiteOwnership(db, storeId, customUser.id, auth.user.storeId))) {
-        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
+router.get('/purchase-orders',validate('query',WarehousePurchaseOrderListQuerySchema), async c=>{
+    c.header('Cache-Control','private, no-store');
+    const query=WarehousePurchaseOrderListQuerySchema.parse(c.get('validatedQuery'));
+    const db=getSupabaseAdmin(c),auth=c.get('auth'),actor=await resolveCustomUser(db,auth.user);
+    if(!actor||!await verifySiteOwnership(db,query.store_id,actor.id,auth.user.storeId))
+        return c.json(failureBody('FORBIDDEN','Your access to this store changed.'),403);
+    const buildRead=(head=false)=>{
+        let read=db.from('purchase_orders').select('*, supplier:suppliers(id,site_id,name), lines:purchase_order_lines(*)',{count:'exact',head})
+            .eq('site_id',query.store_id).is('deleted_at',null).is('lines.deleted_at',null);
+        if(query.status)read=read.eq('status',query.status);
+        if(query.search)read=read.ilike('po_number','%'+query.search.replace(/[\\%_]/g,'\\$&')+'%');
+        return read;
+    };
+    const ascending=query.sort==='oldest',offset=(query.page-1)*query.limit;
+    let {data,error,count}=await buildRead().order('created_at',{ascending}).order('id',{ascending})
+        .range(offset,offset+query.limit-1);
+    // A page may disappear between requests. Confirm the same filtered population;
+    // never turn a missing count or an unrelated database failure into zero rows.
+    if(offset>0&&(error?.code==='PGRST103'||(!error&&Array.isArray(data)&&data.length===0&&count===null))){
+        const recovered=await buildRead(true);
+        if(recovered.error||recovered.count===null)return c.json(failureBody('WAREHOUSE_DOCUMENTS_UNVERIFIED','These warehouse records could not be confirmed.'),503);
+        data=[];count=recovered.count;error=null;
     }
-    if (ownedStoreIds.length === 0) return c.json(success([]));
+    if(error)return c.json(dbFailureBody(),500);
+    if(!Array.isArray(data)||count===null)return c.json(failureBody('WAREHOUSE_DOCUMENTS_UNVERIFIED','These warehouse records could not be confirmed.'),503);
+    const body=scopedInventoryPage(data,count,query.page,query.limit,query.store_id);
+    const page={...body,meta:{...body.meta,total_is_exact:true}};
+    const parsed=WarehousePurchaseOrderPageSchema.safeParse(page);
+    if(!parsed.success)return c.json(failureBody('WAREHOUSE_DOCUMENTS_UNVERIFIED','These warehouse records could not be confirmed.'),503);
+    return c.json(parsed.data);
+});
 
-    const { data, error } = await db
-        .from('purchase_orders')
-        .select('*, supplier:suppliers(name), lines:purchase_order_lines(*)')
-        .in('site_id', ownedStoreIds)
-        .is('deleted_at', null)
-        .order('created_at', { ascending: false });
-
-    if (isMissingTableError(error, 'purchase_orders')) return c.json(success([]));
-    if (error) return c.json(dbFailureBody(), 500);
-
-    return c.json(success(data || []));
+// Stop the logical request, not the business PO/transfer. An already applied
+// acknowledgement is recovered instead of pretending its stock effect was undone.
+router.post('/commands/stop', validate('json', StopWarehouseCommandSchema), async c => {
+    const body=c.get('validatedBody') as StopWarehouseCommandInput;
+    const db=getSupabaseAdmin(c),auth=c.get('auth');
+    const actor=await resolveCustomUser(db,auth.user);
+    if(!actor||!await verifySiteOwnership(db,body.store_id,actor.id,auth.user.storeId)) {
+        return c.json(failureBody('FORBIDDEN','Your access to this store changed.'),403);
+    }
+    const blocked=await assertStaffPermission(c,body.store_id,actor.id,'products:write');if(blocked)return blocked;
+    const data=await executeWarehouseCommand(c.env,body.store_id,actor.id,body.idempotency_key,
+        body.operation,body.target_id,body.command,requestId(c),true);
+    return c.json(success(data));
 });
 
 // POST /inventory/purchase-orders — Create ordered PO and incoming inventory
+router.get('/purchase-orders/:id',validate('param',WarehouseDocumentParamsSchema),validate('query',WarehouseDocumentScopeQuerySchema),async c=>{
+    c.header('Cache-Control','private, no-store');
+    const {id}=WarehouseDocumentParamsSchema.parse(c.get('validatedParam'));
+    const {store_id:site}=WarehouseDocumentScopeQuerySchema.parse(c.get('validatedQuery'));
+    const db=getSupabaseAdmin(c),auth=c.get('auth'),actor=await resolveCustomUser(db,auth.user);
+    if(!actor||!await verifySiteOwnership(db,site,actor.id,auth.user.storeId))
+        return c.json(failureBody('FORBIDDEN','Your access to this store changed.'),403);
+    const {data,error}=await db.from('purchase_orders').select('*, supplier:suppliers(id,site_id,name), lines:purchase_order_lines(*)')
+        .eq('id',id).eq('site_id',site).is('deleted_at',null).is('lines.deleted_at',null).maybeSingle();
+    if(error)return c.json(dbFailureBody(),500);
+    if(!data)return c.json(failureBody('NOT_FOUND','Warehouse record not found.'),404);
+    const parsed=WarehousePurchaseOrderSchema.safeParse(data);
+    if(!parsed.success||parsed.data.id!==id||parsed.data.site_id!==site)
+        return c.json(failureBody('WAREHOUSE_DOCUMENTS_UNVERIFIED','This warehouse record could not be confirmed.'),503);
+    return c.json(success(parsed.data));
+});
+
 router.post('/purchase-orders', validate('json', CreatePurchaseOrderSchema), async (c) => {
     const auth = c.get('auth');
     const body = c.get('validatedBody') as CreatePurchaseOrderInput;
@@ -422,36 +421,9 @@ router.post('/purchase-orders', validate('json', CreatePurchaseOrderSchema), asy
     const staffBlock = await assertStaffPermission(c, body.store_id, customUser.id, 'products:write');
     if (staffBlock) return staffBlock;
 
-    const idempotency = new IdempotencyExecutionAdapter(db);
-    const claim = await idempotency.begin({
-        siteId: body.store_id,
-        key: body.idempotency_key,
-        scope: 'inventory.purchase_orders.create',
-        requestBody: body,
-        requestId: requestId(c),
-    });
-    if (claim.kind === 'replay') return c.json(claim.responseBody as any, claim.statusCode as any);
-
-    try {
-        const { data, error } = await db.rpc('create_purchase_order_with_lines', {
-            p_site_id: body.store_id,
-            p_supplier_id: body.supplier_id || null,
-            p_location_id: body.location_id,
-            p_lines: body.lines,
-            p_expected_at: body.expected_at?.toISOString() || null,
-            p_notes: body.notes || null,
-            p_actor_id: customUser.id,
-            p_request_id: requestId(c),
-            p_idempotency_key: body.idempotency_key,
-        });
-        if (error) throw new Error(error.message);
-        const responseBody = success(data);
-        await idempotency.complete({ id: claim.id, responseBody, statusCode: 201, resourceType: 'purchase_order' });
-        return c.json(responseBody, 201);
-    } catch (error) {
-        await idempotency.fail(claim.id);
-        throw error;
-    }
+    const data = await executeWarehouseCommand(c.env, body.store_id, customUser.id, body.idempotency_key,
+        'purchase_order.create', null, prepareWarehouseCommand('purchase_order.create',null,body).command, requestId(c));
+    return c.json(success(data), 201);
 });
 
 // POST /inventory/purchase-orders/:id/receive — Receive PO inventory
@@ -470,63 +442,62 @@ router.post('/purchase-orders/:id/receive', validate('json', ReceivePurchaseOrde
     const staffBlock = await assertStaffPermission(c, siteId, customUser.id, 'products:write');
     if (staffBlock) return staffBlock;
 
-    const idempotency = new IdempotencyExecutionAdapter(db);
-    const claim = await idempotency.begin({
-        siteId,
-        key: body.idempotency_key,
-        scope: `inventory.purchase_orders.receive:${purchaseOrderId}`,
-        requestBody: body,
-        requestId: requestId(c),
-    });
-    if (claim.kind === 'replay') return c.json(claim.responseBody as any, claim.statusCode as any);
-
-    try {
-        const { data, error } = await db.rpc('receive_purchase_order', {
-            p_purchase_order_id: purchaseOrderId,
-            p_lines: body.lines || null,
-            p_actor_id: customUser.id,
-            p_request_id: requestId(c),
-            p_idempotency_key: body.idempotency_key,
-        });
-        if (error) throw new Error(error.message);
-        const responseBody = success(data);
-        await idempotency.complete({ id: claim.id, responseBody, statusCode: 200, resourceType: 'purchase_order', resourceId: purchaseOrderId });
-        return c.json(responseBody);
-    } catch (error) {
-        await idempotency.fail(claim.id);
-        throw error;
-    }
+    const data = await executeWarehouseCommand(c.env, siteId, customUser.id, body.idempotency_key,
+        'purchase_order.receive', purchaseOrderId, prepareWarehouseCommand('purchase_order.receive',purchaseOrderId,body).command, requestId(c));
+    return c.json(success(data));
 });
 
 // GET /inventory/transfers — List transfers
-router.get('/transfers', async (c) => {
-    const auth = c.get('auth');
-    const storeId = c.req.query('store_id');
-    const db = getSupabaseAdmin(c);
-    const customUser = await resolveCustomUser(db, auth.user);
-
-    if (!customUser) return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
-
-    const ownedStoreIds = storeId ? [storeId] : await listOwnedStoreIds(db, customUser.id, auth.user.storeId);
-    if (storeId && !(await verifySiteOwnership(db, storeId, customUser.id, auth.user.storeId))) {
-        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
+router.get('/transfers',validate('query',WarehouseTransferListQuerySchema), async c=>{
+    c.header('Cache-Control','private, no-store');
+    const query=WarehouseTransferListQuerySchema.parse(c.get('validatedQuery'));
+    const db=getSupabaseAdmin(c),auth=c.get('auth'),actor=await resolveCustomUser(db,auth.user);
+    if(!actor||!await verifySiteOwnership(db,query.store_id,actor.id,auth.user.storeId))
+        return c.json(failureBody('FORBIDDEN','Your access to this store changed.'),403);
+    const buildRead=(head=false)=>{
+        let read=db.from('inventory_transfers').select('*, lines:inventory_transfer_lines(*)',{count:'exact',head})
+            .eq('site_id',query.store_id).is('deleted_at',null).is('lines.deleted_at',null);
+        if(query.status)read=read.eq('status',query.status);
+        if(query.search)read=read.ilike('transfer_number','%'+query.search.replace(/[\\%_]/g,'\\$&')+'%');
+        return read;
+    };
+    const ascending=query.sort==='oldest',offset=(query.page-1)*query.limit;
+    let {data,error,count}=await buildRead().order('created_at',{ascending}).order('id',{ascending})
+        .range(offset,offset+query.limit-1);
+    // A page may disappear between requests. Confirm the same filtered population;
+    // never turn a missing count or an unrelated database failure into zero rows.
+    if(offset>0&&(error?.code==='PGRST103'||(!error&&Array.isArray(data)&&data.length===0&&count===null))){
+        const recovered=await buildRead(true);
+        if(recovered.error||recovered.count===null)return c.json(failureBody('WAREHOUSE_DOCUMENTS_UNVERIFIED','These warehouse records could not be confirmed.'),503);
+        data=[];count=recovered.count;error=null;
     }
-    if (ownedStoreIds.length === 0) return c.json(success([]));
-
-    const { data, error } = await db
-        .from('inventory_transfers')
-        .select('*, lines:inventory_transfer_lines(*)')
-        .in('site_id', ownedStoreIds)
-        .is('deleted_at', null)
-        .order('created_at', { ascending: false });
-
-    if (isMissingTableError(error, 'inventory_transfers')) return c.json(success([]));
-    if (error) return c.json(dbFailureBody(), 500);
-
-    return c.json(success(data || []));
+    if(error)return c.json(dbFailureBody(),500);
+    if(!Array.isArray(data)||count===null)return c.json(failureBody('WAREHOUSE_DOCUMENTS_UNVERIFIED','These warehouse records could not be confirmed.'),503);
+    const body=scopedInventoryPage(data,count,query.page,query.limit,query.store_id);
+    const page={...body,meta:{...body.meta,total_is_exact:true}};
+    const parsed=WarehouseTransferPageSchema.safeParse(page);
+    if(!parsed.success)return c.json(failureBody('WAREHOUSE_DOCUMENTS_UNVERIFIED','These warehouse records could not be confirmed.'),503);
+    return c.json(parsed.data);
 });
 
 // POST /inventory/transfers — Reserve stock for transfer
+router.get('/transfers/:id',validate('param',WarehouseDocumentParamsSchema),validate('query',WarehouseDocumentScopeQuerySchema),async c=>{
+    c.header('Cache-Control','private, no-store');
+    const {id}=WarehouseDocumentParamsSchema.parse(c.get('validatedParam'));
+    const {store_id:site}=WarehouseDocumentScopeQuerySchema.parse(c.get('validatedQuery'));
+    const db=getSupabaseAdmin(c),auth=c.get('auth'),actor=await resolveCustomUser(db,auth.user);
+    if(!actor||!await verifySiteOwnership(db,site,actor.id,auth.user.storeId))
+        return c.json(failureBody('FORBIDDEN','Your access to this store changed.'),403);
+    const {data,error}=await db.from('inventory_transfers').select('*, lines:inventory_transfer_lines(*)')
+        .eq('id',id).eq('site_id',site).is('deleted_at',null).is('lines.deleted_at',null).maybeSingle();
+    if(error)return c.json(dbFailureBody(),500);
+    if(!data)return c.json(failureBody('NOT_FOUND','Warehouse record not found.'),404);
+    const parsed=WarehouseTransferSchema.safeParse(data);
+    if(!parsed.success||parsed.data.id!==id||parsed.data.site_id!==site)
+        return c.json(failureBody('WAREHOUSE_DOCUMENTS_UNVERIFIED','This warehouse record could not be confirmed.'),503);
+    return c.json(success(parsed.data));
+});
+
 router.post('/transfers', validate('json', CreateTransferSchema), async (c) => {
     const auth = c.get('auth');
     const body = c.get('validatedBody') as CreateTransferInput;
@@ -540,35 +511,9 @@ router.post('/transfers', validate('json', CreateTransferSchema), async (c) => {
     const staffBlock = await assertStaffPermission(c, body.store_id, customUser.id, 'products:write');
     if (staffBlock) return staffBlock;
 
-    const idempotency = new IdempotencyExecutionAdapter(db);
-    const claim = await idempotency.begin({
-        siteId: body.store_id,
-        key: body.idempotency_key,
-        scope: 'inventory.transfers.create',
-        requestBody: body,
-        requestId: requestId(c),
-    });
-    if (claim.kind === 'replay') return c.json(claim.responseBody as any, claim.statusCode as any);
-
-    try {
-        const { data, error } = await db.rpc('create_inventory_transfer_with_lines', {
-            p_site_id: body.store_id,
-            p_source_location_id: body.source_location_id,
-            p_destination_location_id: body.destination_location_id,
-            p_lines: body.lines,
-            p_notes: body.notes || null,
-            p_actor_id: customUser.id,
-            p_request_id: requestId(c),
-            p_idempotency_key: body.idempotency_key,
-        });
-        if (error) throw new Error(error.message);
-        const responseBody = success(data);
-        await idempotency.complete({ id: claim.id, responseBody, statusCode: 201, resourceType: 'inventory_transfer' });
-        return c.json(responseBody, 201);
-    } catch (error) {
-        await idempotency.fail(claim.id);
-        throw error;
-    }
+    const data = await executeWarehouseCommand(c.env, body.store_id, customUser.id, body.idempotency_key,
+        'transfer.create', null, prepareWarehouseCommand('transfer.create',null,body).command, requestId(c));
+    return c.json(success(data), 201);
 });
 
 router.post('/transfers/:id/ship', validate('json', ShipTransferSchema), async (c) => {
@@ -586,13 +531,8 @@ router.post('/transfers/:id/ship', validate('json', ShipTransferSchema), async (
     const staffBlock = await assertStaffPermission(c, siteId, customUser.id, 'products:write');
     if (staffBlock) return staffBlock;
 
-    const { data, error } = await db.rpc('ship_inventory_transfer', {
-        p_transfer_id: transferId,
-        p_actor_id: customUser.id,
-        p_request_id: requestId(c),
-        p_idempotency_key: body.idempotency_key,
-    });
-    if (error) return c.json(failureBody('TRANSFER_SHIP_FAILED', 'Unable to ship inventory transfer'), 400);
+    const data = await executeWarehouseCommand(c.env, siteId, customUser.id, body.idempotency_key,
+        'transfer.ship', transferId, prepareWarehouseCommand('transfer.ship',transferId,body).command, requestId(c));
     return c.json(success(data));
 });
 
@@ -611,32 +551,9 @@ router.post('/transfers/:id/receive', validate('json', ReceiveTransferSchema), a
     const staffBlock = await assertStaffPermission(c, siteId, customUser.id, 'products:write');
     if (staffBlock) return staffBlock;
 
-    const idempotency = new IdempotencyExecutionAdapter(db);
-    const claim = await idempotency.begin({
-        siteId,
-        key: body.idempotency_key,
-        scope: `inventory.transfers.receive:${transferId}`,
-        requestBody: body,
-        requestId: requestId(c),
-    });
-    if (claim.kind === 'replay') return c.json(claim.responseBody as any, claim.statusCode as any);
-
-    try {
-        const { data, error } = await db.rpc('receive_inventory_transfer', {
-            p_transfer_id: transferId,
-            p_lines: body.lines || null,
-            p_actor_id: customUser.id,
-            p_request_id: requestId(c),
-            p_idempotency_key: body.idempotency_key,
-        });
-        if (error) throw new Error(error.message);
-        const responseBody = success(data);
-        await idempotency.complete({ id: claim.id, responseBody, statusCode: 200, resourceType: 'inventory_transfer', resourceId: transferId });
-        return c.json(responseBody);
-    } catch (error) {
-        await idempotency.fail(claim.id);
-        throw error;
-    }
+    const data = await executeWarehouseCommand(c.env, siteId, customUser.id, body.idempotency_key,
+        'transfer.receive', transferId, prepareWarehouseCommand('transfer.receive',transferId,body).command, requestId(c));
+    return c.json(success(data));
 });
 
 // POST /inventory/reserve - Reserve available stock with optimistic concurrency.
@@ -960,13 +877,11 @@ router.post('/bulk-adjust', validate('json', BulkAdjustSchema), async (c) => {
 });
 
 // GET /inventory/reservations — List inventory reservations (read-only, ownership-checked)
-router.get('/reservations', async (c) => {
+router.get('/reservations', validate('query', InventoryReservationListQuerySchema), async (c) => {
     const auth = c.get('auth');
-    const storeId = c.req.query('store_id');
-    const statusFilter = c.req.query('status');
-    const productIdFilter = c.req.query('product_id');
-    const page = parseInt(c.req.query('page') || '1');
-    const limit = Math.min(parseInt(c.req.query('limit') || '20'), 100);
+    const q = c.get('validatedQuery') as InventoryReservationListQuery;
+    const { status: statusFilter, product_id: productIdFilter, page, limit } = q;
+    const storeId = q.store_id ?? auth.user.storeId;
     const offset = (page - 1) * limit;
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
@@ -984,38 +899,42 @@ router.get('/reservations', async (c) => {
     }
 
     if (ownedStoreIds.length === 0) {
-        return c.json(paginated([], 0, page, limit));
+        return c.json(scopedInventoryPage([], 0, page, limit, storeId));
     }
 
-    let query = db
-        .from('inventory_reservations')
-        .select('*, products!inner(name, store_id)', { count: 'exact' })
-        .in('store_id', ownedStoreIds)
-        .in('products.store_id', ownedStoreIds);
-
-    if (statusFilter) query = query.eq('status', statusFilter);
-    if (productIdFilter) query = query.eq('product_id', productIdFilter);
-
-    const { data, error, count } = await query
+    const unavailable = () => c.json(failureBody('INVENTORY_RESERVATIONS_UNAVAILABLE', 'Inventory reservations are unavailable. Try again.'), 503);
+    const buildQuery = (head = false) => {
+        let query = db.from('inventory_reservations')
+            .select('id,store_id,product_id,variant_id,location_id,order_id,quantity,status,expires_at,created_at,updated_at,products!inner(name,store_id)', { count: 'exact', head })
+            .in('store_id', ownedStoreIds).in('products.store_id', ownedStoreIds)
+            .is('deleted_at', null);
+        if (statusFilter) query = query.eq('status', statusFilter);
+        if (productIdFilter) query = query.eq('product_id', productIdFilter);
+        return query;
+    };
+    const { data, error, count } = await buildQuery()
         .order('created_at', { ascending: false })
+        .order('id', { ascending: false })
         .range(offset, offset + limit - 1);
 
-    if (isMissingTableError(error, 'inventory_reservations')) {
-        return c.json(paginated([], 0, page, limit));
+    if ((!error && !data?.length && offset > 0) || (error?.code === 'PGRST103' && offset > 0)) {
+        const recovered = await buildQuery(true);
+        if (recovered.error || recovered.count == null || !Number.isSafeInteger(recovered.count) || recovered.count < 0) return unavailable();
+        return c.json(scopedInventoryPage([], recovered.count, page, limit, storeId));
     }
-
-    if (error) {
-        return c.json(dbFailureBody(), 500);
-    }
-
-    return c.json(paginated(data || [], count || 0, page, limit));
+    if (error || count == null || !Number.isSafeInteger(count) || count < 0 || (data?.length ?? 0) > limit || (data?.length ?? 0) > count) return unavailable();
+    const rows = InventoryReservationSchema.array().safeParse(data ?? []);
+    if (!rows.success || rows.data.some(row => !ownedStoreIds.includes(row.store_id) || row.products.store_id !== row.store_id ||
+        (productIdFilter && row.product_id !== productIdFilter) || (statusFilter && row.status !== statusFilter))) return unavailable();
+    return c.json(scopedInventoryPage(rows.data, count, page, limit, storeId));
 });
 
 // GET /inventory/receipts — List PO receipts and transfer receipts (read-only, ownership-checked)
-router.get('/receipts', validate('query', ReceiptPageQuery), async (c) => {
+router.get('/receipts', validate('query', InventoryReceiptListQuerySchema), async (c) => {
     const auth = c.get('auth');
-    const q=c.get('validatedQuery') as z.infer<typeof ReceiptPageQuery>;
-    const {store_id:storeId,page,limit}=q;
+    const q=c.get('validatedQuery') as InventoryReceiptListQuery;
+    const {page,limit}=q;
+    const storeId=q.store_id ?? auth.user.storeId;
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
@@ -1032,14 +951,22 @@ router.get('/receipts', validate('query', ReceiptPageQuery), async (c) => {
     }
 
     if (ownedStoreIds.length === 0) {
-        return c.json(paginated([], 0, page, limit));
+        return c.json(scopedInventoryPage([], 0, page, limit, storeId));
     }
 
     const {data,error}=await db.rpc('read_merchant_inventory_receipts',{
         p_site_ids:ownedStoreIds,p_page:page,p_limit:limit,p_po_id:q.po_id ?? null,p_transfer_id:q.transfer_id ?? null,
     });
-    if(error || !data || !Array.isArray(data.rows) || !Number.isSafeInteger(data.total)) return c.json(dbFailureBody(),500);
-    return c.json(paginated(data.rows,data.total,page,limit));
+    const unavailable = () => c.json(failureBody('INVENTORY_RECEIPTS_UNAVAILABLE', 'Inventory receipts are unavailable. Try again.'), 503);
+    if(error || !data || !Array.isArray(data.rows) || !Number.isSafeInteger(data.total) || data.total < 0 || data.rows.length > limit || data.rows.length > data.total) return unavailable();
+    const rows = InventoryReceiptSchema.array().safeParse(data.rows);
+    if (!rows.success || rows.data.some(row => {
+        const parent = row.receipt_type === 'purchase_order' ? row.purchase_orders : row.inventory_transfers;
+        return !ownedStoreIds.includes(parent.site_id) ||
+            (q.po_id && (row.receipt_type !== 'purchase_order' || row.purchase_order_id !== q.po_id)) ||
+            (q.transfer_id && (row.receipt_type !== 'transfer' || row.transfer_id !== q.transfer_id));
+    })) return unavailable();
+    return c.json(scopedInventoryPage(rows.data,data.total,page,limit,storeId));
 });
 
 // GET /inventory/analytics — Real aggregations over existing tables (no fabricated data)
@@ -1138,11 +1065,10 @@ router.get('/analytics', async (c) => {
 });
 
 // GET /inventory/history — Adjustment history
-router.get('/history', async (c) => {
+router.get('/history', validate('query', InventoryHistoryQuerySchema), async (c) => {
     const auth = c.get('auth');
-    const productId = c.req.query('product_id');
-    const page = parseInt(c.req.query('page') || '1');
-    const limit = Math.min(parseInt(c.req.query('limit') || '20'), 100);
+    const { store_id: requestedStore, product_id: productId, page, limit } = c.get('validatedQuery') as InventoryHistoryQuery;
+    const storeId = requestedStore ?? auth.user.storeId;
     const offset = (page - 1) * limit;
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
@@ -1151,31 +1077,43 @@ router.get('/history', async (c) => {
         return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
 
-    const ownedStoreIds = await listOwnedStoreIds(db, customUser.id, auth.user.storeId);
+    if (storeId) {
+        if (auth.user.storeId && auth.user.storeId !== storeId) return c.json(failureBody('FORBIDDEN', 'Not authorized'), 403);
+        const staffBlock = await assertStaffPermission(c, storeId, customUser.id, 'products:read');
+        if (staffBlock) return staffBlock;
+    }
+    const ownedStoreIds = storeId ? [storeId] : await listOwnedStoreIds(db, customUser.id);
+    const result = (rows: unknown[], total: number) => {
+        const body = paginated(rows, total, page, limit);
+        return { ...body, meta: { ...body.meta, store_id: storeId ?? null } };
+    };
+    const unavailable = () => c.json(failureBody('INVENTORY_HISTORY_UNAVAILABLE', 'Inventory history is unavailable. Try again.'), 503);
     if (ownedStoreIds.length === 0) {
-        return c.json(paginated([], 0, page, limit));
+        return c.json(result([], 0));
     }
 
-    let query = db
-        .from('inventory_adjustments')
-        .select('*, products!inner(name, store_id)', { count: 'exact' })
-        .in('store_id', ownedStoreIds);
-
-    if (productId) query = query.eq('product_id', productId);
-
-    const { data, error, count } = await query
+    const buildQuery = (head = false) => {
+        let query = db.from('inventory_adjustments')
+            .select('*, products!inner(name, store_id)', { count: 'exact', head })
+            .in('store_id', ownedStoreIds)
+            .in('products.store_id', ownedStoreIds);
+        if (productId) query = query.eq('product_id', productId);
+        return query;
+    };
+    const { data, error, count } = await buildQuery()
         .order('created_at', { ascending: false })
+        .order('id', { ascending: false })
         .range(offset, offset + limit - 1);
 
-    if (isInventorySchemaMissingError(error)) {
-        return c.json(paginated([], 0, page, limit));
+    // PostgREST may omit Content-Range for an empty far page or answer PGRST103.
+    // Confirm the same authorized population; absence of a count is not zero.
+    if ((!error && !data?.length && offset > 0) || (error?.code === 'PGRST103' && offset > 0)) {
+        const recovered = await buildQuery(true);
+        if (recovered.error || recovered.count == null) return unavailable();
+        return c.json(result([], recovered.count));
     }
-
-    if (error) {
-        return c.json(dbFailureBody(), 500);
-    }
-
-    return c.json(paginated(data || [], count || 0, page, limit));
+    if (error || count == null) return unavailable();
+    return c.json(result(data || [], count));
 });
 
 async function listOwnedStoreIds(

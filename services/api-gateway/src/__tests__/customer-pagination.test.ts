@@ -107,7 +107,7 @@ test('Dart client and mobile services expose keyset cursor metadata', () => {
     assert.match(dartTypesSource, /final String\? nextCursor/);
     assert.match(dartClientSource, /meta\['next_cursor'\]/);
     assert.match(productServiceSource, /String\? get productsNextCursor/);
-    assert.match(productServiceSource, /'cursor': normalizedCursor/);
+    assert.match(productServiceSource, /if \(cursor != null && cursor\.trim\(\)\.isNotEmpty\)\s*'cursor': cursor\.trim\(\)/);
     assert.match(orderServiceSource, /String\? get ordersNextCursor/);
     assert.match(orderServiceSource, /'cursor': normalizedCursor/);
     assert.match(customerServiceSource, /String\? get customersNextCursor/);

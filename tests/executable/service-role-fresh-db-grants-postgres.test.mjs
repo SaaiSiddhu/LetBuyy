@@ -283,6 +283,7 @@ test('the whole modern-default chain preserves backend reads and the exact opaqu
       collection_membership_receipts:['app_tenant','public.apply_collection_membership_v1(uuid,uuid,uuid,integer,uuid,jsonb)'],
       internal_auth_replay_claims:['service_role','public.consume_internal_auth_replay_jti(text,text,integer)'],
       inventory_adjustment_receipts:['app_tenant','public.apply_inventory_adjustment_v1(uuid,uuid,text,jsonb)'],
+      warehouse_command_receipts:['app_tenant','public.apply_warehouse_command_v1(uuid,uuid,text,text,uuid,jsonb,text)'],
       merchant_totp_commands_v1:['service_role','public.execute_merchant_totp_command_v1(uuid,text,text,jsonb)'],
       product_edit_receipts:['app_tenant','public.read_product_for_edit_v1(uuid,uuid,uuid)'],
       reel_upload_intents:['service_role','public.reel_upload_v1(text,uuid,uuid,text,uuid,jsonb,jsonb,jsonb)'],

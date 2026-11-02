@@ -20,12 +20,14 @@ import {
     Plus,
     Select,
     Skeleton,
+    Switch,
     Textarea,
     Trash2,
     useToast,
 } from '@letbuyy/ui'
 import { SettingsPane } from '@/components/settings/SettingsPane'
 import { gstStateCodeFromName } from '@/lib/india/gst-states'
+import { businessProfileForStorePatch } from '@/lib/store-profile-business'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -41,13 +43,13 @@ interface GeneralData {
     currency: string
     locale: string
     timezone: string
-    invoice_prefix: string
     seo_title: string
     seo_description: string
     // Contact (from business_profile)
     contact_email: string
     contact_phone: string
     contact_website: string
+    public_contact_enabled: boolean
     // Address (from invoice_address)
     address_line1: string
     address_line2: string
@@ -81,8 +83,8 @@ interface LocalizationSummary {
 
 const EDITABLE_KEYS: ReadonlyArray<keyof GeneralData> = [
     'name', 'tagline', 'description', 'currency', 'locale', 'timezone',
-    'invoice_prefix', 'seo_title', 'seo_description',
-    'contact_email', 'contact_phone', 'contact_website',
+    'seo_title', 'seo_description',
+    'contact_email', 'contact_phone', 'contact_website', 'public_contact_enabled',
     'address_line1', 'address_line2', 'address_city', 'address_state', 'address_zip', 'address_country',
 ]
 
@@ -90,30 +92,18 @@ const EMPTY: GeneralData = {
     id: '', store_name: '', site_type: 'store', subdomain: '',
     name: '', tagline: '', description: '',
     currency: 'INR', locale: DEFAULT_ADMIN_LOCALE, timezone: 'Asia/Kolkata',
-    invoice_prefix: '#', seo_title: '', seo_description: '',
+    seo_title: '', seo_description: '',
     contact_email: '', contact_phone: '', contact_website: '',
+    public_contact_enabled: false,
     address_line1: '', address_line2: '', address_city: '', address_state: '', address_zip: '', address_country: 'IN',
 }
 
 const CURRENCY_OPTIONS = [
     { value: 'INR', label: 'Indian Rupee (INR ₹)' },
-    { value: 'USD', label: 'US Dollar (USD $)' },
-    { value: 'EUR', label: 'Euro (EUR €)' },
-    { value: 'GBP', label: 'British Pound (GBP £)' },
-    { value: 'AED', label: 'UAE Dirham (AED)' },
-    { value: 'SGD', label: 'Singapore Dollar (SGD)' },
 ]
 
 const TIMEZONE_OPTIONS = [
     { value: 'Asia/Kolkata', label: '(GMT+05:30) Chennai, Kolkata, Mumbai, New Delhi' },
-    { value: 'Asia/Dubai', label: '(GMT+04:00) Dubai, Abu Dhabi' },
-    { value: 'Asia/Singapore', label: '(GMT+08:00) Singapore, Kuala Lumpur' },
-    { value: 'Asia/Tokyo', label: '(GMT+09:00) Tokyo, Osaka, Sapporo' },
-    { value: 'Europe/London', label: '(GMT+00:00) London, Dublin, Lisbon' },
-    { value: 'Europe/Berlin', label: '(GMT+01:00) Amsterdam, Berlin, Paris' },
-    { value: 'America/New_York', label: '(GMT-05:00) Eastern Time (US & Canada)' },
-    { value: 'America/Los_Angeles', label: '(GMT-08:00) Pacific Time (US & Canada)' },
-    { value: 'UTC', label: '(UTC+00:00) Coordinated Universal Time' },
 ]
 
 const INDIAN_STATES = [
@@ -128,12 +118,6 @@ const INDIAN_STATES = [
 
 const COUNTRY_OPTIONS = [
     { value: 'IN', label: 'India' },
-    { value: 'US', label: 'United States' },
-    { value: 'AE', label: 'United Arab Emirates' },
-    { value: 'SG', label: 'Singapore' },
-    { value: 'GB', label: 'United Kingdom' },
-    { value: 'AU', label: 'Australia' },
-    { value: 'CA', label: 'Canada' },
 ]
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
@@ -174,6 +158,7 @@ export default function GeneralSettingsPage() {
     const [deleting, setDeleting] = useState(false)
     const [initialData, setInitialData] = useState<GeneralData | null>(null)
     const [data, setData] = useState<GeneralData>(EMPTY)
+    const [version, setVersion] = useState<number | null>(null)
     // Raw nested objects preserved for safe merge on PATCH
     const [rawBP, setRawBP] = useState<Record<string, unknown>>({})
     const [rawAddr, setRawAddr] = useState<Record<string, unknown>>({})
@@ -227,6 +212,8 @@ export default function GeneralSettingsPage() {
 
             const d = isRecord(payload?.data) ? payload.data : null
             if (!d) throw new Error('Store details were not returned')
+            if (typeof d.version !== 'number') throw new Error('Store revision was not returned')
+            setVersion(d.version)
 
             const bp = isRecord(d.business_profile) ? d.business_profile : {}
             const addr = isRecord(d.invoice_address) ? d.invoice_address : {}
@@ -244,12 +231,12 @@ export default function GeneralSettingsPage() {
                 currency: rs(d, 'currency', 'INR'),
                 locale: normalizeAdminLocale(rs(d, 'locale', DEFAULT_ADMIN_LOCALE)),
                 timezone: rs(d, 'timezone', 'Asia/Kolkata'),
-                invoice_prefix: rs(d, 'invoice_prefix', '#'),
                 seo_title: rs(d, 'meta_title', rs(d, 'seo_title')),
                 seo_description: rs(d, 'meta_description', rs(d, 'seo_description')),
                 contact_email: rs(bp, 'email'),
                 contact_phone: rs(bp, 'phone'),
                 contact_website: rs(bp, 'website'),
+                public_contact_enabled: bp.public_contact_enabled === true,
                 address_line1: rs(addr, 'line1'),
                 address_line2: rs(addr, 'line2'),
                 address_city: rs(addr, 'city'),
@@ -288,34 +275,44 @@ export default function GeneralSettingsPage() {
     const handleSave = useCallback(async (event?: React.FormEvent<HTMLFormElement>) => {
         event?.preventDefault()
         if (!hasUnsavedChanges || saveState === 'saving') return
+        if (version === null) {
+            notify({ title: 'Reload required', description: 'Store revision is unavailable. Reload before saving.', variant: 'warning' })
+            return
+        }
         setSaveState('saving')
         try {
+            const businessProfile = businessProfileForStorePatch(rawBP)
+            for (const [key, value] of [
+                ['email', data.contact_email], ['phone', data.contact_phone], ['website', data.contact_website],
+            ] as const) {
+                if (value.trim()) businessProfile[key] = value.trim()
+                else delete businessProfile[key]
+            }
+            businessProfile.public_contact_enabled = data.public_contact_enabled
+            const invoiceAddress: Record<string, unknown> = { ...rawAddr }
+            for (const [key, value] of [
+                ['line1', data.address_line1], ['line2', data.address_line2],
+                ['city', data.address_city], ['state', data.address_state], ['zip', data.address_zip],
+            ] as const) {
+                if (value.trim()) invoiceAddress[key] = value.trim()
+                else delete invoiceAddress[key]
+            }
+            const stateCode = data.address_country === 'IN' ? gstStateCodeFromName(data.address_state) : ''
+            if (stateCode) invoiceAddress.state_code = stateCode
+            else delete invoiceAddress.state_code
+            invoiceAddress.country = data.address_country || 'IN'
             const body = {
+                version,
                 name: data.name,
                 tagline: data.tagline,
                 description: data.description,
                 currency: data.currency,
                 locale: data.locale,
                 timezone: data.timezone,
-                invoice_prefix: data.invoice_prefix || null,
                 seo_title: data.seo_title,
                 seo_description: data.seo_description,
-                business_profile: {
-                    ...rawBP,
-                    email: data.contact_email || undefined,
-                    phone: data.contact_phone || undefined,
-                    website: data.contact_website || undefined,
-                },
-                invoice_address: {
-                    ...rawAddr,
-                    line1: data.address_line1 || undefined,
-                    line2: data.address_line2 || undefined,
-                    city: data.address_city || undefined,
-                    state: data.address_state || undefined,
-                    state_code: data.address_country === 'IN' ? gstStateCodeFromName(data.address_state) || undefined : undefined,
-                    zip: data.address_zip || undefined,
-                    country: data.address_country || 'IN',
-                },
+                business_profile: businessProfile,
+                invoice_address: invoiceAddress,
             }
 
             const res = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
@@ -325,7 +322,12 @@ export default function GeneralSettingsPage() {
             })
             const payload = await res.json().catch(() => null) as ApiPayload | null
             if (!res.ok) throw new Error(getPayloadError(payload, 'Unable to save store settings'))
+            const saved = isRecord(payload?.data) ? payload.data : null
+            if (typeof saved?.version !== 'number') throw new Error('Save completed but revision readback is unavailable. Reload to confirm current settings.')
 
+            setVersion(saved.version)
+            setRawBP(businessProfile)
+            setRawAddr(invoiceAddress)
             setInitialData(data)
             setSaveState('saved')
             notify({ title: 'Settings saved', description: 'Store details updated successfully.', variant: 'success' })
@@ -334,7 +336,7 @@ export default function GeneralSettingsPage() {
             setSaveState('unsaved')
             notify({ title: 'Could not save settings', description: msg, variant: 'critical' })
         }
-    }, [data, hasUnsavedChanges, notify, rawAddr, rawBP, saveState, store])
+    }, [data, hasUnsavedChanges, notify, rawAddr, rawBP, saveState, store, version])
 
     // ── Discard ───────────────────────────────────────────────────────────────
 
@@ -551,6 +553,12 @@ export default function GeneralSettingsPage() {
                                 placeholder="https://yourstore.com"
                                 helperText="Your primary domain or marketing site (not your LetBuyy storefront)."
                             />
+                            <Switch
+                                label="Show these contact details on my storefront"
+                                description="Off by default. Turning this on publishes only the email, phone, and website above. Legal, tax, and verification details stay private."
+                                checked={data.public_contact_enabled}
+                                onCheckedChange={value => set('public_contact_enabled', value)}
+                            />
 
                     </Section>
 
@@ -673,29 +681,16 @@ export default function GeneralSettingsPage() {
 
                     </Section>
 
-                    {/* ── Order ID format ───────────────────────────────────── */}
-                    <Section variant="grouped" title="Order ID format" >
-
-                            <div className="settings-general-hint">
-                                Shown on the orders page, customer pages, and order notification emails.
-                            </div>
-                            <div className="settings-form-grid">
-                                <Input
-                                    label="Prefix"
-                                    value={data.invoice_prefix}
-                                    onChange={e => set('invoice_prefix', e.target.value)}
-                                    placeholder="#"
-                                    helperText="Added before the order number."
-                                    maxLength={20}
-                                />
-                                <div className="settings-general-order-example">
-                                    <span className="settings-general-order-example-label">Example</span>
-                                    <span className="settings-general-order-example-value">
-                                        {data.invoice_prefix || '#'}1001, {data.invoice_prefix || '#'}1002, {data.invoice_prefix || '#'}1003, …
-                                    </span>
-                                </div>
-                            </div>
-
+                    {/* Order references are allocated by the database trigger. Invoice prefixes
+                        are a separate tax setting on Business details. */}
+                    <Section variant="grouped" title="Order reference" >
+                        <div className="settings-general-hint">
+                            Order references are assigned when an order is placed and appear on orders, customer pages, and notifications.
+                        </div>
+                        <div className="settings-general-order-example">
+                            <span className="settings-general-order-example-label">Format</span>
+                            <span className="settings-general-order-example-value">ORD-YYYYMMDD-sequence</span>
+                        </div>
                     </Section>
 
                     {/* ── Site type ─────────────────────────────────────────── */}

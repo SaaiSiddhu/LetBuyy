@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { OtpRequestSchema } from '@letbuyy/auth-core'
+import { z } from 'zod'
 import { identityApiRequest, getIdentityApiFailureMessage } from '@/lib/api/client'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { verifyTurnstileToken } from '@/lib/turnstile'
@@ -29,7 +31,9 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Invalid request. Please refresh and try again.' }, { status: 403 })
         }
 
-        const { email, turnstileToken } = await request.json()
+        const parsed = OtpRequestSchema.extend({ turnstileToken: z.string().max(2048).optional() }).safeParse(await request.json().catch(() => null))
+        if (!parsed.success) return NextResponse.json({ error: 'Enter a valid email address.' }, { status: 400 })
+        const { email, turnstileToken } = parsed.data
 
         if (!email) {
             return NextResponse.json({ error: 'Email is required' }, { status: 400 })
@@ -76,8 +80,8 @@ export async function POST(request: NextRequest) {
         }
 
         return NextResponse.json({ success: true })
-    } catch (error) {
-        console.error('Send reset error:', error)
+    } catch {
+        console.error(JSON.stringify({ level: 'error', service: 'accounts', reason: 'password_reset_email_unavailable' }))
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
     }
 }

@@ -1,0 +1,27 @@
+{
+  "zone": "letbuyy.store",
+  "action": "block",
+  "enabled": true,
+  "purpose": "Prevent direct unauthenticated CDN retrieval of private export jobs, sources and results; preserve the canonical authenticated Gateway download boundary.",
+  "environment": "production",
+  "description": "Production: block direct export objects",
+  "hostname": "cdn.letbuyy.store",
+  "bucket": "letbuyy-media-production",
+  "expression": "(http.host eq \"cdn.letbuyy.store\" and (url_decode(http.request.uri.path, \"r\") eq \"/exports\" or starts_with(url_decode(http.request.uri.path, \"r\"), \"/exports/\")))",
+  "status": "approved-and-activated-see-active-policy",
+  "approved": true,
+  "scope": [
+    "Read current production CDN policy metadata",
+    "Create two harmless synthetic canaries under a public and an export prefix; no merchant/customer payloads",
+    "If an exact private canary is anonymously readable, append only the reviewed hostname/path Block rule",
+    "Verify nonzero public delivery and denial of canonical/encoded private canary paths",
+    "Delete the exact two test objects and verify absence"
+  ],
+  "release_scope": "This proposal covers only the CDN restriction and controlled canaries. Application deployment, aliases, schema, original files, payment/provider operations and private storage cutover require their own authority.",
+  "rollback": "If the public control regresses, remove only the newly created rule after deleting the two owned canaries; preserve existing configuration.",
+  "stage_evidence": "STAGING_PRIVATE_EXPORTS.md",
+  "limitation": "Outer mitigation; complete permanent private storage separation before final production certification.",
+  "owner_approval": "Approve scoped production privacy check and guard (Recommended)",
+  "application_release_authorized": false,
+  "active_policy": "PRODUCTION_EXPORT_CDN_POLICY.json"
+}

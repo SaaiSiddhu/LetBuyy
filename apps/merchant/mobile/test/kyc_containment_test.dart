@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:letbuyy_store/app/store_context.dart';
 import 'package:letbuyy_store/models/store_model.dart';
@@ -18,6 +20,7 @@ Map<String, dynamic> overview(
 }) => {
   'site_id': store,
   'provider_mode': 'sandbox',
+  'private_upload_available': true,
   'overall_status': status,
   'documents': [
     {
@@ -31,6 +34,7 @@ Map<String, dynamic> overview(
     {
       'document_type': 'bank_proof',
       'title': 'Bank proof',
+      'required': true,
       'status': 'verified',
     },
   ],
@@ -115,7 +119,13 @@ class Fixture {
       ChangeNotifierProvider<StoreContext>.value(value: stores),
       ChangeNotifierProvider<KycService>.value(value: service),
     ],
-    child: const MaterialApp(home: KycScreen()),
+    child: MaterialApp(home: KycScreen(pickDocumentPhoto: () async {
+      final dir = Directory.systemTemp.createTempSync('letbuyy-kyc-test-');
+      addTearDown(() => dir.deleteSync(recursive: true));
+      final file = File('${dir.path}/proof.png');
+      file.writeAsBytesSync([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 1, 2, 3]);
+      return XFile(file.path, name: 'proof.png', mimeType: 'image/png');
+    })),
   );
 }
 
@@ -139,10 +149,23 @@ Future<void> replyWidget(
 }
 
 Future<void> awaitWidgetRequest(WidgetTester tester, Fixture fixture) async {
-  for (var i = 0; fixture.pending.isEmpty && i < 20; i++) {
+  for (var i = 0; fixture.pending.isEmpty && i < 50; i++) {
     await tester.pump(const Duration(milliseconds: 10));
+    if (fixture.pending.isEmpty) {
+      await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 10)));
+    }
   }
   expect(fixture.pending, isNotEmpty);
+}
+
+Future<void> replyUploadWidget(WidgetTester tester, Fixture fixture,
+    Map<String, dynamic> data, {int status = 200}) async {
+  await awaitWidgetRequest(tester, fixture);
+  await tester.runAsync(() async {
+    await fixture.reply(data, status: status);
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+  });
+  await tester.pump();
 }
 
 Map<String, dynamic> referenceOverview(
@@ -172,10 +195,16 @@ Future<void> openReference(
   await tester.pumpAndSettle();
 }
 
-Future<void> submitReference(WidgetTester tester, String digits) async {
+Future<void> submitReference(WidgetTester tester, Fixture fixture, String digits) async {
   await tester.enterText(find.byType(TextField), digits);
-  await tester.tap(find.widgetWithText(FilledButton, 'Record reference'));
-  await tester.pump();
+  await tester.tap(find.widgetWithText(OutlinedButton, 'Choose document photo'));
+  await tester.pumpAndSettle();
+  expect(find.text('proof.png'), findsOneWidget);
+  // MultipartFile.fromFile performs real filesystem I/O; allow that one
+  // bounded operation to complete before the intercepted HTTP request.
+  await tester.tap(find.widgetWithText(FilledButton, 'Upload document'));
+  await awaitWidgetRequest(tester, fixture);
+  expect(find.byKey(const ValueKey('reference-error')), findsNothing);
 }
 
 void main() {
@@ -386,7 +415,7 @@ void main() {
   );
 
   testWidgets(
-    'original document-type prefills and default reference action remain available without file controls',
+    'document-type prefills and private upload controls remain available',
     (tester) async {
       final f = Fixture();
       await tester.pumpWidget(f.screen());
@@ -430,7 +459,7 @@ void main() {
         await tester.tap(find.widgetWithText(TextButton, 'Close'));
         await tester.pumpAndSettle();
       }
-      await tester.tap(find.text('Add reference'));
+      await tester.tap(find.text('Add document'));
       await tester.pumpAndSettle();
       expect(
         tester
@@ -445,42 +474,47 @@ void main() {
   );
 
   testWidgets(
-    'normal reference-only form validates, shows loading, retries failure and records pending readback',
+    'private upload form validates, shows loading, retries failure and records pending readback',
     (tester) async {
       final f = Fixture();
       await tester.pumpWidget(f.screen());
       await tester.pump();
       await replyWidget(tester, f, overview('store-a'));
       await tester.pumpAndSettle();
+      expect(find.text('Verification documents'), findsOneWidget);
+      expect(find.text('Required · Verified'), findsOneWidget);
       await openReference(tester);
-      await tester.tap(find.widgetWithText(FilledButton, 'Record reference'));
+      await tester.runAsync(() async {
+        await tester.tap(find.widgetWithText(FilledButton, 'Upload document'));
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+      });
       await tester.pump();
-      expect(find.text('Enter 2–8 reference characters.'), findsOneWidget);
+      expect(find.text('Enter only the final 2–4 reference characters.'), findsOneWidget);
+      expect(tester.widget<TextField>(find.byType(TextField)).maxLength, 4);
       expect(f.calls.where((r) => r.method == 'POST'), isEmpty);
-      await submitReference(tester, '1234');
+      await submitReference(tester, f, '1234');
       expect(
         tester.widget<FilledButton>(find.byType(FilledButton)).onPressed,
         isNull,
       );
-      await replyWidget(tester, f, {}, status: 503);
-      await tester.pumpAndSettle();
+      await replyUploadWidget(tester, f, {}, status: 503);
       expect(
-        find.text('Reference could not be recorded. Try again.'),
+        find.text('Document could not be uploaded. Try again.'),
         findsOneWidget,
       );
       expect(
         tester.widget<TextField>(find.byType(TextField)).controller?.text,
         '1234',
       );
-      await tester.tap(find.widgetWithText(FilledButton, 'Record reference'));
-      await tester.pump();
-      await replyWidget(tester, f, {
+      await tester.tap(find.widgetWithText(FilledButton, 'Upload document'));
+      await awaitWidgetRequest(tester, f);
+      await replyUploadWidget(tester, f, {
         'document': {'site_id': 'store-a'},
         'overview': referenceOverview('store-a', 'bank_proof', '1234'),
       });
       await tester.pumpAndSettle();
       expect(
-        find.text('Reference recorded. Verification pending.'),
+        find.text('Private document received. No security scan result yet.'),
         findsOneWidget,
       );
       expect(find.text('Verification pending'), findsOneWidget);
@@ -488,22 +522,60 @@ void main() {
       final writes = f.calls.where((r) => r.method == 'POST').toList();
       expect(writes.length, 2);
       for (final request in writes) {
-        expect(request.path.endsWith('/kyc/documents'), isTrue);
-        final body = request.data as Map;
-        expect(body['store_id'], 'store-a');
-        expect(body['document_type'], 'bank_proof');
-        expect(body['document_number_last4'], '1234');
-        expect(
-          body.containsKey('file_url') || body.containsKey('file_name'),
-          isFalse,
-        );
+        expect(request.path.endsWith('/kyc/documents/upload'), isTrue);
+        expect(request.data, isA<FormData>());
       }
-      expect(f.calls.any((r) => r.path.contains('/upload')), isFalse);
+      expect(f.calls.any((r) => r.path.contains('/upload')), isTrue);
     },
   );
 
   testWidgets(
-    'reference permission denial is actionable and does not report success',
+    'India direct upload availability enables the document control with test copy',
+    (tester) async {
+      final f = Fixture();
+      await tester.pumpWidget(f.screen());
+      await tester.pump();
+      await replyWidget(tester, f, {
+        ...overview('store-a'),
+        'private_upload_available': false,
+        'india_direct_upload_available': true,
+      });
+      await tester.pumpAndSettle();
+      expect(find.textContaining('India upload test:'), findsOneWidget);
+      expect(find.text('Add document'), findsOneWidget);
+      expect(tester.widget<TextButton>(find.byKey(const ValueKey('record-reference-bank_proof'))).onPressed,
+        isNotNull);
+      expect(f.calls.where((r) => r.method == 'POST'), isEmpty);
+    },
+  );
+
+  testWidgets(
+    'unbound private storage disables uploads until a fresh status read reports recovery',
+    (tester) async {
+      final f = Fixture();
+      await tester.pumpWidget(f.screen());
+      await tester.pump();
+      await replyWidget(tester, f, {
+        ...overview('store-a', status: 'in_progress'),
+        'private_upload_available': false,
+        'next_action': 'Private document upload is unavailable. Your saved status remains visible; retry later.',
+      });
+      await tester.pumpAndSettle();
+      expect(find.textContaining('Private upload is unavailable.'), findsOneWidget);
+      expect(find.text('Add document'), findsNothing);
+      expect(tester.widget<TextButton>(find.byKey(const ValueKey('record-reference-bank_proof'))).onPressed, isNull);
+      expect(f.calls.where((r) => r.method == 'POST'), isEmpty);
+      await tester.tap(find.byTooltip('Refresh'));
+      await tester.pump();
+      await replyWidget(tester, f, overview('store-a', status: 'in_progress'));
+      await tester.pumpAndSettle();
+      expect(find.text('Add document'), findsOneWidget);
+      expect(tester.widget<FloatingActionButton>(find.byType(FloatingActionButton)).onPressed, isNotNull);
+    },
+  );
+
+  testWidgets(
+    'upload permission denial is actionable and does not report success',
     (tester) async {
       final f = Fixture();
       await tester.pumpWidget(f.screen());
@@ -511,15 +583,15 @@ void main() {
       await replyWidget(tester, f, overview('store-a'));
       await tester.pumpAndSettle();
       await openReference(tester);
-      await submitReference(tester, '1234');
-      await replyWidget(tester, f, {}, status: 403);
+      await submitReference(tester, f, '1234');
+      await replyUploadWidget(tester, f, {}, status: 403);
       await tester.pumpAndSettle();
       expect(
-        find.text('You do not have permission to record a reference.'),
+        find.text('You do not have permission to upload this document.'),
         findsOneWidget,
       );
       expect(
-        find.text('Reference recorded. Verification pending.'),
+        find.text('Private document received. No security scan result yet.'),
         findsNothing,
       );
     },
@@ -540,7 +612,7 @@ void main() {
       expect(find.text('Store access changed'), findsOneWidget);
       expect(find.byType(TextField), findsNothing);
       expect(
-        find.widgetWithText(FilledButton, 'Record reference'),
+        find.widgetWithText(FilledButton, 'Upload document'),
         findsNothing,
       );
       await tester.tap(find.widgetWithText(TextButton, 'Close'));
@@ -558,7 +630,7 @@ void main() {
       await replyWidget(tester, f, overview('store-a'));
       await tester.pumpAndSettle();
       await openReference(tester);
-      await submitReference(tester, '1234');
+      await submitReference(tester, f, '1234');
       for (var i = 0; f.pending.isEmpty && i < 20; i++) {
         await tester.pump(const Duration(milliseconds: 10));
       }
@@ -567,14 +639,14 @@ void main() {
       await tester.pumpAndSettle();
       await tester.pumpWidget(const SizedBox.shrink());
       f.stores.change(actorId: '', storeId: '');
-      await replyWidget(tester, f, {
+      await replyUploadWidget(tester, f, {
         'overview': referenceOverview('store-a', 'bank_proof', '1234'),
       });
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
       expect(f.service.overview, isNull);
       expect(
-        find.text('Reference recorded. Verification pending.'),
+        find.text('Private document received. No security scan result yet.'),
         findsNothing,
       );
     },
@@ -648,18 +720,18 @@ void main() {
       await replyWidget(tester, f, overview('store-a'));
       await tester.pumpAndSettle();
       await openReference(tester);
-      await submitReference(tester, '1234');
+      await submitReference(tester, f, '1234');
       await awaitWidgetRequest(tester, f);
       f.stores.change(actorId: 'actor-a', storeId: 'store-b');
       await tester.pumpAndSettle();
       expect(find.byType(TextField), findsNothing);
-      await replyWidget(tester, f, {
+      await replyUploadWidget(tester, f, {
         'overview': referenceOverview('store-a', 'bank_proof', '1234'),
       });
       await tester.pumpAndSettle();
       expect(find.text('Store access changed'), findsOneWidget);
       expect(
-        find.text('Reference recorded. Verification pending.'),
+        find.text('Private document received. No security scan result yet.'),
         findsNothing,
       );
       expect(f.service.overview, isNull);
@@ -730,7 +802,7 @@ void main() {
   }
 
   test(
-    'reference-only legacy KYC read, submit and refresh remain compatible without file fields',
+    'reference-only legacy KYC submission is refused while read and refresh remain available',
     () async {
       final f = Fixture();
       final read = f.service.fetchOverview('store-a');
@@ -741,19 +813,17 @@ void main() {
         documentType: 'business_pan',
         documentNumberLast4: '1234',
       );
-      await f.reply({
-        'document': {'id': 'document-store-a', 'status': 'verified'},
-        'overview': overview('store-a'),
-      });
-      expect((await submit)['document']['status'], 'verified');
+      final denied = expectLater(submit, throwsA(isA<ApiException>()));
+      await f.reply({}, status: 410);
+      await denied;
       final body = f.calls.last.data as Map;
       expect(body['document_type'], 'business_pan');
       expect(body['document_number_last4'], '1234');
       expect(body.containsKey('file_url'), isFalse);
       expect(body.containsKey('file_name'), isFalse);
       final refresh = f.service.refreshDocument('document-store-a', 'store-a');
-      await f.reply({'overview': overview('store-a')});
-      expect((await refresh)['overview']['overall_status'], 'verified');
+      await f.reply({'overview': overview('store-a', status: 'in_progress')});
+      expect((await refresh)['overview']['overall_status'], 'in_progress');
       expect(f.calls[0].path.endsWith('/kyc'), isTrue);
       expect(f.calls[1].path.endsWith('/kyc/documents'), isTrue);
       expect(f.service.overview?['site_id'], 'store-a');
@@ -860,36 +930,89 @@ void main() {
   );
 
   testWidgets(
-    'maintained KYC screen collects no files and keeps status loading, denial and retry usable',
+    'private upload shows security-scan state before provider review',
+    (tester) async {
+      final f = Fixture();
+      final pending = overview('store-a', status: 'in_progress');
+      final document = (pending['documents'] as List).first as Map<String, dynamic>;
+      document['status'] = 'submitted';
+      document['provider_mode'] = 'sandbox';
+      document['evidence_scan_status'] = 'pending';
+      ((pending['required_documents'] as List).first as Map<String, dynamic>)['status'] = 'submitted';
+      pending['next_action'] =
+          'Sandbox uploads are stored for testing only. They are not provider reviewed and cannot enable live payouts.';
+      await tester.pumpWidget(f.screen());
+      await tester.pump();
+      await replyWidget(tester, f, pending);
+      await tester.pumpAndSettle();
+      expect(find.textContaining('No scan result yet'), findsOneWidget);
+      expect(find.textContaining('not provider reviewed'), findsOneWidget);
+      expect(find.text('Verified'), findsNothing);
+    },
+  );
+
+  testWidgets(
+    'private upload screen keeps status loading, denial and retry usable',
     (tester) async {
       final f = Fixture();
       await tester.pumpWidget(f.screen());
       await tester.pump();
-      expect(find.text('Document upload unavailable'), findsOneWidget);
+      expect(find.text('Private document upload'), findsOneWidget);
+      expect(find.text('Checking private upload availability.'), findsOneWidget);
       expect(find.text('Camera'), findsNothing);
       expect(find.text('Gallery'), findsNothing);
       expect(find.text('Submit'), findsNothing);
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
+      expect(find.text('Add document'), findsNothing);
       await replyWidget(tester, f, {}, status: 403);
       await tester.pumpAndSettle();
       expect(
         find.text('You do not have access to verification for this store.'),
         findsOneWidget,
       );
+      expect(find.text('Add document'), findsNothing);
       await tester.tap(find.text('Retry'));
       await tester.pump();
       await replyWidget(tester, f, overview('store-a'));
       await tester.pumpAndSettle();
+      expect(find.text('Add document'), findsOneWidget);
       expect(find.text('retained-proof.png'), findsNothing);
       expect(find.textContaining('retained-proof.png'), findsOneWidget);
       expect(
-        find.text('Sandbox status only. This does not approve live selling.'),
+        find.text('Sandbox uploads are not provider reviewed and do not approve live payouts.'),
         findsOneWidget,
       );
       expect(
         f.calls.every((r) => r.method == 'GET' && r.path.endsWith('/kyc')),
         isTrue,
       );
+    },
+  );
+
+  testWidgets(
+    'provider outage presents Retry without an unavailable upload action',
+    (tester) async {
+      final f = Fixture();
+      await tester.pumpWidget(f.screen());
+      await tester.pump();
+      await replyWidget(tester, f, {}, status: 503);
+      await tester.pumpAndSettle();
+      expect(
+        find.text('Verification details are temporarily unavailable.'),
+        findsOneWidget,
+      );
+      expect(
+        find.text('Verification is unavailable. Retry to check whether private upload is available.'),
+        findsOneWidget,
+      );
+      expect(find.text('Retry'), findsOneWidget);
+      expect(find.text('Add document'), findsNothing);
+      await tester.tap(find.text('Retry'));
+      await tester.pump();
+      await replyWidget(tester, f, overview('store-a', status: 'in_progress'));
+      await tester.pumpAndSettle();
+      expect(find.text('Add document'), findsOneWidget);
+      expect(f.calls.where((r) => r.method == 'POST'), isEmpty);
     },
   );
 
@@ -946,6 +1069,10 @@ void main() {
       await tester.tap(find.byTooltip('Refresh status'));
       await tester.pump();
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
+      await awaitWidgetRequest(tester, f);
+      final firstRefreshKey =
+          f.calls.last.headers['X-Idempotency-Key'] as String?;
+      expect(firstRefreshKey, isNotEmpty);
       await replyWidget(tester, f, {}, status: 503);
       await tester.pumpAndSettle();
       expect(
@@ -958,6 +1085,11 @@ void main() {
       await tester.tap(find.byTooltip('Refresh status'));
       await tester.pump();
       await awaitWidgetRequest(tester, f);
+      expect(
+        f.calls.last.headers['X-Idempotency-Key'],
+        firstRefreshKey,
+        reason: 'an uncertain provider result must retry with the same receipt',
+      );
       f.stores.change(actorId: 'actor-b', storeId: 'store-b');
       await tester.pump();
       await replyWidget(tester, f, {

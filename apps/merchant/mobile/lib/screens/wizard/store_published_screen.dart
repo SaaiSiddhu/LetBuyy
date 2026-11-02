@@ -7,6 +7,8 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../services/store_service.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import '../../app/routes.dart';
+import '../../models/store_model.dart';
+import '../../config/app_config.dart';
 
 /// Store Published Screen with Enhanced 6-Stage Animated Progression
 /// Each stage takes 2 seconds minimum with premium visual design
@@ -249,7 +251,9 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: LetbuyyColorTokens.brandPrimary.withValues(alpha: 0.25),
+                    color: LetbuyyColorTokens.brandPrimary.withValues(
+                      alpha: 0.25,
+                    ),
                     blurRadius: 40,
                     spreadRadius: 10,
                   ),
@@ -432,7 +436,9 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: LetbuyyColorTokens.successStrong.withValues(alpha: 0.2),
+                    color: LetbuyyColorTokens.successStrong.withValues(
+                      alpha: 0.2,
+                    ),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: const Text(
@@ -445,7 +451,10 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
                   ),
                 )
               else if (isActive)
-                Text('...', style: TextStyle(color: LetbuyyColorTokens.brandPrimary))
+                Text(
+                      '...',
+                      style: TextStyle(color: LetbuyyColorTokens.brandPrimary),
+                    )
                     .animate(onPlay: (c) => c.repeat())
                     .fadeIn()
                     .fadeOut(duration: 500.ms),
@@ -469,7 +478,10 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
   }
 
   Widget _buildSuccessScreen() {
-    final storeUrl = 'https://${widget.subdomain}.letbuyy.com';
+    final storeUrl = AppConfig.storefrontUrlFor(
+      subdomain: widget.subdomain,
+      publicUrl: StoreModel.generateStoreUrl(widget.subdomain),
+    );
 
     return Scaffold(
       body: Container(
@@ -502,14 +514,15 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
                             end: Alignment.bottomRight,
                             colors: [
                               LetbuyyColorTokens.successStrong,
-                              LetbuyyColorTokens.successStrong.withValues(alpha: 0.8),
+                              LetbuyyColorTokens.successStrong.withValues(
+                                alpha: 0.8,
+                              ),
                             ],
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: LetbuyyColorTokens.successStrong.withValues(
-                                alpha: 0.4,
-                              ),
+                              color: LetbuyyColorTokens.successStrong
+                                  .withValues(alpha: 0.4),
                               blurRadius: 40,
                               spreadRadius: 10,
                             ),
@@ -569,7 +582,9 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
                       color: Colors.white.withValues(alpha: 0.06),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: LetbuyyColorTokens.successStrong.withValues(alpha: 0.3),
+                        color: LetbuyyColorTokens.successStrong.withValues(
+                          alpha: 0.3,
+                        ),
                         width: 1.5,
                       ),
                     ),
@@ -581,9 +596,8 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
                             Container(
                               padding: const EdgeInsets.all(6),
                               decoration: BoxDecoration(
-                                color: LetbuyyColorTokens.successStrong.withValues(
-                                  alpha: 0.2,
-                                ),
+                                color: LetbuyyColorTokens.successStrong
+                                    .withValues(alpha: 0.2),
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: const Icon(
@@ -604,7 +618,7 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
                         ),
                         const SizedBox(height: 14),
                         Text(
-                          '${widget.subdomain}.letbuyy.com',
+                          storeUrl.replaceFirst(RegExp(r'^https?://'), ''),
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 20,

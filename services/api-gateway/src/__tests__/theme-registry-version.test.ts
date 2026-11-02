@@ -245,7 +245,7 @@ test('modern portable1 and2 never acquire legacy aliases from a populated sectio
         assert.ok(collectThemeTemplateValidationIssues({ templateConfig: theme.default_template, runtime, themeSlug: theme.slug }).some(issue => issue.includes('logoUrl is not defined')));
         const pure = { themeId: theme.slug, schema_version: bundle.schema_version, liquidBundle: bundle,
             themeSettings: bundle.config.settings_data.current, templates: bundle.templates, sections: {} };
-        assert.deepEqual(collectThemeTemplateValidationIssues({ templateConfig: pure, runtime, themeSlug: theme.slug }), []);
+        assert.deepEqual(collectThemeTemplateValidationIssues({ templateConfig: pure, runtime, trustedPreviousConfig: { templates: bundle.templates }, themeSlug: theme.slug }), []);
         if (version === '1.0.0') {
             const marked = fixture();
             const markedTheme = { ...theme, config: { theme_bundle: true }, default_template: { ...legacy.default_template, liquidBundle: bundle } };

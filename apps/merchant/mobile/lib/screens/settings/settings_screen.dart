@@ -6,6 +6,7 @@ import 'package:uuid/uuid.dart';
 import '../../services/api_client.dart';
 
 import '../../app/store_context.dart';
+import '../../config/app_config.dart';
 
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
@@ -218,7 +219,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
       );
     }
 
-    final storeUrl = '${_store?.subdomain ?? 'your-store'}.letbuyy.com';
+    final storeUrl = _store == null
+        ? ''
+        : AppConfig.storefrontUrlFor(
+            subdomain: _store!.subdomain,
+            publicUrl: _store!.publicUrl,
+          );
 
     return Scaffold(
       backgroundColor: colors.card,
@@ -245,7 +251,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                         child: StoreInfoCard(
                           storeName: _store!.name,
-                          storeUrl: 'https://$storeUrl',
+                          storeUrl: storeUrl,
                           logoUrl: _store!.logoUrl,
                           isPublished: _store!.isPublished,
                           onEdit: () => Navigator.pushNamed(
@@ -307,11 +313,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                       ),
                       SettingsTile(
+                        icon: Icons.verified_user_outlined,
+                        title: 'Business verification',
+                        subtitle: 'Private KYC documents and review status',
+                        onTap: () =>
+                            Navigator.pushNamed(context, AppRoutes.kyc),
+                      ),
+                      SettingsTile(
                         icon: Icons.loyalty_outlined,
                         title: 'Loyalty',
                         subtitle: 'Customer points and reward settings',
                         onTap: () =>
                             Navigator.pushNamed(context, AppRoutes.loyalty),
+                      ),
+                      SettingsTile(
+                        icon: Icons.local_shipping_outlined,
+                        title: 'Shipping',
+                        subtitle: 'Delivery zones and rates',
+                        onTap: () => Navigator.pushNamed(context, AppRoutes.shipping),
+                      ),
+                      SettingsTile(
+                        icon: Icons.receipt_long_outlined,
+                        title: 'Taxes / GST',
+                        subtitle: 'Tax rates and inclusive prices',
+                        onTap: () => Navigator.pushNamed(context, AppRoutes.taxes),
                       ),
                       SettingsTile(
                         icon: Icons.group_outlined,
@@ -429,20 +454,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           if (mounted) await _loadStore();
                         },
                       ),
-                      if (_store?.subscriptionPlan ==
-                          SubscriptionPlan.professional)
-                        SettingsTile(
-                          icon: Icons.account_balance_outlined,
-                          title: 'Connect Your Razorpay',
-                          subtitle: _store?.isUsingOwnRazorpay == true
-                              ? 'Connected - 0% commission'
-                              : 'Get 0% platform fee',
-                          iconColor: const Color(0xFF2563EB),
-                          onTap: () => Navigator.pushNamed(
-                            context,
-                            AppRoutes.connectRazorpay,
-                          ),
+                      SettingsTile(
+                        icon: Icons.account_balance_outlined,
+                        title: 'Your Razorpay connection',
+                        subtitle: _store?.isUsingOwnRazorpay == true
+                            ? 'Review sandbox connection'
+                            : 'Connect a verified sandbox account',
+                        iconColor: const Color(0xFF2563EB),
+                        onTap: () => Navigator.pushNamed(
+                          context,
+                          AppRoutes.connectRazorpay,
                         ),
+                      ),
                     ],
                   ),
 
@@ -516,8 +539,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
               color: colors.textPrimary,
             ),
           ),
-          const Spacer(),
-          StoreSwitcherButton(onChanged: _loadStore),
+          Expanded(
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: StoreSwitcherButton(onChanged: _loadStore),
+            ),
+          ),
         ],
       ),
     );

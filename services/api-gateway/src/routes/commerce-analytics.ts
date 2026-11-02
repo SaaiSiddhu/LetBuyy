@@ -4,15 +4,14 @@
 // ============================================================
 
 import { Hono } from 'hono';
-import { z } from 'zod';
-import { PaginationQuery, UuidSchema } from '@letbuyy/shared-types';
+import { SupplierMetricsResultSchema, WarehouseMetricsResultSchema, TransferMetricsResultSchema, OperationsSummaryResultSchema } from '@letbuyy/shared-types';
+import { CommerceMetricPageQuerySchema, CommerceMetricStoreQuerySchema, type CommerceMetricPageQuery, type CommerceMetricStoreQuery } from '@letbuyy/commerce-core';
 import { validate } from '../middleware/validation';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { dbFailureBody, getSupabaseAdmin, success } from '../lib/supabase';
 
 const router = new Hono<{ Bindings: Env }>();
-const MetricPageQuery = PaginationQuery.pick({ page:true, limit:true }).extend({ store_id:UuidSchema });
 
 // ── helpers ─────────────────────────────────────────────────
 
@@ -41,9 +40,9 @@ function isMissingColumnError(error: DatabaseErrorLike, columnName: string): boo
 // Tables: purchase_orders (site_id, supplier_id, status, expected_at, created_at)
 //         purchase_order_receipts (purchase_order_id, created_at event time)
 //         suppliers (id, name)
-router.get('/supplier-metrics', validate('query', MetricPageQuery), async (c) => {
+router.get('/supplier-metrics', validate('query', CommerceMetricPageQuerySchema), async (c) => {
     const auth = c.get('auth');
-    const q=c.get('validatedQuery') as z.infer<typeof MetricPageQuery>;
+    const q=c.get('validatedQuery') as CommerceMetricPageQuery;
     const storeId=q.store_id;
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
@@ -59,17 +58,19 @@ router.get('/supplier-metrics', validate('query', MetricPageQuery), async (c) =>
     }
 
     const { data,error }=await db.rpc('read_merchant_supplier_metrics',{p_site_id:storeId,p_page:q.page,p_limit:q.limit});
-    if(error || !data || !Array.isArray(data.suppliers)) return c.json(dbFailureBody(),500);
-    return c.json(success(data));
+    if(error || !data) return c.json(dbFailureBody(),500);
+    const parsed=SupplierMetricsResultSchema.safeParse({...data,store_id:storeId});
+    if(!parsed.success || parsed.data.meta.page!==q.page || parsed.data.meta.per_page!==q.limit) return c.json(dbFailureBody(),500);
+    return c.json(success(parsed.data));
 });
 
 // ── GET /commerce-analytics/warehouse-metrics?store_id= ─────
 // Per-location: SKU count + total units.
 // Tables: inventory_levels (location_id, available, reserved, incoming)
 //         inventory_locations (id, store_id, name, is_default)
-router.get('/warehouse-metrics', validate('query', MetricPageQuery), async (c) => {
+router.get('/warehouse-metrics', validate('query', CommerceMetricPageQuerySchema), async (c) => {
     const auth = c.get('auth');
-    const q=c.get('validatedQuery') as z.infer<typeof MetricPageQuery>;
+    const q=c.get('validatedQuery') as CommerceMetricPageQuery;
     const storeId=q.store_id;
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
@@ -85,16 +86,18 @@ router.get('/warehouse-metrics', validate('query', MetricPageQuery), async (c) =
     }
 
     const { data,error }=await db.rpc('read_merchant_warehouse_metrics',{p_site_id:storeId,p_page:q.page,p_limit:q.limit});
-    if(error || !data || !Array.isArray(data.warehouses)) return c.json(dbFailureBody(),500);
-    return c.json(success(data));
+    if(error || !data) return c.json(dbFailureBody(),500);
+    const parsed=WarehouseMetricsResultSchema.safeParse({...data,store_id:storeId});
+    if(!parsed.success || parsed.data.meta.page!==q.page || parsed.data.meta.per_page!==q.limit) return c.json(dbFailureBody(),500);
+    return c.json(success(parsed.data));
 });
 
 // ── GET /commerce-analytics/transfer-metrics?store_id= ──────
 // Transfer counts by status + in-transit count.
 // Table: inventory_transfers (site_id, status, deleted_at)
-router.get('/transfer-metrics', async (c) => {
+router.get('/transfer-metrics', validate('query', CommerceMetricStoreQuerySchema), async (c) => {
     const auth = c.get('auth');
-    const storeId = c.req.query('store_id');
+    const {store_id:storeId} = c.get('validatedQuery') as CommerceMetricStoreQuery;
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
@@ -111,15 +114,17 @@ router.get('/transfer-metrics', async (c) => {
     const { data, error } = await db.rpc('read_merchant_transfer_metrics', { p_site_id: storeId });
     // Missing schema and failed dependencies are unavailable, never empty success.
     if (error || !data) return c.json(dbFailureBody(), 500);
-    return c.json(success(data));
+    const parsed=TransferMetricsResultSchema.safeParse({...data,store_id:storeId});
+    if(!parsed.success) return c.json(dbFailureBody(),500);
+    return c.json(success(parsed.data));
 });
 
 // ── GET /commerce-analytics/operations-summary?store_id= ────
 // Consolidated snapshot: orders + POs + transfers + low-stock.
 // Tables: orders, purchase_orders, inventory_transfers, inventory_levels, products
-router.get('/operations-summary', async (c) => {
+router.get('/operations-summary', validate('query', CommerceMetricStoreQuerySchema), async (c) => {
     const auth = c.get('auth');
-    const storeId = c.req.query('store_id');
+    const {store_id:storeId} = c.get('validatedQuery') as CommerceMetricStoreQuery;
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
@@ -168,22 +173,26 @@ router.get('/operations-summary', async (c) => {
             .eq('store_id', storeId).in('products.store_id', [storeId]).lte('available', 10),
         countRows('products', 'store_id'),
     ]);
-    if (!orders.error && !openOrders.error) {
-        summary.order_count = orders.count ?? 0;
-        summary.open_order_count = openOrders.count ?? 0;
+    // A successful HEAD without an observed exact count is unavailable, not zero.
+    const counted = (result: {error: unknown; count: number | null}) => !result.error &&
+        result.count !== null && Number.isSafeInteger(result.count) && result.count >= 0;
+    if (counted(orders) && counted(openOrders)) {
+        summary.order_count = orders.count!;
+        summary.open_order_count = openOrders.count!;
     }
-    if (!purchaseOrders.error && !openPurchaseOrders.error) {
-        summary.po_count = purchaseOrders.count ?? 0;
-        summary.open_po_count = openPurchaseOrders.count ?? 0;
+    if (counted(purchaseOrders) && counted(openPurchaseOrders)) {
+        summary.po_count = purchaseOrders.count!;
+        summary.open_po_count = openPurchaseOrders.count!;
     }
-    if (!transfers.error && !movingTransfers.error) {
-        summary.transfer_count = transfers.count ?? 0;
-        summary.in_transit_transfer_count = movingTransfers.count ?? 0;
+    if (counted(transfers) && counted(movingTransfers)) {
+        summary.transfer_count = transfers.count!;
+        summary.in_transit_transfer_count = movingTransfers.count!;
     }
-    if (!lowStock.error) summary.low_stock_sku_count = lowStock.count ?? 0;
-    if (!products.error) summary.total_sku_count = products.count ?? 0;
-
-    return c.json(success(summary));
+    if (counted(lowStock)) summary.low_stock_sku_count = lowStock.count!;
+    if (counted(products)) summary.total_sku_count = products.count!;
+    const parsed=OperationsSummaryResultSchema.safeParse({...summary,store_id:storeId});
+    if(!parsed.success) return c.json(dbFailureBody(),500);
+    return c.json(success(parsed.data));
 });
 
 export default router;

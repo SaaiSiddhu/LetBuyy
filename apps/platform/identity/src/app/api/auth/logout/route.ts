@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { destroySession } from '@/lib/auth/session'
 import { getSessionCookie, clearSessionCookie } from '@/lib/auth/cookies'
 import { getAccountsUrl, getAdminUrl } from '@/lib/config/urls'
+import { nativeBearer, sameAccountsOrigin } from '@/lib/auth/mobile'
 
 function getAllowedOrigins(): Set<string> {
     return new Set(
@@ -35,20 +36,22 @@ export async function POST(request: NextRequest) {
     const cors = corsHeaders(request)
 
     try {
-        const sessionToken = await getSessionCookie()
+        const bearer = nativeBearer(request)
+        if (bearer && !sameAccountsOrigin(request)) return NextResponse.json({ error: 'Request denied' }, { status: 403 })
+        const sessionToken = bearer || await getSessionCookie()
 
         if (sessionToken) {
             await destroySession(sessionToken)
         }
 
-        await clearSessionCookie()
+        if (!bearer) await clearSessionCookie()
 
         return NextResponse.json({ success: true, redirectTo: '/lookup' }, { headers: cors })
     } catch (error) {
-        console.error('Logout error:', error)
+        console.error(JSON.stringify({ level: 'error', service: 'accounts', reason: 'logout_revoke_unavailable' }))
         // Still clear cookies even if DB fails
-        await clearSessionCookie()
-        return NextResponse.json({ success: true, redirectTo: '/lookup' }, { headers: cors })
+        if (!request.headers.has('Authorization')) await clearSessionCookie()
+        return NextResponse.json({ success: false, localSignOutAllowed: true, error: 'Signed out locally; server revocation could not be confirmed.' }, { status: 503, headers: { ...cors, 'Cache-Control': 'private, no-store' } })
     }
 }
 

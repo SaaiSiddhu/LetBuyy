@@ -8,13 +8,43 @@ import {createLetbuyyCoreLiquidThemeBundleFixture} from '../../packages/theme-en
 import {requireOwnedDatabase} from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
 const owned=requireOwnedDatabase();
 test('fully migrated Core catalog carries current canonical section definitions',()=>{
- const actual=JSON.parse(owned.psql("SELECT (default_template->'liquidBundle')::text FROM themes WHERE slug='letbuyy-core';"));
- const expected=createLetbuyyCoreLiquidThemeBundleFixture();
+ const actual=JSON.parse(owned.psql("SELECT (default_template->'liquidBundle')::text FROM themes WHERE slug='letbuyy-core';")) as {sections:Record<string,unknown>;renderer:{engine:string};package:{slug:string}};
+ const frozen=createLetbuyyCoreLiquidThemeBundleFixture();
  // Compare canonicalized JSON too: PostgreSQL jsonb sorts keys differently from TS insertion order.
  const stable=(value:unknown):string=>JSON.stringify(value,(_key,item)=>item&&typeof item==='object'&&!Array.isArray(item)?Object.fromEntries(Object.entries(item).sort(([a],[b])=>a.localeCompare(b))):item);
- const differences=Object.keys(expected.sections).filter(key=>stable(actual.sections[key])!==stable(expected.sections[key]));
+ // The factory is deliberately frozen at the admitted pre-426 bytes. Fresh
+ // databases apply the guarded 426 catalog footer patch after that seed.
+ const migration=readFileSync('database/supabase/migrations/430_core_public_contact_footer.sql','utf8');
+ const source=migration.match(/v_from jsonb := \$corefooterjson\$(.*?)\$corefooterjson\$::jsonb;/s);
+ const target=migration.match(/v_to jsonb := \$corefooterjson\$(.*?)\$corefooterjson\$::jsonb;/s);
+ assert.ok(source&&target,'migration 426 must declare exact source and target footers');
+ assert.equal(stable(JSON.parse(source[1]) as unknown),stable(frozen.sections.footer),'426 must start from the frozen factory footer');
+ const expectedSections:Record<string,unknown>={...frozen.sections,footer:JSON.parse(target[1]) as unknown};
+ const differences=Object.keys(expectedSections).filter(key=>stable(actual.sections[key])!==stable(expectedSections[key]));
  console.info('OWNED_CORE_CATALOG '+JSON.stringify({sectionCount:Object.keys(actual.sections).length,differences,renderer:actual.renderer.engine,package:actual.package.slug}));
  assert.deepEqual(differences,[],'fresh installations must use the actual current canonical section definitions');
+});
+
+test('public-contact footer catalog migration is exact, reversible, and leaves merchant documents intact',()=>{
+ const forward=readFileSync('database/supabase/migrations/430_core_public_contact_footer.sql','utf8');
+ const rollback=readFileSync('database/supabase/rollback/430_core_public_contact_footer.rollback.sql','utf8');
+ const catalog=()=>owned.psql("SELECT default_template::text FROM themes WHERE slug='letbuyy-core';");
+ const quote=(value:string)=>"'"+value.replaceAll("'","''")+"'";
+ const restore=(value:string)=>owned.script(`UPDATE themes SET default_template=${quote(value)}::jsonb WHERE slug='letbuyy-core';`);
+ const merchantDocuments=()=>owned.psql("SELECT jsonb_build_object('sites',(SELECT count(*) FROM sites),'drafts',(SELECT count(*) FROM theme_editor_drafts),'releases',(SELECT count(*) FROM theme_releases))::text;");
+ const current=catalog(), documents=merchantDocuments();
+ try{
+  owned.script(forward);assert.equal(catalog(),current,'repeat forward preserves exact catalog');
+  owned.script(rollback);const previous=catalog();assert.notEqual(previous,current);
+  assert.equal(JSON.parse(previous).liquidBundle.sections.footer.source.includes('shop.contact_email'),false);
+  owned.script(rollback);assert.equal(catalog(),previous,'repeat rollback is harmless');
+  const drift=JSON.parse(previous);drift.liquidBundle.sections.footer.source+='\n<!-- unknown merchant edit -->';
+  restore(JSON.stringify(drift));const unknown=catalog();
+  assert.throws(()=>owned.script(forward),/Unexpected Core catalog footer/);
+  assert.equal(catalog(),unknown,'unknown footer is untouched');
+  restore(previous);owned.script(forward);assert.equal(catalog(),current);
+  assert.equal(merchantDocuments(),documents,'site, draft, and release counts are unchanged');
+ }finally{restore(current);}
 });
 
 

@@ -1,0 +1,29 @@
+# Field to published-output trace
+
+## What is and is not proven
+
+The [generated per-field inventory](FIELD_SOURCE_REFERENCE_AUDIT.md) enumerates every global, section and reusable-block setting declared by each source 2.1.0 factory, including type, default presence and whether the owning Liquid text contains a literal reference. This is **LETBUYY SOURCE VERIFIED** only. No exposed setting completed the requested `widget → serialized value → draft DB → signed preview → release snapshot → anonymous output` proof in this audit because no project fixture was admitted. Every field's final three columns remain `NV`.
+
+The common serialization path is `page.tsx:501-630`: installed bundle-derived section/settings schema → normalized editor state → `sectionToPortableRecord` and `buildDraftConfig` → `settings_data.current`, `templates[templateKey]`, `templates.header`, `templates.footer`. `page.tsx:693-705` coerces toggles and numbers and otherwise preserves values. `SchemaFormRenderer.tsx:94-299` renders text/textarea/richtext, radio/select, color/color background/scheme, image/video/video URL, toggle/checkbox, range/number, URL, font, HTML/Liquid and product/collection/blog/page/menu controls; unknown types render a preserved read-only value. The gateway validates the whole config with `collectThemeTemplateValidationIssues` (`theme-execution.adapter.ts:293-309`) before CAS RPC save (`:1038-1049`), and builds the release from the saved document (`:1079-1101`). Commerce selects the release snapshot (`store-service.ts:572-725`) and renders Liquid (`composition-engine.tsx:568-768`). Each arrow needs a real value-level test.
+
+| Setting class | Declaration → widget | Source binding/output hypothesis | Exact missing proof |
+| --- | --- | --- | --- |
+| Colors and palette | All ten global `colors` groups → `color` control | Token/layout style or section CSS; literal source scan finds no `settings.primaryColor` etc. in section sources, so adapter/style generation must be traced. | Save changed color, DB readback, preview computed style, published computed style on each theme. |
+| Fonts/typography | `headingFontFamily`, `bodyFontFamily` are `text` in all ten | Font mapping may be in renderer/stylesheet rather than section Liquid. | Valid font choice, fallback, loaded font/DOM computed style and mobile layout. |
+| Spacing/layout | Global `borderRadius:number`, per-section ranges/selects | Literal use varies; range may set attributes/CSS. | Min/max/step coercion on server, serialized number, computed layout at three widths. |
+| SEO/global metadata | `metaDescription`, `socialImageUrl`, `faviconUrl` | Layout has literal metadata references for first two; favicon route/head needs separate trace. | Release head tags, canonical URL/noindex/social image, dangerous URL rejection. |
+| Text/rich content | `text`, `textarea`, `richtext` | Many direct `section.settings` uses; some declared fields lack literal owner source use. | Escaping/sanitization, blank/default, RTL/long text, save/reload and exact public DOM. |
+| Resource references | `product`, `collection`, `page`, `blog`, `menu` widgets | Selection IDs may feed Commerce data-binding (`data-binding-engine.ts:91-184`) without literal Liquid use. | Tenant-owned picker, missing/deleted resource, two resources sharing template, preview/public content and no cross-store leakage. |
+| Images/video/URLs | Image/video/URL controls | Liquid filters and sanitizer mediate output | Picker ownership, media availability, safe protocol, alt text, responsive size, public asset URL. |
+| Conditions/defaults | Field `visible_if`, default and presets in bundle schema | `schema-field-extensions.ts`, `SchemaFormRenderer`, `buildDraftConfig` | Hidden field preserved/reset semantics, dynamic condition, preset application and saved readback. |
+| Section/global CSS | `CustomCssWorkspace` and sanitizer exist | Mount/persistence/scoping not demonstrated | Legal CSS applies only intended scope; blocked URL/import/exfiltration; output in preview/public. |
+| HTML/Liquid | `SchemaFormRenderer` has controls; no `custom-liquid` section in ten bundles | Literal merchant-executable Liquid forbidden; `rich-content` source exists | Safe data-only rich content bounded at gateway and renderer; XSS/SSTI/render-budget tests. |
+| Nested blocks | One reusable `badge` plus inline definitions | `blockToPortableRecord` carries children/order; renderer has child outlet logic | Parent/depth/count refusal; child setting visible in public output, hide/move/undo/reload. |
+
+## Source-reference review targets
+
+The literal scan found, for example, Habitat `habitat-measurement-guide.step1Title/step1Text/...step3Text` without same-section literal `section.settings` references; Dewdrop `category-grid.label1/collection1` and `product-grid.productLimit`; and all ten `app-block-slot.slot`. Some collection/product fields intentionally affect a data-binding adapter rather than appearing as direct Liquid text. Each `no literal` row in the annex must be classified as adapter-consumed, other-template-consumed, intentional dormant, or exposed dead control by an end-to-end test. A static substring alone cannot make that decision.
+
+## Executable future trace procedure
+
+For each *installed* theme and each visible field ID: read exact schema/default → record rendered widget and `visible_if` → enter a distinctive safe value on an owned fixture → save and read draft JSON/version → inspect signed preview DOM/computed style/metadata → publish explicitly → read immutable `theme_releases.template_snapshot` and anonymous storefront → restore via a new controlled release. For resource IDs, also test missing/deleted/other-tenant data. For controls with no semantic output, remove or make read-only in the future implementation. This audit performed none of these writes.

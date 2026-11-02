@@ -4,6 +4,7 @@ import type { StorefrontCollectionSummary } from '@letbuyy/api-client';
 import type { StoreNavigation } from '@letbuyy/tenant-core';
 import { LiquidThemePackageBundleSchema } from '@letbuyy/theme-engine';
 import { catalogDemoNavigationTarget, resolveCatalogDemoRoute, type CatalogDemoRoute } from './catalog-demo-route';
+import { isCatalogDemoVersion } from './catalog-demo-versions';
 import { THREADLINE_DEMO_PRODUCTS, THREADLINE_DEMO_COLLECTIONS, THREADLINE_DEMO_NAVIGATION, withThreadlineDemoContent } from './threadline-demo';
 import { PLAYFIELD_DEMO_PRODUCTS, PLAYFIELD_DEMO_COLLECTIONS, PLAYFIELD_DEMO_COLLECTION_PRODUCT_IDS, PLAYFIELD_DEMO_NAVIGATION, withPlayfieldDemoContent } from './playfield-demo';
 import { CIRCUIT_DEMO_PRODUCTS, CIRCUIT_DEMO_COLLECTIONS, CIRCUIT_DEMO_COLLECTION_PRODUCT_IDS, CIRCUIT_DEMO_NAVIGATION, withCircuitDemoContent } from './circuit-demo';
@@ -56,7 +57,7 @@ export function isTrustedCatalogDemoContent(value: unknown): value is CatalogDem
 
 export function resolveCatalogDemoContent(slug: string, catalogVersion: string, template: Record<string, unknown>, path = '/'): CatalogDemoContent | null {
     const source = Object.prototype.hasOwnProperty.call(sources, slug) ? sources[slug] : undefined;
-    if (!source || catalogVersion !== '2.0.0') return null;
+    if (!source || !isCatalogDemoVersion(catalogVersion)) return null;
     const result = LiquidThemePackageBundleSchema.safeParse(template.liquidBundle);
     if (!result.success || result.data.package.slug !== slug || result.data.package.version !== catalogVersion) return null;
     const content: CatalogDemoContent = {
@@ -84,7 +85,7 @@ export function resolveCatalogDemoContent(slug: string, catalogVersion: string, 
 
 /** Signed/bounded visitor identity is supplied by the trusted server demo adapter. */
 export function catalogDemoStateNamespace(slug: string, version: string, visitorId: string): string | null {
-    if (!Object.prototype.hasOwnProperty.call(sources, slug) || version !== '2.0.0' || !/^[a-zA-Z0-9_-]{16,120}$/.test(visitorId)) return null;
+    if (!Object.prototype.hasOwnProperty.call(sources, slug) || !isCatalogDemoVersion(version) || !/^[a-zA-Z0-9_-]{16,120}$/.test(visitorId)) return null;
     return `catalog-demo:${slug}:${version}:${visitorId}`;
 }
 /** Unknown or unsupplied membership stays unavailable, including a valid empty collection. */

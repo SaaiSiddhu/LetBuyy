@@ -12,7 +12,7 @@ test('hot gateway list routes do not run exact counts by default', () => {
   ]) {
     const source = read(path);
     assert.doesNotMatch(source, /\.select\('\*',\s*\{\s*count:\s*'exact'\s*\}\)/, path);
-    assert.match(source, /withCount \? \{ count: 'exact' \} : undefined/, path);
+    assert.match(source, path.endsWith('/products.ts') ? /query\.withCount \|\| head \? \{ count: 'exact', head \} : undefined/ : /withCount \? \{ count: 'exact' \} : undefined/, path);
     assert.match(source, /cursorPaginated/, path);
     assert.match(source, /encodeListCursor/, path);
     assert.match(source, /decodeListCursor/, path);

@@ -85,7 +85,7 @@ test('LB-12 UI: transitional email entry makes an explicit login choice without 
 
 test('LB-12 UI: canonical credential form sends registration to Identity with human proof and CSRF headers', () => {
   assert.match(credentials,/mode === 'sign-in' \? '\/api\/buyer\/login' : '\/api\/buyer\/register'/);
-  assert.match(credentials,/headers: getAuthHeaders\(\)/);
+  assert.match(credentials,/headers: \(await getAuthHeaders\(\)\)/);
   assert.match(credentials,/JSON\.stringify\(\{ email: email\.trim\(\), password, turnstileToken:/);
   assert.doesNotMatch(credentials,/\/api\/customer\/register/);
 });

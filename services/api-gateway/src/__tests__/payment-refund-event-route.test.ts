@@ -54,6 +54,13 @@ function installPostgrest(options: { missingAttempt?: boolean } = {}) {
         if (path === 'rpc/resolve_payment_for_refund_provider_event') {
             return json({ id: PAYMENT, site_id: STORE, order_id: ORDER, provider: 'razorpay', provider_payment_id: 'pay_test_1' });
         }
+        if (path === 'payments') {
+            assert.equal(url.searchParams.get('id'), `eq.${PAYMENT}`);
+            assert.equal(url.searchParams.get('site_id'), `eq.${STORE}`);
+            assert.equal(url.searchParams.get('provider'), 'eq.razorpay');
+            assert.equal(url.searchParams.get('deleted_at'), 'is.null');
+            return json({ credential_id: null });
+        }
         if (path === 'payment_attempts') {
             if (!options.missingAttempt) return url.searchParams.has('metadata') ? json({ id: ATTEMPT }) : json([]);
             return url.searchParams.has('metadata') ? json(null) : json([]);
@@ -108,6 +115,7 @@ test('valid provider refund reaches the reserved attempt and the canonical atomi
     assert.equal(payload.data.result.outcome, 'pending');
     const resolver = calls.find((call) => call.path === 'rpc/resolve_payment_for_refund_provider_event');
     assert.deepEqual(resolver?.body, { p_provider: 'razorpay', p_provider_payment_id: 'pay_test_1' });
+    assert.ok(calls.find((call) => call.path === 'payments'), 'legacy internal callback proves the payment has no merchant credential binding');
     const rpc = calls.find((call) => call.path === 'rpc/reconcile_payment_refund_attempt');
     assert.deepEqual(rpc?.body, {
         p_payment_id: PAYMENT,

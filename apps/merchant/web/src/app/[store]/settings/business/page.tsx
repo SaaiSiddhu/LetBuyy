@@ -2,7 +2,7 @@
 
 import { useReadRequest } from '@/lib/api/use-read-request'
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import {
@@ -31,6 +31,7 @@ import {
     useToast,
 } from '@letbuyy/ui'
 import { SettingsPane } from '@/components/settings/SettingsPane'
+import { businessProfileForStorePatch } from '@/lib/store-profile-business'
 import { deriveGstStateCode, gstStateName, gstStateOptions } from '@/lib/india/gst-states'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -44,6 +45,10 @@ interface KycDocument {
     document_type: KycDocumentType
     status: KycDocumentStatus
     document_number_last4: string | null
+    has_private_upload?: boolean
+    evidence_scan_status?: 'pending' | 'clean' | 'rejected' | null
+    provider_unavailable?: boolean
+    requires_resubmission?: boolean
     rejection_reason: string | null
     submitted_at: string | null
     verified_at: string | null
@@ -60,6 +65,8 @@ interface KycRequirement {
 interface KycOverview {
     overall_status: KycOverallStatus
     provider_mode: 'sandbox' | 'live'
+    private_upload_available: boolean
+    india_direct_upload_available?: boolean
     required_documents: KycRequirement[]
     documents: KycDocument[]
     next_action: string | null
@@ -88,6 +95,27 @@ interface BusinessForm {
 
 type SaveState = 'saved' | 'unsaved' | 'saving'
 type ApiPayload = { data?: unknown; error?: string | { message?: string } }
+
+interface IndiaUploadTicket {
+    receipt_id: string
+    method: 'POST'
+    url: string
+    fields: Record<string, string>
+    maximum_object_bytes: number
+}
+
+function indiaUploadTicket(value: unknown): IndiaUploadTicket {
+    if (!isRecord(value) || typeof value.receipt_id !== 'string' || value.method !== 'POST'
+        || typeof value.url !== 'string' || !isRecord(value.fields)
+        || typeof value.maximum_object_bytes !== 'number') throw new Error('Upload ticket is unavailable. Retry later.')
+    const url = new URL(value.url)
+    if (url.protocol !== 'https:' || !/^[a-z0-9][a-z0-9-]*\.s3\.ap-south-1\.amazonaws\.com$/.test(url.hostname)
+        || url.pathname !== '/' || url.search || url.username || url.password
+        || Object.values(value.fields).some(field => typeof field !== 'string')) {
+        throw new Error('Upload ticket is invalid. Retry later.')
+    }
+    return value as unknown as IndiaUploadTicket
+}
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -121,7 +149,7 @@ const DOC_META: Record<KycDocumentType, { title: string; Icon: LucideIcon; hint:
     bank_proof: {
         title: 'Settlement bank account',
         Icon: CreditCard,
-        hint: 'The bank account that receives your payouts. We verify it before releasing settlements.',
+        hint: 'Upload proof of your intended settlement bank. Your payment provider must separately verify and approve the actual payout destination.',
         last4Label: 'Last 4 of account number',
         last4Hint: 'Only the last 4 digits are stored',
     },
@@ -135,7 +163,7 @@ const DOC_META: Record<KycDocumentType, { title: string; Icon: LucideIcon; hint:
     gst_certificate: {
         title: 'GST certificate',
         Icon: FileText,
-        hint: 'Required only if your business is GST-registered. Enables GST tax invoices.',
+        hint: 'Required for business verification when GST-registered. GST invoices use your saved supplier and tax details.',
         last4Label: 'Last 4 of GSTIN',
         last4Hint: 'Last 4 characters of your GSTIN',
     },
@@ -150,10 +178,23 @@ const DOC_META: Record<KycDocumentType, { title: string; Icon: LucideIcon; hint:
 
 const STATUS_META: Record<KycDocumentStatus, { label: string; Icon: LucideIcon; tone: string }> = {
     verified: { label: 'Verified', Icon: CheckCircle2, tone: 'verified' },
-    submitted: { label: 'Under review', Icon: Clock, tone: 'submitted' },
+    submitted: { label: 'Awaiting provider review', Icon: Clock, tone: 'submitted' },
     needs_review: { label: 'Needs review', Icon: AlertTriangle, tone: 'review' },
     rejected: { label: 'Rejected', Icon: AlertCircle, tone: 'rejected' },
     draft: { label: 'Not submitted', Icon: Circle, tone: 'draft' },
+}
+
+function displayDocumentStatus(status: KycDocumentStatus, document: KycDocument | undefined, mode: KycOverview['provider_mode'] | undefined) {
+    if (document?.evidence_scan_status === 'rejected') return { label: 'Security scan failed', Icon: AlertCircle, tone: 'rejected' }
+    if (document?.requires_resubmission) return { label: 'Replace document', Icon: AlertTriangle, tone: 'review' }
+    if (document && !document.has_private_upload && status !== 'draft' && status !== 'rejected')
+        return { label: 'Upload required', Icon: AlertTriangle, tone: 'review' }
+    if (mode === 'sandbox' && status === 'verified') return { label: 'Sandbox reference', Icon: Info, tone: 'submitted' }
+    if (status !== 'submitted') return STATUS_META[status]
+    if (document?.evidence_scan_status === 'pending') return { label: 'No scan result yet', Icon: Clock, tone: 'submitted' }
+    if (document?.provider_unavailable) return { label: 'Provider unavailable', Icon: AlertTriangle, tone: 'review' }
+    if (mode === 'sandbox') return { label: 'Sandbox received', Icon: Info, tone: 'submitted' }
+    return STATUS_META.submitted
 }
 
 const OVERALL_META: Record<KycOverallStatus, { title: string; variant: 'info' | 'success' | 'warning' | 'critical' }> = {
@@ -161,7 +202,7 @@ const OVERALL_META: Record<KycOverallStatus, { title: string; variant: 'info' | 
     in_progress: { title: 'Verification in progress', variant: 'info' },
     needs_review: { title: 'A document needs review', variant: 'warning' },
     rejected: { title: 'A document was rejected', variant: 'critical' },
-    not_started: { title: 'Verify your business to receive payouts', variant: 'info' },
+    not_started: { title: 'Business verification has not started', variant: 'info' },
 }
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
@@ -208,6 +249,8 @@ export default function BusinessSettingsPage() {
     const [data, setData] = useState<BusinessForm>(EMPTY_BUSINESS)
     const [initialData, setInitialData] = useState<BusinessForm | null>(null)
     const [rawBP, setRawBP] = useState<Record<string, unknown>>({})
+    const [version, setVersion] = useState<number | null>(null)
+    const [nextInvoiceNumber, setNextInvoiceNumber] = useState<number | null>(null)
 
     const [kyc, setKyc] = useState<KycOverview | null>(null)
     const [commission, setCommission] = useState<CommissionOverview | null>(null)
@@ -215,8 +258,10 @@ export default function BusinessSettingsPage() {
     const [optionalError, setOptionalError] = useState<string | null>(null)
 
     // Per-document evidence inputs + in-flight flags
-    const [docInputs, setDocInputs] = useState<Record<string, { last4: string; file_url: string }>>({})
+    const [docInputs, setDocInputs] = useState<Record<string, { last4: string }>>({})
+    const [docFiles, setDocFiles] = useState<Record<string, File | null>>({})
     const [docBusy, setDocBusy] = useState<Record<string, boolean>>({})
+    const refreshRetryKeys = useRef<Record<string, string>>({})
 
     const gstStates = useMemo(() => gstStateOptions(), [])
 
@@ -266,6 +311,7 @@ export default function BusinessSettingsPage() {
         void loadOptional(signal)
         setLoading(true)
         setLoadError(null)
+        setNextInvoiceNumber(null)
         try {
             const storeRes = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, { cache: 'no-store', signal: readSignal })
             const storePayload = await storeRes.json().catch(() => null) as ApiPayload | null
@@ -273,16 +319,20 @@ export default function BusinessSettingsPage() {
             if (!storeRes.ok) throw new Error(getPayloadError(storePayload, 'Unable to load business details'))
             const d = isRecord(storePayload?.data) ? storePayload.data : null
             if (!d) throw new Error('Business details were not returned')
+            if (typeof d.version !== 'number') throw new Error('Store revision was not returned')
+            setVersion(d.version)
+            const counter = Number(d.invoice_number_next)
+            setNextInvoiceNumber(Number.isSafeInteger(counter) && counter > 0 ? counter : null)
 
             const bp = isRecord(d.business_profile) ? d.business_profile : {}
             setRawBP(bp)
             const next: BusinessForm = {
-                legal_name: rs(d, 'legal_name') || rs(bp, 'legal_name'),
+                legal_name: rs(d, 'legal_name'),
                 trade_name: rs(bp, 'trade_name'),
                 entity_type: rs(bp, 'entity_type'),
                 pan_last4: rs(bp, 'pan_last4'),
-                gstin: rs(d, 'gstin') || rs(bp, 'gstin'),
-                gst_state_code: rs(d, 'gst_state_code') || rs(bp, 'gst_state_code'),
+                gstin: rs(d, 'gstin'),
+                gst_state_code: rs(d, 'gst_state_code'),
                 invoice_prefix: rs(d, 'invoice_prefix', 'LBY'),
             }
             setData(next)
@@ -322,17 +372,25 @@ export default function BusinessSettingsPage() {
 
     const handleSave = useCallback(async () => {
         if (!hasUnsavedChanges || saveState === 'saving') return
+        if (version === null) {
+            notify({ title: 'Reload required', description: 'Store revision is unavailable. Reload before saving.', variant: 'warning' })
+            return
+        }
         setSaveState('saving')
         try {
-            const business_profile: Record<string, unknown> = { ...rawBP }
-            business_profile.trade_name = data.trade_name || undefined
-            business_profile.entity_type = data.entity_type || undefined
-            business_profile.pan_last4 = data.pan_last4.length === 4 ? data.pan_last4 : undefined
+            const business_profile = businessProfileForStorePatch(rawBP)
+            if (data.trade_name.trim()) business_profile.trade_name = data.trade_name.trim()
+            else delete business_profile.trade_name
+            if (data.entity_type) business_profile.entity_type = data.entity_type
+            else delete business_profile.entity_type
+            if (data.pan_last4.length === 4) business_profile.pan_last4 = data.pan_last4
+            else delete business_profile.pan_last4
 
             const res = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
+                    version,
                     legal_name: data.legal_name || null,
                     gstin: data.gstin || null,
                     gst_state_code: data.gst_state_code || null,
@@ -342,7 +400,10 @@ export default function BusinessSettingsPage() {
             })
             const payload = await res.json().catch(() => null) as ApiPayload | null
             if (!res.ok) throw new Error(getPayloadError(payload, 'Unable to save business details'))
+            const saved = isRecord(payload?.data) ? payload.data : null
+            if (typeof saved?.version !== 'number') throw new Error('Save completed but revision readback is unavailable. Reload to confirm current settings.')
 
+            setVersion(saved.version)
             setInitialData(data)
             setSaveState('saved')
             notify({ title: 'Business details saved', description: 'Legal identity and GST details updated.', variant: 'success' })
@@ -351,7 +412,7 @@ export default function BusinessSettingsPage() {
             setSaveState('unsaved')
             notify({ title: 'Could not save business details', description: msg, variant: 'critical' })
         }
-    }, [data, hasUnsavedChanges, notify, rawBP, saveState, store])
+    }, [data, hasUnsavedChanges, notify, rawBP, saveState, store, version])
 
     const handleDiscard = useCallback(() => {
         if (!initialData) return
@@ -361,52 +422,108 @@ export default function BusinessSettingsPage() {
 
     // ── KYC submit / refresh ──────────────────────────────────────────────────
 
-    const docInput = useCallback((type: KycDocumentType) => docInputs[type] || { last4: '', file_url: '' }, [docInputs])
-    const setDocInput = useCallback((type: KycDocumentType, patch: Partial<{ last4: string; file_url: string }>) => {
-        setDocInputs((cur) => ({ ...cur, [type]: { ...(cur[type] || { last4: '', file_url: '' }), ...patch } }))
+    const docInput = useCallback((type: KycDocumentType) => docInputs[type] || { last4: '' }, [docInputs])
+    const setDocInput = useCallback((type: KycDocumentType, patch: Partial<{ last4: string }>) => {
+        setDocInputs((cur) => ({ ...cur, [type]: { ...(cur[type] || { last4: '' }), ...patch } }))
     }, [])
 
     const submitDocument = useCallback(async (type: KycDocumentType) => {
-        const input = docInputs[type] || { last4: '', file_url: '' }
-        if (!input.last4.trim() && !input.file_url.trim()) {
-            notify({ title: 'Add a reference', description: 'Enter the last 4 digits or a secure document link.', variant: 'warning' })
+        const input = docInputs[type] || { last4: '' }
+        const file = docFiles[type]
+        if (!kyc?.private_upload_available && !kyc?.india_direct_upload_available) {
+            notify({ title: 'Private upload unavailable', description: 'Your saved status remains visible. Retry when private document storage is available.', variant: 'warning' })
+            return
+        }
+        if (!/^[A-Za-z0-9]{2,4}$/.test(input.last4.trim())) {
+            notify({ title: 'Add a reference', description: 'Enter only the final 2–4 reference characters.', variant: 'warning' })
+            return
+        }
+        if (!file) {
+            notify({ title: 'Choose a document', description: 'Upload a PDF, JPEG, or PNG proof under 5 MB.', variant: 'warning' })
+            return
+        }
+        if (file.size < 1 || file.size > 5 * 1024 * 1024
+            || !['application/pdf', 'image/jpeg', 'image/png'].includes(file.type)) {
+            notify({ title: 'Choose another document', description: 'Use a PDF, JPEG, or PNG under 5 MB.', variant: 'warning' })
             return
         }
         setDocBusy((cur) => ({ ...cur, [type]: true }))
         try {
-            const res = await fetch(`/api/stores/${encodeURIComponent(store)}/kyc`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    document_type: type,
-                    document_number_last4: input.last4.trim() || undefined,
-                    file_url: input.file_url.trim() || undefined,
-                }),
-            })
-            const payload = await res.json().catch(() => null) as ApiPayload | null
-            if (!res.ok) throw new Error(getPayloadError(payload, 'Unable to submit document'))
-            if (isRecord(payload?.data) && isRecord((payload.data as Record<string, unknown>).overview)) {
-                setKyc((payload.data as { overview: KycOverview }).overview)
+            const path = `/api/stores/${encodeURIComponent(store)}/kyc`
+            if (kyc?.india_direct_upload_available) {
+                // File bytes travel from the browser to S3 Mumbai. The app
+                // receives only a digest, receipt, and opaque object version.
+                const bytes = await file.arrayBuffer()
+                const hash = await crypto.subtle.digest('SHA-256', bytes)
+                const sha256 = Array.from(new Uint8Array(hash), byte => byte.toString(16).padStart(2, '0')).join('')
+                const key = crypto.randomUUID()
+                const intentResponse = await fetch(`${path}/upload-intent`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Idempotency-Key': key },
+                    body: JSON.stringify({ document_type: type, document_number_last4: input.last4.trim(),
+                        content_type: file.type, byte_size: file.size, sha256_hex: sha256 }),
+                })
+                const intentPayload = await intentResponse.json().catch(() => null) as ApiPayload | null
+                if (!intentResponse.ok) throw new Error(getPayloadError(intentPayload, 'Unable to prepare document upload'))
+                const ticket = indiaUploadTicket(intentPayload?.data)
+                if (file.size > ticket.maximum_object_bytes) throw new Error('Document exceeds the upload limit.')
+                const s3Form = new FormData()
+                for (const [name, value] of Object.entries(ticket.fields)) s3Form.set(name, value)
+                s3Form.set('file', file)
+                const uploaded = await fetch(ticket.url, {
+                    method: 'POST', body: s3Form, credentials: 'omit', redirect: 'error',
+                })
+                if (uploaded.status !== 201) throw new Error('Private storage did not accept the document. Retry upload.')
+                const versionId = uploaded.headers.get('x-amz-version-id')
+                if (!versionId || versionId === 'null') throw new Error('Private storage did not return a version. Retry upload.')
+                const completion = await fetch(`${path}/upload-complete`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Idempotency-Key': key },
+                    body: JSON.stringify({ receipt_id: ticket.receipt_id, version_id: versionId }),
+                })
+                const completionPayload = await completion.json().catch(() => null) as ApiPayload | null
+                if (!completion.ok) throw new Error(getPayloadError(completionPayload, 'Unable to confirm document upload'))
+                const statusResponse = await fetch(path, { cache: 'no-store' })
+                const statusPayload = await statusResponse.json().catch(() => null) as ApiPayload | null
+                if (!statusResponse.ok || !isRecord(statusPayload?.data)) {
+                    throw new Error('Document was received, but current status could not be loaded. Refresh status before retrying.')
+                }
+                setKyc(statusPayload.data as unknown as KycOverview)
+            } else {
+                const form = new FormData()
+                form.set('document_type', type)
+                form.set('document_number_last4', input.last4.trim())
+                form.set('file', file)
+                const res = await fetch(`${path}/upload`, { method: 'POST', body: form })
+                const payload = await res.json().catch(() => null) as ApiPayload | null
+                if (!res.ok) throw new Error(getPayloadError(payload, 'Unable to submit document'))
+                if (isRecord(payload?.data) && isRecord((payload.data as Record<string, unknown>).overview)) {
+                    setKyc((payload.data as { overview: KycOverview }).overview)
+                }
             }
-            setDocInputs((cur) => ({ ...cur, [type]: { last4: '', file_url: '' } }))
-            notify({ title: 'Document submitted', description: `${DOC_META[type].title} sent for verification.`, variant: 'success' })
+            setDocInputs((cur) => ({ ...cur, [type]: { last4: '' } }))
+            setDocFiles((cur) => ({ ...cur, [type]: null }))
+            notify({ title: 'Document received', description: `${DOC_META[type].title} is stored privately. No security scan result is available yet; this does not authorize payouts.`, variant: 'success' })
         } catch (err) {
             const msg = err instanceof Error ? err.message : 'Unable to submit document'
             notify({ title: 'Submission failed', description: msg, variant: 'critical' })
         } finally {
             setDocBusy((cur) => ({ ...cur, [type]: false }))
         }
-    }, [docInputs, notify, store])
+    }, [docFiles, docInputs, kyc?.private_upload_available, kyc?.india_direct_upload_available, notify, store])
 
     const refreshDocument = useCallback(async (doc: KycDocument) => {
+        const operation = `${store}:${doc.id}:${doc.updated_at || ''}`
+        const retryKey = refreshRetryKeys.current[operation] ||= crypto.randomUUID()
         setDocBusy((cur) => ({ ...cur, [doc.document_type]: true }))
         try {
-            const res = await fetch(`/api/stores/${encodeURIComponent(store)}/kyc/documents/${doc.id}/refresh`, { method: 'POST' })
+            const res = await fetch(`/api/stores/${encodeURIComponent(store)}/kyc/documents/${doc.id}/refresh`, {
+                method: 'POST', headers: { 'X-Idempotency-Key': retryKey },
+            })
             const payload = await res.json().catch(() => null) as ApiPayload | null
             if (!res.ok) throw new Error(getPayloadError(payload, 'Unable to refresh status'))
             if (isRecord(payload?.data) && isRecord((payload.data as Record<string, unknown>).overview)) {
                 setKyc((payload.data as { overview: KycOverview }).overview)
             }
+            delete refreshRetryKeys.current[operation]
             notify({ title: 'Status refreshed', description: `${DOC_META[doc.document_type].title} status updated.`, variant: 'info' })
         } catch (err) {
             const msg = err instanceof Error ? err.message : 'Unable to refresh status'
@@ -445,12 +562,8 @@ export default function BusinessSettingsPage() {
             { document_type: 'bank_proof', title: 'Bank proof', required: true, status: null },
             { document_type: 'address_proof', title: 'Business address proof', required: true, status: null },
             { document_type: 'gst_certificate', title: 'GST certificate', required: false, status: null },
+            { document_type: 'identity_proof', title: 'Identity proof', required: false, status: null },
         ])
-    // Aadhaar / identity proof is an optional KYC step the gateway accepts but
-    // does not list as required — surface it so merchants can complete it.
-    const renderDocs: KycRequirement[] = requiredDocs.some((d) => d.document_type === 'identity_proof')
-        ? requiredDocs
-        : [...requiredDocs, { document_type: 'identity_proof', title: 'Identity proof', required: false, status: docByType.get('identity_proof')?.status ?? null }]
 
     return (
         <SettingsPane
@@ -475,11 +588,15 @@ export default function BusinessSettingsPage() {
 
             {/* ── Verification status ───────────────────────────────────────── */}
             {kyc && overall && (
-                <Banner variant={overall.variant} title={overall.title}>
-                    {kyc.next_action || 'Complete the required documents below to verify your business.'}
-                    {kyc.provider_mode === 'sandbox' && (
-                        <span className="settings-business-sandbox-note"> Verification is running in sandbox mode.</span>
-                    )}
+                <Banner variant={!kyc.private_upload_available && !kyc.india_direct_upload_available ? 'warning' : kyc.provider_mode === 'sandbox' ? 'info' : overall.variant}
+                    title={!kyc.private_upload_available && !kyc.india_direct_upload_available ? 'Private uploads unavailable' : kyc.india_direct_upload_available ? 'India upload test' : kyc.provider_mode === 'sandbox' ? 'Sandbox verification' : overall.title}>
+                    {!kyc.private_upload_available && !kyc.india_direct_upload_available
+                        ? kyc.next_action || 'Your saved status remains visible. Retry later.'
+                        : kyc.india_direct_upload_available
+                        ? 'Direct private upload is available in this test environment. A received file remains pending security scan and provider review; it cannot enable live payouts.'
+                        : kyc.provider_mode === 'sandbox'
+                        ? kyc.next_action || 'Sandbox uploads are not provider reviewed and cannot enable live payouts.'
+                        : kyc.next_action || 'Complete the required documents below to verify your business.'}
                 </Banner>
             )}
 
@@ -488,7 +605,7 @@ export default function BusinessSettingsPage() {
                 <Section variant="grouped" title="Business identity" >
 
                         <div className="settings-general-hint">
-                            Used on GST invoices and shared with payment partners for settlements. Keep this exactly as on your registration documents.
+                            Used for applicable GST invoices and payment-provider onboarding. Keep this exactly as on your registration documents.
                         </div>
                         <Input
                             label="Legal business name"
@@ -517,7 +634,7 @@ export default function BusinessSettingsPage() {
                             onChange={(e) => set('pan_last4', e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4))}
                             placeholder="1234F"
                             maxLength={4}
-                            helperText="We only store the last 4 characters of your PAN. Upload the full PAN under verification below."
+                            helperText="We store only the last 4 characters here. Upload your PAN document privately below; these reference characters do not verify it."
                         />
 
                 </Section>
@@ -551,7 +668,9 @@ export default function BusinessSettingsPage() {
                             onChange={(e) => set('invoice_prefix', e.target.value.slice(0, 20))}
                             placeholder="LBY"
                             maxLength={20}
-                            helperText="Appears before invoice numbers, e.g. LBY-0001."
+                            helperText={nextInvoiceNumber === null
+                                ? 'Format: prefix followed by a six-digit or longer sequence. Reload to see the current counter.'
+                                : `Current next format: ${data.invoice_prefix || 'LBY'}-${String(nextInvoiceNumber).padStart(6, '0')}. The number is assigned atomically when an invoice is issued and may advance before your next order.`}
                         />
 
                 </Section>
@@ -561,20 +680,20 @@ export default function BusinessSettingsPage() {
             <Section variant="grouped" title="Verification &amp; KYC" >
 
                     <div className="settings-general-hint">
-                        Verified businesses can receive payouts. We store only the last 4 digits of each document number. Add a secure link only if your document is hosted privately (for example DigiLocker).
+                        Upload PDF, JPEG, or PNG evidence privately (up to 5 MB). LetBuyy verification requires an approved review provider. Your payment provider must separately approve live payments and the settlement bank.
                     </div>
 
                     <div className="settings-business-kyc-list">
-                        {renderDocs.map((req) => {
+                        {requiredDocs.map((req) => {
                             const meta = DOC_META[req.document_type]
                             const DocIcon = meta.Icon
                             const existing = docByType.get(req.document_type)
                             const status: KycDocumentStatus = existing?.status || 'draft'
-                            const sMeta = STATUS_META[status]
+                            const sMeta = displayDocumentStatus(status, existing, kyc?.provider_mode)
                             const SIcon = sMeta.Icon
                             const input = docInput(req.document_type)
                             const busy = !!docBusy[req.document_type]
-                            const isVerified = status === 'verified'
+                            const isVerified = kyc?.provider_mode === 'live' && status === 'verified'
 
                             return (
                                 <div key={req.document_type} className="settings-business-kyc-item">
@@ -589,7 +708,8 @@ export default function BusinessSettingsPage() {
                                             </div>
                                             <span className="settings-business-kyc-hint">{meta.hint}</span>
                                         </div>
-                                        <span className={`settings-business-status settings-business-status--${sMeta.tone}`}>
+                                        <span role="status" aria-live="polite" aria-atomic="true"
+                                            className={`settings-business-status settings-business-status--${sMeta.tone}`}>
                                             <SIcon className="letbuyy-icon" aria-hidden="true" />
                                             {sMeta.label}
                                         </span>
@@ -602,30 +722,34 @@ export default function BusinessSettingsPage() {
                                         </div>
                                     )}
 
-                                    {!isVerified && (
-                                        <div className="settings-business-kyc-form">
+                                    <div className="settings-business-kyc-form">
+                                            {isVerified && (
+                                                <div className="settings-general-hint">
+                                                    Replacing this document resets its LetBuyy verification. Provider review is required again; bank changes must also be approved by your payment provider.
+                                                </div>
+                                            )}
                                             <Input
                                                 label={meta.last4Label}
                                                 value={input.last4}
-                                                onChange={(e) => setDocInput(req.document_type, { last4: e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8) })}
+                                                disabled={!kyc?.private_upload_available && !kyc?.india_direct_upload_available}
+                                                onChange={(e) => setDocInput(req.document_type, { last4: e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4) })}
                                                 placeholder="••••"
-                                                maxLength={8}
+                                                maxLength={4}
                                                 helperText={meta.last4Hint}
                                             />
-                                            <Input
-                                                label="Secure document link (optional)"
-                                                value={input.file_url}
-                                                onChange={(e) => setDocInput(req.document_type, { file_url: e.target.value })}
-                                                placeholder="https://…"
-                                                type="url"
-                                            />
+                                            <label className="settings-business-kyc-upload">
+                                                <span>Document file</span>
+                                                <input key={`${req.document_type}-${existing?.updated_at || 'new'}`} type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
+                                                    disabled={busy || (!kyc?.private_upload_available && !kyc?.india_direct_upload_available)}
+                                                    onChange={(event) => setDocFiles((cur) => ({ ...cur, [req.document_type]: event.target.files?.[0] || null }))}
+                                                    aria-label={`Upload ${meta.title}`} />
+                                            </label>
                                             <div className="settings-business-kyc-actions">
-                                                <Button variant="primary" onClick={() => void submitDocument(req.document_type)} loading={busy}>
-                                                    {existing ? 'Resubmit' : 'Submit for verification'}
+                                                <Button variant="primary" onClick={() => void submitDocument(req.document_type)} loading={busy} disabled={!kyc?.private_upload_available && !kyc?.india_direct_upload_available}>
+                                                    {isVerified ? 'Replace verified document' : existing ? 'Resubmit document' : 'Upload document'}
                                                 </Button>
                                             </div>
-                                        </div>
-                                    )}
+                                    </div>
 
                                     {existing && (status === 'submitted' || status === 'needs_review') && (
                                         <div className="settings-business-kyc-actions settings-business-kyc-actions--inline">
@@ -636,6 +760,7 @@ export default function BusinessSettingsPage() {
                                             {existing.document_number_last4 && (
                                                 <span className="settings-business-kyc-stored">Stored: ••••{existing.document_number_last4}</span>
                                             )}
+                                            {existing.has_private_upload && <span className="settings-business-kyc-stored">Private file received</span>}
                                         </div>
                                     )}
 
@@ -678,29 +803,29 @@ export default function BusinessSettingsPage() {
                         <div className="settings-business-fee-row">
                             <span className="settings-business-fee-icon settings-business-fee-icon--muted"><CreditCard className="letbuyy-icon" aria-hidden="true" /></span>
                             <div className="settings-business-fee-body">
-                                <span className="settings-business-fee-label">Payment provider fees</span>
+                                <span className="settings-business-fee-label">Payment provider charges</span>
                                 <span className="settings-business-fee-desc">
-                                    Your connected provider may charge processing fees and applicable tax. Confirm the actual charges in your provider statement. Configure your connection in{' '}
+                                    Your provider applies charges under your own agreement. Check its statement for actual fees and taxes. Configure your account in{' '}
                                     <Link href={`/${store}/settings/payments`} className="settings-business-link">Payments</Link>.
                                 </span>
                             </div>
-                            <span className="settings-business-fee-value settings-business-fee-value--muted">Provider statement</span>
+                            <span className="settings-business-fee-value settings-business-fee-value--muted">See statement</span>
                         </div>
 
                         <div className="settings-business-fee-row settings-business-fee-row--net">
                             <span className="settings-business-fee-icon"><CheckCircle2 className="letbuyy-icon" aria-hidden="true" /></span>
                             <div className="settings-business-fee-body">
                                 <span className="settings-business-fee-label">Actual settlement</span>
-                                <span className="settings-business-fee-desc">Check payout statements and your payment provider for the final settled amount and bank status.</span>
+                                <span className="settings-business-fee-desc">Your provider determines actual settlement after its fees, taxes, refunds, and any holds. Check its verified bank destination and payout statement.</span>
                             </div>
-                            <span className="settings-business-fee-value settings-business-fee-value--net">See payouts</span>
+                            <span className="settings-business-fee-value settings-business-fee-value--net">Provider statement</span>
                         </div>
                     </div>
 
                     {commission && commission.summary.gross_amount_minor > 0 && (
                         <div className="settings-business-settlement">
                             <div className="settings-business-settlement-item">
-                                <span className="settings-business-settlement-label">Gross sales</span>
+                                <span className="settings-business-settlement-label">Paid orders in recent fee records</span>
                                 <span className="settings-business-settlement-value">{formatInr(commission.summary.gross_amount_minor, currency)}</span>
                             </div>
                             <div className="settings-business-settlement-item">
@@ -717,9 +842,9 @@ export default function BusinessSettingsPage() {
                     <div className="settings-business-fee-foot">
                         <Lock className="letbuyy-icon" aria-hidden="true" />
                         <span>
-                            Track every payout under{' '}
-                            <Link href={`/${store}/payouts`} className="settings-business-link">Payouts</Link>.
-                            LetBuyy&apos;s 0% commission is permanent.
+                            This fee summary does not confirm a bank settlement. Check{' '}
+                            <Link href={`/${store}/payouts`} className="settings-business-link">Payouts</Link>{' '}
+                            and your provider statement for fees, refunds, and holds. LetBuyy&apos;s 0% commission is permanent.
                         </span>
                     </div>
 
@@ -731,7 +856,7 @@ export default function BusinessSettingsPage() {
                     <div className="settings-business-privacy">
                         <Info className="letbuyy-icon" aria-hidden="true" />
                         <span>
-                            We follow data minimisation: only the last 4 digits of PAN, bank, and ID numbers are stored. Full documents are verified by our KYC partner and never kept in your store&apos;s media library.
+                            Reference digits do not establish identity or bank ownership. Never upload identity or bank documents to the public media library.
                         </span>
                     </div>
 

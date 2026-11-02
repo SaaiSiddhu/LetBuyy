@@ -22,23 +22,41 @@ import { FIXED_PUBLIC_ERROR_MESSAGES } from '../lib/public-errors';
 import { toInrMinorUnits } from '@letbuyy/payments';
 import { registerStorefrontCheckoutPaymentRoutes } from '../routes/storefront/checkout-payment-routes';
 import { registerStorefrontInternalPaymentRoutes } from '../routes/storefront/internal-payment-routes';
+import { encryptPaymentSecret } from '../lib/store-payment-config';
 
 const POSTGREST_ORIGIN = 'https://late-capture.fake-postgrest.test';
 const STORE = 'aaaaaaaa-0000-4000-8000-0000000000a1';
 const ORDER = 'bbbbbbbb-0000-4000-8000-0000000000b1';
 const KEY_SECRET = 'rzp-test-secret-for-route-tests-only';
+const SHARED_SECRET = 'different-shared-secret-must-not-verify';
+const STORE_KEY_ID = 'rzp_test_XXXXXXXXXXXX';
+const STORE_CREDENTIAL_ID = 'cccccccc-0000-4000-8000-0000000000c1';
+const ENCRYPTION_KEY = 'owned-route-test-encryption-key-2026';
 const INTERNAL_SECRET = 'internal-secret-for-route-tests-only';
+const STORE_PAYMENT_SETTINGS = encryptPaymentSecret(KEY_SECRET, ENCRYPTION_KEY,
+    { siteId: STORE, keyId: STORE_KEY_ID, environment: 'sandbox' }).then(ciphertext => ({
+    mode: 'ownAccount', razorpay: {
+        key_id: STORE_KEY_ID, key_secret_ciphertext: ciphertext, verified: true, test_mode: true,
+    },
+}));
+const PINNED_STORE_CREDENTIAL = encryptPaymentSecret(KEY_SECRET, ENCRYPTION_KEY,
+    { siteId: STORE, keyId: STORE_KEY_ID, environment: 'sandbox', credentialId: STORE_CREDENTIAL_ID });
 
 type Json = Record<string, unknown>;
 type Captured = { method: string; path: string; body: unknown };
 
-function env(): Env {
+function env(providerPayment: Json = {}): Env {
     return {
         ENVIRONMENT: 'test',
         SUPABASE_URL: POSTGREST_ORIGIN,
         SUPABASE_SERVICE_ROLE_KEY: 'test-service-role-key',
-        RAZORPAY_KEY_ID: 'rzp_route_test_key',
-        RAZORPAY_KEY_SECRET: KEY_SECRET,
+        RAZORPAY_KEY_ID: 'rzp_test_YYYYYYYYYYYY',
+        RAZORPAY_KEY_SECRET: SHARED_SECRET,
+        PAYMENT_CONFIG_ENCRYPTION_KEY: ENCRYPTION_KEY,
+        HOSTED_RAZORPAY_TEST_ADAPTER: { fetchPayment: async () => ({
+            id: 'pay_route', order_id: 'order_RZP_route', amount: 50000,
+            currency: 'INR', status: 'captured', captured: true, ...providerPayment,
+        }) },
         INTERNAL_API_SECRET: INTERNAL_SECRET,
     } as unknown as Env;
 }
@@ -48,12 +66,23 @@ function jsonResponse(body: unknown, status = 200): Response {
 }
 
 // A fake PostgREST that serves exactly what these routes read and records every write.
-function installFakePostgrest(fixture: { order?: Json; rpcResult?: Json }) {
+function installFakePostgrest(fixture: { order?: Json; rpcResult?: Json; onlinePaymentEnabled?: boolean;
+    providerOrderAmount?: number; providerOrderCurrency?: string; pinnedMerchantAccount?: boolean }) {
     const originalFetch = globalThis.fetch;
     const requests: Captured[] = [];
+    const razorpayRequests: Captured[] = [];
 
     globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
         const url = new URL(typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url);
+        if (url.origin === 'https://api.razorpay.com') {
+            assert.equal(init?.headers && new Headers(init.headers).get('Authorization'),
+                `Basic ${Buffer.from(`${STORE_KEY_ID}:${KEY_SECRET}`).toString('base64')}`,
+                'the provider request must use this store’s saved account');
+            razorpayRequests.push({ method: init?.method || 'GET', path: url.pathname, body: init?.body });
+            if (url.pathname === '/v1/orders') return jsonResponse({ id: 'order_RZP_route',
+                amount: fixture.providerOrderAmount ?? 50000, currency: fixture.providerOrderCurrency ?? 'INR' });
+            throw new Error(`unexpected provider request ${url.pathname}`);
+        }
         assert.equal(url.origin, POSTGREST_ORIGIN, 'the route must only talk to the fake PostgREST');
         const method = (init?.method || 'GET').toUpperCase();
         const path = url.pathname.replace('/rest/v1/', '');
@@ -61,7 +90,28 @@ function installFakePostgrest(fixture: { order?: Json; rpcResult?: Json }) {
         requests.push({ method, path, body });
 
         if (path === 'orders' && method === 'GET') {
+            if (url.searchParams.get('select') === 'id') return jsonResponse({ id: ORDER });
             return fixture.order ? jsonResponse(fixture.order) : jsonResponse({ code: 'PGRST116', message: 'no rows' }, 406);
+        }
+        if (path === 'payments' && method === 'GET') {
+            return jsonResponse([]); // legacy callback fixture has no merchant-bound canonical payment
+        }
+        if (path === 'checkout_sessions' && method === 'GET') {
+            return jsonResponse([]); // legacy callback fixture has no pinned merchant checkout credential
+        }
+        if (path === 'sites' && method === 'GET') {
+            return jsonResponse({ id: STORE, online_payment_enabled: fixture.onlinePaymentEnabled !== false,
+                payment_settings: fixture.pinnedMerchantAccount ? { mode: 'ownAccount', razorpay: {
+                    credential_id: STORE_CREDENTIAL_ID, key_id: STORE_KEY_ID, verified: true, test_mode: true,
+                } } : await STORE_PAYMENT_SETTINGS });
+        }
+        if (path === 'payment_credentials' && method === 'GET' && fixture.pinnedMerchantAccount) {
+            assert.equal(url.searchParams.get('id'), `eq.${STORE_CREDENTIAL_ID}`);
+            assert.equal(url.searchParams.get('site_id'), `eq.${STORE}`);
+            assert.equal(url.searchParams.get('selected_for_checkout'), 'eq.true');
+            return jsonResponse({ id: STORE_CREDENTIAL_ID, site_id: STORE, provider: 'razorpay', mode: 'sandbox',
+                status: 'active', provider_key_id: STORE_KEY_ID, last_verified_at: new Date().toISOString(),
+                encrypted_credentials: { key_secret_ciphertext: await PINNED_STORE_CREDENTIAL } });
         }
         if (path === 'idempotency_keys' && method === 'POST') {
             return jsonResponse({ id: 'idem-claim-1', request_hash: 'h', status: 'processing', response_body: null, status_code: null, locked_until: null }, 201);
@@ -75,11 +125,15 @@ function installFakePostgrest(fixture: { order?: Json; rpcResult?: Json }) {
         if (path === 'rpc/confirm_order_payment_with_ledger' && method === 'POST') {
             return jsonResponse(fixture.rpcResult ?? {});
         }
+        if (path === 'rpc/attach_order_payment_reference_with_ledger' && method === 'POST') {
+            return jsonResponse({ id: ORDER, payment_id: 'order_RZP_route' });
+        }
         return jsonResponse({ code: 'UNEXPECTED', message: `unexpected ${method} ${path}` }, 500);
     }) as typeof globalThis.fetch;
 
     return {
         requests,
+        razorpayRequests,
         rpcCalls: () => requests.filter((r) => r.path === 'rpc/confirm_order_payment_with_ledger'),
         idempotencyCompletion: () => requests.find((r) => r.path === 'idempotency_keys' && r.method === 'PATCH'
             && (r.body as Json | undefined)?.status === 'completed')?.body as Json | undefined,
@@ -89,16 +143,16 @@ function installFakePostgrest(fixture: { order?: Json; rpcResult?: Json }) {
 
 type PaidEventCall = { orderId: string; idempotencyKey: string };
 
-function withEnv(app: Hono<{ Bindings: Env }>) {
+function withEnv(app: Hono<{ Bindings: Env }>, providerPayment?: Json) {
     app.use('*', async (c, next) => {
-        (c as unknown as { env: Env }).env = env();
+        (c as unknown as { env: Env }).env = env(providerPayment);
         await next();
     });
 }
 
-function storefrontApp(paidEvents: PaidEventCall[]) {
+function storefrontApp(paidEvents: PaidEventCall[], providerPayment?: Json) {
     const app = new Hono<{ Bindings: Env }>();
-    withEnv(app);
+    withEnv(app, providerPayment);
     registerStorefrontCheckoutPaymentRoutes(app, {
         loadPublishedStore: async () => ({ id: STORE, subdomain: 'late-capture' }) as never,
         getRequestId: () => 'req-route-test',
@@ -146,6 +200,7 @@ function webhookConfirm(app: Hono<{ Bindings: Env }>) {
         headers: { 'content-type': 'application/json', 'X-Internal-API-Secret': INTERNAL_SECRET },
         body: JSON.stringify({
             orderId: ORDER,
+            storeId: STORE,
             provider: 'razorpay',
             paymentId: 'pay_route',
             providerOrderId: 'order_RZP_route',
@@ -210,6 +265,82 @@ test('verify: a confirmed capture announces order.paid once, keyed on the provid
     assert.deepEqual(paidEvents, [{ orderId: ORDER, idempotencyKey: 'razorpay:pay_route' }],
         'the same key the webhook path uses, so the pair produces one event');
 });
+
+test('unversioned fallback keys cannot start a new direct payment', async (t) => {
+    const postgrest = installFakePostgrest({ order: PENDING_ORDER });
+    t.after(() => postgrest.restore());
+    const response = await storefrontApp([]).request('/late-capture/payments/razorpay/order', {
+        method: 'POST', headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ orderId: ORDER, idempotencyKey: 'razorpay-order-own-account' }),
+    });
+    assert.equal(response.status, 410);
+    assert.equal((await response.json() as { error: { code: string } }).error.code, 'HOSTED_CHECKOUT_REQUIRED');
+    assert.equal(postgrest.razorpayRequests.length, 0);
+    assert.equal(postgrest.requests.filter(request => request.path === 'orders' || request.path.startsWith('rpc/')).length, 0);
+});
+
+test('a saved merchant account cannot start an unpinned direct storefront payment', async t => {
+    const postgrest = installFakePostgrest({ order: PENDING_ORDER, pinnedMerchantAccount: true });
+    t.after(() => postgrest.restore());
+    const response = await storefrontApp([]).request('/late-capture/payments/razorpay/order', {
+        method: 'POST', headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ orderId: ORDER, idempotencyKey: 'retired-direct-merchant-start' }),
+    });
+    assert.equal(response.status, 410);
+    assert.equal((await response.json() as { error: { code: string } }).error.code, 'HOSTED_CHECKOUT_REQUIRED');
+    assert.equal(postgrest.razorpayRequests.length, 0, 'no provider order can be opened');
+    assert.equal(postgrest.requests.filter(request => request.path === 'orders' || request.path.startsWith('rpc/')).length, 0,
+        'no order or payment reference is touched');
+});
+
+test('verify: disabled merchant payment setup refuses a signed capture before ledger writes', async (t) => {
+    const postgrest = installFakePostgrest({ order: PENDING_ORDER, rpcResult: CONFIRMED, onlinePaymentEnabled: false });
+    t.after(() => postgrest.restore());
+    const paidEvents: PaidEventCall[] = [];
+
+    const response = await verify(storefrontApp(paidEvents));
+    assert.equal(response.status, 503);
+    assert.equal(postgrest.rpcCalls().length, 0);
+    assert.deepEqual(paidEvents, []);
+});
+
+test('verify: shared platform signature cannot confirm a merchant-owned payment', async (t) => {
+    const postgrest = installFakePostgrest({ order: PENDING_ORDER, rpcResult: CONFIRMED });
+    t.after(() => postgrest.restore());
+    const paidEvents: PaidEventCall[] = [];
+    const providerOrderId = 'order_RZP_route';
+    const paymentId = 'pay_route';
+    const sharedSignature = createHmac('sha256', SHARED_SECRET).update(`${providerOrderId}|${paymentId}`).digest('hex');
+
+    const response = await storefrontApp(paidEvents).request('/late-capture/payments/razorpay/verify', {
+        method: 'POST', headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ orderId: ORDER, razorpay_order_id: providerOrderId,
+            razorpay_payment_id: paymentId, razorpay_signature: sharedSignature,
+            idempotencyKey: 'razorpay-verify-shared-signature' }),
+    });
+    assert.equal(response.status, 400);
+    assert.equal(postgrest.rpcCalls().length, 0);
+    assert.deepEqual(paidEvents, []);
+});
+
+for (const scenario of [
+    { name: 'uncaptured', payment: { status: 'authorized', captured: false }, status: 409 },
+    { name: 'wrong amount', payment: { amount: 100 }, status: 409 },
+    { name: 'wrong provider order', payment: { order_id: 'order_other' }, status: 409 },
+    { name: 'wrong currency', payment: { currency: 'USD' }, status: 409 },
+    { name: 'provider outage', payment: { error: { code: 'UNAVAILABLE' } }, status: 503 },
+]) {
+    test(`verify: ${scenario.name} provider payment never posts ledger or paid event`, async (t) => {
+        const postgrest = installFakePostgrest({ order: PENDING_ORDER, rpcResult: CONFIRMED });
+        t.after(() => postgrest.restore());
+        const paidEvents: PaidEventCall[] = [];
+
+        const response = await verify(storefrontApp(paidEvents, scenario.payment));
+        assert.equal(response.status, scenario.status);
+        assert.equal(postgrest.rpcCalls().length, 0);
+        assert.deepEqual(paidEvents, []);
+    });
+}
 
 test('verify: when the webhook confirmed first, the buyer\'s callback succeeds instead of erroring after payment', async (t) => {
     // confirm_order_payment writes the PAYMENT id into orders.payment_id, so this is the row the buyer's

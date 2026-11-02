@@ -17,7 +17,7 @@ const combined = `${page}\n${wizard}\n${detail}\n${client}`;
 for (const fragment of [
   "checkout?.dns_records.map",
   "domainsClient",
-  "Buy a",
+  "Find a new domain",
   "Ownership",
   "DNS",
   "SSL",
@@ -25,6 +25,11 @@ for (const fragment of [
 ]) {
   reporter.assert(combined.includes(fragment), `domains settings subsystem missing ${fragment}`);
 }
+
+// Registration stays unavailable until server-owned payment proof is implemented.
+// A source guard must not force the UI to advertise an unavailable purchase.
+reporter.assert(page.includes('Registration through LetBuyy will be available after secure payment verification is ready.'),
+  'domain search must disclose the live registration gate');
 
 reporter.assert(
   combined.includes("apex_mx_warning") || combined.includes("This domain receives email"),

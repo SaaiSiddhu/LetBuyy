@@ -1,5 +1,6 @@
-// LB-10 dispatch — the cancelled/refunded templates (lb10-order-emails) now need a producer that renders +
-// enqueues the email, the orders status-update handler must invoke it, and the worker must recognise the jobs.
+// LB-10 dispatch follows the canonical transactional order-email outbox.
+// The earlier direct route enqueue was retired when migration 402 made the
+// order mutation and delivery intent one database transaction.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -7,55 +8,41 @@ import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
-const read = (p) => readFileSync(resolve(ROOT, p), 'utf8');
-const producer = read('services/api-gateway/src/lib/order-confirmation-email.ts');
+const read = (path) => readFileSync(resolve(ROOT, path), 'utf8');
+const capture = read('database/supabase/migrations/402_atomic_order_lifecycle_email.sql');
 const orders = read('services/api-gateway/src/routes/orders.ts');
-const worker = read('services/queue-workers/src/index.ts');
+const risk = read('services/api-gateway/src/routes/order-risk.ts');
+const worker = read('services/queue-workers/src/platform-queue-consumer.ts');
+const delivery = read('services/queue-workers/src/order-lifecycle-email.ts');
 
-test('LB-10: order-confirmation-email exports enqueueOrderLifecycleEmail for cancelled + refunded', () => {
-  assert.match(producer, /export async function enqueueOrderLifecycleEmail/);
-  assert.match(producer, /export type OrderLifecycleEmailKind = 'cancelled' \| 'refunded'/);
-  // produces the matching job types
-  assert.match(producer, /'email\.order_cancelled'/);
-  assert.match(producer, /'email\.order_refunded'/);
+test('LB-10: order changes capture one transactional, immutable-context email intent', () => {
+  assert.match(capture, /CREATE CONSTRAINT TRIGGER order_lifecycle_email_v1 AFTER INSERT OR UPDATE ON public\.orders\s+DEFERRABLE INITIALLY DEFERRED/);
+  assert.match(capture, /intent_key:='order-email-v1:'\|\|o\.store_id::text\|\|':'\|\|o\.id::text\|\|':'\|\|txid_current\(\)::text/);
+  assert.match(capture, /WHEN o\.status='cancelled' THEN 'cancelled'/);
+  assert.match(capture, /WHEN o\.refund_status IS DISTINCT FROM OLD\.refund_status THEN 'refund_updated'/);
+  assert.match(capture, /'store_name',s\.name/);
+  assert.match(capture, /INSERT INTO public\.email_logs[\s\S]*?INSERT INTO public\.outbox_events[\s\S]*?'order\.lifecycle_email_queued'/);
 });
 
-test('LB-10: the producer renders a real recipient email (subject + greeting) and bails without an address', () => {
-  // buildOrderLifecycleEmail returns null when there is no customer_email, mirroring order_confirmation
-  assert.match(producer, /function buildOrderLifecycleEmail/);
-  assert.match(producer, /if \(!recipient\) return null/);
-  assert.match(producer, /Order \$\{orderLabel\} cancelled/);
-  assert.match(producer, /Refund issued for order \$\{orderLabel\}/);
-  // refunded uses the refund amount (falls back to order total)
-  assert.match(producer, /money\(refundAmount \?\? order\.total, currency\)/);
+test('LB-10: merchant transitions and refund completion use the order mutation trigger without a second sender', () => {
+  assert.match(orders, /const data = await service\.transitionStatus\(orderId, tenant, body\.status, body\)/);
+  assert.match(orders, /const \{data,replayed\} = await service\.completeRefund\(orderId, tenant, body, stepUp\.metadata\)/);
+  assert.doesNotMatch(orders, /enqueueOrderLifecycleEmail\(/);
 });
 
-test('LB-10: the order status-update handler dispatches the lifecycle email for cancelled/refunded', () => {
-  assert.match(orders, /import \{ enqueueOrderLifecycleEmail \} from '\.\.\/lib\/order-confirmation-email'/);
-  // wired inside the PATCH /:id transition, gated on the terminal statuses, best-effort (try/catch)
-  assert.match(orders, /body\.status === 'cancelled' \|\| body\.status === 'refunded'/);
-  const handler = orders.slice(orders.indexOf("router.patch('/:id'"));
-  assert.match(handler, /await enqueueOrderLifecycleEmail\(c\.env, db, \{[\s\S]{0,200}kind: body\.status/);
+test('LB-10: COD reject and timeout both persist cancellation through the order table', () => {
+  const reject = risk.slice(risk.indexOf("orderCodRouter.post('/:id/cod/confirm'"), risk.indexOf("orderCodRouter.post('/:id/cod/timeout'"));
+  const timeout = risk.slice(risk.indexOf("orderCodRouter.post('/:id/cod/timeout'"));
+  assert.match(reject, /status: 'cancelled'[\s\S]*?\.from\('orders'\)\s*\.update\(updates\)/);
+  assert.match(timeout, /\.from\('orders'\)\s*\.update\(\{[\s\S]*?status: 'cancelled'/);
+  for (const path of [reject, timeout]) assert.match(path, /\.eq\('store_id', tenant\.siteId\)/);
+  assert.doesNotMatch(risk, /enqueueOrderLifecycleEmail\(/);
 });
 
-test('LB-10: the queue worker treats the cancelled/refunded jobs as transactional emails', () => {
-  const fn = worker.slice(worker.indexOf('function isTransactionalEmailJob'), worker.indexOf('function isTransactionalEmailJob') + 320);
-  assert.match(fn, /jobType === 'email\.order_cancelled'/);
-  assert.match(fn, /jobType === 'email\.order_refunded'/);
-});
-
-// Dispatch-gap closure: every terminal cancel/refund path (not just PATCH /:id) must notify the customer.
-test('LB-10: the canonical refund/complete path also dispatches the refunded email', () => {
-  const completeHandler = orders.slice(
-    orders.indexOf("router.post('/:id/refund/complete'"),
-    orders.indexOf("router.post('/:id/refund'"),
-  );
-  assert.match(completeHandler, /enqueueOrderLifecycleEmail\(c\.env, db, \{[\s\S]{0,160}kind: 'refunded'/);
-});
-
-test('LB-10: both COD cancellation paths (reject + timeout) dispatch the cancelled email', () => {
-  const risk = read('services/api-gateway/src/routes/order-risk.ts');
-  assert.match(risk, /import \{ enqueueOrderLifecycleEmail \} from '\.\.\/lib\/order-confirmation-email'/);
-  const matches = risk.match(/enqueueOrderLifecycleEmail\(c\.env, db, \{[\s\S]{0,160}kind: 'cancelled'/g) || [];
-  assert.ok(matches.length >= 2, 'COD reject and COD timeout must each enqueue the cancelled email');
+test('LB-10: the existing queue worker sends only a leased snapshot and records the provider receipt', () => {
+  assert.match(worker, /job\.job_type==='order\.lifecycle_email_queued'\)return sendOrderLifecycleEmail\(rpc,this\.env,job,workerId\)/);
+  assert.match(delivery, /db\.rpc\('order_lifecycle_email_delivery_v1'/);
+  assert.match(delivery, /db\.rpc\('seal_order_lifecycle_email_message_v1'/);
+  assert.match(delivery, /sendResendEmail\(/);
+  assert.match(delivery, /db\.rpc\('complete_order_lifecycle_email_v1'/);
 });

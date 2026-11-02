@@ -35,9 +35,13 @@ const GUARDED = [
 // Rollbacks written after this phase are held to the forward rule below. Earlier files are covered
 // by the explicit list above; raising this number is not a fix.
 const RATCHET_FROM_EXCLUSIVE = 245;
-const PROFILE_GUARDED = ['388_cart_order_fact_snapshots.rollback.sql'];
+// These use the stronger finite typed-ABI guard checked by guardedRestorations.
+const PROFILE_GUARDED = [
+    '388_cart_order_fact_snapshots.rollback.sql',
+    '411_authoritative_checkout_gst.rollback.sql',
+];
 
-const CANDIDATE_GUARDED = [280,285,288,291,293,294,296,303,305];
+const CANDIDATE_GUARDED = [280,285,288,291,293,294,296,303,305,401,410,411,412,414,417,420,425,426,428,429];
 
 const rollbackFiles = () => readdirSync(rollbackDir).filter((n) => n.endsWith('.sql')).sort();
 const read = (name) => readFileSync(join(rollbackDir, name), 'utf8');
@@ -129,12 +133,13 @@ test('candidate guards bind every restored ABI and precede any schema or functio
         assert.match(guard,/proargnames\[1:v_live.pronargs\]/);
         assert.match(guard,/prorettype IS DISTINCT FROM/);
         assert.match(guard,/proretset IS DISTINCT FROM/);
-        assert.match(guard,new RegExp(`rollback ${n} refuses to run`));
+        const historicalLabel = ({420:416,425:421,426:422,428:424,429:425})[n] ?? n;
+        assert.match(guard,new RegExp(`rollback ${historicalLabel} refuses to run`));
         assert.ok(sql.indexOf(guard) < sql.search(/^\s*(?:CREATE OR REPLACE FUNCTION|DROP |ALTER )/m),`${name}: guard before first mutation`);
         assert.match(sql,/^BEGIN;$/m);
         assert.match(sql,/^COMMIT;$/m);
     }
-    assert.equal(restorers,13);
+    assert.equal(restorers,28);
 });
 
 test('current Console, staff and subscription rollback guards bind all live signatures before mutation', () => {
@@ -151,7 +156,8 @@ test('current Console, staff and subscription rollback guards bind all live sign
         assert.match(guard,/proargnames\[1:v_live.pronargs\]/);
         assert.match(guard,/prorettype IS DISTINCT FROM/);
         assert.match(guard,/proretset IS DISTINCT FROM/);
-        assert.match(guard,new RegExp(`rollback ${n} refuses to run`));
+        const historicalLabel = ({420:416,425:421,426:422,428:424,429:425})[n] ?? n;
+        assert.match(guard,new RegExp(`rollback ${historicalLabel} refuses to run`));
         assert.ok(sql.indexOf(guard)<sql.search(/^\s*(?:CREATE OR REPLACE FUNCTION|DROP |ALTER )/m));
         if (n===329) {
             assert.equal((guard.match(/'public\.complete_console_mfa_v1\(/g)||[]).length,2,
@@ -843,4 +849,39 @@ test('current cart snapshot rollback retains four complete ABI proofs and refuse
   assert.ok(original.includes(before),before);
   assert.deepEqual(guardedRestorations(original.replace(before,after)),[],before);
  }
+});
+
+test('Wave 6 pre-use refusals cannot hide a write or user RPC after a typed guard',()=>{
+    const sql=read('410_checkout_custom_host_derivation.rollback.sql');
+    assert.deepEqual(guardedRestorations(sql),['guard_checkout_domain_v1']);
+    const oldBlock='DO $$ BEGIN';
+    for(const injected of [
+        'PERFORM public.unknown_mutation();',
+        "EXECUTE 'DROP FUNCTION public.guard_checkout_domain_v1()';",
+        'UPDATE public.site_domains SET purpose=purpose;',
+        'SELECT public.unknown_mutation();',
+        'COMMIT;'
+    ]) {
+        const changed=sql.replace(oldBlock,()=>oldBlock+' '+injected);
+        assert.notEqual(changed,sql);
+        assert.deepEqual(guardedRestorations(changed),[],injected);
+    }
+    const invoice=read('412_invoice_checkout_fact_parity.rollback.sql');
+    assert.deepEqual(guardedRestorations(invoice),['issue_gst_invoice','capture_order_lifecycle_email_v1']);
+    assert.deepEqual(guardedRestorations(invoice.replace('EXECUTE d;','EXECUTE d; EXECUTE d;')),[],
+        'the dynamic invoice rollback boundary must stay exactly pinned');
+});
+
+
+test('managed-payment pre-use refusal remains exact and rejects injected effects',()=>{
+ const sql=read('417_managed_sandbox_payment_connections.rollback.sql');
+ assert.deepEqual(guardedRestorations(sql),['commit_store_payment_configuration_v1']);
+ for(const extra of ['PERFORM public.unknown_mutation();','UPDATE public.sites SET updated_at=now();',"EXECUTE 'DROP TABLE public.sites';"]){
+  const changed=sql.replace('DO $guard$ BEGIN',()=>`DO $guard$ BEGIN ${extra}`);
+  assert.notEqual(changed,sql);
+  assert.deepEqual(guardedRestorations(changed),[]);
+ }
+ const changed=sql.replace("IF EXISTS(SELECT 1 FROM public.payment_credentials", "IF false AND EXISTS(SELECT 1 FROM public.payment_credentials");
+ assert.notEqual(changed,sql);
+ assert.deepEqual(guardedRestorations(changed),[]);
 });

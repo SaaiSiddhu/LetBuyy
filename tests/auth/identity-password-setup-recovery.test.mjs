@@ -4,6 +4,9 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
 import ts from 'typescript';
+import { createRequire } from 'node:module';
+
+const { z } = createRequire(new URL('../../packages/auth-core/package.json', import.meta.url))('zod');
 
 function execute(file, name, context, effect = false) {
   const source = ts.createSourceFile(file, readFileSync(file, 'utf8'), ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
@@ -98,8 +101,8 @@ for (const type of ['email_verify', 'magic_link']) {
 test('magic link for an account with a password preserves normal sign-in', async () => {
   const f = verificationFixture('magic_link', true);
   const response = await execute(verify, 'GET', f.ctx)(f.request);
-  assert.equal(response.location, '/onboarding');
-  assert.ok(f.calls.includes('session'));
+  assert.equal(response.location, '/login');
+  assert.ok(!f.calls.includes('session'));
   assert.ok(!f.calls.includes('intent'));
 });
 
@@ -112,7 +115,7 @@ function passwordProxy(cookies = {}) {
     crypto: { getRandomValues: bytes => bytes.fill(7) }, require: name => {
       if (name === 'next/server') return { NextResponse: { next: () => next, redirect: url => ({ kind: 'redirect', location: url.pathname }) } };
       if (name === '@/lib/config/urls') return { getAdminUrl: () => 'https://admin.letbuyy.com' };
-      if (name === '@letbuyy/auth-core') return { LETBUYY_MERCHANT_SESSION_COOKIE: 'lb_session', verifyLetbuyySessionCookieValue: () => ({ accepted: false }) };
+      if (name === '@letbuyy/auth-core') return { LETBUYY_MERCHANT_SESSION_COOKIE: 'lb_session', verifyLetbuyySessionCookieValue: () => ({ accepted: false }), resolveLetbuyyPlatformCookieNames: () => ({ session:'lb_session', csrf:'letbuyy_csrf', legacyCsrf:'lb_csrf', passwordSetIntent:'lb_password_set_intent' }) };
       throw new Error(`Unexpected runtime import: ${name}`);
     } };
   new vm.Script(output).runInContext(vm.createContext(ctx));
@@ -131,6 +134,8 @@ for (const cookie of [undefined, 'synthetic-intent-id']) {
 test('the public password shell never lets an unverified POST change a password', async () => {
   const calls = [];
   const response = await execute(setPassword, 'POST', {
+    PasswordUpdateSchema: z.object({ password: z.string().min(12).max(128) }),
+    MobileAuthError: class extends Error {},
     checkRateLimit: async () => ({ allowed: true }), validateCsrf: () => true,
     getPasswordSetIntentCookie: async () => undefined,
     identityApiRequest: async () => { calls.push('mutation'); },

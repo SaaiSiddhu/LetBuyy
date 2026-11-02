@@ -29,6 +29,9 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
+				<string>com.letbuyy.store.accounts</string>
+				<string>com.letbuyy.store.accounts.staging</string>
+				<string>com.letbuyy.store.accounts.development</string>
 				<string>com.googleusercontent.apps.468123057306-pu3n7p8i7ad7fjgjf487noteqjogjk9n</string>
 			</array>
 		</dict>
@@ -39,6 +42,8 @@
 	<string>468123057306-pu3n7p8i7ad7fjgjf487noteqjogjk9n.apps.googleusercontent.com</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>FlutterDeepLinkingEnabled</key>
+	<false/>
 	<key>NSCameraUsageDescription</key>
 	<string>LetBuyy uses the camera to capture product, logo, and verification images.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
@@ -57,7 +62,7 @@
 					<key>UISceneConfigurationName</key>
 					<string>flutter</string>
 					<key>UISceneDelegateClassName</key>
-					<string>FlutterSceneDelegate</string>
+					<string>$(PRODUCT_MODULE_NAME).MerchantSceneDelegate</string>
 					<key>UISceneStoryboardFile</key>
 					<string>Main</string>
 				</dict>

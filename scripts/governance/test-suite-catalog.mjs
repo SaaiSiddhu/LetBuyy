@@ -44,6 +44,10 @@ export const HISTORICAL_GATEWAY_MIGRATION_CEILINGS = Object.freeze({
     'services/api-gateway/src/__tests__/owned-db/theme-draft-cas.postgres.test.ts': 390,
     'services/api-gateway/src/__tests__/owned-db/theme-editor-template-keys.postgres.test.ts': 390,
     'services/api-gateway/src/__tests__/owned-db/pantry-variant-facts.postgres.test.ts': 387,
+    // These exercise the admitted 389/391 capture and rollback contract before
+    // successor migration 432 changes the public catalog pointer to 2.1.0.
+    'services/api-gateway/src/__tests__/owned-db/niche-theme-promotion.postgres.test.ts': 431,
+    'services/api-gateway/src/__tests__/owned-db/theme-shared-groups.postgres.test.ts': 431,
 });
 
 export const ROOT_GATEWAY_DB_SUITE_DIR = 'tests/owned-db';
@@ -69,6 +73,7 @@ export const ROOT_GATEWAY_DB_SUITES = [
     'tests/owned-db/order-lifecycle-email.postgres.test.ts',
     'tests/owned-db/notification-worker-transport.postgres.test.ts',
     'tests/owned-db/merchant-collection-membership-browser.postgres.test.ts',
+    'tests/owned-db/merchant-accounts-browser.postgres.test.ts',
     'tests/owned-db/merchant-dashboard-access.postgres.test.ts',
     'tests/owned-db/merchant-entitlement-authority-browser.postgres.test.ts',
     'tests/owned-db/merchant-export.postgres.test.ts',
@@ -90,6 +95,7 @@ export const ROOT_GATEWAY_DB_SUITES = [
     'tests/owned-db/platform-job-recovery.postgres.test.ts',
     'tests/owned-db/private-reel-intake.postgres.test.ts',
     'tests/owned-db/published-storefront-recovery-browser.postgres.test.ts',
+    'tests/owned-db/razorpay-callback-order-ledger.postgres.test.ts',
     'tests/owned-db/reel-review-revisions.postgres.test.ts',
     'tests/owned-db/storefront-access-worker.postgres.test.ts',
     'tests/owned-db/storefront-buyer-support-recovery-browser.postgres.test.ts',

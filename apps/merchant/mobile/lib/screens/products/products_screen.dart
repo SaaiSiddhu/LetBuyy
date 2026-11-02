@@ -1,3 +1,4 @@
+import 'dart:async';
 import '../../services/api_client.dart';
 import '../../widgets/shared/merchant_export_share.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +7,7 @@ import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' as mobile_tokens;
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../app/store_context.dart';
+import '../../app/routes.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' hide LoadingOverlay;
 import '../../services/store_service.dart';
 
@@ -13,7 +15,7 @@ import '../../services/product_service.dart';
 import '../../models/store_model.dart';
 import '../../theme/app_theme_colors.dart';
 import 'product_form_screen.dart';
-import 'import_products_screen.dart';
+import 'csv_import_screen.dart';
 import '../../widgets/shared/cached_merchant_image.dart';
 import '../../widgets/shared/accessible_tap_region.dart';
 import '../../widgets/shared/loading_overlay.dart';
@@ -36,6 +38,12 @@ class _ProductsScreenState extends State<ProductsScreen> {
   bool _isSeedingSample = false;
   String? _loadError;
 
+  Object? _viewContext;
+  ({Object? key, String? store})? _menuView;
+  int _loadGeneration = 0, _page = 1;
+  bool _hasMore = false, _offline = false;
+  Timer? _searchDebounce;
+
   // Search & Filter State
   String _searchQuery = '';
   String _statusFilter =
@@ -56,125 +64,133 @@ class _ProductsScreenState extends State<ProductsScreen> {
   @override
   void initState() {
     super.initState();
+    _viewContext = context.read<StoreContext>().requestContextKey;
     _loadData();
   }
 
   @override
   void dispose() {
+    _searchDebounce?.cancel();
     _searchController.dispose();
     _scrollController.dispose();
     super.dispose();
   }
 
+  bool _scopeCurrent(Object? captured, String? storeId) =>
+      mounted &&
+      context.read<StoreContext>().requestContextKey == captured &&
+      context.read<StoreContext>().selectedStoreId == storeId;
+
   Future<void> _loadData() async {
+    if (!mounted) return;
+    final generation = ++_loadGeneration;
     setState(() {
       _isLoading = true;
       _loadError = null;
+      _hasMore = false;
+      _storeProducts = [];
+      _selectedProductIds.clear();
     });
     try {
-      final productService = context.read<ProductService>();
-
-      final store = await context.read<StoreContext>().ensureSelectedStore();
-
-      if (store != null) {
-        // Fetch products for this store via API
-        final storeProducts = await productService.fetchProducts(store.id);
-
-        if (!mounted) return;
+      final stores = context.read<StoreContext>();
+      final store = await stores.ensureSelectedStore();
+      if (!mounted || generation != _loadGeneration) return;
+      final captured = stores.requestContextKey;
+      _viewContext = captured;
+      _store = store;
+      if (store == null) {
         setState(() {
-          _store = store;
-          _storeProducts = storeProducts;
-          _totalSellerProducts = storeProducts.length;
+          _isLoading = false;
+          _loadError = 'Select a store to view products.';
+        });
+        return;
+      }
+      final service = context.read<ProductService>();
+      final sort = switch (_sortBy) {
+        'name_asc' || 'name_desc' => 'name',
+        'price_asc' || 'price_desc' => 'price',
+        _ => 'created_at',
+      };
+      final rows = await service.fetchProducts(
+        store.id,
+        page: _page,
+        search: _searchQuery,
+        sort: sort,
+        order: _sortBy == 'newest' || _sortBy.endsWith('_desc')
+            ? 'desc'
+            : 'asc',
+        status: ['out_of_stock', 'low_stock'].contains(_statusFilter)
+            ? 'all'
+            : _statusFilter,
+        stockFilter: switch (_statusFilter) {
+          'out_of_stock' => 'out_of_stock',
+          'low_stock' => 'low_stock',
+          _ => null,
+        },
+      );
+      if (!_scopeCurrent(captured, store.id) || generation != _loadGeneration)
+        return;
+      setState(() {
+        _storeProducts = rows;
+        _totalSellerProducts = rows.length;
+        _hasMore = service.productsHasMore;
+        _offline = service.productsOffline;
+        _isLoading = false;
+      });
+    } catch (error) {
+      if (mounted &&
+          generation == _loadGeneration &&
+          _viewContext == context.read<StoreContext>().requestContextKey) {
+        setState(() {
+          _storeProducts = [];
+          _hasMore = false;
+          _isLoading = false;
+          _loadError =
+              error is ApiException &&
+                  error.code == 'PRODUCT_FILTER_UNSUPPORTED'
+              ? 'Stock filters are unavailable on this server. Select All products.'
+              : 'Products could not load. Check your connection and store access, then retry.';
         });
       }
-    } catch (e) {
-      debugPrint('Error loading products: $e');
-      if (mounted)
-        setState(() => _loadError = 'Products could not load. Please retry.');
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
     }
   }
 
-  // ============================================
-  // COMPUTED PROPERTIES
-  // ============================================
-
-  List<Map<String, dynamic>> get _filteredProducts {
-    var products = List<Map<String, dynamic>>.from(_storeProducts);
-
-    // Apply status filter
-    if (_statusFilter != 'all') {
-      products = products.where((p) {
-        final isActive = _productIsActive(p);
-        final stock = _productStock(p);
-        switch (_statusFilter) {
-          case 'active':
-            return isActive && stock > 0;
-          case 'inactive':
-            return !isActive;
-          case 'out_of_stock':
-            return stock <= 0;
-          case 'low_stock':
-            return stock > 0 && stock <= 5;
-          default:
-            return true;
-        }
-      }).toList();
-    }
-
-    // Apply search
-    if (_searchQuery.isNotEmpty) {
-      final query = _searchQuery.toLowerCase();
-      products = products
-          .where(
-            (p) =>
-                (p['name'] as String? ?? '').toLowerCase().contains(query) ||
-                (p['sku'] as String? ?? '').toLowerCase().contains(query),
-          )
-          .toList();
-    }
-
-    // Apply sorting
-    products.sort((a, b) {
-      switch (_sortBy) {
-        case 'newest':
-          final aDate = a['created_at'];
-          final bDate = b['created_at'];
-          if (aDate == null && bDate == null) return 0;
-          if (aDate == null) return 1;
-          if (bDate == null) return -1;
-          return bDate.toString().compareTo(aDate.toString());
-        case 'oldest':
-          final aDate = a['created_at'];
-          final bDate = b['created_at'];
-          if (aDate == null && bDate == null) return 0;
-          if (aDate == null) return 1;
-          if (bDate == null) return -1;
-          return aDate.toString().compareTo(bDate.toString());
-        case 'name_asc':
-          return (a['name'] ?? '').toString().compareTo(
-            (b['name'] ?? '').toString(),
-          );
-        case 'name_desc':
-          return (b['name'] ?? '').toString().compareTo(
-            (a['name'] ?? '').toString(),
-          );
-        case 'price_asc':
-          return _productPrice(a).compareTo(_productPrice(b));
-        case 'price_desc':
-          return _productPrice(b).compareTo(_productPrice(a));
-        default:
-          return 0;
-      }
+  void _queryChanged({String? search, String? status, String? sort}) {
+    _searchDebounce?.cancel();
+    setState(() {
+      if (search != null) _searchQuery = search;
+      if (status != null) _statusFilter = status;
+      if (sort != null) _sortBy = sort;
+      _page = 1;
+      _hasMore = false;
+      _storeProducts = [];
+      _selectedProductIds.clear();
+      _isLoading = true;
+      ++_loadGeneration;
     });
-
-    return products;
+    if (search != null) {
+      _searchDebounce = Timer(const Duration(milliseconds: 300), () {
+        if (mounted) _loadData();
+      });
+    } else {
+      _loadData();
+    }
   }
 
-  int get _activeCount => _storeProducts
-      .where((p) => _productIsActive(p) && _productStock(p) > 0)
-      .length;
+  void _changePage(int delta) {
+    if (_isLoading || (delta < 0 && _page == 1) || (delta > 0 && !_hasMore))
+      return;
+    setState(() {
+      _page += delta;
+      _selectedProductIds.clear();
+    });
+    _loadData();
+  }
+
+  // Rows are already filtered and ordered by the server across the whole catalog.
+  List<Map<String, dynamic>> get _filteredProducts => _storeProducts;
+
+  int get _activeCount => _storeProducts.where(_productIsActive).length;
 
   int get _outOfStockCount =>
       _storeProducts.where((p) => _productStock(p) <= 0).length;
@@ -240,84 +256,78 @@ class _ProductsScreenState extends State<ProductsScreen> {
   }
 
   Future<void> _removeSelectedProducts() async {
-    if (_store == null || _selectedProductIds.isEmpty) return;
-
+    final store = _store, captured = _viewContext;
+    if (store == null ||
+        _selectedProductIds.isEmpty ||
+        _offline ||
+        !_scopeCurrent(captured, store.id))
+      return;
+    final selected = Set<String>.from(_selectedProductIds);
     final confirm = await _showConfirmDialog(
-      title: 'Remove ${_selectedProductIds.length} Products?',
+      title: 'Remove ${selected.length} Products?',
       message:
-          'These products will be removed from your store but will remain in your catalog.',
+          'These products will be removed from your store selection but remain in your catalog.',
       confirmText: 'Remove',
       confirmColor: Colors.redAccent,
     );
-
-    if (confirm != true) return;
-
+    if (confirm != true || !_scopeCurrent(captured, store.id)) return;
     try {
-      final storeService = context.read<StoreService>();
-      final currentIds = _store!.selectedProductIds;
-      final newIds = currentIds
-          .where((id) => !_selectedProductIds.contains(id))
-          .toList();
-      await storeService.updateSelectedProducts(_store!.id, newIds);
-
-      HapticFeedback.mediumImpact();
-      _clearSelection();
-      _toggleSelectionMode();
-      _loadData();
-
-      if (mounted) {
+      await context.read<StoreService>().updateSelectedProducts(
+        store.id,
+        store.selectedProductIds.where((id) => !selected.contains(id)).toList(),
+      );
+      if (!_scopeCurrent(captured, store.id)) return;
+      setState(() {
+        _selectedProductIds.clear();
+        _isSelectionMode = false;
+      });
+      await _loadData();
+      if (_scopeCurrent(captured, store.id))
         _showSnackBar(
-          '${_selectedProductIds.length} products removed from store',
+          '${selected.length} products removed from store selection',
         );
-      }
-    } catch (e) {
-      if (mounted) {
+    } catch (_) {
+      if (_scopeCurrent(captured, store.id))
         _showSnackBar('Unable to update selected products.', isError: true);
-      }
     }
   }
 
   Future<void> _hideSelectedProducts() async {
-    if (_store == null || _selectedProductIds.isEmpty) return;
-
-    final selectedIds = _selectedProductIds.toList(growable: false);
+    final store = _store, captured = _viewContext;
+    if (store == null ||
+        _selectedProductIds.isEmpty ||
+        _offline ||
+        !_scopeCurrent(captured, store.id))
+      return;
+    final selected = _selectedProductIds.toList(growable: false);
     final confirm = await _showConfirmDialog(
-      title: 'Hide ${selectedIds.length} Products?',
+      title: 'Hide ${selected.length} Products?',
       message:
           'Hidden products stay in your catalog but are not active in your store.',
       confirmText: 'Hide',
       confirmColor: AppColors.lavender,
     );
-
-    if (confirm != true) return;
-
+    if (confirm != true || !_scopeCurrent(captured, store.id)) return;
     try {
-      await context.read<ProductService>().bulkAction(
+      final affected = await context.read<ProductService>().bulkAction(
         action: 'deactivate',
-        productIds: selectedIds,
-        storeId: _store!.id,
+        productIds: selected,
+        storeId: store.id,
       );
-
-      if (!mounted) return;
+      if (!_scopeCurrent(captured, store.id)) return;
       setState(() {
-        _storeProducts = _storeProducts
-            .map((product) {
-              final productId = product['id']?.toString();
-              if (productId == null || !selectedIds.contains(productId)) {
-                return product;
-              }
-              return {...product, 'is_active': false, 'status': 'draft'};
-            })
-            .toList(growable: false);
+        _selectedProductIds.clear();
+        _isSelectionMode = false;
       });
-      HapticFeedback.mediumImpact();
-      _clearSelection();
-      _toggleSelectionMode();
-      _showSnackBar('${selectedIds.length} products hidden');
+      await _loadData();
+      if (_scopeCurrent(captured, store.id))
+        _showSnackBar('$affected products updated. Catalog refreshed.');
     } catch (_) {
-      if (mounted) {
-        _showSnackBar('Unable to hide selected products.', isError: true);
-      }
+      if (_scopeCurrent(captured, store.id))
+        _showSnackBar(
+          'The update could not be confirmed. Refresh the catalog before retrying.',
+          isError: true,
+        );
     }
   }
 
@@ -340,31 +350,33 @@ class _ProductsScreenState extends State<ProductsScreen> {
     if (result == true) _loadData();
   }
 
-  void _navigateToImport() async {
-    if (_store == null) return;
-
-    final result = await Navigator.push<bool>(
+  Future<void> _navigateToImport() async {
+    final store = _store, captured = _viewContext;
+    if (store == null || !_scopeCurrent(captured, store.id)) return;
+    await Navigator.push<void>(
       context,
-      MaterialPageRoute(
-        builder: (_) => ImportProductsScreen(
-          store: _store!,
-          alreadySelectedIds: Set.from(_store!.selectedProductIds),
-        ),
-      ),
+      MaterialPageRoute(builder: (_) => CsvImportScreen(storeId: store.id)),
     );
-    if (result == true) _loadData();
+    // Imports continue durably after leaving their page. Returning always reads
+    // the current catalog; a popped route's return value is not a job receipt.
+    if (_scopeCurrent(captured, store.id)) await _loadData();
   }
 
   Future<void> _seedSampleProduct() async {
     final store = _store;
-    if (store == null || _isSeedingSample) return;
+    if (store == null ||
+        _isSeedingSample ||
+        _offline ||
+        !_scopeCurrent(_viewContext, store.id))
+      return;
+    final captured = _viewContext;
 
     setState(() => _isSeedingSample = true);
     try {
       final product = await context.read<ProductService>().seedSampleProduct(
         store.id,
       );
-      if (!mounted) return;
+      if (!_scopeCurrent(captured, store.id)) return;
       setState(() {
         _storeProducts = [
           product,
@@ -386,7 +398,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
   }
 
   void _exportProducts() async {
-    if (_store == null) return;
+    final store = _store, captured = _viewContext;
+    if (store == null || !_scopeCurrent(captured, store.id)) return;
 
     // Show export options
     final format = await showModalBottomSheet<String>(
@@ -422,10 +435,11 @@ class _ProductsScreenState extends State<ProductsScreen> {
       ),
     );
 
-    if (format == 'csv') {
+    if (format == 'csv' && _scopeCurrent(captured, store.id)) {
       try {
         final service = context.read<ProductService>();
-        final result = await service.exportProducts(_store!.id);
+        final result = await service.exportProducts(store.id);
+        if (!_scopeCurrent(captured, store.id)) return;
         final job = result['job'] is Map ? result['job'] as Map : const {};
         var latest = Map<String, dynamic>.from(job);
         for (var attempt = 0; attempt < 5; attempt += 1) {
@@ -435,24 +449,34 @@ class _ProductsScreenState extends State<ProductsScreen> {
           await Future<void>.delayed(const Duration(milliseconds: 350));
           final jobId = latest['id']?.toString();
           if (jobId == null || jobId.isEmpty) break;
+          if (!_scopeCurrent(captured, store.id)) return;
           final detail = await service.fetchExportJob(jobId);
+          if (!_scopeCurrent(captured, store.id)) return;
           latest = detail['job'] is Map
               ? Map<String, dynamic>.from(detail['job'] as Map)
               : detail;
         }
 
+        if (!_scopeCurrent(captured, store.id)) return;
         final status = latest['status']?.toString() ?? 'queued';
         final downloadUrl = latest['download_url']?.toString();
         if (status == 'completed' &&
             downloadUrl != null &&
             downloadUrl.isNotEmpty) {
-          await shareMerchantExport(api: context.read<ApiClient>(), job: latest);
+          await shareMerchantExport(
+            api: context.read<ApiClient>(),
+            job: latest,
+          );
           _showSnackBar('Product CSV export ready to share.');
         } else {
           _showSnackBar('Product CSV export $status. Try again shortly.');
         }
       } catch (error) {
-        _showSnackBar('Could not start product export: $error');
+        if (_scopeCurrent(captured, store.id))
+          _showSnackBar(
+            'Product export could not be confirmed. Retry from the selected store.',
+            isError: true,
+          );
       }
     }
   }
@@ -524,31 +548,57 @@ class _ProductsScreenState extends State<ProductsScreen> {
     required String confirmText,
     Color confirmColor = Colors.redAccent,
   }) {
+    final captured = _viewContext, storeId = _store?.id;
     return showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: colors.card,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(title, style: TextStyle(color: colors.textPrimary)),
-        content: Text(message, style: TextStyle(color: colors.textSecondary)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(
-              'Cancel',
+      builder: (dialogContext) => Consumer<StoreContext>(
+        builder: (_, stores, child) {
+          if (stores.requestContextKey != captured ||
+              stores.selectedStoreId != storeId) {
+            return AlertDialog(
+              title: const Text('Store context changed'),
+              content: const Text(
+                'Close this dialog and reload the selected store.',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogContext, false),
+                  child: const Text('Close'),
+                ),
+              ],
+            );
+          }
+          return AlertDialog(
+            backgroundColor: colors.card,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            title: Text(title, style: TextStyle(color: colors.textPrimary)),
+            content: Text(
+              message,
               style: TextStyle(color: colors.textSecondary),
             ),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(confirmText, style: TextStyle(color: confirmColor)),
-          ),
-        ],
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text(
+                  'Cancel',
+                  style: TextStyle(color: colors.textSecondary),
+                ),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: Text(confirmText, style: TextStyle(color: confirmColor)),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
 
   void _showSnackBar(String message, {bool isError = false}) {
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
@@ -567,6 +617,21 @@ class _ProductsScreenState extends State<ProductsScreen> {
   @override
   Widget build(BuildContext context) {
     colors = AppThemeColors.of(context);
+    final stores = context.watch<StoreContext>();
+    if (_viewContext != stores.requestContextKey) {
+      _viewContext = stores.requestContextKey;
+      ++_loadGeneration;
+      _store = null;
+      _storeProducts = [];
+      _selectedProductIds.clear();
+      _page = 1;
+      _hasMore = false;
+      _isLoading = true;
+      _loadError = null;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _loadData();
+      });
+    }
     return LoadingOverlay(
       isLoading: _isLoading,
       child: Scaffold(
@@ -579,9 +644,35 @@ class _ProductsScreenState extends State<ProductsScreen> {
               children: [
                 _buildHeader(),
                 _buildActionToolbar(),
-                if (_loadError == null) _buildStatsRow(),
+                if (_loadError == null && !_isLoading) _buildStatsRow(),
                 _buildFilterSortBar(),
+                if (_offline)
+                  const Padding(
+                    padding: EdgeInsets.all(8),
+                    child: Text(
+                      'Offline snapshot of this page. Reconnect before making changes.',
+                    ),
+                  ),
                 Expanded(child: _buildProductGrid()),
+                if (_page > 1 || _hasMore)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TextButton(
+                        onPressed: _page > 1 && !_isLoading
+                            ? () => _changePage(-1)
+                            : null,
+                        child: const Text('Previous'),
+                      ),
+                      Text('Page $_page'),
+                      TextButton(
+                        onPressed: _hasMore && !_isLoading
+                            ? () => _changePage(1)
+                            : null,
+                        child: const Text('Next'),
+                      ),
+                    ],
+                  ),
                 if (_isSelectionMode && _selectedProductIds.isNotEmpty)
                   _buildBulkActionsBar(),
               ],
@@ -627,32 +718,51 @@ class _ProductsScreenState extends State<ProductsScreen> {
             tooltip: 'Refresh',
           ),
           PopupMenuButton<String>(
+            enabled: !_isLoading && _loadError == null && _store != null,
+            onOpened: () => _menuView = (key: _viewContext, store: _store?.id),
             icon: Icon(Icons.more_vert, color: colors.textSecondary),
             color: colors.card,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
             itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'csv',
+                child: Row(
+                  children: [
+                    Icon(Icons.upload_file_outlined, size: 20),
+                    SizedBox(width: 12),
+                    Text('CSV imports'),
+                  ],
+                ),
+              ),
               PopupMenuItem(
-                value: 'settings',
+                value: 'inventory',
                 child: Row(
                   children: [
                     Icon(
-                      Icons.settings_rounded,
+                      Icons.inventory_2_outlined,
                       size: 20,
                       color: colors.textSecondary,
                     ),
                     const SizedBox(width: 12),
                     Text(
-                      'Settings',
+                      'Inventory',
                       style: TextStyle(color: colors.textPrimary),
                     ),
                   ],
                 ),
               ),
             ],
-            onSelected: (value) {
-              // Handle menu selection
+            onSelected: (value) async {
+              final view = _menuView;
+              _menuView = null;
+              if (view == null || !_scopeCurrent(view.key, view.store)) return;
+              if (value == 'csv') {
+                await _navigateToImport();
+              }
+              if (value == 'inventory')
+                Navigator.pushNamed(context, AppRoutes.inventory);
             },
           ),
         ],
@@ -766,18 +876,26 @@ class _ProductsScreenState extends State<ProductsScreen> {
         runSpacing: 8,
         children: [
           _buildStatChip(
-            'Total',
+            'On this page',
             '${_storeProducts.length}',
             AppColors.lavender,
           ),
-          _buildStatChip('Active', '$_activeCount', const Color(0xFF22C55E)),
           _buildStatChip(
-            'Out of Stock',
+            'Active on page',
+            '$_activeCount',
+            const Color(0xFF22C55E),
+          ),
+          _buildStatChip(
+            'Out of stock on page',
             '$_outOfStockCount',
             const Color(0xFFEF4444),
           ),
           if (_inactiveCount > 0) ...[
-              _buildStatChip('Hidden', '$_inactiveCount', colors.textTertiary),
+            _buildStatChip(
+              'Hidden on page',
+              '$_inactiveCount',
+              colors.textTertiary,
+            ),
           ],
         ],
       ),
@@ -832,8 +950,10 @@ class _ProductsScreenState extends State<ProductsScreen> {
               _buildFilterChip('All', 'all'),
               _buildFilterChip('Active', 'active'),
               _buildFilterChip('Inactive', 'inactive'),
+              _buildFilterChip('Draft', 'draft'),
+              _buildFilterChip('Archived', 'archived'),
               _buildFilterChip('Out of Stock', 'out_of_stock'),
-              _buildFilterChip('Low Stock', 'low_stock'),
+              _buildFilterChip('Stock 1–5', 'low_stock'),
             ],
           ),
         ),
@@ -885,7 +1005,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       ),
                     ],
                     onChanged: (value) {
-                      if (value != null) setState(() => _sortBy = value);
+                      if (value != null) _queryChanged(sort: value);
                     },
                   ),
                 ),
@@ -902,10 +1022,10 @@ class _ProductsScreenState extends State<ProductsScreen> {
                   ),
                   child: TextField(
                     controller: _searchController,
-                    onChanged: (v) => setState(() => _searchQuery = v),
+                    onChanged: (v) => _queryChanged(search: v),
                     style: TextStyle(color: colors.textPrimary, fontSize: 13),
                     decoration: InputDecoration(
-                      hintText: 'Search products...',
+                      hintText: 'Search product names...',
                       hintStyle: TextStyle(
                         color: colors.textTertiary,
                         fontSize: 13,
@@ -924,7 +1044,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                               ),
                               onPressed: () {
                                 _searchController.clear();
-                                setState(() => _searchQuery = '');
+                                _queryChanged(search: '');
                               },
                             )
                           : null,
@@ -945,7 +1065,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
     final isActive = _statusFilter == value;
     void applyFilter() {
       HapticFeedback.selectionClick();
-      setState(() => _statusFilter = value);
+      _queryChanged(status: value);
     }
 
     return AccessibleTapRegion(
@@ -989,20 +1109,32 @@ class _ProductsScreenState extends State<ProductsScreen> {
   Widget _buildProductGrid() {
     if (_loadError != null) {
       return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(_loadError!),
-            FilledButton(
-              onPressed: _loadData,
-              child: const Text('Retry products'),
-            ),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(_loadError!, textAlign: TextAlign.center),
+              const SizedBox(height: 12),
+              FilledButton(
+                onPressed: _loadData,
+                child: const Text('Retry products'),
+              ),
+              if (['out_of_stock', 'low_stock'].contains(_statusFilter))
+                TextButton(
+                  onPressed: () => _queryChanged(status: 'all'),
+                  child: const Text('Clear stock filter'),
+                ),
+            ],
+          ),
         ),
       );
     }
 
-    if (_storeProducts.isEmpty) {
+    if (_storeProducts.isEmpty &&
+        _searchQuery.trim().isEmpty &&
+        _statusFilter == 'all' &&
+        _page == 1) {
       return _buildEmptyState();
     }
 
@@ -1019,11 +1151,10 @@ class _ProductsScreenState extends State<ProductsScreen> {
             ),
             const SizedBox(height: 8),
             TextButton(
-              onPressed: () => setState(() {
-                _statusFilter = 'all';
-                _searchQuery = '';
+              onPressed: () {
                 _searchController.clear();
-              }),
+                _queryChanged(search: '', status: 'all');
+              },
               child: Text(
                 'Clear Filters',
                 style: TextStyle(color: AppColors.lavender),
@@ -1034,22 +1165,24 @@ class _ProductsScreenState extends State<ProductsScreen> {
       );
     }
 
-    return GridView.builder(
-      controller: _scrollController,
-      padding: EdgeInsets.fromLTRB(16, 0, 16, _isSelectionMode ? 100 : 24),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        mainAxisExtent:
-            (MediaQuery.sizeOf(context).width - 42) / 2 +
-            MediaQuery.textScalerOf(context).scale(112),
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
+    return LayoutBuilder(
+      builder: (context, constraints) => GridView.builder(
+        controller: _scrollController,
+        padding: EdgeInsets.fromLTRB(16, 0, 16, _isSelectionMode ? 100 : 24),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          mainAxisExtent:
+              (constraints.maxWidth - 42) / 2 +
+              MediaQuery.textScalerOf(context).scale(112),
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 10,
+        ),
+        itemCount: _filteredProducts.length,
+        itemBuilder: (context, index) {
+          final product = _filteredProducts[index];
+          return _buildProductCard(product);
+        },
       ),
-      itemCount: _filteredProducts.length,
-      itemBuilder: (context, index) {
-        final product = _filteredProducts[index];
-        return _buildProductCard(product);
-      },
     );
   }
 
@@ -1100,8 +1233,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
       'Product $name',
       statusText,
       'Stock $stock',
-      'Price INR ${salePrice.toStringAsFixed(0)}',
-      if (hasDiscount) 'was INR ${originalPrice!.toStringAsFixed(0)}',
+      'Price INR ${salePrice.toStringAsFixed(2)}',
+      if (hasDiscount) 'was INR ${originalPrice!.toStringAsFixed(2)}',
     ].join(', ');
 
     return Semantics(
@@ -1244,34 +1377,42 @@ class _ProductsScreenState extends State<ProductsScreen> {
                           ),
                           const Spacer(),
                           // Price
-                          Row(
-                            children: [
-                              Text(
-                                '₹${salePrice.toStringAsFixed(0)}',
-                                style: const TextStyle(
-                                  color: mobile_tokens
-                                      .LetbuyyColorTokens
-                                      .brandPrimary,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                ),
-                              ),
-                              if (hasDiscount) ...[
-                                const SizedBox(width: 4),
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: Alignment.centerLeft,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
                                 Text(
-                                  '₹${originalPrice!.toStringAsFixed(0)}',
-                                  style: TextStyle(
-                                    color: colors.textTertiary,
-                                    fontSize: 10,
-                                    decoration: TextDecoration.lineThrough,
+                                  '₹${salePrice.toStringAsFixed(2)}',
+                                  style: const TextStyle(
+                                    color: mobile_tokens
+                                        .LetbuyyColorTokens
+                                        .brandPrimary,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
                                   ),
                                 ),
+                                if (hasDiscount) ...[
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    '₹${originalPrice!.toStringAsFixed(2)}',
+                                    style: TextStyle(
+                                      color: colors.textTertiary,
+                                      fontSize: 10,
+                                      decoration: TextDecoration.lineThrough,
+                                    ),
+                                  ),
+                                ],
                               ],
-                            ],
+                            ),
                           ),
                           const SizedBox(height: 4),
                           // Status + Stock
-                          Row(
+                          Wrap(
+                            spacing: 6,
+                            runSpacing: 4,
+                            crossAxisAlignment: WrapCrossAlignment.center,
                             children: [
                               Container(
                                 padding: const EdgeInsets.symmetric(
@@ -1291,7 +1432,6 @@ class _ProductsScreenState extends State<ProductsScreen> {
                                   ),
                                 ),
                               ),
-                              const Spacer(),
                               Text(
                                 'Stock: $stock',
                                 style: TextStyle(
@@ -1403,7 +1543,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     spacing: 12,
                     runSpacing: 12,
                     children: [
-                      if (_totalSellerProducts > 0) ...[
+                      if (_store != null) ...[
                         OutlinedButton.icon(
                           onPressed: _navigateToImport,
                           style: OutlinedButton.styleFrom(
@@ -1418,7 +1558,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                             ),
                           ),
                           icon: const Icon(Icons.download_rounded, size: 18),
-                          label: const Text('Import'),
+                          label: const Text('Import CSV'),
                         ),
                       ],
                       OutlinedButton.icon(

@@ -1,0 +1,45 @@
+{
+  "status": "LOCAL_BROWSER_GATE_PASSED",
+  "date": "2026-11-02",
+  "reason": "The broad test run used retired merchant activation-card copy and selectors after the canonical store setup redesign.",
+  "change": "The owned browser suites now assert the current store setup heading, draft status, six setup tasks, payment and plan navigation, and the Continue to payment action while retaining downstream API/database/checkout assertions.",
+  "suites": [
+    {
+      "name": "storefront-web-onboarding-browser",
+      "runId": "bb80348914db",
+      "suites": 1,
+      "failedSuites": 0,
+      "tests": 1,
+      "pass": 1,
+      "fail": 0,
+      "skipped": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    {
+      "name": "subscription-checkout-browser",
+      "runId": "316902bf2a76",
+      "suites": 1,
+      "failedSuites": 0,
+      "tests": 1,
+      "pass": 1,
+      "fail": 0,
+      "skipped": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    }
+  ],
+  "limits": "These are local synthetic owned browser and provider fixtures; no hosted onboarding or real subscription provider payment."
+}

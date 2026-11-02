@@ -1,0 +1,37 @@
+{
+  "dateIst": "2026-11-01",
+  "scope": "Nine historical rollbacks, ten function restorers, migrations 401–425",
+  "change": "Each rollback now refuses a changed typed input/result ABI or an extra overload before its first schema mutation. Rollback 416 is transactional. The source recognizer pins older pre-use refusal bodies and the exact dynamic mutation boundary in rollback 412.",
+  "sourceChecks": {
+    "suite": "tests/governance/rollback-signature-precondition.test.mjs",
+    "tests": 89,
+    "passed": 89,
+    "failed": 0,
+    "skipped": 0,
+    "adversarial": "A changed pre-use block, user RPC, dynamic SQL, DML, transaction statement, or changed pinned 412 dynamic block earns no signature proof."
+  },
+  "ownedPostgres": {
+    "runId": "957ae305c5b1",
+    "suite": "tests/executable/rollback-signature-precondition-postgres.test.mjs",
+    "tests": 8,
+    "passed": 8,
+    "failed": 0,
+    "skipped": 0,
+    "restoredSignaturesUnderDriftControls": 34,
+    "migrationPointRoundTrips": true,
+    "cleanupFailures": 0,
+    "remainingOwnedContainers": 0,
+    "remainingOwnedNetworks": 0,
+    "remainingOwnedVolumes": 0
+  },
+  "otherChecks": {
+    "migrationSafety": "passed",
+    "rollbackIntegrity": "passed",
+    "governance": {"passed": 114, "failed": 0, "blocked": 0, "skipped": 0}
+  },
+  "limits": [
+    "These are disposable local PostgreSQL and source checks, not hosted rollback acceptance.",
+    "A complete behavioral rerun is in progress and is not claimed green here.",
+    "FUCOMES test checkout and statement, India-hosted KYC storage/scanning, Cashfree provider KYC, and production release gates remain open."
+  ]
+}

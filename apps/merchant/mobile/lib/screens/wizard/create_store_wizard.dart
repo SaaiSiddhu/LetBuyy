@@ -439,10 +439,7 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
     }
 
     final key = const Uuid().v4();
-    final keySaved = await preferences.setString(
-      keyPreference,
-      key,
-    );
+    final keySaved = await preferences.setString(keyPreference, key);
     final fingerprintSaved = await preferences.setString(
       fingerprintPreference,
       fingerprint,
@@ -605,10 +602,17 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
         _previousStep();
       },
       child: Scaffold(
-        bottomNavigationBar: _currentStep == 1 ? SafeArea(child: TextButton(
-          onPressed: () => Navigator.pushNamed(context, AppRoutes.acceptStaffInvitation),
-          child: const Text('Join a store with a staff invitation'),
-        )) : null,
+        bottomNavigationBar: _currentStep == 1
+            ? SafeArea(
+                child: TextButton(
+                  onPressed: () => Navigator.pushNamed(
+                    context,
+                    AppRoutes.acceptStaffInvitation,
+                  ),
+                  child: const Text('Join a store with a staff invitation'),
+                ),
+              )
+            : null,
         body: PageView(
           controller: _pageController,
           physics: const NeverScrollableScrollPhysics(),
@@ -1334,7 +1338,7 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
                           ),
                         ),
                         child: Text(
-                          '.letbuyy.com',
+                          '.${StoreModel.storefrontRootDomain}',
                           style: TextStyle(
                             color: LetbuyyColorTokens.brandPrimary,
                             fontSize: 14,
@@ -1409,7 +1413,7 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
-                          '${_lang.subdomainAvailable}\nhttps://${_subdomainController.text}.letbuyy.com',
+                          '${_lang.subdomainAvailable}\n${StoreModel.generateStoreUrl(_subdomainController.text)}',
                           style: TextStyle(
                             color: LetbuyyColorTokens.successStrong,
                             fontSize: 13,

@@ -9,6 +9,7 @@ import {
   hasRenderableThemeTemplate,
 } from './theme-registry';
 import { localizeThemeTemplateConfig, LiquidThemePackageBundleSchema, type LiquidThemePackageBundle } from './theme-bundle';
+import { EDITOR_LEGACY_TEMPLATE_SECTION_LIMIT, sectionDefinitionAllowsGroup, type EditorSectionGroup, type EditorSectionEligibility } from './editor-section-insertion';
 
 export * from './theme-registry';
 export * from './theme-settings';
@@ -16,6 +17,7 @@ export * from './built-in-section-schemas';
 export * from './execution-runtime';
 export * from './theme-governance';
 export * from './theme-bundle';
+export * from './editor-section-insertion';
 export * from './theme-renderer';
 export * from './order-receipt-view';
 export * from './portable-to-liquid';
@@ -677,8 +679,34 @@ function validateLegacySectionSlots(
   sections: ThemeTemplateRecord,
   sectionSchemas: Record<string, SectionSchema>,
   issues: string[],
+  trustedPreviousConfig?: ThemeTemplateRecord,
+  templateKey = 'index',
 ) {
   const sectionKeys = Object.keys(sections);
+  const identities = new Set<string>();
+  const validatePlacement = (value: unknown, group: EditorSectionGroup, path: string) => {
+    const row = asThemeRecord(value);
+    if (typeof row.id === 'string') {
+      if (identities.has(row.id)) issues.push(`${path} has a duplicate section identity`);
+      identities.add(row.id);
+    }
+    const type = typeof row.type === 'string' ? row.type : '';
+    const definition = sectionSchemas[type];
+    if (!definition) return;
+    const explicit = Array.isArray(asThemeRecord(asThemeRecord(definition).enabled_on).groups);
+    const prior = asThemeRecord(asThemeRecord(trustedPreviousConfig).sections);
+    const priorPortable = asThemeRecord(asThemeRecord(asThemeRecord(asThemeRecord(trustedPreviousConfig).templates)[group === 'template' ? templateKey : group]).sections);
+    const oldRows = [...(group === 'template' && Array.isArray(prior.template) ? prior.template : [prior[group]]),
+      ...Object.entries(priorPortable).map(([id, value]) => ({ ...asThemeRecord(value), id }))];
+    const ownedPrior = Array.isArray(oldRows) && oldRows.some(value => {
+      const old = asThemeRecord(value);
+      return old.id === row.id && old.type === type;
+    });
+    const allowed = explicit || group === 'template'
+      ? sectionDefinitionAllowsGroup(definition as unknown as EditorSectionEligibility, group, templateKey)
+      : type === group || ownedPrior;
+    if (!allowed) issues.push(`${path} is not enabled in the ${group} group`);
+  };
 
   for (const key of sectionKeys) {
     if (!['header', 'footer', 'template'].includes(key)) {
@@ -688,20 +716,23 @@ function validateLegacySectionSlots(
 
   if (sections.header !== undefined) {
     validateThemeSection(sections.header, sectionSchemas, 'sections.header', issues);
+    validatePlacement(sections.header, 'header', 'sections.header');
   }
 
   if (sections.footer !== undefined) {
     validateThemeSection(sections.footer, sectionSchemas, 'sections.footer', issues);
+    validatePlacement(sections.footer, 'footer', 'sections.footer');
   }
 
   if (sections.template !== undefined) {
     if (!Array.isArray(sections.template)) {
       issues.push('sections.template must be an array');
-    } else if (sections.template.length > 50) {
+    } else if (sections.template.length > EDITOR_LEGACY_TEMPLATE_SECTION_LIMIT) {
       issues.push('sections.template exceeds the maximum section count');
     } else {
       sections.template.forEach((section, index) => {
         validateThemeSection(section, sectionSchemas, `sections.template[${index}]`, issues);
+        validatePlacement(section, 'template', `sections.template[${index}]`);
       });
     }
   }
@@ -712,11 +743,24 @@ function validatePortableTemplates(
   sectionSchemas: Record<string, SectionSchema>,
   sectionDefinitions: ThemeTemplateRecord,
   issues: string[],
+  trustedPreviousConfig?: ThemeTemplateRecord,
 ) {
+  const sharedIds = new Set<string>();
+  for (const key of ['header', 'footer']) {
+    for (const id of Object.keys(asThemeRecord(asThemeRecord(templates[key]).sections))) {
+      if (sharedIds.has(id)) issues.push(`templates.${key} has duplicate section identity "${id}" in shared groups`);
+      sharedIds.add(id);
+    }
+  }
   for (const [templateKey, template] of Object.entries(templates)) {
     const templateRecord = asThemeRecord(template);
     const sections = asThemeRecord(templateRecord.sections);
     const sectionIds = new Set(Object.keys(sections));
+    if (templateKey !== 'header' && templateKey !== 'footer') {
+      for (const id of sectionIds) {
+        if (sharedIds.has(id)) issues.push(`templates.${templateKey} has duplicate section identity "${id}" in its rendered composition`);
+      }
+    }
 
     if (sectionIds.size > 80) {
       issues.push(`templates.${templateKey}.sections exceeds the maximum section count`);
@@ -725,9 +769,36 @@ function validatePortableTemplates(
 
     for (const [sectionId, section] of Object.entries(sections)) {
       validatePortableThemeSection(section, sectionSchemas, sectionDefinitions, `templates.${templateKey}.sections.${sectionId}`, issues);
+      const sectionType = asThemeRecord(section).type;
+      if (typeof sectionType === 'string' && sectionSchemas[sectionType]) {
+        const definition = asThemeRecord(sectionSchemas[sectionType]);
+        const group: EditorSectionGroup = templateKey === 'header' || templateKey === 'footer' ? templateKey : 'template';
+        const hasGroupDeclaration = Array.isArray(asThemeRecord(definition.enabled_on).groups);
+        const hasTemplateDeclaration = Array.isArray(asThemeRecord(definition.enabled_on).templates);
+        const priorGroup = asThemeRecord(asThemeRecord(asThemeRecord(trustedPreviousConfig).templates)[templateKey]);
+        const priorSection = asThemeRecord(asThemeRecord(priorGroup.sections)[sectionId]);
+        // This reference must come from the owned server draft or store baseline, NEVER
+        // from candidate.liquidBundle, which a caller can modify with the forged section.
+        const priorLegacy = asThemeRecord(asThemeRecord(asThemeRecord(trustedPreviousConfig).sections)[group]);
+        const grandfathered = group !== 'template' && !hasGroupDeclaration && (priorSection.type === sectionType
+          || (priorLegacy.id === sectionId && priorLegacy.type === sectionType));
+        const allowed = hasGroupDeclaration
+          ? sectionDefinitionAllowsGroup(definition as unknown as EditorSectionEligibility, group, templateKey)
+          : group === 'template'
+            ? !hasTemplateDeclaration || sectionDefinitionAllowsGroup(definition as unknown as EditorSectionEligibility, group, templateKey)
+            : grandfathered;
+        if (!allowed) {
+          issues.push(`templates.${templateKey}.sections.${sectionId} is not enabled in the ${group} group`);
+        }
+        const limit = typeof definition.limit === 'number' ? definition.limit : null;
+        if (limit && Object.values(sections).filter((entry) => asThemeRecord(entry).type === sectionType).length > limit) {
+          issues.push(`templates.${templateKey} exceeds the ${sectionType} section limit (${limit})`);
+        }
+      }
     }
 
     if (Array.isArray(templateRecord.order)) {
+      if (new Set(templateRecord.order).size !== templateRecord.order.length) issues.push(`templates.${templateKey}.order has duplicate section identities`);
       for (const sectionId of templateRecord.order) {
         if (typeof sectionId !== 'string' || !sectionIds.has(sectionId)) {
           issues.push(`templates.${templateKey}.order references missing section "${String(sectionId)}"`);
@@ -794,6 +865,9 @@ export function collectThemeTemplateValidationIssues(input: {
   runtime: ThemeTemplateValidationRuntime;
   themeSlug: string;
   maxSerializedLength?: number;
+  /** Owned server draft/store baseline, used only to preserve exact legacy shared instances. */
+  trustedPreviousConfig?: ThemeTemplateRecord;
+  selectedTemplateKey?: string;
 }): string[] {
   const issues: string[] = [];
   const serialized = JSON.stringify(input.templateConfig);
@@ -819,11 +893,11 @@ export function collectThemeTemplateValidationIssues(input: {
   const hasLegacySlots = ['header', 'footer', 'template'].some((key) => sections[key] !== undefined);
 
   if (hasLegacySlots || !hasPortableTemplates) {
-    validateLegacySectionSlots(sections, sectionSchemas, issues);
+    validateLegacySectionSlots(sections, sectionSchemas, issues, input.trustedPreviousConfig, input.selectedTemplateKey);
   }
 
   if (hasPortableTemplates) {
-    validatePortableTemplates(templates, sectionSchemas, sections, issues);
+    validatePortableTemplates(templates, sectionSchemas, sections, issues, input.trustedPreviousConfig);
   }
 
   validateThemeSettings(settingsSchema, collectTemplateSettings(input.templateConfig), issues);
@@ -919,6 +993,7 @@ export interface FooterSettings {
   telegramUrl?: string;
   youtubeUrl?: string;
   contactEmail?: string;
+  contactPhone?: string;
 }
 
 export interface TestimonialsSettings {

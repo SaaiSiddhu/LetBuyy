@@ -1,0 +1,124 @@
+-- Empty-only maintenance rollback. Accepted import evidence is never discarded by rollback.
+-- A code rollback after registration recovers forward; it never deletes work.
+BEGIN;
+SET LOCAL search_path=pg_catalog,public;
+SELECT pg_advisory_xact_lock(hashtextextended('letbuyy:migration:416:product-imports',0));
+-- Preserve native catalog exclusion. Managed PostgreSQL requires the reviewed
+-- provider-admin bootstrap; no advisory/event-trigger substitute is accepted.
+DO $managed_catalog_fence$
+BEGIN
+ IF (SELECT rolsuper FROM pg_catalog.pg_roles WHERE rolname=current_user) THEN
+  LOCK TABLE pg_catalog.pg_proc IN SHARE ROW EXCLUSIVE MODE;
+ ELSE
+  IF current_user<>'postgres' OR NOT EXISTS(SELECT 1 FROM pg_catalog.pg_proc p JOIN pg_catalog.pg_namespace n ON n.oid=p.pronamespace
+ WHERE p.oid=pg_catalog.to_regprocedure('letbuyy_maintenance.lock_catalogs_v1()')
+ AND n.nspname='letbuyy_maintenance' AND n.nspowner='supabase_admin'::regrole
+ AND p.proowner='supabase_admin'::regrole AND p.prosecdef AND p.prokind='f' AND NOT p.proretset
+ AND p.prorettype='pg_catalog.void'::regtype AND p.prolang=(SELECT oid FROM pg_catalog.pg_language WHERE lanname='plpgsql')
+ AND p.pronargs=0 AND p.pronargdefaults=0 AND p.proargnames IS NULL AND p.proargmodes IS NULL AND p.proallargtypes IS NULL
+ AND NOT p.proisstrict AND NOT p.proleakproof AND p.prosupport=0 AND p.provolatile='v' AND p.proparallel='u'
+ AND p.proconfig=ARRAY['search_path=pg_catalog, pg_temp']::text[]
+ AND pg_catalog.encode(pg_catalog.sha256(pg_catalog.convert_to(p.prosrc,'UTF8')),'hex')='4772eebc5017ef1e188b188f87f1cca8fb8f2b9cfd1e928798ef5cd5dfebfabc'
+ AND EXISTS(SELECT 1 FROM pg_catalog.pg_roles r WHERE r.oid=p.proowner AND r.rolsuper)
+ AND NOT EXISTS(SELECT 1 FROM pg_catalog.aclexplode(coalesce(p.proacl,pg_catalog.acldefault('f',p.proowner)))a
+  WHERE a.grantor<>p.proowner OR a.grantee NOT IN(p.proowner,'postgres'::regrole) OR (a.grantee<>p.proowner AND a.is_grantable))
+ AND pg_catalog.has_function_privilege('postgres',p.oid,'EXECUTE')
+ AND NOT EXISTS(SELECT 1 FROM pg_catalog.aclexplode(coalesce(n.nspacl,pg_catalog.acldefault('n',n.nspowner)))a
+  WHERE a.grantor<>n.nspowner OR a.grantee NOT IN(n.nspowner,'postgres'::regrole)
+   OR(a.grantee<>n.nspowner AND (a.is_grantable OR a.privilege_type<>'USAGE')))
+ AND pg_catalog.has_schema_privilege('postgres',n.oid,'USAGE')
+ AND (SELECT count(*) FROM pg_catalog.pg_proc x WHERE x.pronamespace=n.oid AND x.proname=p.proname)=1) THEN
+   RAISE EXCEPTION 'LETBUYY_PROVIDER_ADMIN_CATALOG_FENCE_REQUIRED' USING ERRCODE='42501';END IF;
+  PERFORM letbuyy_maintenance.lock_catalogs_v1();
+  -- Prove actual backend-held relation locks, including cluster-shared catalogs.
+  IF EXISTS(SELECT 1 FROM unnest(ARRAY['pg_catalog.pg_proc'::pg_catalog.regclass]::oid[]) catalog_oid
+    WHERE NOT EXISTS(SELECT 1 FROM pg_catalog.pg_locks l WHERE l.pid=pg_catalog.pg_backend_pid()
+     AND l.locktype='relation' AND l.relation=catalog_oid AND l.granted
+     AND l.mode IN('ShareRowExclusiveLock','ExclusiveLock','AccessExclusiveLock')
+     AND l.database IN(0,(SELECT oid FROM pg_catalog.pg_database WHERE datname=pg_catalog.current_database())))) THEN
+   RAISE EXCEPTION 'LETBUYY_NATIVE_CATALOG_LOCKS_REQUIRED';END IF;
+ END IF;
+END $managed_catalog_fence$;
+DO $quiescent$ BEGIN
+ IF current_setting('transaction_isolation')<>'read committed'
+  OR EXISTS(SELECT 1 FROM pg_locks l WHERE l.locktype='transactionid' AND l.mode='ExclusiveLock' AND l.granted
+   AND (l.pid IS NULL OR l.pid<>pg_backend_pid())) OR EXISTS(SELECT 1 FROM pg_prepared_xacts) THEN
+  RAISE EXCEPTION 'rollback416 refuses concurrent/prepared writes or non-read-committed state';END IF;
+END $quiescent$;
+
+LOCK TABLE public.product_import_jobs,public.product_import_rows IN ACCESS EXCLUSIVE MODE;
+LOCK TABLE public.migration_privilege_journal IN SHARE ROW EXCLUSIVE MODE;
+DO $rollback416$
+DECLARE signature text; f record; shape text; j record; relation_row record;
+ signatures constant text[]:=ARRAY['public.guard_product_import_record_v1()','public.assert_product_import_actor_v1(uuid,uuid)','public.assert_product_creation_limit_v1(uuid,uuid)','public.record_product_creation_usage_v1(uuid,uuid,uuid,uuid)','public.product_import_snapshot_v1(uuid)','public.register_product_import_v1(uuid,uuid,uuid,text,jsonb)','public.read_product_import_v1(uuid,uuid,uuid)','public.claim_product_import_v1(uuid,uuid,uuid)','public.begin_product_import_row_v1(uuid,uuid,uuid,uuid)','public.complete_product_import_row_v1(uuid,uuid,uuid,uuid,uuid,jsonb)','public.fail_product_import_row_v1(uuid,uuid,uuid,uuid,uuid,text)','public.release_product_import_v1(uuid,uuid,uuid,uuid)','public.command_product_import_v1(uuid,uuid,uuid,uuid,boolean)','public.read_product_import_key_v1(uuid,uuid,uuid)','public.product_import_capabilities_v1(uuid,uuid)','public.read_product_import_rows_v1(uuid,uuid,uuid,integer,integer,text)','public.read_product_import_history_v1(uuid,uuid,integer,integer)','public.due_product_imports_v1()','public.stop_product_import_registration_v1(uuid,uuid,uuid,text)'];
+BEGIN
+ IF EXISTS(SELECT 1 FROM public.product_import_jobs) OR EXISTS(SELECT 1 FROM public.product_import_rows) THEN
+  RAISE EXCEPTION 'rollback416 refuses retained product import work; recover forward'; END IF;
+ IF (SELECT count(*) FROM public.migration_privilege_journal WHERE migration='416')<>cardinality(signatures)+2
+  OR EXISTS(SELECT 1 FROM public.migration_privilege_journal WHERE migration='416'
+   AND NOT(object_signature=ANY(signatures) OR object_signature IN('public.product_import_jobs','public.product_import_rows')))
+  OR EXISTS(SELECT object_signature FROM public.migration_privilege_journal WHERE migration='416' GROUP BY object_signature HAVING count(*)<>1) THEN
+  RAISE EXCEPTION 'rollback416 refuses missing/changed provenance'; END IF;
+ FOREACH signature IN ARRAY signatures LOOP
+  SELECT * INTO f FROM pg_proc WHERE oid=to_regprocedure(signature);
+  IF NOT FOUND THEN RAISE EXCEPTION 'rollback416 refuses missing function'; END IF;
+  SELECT * INTO j FROM public.migration_privilege_journal WHERE migration='416' AND object_signature=signature;
+  shape:=jsonb_build_object('definition',pg_get_functiondef(f.oid),'acl',
+  (SELECT jsonb_agg(jsonb_build_array(a.grantor,a.grantee,a.privilege_type,a.is_grantable) ORDER BY a.grantor,a.grantee,a.privilege_type,a.is_grantable)
+   FROM aclexplode(coalesce(f.proacl,acldefault('f',f.proowner)))a),
+  'owner',f.proowner,'language',f.prolang,'kind',f.prokind,'config',f.proconfig,'strict',f.proisstrict,
+  'leakproof',f.proleakproof,'parallel',f.proparallel,'volatility',f.provolatile,'security',f.prosecdef,
+  'support',f.prosupport,'cost',f.procost,'rows',f.prorows)::text;
+  IF j.object_oid IS DISTINCT FROM f.oid OR j.object_owner IS DISTINCT FROM f.proowner OR f.proowner<>current_user::regrole::oid
+   OR j.grantee IS DISTINCT FROM current_user OR j.action IS DISTINCT FROM 'granted' OR j.privilege IS DISTINCT FROM 'IMPORT FUNCTION PROFILE'
+   OR j.object_definition_hash IS DISTINCT FROM encode(sha256(convert_to(shape,'UTF8')),'hex') THEN
+   RAISE EXCEPTION 'rollback416 refuses changed function profile: %',signature; END IF;
+ END LOOP;
+ FOREACH signature IN ARRAY ARRAY['public.product_import_jobs','public.product_import_rows'] LOOP
+  SELECT * INTO relation_row FROM pg_class WHERE oid=to_regclass(signature);
+  SELECT * INTO j FROM public.migration_privilege_journal WHERE migration='416' AND object_signature=signature;
+  IF relation_row.relowner<>current_user::regrole::oid OR j.object_oid IS DISTINCT FROM relation_row.oid
+   OR j.object_owner IS DISTINCT FROM relation_row.relowner OR j.grantee IS DISTINCT FROM current_user
+   OR j.action IS DISTINCT FROM 'granted' OR j.privilege IS DISTINCT FROM 'IMPORT TABLE PROFILE'
+   OR NOT relation_row.relrowsecurity OR NOT relation_row.relforcerowsecurity
+   OR EXISTS(SELECT 1 FROM aclexplode(coalesce(relation_row.relacl,acldefault('r',relation_row.relowner)))a
+    WHERE a.grantee<>relation_row.relowner OR a.grantor<>relation_row.relowner) THEN
+   RAISE EXCEPTION 'rollback416 refuses changed private table profile'; END IF;
+  SELECT jsonb_build_object(
+ 'relation',jsonb_build_array(t.relkind,t.relpersistence,t.relrowsecurity,t.relforcerowsecurity,t.reloptions,t.relreplident),
+ 'columns',(SELECT jsonb_agg(jsonb_build_array(a.attnum,a.attname,a.atttypid,a.atttypmod,a.attnotnull,a.attisdropped,a.attidentity,a.attgenerated,a.attcollation,a.attacl,pg_get_expr(d.adbin,d.adrelid)) ORDER BY a.attnum) FROM pg_attribute a LEFT JOIN pg_attrdef d ON d.adrelid=a.attrelid AND d.adnum=a.attnum WHERE a.attrelid=t.oid AND a.attnum>0),
+ 'constraints',(SELECT jsonb_agg(jsonb_build_array(c.conname,pg_get_constraintdef(c.oid),c.convalidated,c.condeferrable,c.condeferred) ORDER BY c.conname) FROM pg_constraint c WHERE c.conrelid=t.oid),
+ 'indexes',(SELECT jsonb_agg(pg_get_indexdef(i.indexrelid) ORDER BY i.indexrelid::regclass::text) FROM pg_index i WHERE i.indrelid=t.oid),
+ 'triggers',(SELECT jsonb_agg(jsonb_build_array(x.tgname,pg_get_triggerdef(x.oid),x.tgenabled) ORDER BY x.tgname) FROM pg_trigger x WHERE x.tgrelid=t.oid AND NOT x.tgisinternal),
+ 'policies',(SELECT jsonb_agg(jsonb_build_array(x.polname,x.polcmd,x.polpermissive,x.polroles,pg_get_expr(x.polqual,x.polrelid),pg_get_expr(x.polwithcheck,x.polrelid)) ORDER BY x.polname) FROM pg_policy x WHERE x.polrelid=t.oid),
+ 'rules',(SELECT jsonb_agg(pg_get_ruledef(x.oid) ORDER BY x.rulename) FROM pg_rewrite x WHERE x.ev_class=t.oid)
+ )::text INTO shape FROM pg_class t WHERE t.oid=to_regclass(signature);
+
+  IF j.object_definition_hash IS DISTINCT FROM encode(sha256(convert_to(shape,'UTF8')),'hex') THEN
+   RAISE EXCEPTION 'rollback416 refuses changed table shape'; END IF;
+ END LOOP;
+END $rollback416$;
+DROP FUNCTION public.stop_product_import_registration_v1(uuid,uuid,uuid,text);
+DROP FUNCTION public.due_product_imports_v1();
+DROP FUNCTION public.read_product_import_history_v1(uuid,uuid,integer,integer);
+DROP FUNCTION public.read_product_import_rows_v1(uuid,uuid,uuid,integer,integer,text);
+DROP FUNCTION public.product_import_capabilities_v1(uuid,uuid);
+DROP FUNCTION public.read_product_import_key_v1(uuid,uuid,uuid);
+DROP FUNCTION public.command_product_import_v1(uuid,uuid,uuid,uuid,boolean);
+DROP FUNCTION public.release_product_import_v1(uuid,uuid,uuid,uuid);
+DROP FUNCTION public.fail_product_import_row_v1(uuid,uuid,uuid,uuid,uuid,text);
+DROP FUNCTION public.complete_product_import_row_v1(uuid,uuid,uuid,uuid,uuid,jsonb);
+DROP FUNCTION public.begin_product_import_row_v1(uuid,uuid,uuid,uuid);
+DROP FUNCTION public.claim_product_import_v1(uuid,uuid,uuid);
+DROP FUNCTION public.read_product_import_v1(uuid,uuid,uuid);
+DROP FUNCTION public.register_product_import_v1(uuid,uuid,uuid,text,jsonb);
+DROP FUNCTION public.record_product_creation_usage_v1(uuid,uuid,uuid,uuid);
+DROP FUNCTION public.assert_product_creation_limit_v1(uuid,uuid);
+DROP TABLE public.product_import_rows;
+DROP TABLE public.product_import_jobs;
+DROP FUNCTION public.product_import_snapshot_v1(uuid);
+DROP FUNCTION public.assert_product_import_actor_v1(uuid,uuid);
+DROP FUNCTION public.guard_product_import_record_v1();
+DELETE FROM public.migration_privilege_journal WHERE migration='416';
+NOTIFY pgrst,'reload schema';
+COMMIT;

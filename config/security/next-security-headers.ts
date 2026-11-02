@@ -4,6 +4,8 @@ export type SecurityHeaderOptions = {
   frameSources?: string[];
   reportOnly?: boolean;
   razorpayCheckoutForms?: boolean;
+  /** Exact Mumbai S3 bucket used only for direct browser KYC uploads. */
+  indiaUploadS3Bucket?: string;
 };
 
 function splitOrigins(value: string | undefined): string[] {
@@ -69,7 +71,11 @@ export function createContentSecurityPolicy(options: SecurityHeaderOptions = {})
   // lumberjack.razorpay.com is Razorpay's own telemetry/fraud-signal beacon (checkout.js posts to
   // /v2/logz throughout the checkout flow) — connect-src only, never a script or frame origin.
   const razorpayConnectOnly = ['https://lumberjack.razorpay.com'];
-  const connectSrc = unique(["'self'", ...origins, 'https://*.supabase.co', 'wss://*.supabase.co', ...razorpayOrigins, ...razorpayConnectOnly]);
+  const indiaUploadOrigin = options.indiaUploadS3Bucket
+    && /^(?=.{3,63}$)[a-z0-9](?:[a-z0-9-]*[a-z0-9])$/.test(options.indiaUploadS3Bucket)
+    ? `https://${options.indiaUploadS3Bucket}.s3.ap-south-1.amazonaws.com` : undefined;
+  const connectSrc = unique(["'self'", ...origins, 'https://*.supabase.co', 'wss://*.supabase.co', ...razorpayOrigins, ...razorpayConnectOnly,
+    ...(indiaUploadOrigin ? [indiaUploadOrigin] : [])]);
   const imgSrc = unique(["'self'", 'data:', 'blob:', 'https:', ...origins]);
   const scriptSrc = unique([
     "'self'",

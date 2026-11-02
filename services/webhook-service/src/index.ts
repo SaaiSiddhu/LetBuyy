@@ -382,14 +382,19 @@ async function markOrderPaid(
         eventType?: string;
     }
 ): Promise<void> {
-    await confirmGatewayOrderPayment(env, {
+    const confirmation = await confirmGatewayOrderPayment(env, {
         orderId: order.id,
+        storeId: order.store_id,
         provider: params.provider,
         paymentId: params.paymentId,
         providerOrderId: params.providerOrderId || order.payment_id || null,
         providerEventId: params.providerEventId,
         idempotencyKey: `payment-webhook:${params.provider}:${params.providerEventId}:paid`,
     });
+
+    // The Gateway can book a real but unfulfillable late capture and queue its
+    // refund. Its reply explicitly forbids a buyer-facing paid announcement.
+    if (asObject(asObject(confirmation).data).fulfillable === false) return;
 
     await emitPaymentDomainEvent(env, {
         provider: params.provider,
@@ -422,6 +427,7 @@ async function markOrderFailed(
     const provider = params.provider || "razorpay";
     await recordGatewayOrderPaymentFailure(env, {
         orderId: order.id,
+        storeId: order.store_id,
         provider,
         providerEventId: params.providerEventId,
         paymentStatus: "failed",
@@ -477,6 +483,7 @@ async function markOrderRefunded(
 
     await recordGatewayOrderPaymentFailure(env, {
         orderId: order.id,
+        storeId: order.store_id,
         provider,
         providerEventId,
         paymentStatus: "refunded",
@@ -724,6 +731,30 @@ app.post("/webhook-deliveries/dispatch", async (c) => {
 // Razorpay sends: x-razorpay-signature header = HMAC-SHA256(body, secret)
 // Docs: https://razorpay.com/docs/webhooks/validate-test/
 
+// Each merchant registers this exact URL in their own Razorpay test account.
+// The Gateway reads the immutable credential version and verifies its distinct
+// webhook secret before parsing the event or touching an order/ledger. This
+// ingress never has access to the merchant's API or webhook secrets.
+app.post('/razorpay/merchant/:siteId/:credentialId', async (c) => {
+    const siteId = c.req.param('siteId'), credentialId = c.req.param('credentialId');
+    if (!isUuid(siteId) || !isUuid(credentialId)) return c.json({ error: 'Invalid callback scope' }, 400);
+    if (!c.env.API_GATEWAY_SERVICE || !c.env.INTERNAL_API_SECRET) {
+        return c.json({ error: 'Merchant callback service unavailable' }, 503);
+    }
+    const body = await c.req.text();
+    if (body.length > 256 * 1024) return c.json({ error: 'Callback too large' }, 413);
+    const response = await c.env.API_GATEWAY_SERVICE.fetch(
+        `https://api-gateway/v1/storefront/internal/payments/merchant-razorpay/${siteId}/${credentialId}`,
+        { method: 'POST', body, headers: {
+            'Content-Type': 'application/json',
+            'X-Internal-API-Secret': c.env.INTERNAL_API_SECRET,
+            'X-Razorpay-Signature': c.req.header('x-razorpay-signature') || '',
+            'X-Razorpay-Event-Id': c.req.header('x-razorpay-event-id') || '',
+        } },
+    );
+    return new Response(response.body, { status: response.status, headers: { 'Content-Type': 'application/json' } });
+});
+
 app.post("/razorpay", async (c) => {
     const body = await c.req.text();
     const signature = c.req.header("x-razorpay-signature");
@@ -808,10 +839,25 @@ app.post("/razorpay", async (c) => {
                 });
 
                 if (order) {
+                    const providerOrderId = textValue(paymentRecord.order_id);
+                    const providerAmountMinor = paymentRecord.amount;
+                    const orderTotal = numberValue(order.total);
+                    const expectedAmountMinor = orderTotal === undefined ? NaN : Math.round(orderTotal * 100);
+                    // The signed event authenticates Razorpay's payload, not its
+                    // relationship to this checkout. A mismatched capture must
+                    // remain unreconciled instead of posting the order total.
+                    if (!paymentId || !providerOrderId || !order.payment_id
+                        || (order.payment_id !== providerOrderId && order.payment_id !== paymentId)
+                        || paymentRecord.status !== 'captured' || paymentRecord.currency !== 'INR'
+                        || !Number.isSafeInteger(providerAmountMinor) || Number(providerAmountMinor) <= 0
+                        || !Number.isSafeInteger(expectedAmountMinor) || expectedAmountMinor <= 0
+                        || providerAmountMinor !== expectedAmountMinor) {
+                        throw new Error('Captured payment facts require reconciliation');
+                    }
                     await markOrderPaid(c.env, order, {
                         provider: "razorpay",
                         paymentId: paymentId || providerEventId,
-                        providerOrderId: textValue(paymentRecord.order_id),
+                        providerOrderId,
                         providerEventId,
                         eventType,
                     });
@@ -975,6 +1021,7 @@ app.post("/razorpay", async (c) => {
                     // unexpected-status events must not post a full-order refund reversal.
                     await recordGatewayOrderPaymentEvent(c.env, {
                         orderId: order.id,
+                        storeId: order.store_id,
                         provider: "razorpay",
                         providerEventId,
                         eventType,

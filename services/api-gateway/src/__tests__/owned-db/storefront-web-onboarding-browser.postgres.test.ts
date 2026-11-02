@@ -392,16 +392,16 @@ test('merchant resumes the real onboarding form and creates one completed store'
     dashboardPage.on('console', message => { if (message.type() === 'error') dashboardConsoleErrors.push(message.text()); });
     const dashboardResponse = await dashboardPage.goto(`${merchantOrigin}/${subdomain}/dashboard`, { waitUntil: 'domcontentloaded' });
     try {
-        await dashboardPage.getByRole('heading', { name: 'Where do you want to start?', level: 1 }).waitFor({ timeout: 20_000 });
+        await dashboardPage.getByRole('heading', { name: 'Finish setting up Synthetic Browser Coffee', level: 1 }).waitFor({ timeout: 20_000 });
     } catch {
-        throw new Error(`Merchant dashboard did not reach its activation page; status=${dashboardResponse?.status()} url=${dashboardPage.url()} body=${(await dashboardPage.locator('body').innerText()).slice(0, 1200)} pageErrors=${dashboardErrors.join(' | ')} consoleErrors=${dashboardConsoleErrors.join(' | ')}`);
+        throw new Error(`Merchant dashboard did not reach its store setup page; status=${dashboardResponse?.status()} url=${dashboardPage.url()} body=${(await dashboardPage.locator('body').innerText()).slice(0, 1200)} pageErrors=${dashboardErrors.join(' | ')} consoleErrors=${dashboardConsoleErrors.join(' | ')}`);
     }
     assert.equal(await dashboardPage.getByRole('heading', { level: 1 }).count(), 1,
-        'the first-store dashboard exposes its activation title as the sole page heading');
-    assert.equal(await dashboardPage.locator('article.activation-card').count(), 5,
-        'the new store opens its five-step storefront setup checklist');
-    await dashboardPage.getByRole('heading', { name: 'Add product', level: 2 }).waitFor();
-    assert.match(await dashboardPage.locator('body').innerText(), /Your site is in draft mode/,
+        'the first-store dashboard exposes its setup title as the sole page heading');
+    await dashboardPage.getByRole('heading', { name: 'Store setup', level: 2 }).waitFor();
+    await dashboardPage.getByText('6 setup tasks').waitFor();
+    await dashboardPage.getByRole('heading', { name: 'Add first product', level: 3 }).waitFor();
+    assert.match(await dashboardPage.locator('body').innerText(), /Draft — not visible to visitors/,
         'the new owner sees the honest draft-publication state with the setup steps');
     assert.deepEqual(dashboardErrors, []);
     assert.deepEqual(dashboardConsoleErrors, []);

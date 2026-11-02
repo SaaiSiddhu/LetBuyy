@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAdminUrl } from '@/lib/config/urls'
-import { LETBUYY_MERCHANT_SESSION_COOKIE, verifyLetbuyySessionCookieValue } from '@letbuyy/auth-core'
+import { resolveLetbuyyPlatformCookieNames, verifyLetbuyySessionCookieValue } from '@letbuyy/auth-core'
 
 const PUBLIC_ROUTES = ['/check-email', '/api/']
 const ACCIDENTAL_ADMIN_PATH = /^\/[^/]+\/(?:dashboard|analytics|products|orders|customers|settings|appearance|online-store)(?:\/|$)/
 
 export function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl
-    const sessionToken = request.cookies.get(LETBUYY_MERCHANT_SESSION_COOKIE)?.value
+    const names = resolveLetbuyyPlatformCookieNames(process.env.NEXT_PUBLIC_ENV)
+    const sessionToken = request.cookies.get(names.session)?.value
     const session = verifyLetbuyySessionCookieValue('merchant', sessionToken)
     const hasSessionCookie = Boolean(sessionToken)
 
@@ -24,7 +25,7 @@ export function proxy(request: NextRequest) {
         return NextResponse.redirect(redirectUrl)
     }
 
-    if (pathname.startsWith('/api/') || pathname.startsWith('/_next/') || pathname.startsWith('/icons/')) {
+    if (pathname.startsWith('/api/') || pathname.startsWith('/_next/') || pathname.startsWith('/icons/') || pathname.startsWith('/.well-known/')) {
         return NextResponse.next()
     }
 
@@ -35,14 +36,14 @@ export function proxy(request: NextRequest) {
     // This route renders a data-free password form. Its API still requires
     // CSRF and a fresh server-validated, single-use verification intent.
     const response = NextResponse.next()
-    const existingCsrf = request.cookies.get('letbuyy_csrf')?.value || request.cookies.get('lb_csrf')?.value
+    const existingCsrf = request.cookies.get(names.csrf)?.value || request.cookies.get(names.legacyCsrf)?.value
 
     if (!existingCsrf) {
         const array = new Uint8Array(32)
         crypto.getRandomValues(array)
         const csrfToken = Array.from(array, (b) => b.toString(16).padStart(2, '0')).join('')
 
-        response.cookies.set('letbuyy_csrf', csrfToken, {
+        response.cookies.set(names.csrf, csrfToken, {
             httpOnly: false,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',
@@ -54,6 +55,11 @@ export function proxy(request: NextRequest) {
     response.headers.set('X-Frame-Options', 'DENY')
     response.headers.set('X-Content-Type-Options', 'nosniff')
     response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
+    if (pathname.startsWith('/mobile') || pathname.startsWith('/merchant/auth/callback')) {
+        response.headers.set('Cache-Control', 'private, no-store')
+        response.headers.set('Referrer-Policy', 'no-referrer')
+        response.headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive')
+    }
 
     return response
 }

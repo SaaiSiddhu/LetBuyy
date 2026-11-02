@@ -16,8 +16,9 @@ import { FIXED_PUBLIC_ERROR_MESSAGES } from '../../lib/public-errors';
 import { IdempotencyExecutionAdapter } from '../../execution/idempotency-execution.adapter';
 import { EventExecutionAdapter } from '../../execution/event-execution.adapter';
 import { createPublicStorefrontTenantContext } from '../../lib/tenant-context';
-import { createRazorpayPaymentProvider } from '@letbuyy/infrastructure/razorpay-adapter';
+import { createRazorpayPaymentProvider, fetchRazorpayPayment } from '@letbuyy/infrastructure/razorpay-adapter';
 import { assertProviderPaymentNotReplayed } from '../../lib/payment-route-support';
+import { hostedRazorpayTestCredentials } from '../../lib/hosted-razorpay-credentials';
 import type {
     CreateCheckoutOrderCommand,
     // The wire contracts these handlers receive. They are `z.infer` of the very schemas that parse
@@ -26,7 +27,6 @@ import type {
     // real schema did not declare, `z.object()` stripped the field silently, and a merchant's
     // configured shipping rate was unreachable while the build stayed green (CAP-C39/C42/C46).
     StorefrontCreateOrderInput,
-    StorefrontRazorpayOrderInput,
     StorefrontRazorpayVerifyInput,
 } from '@letbuyy/checkout-core';
 import { StorefrontCheckoutQuoteSchema, type StorefrontCheckoutQuoteInput } from '@letbuyy/checkout-core';
@@ -61,12 +61,6 @@ type StorefrontPaidOrderSnapshot = {
 
 function isCheckoutPostCommitDeferralEnabled(env: Pick<Env, 'CHECKOUT_POSTCOMMIT_DEFERRAL'>): boolean {
     return (env.CHECKOUT_POSTCOMMIT_DEFERRAL || 'on').trim().toLowerCase() !== 'off';
-}
-
-function requestedAmountMinorUnits(input: { amount?: number; amountMinorUnits?: number }): number | null {
-    if (typeof input.amountMinorUnits === 'number') return input.amountMinorUnits;
-    if (typeof input.amount === 'number') return Math.round(input.amount * 100);
-    return null;
 }
 
 function orderAmountMinorUnits(order: { total: number | string; currency?: string | null }): {
@@ -367,124 +361,21 @@ export function registerStorefrontCheckoutPaymentRoutes(
         }
     });
 
-    // POST /storefront/:subdomain/payments/razorpay/order — Public Razorpay order creation.
+    // New payment starts belong to the hosted checkout session, which binds the
+    // cart, site, origin and immutable merchant credential before provider order
+    // creation. This endpoint remains mounted only to give old clients a clear
+    // recovery answer. It must not fall back to process-wide Razorpay keys.
     router.post(
         '/:subdomain/payments/razorpay/order',
         validate('json', StorefrontRazorpayOrderSchema),
         async (c) => {
-            const subdomain = c.req.param('subdomain');
-            const body = c.get('validatedBody') as StorefrontRazorpayOrderInput;
-            const store = await loadPublishedStore(c, subdomain);
-
+            const store = await loadPublishedStore(c, c.req.param('subdomain'));
             if (!store) {
-                return c.json(
-                    { success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } },
-                    404
-                );
+                return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
             }
-
-            if (!c.env.RAZORPAY_KEY_ID || !c.env.RAZORPAY_KEY_SECRET) {
-                return c.json(
-                    { success: false, error: { code: 'PAYMENT_UNAVAILABLE', message: 'Razorpay is not configured' } },
-                    503
-                );
-            }
-
-            const db = getSupabaseAdmin(c);
-            const paymentService = new PaymentExecutionAdapter(db);
-            const order = await paymentService.loadStorefrontPayableOrder(body.orderId, store.id);
-            const amount = orderAmountMinorUnits(order);
-            if (!amount) {
-                return c.json(
-                    { success: false, error: { code: 'PAYMENT_CURRENCY_UNSUPPORTED', message: 'Only INR storefront payments are supported' } },
-                    400
-                );
-            }
-
-            const amountMinorUnits = amount.amountMinor;
-            const requestedMinorUnits = requestedAmountMinorUnits(body);
-            if (requestedMinorUnits !== null && requestedMinorUnits !== amountMinorUnits) {
-                return c.json(
-                    { success: false, error: { code: 'AMOUNT_MISMATCH', message: 'Order amount changed. Please refresh checkout and try again.' } },
-                    400
-                );
-            }
-
-            const idempotency = new IdempotencyExecutionAdapter(db);
-            const claim = await idempotency.begin({
-                siteId: store.id,
-                key: body.idempotencyKey,
-                scope: `storefront.payment.razorpay.order:${body.orderId}`,
-                requestBody: body,
-                requestId: getRequestId(c),
-            });
-
-            if (claim.kind === 'replay') {
-                return c.json(claim.responseBody as any, claim.statusCode as any);
-            }
-
-            try {
-                const provider = createRazorpayPaymentProvider({
-                    keyId: c.env.RAZORPAY_KEY_ID,
-                    keySecret: c.env.RAZORPAY_KEY_SECRET,
-                });
-                const intent = await provider.createIntent({
-                    storeId: store.id,
-                    orderId: body.orderId,
-                    amount,
-                    idempotencyKey: body.idempotencyKey,
-                    receipt: body.orderId,
-                    metadata: {
-                        source: 'storefront',
-                    },
-                });
-                const providerOrderId = intent.references.providerOrderId;
-
-                if (!providerOrderId) {
-                    await idempotency.fail(claim.id);
-                    return c.json(
-                        {
-                            success: false,
-                            error: {
-                                code: 'PAYMENT_PROVIDER_ERROR',
-                                message: 'Failed to create Razorpay order',
-                            },
-                        },
-                        502
-                    );
-                }
-
-                await paymentService.attachPaymentReference({
-                    orderId: body.orderId,
-                    provider: 'razorpay',
-                    providerOrderId,
-                    requestId: getRequestId(c),
-                    idempotencyKey: body.idempotencyKey,
-                });
-
-                const responseBody = success({
-                    keyId: c.env.RAZORPAY_KEY_ID,
-                    key_id: c.env.RAZORPAY_KEY_ID,
-                    razorpayOrderId: providerOrderId,
-                    razorpay_order_id: providerOrderId,
-                    amount: intent.amount.amountMinor,
-                    currency: intent.amount.currency,
-                });
-
-                await idempotency.complete({
-                    id: claim.id,
-                    responseBody,
-                    statusCode: 200,
-                    resourceType: 'order',
-                    resourceId: body.orderId,
-                });
-
-                return c.json(responseBody);
-            } catch (error) {
-                await idempotency.fail(claim.id);
-                throw error;
-            }
-        }
+            return c.json({ success: false, error: { code: 'HOSTED_CHECKOUT_REQUIRED',
+                message: 'Start a new secure checkout from the store cart.' } }, 410);
+        },
     );
 
     // POST /storefront/:subdomain/payments/razorpay/verify — Public Razorpay signature verification.
@@ -503,9 +394,10 @@ export function registerStorefrontCheckoutPaymentRoutes(
                 );
             }
 
-            if (!c.env.RAZORPAY_KEY_SECRET) {
+            const razorpayCredentials = await hostedRazorpayTestCredentials(c, store.id);
+            if (!razorpayCredentials) {
                 return c.json(
-                    { success: false, error: { code: 'PAYMENT_UNAVAILABLE', message: 'Razorpay is not configured' } },
+                    { success: false, error: { code: 'PAYMENT_UNAVAILABLE', message: 'Store payment setup is unavailable' } },
                     503
                 );
             }
@@ -562,8 +454,8 @@ export function registerStorefrontCheckoutPaymentRoutes(
             });
 
             const provider = createRazorpayPaymentProvider({
-                keyId: c.env.RAZORPAY_KEY_ID || 'storefront',
-                keySecret: c.env.RAZORPAY_KEY_SECRET,
+                keyId: razorpayCredentials.keyId,
+                keySecret: razorpayCredentials.keySecret,
             });
             const verification = await provider.verify({
                 storeId: store.id,
@@ -587,6 +479,36 @@ export function registerStorefrontCheckoutPaymentRoutes(
                     },
                     400
                 );
+            }
+
+            // A checkout signature authenticates the provider order/payment pair only. It does
+            // not attest capture or amount. Read the payment using this merchant's own key before
+            // the canonical money writer receives a capture claim.
+            let providerPayment: Awaited<ReturnType<typeof fetchRazorpayPayment>>;
+            try {
+                providerPayment = c.env.ENVIRONMENT === 'test' && c.env.HOSTED_RAZORPAY_TEST_ADAPTER
+                    ? await c.env.HOSTED_RAZORPAY_TEST_ADAPTER.fetchPayment(body.razorpay_payment_id)
+                    : await fetchRazorpayPayment(razorpayCredentials, body.razorpay_payment_id);
+            } catch {
+                await idempotency.fail(claim.id);
+                return c.json({ success: false, error: { code: 'PAYMENT_VERIFICATION_UNAVAILABLE',
+                    message: 'Payment status is temporarily unavailable. Retry verification.' } }, 503);
+            }
+            if (providerPayment.error) {
+                await idempotency.fail(claim.id);
+                return c.json({ success: false, error: { code: 'PAYMENT_VERIFICATION_UNAVAILABLE',
+                    message: 'Payment status is temporarily unavailable. Retry verification.' } }, 503);
+            }
+            if (providerPayment.status !== 'captured' || providerPayment.captured !== true) {
+                await idempotency.fail(claim.id);
+                return c.json({ success: false, error: { code: 'PAYMENT_NOT_CAPTURED',
+                    message: 'The provider has not confirmed capture. Retry verification shortly.' } }, 409);
+            }
+            if (providerPayment.id !== body.razorpay_payment_id || providerPayment.order_id !== body.razorpay_order_id
+                || providerPayment.amount !== amount.amountMinor || providerPayment.currency?.toUpperCase() !== amount.currency) {
+                await idempotency.fail(claim.id);
+                return c.json({ success: false, error: { code: 'PAYMENT_PROOF_MISMATCH',
+                    message: 'The provider payment does not match this order.' } }, 409);
             }
 
             try {

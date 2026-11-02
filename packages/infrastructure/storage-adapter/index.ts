@@ -105,3 +105,15 @@ export function planSignedR2UploadIntent(input: SignedR2UploadIntentInput): Sign
 export { transferPrivateOriginal, inspectPrivateOriginal, originalKey, privateOriginalRuntimeAvailable,
   type OriginalIntent as PrivateReelOriginalIntent, type TransferBudget as PrivateReelTransferBudget,
   type VerifiedOriginal as VerifiedPrivateReelOriginal, type PrivateR2Binding } from './reel-private-r2';
+
+export { signKycIndiaS3Post, type KycIndiaS3PostInput, type KycIndiaS3Post,
+  type KycIndiaContentType } from './kyc-india-s3-post';
+export { verifyKycIndiaS3Head, type KycIndiaS3HeadExpectation,
+  type KycIndiaS3VerifiedObject } from './kyc-india-s3-head';
+export { headKycIndiaS3Object, type KycIndiaS3HeadRequest } from './kyc-india-s3-head-request';
+export { assumeKycIndiaUploadRole, kycIndiaUploadSessionPolicy,
+  type KycIndiaUploadRoleInput, type KycIndiaUploadCredentials } from './kyc-india-s3-sts';
+export { parseKycIndiaGuardDutyEvent, type KycIndiaGuardDutyExpectation,
+  type KycIndiaScanResult } from './kyc-india-guardduty-event';
+export { signKycIndiaS3ReviewUrl, type KycIndiaS3ReviewUrlInput } from './kyc-india-s3-review-url';
+export { cleanupKycIndiaS3ObjectVersions, type KycIndiaS3CleanupInput } from './kyc-india-s3-cleanup';

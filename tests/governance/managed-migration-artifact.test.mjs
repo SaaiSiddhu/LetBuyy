@@ -38,7 +38,7 @@ test('every existing reviewed admission block compiles without editing its sourc
         assert.doesNotMatch(artifact.sql,/PERFORM letbuyy_maintenance\.lock_catalogs_v1\(\)/);
         if(folder==='migrations')forward++;else rollback++;
     }
-    assert.equal(forward,22);assert.equal(rollback,31);
+    assert.equal(forward,22);assert.equal(rollback,33);
 });
 
 for(const [before,after] of [

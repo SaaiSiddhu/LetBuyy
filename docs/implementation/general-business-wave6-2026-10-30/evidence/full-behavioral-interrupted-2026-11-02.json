@@ -1,0 +1,63 @@
+{
+  "scope": "Second broad Wave 6 behavioral attempt after browser-lane and fixture repairs",
+  "date": "2026-11-02",
+  "status": "red and intentionally interrupted after confirmed failures; not a full gate result",
+  "invocation": "node scripts/governance/test-behavioral.mjs --with-contracts --report /private/tmp/letbuyy-wave6-428-browserlane-full.json",
+  "observed_before_signal": {
+    "pure_passed": 3149,
+    "pure_failed": 0,
+    "pure_explicit_human_provider_skips": 15,
+    "contracts_passed": 364,
+    "postgres_suite_lines_completed": 209,
+    "failed_postgres_suite_lines": 22,
+    "examples": [
+      "A real owned-database suite failed on spawnSync docker ETIMEDOUT",
+      "Several REST sidecars returned HTTP 401 during bounded startup or failed before their suite started",
+      "Several browser suites reached their test timeout"
+    ]
+  },
+  "stop": {
+    "owned_runner_pid": 7369,
+    "signal": "SIGINT",
+    "reason": "The broad run was irreversibly red after more than two hours; preserving exact logs and freeing owned fixtures allowed a fresh focused run",
+    "runner_exit_code": 130,
+    "parent_gate_exit_code": 1,
+    "owned_run_id": "6a3a58a4923d",
+    "owned_run_containers_remaining_after_cleanup": 0
+  },
+  "artifact_sha256": {
+    "gate_log": "cd5973e5cafa8d1df38da3aa3c78a1b550f844a4409143759e2e9af6bd93fe46",
+    "gate_json": "6d4f56277a54658eede18a1434431d53c45bf4f291de7627cde0ff31dd5bb966"
+  },
+  "focused_recheck": {
+    "run_id": "31274186514d",
+    "suites": [
+      "kyc-write-guard-rollback.postgres.test.ts",
+      "niche-theme-v210-editor.postgres.test.ts"
+    ],
+    "passed": 3,
+    "failed": 0,
+    "cleanup_failures": 0,
+    "remaining_owned_containers": 0,
+    "remaining_owned_networks": 0,
+    "remaining_owned_volumes": 0,
+    "scope_limit": "These two passing isolated reruns do not retroactively make the broad gate green or classify every earlier failure"
+  },
+  "sensitive_path_recheck": {
+    "run_id": "cd5df08d8646",
+    "suites": [
+      "kyc-review-console-browser.postgres.test.ts",
+      "merchant-payment-setup-browser.postgres.test.ts",
+      "merchant-payout-statements-browser.postgres.test.ts",
+      "merchant-money-approval.postgres.test.ts"
+    ],
+    "passed": 26,
+    "failed": 0,
+    "cleanup_failures": 0,
+    "remaining_owned_containers": 0,
+    "remaining_owned_networks": 0,
+    "remaining_owned_volumes": 0,
+    "scope_limit": "Local sandbox and synthetic browser proof only; no FUCOMES charge, signed provider callback, provider statement, or live KYC approval"
+  },
+  "interpretation": "The parent JSON total excludes interrupted Postgres assertions and cannot be read as a passing full gate. Each failed suite requires a clean reproduction or host/fixture diagnosis before product attribution."
+}

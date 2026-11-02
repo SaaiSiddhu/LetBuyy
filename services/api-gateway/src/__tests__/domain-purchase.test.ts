@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { createDomainRegistrarProvider } from '../lib/registrar/index.ts';
+import { domainPurchaseCheckoutAllowed } from '../routes/domains.ts';
 
 function repositorySource(path: string): string {
     return readFileSync(new URL(`../../../../${path}`, import.meta.url), 'utf8');
@@ -51,8 +52,17 @@ test('domain purchase route records checkout, registrar, DNS, and Vercel evidenc
     assert.match(routeSource, /provider\.configureDns\(domain,\s*target\)/);
     assert.match(routeSource, /attachVercelProjectDomain\(c\.env,\s*domain\)/);
     assert.match(routeSource, /checkout:\s*\{[\s\S]*status:\s*checkoutStatus/);
-    assert.match(routeSource, /DOMAIN_CHECKOUT_MODE_UNAVAILABLE/);
+    assert.match(routeSource, /DOMAIN_PAYMENT_VERIFICATION_REQUIRED/);
     assert.doesNotMatch(routeSource, /REGISTRAR_API_URL is required/);
+});
+
+test('domain checkout rejects caller references on every live registrar', () => {
+    assert.equal(domainPurchaseCheckoutAllowed('sandbox', 'sandbox'), true);
+    assert.equal(domainPurchaseCheckoutAllowed('sandbox', 'external_reference'), false);
+    assert.equal(domainPurchaseCheckoutAllowed('resellerclub', 'sandbox'), false);
+    assert.equal(domainPurchaseCheckoutAllowed('resellerclub', 'external_reference'), false);
+    assert.equal(domainPurchaseCheckoutAllowed('opensrs', 'external_reference'), false);
+    assert.match(routeSource, /if \(!domainPurchaseCheckoutAllowed\(provider\.name, checkoutMode\)\)/);
 });
 
 test('shared clients and mobile app expose the verified buy-domain checkout flow', () => {

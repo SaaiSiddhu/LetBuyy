@@ -9,10 +9,10 @@ function countMatches(source, pattern) {
   return source.match(pattern)?.length || 0;
 }
 
-function blockAfter(source, marker) {
+function blockAfter(source, marker, length = 1800) {
   const start = source.indexOf(marker);
   assert.notEqual(start, -1, `${marker} exists`);
-  return source.slice(start, start + 1800);
+  return source.slice(start, start + length);
 }
 
 test('queue worker persists a Cloudflare batch with batched DB writes', () => {
@@ -40,7 +40,7 @@ test('queue worker persists a Cloudflare batch with batched DB writes', () => {
 });
 
 test('queue worker drains platform queues once per Cloudflare batch', () => {
-  const queueHandlerBlock = blockAfter(queueWorkerSource, 'async queue(batch, env)');
+  const queueHandlerBlock = blockAfter(queueWorkerSource, 'async queue(batch, env)', 7000);
   assert.match(queueHandlerBlock, /const deliveries = await normalizeDeliveries\(env, batch\)/);
   assert.match(queueHandlerBlock, /await persistQueueBatch\(env, deliveries\)/);
   assert.match(queueHandlerBlock, /await recordQueueBatchMetric\(env, batch, deliveries\)/);

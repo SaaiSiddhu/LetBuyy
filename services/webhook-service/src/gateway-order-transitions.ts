@@ -60,6 +60,7 @@ export async function confirmGatewayOrderPayment(
     env: GatewayOrderTransitionEnv,
     input: {
         orderId: string;
+        storeId: string;
         provider: GatewayPaymentProvider;
         paymentId: string;
         providerOrderId?: string | null;
@@ -69,6 +70,7 @@ export async function confirmGatewayOrderPayment(
 ): Promise<unknown> {
     return gatewayOrderMutation(env, "/v1/storefront/internal/payments/confirm", {
         orderId: input.orderId,
+        storeId: input.storeId,
         provider: input.provider,
         paymentId: input.paymentId,
         providerOrderId: input.providerOrderId || null,
@@ -81,6 +83,7 @@ export async function recordGatewayOrderPaymentFailure(
     env: GatewayOrderTransitionEnv,
     input: {
         orderId: string;
+        storeId: string;
         provider: GatewayPaymentProvider;
         providerEventId: string;
         paymentStatus: "failed" | "refunded";
@@ -92,6 +95,7 @@ export async function recordGatewayOrderPaymentFailure(
 ): Promise<unknown> {
     return gatewayOrderMutation(env, "/v1/storefront/internal/payments/failure", {
         orderId: input.orderId,
+        storeId: input.storeId,
         provider: input.provider,
         providerEventId: input.providerEventId,
         paymentStatus: input.paymentStatus,
@@ -106,6 +110,7 @@ export async function recordGatewayOrderPaymentEvent(
     env: GatewayOrderTransitionEnv,
     input: {
         orderId: string;
+        storeId: string;
         provider: GatewayPaymentProvider;
         providerEventId: string;
         eventType: string;
@@ -114,6 +119,7 @@ export async function recordGatewayOrderPaymentEvent(
 ): Promise<unknown> {
     return gatewayOrderMutation(env, "/v1/storefront/internal/payments/event", {
         orderId: input.orderId,
+        storeId: input.storeId,
         provider: input.provider,
         providerEventId: input.providerEventId,
         eventType: input.eventType,

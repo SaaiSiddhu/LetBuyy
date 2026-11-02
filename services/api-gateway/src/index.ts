@@ -12,6 +12,8 @@ import { observability, getObservabilityRoute } from './middleware/observability
 import { internalPerimeter } from './middleware/internal-perimeter';
 import { AppError, formatAppError } from './lib/errors';
 import { getSupabaseAdminFromEnv } from './lib/supabase';
+import { drainKycPrivateObjectCleanup } from './lib/kyc-private-object-cleanup';
+import { drainKycIndiaObjectCleanup } from './lib/kyc-india-object-cleanup';
 import { resolveCredentialedCorsOrigin } from './lib/cors';
 import type { RazorpayOrderSearchResult } from '@letbuyy/infrastructure/razorpay-adapter';
 import storesRouter from './routes/stores';
@@ -96,6 +98,7 @@ import domainsRouter from './routes/domains';
 import customDomainsRouter, { storeAccessRouter } from './routes/custom-domains';
 import internalCustomDomainReconcileRouter from './routes/internal-custom-domain-reconcile';
 import internalNotificationJobsRouter from './routes/internal-notification-jobs';
+import internalProductImportRouter from './routes/internal-product-import';
 import internalStoreAccessRouter from './routes/internal-store-access';
 import { createAdminGraphQLRouter } from './graphql/admin';
 import { createStorefrontGraphQLRouter } from './graphql/storefront';
@@ -138,6 +141,8 @@ export interface Env {
     AD_PLACEMENT_SIGNING_SECRET?: string;
     LETBUYY_PAYMENT_MODE?: 'sandbox' | 'live';
     LETBUYY_RAZORPAY_MODE?: 'sandbox' | 'live';
+    /** Explicit managed simulation only; production admission is always denied. */
+    LETBUYY_MANAGED_PAYMENTS_MODE?: 'sandbox';
     LETBUYY_CASHFREE_MODE?: 'sandbox' | 'live';
     LETBUYY_UPI_MODE?: 'sandbox' | 'live';
     LETBUYY_COD_MODE?: 'sandbox' | 'live';
@@ -174,6 +179,7 @@ export interface Env {
     TWILIO_AUTH_TOKEN?: string;
     TWILIO_WHATSAPP_FROM?: string;
     PAYMENT_CONFIG_ENCRYPTION_KEY?: string;
+    MERCHANT_RAZORPAY_WEBHOOK_ORIGIN?: string;
     TOTP_ENCRYPTION_KEY?: string;
     STRIPE_SECRET_KEY: string;
     PAYPAL_CLIENT_ID?: string;
@@ -240,6 +246,7 @@ export interface Env {
     WORKER_INTERNAL_API_SECRET?: string;
     INTERNAL_GATEWAY_IP_ALLOWLIST?: string;
     INTERNAL_API_KEYRING?: string;
+    PRODUCT_IMPORT_REQUEST_SECRET?: string;
     STOREFRONT_INTERNAL_PERIMETER?: string;
     STOREFRONT_INTERNAL_REQUEST_KEYRING?: string;
     PLATFORM_CONSOLE_API_TOKEN?: string;
@@ -247,6 +254,31 @@ export interface Env {
     ASSET_PUBLIC_BASE_URL?: string;
     UPLOAD_PUBLIC_BASE_URL?: string;
     R2_BUCKET?: R2Bucket;
+    /** Owned-test mock only. India-only KYC bytes require a different storage adapter before deployed intake. */
+    KYC_PRIVATE_BUCKET?: R2Bucket;
+    /** Explicit admission after India-only private storage, scanner, and retention approval. */
+    KYC_UPLOAD_ENABLED?: 'true' | 'false';
+    /** Owned-test only until Mumbai storage, scanner and privacy gates pass. */
+    KYC_INDIA_UPLOAD_ENABLED?: 'true' | 'false';
+    KYC_INDIA_BUCKET?: string;
+    KYC_INDIA_ACCOUNT_ID?: string;
+    KYC_INDIA_UPLOAD_ROLE_ARN?: string;
+    KYC_INDIA_STS_ACCESS_KEY_ID?: string;
+    KYC_INDIA_STS_SECRET_ACCESS_KEY?: string;
+    KYC_INDIA_STS_SESSION_TOKEN?: string;
+    KYC_INDIA_HEAD_ACCESS_KEY_ID?: string;
+    KYC_INDIA_HEAD_SECRET_ACCESS_KEY?: string;
+    KYC_INDIA_HEAD_SESSION_TOKEN?: string;
+    /** Owned-test reviewer ticket only until India storage, IAM and privacy gates pass. */
+    KYC_INDIA_REVIEW_ENABLED?: 'true' | 'false';
+    KYC_INDIA_REVIEW_ACCESS_KEY_ID?: string;
+    KYC_INDIA_REVIEW_SECRET_ACCESS_KEY?: string;
+    KYC_INDIA_REVIEW_SESSION_TOKEN?: string;
+    /** Owned-test only until Mumbai bucket, IAM, retention and deletion proof pass. */
+    KYC_INDIA_CLEANUP_ENABLED?: 'true' | 'false';
+    KYC_INDIA_CLEANUP_ACCESS_KEY_ID?: string;
+    KYC_INDIA_CLEANUP_SECRET_ACCESS_KEY?: string;
+    KYC_INDIA_CLEANUP_SESSION_TOKEN?: string;
     /** Approved server-only private-original profile. No default account/binding activation. */
     REEL_CUSTODY_PROFILE?: string;
     REEL_ORIGINALS_BUCKET?: R2Bucket;
@@ -685,7 +717,7 @@ app.use(
     (c, next) => cors({
         origin: (origin) => resolveCredentialedCorsOrigin(origin, c.env),
         allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-        allowHeaders: ['Content-Type', 'Authorization', 'X-Store-ID', 'X-Request-ID', 'X-Trace-ID', 'X-Idempotency-Key', 'Idempotency-Key', 'X-Platform-Console-Token', 'X-LetBuyy-API-Version', 'LetBuyy-API-Version'],
+        allowHeaders: ['Content-Type', 'Authorization', 'X-Store-ID', 'X-Request-ID', 'X-Trace-ID', 'X-Idempotency-Key', 'Idempotency-Key', 'X-Platform-Console-Token', 'X-LetBuyy-API-Version', 'LetBuyy-API-Version', 'X-LetBuyy-Warehouse-Protocol'],
         exposeHeaders: ['X-Request-ID', 'X-Trace-ID', 'X-RateLimit-Limit', 'X-RateLimit-Remaining', 'X-RateLimit-Reset', 'X-RateLimit-Cost', 'X-RateLimit-Policy', 'X-App-Quota-Limit', 'X-App-Quota-Remaining', 'X-App-Quota-Reset', 'X-App-Quota-Used', 'X-App-Quota-Route', 'X-LetBuyy-API-Version', 'X-Response-Time'],
         maxAge: 86400,
         credentials: true,
@@ -811,6 +843,7 @@ api.route('/internal/events', internalEventsRouter);
 api.route('/internal/store-access', internalStoreAccessRouter);
 api.route('/internal/custom-domain-reconcile', internalCustomDomainReconcileRouter);
 api.route('/internal/notification-jobs', internalNotificationJobsRouter);
+api.route('/internal/product-import', internalProductImportRouter);
 
 // Protected routes (auth required)
 api.use('/*', authMiddleware);
@@ -956,6 +989,41 @@ async function runScheduledDispatch(controller: ScheduledController, env: Env): 
     const outbox = new OutboxExecutionAdapter(db);
     const queue = new QueueExecutionAdapter(db);
     const queueNames: ScheduledQueueName[] = ['analytics-events', 'search-indexing', 'payment-events'];
+
+    // Private KYC evidence cleanup is independent of outbox traffic. Its due
+    // records must still drain on an otherwise idle scheduled tick.
+    if (env.KYC_PRIVATE_BUCKET) {
+        try {
+            const cleanup = await drainKycPrivateObjectCleanup(env);
+            if (cleanup.scanned > 0) console.info(JSON.stringify({
+                level: 'info', service: 'letbuyy-api', route: 'scheduled.kyc_private_cleanup',
+                method: 'CRON', status_code: cleanup.deferred > 0 ? 207 : 200,
+                ...cleanup,
+            }));
+        } catch {
+            console.error(JSON.stringify({
+                level: 'error', service: 'letbuyy-api', route: 'scheduled.kyc_private_cleanup',
+                method: 'CRON', status_code: 500,
+                error: 'Private KYC cleanup retry failed',
+            }));
+        }
+    }
+    if (env.KYC_INDIA_CLEANUP_ENABLED === 'true') {
+        try {
+            const cleanup = await drainKycIndiaObjectCleanup(env);
+            if (cleanup.scanned > 0) console.info(JSON.stringify({
+                level: 'info', service: 'letbuyy-api', route: 'scheduled.kyc_india_cleanup',
+                method: 'CRON', status_code: cleanup.deferred > 0 ? 207 : 200,
+                ...cleanup,
+            }));
+        } catch {
+            console.error(JSON.stringify({
+                level: 'error', service: 'letbuyy-api', route: 'scheduled.kyc_india_cleanup',
+                method: 'CRON', status_code: 500,
+                error: 'Private India KYC cleanup retry failed',
+            }));
+        }
+    }
 
     try {
         const pending = await hasPendingScheduledDispatchWork(

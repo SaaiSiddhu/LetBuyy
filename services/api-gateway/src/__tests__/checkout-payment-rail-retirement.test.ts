@@ -22,6 +22,8 @@ import storefrontRouter from '../routes/storefront';
 const testDir = dirname(fileURLToPath(import.meta.url));
 const routesPath = join(testDir, '../routes/storefront/checkout-payment-routes.ts');
 const currentSource = readFileSync(routesPath, 'utf8');
+const buyerCheckoutClient = readFileSync(join(testDir,
+    '../../../../apps/commerce/web/src/app/store/[subdomain]/checkout/checkout-client.tsx'), 'utf8');
 
 function env(): Env {
     return {
@@ -69,7 +71,13 @@ test('none of the retired provider paths appear anywhere in the mounted storefro
     }
 });
 
-// ─── B. Razorpay + COD (order creation) remain live and reachable ─────────────
+test('the buyer checkout component has no caller for the retired direct order or verify path', () => {
+    for (const path of ['/payments/razorpay/order', '/payments/razorpay/verify', "fetch('/api/orders'"]) {
+        assert.equal(buyerCheckoutClient.includes(path), false, `buyer checkout must use the hosted session instead of ${path}`);
+    }
+});
+
+// ─── B. Retained order and legacy Razorpay drain routes remain mounted ────────
 // These POST an intentionally incomplete body. If the route were gone, Hono's
 // router would 404 before any validation middleware runs; getting a 400
 // (schema-validation rejection) instead proves the route matched and its
@@ -83,7 +91,7 @@ const SURVIVING_ROUTES = [
 ];
 
 for (const path of SURVIVING_ROUTES) {
-    test(`canonical route remains reachable and validates its body: POST ${path}`, async () => {
+    test(`retained route remains reachable and validates its body: POST ${path}`, async () => {
         const response = await storefrontApp().request(
             path,
             { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' },

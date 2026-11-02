@@ -10,7 +10,7 @@ import { assertStaffPermission } from '../middleware/staff-permission';
 import { ProductExecutionAdapter, isProductVariantDiffEnabled } from '../execution/product-execution.adapter';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import { readProductForEdit } from '../execution/product-mutation.adapter';
-import { ValidationError } from '../lib/errors';
+import { AppError, ValidationError } from '../lib/errors';
 import { registerGiftCardRoutes } from './gift-cards';
 import {
     CreateProductSchema,
@@ -463,6 +463,9 @@ router.get('/', validate('query', ListProductsQuery), async (c) => {
     const query = c.get('validatedQuery') as ListProductsQueryInput;
     const offset = (query.page - 1) * query.limit;
     const decodedCursor = decodeListCursor(query.cursor);
+    if (query.cursor && (!decodedCursor || !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(decodedCursor.id))) {
+        throw new ValidationError('Invalid product cursor. Restart this catalog view.');
+    }
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
@@ -489,10 +492,10 @@ router.get('/', validate('query', ListProductsQuery), async (c) => {
     }
 
     const omittedColumns = new Set<string>();
-    const buildProductsQuery = (includeDeletedAtFilter: boolean) => {
+    const buildProductsQuery = (includeDeletedAtFilter: boolean, head = false) => {
         let dbQuery = db
             .from('products')
-            .select(productListColumns(c.env, omittedColumns, query.view === 'summary'), query.withCount ? { count: 'exact' } : undefined)
+            .select(productListColumns(c.env, omittedColumns, query.view === 'summary'), query.withCount || head ? { count: 'exact', head } : undefined)
             .in('store_id', ownedStoreIds);
 
         if (includeDeletedAtFilter) dbQuery = dbQuery.is('deleted_at', null);
@@ -501,16 +504,21 @@ router.get('/', validate('query', ListProductsQuery), async (c) => {
         if (query.status === 'inactive') dbQuery = dbQuery.eq('is_active', false);
         if (query.status === 'draft' || query.status === 'archived') dbQuery = dbQuery.eq('status', query.status);
         if (query.search) dbQuery = dbQuery.ilike('name', `%${query.search}%`);
+        if (query.stock_filter === 'out_of_stock') dbQuery = dbQuery.lte('stock', 0);
+        if (query.stock_filter === 'low_stock') dbQuery = dbQuery.gt('stock', 0).lte('stock', 5);
         if (decodedCursor) {
-            dbQuery = query.order === 'asc'
-                ? dbQuery.gt(query.sort, decodedCursor.value)
-                : dbQuery.lt(query.sort, decodedCursor.value);
+            // The secondary ID order is part of cursor membership, so products
+            // with the same price/name/display order cannot disappear at a page boundary.
+            const operator = query.order === 'asc' ? 'gt' : 'lt';
+            const value = JSON.stringify(decodedCursor.value);
+            dbQuery = dbQuery.or(`${query.sort}.${operator}.${value},and(${query.sort}.eq.${value},id.${operator}.${decodedCursor.id})`);
         }
 
         dbQuery = dbQuery
             .order(query.sort, { ascending: query.order === 'asc' })
             .order('id', { ascending: query.order === 'asc' });
 
+        if (head) return dbQuery;
         if (query.cursor || query.page === 1) return dbQuery.limit(query.limit + 1);
         return dbQuery.range(offset, offset + query.limit);
     };
@@ -535,9 +543,15 @@ router.get('/', validate('query', ListProductsQuery), async (c) => {
         break;
     }
 
-    if (error) {
-        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
+    const emptyOffset = !error && Array.isArray(data) && data.length === 0;
+    if ((error?.code === 'PGRST103' || emptyOffset) && offset > 0 && !query.cursor) {
+        const recovered = await buildProductsQuery(includeDeletedAtFilter, true);
+        if (recovered.error || typeof recovered.count !== 'number') throw new AppError('Products could not be loaded. Please retry.', 503, 'PRODUCTS_UNAVAILABLE');
+        const empty = cursorPaginated([], { page: query.page, limit: query.limit, total: recovered.count, nextCursor: null });
+        return c.json({ ...empty, meta: { ...empty.meta, stock_filter: query.stock_filter ?? null } });
     }
+    if (error) throw new AppError('Products could not be loaded. Please retry.', 503, 'PRODUCTS_UNAVAILABLE');
+    if (!Array.isArray(data)) throw new AppError('Products could not be loaded. Please retry.', 503, 'PRODUCTS_UNAVAILABLE');
 
     const rows = (data || []) as unknown as Array<Record<string, unknown>>;
     const pageRows = rows.slice(0, query.limit) as Array<Record<string, unknown>>;
@@ -548,12 +562,13 @@ router.get('/', validate('query', ListProductsQuery), async (c) => {
         ? await hydrateProductVariants(db, pageRows)
         : pageRows;
 
-    return c.json(cursorPaginated(responseRows, {
+    const response = cursorPaginated(responseRows, {
         page: query.page,
         limit: query.limit,
         total: query.withCount ? count || 0 : undefined,
         nextCursor,
-    }));
+    });
+    return c.json({ ...response, meta: { ...response.meta, stock_filter: query.stock_filter ?? null } });
 });
 
 // GET /products/barcode/lookup — Resolve a scanned product or variant barcode

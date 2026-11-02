@@ -1,0 +1,50 @@
+{
+  "status": "V2_PROMOTION_SOURCE_PROVENANCE_RED",
+  "date": "2026-11-02",
+  "admission": "docs/implementation/niche-theme-programme/release-v2/proposals/9b2e045a696940bc80ead069c5b8b74ea45bc74b971e7cded2138d087a630d8b/manifest.json",
+  "compatibilityRecord": "docs/evidence/consolidation-2026-10-25/PROMOTION_SOURCE_COMPATIBILITY.json",
+  "sourceHashCount": 47,
+  "currentDriftCount": 22,
+  "validSuccessorCount": 2,
+  "validSuccessors": [
+    "packages/theme-engine/src/first-party-theme-catalog.ts",
+    "packages/theme-engine/src/niche-order-presentation.ts"
+  ],
+  "noSuccessorRecord": [
+    "docs/implementation/niche-theme-programme/release-v2/generate-release.ts",
+    "packages/theme-engine/src/circuit-discovery.ts",
+    "packages/theme-engine/src/circuit-theme.ts",
+    "packages/theme-engine/src/dewdrop-discovery.ts",
+    "packages/theme-engine/src/dewdrop-theme.ts",
+    "packages/theme-engine/src/habitat-discovery.ts",
+    "packages/theme-engine/src/habitat-theme.ts",
+    "packages/theme-engine/src/kindred-discovery.ts",
+    "packages/theme-engine/src/kindred-theme.ts",
+    "packages/theme-engine/src/madeyours-discovery.ts",
+    "packages/theme-engine/src/madeyours-theme.ts",
+    "packages/theme-engine/src/marginalia-discovery.ts",
+    "packages/theme-engine/src/pantry-discovery.ts",
+    "packages/theme-engine/src/pantry-theme.ts",
+    "packages/theme-engine/src/playfield-discovery.ts",
+    "packages/theme-engine/src/trailmark-discovery.ts",
+    "packages/theme-engine/src/trailmark-theme.ts"
+  ],
+  "successorAdmittedHashMismatch": [
+    "packages/theme-engine/src/marginalia-theme.ts",
+    "packages/theme-engine/src/playfield-theme.ts"
+  ],
+  "successorCurrentHashMismatch": ["pnpm-lock.yaml"],
+  "sourceSearch": {
+    "roots": ["current and sibling Codex worktrees", "/Volumes/Projects/LetBuyy"],
+    "candidateFilesWithMatchingBasename": 628,
+    "driftedAdmittedHashesFound": [
+      "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "packages/theme-engine/src/trailmark-discovery.ts",
+      "packages/theme-engine/src/trailmark-theme.ts"
+    ],
+    "driftedAdmittedHashesNotFoundInSurvey": 19,
+    "limit": "This is a survey of current files and checked-in snapshots, not a proof that original bytes never existed in external archives or unreachable Git objects."
+  },
+  "factoryParity": { "defaultBundlesMatchingAdmission": 10, "defaultBundleCount": 10, "v2BundlesMatchingAdmission": 0, "v2BundleCount": 9 },
+  "decision": "Do not repin the accepted manifest or emit a new 2.0.0 payload from current factories. Historical source recovery or a reviewed versioned successor with exact admitted bundle parity is required before promotion."
+}

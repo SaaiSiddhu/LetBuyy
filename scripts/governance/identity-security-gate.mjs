@@ -12,6 +12,7 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { execFileSync } from 'node:child_process';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '../..');
 const read = (p) => {
@@ -29,8 +30,8 @@ const checks = [
   {
     id: 'SEC-C2',
     file: 'apps/internal/console/src/lib/console-session.ts',
-    mustContain: ["APP_ENV === 'production'", "VERCEL_ENV === 'production'"],
-    desc: 'console session secret prod-gate must check APP_ENV and VERCEL_ENV, not NODE_ENV alone',
+    mustContain: ['verifyIdentityPlatformSession(cookieValue,', 'publicJwks:process.env.LETBUYY_IDENTITY_PUBLIC_JWKS'],
+    desc: 'Console must delegate human-session verification to the sole Identity public verifier',
   },
   {
     id: 'SEC-C3',
@@ -51,10 +52,8 @@ const forbidden = [
   {
     id: 'SEC-C2-literal-default',
     file: 'apps/internal/console/src/lib/console-session.ts',
-    // The literal may exist only inside the non-production branch. Fail if the prod
-    // gate reverts to NODE_ENV-only (i.e. APP_ENV/VERCEL_ENV checks removed).
-    mustNotMatch: /if \(process\.env\.NODE_ENV === 'production'\) \{\s*\n\s*return isSafeSecret/,
-    desc: 'console prod gate must not revert to NODE_ENV-only',
+    mustNotMatch: /PLATFORM_CONSOLE_SESSION_SECRET|createHmac|SignJWT/,
+    desc: 'Console must not restore a local symmetric verifier or human-session signer',
   },
 ];
 
@@ -76,6 +75,17 @@ for (const f of forbidden) {
     console.error(`✗ ${f.id} forbidden pattern present in ${f.file}: ${f.desc}`);
     failed++;
   }
+}
+
+// The old symmetric-secret production check is superseded by the canonical
+// issuer/verifier contract. Reuse its executable-body/SQL guard rather than
+// treating a matching comment or an uncalled public verifier as evidence.
+try {
+  execFileSync(process.execPath, [join(root, 'scripts/validators/session-security-validator.mjs')], { cwd: root, stdio: 'pipe' });
+  console.log('✓ canonical session-security validator passed (sole issuer, live verifier and durable MFA)');
+} catch {
+  console.error('✗ canonical session-security validator failed; run it for the exact guard diagnostic.');
+  failed++;
 }
 
 if (failed) {

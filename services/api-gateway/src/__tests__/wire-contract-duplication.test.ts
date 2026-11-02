@@ -96,10 +96,15 @@ test('the rule is load-bearing: it fires on the exact declaration this phase rem
     assert.deepEqual(duplicatedContracts('// type StorefrontCreateOrderBody = { ... }', inferred), []);
 });
 
-test('the three converted handlers read the inferred type, not a local copy', () => {
+test('active handlers read inferred types and the retired direct order start cannot use a body copy', () => {
     const route = readFileSync(join(routesRoot, 'storefront/checkout-payment-routes.ts'), 'utf8');
-    for (const name of ['StorefrontCreateOrderInput', 'StorefrontRazorpayOrderInput', 'StorefrontRazorpayVerifyInput']) {
+    for (const name of ['StorefrontCreateOrderInput', 'StorefrontRazorpayVerifyInput']) {
         assert.match(route, new RegExp(`as ${name};`), `${name} must be what validatedBody is cast to`);
     }
+    const retiredOrder = route.slice(route.indexOf("'/:subdomain/payments/razorpay/order'"),
+        route.indexOf("'/:subdomain/payments/razorpay/verify'"));
+    assert.match(retiredOrder, /HOSTED_CHECKOUT_REQUIRED/);
+    assert.match(retiredOrder, /410/);
+    assert.doesNotMatch(retiredOrder, /validatedBody|StorefrontRazorpayOrderInput/);
     assert.doesNotMatch(route, /type Storefront\w*Body = \{/, 'the local copies must stay deleted');
 });

@@ -1,0 +1,71 @@
+{
+  "result": {
+    "restoreMethod": "buffered-stdin native PG17 pg_restore-to-stdin pre-data/data/post-data with exact owners/ACLs/checks and no disabled triggers/constraints",
+    "dataset": "production",
+    "runId": "d0b2239984e0",
+    "sourceRevision": "9b5b89437703cba8527b9e0ca32ca9a7aca495b8",
+    "image": "public.ecr.aws/supabase/postgres:17.6.1.127@sha256:be60aee15997daca475b710b734bc6bfe52cd544dcd7e9fd2ff58210b6747d83",
+    "network": "none",
+    "stages": [
+      "native-archive-pre-data-scoped-toc",
+      "native-archive-pre-data-scoped-toc",
+      "native-archive-data",
+      "native-archive-post-data",
+      {
+        "direction": "up",
+        "migrations": 1,
+        "sqlSha256": "177cf73557490535a77092b82b9161ba801cb8950a57e4c0ddf7170bb9cfc2f8",
+        "status": "committed"
+      },
+      {
+        "direction": "down",
+        "migrations": 1,
+        "sqlSha256": "6785f3f7f2b58069eec2efda0ef1d3d9b8f2d9db5ddae0c2b794e16b7a224e99",
+        "status": "committed"
+      },
+      {
+        "direction": "up",
+        "migrations": 1,
+        "sqlSha256": "75785f6c097fb0e0d7c1854950584f0429aec212f64adf3402c368735816dc26",
+        "status": "committed"
+      }
+    ],
+    "hostedWrite": false,
+    "managedIdentity": true,
+    "before": {
+      "helper": false,
+      "tables": 488,
+      "catalog": 11,
+      "history": 341
+    },
+    "exactCliIdentity": true,
+    "retainedSnapshotBeforeSha256": "9500498990d0ff03d6e101c0176df6eb41dc59ff22ad40567d84b57c37fa157d",
+    "preservedLegacyAliasCount": 5,
+    "privateAclAfterUp": true,
+    "rollbackRetainedHistoryExact": true,
+    "rollbackExact": true,
+    "privateAclAfterReplay": true,
+    "retainedChanges": [],
+    "retainedTables": 523,
+    "exactlyPreservedTables": 523,
+    "allOriginalRowsPreserved": true,
+    "expectedAppendedMigrationJournalRows": 41,
+    "newReceiptTableEmpty": true,
+    "after": {
+      "helper": false,
+      "catalog": 10,
+      "circuit": "Circuit",
+      "history": 342
+    },
+    "pass": true
+  },
+  "cleanup": {
+    "runId": "d0b2239984e0",
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    },
+    "pass": true
+  }
+}

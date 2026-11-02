@@ -1,0 +1,7 @@
+{
+  "chunk_id": "7a80cc",
+  "wall_time_seconds": 2.070607583,
+  "exit_code": 0,
+  "original_token_count": 146,
+  "output": "{\"kind\":\"positive_control\",\"issues\":[],\"node\":\"v22.23.3\",\"execPath\":\"/opt/homebrew/Cellar/node@22/22.23.3_2/bin/node\"}\n{\"kind\":\"legacy_header_eligibility_bypass\",\"trustedProductGridGroups\":{\"templates\":[\"*\"],\"groups\":[\"template\"]},\"issues\":[],\"mutationCalls\":1,\"saveError\":\"The theme service returned no confirmed receipt. Retry the same request.\"}\n{\"kind\":\"catalog_server_count_disagreement\",\"existingCount\":50,\"uiRefusal\":null,\"issues\":[\"sections.template exceeds the maximum section count\"]}\n{\"kind\":\"cross_group_duplicate_id\",\"duplicateId\":\"banner-carousel-default\",\"issues\":[]}\n"
+}

@@ -8,6 +8,11 @@
     "SUPABASE_SERVICE_ROLE_KEY"
   ],
   "properties": {
+    "LETBUYY_MANAGED_PAYMENTS_MODE": {
+      "type": "string",
+      "enum": ["", "sandbox"],
+      "description": "API-only managed test collections. Explicit non-production opt-in; never enables live payments."
+    },
     "SUPABASE_URL": {
       "type": "string",
       "format": "uri"
@@ -353,6 +358,12 @@
     },
     "R2_BUCKET": {
       "type": "string"
+    },
+    "KYC_UPLOAD_ENABLED": {
+      "enum": [
+        "true",
+        "false"
+      ]
     },
     "CUSTOMER_SESSION_SECRET": {
       "type": "string"

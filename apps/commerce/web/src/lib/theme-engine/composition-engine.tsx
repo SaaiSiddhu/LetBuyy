@@ -526,6 +526,9 @@ export async function buildLiquidCommerceContext({
         shop: {
             id: store.id,
             name: store.name,
+            contact_email: store.publicContact?.email || null,
+            contact_phone: store.publicContact?.phone || null,
+            contact_website: store.publicContact?.website || null,
             subdomain: store.subdomain,
             url: store.storeUrl || `/store/${plan.route.subdomain}`,
             locale: store.locale || 'en',

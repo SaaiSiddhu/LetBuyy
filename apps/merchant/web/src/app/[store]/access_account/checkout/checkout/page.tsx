@@ -43,6 +43,7 @@ export default async function CheckoutPage({ params, searchParams }: PageProps) 
 
     return (
         <CheckoutClient
+            key={`${user.id}:${storeData.id}:${plan.slug}:${billingPeriod}`}
             plan={toSubscriptionPlanView(plan)}
             billingPeriod={billingPeriod}
             storeId={storeData.id}

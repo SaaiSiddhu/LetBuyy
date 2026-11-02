@@ -1,0 +1,31 @@
+{
+  "status": "LOCAL_SOURCE_AND_OWNED_DB_QUALIFIED_NOT_RELEASED",
+  "scope": "Nine first-party niche themes, admitted 2.0.0 history and 2.1.0 successor catalog; no hosted or provider assertion",
+  "migration": {
+    "up": "database/supabase/migrations/428_niche_theme_catalog_v210.sql",
+    "upSha256": "a2622ffa92adae84caa247fddc01b5ead57b882bade97fe564fe3044ba0b5149",
+    "down": "database/supabase/rollback/428_niche_theme_catalog_v210.rollback.sql",
+    "downSha256": "eb32fb29346132d8c0a7a331fd8ddd2ba8cf45e2325d2cd2714fa871643f1648",
+    "manifestSha256": "6e8408ba3449a0feb08d131e7d46764e64d686271f4c72998205ba17c49fbdb2"
+  },
+  "checks": [
+    { "name": "release generator and artifact integrity", "passed": 5, "failed": 0 },
+    { "name": "historical 2.0.0 isolated factory parity", "passed": 1, "failed": 0, "detail": "10/10 default and 9/9 admitted 2.0.0 bundle hashes match" },
+    { "name": "Theme Engine", "passed": 2214, "failed": 0 },
+    { "name": "owned PostgreSQL through 427, historical 389 and new 428 promotion", "runId": "b435f7ce3f87", "passed": 6, "failed": 0, "skipped": 0, "cleanupRemaining": 0 },
+    { "name": "owned PostgreSQL latest 428 promotion, forged predecessor and stale rollback negatives", "runId": "1bb517677be4", "passed": 1, "failed": 0, "skipped": 0, "cleanupRemaining": 0 },
+    { "name": "nine real Gateway tenant-scoped install, editor save/read and publish journeys", "runId": "17cd5ccd60b4", "passed": 1, "failed": 0, "skipped": 0, "cleanupRemaining": 0 },
+    { "name": "fresh owned PostgreSQL catalog install after streaming large provenance readbacks", "runId": "689c6ccd2ab9", "passed": 1, "failed": 0, "skipped": 0, "cleanupRemaining": 0 },
+    { "name": "Commerce demo unit tests against exact 2.1.0 release artifacts and legacy 2.0.0", "passed": 29, "failed": 0 },
+    { "name": "Commerce TypeScript typecheck after 2.1.0 demo dispatch wiring", "passed": 1, "failed": 0 },
+    { "name": "owned native merchant-to-buyer Core browser journey including ten public catalog samples at 1280 and 390 pixels on home, product, and collection routes", "runId": "24b57f1aa4db", "passed": 1, "failed": 0, "skipped": 0, "cleanupRemaining": 0, "catalogSamples": 20, "catalogVersions": ["2.0.0", "2.1.0"] },
+    { "name": "Gateway DB lane guard", "passed": 15, "failed": 0 },
+    { "name": "sequential migration and rollback integrity validators", "passed": 2, "failed": 0 }
+  ],
+  "boundaries": [
+    "The earlier complete behavioral gate remained red with seven Gateway database suite failures; its result is recorded separately and a new full gate is required on the corrected demo dispatch source",
+    "No hosted migration, visual buyer parity or custom-domain flow was executed in this receipt",
+    "Existing installed 2.0.0 packages are preserved and need a separately qualified upgrade/read policy",
+    "No Cashfree, Mumbai AWS or FUCOMES payment callback and statement acceptance"
+  ]
+}

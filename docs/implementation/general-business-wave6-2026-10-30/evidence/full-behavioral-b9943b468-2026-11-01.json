@@ -1,0 +1,25 @@
+{
+  "dateIst": "2026-11-01",
+  "commitUnderTest": "b9943b468",
+  "command": "pnpm run test",
+  "result": { "tests": 3162, "passed": 3132, "failed": 3, "skipped": 27, "exitCode": 1 },
+  "remainingFailures": [
+    "Every current post-256 SECURITY DEFINER function is closed by name after its latest definition: four named functions remain in the source finding.",
+    "A 411 rollback that restores create_checkout_order is missing from the explicit guarded list and lacks its precondition.",
+    "Fourteen restorers in rollbacks 401–425 lack a DROP or typed signature precondition."
+  ],
+  "separateOwnedRollbackCheck": {
+    "runId": "e2c2014bc5d7",
+    "suite": "tests/executable/rollback-signature-precondition-postgres.test.mjs",
+    "tests": 8,
+    "passed": 8,
+    "failed": 0,
+    "skipped": 0,
+    "cleanupFailures": 0,
+    "remainingOwnedContainers": 0,
+    "remainingOwnedNetworks": 0,
+    "remainingOwnedVolumes": 0,
+    "scopeLimit": "The executable suite proves its earlier guarded and candidate rollback set; it does not cover the newly reported 401–425 restorer files."
+  },
+  "releaseAssessment": "NO GO: a red full suite, 27 Docker-backed skipped checks in that command, and independent provider/hosted/device gates remain."
+}

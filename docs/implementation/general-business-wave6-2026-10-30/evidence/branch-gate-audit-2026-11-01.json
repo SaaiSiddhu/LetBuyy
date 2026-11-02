@@ -1,0 +1,38 @@
+{
+  "dateIst": "2026-11-01",
+  "startingCommit": "3b6eff5b7",
+  "scope": "Wave 6 branch source gate and canonical order-notification and shipping/GST launch contracts",
+  "workspaceTypecheck": { "tasksPassed": 81, "tasksTotal": 81, "exitCode": 0 },
+  "workspaceBuild": { "tasksPassed": 81, "tasksTotal": 81, "exitCode": 0, "warnings": "Five Worker Turbo output-cache declarations; no compilation failures" },
+  "broadBehavioralBeforeContractRepair": {
+    "command": "pnpm run test",
+    "tests": 3158,
+    "passed": 3104,
+    "failed": 27,
+    "skipped": 27,
+    "exitCode": 1,
+    "environmentNote": "The unprivileged broad run could not access a real Docker daemon for its owned database lane; its result is red, not a pass."
+  },
+  "focusedRetargetedContracts": {
+    "orderLifecycleEmail": { "passed": 4, "failed": 0 },
+    "shippingAndGst": { "passed": 28, "failed": 0 }
+  },
+  "ownedOrderLifecycleRuntime": {
+    "runId": "a19fe9f236fd",
+    "suites": 1,
+    "testsPassed": 9,
+    "testsFailed": 0,
+    "testsSkipped": 0,
+    "cleanupFailures": 0,
+    "remainingOwnedContainers": 0,
+    "remainingOwnedNetworks": 0,
+    "remainingOwnedVolumes": 0
+  },
+  "finding": "Six launch assertions still described retired direct email dispatch or pre-hosted-checkout field names. The focused contracts now inspect the canonical transactional outbox and hosted checkout contracts. No product send or money path was changed.",
+  "notEstablished": [
+    "A green full behavioral suite on the edited tree",
+    "Staging or production deployment",
+    "Real FUCOMES test payment, signed callback, ledger and statement reconciliation",
+    "Real email inbox delivery or KYC provider approval"
+  ]
+}

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { LETBUYY_MERCHANT_SESSION_COOKIE, verifyLetbuyySessionCookieValue } from '@letbuyy/auth-core'
+import { resolveLetbuyyPlatformCookieNames, verifyLetbuyySessionCookieValue } from '@letbuyy/auth-core'
 import { getMerchantSignInUrl, MERCHANT_RETURN_PATH_HEADER } from '@/lib/public-urls'
 
 /**
@@ -12,7 +12,8 @@ import { getMerchantSignInUrl, MERCHANT_RETURN_PATH_HEADER } from '@/lib/public-
  */
 export function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl
-    const sessionCookie = request.cookies.get(LETBUYY_MERCHANT_SESSION_COOKIE)?.value
+    const names = resolveLetbuyyPlatformCookieNames(process.env.NEXT_PUBLIC_ENV)
+    const sessionCookie = request.cookies.get(names.session)?.value
     const session = verifyLetbuyySessionCookieValue('merchant', sessionCookie)
 
     if (

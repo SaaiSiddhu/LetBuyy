@@ -121,6 +121,7 @@ async function deliverSignedRefundWebhook(input: {
     eventType?: 'refund.created' | 'refund.processed' | 'refund.failed';
     failGatewayAttempts?: number;
     failGatewayResponsesAfterCommit?: number;
+    merchant?: { siteId: string; credentialId: string; webhookSecret: string };
 }) {
     const eventType = input.eventType || 'refund.processed';
     const status = eventType === 'refund.created' ? 'created' : eventType === 'refund.failed' ? 'failed' : 'processed';
@@ -143,9 +144,10 @@ async function deliverSignedRefundWebhook(input: {
         },
         created_at: Math.floor(Date.now() / 1000),
     });
-    const signature = createHmac('sha256', WEBHOOK_SECRET).update(rawBody).digest('hex');
+    const signature = createHmac('sha256', input.merchant?.webhookSecret || WEBHOOK_SECRET).update(rawBody).digest('hex');
     let gatewayAttempts = 0;
-    return webhookApp.request('/razorpay', {
+    return webhookApp.request(input.merchant
+        ? `/razorpay/merchant/${input.merchant.siteId}/${input.merchant.credentialId}` : '/razorpay', {
         method: 'POST',
         body: rawBody,
         headers: { 'Content-Type': 'application/json', 'X-Razorpay-Signature': signature },
@@ -521,7 +523,9 @@ test('authenticated merchant refund initiation reserves once, survives request r
     `);
 
     const gateway = await gatewayPromise;
-    const originalCredential=await bindSyntheticRefundCredential(owned,gateway,tenant.siteId,[merchantPaymentId]);
+    const merchantWebhookSecret=randomUUID();
+    const originalCredential=await bindSyntheticRefundCredential(owned,gateway,tenant.siteId,[merchantPaymentId],merchantWebhookSecret);
+    const merchantCallback={siteId:tenant.siteId,credentialId:originalCredential.id,webhookSecret:merchantWebhookSecret};
     const approvalHeaders = await merchantApprovalHeaders(gateway,merchantId,merchantEmail,tenant.siteId);
     const request = async () => gateway.request(`/v1/payments/${merchantPaymentId}/refund`, {
         method: 'POST',
@@ -579,15 +583,21 @@ test('authenticated merchant refund initiation reserves once, survives request r
     assert.equal(owned.psql(`SELECT status FROM public.payment_attempts WHERE payment_id = '${merchantPaymentId}'::uuid AND attempt_type = 'refund';`), 'pending');
     assert.equal(owned.psql(`SELECT count(*) FROM public.ledger_transactions WHERE source_type = 'refund' AND site_id = '${tenant.siteId}'::uuid AND metadata->>'payment_id' = '${merchantPaymentId}';`), '0');
 
+    const platformRefund = await deliverSignedRefundWebhook({ gateway, providerPaymentId: merchantProviderPaymentId,
+        providerRefundId: merchantRefundId, amountMinor: 5000, eventType: 'refund.created' });
+    assert.notEqual(platformRefund.status, 200, await platformRefund.clone().text());
+    assert.equal(owned.psql(`SELECT status FROM public.payment_attempts WHERE payment_id = '${merchantPaymentId}'::uuid AND attempt_type = 'refund';`), 'pending');
     const createdWebhook = await deliverSignedRefundWebhook({
         gateway,
         providerPaymentId: merchantProviderPaymentId,
         providerRefundId: merchantRefundId,
         amountMinor: 5000,
         eventType: 'refund.created',
+        merchant: merchantCallback,
     });
     assert.equal(createdWebhook.status, 200, await createdWebhook.clone().text());
-    assert.equal(owned.psql(`SELECT processing_status FROM public.payment_webhook_events WHERE provider = 'razorpay' AND provider_event_id = ${q(`refund.created:${merchantRefundId}`)};`), 'processed');
+    assert.equal(owned.psql(`SELECT count(*) FROM public.idempotency_keys WHERE site_id='${tenant.siteId}'
+        AND scope='razorpay:merchant-webhook:${originalCredential.id}' AND status='completed';`), '1');
     assert.equal(owned.psql(`SELECT status FROM public.payment_attempts WHERE payment_id = '${merchantPaymentId}'::uuid AND attempt_type = 'refund';`), 'pending');
     assert.equal(owned.psql(`SELECT count(*) FROM public.ledger_transactions WHERE source_type = 'refund' AND site_id = '${tenant.siteId}'::uuid AND metadata->>'payment_id' = '${merchantPaymentId}';`), '0');
 
@@ -596,11 +606,13 @@ test('authenticated merchant refund initiation reserves once, survives request r
         providerPaymentId: merchantProviderPaymentId,
         providerRefundId: merchantRefundId,
         amountMinor: 5000,
+        merchant: merchantCallback,
     });
     assert.equal(webhookResponse.status, 200, await webhookResponse.clone().text());
     const webhookBody = await webhookResponse.json() as Record<string, unknown>;
-    assert.equal(webhookBody.received, true);
-    assert.equal(owned.psql(`SELECT processing_status FROM public.payment_webhook_events WHERE provider = 'razorpay' AND provider_event_id = ${q(`refund.processed:${merchantRefundId}`)};`), 'processed');
+    assert.equal((webhookBody.data as Record<string,unknown>).received, true);
+    assert.equal(owned.psql(`SELECT count(*) FROM public.idempotency_keys WHERE site_id='${tenant.siteId}'
+        AND scope='razorpay:merchant-webhook:${originalCredential.id}' AND status='completed';`), '2');
     assert.equal(owned.psql(`SELECT status||'|'||refunded_amount_minor::text FROM public.payments WHERE id = '${merchantPaymentId}'::uuid;`), 'captured|5000');
     assert.equal(owned.psql(`SELECT status FROM public.payment_attempts WHERE payment_id = '${merchantPaymentId}'::uuid AND attempt_type = 'refund';`), 'succeeded');
     assert.equal(owned.psql(`SELECT count(*) FROM public.ledger_transactions WHERE source_type = 'refund' AND site_id = '${tenant.siteId}'::uuid AND metadata->>'payment_id' = '${merchantPaymentId}';`), '1');
@@ -610,10 +622,11 @@ test('authenticated merchant refund initiation reserves once, survives request r
         providerPaymentId: merchantProviderPaymentId,
         providerRefundId: merchantRefundId,
         amountMinor: 5000,
+        merchant: merchantCallback,
     });
     assert.equal(replayedWebhook.status, 200, await replayedWebhook.clone().text());
     const replayedBody = await replayedWebhook.json() as Record<string, unknown>;
-    assert.equal(replayedBody.duplicate, true);
+    assert.equal((replayedBody.data as Record<string,unknown>).received, true);
     assert.equal(owned.psql(`SELECT count(*) FROM public.ledger_transactions WHERE source_type = 'refund' AND site_id = '${tenant.siteId}'::uuid AND metadata->>'payment_id' = '${merchantPaymentId}';`), '1');
   });
 

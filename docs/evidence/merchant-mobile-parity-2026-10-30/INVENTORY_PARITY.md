@@ -1,0 +1,41 @@
+# Inventory continuation — bounded source and runtime evidence
+
+30 October 2026. Source checkpoint `fff025100c2ced7bcbc2fa0c18b99f0cfc7e800a`, branch `codex/merchant-mobile-parity`. This is a partial qualification of inventory; rows 29–37 are not fully accepted.
+
+Later continuation: `c732d03921fc8d67c3fba714ac42b561fee90953` connects Products → Inventory with a captured-menu store guard, replacing an inert Settings action. Its full mobile suite passes 491/491 and governance 114/114. The installed APK hash was verified; it reached Inventory and loaded a hosted stock row, but Android System UI ANR limits that run's usability evidence. `753734ed581da332bfb1b66def881fa6758c762a` adds native stock history and repairs its server scope; full mobile tests are now 502/502. See [history repair and evidence](HISTORY_PARITY.md) for current row-31 status. The remaining table below records the core checkpoint; its “history absent” entry is superseded by that continuation.
+
+## Connected changes
+
+The five existing native workspaces now bind their rows, refreshes, open forms and callbacks to the account/selected-store generation. A store change clears private rows before loading the new store; A→B→A cannot restore an old form. Each resource has its own read generation, so a late page or filter response cannot replace a newer result. Mutation receipts cannot overwrite a newer read. A declared foreign store in a root, joined product, purchase-order/transfer envelope or line is rejected. Requests pin both the explicit store and captured transport context. These client boundaries do not grant server permissions.
+
+Inventory transport contracts moved from the app service to the existing shared Dart models package, with a compatibility re-export for current callers. The models mirror the existing canonical Gateway projections and raw adjustment reply aliases. Missing/fractional mandatory quantities fail parsing instead of becoming zero; unobserved committed quantity remains unknown. Location absence remains absent rather than becoming a writable `default` identifier. Product variant and warehouse labels are preserved. Low-stock presentation includes 1–10, consistent with the existing inventory API; zero is labelled out of stock. Page metrics describe only the currently shown rows. Name/SKU/location filtering is explicitly labelled **Filter this page**; Previous/Next use server pages and Previous remains available after a later page fails.
+
+Stock adjustment now uses the existing encrypted `SecurityCommandStore` journal. The original actor, site, product, variant, explicit location, delta, reason and note are frozen before HTTP dispatch. A lost/unreadable acknowledgement retains the same key across a service/app restart. A changed intent cannot replace an unresolved request. “Retry original” replays the saved command through current server authorization; quantities changing on refresh do not prove that this command committed. A returned receipt must match its original product/variant/location before the journal clears. Retired contexts and mismatched receipts retain recovery identity. Scanned stock changes choose a named current-store location; ordinary rows without a location also require an explicit choice. No client recomputes authoritative stock.
+
+The web inventory parser now preserves an observed `sellable: 0` rather than substituting `available` through a truthy fallback. No source was copied into or over the primary checkout's unrelated Merchant web changes.
+
+## Evidence
+
+- Merchant mobile: 489/489 tests and clean analysis, including 21 inventory transport/model/journal tests and 9 rendered workspace tests. The latter cover all five store lifetimes, four open create forms, A→B→A adjustment retirement, honest quantity/page presentation, failed-next-page recovery, late refreshes, and a synthetic committed-effect/lost-reply sequence where refreshed quantity changes but “Retry original” remains necessary.
+- Shared Dart models: 12/12 existing package checks pass.
+- Merchant web: typecheck passes; existing inventory adjustment component suite passes 8/8 from its owning app directory. An initial root-directory invocation failed module-alias resolution and was not acceptance evidence.
+- Owned Gateway/PostgreSQL run `bf383e105a03`: inventory adjustment audit 16/16 and reservation lifecycle 1/1; `--prepared-transactions 2 --jobs 1`. Real Gateway, identity signatures, PostgREST and disposable PostgreSQL exercised current owner/staff reads and commands, revocation, foreign resource denial, concurrent/equal-key effects, payload-bound replay, atomic stock/audit/outbox/receipt failure and rollback controls. Cleanup reports no remaining owned containers, networks or volumes. This is not hosted native mutation or independent cross-tenant RLS certification.
+- Governance, exact Android bytes and emulator observations are recorded in `QUALIFICATION.json` only after their processes complete. Earlier APKs do not demonstrate these inventory changes.
+
+Preliminary new tests found the three retained background views and were red until their store subscriptions were completed. Test-harness corrections included a synchronous rejection assertion, the actual `PurchaseOrdersScreen` name, and advancing the Flutter test clock to dispatch a delayed HTTP request. Preliminary failed/interleaved logs were not counted as passes. An accidental broad formatter invocation was removed from 39 previously clean files only after reproducing each exact formatter output; unrelated source remains unchanged.
+
+## Remaining inventory acceptance
+
+| Ledger rows | Demonstrated scope | Still required |
+|---|---|---|
+| 29 quantities | Shared projections, exact observed integers, page-scoped UI, explicit location, frozen retry and synthetic UI recovery; real existing stock writer suites | Native owned-backend mutation and restart, web↔mobile readback, multi-location/variant coverage, current staff UI and deployed compatibility |
+| 30 reservations | Native observed reserved quantity; existing real database reservation lifecycle passes | Native reservation browser/detail, complete cart/order lifecycle effects and cross-client checks |
+| 31 history | Existing Gateway audit/history exercised by the stock suite | Native history surface absent. Audit found `/inventory/history` currently ignores explicit `store_id`, following the session store when present or the owned-store population otherwise; repair explicit selected-store scope and prove two-owned-store behavior before wiring mobile |
+| 32 locations | Current native list/create form transport and privacy lifetimes | Owned location creation/readback, durable create recovery, server pagination, native hosted acceptance |
+| 33 transfers | Native list/forms/lifetimes and envelope scope; stable body/header key alignment | Complete status/action eligibility, named source/destination/product selection, durable create/ship/receive restart recovery, real owned lifecycle and effect-once checks |
+| 34 suppliers | Native list/create form and privacy lifetime | Owned creation/readback, durable retry, server pagination, native acceptance |
+| 35 purchase orders | Native list/forms/lifetimes and envelope scope; body/header key alignment | Named record selection, multi-line editor, complete status controls, durable create/receive recovery and real owned lifecycle |
+| 36 receiving/receipts | Existing receive transports, selected context and receipt envelope checks | Native receipt browser, partial/full receive journeys, real owned transaction/retry and cross-client readback |
+| 37 operations dashboard | Visible inventory metrics explicitly describe shown page rows | Native canonical operational analytics and drilldowns; verify complete populations and missing-versus-zero behavior on the server |
+
+The four warehouse lists remain unpaginated on the server. Missing-table compatibility in existing inventory readers can still return empty/fallback projections; it has not been deleted without the required canonical-winner/live-path proof. Native PO/transfer forms still expose raw IDs and one-line inputs. These gaps prevent a complete inventory parity verdict. No migration, deployment, production stock adjustment, purchase order, transfer, supplier or location mutation was performed by this continuation.

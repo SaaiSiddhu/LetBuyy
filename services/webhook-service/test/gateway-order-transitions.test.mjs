@@ -31,6 +31,7 @@ test("confirmGatewayOrderPayment posts signed confirmation to the gateway", asyn
 
     await confirmGatewayOrderPayment(env, {
         orderId: "order-1",
+        storeId: "store-1",
         provider: "razorpay",
         paymentId: "pay-1",
         providerOrderId: "rzp-order-1",
@@ -44,6 +45,7 @@ test("confirmGatewayOrderPayment posts signed confirmation to the gateway", asyn
     assert.equal(calls[0].init.headers["X-Internal-API-Secret"], "internal-secret");
     assert.deepEqual(calls[0].body, {
         orderId: "order-1",
+        storeId: "store-1",
         provider: "razorpay",
         paymentId: "pay-1",
         providerOrderId: "rzp-order-1",
@@ -57,6 +59,7 @@ test("recordGatewayOrderPaymentFailure posts refund release intent to the gatewa
 
     await recordGatewayOrderPaymentFailure(env, {
         orderId: "order-1",
+        storeId: "store-1",
         provider: "paypal",
         providerEventId: "evt-refund",
         paymentStatus: "refunded",
@@ -68,6 +71,7 @@ test("recordGatewayOrderPaymentFailure posts refund release intent to the gatewa
     assert.equal(calls[0].input, "https://api-gateway/v1/storefront/internal/payments/failure");
     assert.deepEqual(calls[0].body, {
         orderId: "order-1",
+        storeId: "store-1",
         provider: "paypal",
         providerEventId: "evt-refund",
         paymentStatus: "refunded",
@@ -83,6 +87,7 @@ test("recordGatewayOrderPaymentEvent posts provider event markers to the gateway
 
     await recordGatewayOrderPaymentEvent(env, {
         orderId: "order-1",
+        storeId: "store-1",
         provider: "cashfree",
         providerEventId: "evt-partial-refund",
         eventType: "refund.partial",
@@ -91,6 +96,7 @@ test("recordGatewayOrderPaymentEvent posts provider event markers to the gateway
     assert.equal(calls[0].input, "https://api-gateway/v1/storefront/internal/payments/event");
     assert.deepEqual(calls[0].body, {
         orderId: "order-1",
+        storeId: "store-1",
         provider: "cashfree",
         providerEventId: "evt-partial-refund",
         eventType: "refund.partial",

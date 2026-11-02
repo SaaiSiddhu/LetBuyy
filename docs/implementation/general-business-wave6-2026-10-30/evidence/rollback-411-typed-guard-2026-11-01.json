@@ -1,0 +1,33 @@
+{
+  "dateIst": "2026-11-01",
+  "scope": "Migration 411 rollback safety for four canonical checkout writers",
+  "change": "A finite typed-ABI guard now runs before the rollback's first schema mutation. It requires each writer's exact signature, input names, JSONB return, non-set result, and sole overload before restoring historical bodies.",
+  "sourceChecks": {
+    "guardedRestorations": [
+      "create_checkout_order",
+      "create_storefront_checkout_order_with_delivery_rate",
+      "create_marketplace_checkout_order",
+      "create_marketplace_checkout_order_with_delivery_rate"
+    ],
+    "rollbackSourceSuite": { "tests": 88, "passed": 87, "failed": 1, "skipped": 0 },
+    "remainingFailure": "Ten other function restorers in rollback files 401–425 still lack an accepted typed precondition or safe exact DROP."
+  },
+  "ownedPostgres": {
+    "runId": "6a3ad2c3baf0",
+    "suite": "tests/executable/rollback-signature-precondition-postgres.test.mjs",
+    "tests": 8,
+    "passed": 8,
+    "failed": 0,
+    "skipped": 0,
+    "restoredSignaturesUnderDriftControls": 24,
+    "cleanupFailures": 0,
+    "remainingOwnedContainers": 0,
+    "remainingOwnedNetworks": 0,
+    "remainingOwnedVolumes": 0
+  },
+  "notEstablished": [
+    "The other ten rollback restorers are safe.",
+    "A green complete behavioral suite or hosted rollback acceptance.",
+    "Any live provider or production payment readiness."
+  ]
+}

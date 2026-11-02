@@ -2,12 +2,12 @@
 
 import { useState, useEffect, useCallback, useRef, Suspense } from 'react'
 import { getAuthHeaders } from '@/lib/csrf-client'
-import { safePlatformReturnTo, authPathWithReturnTo } from '@/lib/auth/return-to'
+import { safePlatformReturnTo, authPathWithReturnTo, accountResultPath } from '@/lib/auth/return-to'
 import { useSearchParams } from 'next/navigation'
 import TurnstileWidget, { type TurnstileHandle } from '@/components/TurnstileWidget'
 import { AuthIcon } from '@/components/AuthIcon'
 import { BrandLogo } from '@/components/BrandLogo'
-import { OAuthBrandIcon } from '@/components/OAuthBrandIcon'
+import { validatePasswordStrength } from '@/lib/auth/password'
 import { Button, Input } from '@letbuyy/ui'
 
 type Lang = 'en' | 'hi' | 'ta'
@@ -15,8 +15,8 @@ type Step = 'email' | 'otp' | 'password'
 
 const translations: Record<Lang, Record<string, string>> = {
     en: {
-        title: 'Start your free trial',
-        subtitle: 'Create your store, then review plans before paying.',
+        title: 'Create your account',
+        subtitle: 'Verify your email and secure your LetBuyy account.',
         email: 'Email',
         emailPlaceholder: 'you@example.com',
         continue: 'Continue',
@@ -63,8 +63,8 @@ const translations: Record<Lang, Record<string, string>> = {
         pwMismatch: 'Passwords do not match',
     },
     hi: {
-        title: 'अपना मुफ़्त ट्रायल शुरू करें',
-        subtitle: 'अपना स्टोर बनाएं, फिर भुगतान से पहले प्लान देखें।',
+        title: 'अपना अकाउंट बनाएं',
+        subtitle: 'अपना ईमेल सत्यापित करें और LetBuyy अकाउंट सुरक्षित करें।',
         email: 'ईमेल',
         emailPlaceholder: 'you@example.com',
         continue: 'जारी रखें',
@@ -109,8 +109,8 @@ const translations: Record<Lang, Record<string, string>> = {
         pwMismatch: 'पासवर्ड मेल नहीं खाते',
     },
     ta: {
-        title: 'உங்கள் இலவச சோதனையைத் தொடங்குங்கள்',
-        subtitle: 'உங்கள் கடையை உருவாக்கி, கட்டணம் செலுத்தும் முன் திட்டங்களைப் பாருங்கள்.',
+        title: 'உங்கள் கணக்கை உருவாக்கவும்',
+        subtitle: 'மின்னஞ்சலைச் சரிபார்த்து உங்கள் LetBuyy கணக்கைப் பாதுகாக்கவும்.',
         email: 'மின்னஞ்சல்',
         emailPlaceholder: 'you@example.com',
         continue: 'தொடரவும்',
@@ -188,7 +188,7 @@ function SignupContent() {
     const otpRefs = useRef<(HTMLInputElement | null)[]>([])
 
     // Password state
-    const [userId, setUserId] = useState<string | null>(null)
+    const [emailVerified, setEmailVerified] = useState(false)
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
     const [showPassword, setShowPassword] = useState(false)
@@ -233,15 +233,7 @@ function SignupContent() {
         localStorage.setItem('letbuyy_lang', next)
     }
 
-    // Password validation rules
-    const pwRules = {
-        minLength: password.length >= 8,
-        hasUppercase: /[A-Z]/.test(password),
-        hasLowercase: /[a-z]/.test(password),
-        hasNumber: /[0-9]/.test(password),
-        hasSpecial: /[^A-Za-z0-9]/.test(password),
-    }
-    const pwValid = Object.values(pwRules).every(Boolean)
+    const { rules: pwRules, isValid: pwValid } = validatePasswordStrength(password)
     const pwMatch = password === confirmPassword && confirmPassword.length > 0
 
     // ——— Step 1: Email Submit ———
@@ -261,6 +253,7 @@ function SignupContent() {
         try {
             const res = await fetch('/api/auth/signup', {
                 method: 'POST',
+                signal: AbortSignal.timeout(20000),
                 headers: (await getAuthHeaders()),
                 body: JSON.stringify({
                     email: email.trim(),
@@ -364,6 +357,7 @@ function SignupContent() {
         try {
             const res = await fetch('/api/auth/verify-otp', {
                 method: 'POST',
+                signal: AbortSignal.timeout(20000),
                 headers: (await getAuthHeaders()),
                 body: JSON.stringify({
                     email: email.trim(),
@@ -381,7 +375,7 @@ function SignupContent() {
             }
 
             if (data.verified) {
-                setUserId(data.userId)
+                setEmailVerified(true)
                 setStep('password')
             }
         } catch {
@@ -404,6 +398,7 @@ function SignupContent() {
         try {
             const res = await fetch('/api/auth/signup', {
                 method: 'POST',
+                signal: AbortSignal.timeout(20000),
                 headers: (await getAuthHeaders()),
                 body: JSON.stringify({
                     email: email.trim(),
@@ -434,7 +429,7 @@ function SignupContent() {
     // ——— Step 3: Password Submit ———
     const handlePasswordSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        if (!pwValid || !pwMatch || !userId) return
+        if (!pwValid || !pwMatch || !emailVerified) return
 
         setLoading(true)
         setError(null)
@@ -442,11 +437,10 @@ function SignupContent() {
         try {
             const res = await fetch('/api/auth/set-password', {
                 method: 'POST',
+                signal: AbortSignal.timeout(20000),
                 headers: (await getAuthHeaders()),
                 body: JSON.stringify({
                     password,
-                    userId,
-                    email: email.trim(),
                 }),
             })
 
@@ -454,11 +448,17 @@ function SignupContent() {
 
             if (!res.ok) {
                 setError(data.error || 'Something went wrong')
+                if (res.status === 403 || res.status === 409) {
+                    setEmailVerified(false)
+                    setPassword('')
+                    setConfirmPassword('')
+                    setStep('email')
+                }
                 return
             }
 
             if (data.redirectTo) {
-                window.location.href = returnTo || data.redirectTo
+                window.location.href = accountResultPath(data, returnTo)
             }
         } catch {
             setError('Something went wrong. Please try again.')
@@ -466,10 +466,6 @@ function SignupContent() {
             setLoading(false)
         }
     }
-
-    const handleOAuth = useCallback(async (provider: 'google' | 'apple') => {
-        setError(`${provider === 'google' ? 'Google' : 'Apple'} sign-up is not configured. Use email sign-up.`)
-    }, [])
 
     const handleTurnstileVerify = useCallback((token: string) => {
         setTurnstileToken(token)
@@ -533,29 +529,13 @@ function SignupContent() {
                             </Button>
                         </form>
 
-                        <div className="auth-divider">
-                            <span>{t.or}</span>
-                        </div>
-
-                        <div className="auth-oauth-row">
-                            <Button unstyled type="button" className="auth-btn-oauth unavailable" onClick={(e) => e.preventDefault()} aria-disabled="true">
-                                <OAuthBrandIcon provider="apple" className="auth-oauth-brand-icon" />
-                                {t.apple}
-                                <span className="auth-unavailable-badge">{t.unavailable}</span>
-                            </Button>
-                            <Button unstyled type="button" className="auth-btn-oauth" onClick={() => handleOAuth('google')}>
-                                <OAuthBrandIcon provider="google" className="auth-oauth-brand-icon" />
-                                {t.google}
-                            </Button>
-                        </div>
-
-                        <div className="auth-bottom-link">
+<div className="auth-bottom-link">
                             <span>{t.alreadyHave}</span>{' '}
                             <a href="/lookup">{t.logIn}</a>
                         </div>
 
                         <p className="auth-terms">
-                            {t.terms} <a href="#">{t.termsLink}</a> {t.and} <a href="#">{t.privacyLink}</a>
+                            {t.terms} <a href={`${process.env.NEXT_PUBLIC_MARKETING_URL || 'https://letbuyy.com'}/en/legal/terms`}>{t.termsLink}</a> {t.and} <a href={`${process.env.NEXT_PUBLIC_MARKETING_URL || 'https://letbuyy.com'}/en/legal/privacy`}>{t.privacyLink}</a>
                         </p>
 
                         <TurnstileWidget ref={turnstileRef} onVerify={handleTurnstileVerify} />
@@ -578,21 +558,7 @@ function SignupContent() {
                         </p>
 
                         <div className="auth-otp-inputs" onPaste={handleOtpPaste} role="group" aria-label={t.otpTitle}>
-                            {otp.map((digit, i) => (
-                                <Input unstyled
-                                    key={i}
-                                    ref={el => { otpRefs.current[i] = el }}
-                                    type="text"
-                                    inputMode="numeric"
-                                    maxLength={1}
-                                    value={digit}
-                                    onChange={e => handleOtpChange(i, e.target.value)}
-                                    onKeyDown={e => handleOtpKeyDown(i, e)}
-                                    className="auth-otp-input"
-                                    aria-label={`Digit ${i + 1} of ${otp.length}`}
-                                    autoFocus={i === 0}
-                                />
-                            ))}
+                            <Input unstyled id="signup-code" ref={el => { otpRefs.current[0] = el }} type="text" inputMode="numeric" autoComplete="one-time-code" maxLength={6} pattern="[0-9]{6}" value={otp.join('')} onChange={event => { const value = event.target.value.replace(/\D/g, '').slice(0, 6); setOtp(value.padEnd(6, ' ').split('').map(digit => digit.trim())) }} aria-label="Email verification code" autoFocus />
                         </div>
 
                         {error && <div className="auth-error" role="alert" aria-live="assertive"><AuthIcon name="error" />{error}</div>}
@@ -683,6 +649,7 @@ function SignupContent() {
                             </div>
 
                             {/* Password rules */}
+                            <p>8–128 characters, including uppercase, lowercase, a number and a special character.</p>
                             <div className="auth-pw-rules">
                                 <div className={`auth-pw-rule ${pwRules.minLength ? 'pass' : ''}`}>
                                     <AuthIcon name={pwRules.minLength ? 'check_circle' : 'radio_button_unchecked'} size={16} />

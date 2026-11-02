@@ -1,0 +1,133 @@
+{
+  "status": "FORENSIC_RECOVERY_NOT_ACTIVE_SOURCE",
+  "date": "2026-11-02",
+  "admissionManifest": "docs/implementation/niche-theme-programme/release-v2/proposals/9b2e045a696940bc80ead069c5b8b74ea45bc74b971e7cded2138d087a630d8b/manifest.json",
+  "method": "SHA-256 comparison of unreachable Git blob contents with immutable admitted sourceHashes; no admission or current source changed",
+  "entries": [
+    {
+      "admittedPath": "docs/implementation/niche-theme-programme/release-v2/generate-release.ts",
+      "admittedSha256": "e37ed394dee9e93fc36ef80c2edcbe537419578df8bf8095e16066e9fbd5c722",
+      "gitBlobOid": "74554f8bf568291e8b88f4ffbec388939f4abfd1",
+      "recoveredPath": "docs/implementation/niche-theme-programme/release-v2/recovered-admitted-source/docs/implementation/niche-theme-programme/release-v2/generate-release.ts"
+    },
+    {
+      "admittedPath": "packages/theme-engine/src/circuit-discovery.ts",
+      "admittedSha256": "c693f8615078da1a0a5df2ce1bbd34ce230279597ae78936405e7a67579b2304",
+      "gitBlobOid": "b1cb64aa9820a29f2c738fb02b8ef54cd3a8aff2",
+      "recoveredPath": "docs/implementation/niche-theme-programme/release-v2/recovered-admitted-source/packages/theme-engine/src/circuit-discovery.ts"
+    },
+    {
+      "admittedPath": "packages/theme-engine/src/circuit-theme.ts",
+      "admittedSha256": "7aee57ffb67c3116fd4fa1e201ae4a1ff66a787114ac781e4678fc0eb6b13228",
+      "gitBlobOid": "0c9190a41cfa145691a24ebee288273b91ef4e84",
+      "recoveredPath": "docs/implementation/niche-theme-programme/release-v2/recovered-admitted-source/packages/theme-engine/src/circuit-theme.ts"
+    },
+    {
+      "admittedPath": "packages/theme-engine/src/dewdrop-discovery.ts",
+      "admittedSha256": "917dbb6a0830a6f502c8c5bc382b82c44e875fc69a11425dd00f138127f2a5dc",
+      "gitBlobOid": "ebe18c2584d6f7aaee86dcab86742e92959368cf",
+      "recoveredPath": "docs/implementation/niche-theme-programme/release-v2/recovered-admitted-source/packages/theme-engine/src/dewdrop-discovery.ts"
+    },
+    {
+      "admittedPath": "packages/theme-engine/src/dewdrop-theme.ts",
+      "admittedSha256": "f74d02112609e47d24d023ffbc05869645f43842e6ef669f8a5121cfe1354b96",
+      "gitBlobOid": "0dbd93073e9ae052eca8b6daeb99d6270e6f72b6",
+      "recoveredPath": "docs/implementation/niche-theme-programme/release-v2/recovered-admitted-source/packages/theme-engine/src/dewdrop-theme.ts"
+    },
+    {
+      "admittedPath": "packages/theme-engine/src/habitat-discovery.ts",
+      "admittedSha256": "4324e2d7d7fbedb62eed0893dfb9656e6c462e631f9797f12a8276a4b5c47a46",
+      "gitBlobOid": "69bf9f28678e51fc216499f4669c0f3bb9eebf8d",
+      "recoveredPath": "docs/implementation/niche-theme-programme/release-v2/recovered-admitted-source/packages/theme-engine/src/habitat-discovery.ts"
+    },
+    {
+      "admittedPath": "packages/theme-engine/src/habitat-theme.ts",
+      "admittedSha256": "952a76aece040b89e12741c8e37e6630d7770848febefc820379351b82390ead",
+      "gitBlobOid": "6a3b53b9b2c7208316470c2fe15337929db24709",
+      "recoveredPath": "docs/implementation/niche-theme-programme/release-v2/recovered-admitted-source/packages/theme-engine/src/habitat-theme.ts"
+    },
+    {
+      "admittedPath": "packages/theme-engine/src/kindred-discovery.ts",
+      "admittedSha256": "90bc326720b962d3a43ccd6625dcb153ab1507eecbc3151ec65698774b40eb1c",
+      "gitBlobOid": "86aaba1b95b05d7d543f1459eff873b3a7771d58",
+      "recoveredPath": "docs/implementation/niche-theme-programme/release-v2/recovered-admitted-source/packages/theme-engine/src/kindred-discovery.ts"
+    },
+    {
+      "admittedPath": "packages/theme-engine/src/kindred-theme.ts",
+      "admittedSha256": "ebc8218b0ec3b1b32ddb6f8764281ed130bfacad8a9e4218c90c356f181950ea",
+      "gitBlobOid": "bff735f95c3e353df1e75e62a1e5d4f3c89fb3b7",
+      "recoveredPath": "docs/implementation/niche-theme-programme/release-v2/recovered-admitted-source/packages/theme-engine/src/kindred-theme.ts"
+    },
+    {
+      "admittedPath": "packages/theme-engine/src/madeyours-discovery.ts",
+      "admittedSha256": "ef00d65baaba0d7fcef3eb0534d9986868246e89998de7190fd8e71f903862ea",
+      "gitBlobOid": "fd904c177f7708672d18f37db5aa2225376fbe1e",
+      "recoveredPath": "docs/implementation/niche-theme-programme/release-v2/recovered-admitted-source/packages/theme-engine/src/madeyours-discovery.ts"
+    },
+    {
+      "admittedPath": "packages/theme-engine/src/madeyours-theme.ts",
+      "admittedSha256": "81e23b9d0ea149050ff8968777263126920036abadeb06c1a7f4aaf38f850097",
+      "gitBlobOid": "733a58efb1dc937218e6166b072865a6be1dea39",
+      "recoveredPath": "docs/implementation/niche-theme-programme/release-v2/recovered-admitted-source/packages/theme-engine/src/madeyours-theme.ts"
+    },
+    {
+      "admittedPath": "packages/theme-engine/src/marginalia-discovery.ts",
+      "admittedSha256": "0def54888df6d296258317401223467e7d60f02dd3d6734bf092eebb7bd3edc6",
+      "gitBlobOid": "429dc335e7edd95c20d0eff24160a08abbaacc4e",
+      "recoveredPath": "docs/implementation/niche-theme-programme/release-v2/recovered-admitted-source/packages/theme-engine/src/marginalia-discovery.ts"
+    },
+    {
+      "admittedPath": "packages/theme-engine/src/marginalia-theme.ts",
+      "admittedSha256": "e4727391eaff1997e2c3647b895de403b227aa52222549a11b48324b4617d7c8",
+      "gitBlobOid": "c874eff3c2a837ba41f4f135bf354a21f55a76d7",
+      "recoveredPath": "docs/implementation/niche-theme-programme/release-v2/recovered-admitted-source/packages/theme-engine/src/marginalia-theme.ts"
+    },
+    {
+      "admittedPath": "packages/theme-engine/src/pantry-discovery.ts",
+      "admittedSha256": "298f8031a752216a241121b02c70bebbb44d8dc89b9a5b48d10798b5b484be20",
+      "gitBlobOid": "8cb8709d2c6a8f2a8c7a5dbfcfed13e82c0d34e4",
+      "recoveredPath": "docs/implementation/niche-theme-programme/release-v2/recovered-admitted-source/packages/theme-engine/src/pantry-discovery.ts"
+    },
+    {
+      "admittedPath": "packages/theme-engine/src/pantry-theme.ts",
+      "admittedSha256": "9b26be01a73c36fd4338823282d8ff5982aee881ba5ad65b91e202a911bb78d0",
+      "gitBlobOid": "7f9b93def0293c5f1acecf3ef0efc9e6151c9d2f",
+      "recoveredPath": "docs/implementation/niche-theme-programme/release-v2/recovered-admitted-source/packages/theme-engine/src/pantry-theme.ts"
+    },
+    {
+      "admittedPath": "packages/theme-engine/src/playfield-discovery.ts",
+      "admittedSha256": "fdf8853cc42fbeb7f65c6121fd90111d3fdf7f03f43ab55a5210d353140143e1",
+      "gitBlobOid": "e0daa87457f13135d46b532a46d97b2a722177e0",
+      "recoveredPath": "docs/implementation/niche-theme-programme/release-v2/recovered-admitted-source/packages/theme-engine/src/playfield-discovery.ts"
+    },
+    {
+      "admittedPath": "packages/theme-engine/src/playfield-theme.ts",
+      "admittedSha256": "53df2640657358d3c662fc32acf92d48e8a63f7ed3cb0e70e5b52bcc32032a37",
+      "gitBlobOid": "8d9de6e1ee5e10a54e035d3936f447ea629206b7",
+      "recoveredPath": "docs/implementation/niche-theme-programme/release-v2/recovered-admitted-source/packages/theme-engine/src/playfield-theme.ts"
+    }
+  ],
+  "existingSnapshots": [
+    {
+      "admittedPath": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "admittedSha256": "cc11490138ae5c2f13ab022a60b4cc2fe7d8fc5eb766dbf087eeb227d6050d6e",
+      "snapshotPath": "docs/implementation/niche-themes-2026-10-23/playfield/v201-source-repair-2026-10-23/before/packages/theme-engine/src/first-party-theme-catalog.ts"
+    },
+    {
+      "admittedPath": "packages/theme-engine/src/niche-order-presentation.ts",
+      "admittedSha256": "6d3cb80e5dc5c922328ae0f653d74492cc202b0f4714fc08314a81a60cfdfc00",
+      "snapshotPath": "docs/implementation/niche-theme-programme/release-playfield201/order-presentation-source-repair/niche-order-presentation.ts.before.snapshot"
+    },
+    {
+      "admittedPath": "packages/theme-engine/src/trailmark-discovery.ts",
+      "admittedSha256": "50b0bc0ae6482b95862ef547cbe0bc30c76786f1721383b8c832d5a3575d0e41",
+      "snapshotPath": "docs/implementation/niche-themes-2026-10-23/trailmark/shopping-form/baseline/packages/theme-engine/src/trailmark-discovery.ts"
+    },
+    {
+      "admittedPath": "packages/theme-engine/src/trailmark-theme.ts",
+      "admittedSha256": "d19f81896346b3f2e1a288e220262cad8ed4962782b3c6713b0b394b3e572384",
+      "snapshotPath": "docs/implementation/niche-themes-2026-10-23/trailmark/factory-validation/baseline/packages/theme-engine/src/trailmark-theme.ts"
+    }
+  ],
+  "originalLockfileStatus": "The admitted pnpm-lock.yaml bytes were not found in reachable history or the 6,594 unreachable Git blobs examined; local successor lockfile review remains required."
+}

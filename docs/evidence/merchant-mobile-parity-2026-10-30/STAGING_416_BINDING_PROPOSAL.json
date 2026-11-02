@@ -1,0 +1,42 @@
+{
+  "status": "proposal-only-no-provider-mutation",
+  "sourceRevision": "e8d1ac3c177775606378487378f665cac8013536",
+  "environment": "staging",
+  "API": {
+    "worker": "letbuyy-api-staging",
+    "expectedVersion": "844f3c28-4c13-435b-9ada-5a931d1890fa",
+    "beforeVariables": 64,
+    "afterVariables": 64,
+    "removePlainVariables": [
+      "NEXT_PUBLIC_ENV"
+    ],
+    "addSecretNames": [
+      "PRODUCT_IMPORT_REQUEST_SECRET"
+    ],
+    "keepSecretBindingTypes": [
+      "secret_text",
+      "secret_key"
+    ],
+    "allOtherNonsecretAndResourceBindings": "exact fresh values preserved in memory",
+    "atomicSameUploadReplacement": true
+  },
+  "queue": {
+    "worker": "letbuyy-queue-workers-staging",
+    "expectedVersion": "0579c993-248f-4848-9d37-9cbe57a49af8",
+    "beforeVariables": 27,
+    "afterVariables": 29,
+    "addSecretNames": [
+      "PRODUCT_IMPORT_REQUEST_SECRET"
+    ],
+    "addPlainVariables": {
+      "PRODUCT_IMPORT_RECOVERY": "bound-request-v1"
+    },
+    "allExistingBindingsPreserved": true
+  },
+  "newSecret": "one newly generated purpose-only value, encrypted local recovery retention, no existing credential export or keyring rewrite",
+  "protectedMerchantAlias": "admin-staging.letbuyy.com",
+  "accountsBffProductionDnsWafChanges": false,
+  "providerSource": "https://developers.cloudflare.com/api/resources/workers/subresources/scripts/subresources/versions/methods/create/",
+  "apiBuiltSourceRevision": "9bffaca702c579ee675530a5242dd416d1059617",
+  "apiRuntimeInputsIdentical": true
+}

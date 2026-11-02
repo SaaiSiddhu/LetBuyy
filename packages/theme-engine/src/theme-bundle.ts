@@ -259,6 +259,7 @@ export const ThemeLiquidPresetSchema = z.object({
 
 export const ThemeLiquidSectionSchema = z.object({
   name: z.string().min(1).max(120),
+  limit: z.number().int().positive().max(80).optional(),
   tag: z.string().min(1).max(40).default('section'),
   class: z.string().max(200).optional(),
   settings: z.array(ThemeLiquidSchemaSettingFieldSchema).max(100).default([]),
@@ -266,9 +267,11 @@ export const ThemeLiquidSectionSchema = z.object({
   presets: z.array(ThemeLiquidPresetSchema).max(50).default([]),
   enabled_on: z.object({
     templates: z.array(z.string().min(1).max(120)).max(100).default(['*']),
+    groups: z.array(z.enum(['header', 'template', 'footer'])).max(3).optional(),
   }).default({ templates: ['*'] }),
   disabled_on: z.object({
     templates: z.array(z.string().min(1).max(120)).max(100).default([]),
+    groups: z.array(z.enum(['header', 'template', 'footer'])).max(3).optional(),
   }).default({ templates: [] }),
 }).strict();
 
@@ -1817,6 +1820,9 @@ function buildLiquidRuntimeSectionSchemas(bundle: LiquidThemePackageBundle): Rec
         name: preset.name,
         settings: preset.settings,
       })),
+      ...(sectionFile.schema.enabled_on.groups ? { enabled_on: sectionFile.schema.enabled_on } : {}),
+      ...(sectionFile.schema.disabled_on.groups ? { disabled_on: sectionFile.schema.disabled_on } : {}),
+      ...(sectionFile.schema.limit ? { limit: sectionFile.schema.limit } : {}),
       renderer_key: `liquid.section.${sectionType}`,
       settings_schema: liquidSettingsToFieldRecord(sectionFile.schema.settings),
       blocks_schema: {

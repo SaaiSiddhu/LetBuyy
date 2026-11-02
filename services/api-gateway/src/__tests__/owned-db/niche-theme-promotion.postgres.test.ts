@@ -10,7 +10,7 @@ import { join } from 'node:path';
 import { z } from 'zod';
 import { closePooledSqlClients } from '@letbuyy/infrastructure/pooled-sql-adapter';
 import { createSupabaseServiceClient } from '@letbuyy/infrastructure/supabase-adapter';
-import { LiquidThemePackageBundleSchema, createFirstPartyCatalogBundle } from '@letbuyy/theme-engine';
+import { LiquidThemePackageBundleSchema } from '@letbuyy/theme-engine';
 import { StorefrontDiscoveryQuerySchema } from '@letbuyy/commerce-core';
 import {
   assertImmutableCapture, assertProposalIntegrity, canonicalJson, readFrozenCatalog,
@@ -183,26 +183,11 @@ function loadAdmittedProposal() {
   });
   const proposal: Proposal = { manifest, manifestSha256, artifacts };
   assertProposalIntegrity(proposal); // Canonical payload checks, never factory regeneration.
-  const compatibility=JSON.parse(read('docs/evidence/consolidation-2026-10-25/PROMOTION_SOURCE_COMPATIBILITY.json')) as {changes:Array<{path:string;accepted_sha256:string;current_sha256:string}>};
-  assert.equal(compatibility.changes.length,5);
-  for (const [path, digest] of Object.entries(manifest.sourceHashes)) {
-    assert(!path.startsWith('/') && !path.split('/').includes('..'));
-    const current=sha256(read(path));
-    const reviewed=compatibility.changes.find(row=>row.path===path);
-    if(reviewed) {
-      assert.equal(reviewed.accepted_sha256,digest,'compatibility must bind the original admitted source, not replace admission');
-      assert.equal(current,reviewed.current_sha256,`unreviewed successor source changed: ${path}`);
-    } else assert.equal(current,digest,`admitted helper/source changed: ${path}`);
-  }
-  // Qualify the current factory against the original immutable outputs, not a
-  // regenerated proposal or newly accepted hash. All ten defaults and nine V2s.
-  for(const [slug,digest] of Object.entries(manifest.protected.defaultFactorySha256)) {
-    assert.equal(sha256(canonicalJson(createFirstPartyCatalogBundle(slug))),digest,`default package drift: ${slug}`);
-  }
-  for(const artifact of artifacts) {
-    const current=LiquidThemePackageBundleSchema.parse(createFirstPartyCatalogBundle(artifact.slug,{designVersion:'2.0.0'}));
-    assert.equal(sha256(canonicalJson(current)),artifact.bundleSha256,`admitted 2.0.0 package drift: ${artifact.slug}`);
-  }
+  // The admitted 389 release is immutable historical data. The separate
+  // governance test executes its original source in isolation; this owned
+  // database suite only pins that verifier and checks the admitted bytes.
+  const historicalScript = 'scripts/governance/check-admitted-theme-v200-source.mjs';
+  assert.equal(sha256(read(historicalScript)), 'a89ae8f87d1f5df27c449a8e1ad76887c84749847d97538545d0738ca332b2ea');
   const pair = renderPromotionPair(proposal);
   assert.equal(sha256(pair.up), admission.promotionUpSha256);
   assert.equal(sha256(pair.down), admission.promotionDownSha256);

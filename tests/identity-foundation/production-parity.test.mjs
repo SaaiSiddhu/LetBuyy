@@ -42,10 +42,11 @@ test('legacy cookie names and attributes remain the current golden surface', () 
   assert.match(authCore, /LETBUYY_MERCHANT_SESSION_COOKIE = 'lb_session'/);
   assert.match(authCore, /LETBUYY_CUSTOMER_SESSION_COOKIE = 'lb_customer_session'/);
   assert.match(authCore, /LETBUYY_PLATFORM_SESSION_COOKIE = 'lb_console_session'/);
-  assert.match(identityCookies, /csrf: 'letbuyy_csrf'/);
-  assert.match(identityCookies, /accounts: 'lb_accounts'/);
-  assert.match(identityCookies, /device: 'lb_device'/);
-  assert.match(identityCookies, /passwordSetIntent: PASSWORD_SET_INTENT_COOKIE/);
+  assert.match(identityCookies, /const COOKIE_NAMES = resolveLetbuyyPlatformCookieNames/);
+  assert.match(authCore, /csrf: `letbuyy_csrf\$\{suffix\}`/);
+  assert.match(authCore, /accounts: `lb_accounts\$\{suffix\}`/);
+  assert.match(authCore, /device: `lb_device\$\{suffix\}`/);
+  assert.match(authCore, /passwordSetIntent: `lb_password_set_intent\$\{suffix\}`/);
   assert.match(identityCookies, /sameSite: 'lax'/);
   assert.match(identityCookies, /sameSite: 'strict'/);
   assert.match(identityCookies, /httpOnly: false, \/\/ Must be readable client-side for CSRF headers/);

@@ -29,12 +29,7 @@ export {
 import { UuidSchema } from './uuid';
 export { UuidSchema } from './uuid';
 
-export const ProductCsvImportSchema = z.object({
-  store_id: UuidSchema,
-  // Keep quoted field whitespace and line breaks intact.
-  csv: z.string().min(1).max(1_048_576).refine(value => value.trim().length > 0, 'A product CSV is required'),
-});
-export type ProductCsvImportInput = z.infer<typeof ProductCsvImportSchema>;
+export * from './product-import';
 
 export const QueryBooleanSchema = z.preprocess((value) => {
   if (value === undefined || value === null || value === '') return false;
@@ -133,7 +128,8 @@ export const BusinessProfileSchema = z.object({
   pan_last4: z.string().trim().toUpperCase().regex(/^[A-Z0-9]{4}$/).optional(),
   email: EmailSchema.optional(),
   phone: z.string().max(30).optional(),
-  website: UrlSchema.optional(),
+  website: UrlSchema.refine((value) => /^https?:\/\//i.test(value), 'Use an HTTP or HTTPS website URL.').optional(),
+  public_contact_enabled: z.boolean().optional(),
 }).passthrough();
 
 export const InvoiceAddressSchema = AddressSchema.partial().passthrough();
@@ -1067,22 +1063,27 @@ export const CodReconciliationOverviewSchema = z.object({
   }),
 });
 
-export const MerchantKycDocumentSchema = AuditedEntitySchema.extend({
+/** Merchant-visible KYC status only. Private object keys and scanner/provider payloads stay in the Gateway. */
+export const MerchantKycDocumentSchema = TimestampedEntitySchema.extend({
+  created_at: z.string().datetime({ offset: true }),
+  updated_at: z.string().datetime({ offset: true }),
+  deleted_at: z.string().datetime({ offset: true }).optional().nullable(),
   site_id: UuidSchema,
   document_type: MerchantKycDocumentTypeSchema,
   status: MerchantKycDocumentStatusSchema,
   provider: z.string().min(1).max(80),
   provider_mode: MerchantKycProviderModeSchema,
   provider_reference: z.string().optional().nullable(),
+  has_private_upload: z.boolean(),
+  evidence_scan_status: z.enum(['pending', 'clean', 'rejected']).optional().nullable(),
+  provider_unavailable: z.boolean().optional(),
+  requires_resubmission: z.boolean().optional(),
   document_number_last4: z.string().optional().nullable(),
-  file_url: UrlSchema.optional().nullable(),
-  file_name: z.string().optional().nullable(),
   rejection_reason: z.string().optional().nullable(),
-  metadata: MetadataSchema.default({}),
-  submitted_at: z.string().datetime().optional().nullable(),
-  verified_at: z.string().datetime().optional().nullable(),
-  rejected_at: z.string().datetime().optional().nullable(),
-}).passthrough();
+  submitted_at: z.string().datetime({ offset: true }).optional().nullable(),
+  verified_at: z.string().datetime({ offset: true }).optional().nullable(),
+  rejected_at: z.string().datetime({ offset: true }).optional().nullable(),
+}).strict();
 
 export const MerchantKycRequirementSchema = z.object({
   document_type: MerchantKycDocumentTypeSchema,
@@ -1095,10 +1096,12 @@ export const MerchantKycOverviewSchema = z.object({
   site_id: UuidSchema,
   overall_status: MerchantKycOverallStatusSchema,
   provider_mode: MerchantKycProviderModeSchema,
+  private_upload_available: z.boolean(),
+  india_direct_upload_available: z.boolean().optional(),
   required_documents: z.array(MerchantKycRequirementSchema).default([]),
   documents: z.array(MerchantKycDocumentSchema).default([]),
   next_action: z.string().optional().nullable(),
-});
+}).strict();
 
 export const MerchantTwoFactorSchema = AuditedEntitySchema.extend({
   custom_user_id: UuidSchema,
@@ -1175,7 +1178,6 @@ export const StoreSchema = AuditedEntitySchema.extend({
   business_profile: BusinessProfileSchema.optional().nullable(),
   invoice_address: InvoiceAddressSchema.optional().nullable(),
   invoice_footer: z.string().max(1000).optional().nullable(),
-  invoice_number_next: z.number().int().positive().optional().nullable(),
   theme_config: MetadataSchema.default({}),
   settings: MetadataSchema.default({}),
   navigation: MetadataSchema.default({}),
@@ -1619,6 +1621,114 @@ export const ProductReviewSchema = AuditedEntitySchema.extend({
   merchant_reply_by: UuidSchema.optional().nullable(),
   merchant_reply_at: z.string().datetime().optional().nullable(),
 }).passthrough();
+
+// Stored audit reasons differ from the command aliases accepted by adjust.
+export const InventoryHistoryReasonSchema = z.enum(['sale', 'return', 'adjustment', 'recount', 'transfer', 'damaged', 'reserved', 'unreserved']);
+export const InventoryHistoryEntrySchema = z.object({
+  id: UuidSchema,
+  store_id: UuidSchema,
+  product_id: UuidSchema,
+  variant_id: UuidSchema.optional().nullable(),
+  location_id: UuidSchema,
+  quantity_change: z.number().int(),
+  reason: InventoryHistoryReasonSchema,
+  reference_id: UuidSchema.optional().nullable(),
+  note: z.string().optional().nullable(),
+  created_by: UuidSchema.optional().nullable(),
+  created_at: z.string().datetime({ offset: true }),
+  products: z.object({ name: z.string(), store_id: UuidSchema }),
+});
+export type InventoryHistoryEntry = z.infer<typeof InventoryHistoryEntrySchema>;
+
+export const InventoryReservationStatusSchema = z.enum(['active', 'hold', 'committed', 'released', 'expired', 'fulfilled', 'cancelled']);
+export const InventoryReservationSchema = z.object({
+  id: UuidSchema,
+  store_id: UuidSchema,
+  product_id: UuidSchema,
+  variant_id: UuidSchema.optional().nullable(),
+  location_id: UuidSchema,
+  order_id: UuidSchema.optional().nullable(),
+  quantity: z.number().int().positive(),
+  status: InventoryReservationStatusSchema,
+  expires_at: z.string().datetime({ offset: true }),
+  created_at: z.string().datetime({ offset: true }),
+  updated_at: z.string().datetime({ offset: true }),
+  products: z.object({ name: z.string(), store_id: UuidSchema }),
+});
+export type InventoryReservation = z.infer<typeof InventoryReservationSchema>;
+
+const InventoryReceiptParentSchema = z.object({ id: UuidSchema, site_id: UuidSchema });
+const InventoryReceiptBaseSchema = z.object({
+  id: UuidSchema,
+  quantity_received: z.number().int().positive(),
+  notes: z.string().optional().nullable(),
+  received_at: z.string().datetime({ offset: true }),
+  created_at: z.string().datetime({ offset: true }),
+});
+export const InventoryReceiptSchema = z.discriminatedUnion('receipt_type', [
+  InventoryReceiptBaseSchema.extend({
+    receipt_type: z.literal('purchase_order'), purchase_order_id: UuidSchema,
+    transfer_id: z.null().optional(), purchase_orders: InventoryReceiptParentSchema,
+    inventory_transfers: z.null().optional(),
+  }),
+  InventoryReceiptBaseSchema.extend({
+    receipt_type: z.literal('transfer'), transfer_id: UuidSchema,
+    purchase_order_id: z.null().optional(), inventory_transfers: InventoryReceiptParentSchema,
+    purchase_orders: z.null().optional(),
+  }),
+]).refine(row => row.receipt_type === 'purchase_order'
+  ? row.purchase_order_id === row.purchase_orders.id : row.transfer_id === row.inventory_transfers.id,
+  { message: 'The receipt parent could not be confirmed' });
+export type InventoryReceipt = z.infer<typeof InventoryReceiptSchema>;
+
+const InventoryMetricCountSchema = z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER);
+export const InventoryMetricPageSchema = z.object({
+  page: z.number().int().positive(), per_page: z.number().int().min(1).max(100),
+  total: InventoryMetricCountSchema, total_pages: InventoryMetricCountSchema,
+  has_next: z.boolean(), has_prev: z.boolean(),
+}).refine(m => m.total_pages === Math.ceil(m.total / m.per_page) && m.has_next === (m.page < m.total_pages) && m.has_prev === (m.page > 1),
+  { message: 'The inventory metric page could not be confirmed' });
+export type InventoryMetricPage = z.infer<typeof InventoryMetricPageSchema>;
+export const SupplierMetricsRowSchema = z.object({
+  supplier_id: UuidSchema.nullable(), supplier_name: z.string(), po_count: InventoryMetricCountSchema,
+  on_time_rate: z.number().min(0).max(1).nullable(), avg_lead_time_days: z.number().int().nonnegative().nullable(),
+});
+export const SupplierMetricsResultSchema = z.object({
+  store_id: UuidSchema, suppliers: z.array(SupplierMetricsRowSchema), meta: InventoryMetricPageSchema,
+}).refine(r => r.suppliers.length === Math.min(r.meta.per_page, Math.max(0, r.meta.total - (r.meta.page - 1) * r.meta.per_page)) &&
+  new Set(r.suppliers.map(row => row.supplier_id)).size === r.suppliers.length,
+  { message: 'The supplier metric rows could not be confirmed' });
+export type SupplierMetricsRow = z.infer<typeof SupplierMetricsRowSchema>;
+export type SupplierMetricsResult = z.infer<typeof SupplierMetricsResultSchema>;
+export const WarehouseMetricsRowSchema = z.object({
+  location_id: UuidSchema, location_name: z.string(), is_default: z.boolean(),
+  sku_count: InventoryMetricCountSchema, total_units: InventoryMetricCountSchema,
+});
+export const WarehouseMetricsResultSchema = z.object({
+  store_id: UuidSchema, warehouses: z.array(WarehouseMetricsRowSchema), meta: InventoryMetricPageSchema,
+}).refine(r => r.warehouses.length === Math.min(r.meta.per_page, Math.max(0, r.meta.total - (r.meta.page - 1) * r.meta.per_page)) &&
+  new Set(r.warehouses.map(row => row.location_id)).size === r.warehouses.length,
+  { message: 'The warehouse metric rows could not be confirmed' });
+export type WarehouseMetricsRow = z.infer<typeof WarehouseMetricsRowSchema>;
+export type WarehouseMetricsResult = z.infer<typeof WarehouseMetricsResultSchema>;
+export const TransferMetricsResultSchema = z.object({
+  store_id: UuidSchema, by_status: z.record(z.string(), InventoryMetricCountSchema),
+  in_transit_count: InventoryMetricCountSchema, total_count: InventoryMetricCountSchema,
+}).refine(r => Object.values(r.by_status).reduce((sum, count) => sum + count, 0) === r.total_count &&
+  r.in_transit_count === (r.by_status.shipped ?? 0) + (r.by_status.partially_received ?? 0),
+  { message: 'The transfer metric totals could not be confirmed' });
+export type TransferMetricsResult = z.infer<typeof TransferMetricsResultSchema>;
+export const OperationsSummaryResultSchema = z.object({
+  store_id: UuidSchema, order_count: InventoryMetricCountSchema.optional(), open_order_count: InventoryMetricCountSchema.optional(),
+  po_count: InventoryMetricCountSchema.optional(), open_po_count: InventoryMetricCountSchema.optional(),
+  transfer_count: InventoryMetricCountSchema.optional(), in_transit_transfer_count: InventoryMetricCountSchema.optional(),
+  low_stock_sku_count: InventoryMetricCountSchema.optional(), total_sku_count: InventoryMetricCountSchema.optional(),
+}).refine(r => Object.keys(r).some(key => key !== 'store_id') &&
+  (r.open_order_count === undefined || (r.order_count !== undefined && r.open_order_count <= r.order_count)) &&
+  (r.open_po_count === undefined || (r.po_count !== undefined && r.open_po_count <= r.po_count)) &&
+  (r.in_transit_transfer_count === undefined || (r.transfer_count !== undefined && r.in_transit_transfer_count <= r.transfer_count)),
+  { message: 'The available operations counts could not be confirmed' });
+export type OperationsSummaryResult = z.infer<typeof OperationsSummaryResultSchema>;
 
 export const InventoryLevelSchema = z.object({
   id: z.string().min(1),
@@ -2131,6 +2241,7 @@ export const SubscriptionCancelResultSchema = z.object({
 }).passthrough();
 
 export const SubscriptionOrderResultSchema = z.object({
+  provider_mode: z.enum(['sandbox', 'live']).nullable().optional(),
   tax:SubscriptionTaxSummarySchema.optional(),
   razorpay_order_id: z.string().min(1).optional().nullable(),
   razorpay_subscription_id: z.string().min(1).optional().nullable(),
@@ -2165,11 +2276,11 @@ export const SubscriptionVerificationResultSchema = z.object({
   message: z.string().max(500).optional(),
 }).passthrough();
 
-export { StorePaymentSetupSchema, SaveStorePaymentConfigSchema, UpdateStorePaymentMethodsSchema,
-  type StorePaymentSetup, type SaveStorePaymentConfigInput, type UpdateStorePaymentMethodsInput } from './payment-setup';
+export { StorePaymentSetupSchema, SaveStorePaymentConfigSchema, AttachStorePaymentWebhookSchema, UpdateStorePaymentMethodsSchema,
+  type StorePaymentSetup, type SaveStorePaymentConfigInput, type AttachStorePaymentWebhookInput, type UpdateStorePaymentMethodsInput } from './payment-setup';
 
 export const StorePaymentSettingsSchema = z.object({
-  mode: z.enum(['unconfigured', 'shared', 'ownAccount']).default('unconfigured'),
+  mode: z.enum(['unconfigured', 'shared', 'ownAccount', 'managedSandbox']).default('unconfigured'),
   gateways: z.array(z.string().min(1).max(80)).default([]),
   razorpay: z.object({
     key_id: z.string().max(120).optional().nullable(),
@@ -2178,6 +2289,7 @@ export const StorePaymentSettingsSchema = z.object({
     connected_at: z.string().datetime({ offset: true }).optional().nullable(),
     updated_at: z.string().datetime({ offset: true }).optional().nullable(),
     secret_configured: z.boolean().default(false),
+    webhook_secret_configured: z.boolean().default(false),
   }).nullable().default(null),
 }).passthrough();
 
@@ -2186,6 +2298,7 @@ export const StorePaymentConfigSchema = z.object({
   online_payment_enabled: z.boolean().default(false),
   cod_enabled: z.boolean().default(false),
   provider_mode: z.enum(['sandbox', 'live']).nullable().default(null),
+  webhook_callback_url: z.string().url().nullable().optional(),
   payment_settings: StorePaymentSettingsSchema,
   schema_ready: z.boolean().optional(),
   setup: StorePaymentSetupSchema.optional(),
@@ -5162,3 +5275,9 @@ export { calculateGstAmounts } from './gst-amounts';
 export * from './personalization-contracts';
 export * from './storefront-discovery-contracts';
 export * from './checkout-totals-quote';
+
+export * from './warehouse-command';
+export * from './warehouse-documents';
+export * from './warehouse-options';
+
+export * from './warehouse-command-inputs';

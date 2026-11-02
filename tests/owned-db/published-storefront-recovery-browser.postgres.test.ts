@@ -16,7 +16,7 @@ import { closePooledSqlClients } from '@letbuyy/infrastructure/pooled-sql-adapte
 import { hashMerchantPassword } from '../../services/api-gateway/src/lib/merchant-password';
 import { Gateway, gatewayEnv, newIdentityKeys, INTERNAL_SECRET, tapRest, type RestTap } from '../../services/api-gateway/src/__tests__/owned-db/gateway-harness';
 import { requireOwnedDatabase, startOwnedPooledSqlProxy, type OwnedPooledSqlProxy, createOwnedCheckoutTlsCertificate, startOwnedClientRuntime, stopOwnedClientRuntime, type OwnedClientProcess } from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
-import { newSyntheticTenant, seedSyntheticTenant } from '../../services/api-gateway/src/__tests__/owned-db/synthetic-tenant';
+import { newSyntheticTenant, seedSyntheticOrder, seedSyntheticTenant, type SeedOptions } from '../../services/api-gateway/src/__tests__/owned-db/synthetic-tenant';
 
 const owned = requireOwnedDatabase();
 let proxy:OwnedPooledSqlProxy,gateway:Gateway,tap:RestTap;
@@ -27,6 +27,7 @@ let bridge: Server | undefined, browser: Browser | undefined;
 let checkoutTls: HttpsServer | undefined, checkoutTlsPort: number;
 const clients: OwnedClientProcess[] = [];
 const contexts: BrowserContext[] = [];
+const privateKycObjects = new Map<string, Uint8Array>();
 
 // Diagnostic observations only: no HTML, query, token, cookie or raw runtime log retained.
 function previewDiagnostic(text: string) {
@@ -76,7 +77,10 @@ before(async () => {
     const checkoutSpki = checkoutCertificate.spki;
     checkoutTls = createHttpsServer({ key: checkoutCertificate.key, cert: checkoutCertificate.cert }, (req, res) => {
         const checkoutHost = req.headers.host || '';
-        if (!/^[a-z0-9-]+\.localhost:\d+$/.test(checkoutHost) || !checkoutHost.endsWith(':'+checkoutTlsPort)) { res.writeHead(421); res.end(); return; }
+        if (!/^(?:[a-z0-9-]+\.localhost|shop\.merchant\.test):\d+$/.test(checkoutHost)
+            || !checkoutHost.endsWith(':'+checkoutTlsPort)) {
+            res.writeHead(421); res.end(); return;
+        }
         const upstream = forwardHttpRequest({ hostname: '127.0.0.1', port: commercePort, path: req.url, method: req.method,
             headers: { ...req.headers, host: checkoutHost, 'x-forwarded-host': checkoutHost, 'x-forwarded-proto': 'https' } }, response => {
             response.on('error', () => res.destroy());
@@ -90,9 +94,16 @@ before(async () => {
     });
     await new Promise<void>(resolve => checkoutTls!.listen(0, '127.0.0.1', resolve));
     checkoutTlsPort = (checkoutTls.address() as { port: number }).port;
-    gateway = new Gateway(gatewayEnv(owned, keys, { ...proxy.env(), ENVIRONMENT: 'local',
+    // The synthetic KYC bucket is test-only; local auth still needs the owned
+    // email sink. No deployed environment uses this mixed fixture configuration.
+    gateway = new Gateway(gatewayEnv(owned, keys, { ...proxy.env(), ENVIRONMENT: 'test', APP_ENV: 'local',
         LETBUYY_IDENTITY_ISSUER: identityOrigin, NEXT_PUBLIC_STORE_ROOT_DOMAIN: 'localhost', CHECKOUT_ORIGIN: `https://checkout.localhost:${checkoutTlsPort}`,
-        CHECKOUT_SIGNING_SECRET: crypto.randomUUID() + crypto.randomUUID() }));
+        CHECKOUT_SIGNING_SECRET: crypto.randomUUID() + crypto.randomUUID(),
+        KYC_UPLOAD_ENABLED: 'true',
+        KYC_PRIVATE_BUCKET: {
+            put: async (key: string, bytes: Uint8Array) => { privateKycObjects.set(key, bytes); },
+            delete: async (key: string) => { privateKycObjects.delete(key); },
+        } }));
     bridge = createServer(async (req, res) => {
         try {
             const chunks: Buffer[] = []; for await (const chunk of req) chunks.push(Buffer.from(chunk));
@@ -125,7 +136,8 @@ before(async () => {
         NEXT_PUBLIC_TURNSTILE_SITE_KEY: '1x00000000000000000000AA', TURNSTILE_SECRET_KEY: '1x0000000000000000000000000000000AA',
         RESEND_API_KEY: '', LETBUYY_EMAIL_API_KEY: '' } }));
     clients.push(startOwnedClientRuntime(owned, 'merchant-next-production', { port: merchantPort, env: { ...common,
-        LETBUYY_API_BASE_URL: apiOrigin + '/v1', NEXT_PUBLIC_STOREFRONT_URL: commerceOrigin } }));
+        LETBUYY_API_BASE_URL: apiOrigin + '/v1', NEXT_PUBLIC_STOREFRONT_URL: commerceOrigin,
+        KYC_INDIA_BUCKET: 'letbuyy-kyc-mumbai-synthetic' } }));
     clients.push(startOwnedClientRuntime(owned, 'commerce-next-production', { port: commercePort, env: { ...common,
         CHECKOUT_ORIGIN: `https://checkout.localhost:${checkoutTlsPort}`,
         LETBUYY_API_BASE_URL: apiOrigin + '/v1', LETBUYY_API_URL: apiOrigin + '/v1',
@@ -146,7 +158,7 @@ before(async () => {
     // each public store document is still required to return 200 below.
     await Promise.all([ready(identityOrigin + '/login', clients[0]), ready(merchantOrigin, clients[1]),
         ready(commerceOrigin + '/api/buyer-auth/session', clients[2])]);
-    browser = await chromium.launch({ headless: true, args: ['--host-resolver-rules=MAP *.localhost 127.0.0.1',
+    browser = await chromium.launch({ headless: true, args: ['--no-proxy-server', '--host-resolver-rules=MAP *.localhost 127.0.0.1, MAP shop.merchant.test 127.0.0.1',
         `--ignore-certificate-errors-spki-list=${checkoutSpki}`] });
 }, { timeout: 400_000 });
 after(async () => {
@@ -160,8 +172,8 @@ after(async () => {
     if (bridge?.listening) await new Promise<void>(resolve => bridge!.close(() => resolve()));
 });
 
-async function fixture(tag: string) {
-    const tenant = newSyntheticTenant(tag); seedSyntheticTenant(owned.psql, tenant);
+async function fixture(tag: string, options: SeedOptions = {}) {
+    const tenant = newSyntheticTenant(tag); seedSyntheticTenant(owned.psql, tenant, options);
     const owner = crypto.randomUUID(), staff = crypto.randomUUID(), product = crypto.randomUUID();
     const email = `syn-published-owner-${owner}@example.invalid`, staffEmail = `syn-published-staff-${staff}@example.invalid`;
     const hash = await hashMerchantPassword(password);
@@ -280,7 +292,29 @@ async function publish(page: Page) {
 
 test('normal Merchant publication renders the saved Liquid heading on the real public Commerce origin and buys through canonical cart/handoff', { timeout: 400_000 }, async t => {
     const f = await fixture('published-liquid'); t.after(() => f.context.close());
-    await signIn(f.page, f.email); await openEditor(f);
+    await signIn(f.page, f.email);
+    const profileName = `Synthetic merchant ${f.tenant.subdomain}`;
+    const profileTitle = `Synthetic SEO ${f.tenant.subdomain}`;
+    const profileDescription = `Public storefront description for ${f.tenant.subdomain}.`;
+    const contactEmail = `contact-${f.tenant.subdomain}@example.invalid`;
+    await f.page.goto(`${merchantOrigin}/${f.tenant.subdomain}/settings/general`);
+    await expect(f.page.getByLabel('Store name', { exact: true })).toBeVisible();
+    await f.page.getByLabel('Store name', { exact: true }).fill(profileName);
+    await f.page.getByLabel('SEO title', { exact: true }).fill(profileTitle);
+    await f.page.getByLabel('SEO description', { exact: true }).fill(profileDescription);
+    await f.page.getByLabel('Contact email', { exact: true }).fill(contactEmail);
+    await f.page.getByRole('switch', { name: 'Show these contact details on my storefront' }).click();
+    const [profileSave] = await Promise.all([
+        f.page.waitForResponse(response => new URL(response.url()).pathname === `/api/stores/${f.tenant.subdomain}/settings`
+            && response.request().method() === 'PATCH'),
+        f.page.getByRole('button', { name: 'Save', exact: true }).first().click(),
+    ]);
+    assert.equal(profileSave.status(), 200, 'normal General settings save reaches the canonical site API');
+    assert.equal(owned.psql(`SELECT name||'|'||meta_title||'|'||meta_description||'|'||(business_profile->>'email')
+        FROM sites WHERE id='${f.tenant.siteId}';`), `${profileName}|${profileTitle}|${profileDescription}|${contactEmail}`,
+        'General settings save is visible in the owned canonical sites row');
+    await openEditor(f);
+    await expect(f.page.frameLocator('iframe.te-preview-iframe').locator('body')).toContainText(profileName);
     await publish(f.page);
     const firstRelease = f.currentRelease(); assert.ok(firstRelease);
     const buyer = await f.context.newPage();
@@ -297,6 +331,12 @@ test('normal Merchant publication renders the saved Liquid heading on the real p
     const initial = await buyer.goto(f.publicUrl); assert.equal(initial?.status(), 200);
     await expect(buyer.locator('[data-theme-renderer="liquid"][data-editor-mode="false"]').first()).toBeVisible();
     await buyer.waitForLoadState('networkidle');
+    await expect(buyer).toHaveTitle(profileTitle);
+    assert.equal(await buyer.locator('meta[name="description"]').getAttribute('content'), profileDescription);
+    await expect(buyer.getByRole('link', { name: contactEmail }).first()).toBeVisible();
+    assert.ok((await buyer.locator('link[rel="canonical"]').getAttribute('href'))?.includes(f.tenant.subdomain),
+        'published metadata resolves to this tenant storefront');
+    assert.doesNotMatch(await buyer.locator('body').innerText(), /Private Legal Name|pan_last4|never-public/);
     const initialHeading = await buyer.getByRole('heading', { level: 1 }).first().textContent();
     const marker = `Synthetic saved release ${crypto.randomUUID()}`;
     await editHeading(f.page, marker);
@@ -348,6 +388,540 @@ test('normal Merchant publication renders the saved Liquid heading on the real p
     assert.equal(new URL(buyer.url()).port, String(checkoutTlsPort));
     assert.equal(owned.psql(`SELECT count(*) FROM carts WHERE store_id='${f.tenant.siteId}';`), '1');
     assert.equal(owned.psql(`SELECT count(*) FROM orders WHERE store_id='${f.tenant.siteId}';`), '0', 'handoff proof stops before any order or payment');
+
+    // This owned fixture marks one local test hostname active to exercise the
+    // Commerce host rewrite and metadata. Real DNS/TLS/provider verification is
+    // a separate hosted acceptance gate and is not simulated by this DB row.
+    owned.psql(`UPDATE sites SET custom_domain='shop.merchant.test', custom_domain_status='active'
+        WHERE id='${f.tenant.siteId}';`);
+    const customBuyer = await f.context.newPage();
+    const customResponse = await customBuyer.goto(`https://shop.merchant.test:${checkoutTlsPort}`);
+    if (customResponse?.status() !== 200) console.info('N4_CUSTOM_HOST_DIAGNOSTIC', JSON.stringify({
+        status: customResponse?.status(), host: customResponse ? new URL(customResponse.url()).host : null,
+        server: customResponse?.headers()['server'] || null,
+        bodyHash: customResponse ? createHash('sha256').update(await customResponse.text()).digest('hex') : null,
+    }));
+    assert.equal(customResponse?.status(), 200, 'verified-host-shaped request reaches the same published store');
+    await expect(customBuyer).toHaveTitle(profileTitle);
+    assert.equal(await customBuyer.locator('meta[name="description"]').getAttribute('content'), profileDescription);
+    assert.equal(new URL((await customBuyer.locator('link[rel="canonical"]').getAttribute('href')) || '').origin,
+        'https://shop.merchant.test', 'custom-domain canonical metadata uses the store host');
+    await expect(customBuyer.getByRole('link', { name: contactEmail }).first()).toBeVisible();
+
+    // General settings are mutable after a theme release is published. A later
+    // profile edit must reach both public hosts and the editor without silently
+    // creating or requiring another theme release; contact remains opt-in.
+    const updatedName = `Synthetic updated merchant ${f.tenant.subdomain}`;
+    const updatedTitle = `Updated SEO ${f.tenant.subdomain}`;
+    const updatedDescription = `Updated public storefront description for ${f.tenant.subdomain}.`;
+    const updatedContact = `updated-${f.tenant.subdomain}@example.invalid`;
+    await f.page.goto(`${merchantOrigin}/${f.tenant.subdomain}/settings/general`);
+    await expect(f.page.getByLabel('Store name', { exact: true })).toHaveValue(profileName);
+    await f.page.getByLabel('Store name', { exact: true }).fill(updatedName);
+    await f.page.getByLabel('SEO title', { exact: true }).fill(updatedTitle);
+    await f.page.getByLabel('SEO description', { exact: true }).fill(updatedDescription);
+    await f.page.getByLabel('Contact email', { exact: true }).fill(updatedContact);
+    await f.page.getByRole('switch', { name: 'Show these contact details on my storefront' }).click();
+    const [updatedProfileSave] = await Promise.all([
+        f.page.waitForResponse(response => new URL(response.url()).pathname === `/api/stores/${f.tenant.subdomain}/settings`
+            && response.request().method() === 'PATCH'),
+        f.page.getByRole('button', { name: 'Save', exact: true }).first().click(),
+    ]);
+    assert.equal(updatedProfileSave.status(), 200, 'published-store General edit reaches the canonical settings API');
+    assert.equal(owned.psql(`SELECT name||'|'||meta_title||'|'||meta_description||'|'||(business_profile->>'email')||'|'||(business_profile->>'public_contact_enabled')
+        FROM sites WHERE id='${f.tenant.siteId}';`),
+    `${updatedName}|${updatedTitle}|${updatedDescription}|${updatedContact}|false`,
+    'the canonical site row retains the new private contact and its public opt-out');
+    assert.equal(f.currentRelease(), secondRelease, 'a General edit leaves the published theme release unchanged');
+    await f.page.reload();
+    await expect(f.page.getByLabel('Store name', { exact: true })).toHaveValue(updatedName);
+    await expect(f.page.getByLabel('Contact email', { exact: true })).toHaveValue(updatedContact);
+    await openEditor(f);
+    await expect(f.page.frameLocator('iframe.te-preview-iframe').locator('body')).toContainText(updatedName);
+    await customBuyer.reload();
+    await expect(customBuyer).toHaveTitle(updatedTitle);
+    assert.equal(await customBuyer.locator('meta[name="description"]').getAttribute('content'), updatedDescription);
+    await expect(customBuyer.locator('body')).toContainText(updatedName);
+    await expect(customBuyer.getByRole('link', { name: updatedContact })).toHaveCount(0);
+    await expect(customBuyer.getByRole('link', { name: contactEmail })).toHaveCount(0);
+    const publicReload = await buyer.goto(f.publicUrl);
+    assert.equal(publicReload?.status(), 200);
+    await expect(buyer).toHaveTitle(updatedTitle);
+    assert.equal(await buyer.locator('meta[name="description"]').getAttribute('content'), updatedDescription);
+    await expect(buyer.getByRole('link', { name: updatedContact })).toHaveCount(0);
+
+    await f.page.goto(`${merchantOrigin}/${f.tenant.subdomain}/settings/general`);
+    await f.page.getByRole('switch', { name: 'Show these contact details on my storefront' }).click();
+    const [optInSave] = await Promise.all([
+        f.page.waitForResponse(response => new URL(response.url()).pathname === `/api/stores/${f.tenant.subdomain}/settings`
+            && response.request().method() === 'PATCH'),
+        f.page.getByRole('button', { name: 'Save', exact: true }).first().click(),
+    ]);
+    assert.equal(optInSave.status(), 200);
+    assert.equal(owned.psql(`SELECT business_profile->>'public_contact_enabled' FROM sites WHERE id='${f.tenant.siteId}';`), 'true');
+    assert.equal(f.currentRelease(), secondRelease, 'contact opt-in also leaves the published theme release unchanged');
+    await customBuyer.reload();
+    await expect(customBuyer.getByRole('link', { name: updatedContact }).first()).toBeVisible();
+    await expect(customBuyer.getByRole('link', { name: contactEmail })).toHaveCount(0);
+});
+
+test('two Merchant settings tabs report stale saves and preserve a cleared contact field', { timeout: 180_000 }, async t => {
+    const f = await fixture('profile-two-tabs'); t.after(() => f.context.close());
+    owned.psql(`UPDATE sites SET business_profile='{"email":"before-clear@example.invalid"}'::jsonb
+        WHERE id='${f.tenant.siteId}';`);
+    await signIn(f.page, f.email);
+    const address = `${merchantOrigin}/${f.tenant.subdomain}/settings/general`;
+    const staleTab = await f.context.newPage();
+    await Promise.all([f.page.goto(address), staleTab.goto(address)]);
+    await Promise.all([
+        expect(f.page.getByLabel('Contact email', { exact: true })).toHaveValue('before-clear@example.invalid'),
+        expect(staleTab.getByLabel('Contact email', { exact: true })).toHaveValue('before-clear@example.invalid'),
+    ]);
+    await f.page.getByLabel('Contact email', { exact: true }).fill('');
+    const [clearResponse] = await Promise.all([
+        f.page.waitForResponse(response => new URL(response.url()).pathname === `/api/stores/${f.tenant.subdomain}/settings`
+            && response.request().method() === 'PATCH'),
+        f.page.getByRole('button', { name: 'Save', exact: true }).first().click(),
+    ]);
+    assert.equal(clearResponse.status(), 200);
+    assert.equal(owned.psql(`SELECT business_profile ? 'email' FROM sites WHERE id='${f.tenant.siteId}';`), 'f');
+    await staleTab.getByLabel('Store name', { exact: true }).fill('Stale tab attempted rename');
+    const [staleResponse] = await Promise.all([
+        staleTab.waitForResponse(response => new URL(response.url()).pathname === `/api/stores/${f.tenant.subdomain}/settings`
+            && response.request().method() === 'PATCH'),
+        staleTab.getByRole('button', { name: 'Save', exact: true }).first().click(),
+    ]);
+    assert.equal(staleResponse.status(), 409);
+    await expect(staleTab.getByText('Store settings changed. Reload before saving.')).toBeVisible();
+    assert.equal(owned.psql(`SELECT business_profile ? 'email' FROM sites WHERE id='${f.tenant.siteId}';`), 'f',
+        'the stale tab never restores a cleared contact');
+    assert.notEqual(owned.psql(`SELECT name FROM sites WHERE id='${f.tenant.siteId}';`), 'Stale tab attempted rename');
+    await staleTab.reload();
+    await expect(staleTab.getByLabel('Contact email', { exact: true })).toHaveValue('');
+});
+
+test('General and Business expose keyboard labels and recover an optional status read in light and dark themes', { timeout: 180_000 }, async t => {
+    const f = await fixture('settings-a11y'); t.after(() => f.context.close());
+    await signIn(f.page, f.email);
+    await f.page.evaluate(() => localStorage.setItem('letbuyy-theme', 'light'));
+    await f.page.goto(`${merchantOrigin}/${f.tenant.subdomain}/settings/general`);
+    await expect.poll(() => f.page.locator('html').getAttribute('data-theme')).toBe('light');
+    const storeName = f.page.getByRole('textbox', { name: 'Store name', exact: true });
+    await expect(storeName).toBeVisible();
+    const generalTree = await f.page.locator('form.settings-general-stack').ariaSnapshot();
+    assert.match(generalTree, /textbox "Store name"/);
+    assert.match(generalTree, /textbox "Tagline"/);
+    await storeName.focus();
+    await f.page.keyboard.press('Tab');
+    await expect(f.page.getByRole('textbox', { name: 'Tagline', exact: true })).toBeFocused();
+
+    let failOnce = true;
+    await f.page.route(`**/api/stores/${f.tenant.subdomain}/kyc`, async route => {
+        if (failOnce) {
+            failOnce = false;
+            await route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ error: { message: 'Synthetic status outage' } }) });
+            return;
+        }
+        await route.continue();
+    });
+    await f.page.goto(`${merchantOrigin}/${f.tenant.subdomain}/settings/business`);
+    const warning = f.page.getByRole('status').filter({ hasText: 'Some business information is unavailable' });
+    await expect(warning).toBeVisible();
+    const retry = warning.getByRole('button', { name: 'Retry status' });
+    await retry.focus();
+    await f.page.keyboard.press('Enter');
+    await expect(f.page.getByRole('status').filter({ hasText: 'Sandbox verification' })).toBeVisible();
+    await expect(warning).toHaveCount(0);
+
+    await f.page.evaluate(() => localStorage.setItem('letbuyy-theme', 'dark'));
+    await f.page.reload();
+    await expect.poll(() => f.page.locator('html').getAttribute('data-theme')).toBe('dark');
+    const pan = f.page.locator('.settings-business-kyc-item').filter({ hasText: 'Business PAN' }).first();
+    const businessTree = await pan.ariaSnapshot();
+    assert.match(businessTree, /textbox "Last 4 of PAN"/);
+    assert.match(businessTree, /button "Upload document"/);
+    await pan.getByRole('textbox', { name: 'Last 4 of PAN' }).focus();
+    await f.page.keyboard.press('Tab');
+    await expect(pan.getByLabel('Upload Business PAN')).toBeFocused();
+
+    await f.page.goto(`${merchantOrigin}/${f.tenant.subdomain}/products`);
+    for (const [label, path] of [
+        ['Inventory history', 'products/inventory-history'],
+        ['Reservations', 'products/reservations'],
+        ['Locations', 'products/locations'],
+        ['Operations dashboard', 'products/operations-dashboard'],
+    ]) {
+        await expect(f.page.getByRole('link', { name: label, exact: true })).toHaveAttribute('href',
+            `/${f.tenant.subdomain}/${path}`);
+    }
+});
+
+test('Business disables private uploads on an unavailable KYC binding and recovers after status reload', { timeout: 180_000 }, async t => {
+    const f = await fixture('kyc-binding-recovery'); t.after(() => f.context.close());
+    await signIn(f.page, f.email);
+    const statusPath = `**/api/stores/${f.tenant.subdomain}/kyc`;
+    await f.page.route(statusPath, async route => {
+        const upstream = await route.fetch();
+        const payload = await upstream.json() as { data: { private_upload_available: boolean; next_action: string } };
+        payload.data.private_upload_available = false;
+        payload.data.next_action = 'Private document upload is unavailable. Your saved status remains visible; retry later.';
+        await route.fulfill({ response: upstream, json: payload });
+    });
+    await f.page.goto(`${merchantOrigin}/${f.tenant.subdomain}/settings/business`);
+    await expect(f.page.getByRole('status').filter({ hasText: 'Private uploads unavailable' })).toBeVisible();
+    const pan = f.page.locator('.settings-business-kyc-item').filter({ hasText: 'Business PAN' }).first();
+    await expect(pan.getByLabel('Upload Business PAN')).toBeDisabled();
+    await expect(pan.getByRole('button', { name: 'Upload document' })).toBeDisabled();
+    await f.page.unroute(statusPath);
+    await f.page.reload();
+    await expect(f.page.getByRole('status').filter({ hasText: 'Sandbox verification' })).toBeVisible();
+    await expect(pan.getByLabel('Upload Business PAN')).toBeEnabled();
+    await expect(pan.getByRole('button', { name: 'Upload document' })).toBeEnabled();
+});
+
+test('Merchant KYC proxy denies closed intake, then sends India file bytes directly to Mumbai storage', { timeout: 240_000 }, async t => {
+    const f = await fixture('kyc-proxy-closed'); t.after(() => f.context.close());
+    await signIn(f.page, f.email);
+    gateway.env.KYC_UPLOAD_ENABLED = 'false';
+    t.after(() => { gateway.env.KYC_UPLOAD_ENABLED = 'true'; });
+    const before = privateKycObjects.size;
+    const response = await f.page.request.post(
+        `${merchantOrigin}/api/stores/${f.tenant.subdomain}/kyc/upload`,
+        { data: 'not-a-valid-multipart-document', headers: {
+            'content-type': 'multipart/form-data; boundary=missing',
+            'x-idempotency-key': crypto.randomUUID(),
+        } },
+    );
+    assert.equal(response.status(), 503, await response.text());
+    assert.equal((await response.json() as { error?: { code?: string } }).error?.code, 'KYC_UPLOAD_UNAVAILABLE');
+    assert.equal(privateKycObjects.size, before, 'closed intake cannot write a fixture object');
+
+    const pdf = Buffer.from('%PDF-1.7\nSynthetic Mumbai browser upload proof\n');
+    const digest = createHash('sha256').update(pdf).digest();
+    const replacementPdf = Buffer.from('%PDF-1.7\nSynthetic Mumbai replacement proof\n');
+    const replacementDigest = createHash('sha256').update(replacementPdf).digest();
+    const bucket = 'letbuyy-kyc-mumbai-synthetic';
+    const versionId = 'synthetic-version-1';
+    const replacementVersionId = 'synthetic-version-2';
+    const indiaConfig = {
+        KYC_INDIA_UPLOAD_ENABLED: 'true', KYC_INDIA_BUCKET: bucket,
+        KYC_INDIA_ACCOUNT_ID: '123456789012',
+        KYC_INDIA_UPLOAD_ROLE_ARN: 'arn:aws:iam::123456789012:role/letbuyy-kyc-upload',
+        KYC_INDIA_STS_ACCESS_KEY_ID: 'SYNTHETICKEY12345678',
+        KYC_INDIA_STS_SECRET_ACCESS_KEY: 'synthetic-sts-source-secret-for-tests',
+        KYC_INDIA_HEAD_ACCESS_KEY_ID: 'SYNTHETICHEAD12345678',
+        KYC_INDIA_HEAD_SECRET_ACCESS_KEY: 'synthetic-head-secret-for-tests',
+    } as const;
+    const mutableEnv = gateway.env as unknown as Record<string, unknown>;
+    const priorConfig = Object.fromEntries(Object.keys(indiaConfig).map(key => [key, mutableEnv[key]]));
+    Object.assign(mutableEnv, indiaConfig);
+    t.after(() => { for (const key of Object.keys(indiaConfig)) mutableEnv[key] = priorConfig[key]; });
+
+    const originalFetch = globalThis.fetch;
+    let stsCalls = 0, headCalls = 0, browserPosts = 0;
+    let rejectNextPost = false;
+    let browserPostHasFile = false, browserPostHasScopedKey = false;
+    const browserUploadFailures: string[] = [];
+    f.page.on('requestfailed', request => {
+        if (request.url().includes(`${bucket}.s3.ap-south-1.amazonaws.com`)) {
+            browserUploadFailures.push(request.failure()?.errorText || 'unknown browser request failure');
+        }
+    });
+    f.page.on('console', message => {
+        if (message.type() === 'error' && /amazonaws|CORS|Content Security Policy|Failed to fetch/.test(message.text())) {
+            browserUploadFailures.push(`console:${['CORS', 'Content Security Policy', 'Failed to fetch', 'net::']
+                .filter(marker => message.text().includes(marker)).join('|') || 'browser error'}`);
+        }
+    });
+    globalThis.fetch = (async (url: RequestInfo | URL, init?: RequestInit) => {
+        const target = String(url);
+        if (target === 'https://sts.ap-south-1.amazonaws.com/') {
+            stsCalls++;
+            assert.equal(init?.method, 'POST');
+            const policy = JSON.parse(new URLSearchParams(String(init?.body)).get('Policy')!) as {
+                Statement: Array<{ Resource: string }>;
+            };
+            assert.match(policy.Statement[0].Resource,
+                new RegExp(`^arn:aws:s3:::${bucket}/kyc/${f.tenant.siteId}/business_pan/[a-f0-9-]{36}$`));
+            return new Response(`<AssumeRoleResponse><AssumeRoleResult><Credentials>
+                <AccessKeyId>ASIATEMPORARY12345678</AccessKeyId>
+                <SecretAccessKey>synthetic-temporary-secret-123456</SecretAccessKey>
+                <SessionToken>syntheticTempSession1234567890==</SessionToken>
+                <Expiration>${new Date(Date.now() + 15 * 60_000).toISOString()}</Expiration>
+                </Credentials></AssumeRoleResult></AssumeRoleResponse>`,
+                { status: 200, headers: { 'content-type': 'text/xml' } });
+        }
+        if (target.startsWith(`https://${bucket}.s3.ap-south-1.amazonaws.com/kyc/`)) {
+            headCalls++;
+            assert.equal(init?.method, 'HEAD');
+            const requestedVersion = new URL(target).searchParams.get('versionId');
+            assert.ok(requestedVersion === versionId || requestedVersion === replacementVersionId);
+            const expectedBytes = requestedVersion === versionId ? pdf : replacementPdf;
+            const expectedDigest = requestedVersion === versionId ? digest : replacementDigest;
+            const headers = new Headers(init?.headers);
+            assert.equal(headers.get('x-amz-expected-bucket-owner'), '123456789012');
+            assert.equal(headers.get('x-amz-checksum-mode'), 'ENABLED');
+            return new Response(null, { status: 200, headers: {
+                'x-amz-version-id': requestedVersion, 'content-length': String(expectedBytes.length),
+                'content-type': 'application/pdf', 'x-amz-checksum-sha256': expectedDigest.toString('base64'),
+                'x-amz-server-side-encryption': 'AES256',
+            } });
+        }
+        if (/^https:\/\/[^/]*amazonaws\.com\//.test(target)) throw new Error('Unexpected synthetic AWS request');
+        return originalFetch(url, init);
+    }) as typeof fetch;
+    t.after(() => { globalThis.fetch = originalFetch; });
+
+    await f.page.route(`https://${bucket}.s3.ap-south-1.amazonaws.com/**`, async route => {
+        if (route.request().method() === 'OPTIONS') {
+            await route.fulfill({ status: 204, headers: {
+                'access-control-allow-origin': merchantOrigin,
+                'access-control-allow-methods': 'POST',
+                'access-control-allow-headers': '*',
+            } });
+            return;
+        }
+        assert.equal(route.request().method(), 'POST');
+        browserPosts++;
+        const body = route.request().postDataBuffer();
+        browserPostHasFile = Boolean(body?.includes(browserPosts === 1 ? pdf : replacementPdf));
+        browserPostHasScopedKey = Boolean(body?.includes(Buffer.from(`kyc/${f.tenant.siteId}/business_pan/`)));
+        if (rejectNextPost) {
+            rejectNextPost = false;
+            await route.fulfill({ status: 503, headers: { 'access-control-allow-origin': merchantOrigin },
+                body: 'Synthetic S3 outage' });
+            return;
+        }
+        await route.fulfill({ status: 201, headers: {
+            'access-control-allow-origin': merchantOrigin,
+            'access-control-expose-headers': 'x-amz-version-id',
+            'x-amz-version-id': browserPosts === 1 ? versionId : replacementVersionId,
+        } });
+    });
+
+    await f.page.goto(`${merchantOrigin}/${f.tenant.subdomain}/settings/business`);
+    await expect(f.page.getByRole('status').filter({ hasText: 'India upload test' })).toBeVisible();
+    const pan = f.page.locator('.settings-business-kyc-item').filter({ hasText: 'Business PAN' }).first();
+    await pan.getByRole('textbox', { name: 'Last 4 of PAN' }).fill('1234');
+    await pan.getByLabel('Upload Business PAN').setInputFiles({ name: 'synthetic-pan.pdf', mimeType: 'application/pdf', buffer: pdf });
+    const completionPromise = f.page.waitForResponse(response =>
+        new URL(response.url()).pathname === `/api/stores/${f.tenant.subdomain}/kyc/upload-complete`
+            && response.request().method() === 'POST', { timeout: 30_000 })
+        .then(response => ({ response }), error => ({ error }));
+    const [intent] = await Promise.all([
+        f.page.waitForResponse(response => new URL(response.url()).pathname === `/api/stores/${f.tenant.subdomain}/kyc/upload-intent`
+            && response.request().method() === 'POST'),
+        pan.getByRole('button', { name: 'Upload document' }).click(),
+    ]);
+    assert.equal(intent.status(), 201, await intent.text());
+    const state = await completionPromise;
+    if ('error' in state) throw new Error(`Mumbai browser completion missing: posts=${browserPosts}, file=${browserPostHasFile}, scopedKey=${browserPostHasScopedKey}, failures=${browserUploadFailures.join(',')}, page=${(await f.page.locator('body').innerText()).slice(-500)}`, { cause: state.error });
+    const complete = state.response;
+    assert.equal(complete.status(), 201, await complete.text());
+    assert.equal(browserPostHasFile, true, 'the browser sends the selected file bytes to Mumbai S3');
+    assert.equal(browserPostHasScopedKey, true, 'the signed form contains this site and document key');
+    for (const response of [intent, complete]) {
+        assert.equal(response.request().headers()['content-type'], 'application/json');
+        assert.equal(response.request().postData()?.includes('Synthetic Mumbai browser upload proof'), false,
+            'file bytes cannot transit the Merchant proxy');
+    }
+    await expect(pan.getByRole('status')).toHaveText(/No scan result yet/);
+    assert.equal(stsCalls, 1);
+    assert.equal(browserPosts, 1);
+    assert.equal(headCalls, 1);
+    assert.equal(owned.psql(`SELECT status||'|'||provider_mode||'|'||(metadata->>'private_storage_provider')||'|'||
+        (metadata->>'private_object_version_id')||'|'||(metadata->>'malware_scan_status')||'|'||
+        (metadata->>'provider_verified') FROM merchant_kyc_documents
+        WHERE site_id='${f.tenant.siteId}' AND document_type='business_pan';`),
+        `submitted|sandbox|aws_s3_mumbai|${versionId}|pending|false`);
+    assert.equal(owned.psql(`SELECT status||'|'||outcome FROM kyc_private_object_cleanup_jobs
+        WHERE site_id='${f.tenant.siteId}' AND storage_provider='aws_s3_mumbai';`), 'completed|retained');
+    assert.doesNotMatch(await f.page.locator('body').innerText(), /kyc\/[^\s]+\/business_pan\/|synthetic-temporary|sha256_hex/);
+
+    // The storage outage must leave the first evidence row intact. A new
+    // browser attempt must get a fresh ticket and replace it only on completion.
+    const firstObjectKey = owned.psql(`SELECT metadata->>'private_object_key' FROM merchant_kyc_documents
+        WHERE site_id='${f.tenant.siteId}' AND document_type='business_pan';`);
+    await pan.getByRole('textbox', { name: 'Last 4 of PAN' }).fill('5678');
+    await pan.getByLabel('Upload Business PAN').setInputFiles({ name: 'replacement-pan.pdf',
+        mimeType: 'application/pdf', buffer: replacementPdf });
+    rejectNextPost = true;
+    const [outageIntent] = await Promise.all([
+        f.page.waitForResponse(item => new URL(item.url()).pathname === `/api/stores/${f.tenant.subdomain}/kyc/upload-intent`
+            && item.request().method() === 'POST'),
+        pan.getByRole('button', { name: 'Resubmit document' }).click(),
+    ]);
+    assert.equal(outageIntent.status(), 201, await outageIntent.text());
+    await expect(f.page.getByText('Submission failed')).toBeVisible();
+    await expect(f.page.getByText('Private storage did not accept the document. Retry upload.')).toBeVisible();
+    assert.equal(browserPosts, 2);
+    assert.equal(headCalls, 1, 'a rejected S3 POST cannot trigger upload completion');
+    assert.equal(owned.psql(`SELECT document_number_last4||'|'||(metadata->>'private_object_key')||'|'||
+        (metadata->>'private_object_version_id')||'|'||(metadata->>'provider_verified')
+        FROM merchant_kyc_documents WHERE site_id='${f.tenant.siteId}' AND document_type='business_pan';`),
+        `1234|${firstObjectKey}|${versionId}|false`, 'storage outage leaves existing private evidence unchanged');
+    await expect(pan.getByRole('status')).toHaveText(/No scan result yet/);
+
+    const replacementCompletionPromise = f.page.waitForResponse(item =>
+        new URL(item.url()).pathname === `/api/stores/${f.tenant.subdomain}/kyc/upload-complete`
+            && item.request().method() === 'POST', { timeout: 30_000 });
+    const [retryIntent, retryCompletion] = await Promise.all([
+        f.page.waitForResponse(item => new URL(item.url()).pathname === `/api/stores/${f.tenant.subdomain}/kyc/upload-intent`
+            && item.request().method() === 'POST'),
+        replacementCompletionPromise,
+        pan.getByRole('button', { name: 'Resubmit document' }).click(),
+    ]);
+    assert.equal(retryIntent.status(), 201, await retryIntent.text());
+    assert.equal(retryCompletion.status(), 201, await retryCompletion.text());
+    await expect(pan.getByRole('status')).toHaveText(/No scan result yet/);
+    assert.equal(browserPosts, 3);
+    assert.equal(headCalls, 2);
+    const replacementObjectKey = owned.psql(`SELECT metadata->>'private_object_key' FROM merchant_kyc_documents
+        WHERE site_id='${f.tenant.siteId}' AND document_type='business_pan';`);
+    assert.notEqual(replacementObjectKey, firstObjectKey);
+    assert.equal(owned.psql(`SELECT document_number_last4||'|'||(metadata->>'private_object_version_id')||'|'||
+        (metadata->>'malware_scan_status')||'|'||(metadata->>'provider_verified')
+        FROM merchant_kyc_documents WHERE site_id='${f.tenant.siteId}' AND document_type='business_pan';`),
+        `5678|${replacementVersionId}|pending|false`);
+});
+
+test('Merchant order detail renders generated order and immutable GST invoice numbers after a Business edit', { timeout: 180_000 }, async t => {
+    const f = await fixture('merchant-invoice', { gst: true, taxRates: true }); t.after(() => f.context.close());
+    const { orderId } = seedSyntheticOrder(owned.psql, f.tenant);
+    const [orderNumber, invoiceNumber] = owned.psql(`SELECT o.order_number||'|'||coalesce(o.gst_invoice_number,'')
+        FROM orders o WHERE o.id='${orderId}' AND o.store_id='${f.tenant.siteId}';`).split('|');
+    assert.match(orderNumber, /^ORD-[0-9]{8}-[0-9]+$/);
+    assert.equal(invoiceNumber, owned.psql(`SELECT invoice_number FROM gst_invoices
+        WHERE site_id='${f.tenant.siteId}' AND order_id='${orderId}';`));
+    assert.ok(invoiceNumber, 'the registered canonical order issued a GST invoice');
+    await signIn(f.page, f.email);
+    const detailUrl = `${merchantOrigin}/${f.tenant.subdomain}/orders/${orderId}`;
+    await f.page.goto(detailUrl);
+    await expect(f.page.getByRole('heading', { name: `Order #${orderNumber}`, exact: true })).toBeVisible();
+    await expect(f.page.getByText(invoiceNumber, { exact: true })).toBeVisible();
+
+    await f.page.goto(`${merchantOrigin}/${f.tenant.subdomain}/settings/business`);
+    await f.page.getByLabel('Invoice number prefix', { exact: true }).fill('NEW');
+    const [save] = await Promise.all([
+        f.page.waitForResponse(item => new URL(item.url()).pathname === `/api/stores/${f.tenant.subdomain}/settings`
+            && item.request().method() === 'PATCH'),
+        f.page.getByRole('button', { name: 'Save', exact: true }).first().click(),
+    ]);
+    assert.equal(save.status(), 200);
+    assert.equal(owned.psql(`SELECT invoice_number FROM gst_invoices WHERE site_id='${f.tenant.siteId}'
+        AND order_id='${orderId}';`), invoiceNumber, 'editing the current prefix cannot rewrite a historical invoice');
+    await f.page.goto(detailUrl);
+    await expect(f.page.getByRole('heading', { name: `Order #${orderNumber}`, exact: true })).toBeVisible();
+    await expect(f.page.getByText(invoiceNumber, { exact: true })).toBeVisible();
+});
+
+test('Merchant Business ignores legacy nested legal and GST copies after canonical fields are cleared', { timeout: 180_000 }, async t => {
+    const f = await fixture('business-clear'); t.after(() => f.context.close());
+    owned.psql(`UPDATE sites SET legal_name=NULL, gstin=NULL, gst_state_code=NULL,
+        business_profile='{"legal_name":"Stale legal copy","gstin":"27ABCDE1234F1Z5","gst_state_code":"27","trade_name":"Existing trade"}'::jsonb
+        WHERE id='${f.tenant.siteId}';`);
+    await signIn(f.page, f.email);
+    await f.page.goto(`${merchantOrigin}/${f.tenant.subdomain}/settings/business`);
+    await expect(f.page.getByLabel('Legal business name', { exact: true })).toHaveValue('');
+    await expect(f.page.getByLabel('GSTIN', { exact: true })).toHaveValue('');
+    await expect(f.page.getByLabel('GST state', { exact: true })).toHaveValue('');
+    await f.page.getByLabel('Trade name', { exact: true }).fill('Updated trade');
+    const [response] = await Promise.all([
+        f.page.waitForResponse(item => new URL(item.url()).pathname === `/api/stores/${f.tenant.subdomain}/settings`
+            && item.request().method() === 'PATCH'),
+        f.page.getByRole('button', { name: 'Save', exact: true }).first().click(),
+    ]);
+    assert.equal(response.status(), 200, 'normal Business save accepts the canonical cleared fields');
+    assert.equal(owned.psql(`SELECT coalesce(legal_name,'')||'|'||coalesce(gstin,'')||'|'||coalesce(gst_state_code,'')||'|'
+        ||coalesce(business_profile->>'trade_name','')||'|'||coalesce(business_profile->>'legal_name','')||'|'
+        ||coalesce(business_profile->>'gstin','')||'|'||coalesce(business_profile->>'gst_state_code','')
+        FROM sites WHERE id='${f.tenant.siteId}';`), '|||Updated trade|||');
+    await f.page.reload();
+    await expect(f.page.getByLabel('Legal business name', { exact: true })).toHaveValue('');
+    await expect(f.page.getByLabel('GSTIN', { exact: true })).toHaveValue('');
+    await expect(f.page.getByLabel('GST state', { exact: true })).toHaveValue('');
+});
+
+test('mobile-width dark Merchant Business shows private KYC scan rejection and resubmission', { timeout: 180_000 }, async t => {
+    const f = await fixture('business-mobile'); t.after(() => f.context.close());
+    await f.page.setViewportSize({ width: 390, height: 844 });
+    await f.page.emulateMedia({ colorScheme: 'dark' });
+    await signIn(f.page, f.email);
+    await f.page.evaluate(() => localStorage.setItem('letbuyy-theme', 'dark'));
+    await f.page.goto(`${merchantOrigin}/${f.tenant.subdomain}/settings/business`);
+    assert.equal(await f.page.evaluate(() => matchMedia('(prefers-color-scheme: dark)').matches), true);
+    await expect.poll(() => f.page.locator('html').getAttribute('data-theme')).toBe('dark');
+    await expect(f.page.getByLabel('Legal business name', { exact: true })).toBeVisible();
+    const nextInvoiceExample = owned.psql(`SELECT coalesce(invoice_prefix,'LBY')||'-'||lpad(invoice_number_next::text,6,'0')
+        FROM sites WHERE id='${f.tenant.siteId}';`);
+    await expect(f.page.getByText(`Current next format: ${nextInvoiceExample}`, { exact: false })).toBeVisible();
+    const pan = f.page.locator('.settings-business-kyc-item').filter({ hasText: 'Business PAN' }).first();
+    await expect(pan).toBeVisible();
+    await pan.getByLabel('Last 4 of PAN', { exact: true }).fill('1234');
+    await f.page.keyboard.press('Tab');
+    await expect(pan.getByLabel('Upload Business PAN')).toBeFocused();
+    await pan.getByLabel('Upload Business PAN').setInputFiles({ name: 'synthetic-pan.pdf', mimeType: 'application/pdf',
+        buffer: Buffer.from('%PDF-1.7\nsynthetic private KYC proof') });
+    const [response] = await Promise.all([
+        f.page.waitForResponse(item => new URL(item.url()).pathname === `/api/stores/${f.tenant.subdomain}/kyc/upload`
+            && item.request().method() === 'POST'),
+        pan.getByRole('button', { name: 'Upload document' }).click(),
+    ]);
+    assert.equal(response.status(), 201, 'normal mobile-width Merchant upload reaches private Gateway evidence route');
+    await expect(pan.getByText('No scan result yet')).toBeVisible();
+    const key = owned.psql(`SELECT metadata->>'private_object_key' FROM merchant_kyc_documents
+        WHERE site_id='${f.tenant.siteId}' AND document_type='business_pan';`);
+    assert.ok(key.startsWith(`kyc/${f.tenant.siteId}/`) && privateKycObjects.has(key));
+    assert.equal(owned.psql(`SELECT status||'|'||provider_mode FROM merchant_kyc_documents
+        WHERE site_id='${f.tenant.siteId}' AND document_type='business_pan';`), 'submitted|sandbox');
+    assert.doesNotMatch(await f.page.locator('body').innerText(), /private_object_key|kyc\/.*business_pan/);
+
+    // A synthetic trusted scanner verdict exercises the merchant recovery UI;
+    // this fixture does not represent a production malware scan.
+    owned.psql(`UPDATE merchant_kyc_documents SET metadata=jsonb_set(metadata,'{malware_scan_status}','"rejected"'::jsonb)
+        WHERE site_id='${f.tenant.siteId}' AND document_type='business_pan';`);
+    await f.page.reload();
+    await expect(pan.getByRole('status')).toHaveText(/Security scan failed/);
+    await expect(f.page.getByText('A document failed its security scan. Replace that file to continue verification.')).toBeVisible();
+    await pan.getByLabel('Last 4 of PAN', { exact: true }).fill('1234');
+    await pan.getByLabel('Upload Business PAN').setInputFiles({ name: 'replacement-pan.pdf', mimeType: 'application/pdf',
+        buffer: Buffer.from('%PDF-1.7\nsynthetic replacement proof') });
+    const [replacement] = await Promise.all([
+        f.page.waitForResponse(item => new URL(item.url()).pathname === `/api/stores/${f.tenant.subdomain}/kyc/upload`
+            && item.request().method() === 'POST'),
+        pan.getByRole('button', { name: 'Resubmit document' }).click(),
+    ]);
+    assert.equal(replacement.status(), 201);
+    await expect(pan.getByRole('status')).toHaveText(/No scan result yet/);
+    const newKey = owned.psql(`SELECT metadata->>'private_object_key' FROM merchant_kyc_documents
+        WHERE site_id='${f.tenant.siteId}' AND document_type='business_pan';`);
+    assert.notEqual(newKey, key);
+    assert.equal(privateKycObjects.has(key), false, 'replaced evidence is removed from the private fixture');
+    assert.equal(privateKycObjects.has(newKey), true);
+
+    // A historical reference-only row cannot be presented as provider review.
+    privateKycObjects.delete(newKey);
+    owned.psql(`UPDATE merchant_kyc_documents SET metadata=metadata-'private_object_key'
+        WHERE site_id='${f.tenant.siteId}' AND document_type='business_pan';`);
+    await f.page.reload();
+    await expect(pan.getByText('Upload required')).toBeVisible();
+    await expect(f.page.getByText('Upload the remaining required documents privately.', { exact: false })).toBeVisible();
+
+    // The production KYC provider is not connected. This projection checks only
+    // that a merchant can start replacing bank proof after a provider approval.
+    await f.page.route(`**/api/stores/${f.tenant.subdomain}/kyc`, async route => {
+        const upstream = await route.fetch();
+        const payload = await upstream.json() as { data: { provider_mode: string; documents: Array<Record<string, unknown>> } };
+        payload.data.provider_mode = 'live';
+        payload.data.documents.push({ id: crypto.randomUUID(), document_type: 'bank_proof', status: 'verified',
+            document_number_last4: '4321', has_private_upload: true, evidence_scan_status: 'clean',
+            rejection_reason: null, submitted_at: new Date().toISOString(), verified_at: new Date().toISOString(), updated_at: new Date().toISOString() });
+        await route.fulfill({ response: upstream, json: payload });
+    });
+    await f.page.reload();
+    const bank = f.page.locator('.settings-business-kyc-item').filter({ hasText: 'Settlement bank account' }).first();
+    await expect(bank.getByRole('button', { name: 'Replace verified document' })).toBeVisible();
+    await expect(bank.getByText('bank changes must also be approved by your payment provider.', { exact: false })).toBeVisible();
 });
 
 for (const operation of ['save', 'publish'] as const) {

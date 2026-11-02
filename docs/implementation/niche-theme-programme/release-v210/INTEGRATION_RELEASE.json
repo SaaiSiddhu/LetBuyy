@@ -1,0 +1,9 @@
+{
+  "status": "LOCAL_INTEGRATION_CANDIDATE_NOT_DEPLOYED",
+  "migration": 432,
+  "manifestSha256": "dc38dedf132efb1d57adb40855982fc6e3f5d5f8fcb2c513920da40ad5a5b018",
+  "upSha256": "312b7bc22573e06f30481f05b60a6b58307efa02a76c716e6ed1c12bef7861c7",
+  "downSha256": "e6609df33120d83be67d2c7b1874a5df8957a6474409d4167d39863d90b4f318",
+  "proposalDirectory": "docs/implementation/niche-theme-programme/release-v210/proposals/dc38dedf132efb1d57adb40855982fc6e3f5d5f8fcb2c513920da40ad5a5b018",
+  "predecessorProposalPreserved": true
+}

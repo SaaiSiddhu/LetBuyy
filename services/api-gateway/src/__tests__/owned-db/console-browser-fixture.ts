@@ -27,7 +27,7 @@ export async function withConsoleBrowser(owned: OwnedDatabase, run: (fixture: {
     rotateConfiguredFactor:(actor:ConsoleBrowserActor,factor:string)=>Promise<void>; loseNextMfaExecutionReply:()=>void;
     loseNextJobApprovalReply:()=>void;loseNextJobExecutionReply:()=>void;
     calls: { path: string; status: number }[]; loseNextApprovalReply: () => void; loseNextMoneyExecutionReply: () => void;
-}) => Promise<void>, options: { makerRole?: 'lead' | 'admin' | 'super';targetRole?:'lead'|'admin'|'super' } = {}) {
+}) => Promise<void>, options: { makerRole?: 'lead' | 'admin' | 'super';targetRole?:'lead'|'admin'|'super'; kycPrivateBucket?: R2Bucket } = {}) {
     const actors: ConsoleBrowserActor[] = [options.makerRole || 'lead', 'super',...(options.targetRole?[options.targetRole]:[])].map((kind, index) => {
         const id = crypto.randomUUID(); return { id, email: `syn-browser-consent-${id}@example.invalid`, kind: kind as 'lead' | 'super' | 'admin',
             factor: ['JBSWY3DPEHPK3PXP','KRUGS4ZANFZSAYJA','NBSWY3DPO5XXE3DE'][index] };
@@ -40,7 +40,8 @@ export async function withConsoleBrowser(owned: OwnedDatabase, run: (fixture: {
             VALUES('${actor.id}','${actor.email}','${actor.kind === 'admin' ? 'admin' : 'manager'}','active',true,NULL);`);
     }
     const bridge = 'synthetic-consent-browser-bridge-' + crypto.randomUUID(), keys=await newIdentityKeys();
-    const gateway = new Gateway(gatewayEnv(owned, keys, { PLATFORM_CONSOLE_API_TOKEN: bridge }));
+    const gateway = new Gateway(gatewayEnv(owned, keys, { PLATFORM_CONSOLE_API_TOKEN: bridge,
+        ...(options.kycPrivateBucket ? { KYC_PRIVATE_BUCKET: options.kycPrivateBucket } : {}) }));
     let adapter: Server | undefined, app: OwnedClientProcess | undefined, identity:OwnedClientProcess|undefined, browser: Browser | undefined;
     const calls: { path: string; status: number }[] = [], diagnostics: string[] = [], pages: Page[] = [], errors: string[] = [];
     const browserTrace: Record<string, unknown>[] = [];

@@ -340,6 +340,25 @@ test("a genuine duplicate of a processed event is acknowledged and not reprocess
     assert.equal(harness.calls.confirm.length, 1, "a processed event is never confirmed twice");
 });
 
+test("a signed late capture booked as refund-owed never emits a normal paid domain event", async () => {
+    const harness = createHarness({
+        orders: [{ ...orderRow(), status: "cancelled", inventory_released_at: new Date().toISOString() }],
+        confirm: () => jsonResponse({ success: true, data: {
+            order: { id: ORDER_ID, status: "cancelled", refund_status: "pending" },
+            capture_outcome: "captured_unfulfillable", fulfillable: false,
+        } }),
+    });
+    const first = await harness.deliver(orderPayment());
+    assert.equal(first.status, 200);
+    assert.equal(harness.calls.confirm.length, 1, "the Gateway still books the captured funds and refund obligation");
+    assert.equal(harness.calls.domainEvents.length, 0, "an unfulfillable order cannot announce payment as fulfilled");
+    assert.equal(harness.eventRow(ORDER_EVENT_ID).processing_status, "processed");
+    const retry = await harness.deliver(orderPayment());
+    assert.equal(retry.body.duplicate, true);
+    assert.equal(harness.calls.confirm.length, 1);
+    assert.equal(harness.calls.domainEvents.length, 0);
+});
+
 test("a duplicate of an ignored event is acknowledged and not reprocessed", async () => {
     const harness = createHarness();
     const event = capturedEvent({ paymentId: "pay_NOCONTEXT", providerOrderId: "order_NOCONTEXT", notes: {} });

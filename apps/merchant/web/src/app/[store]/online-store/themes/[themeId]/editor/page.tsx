@@ -56,6 +56,10 @@ import {
     normalizeEditorSchemaField,
     resolveFieldDefault,
     parseTemplateKey,
+    listEditorSectionCandidates,
+    insertEditorSection,
+    sectionInsertionRefusal,
+    type EditorSectionInsertionTarget,
     type EditorPreviewContext,
     composeExperienceTemplateSections,
     type ExperienceApplyMode,
@@ -111,14 +115,6 @@ type ApiEditorResponse = {
     sectionSchemas?: Record<string, unknown>
     themeSettingsSchema?: unknown
     version?: number
-}
-
-type AvailableSection = {
-    type: string
-    name: string
-    description: string
-    hasBlocks: boolean
-    settingsCount: number
 }
 
 type ReleaseEntry = {
@@ -743,7 +739,6 @@ function ThemeEditorInner() {
 
     const [settingsSchema, setSettingsSchema] = useState<ThemeSettingsSchema>(() => normalizeSettingsSchema(getThemeSettingsSchema(themeId || 'urban-kicks')))
     const [sectionSchemas, setSectionSchemas] = useState<Record<string, SectionSchema>>(() => getSectionSchemas(themeId || 'urban-kicks'))
-    const [availableSections, setAvailableSections] = useState<AvailableSection[]>([])
     const [editorState, setEditorState] = useState<EditorState>(EMPTY_STATE)
     const [savedState, setSavedState] = useState<EditorState>(EMPTY_STATE)
     const [baseConfig, setBaseConfig] = useState<JsonRecord>({})
@@ -758,7 +753,7 @@ function ThemeEditorInner() {
     const [navigationOpen, setNavigationOpen] = useState(true)
     const [leaveRequested, setLeaveRequested] = useState(false)
     const [isLiveTheme, setIsLiveTheme] = useState(false)
-    const [addSectionType, setAddSectionType] = useState('')
+    const [addSectionTarget, setAddSectionTarget] = useState<EditorSectionInsertionTarget | null>(null)
     const [sectionPendingRemoval, setSectionPendingRemoval] = useState<SectionEntry | null>(null)
     const [blockPendingRemoval, setBlockPendingRemoval] = useState<{ sectionId: string; block: BlockEntry } | null>(null)
     const [isLoading, setIsLoading] = useState(true)
@@ -827,21 +822,12 @@ function ThemeEditorInner() {
     const selectedBlockSchema = selectedSection && selectedBlock
         ? editorBlockSchema(blockCatalogs[selectedSection.type], selectedBlock.type, findEditorBlock(selectedSection.blocks, selectedBlock.id)?.depth || 1)
         : undefined
-    const addableSections = useMemo(() => {
-        const existingPinned = new Set(['header', 'footer'])
-        return availableSections.length > 0
-            ? availableSections.filter((section) => !existingPinned.has(section.type))
-            : Object.entries(sectionSchemas)
-                .filter(([type]) => !existingPinned.has(type))
-                .map(([type, schema]) => ({
-                    type,
-                    name: schema.name,
-                    description: schema.description,
-                    hasBlocks: Boolean(schema.blocks_schema),
-                    settingsCount: Object.keys(schema.settings_schema || {}).length,
-                }))
-    }, [availableSections, sectionSchemas])
-    const activeAddSectionType = addSectionType || addableSections[0]?.type || ''
+    const sectionCandidates = useMemo(() => addSectionTarget
+        ? listEditorSectionCandidates(installedBlockBundle, editorState.sections, selectedTemplateKey, addSectionTarget)
+            .map(candidate => sectionSchemas[candidate.type] ? candidate : {
+                ...candidate, available: false, reason: 'The installed editor schema for this section is unavailable.',
+            })
+        : [], [addSectionTarget, installedBlockBundle, editorState.sections, selectedTemplateKey, sectionSchemas])
     const activeDevice = PREVIEW_DEVICES.find((device) => device.value === previewDevice) || PREVIEW_DEVICES[0]
     const selectedTemplate = templateOptions.find((option) => option.key === selectedTemplateKey) || templateOptions[0] || DEFAULT_TEMPLATE_OPTIONS[0]
     const templateBase = parseTemplateKey(selectedTemplateKey).baseType
@@ -972,16 +958,6 @@ function ThemeEditorInner() {
                 apiSectionSchemas,
                 nextSettingsSchema,
             )
-            const catalogSchemas = Object.keys(asRecord(editorPayload.sectionSchemas)).length > 0
-                ? editorPayload.sectionSchemas as Record<string, SectionSchema> : apiSectionSchemas
-            const sectionCatalog = Object.entries(catalogSchemas).map(([type, schema]) => ({
-                    type,
-                    name: schema.name,
-                    description: schema.description,
-                    hasBlocks: Boolean(schema.blocks_schema),
-                    settingsCount: Object.keys(schema.settings_schema || {}).length,
-                }))
-
             const loadedVersion = editorPayload.version
             if (!Number.isInteger(loadedVersion) || Number(loadedVersion) < 0) throw new Error('The current draft revision is missing. Retry loading the editor.')
             const loadedActorId = editorPayload.actorId
@@ -1019,9 +995,9 @@ function ThemeEditorInner() {
             setReplacementVersion(null)
             setHasConflict(false)
             setSectionSchemas(apiSectionSchemas)
-            setAvailableSections(sectionCatalog)
             setTemplateOptions(nextTemplateOptions)
             setSelectedTemplateKey(nextTemplateKey)
+            setAddSectionTarget(null)
             setSettingsSchema(nextSettingsSchema)
             setEditorState(nextState)
             setSavedState(nextState)
@@ -1367,22 +1343,31 @@ function ThemeEditorInner() {
         })))
     }, [applyChange])
 
-    const addSection = useCallback(() => {
-        if (!activeAddSectionType) return
-        const order = editorState.sections.template.length
-            ? Math.max(...editorState.sections.template.map((section) => section.order)) + 10
-            : 10
-        const nextSection = createSectionFromSchema(activeAddSectionType, sectionSchemas, order)
-        applyChange((current) => ({
-            ...current,
-            sections: {
-                ...current.sections,
-                template: [...current.sections.template, nextSection],
-            },
-        }))
+    const addSection = useCallback((type: string) => {
+        if (!addSectionTarget || !sectionSchemas[type]) return
+        const refusal = sectionInsertionRefusal(installedBlockBundle, editorState.sections, selectedTemplateKey, addSectionTarget, type)
+        if (refusal) {
+            notify({ title: 'Section cannot be added', description: refusal, variant: 'critical' })
+            return
+        }
+        const nextSection = createSectionFromSchema(type, sectionSchemas, 0)
+        applyChange((current) => {
+            const result = insertEditorSection(installedBlockBundle, current.sections, selectedTemplateKey, addSectionTarget, nextSection)
+            return result.inserted ? { ...current, sections: result.sections } : current
+        })
         setSelection({ kind: 'section', sectionId: nextSection.id })
         setPanelMode('sections')
-    }, [activeAddSectionType, applyChange, editorState.sections.template, sectionSchemas])
+        setAddSectionTarget(null)
+    }, [addSectionTarget, applyChange, editorState.sections, installedBlockBundle, notify, sectionSchemas, selectedTemplateKey])
+
+    const openPreviewSectionCatalog = useCallback((adjacentSectionId: string, position: 'before' | 'after') => {
+        const group = (['header', 'template', 'footer'] as const).find(key => editorState.sections[key].some(section => section.id === adjacentSectionId))
+        if (!group) return
+        setPanelMode('sections')
+        setMobilePanel('sections')
+        setNavigationOpen(true)
+        setAddSectionTarget({ group, templateKey: selectedTemplateKey, adjacentSectionId, position })
+    }, [editorState.sections, selectedTemplateKey])
 
     const moveSection = useCallback((sectionId: string, direction: -1 | 1) => {
         const index = editorState.sections.template.findIndex((section) => section.id === sectionId)
@@ -1644,11 +1629,13 @@ function ThemeEditorInner() {
                             sectionSchemas={sectionSchemas}
                             blockCatalogs={blockCatalogs}
                             selection={selection}
-                            addableSections={addableSections}
-                            addSectionType={activeAddSectionType}
+                            templateKey={selectedTemplateKey}
+                            catalogTarget={addSectionTarget}
+                            sectionCandidates={sectionCandidates}
                             onSelect={value => { setSelection(value); if (window.matchMedia('(max-width: 760px)').matches) setMobilePanel('properties') }}
-                            onAddSectionTypeChange={setAddSectionType}
-                            onAddSection={addSection}
+                            onOpenCatalog={setAddSectionTarget}
+                            onCloseCatalog={() => setAddSectionTarget(null)}
+                            onInsertSection={addSection}
                             onMoveSection={moveSection}
                             onToggleSection={toggleSectionVisibility}
                             onRemoveSection={setSectionPendingRemoval}
@@ -1733,6 +1720,7 @@ function ThemeEditorInner() {
                             retryDisabled={hasConflict || isPublishing}
                             onSelectSection={(sectionId) => { setSelection({ kind: 'section', sectionId }); if (window.matchMedia('(max-width: 760px)').matches) setMobilePanel('properties') }}
                             onSelectBlock={(sectionId, blockId) => { setSelection({ kind: 'block', sectionId, blockId }); if (window.matchMedia('(max-width: 760px)').matches) setMobilePanel('properties') }}
+                            onAddSectionIntent={openPreviewSectionCatalog}
                         />
                     </div>
                 </section>

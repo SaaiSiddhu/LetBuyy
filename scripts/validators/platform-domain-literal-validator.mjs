@@ -39,8 +39,12 @@ function tokenAt(text, index) {
   return text.slice(start, end);
 }
 
-function isAllowedToken(token) {
+function isAllowedToken(token, file) {
   const normalized = token.replace(/^[^A-Za-z0-9]+/, "").replace(/[^A-Za-z0-9_./-]+$/, "");
+  // These are three exact OS callback schemes from the first-party registry,
+  // not HTTPS hosts. Keep the exception bound to the generated native contract.
+  if (file === 'apps/merchant/mobile/lib/services/merchant_auth_contract.g.dart'
+      && /^com\.letbuyy\.store\.accounts(?:\.(?:development|staging))?:\/\/auth\/callback$/.test(normalized)) return true;
   if (
     !normalized.includes("://") &&
     !normalized.includes("@") &&
@@ -61,7 +65,7 @@ for (const file of listWorkspaceFiles(scanRoots)) {
   const text = readFile(file);
   for (const match of text.matchAll(/letbuyy\.store/g)) {
     const token = tokenAt(text, match.index || 0);
-    if (isAllowedToken(token) || isApprovedStorefrontDomainLiteral(file, text, match.index || 0)) continue;
+    if (isAllowedToken(token, file) || isApprovedStorefrontDomainLiteral(file, text, match.index || 0)) continue;
 
     const line = text.slice(0, match.index).split("\n").length;
     offenders.push(`${file}:${line}: ${token}`);

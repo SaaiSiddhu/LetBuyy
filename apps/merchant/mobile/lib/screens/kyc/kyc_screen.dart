@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../app/store_context.dart';
 import '../../services/api_client.dart';
@@ -7,7 +9,9 @@ import '../../services/kyc_service.dart';
 import '../../theme/app_theme_colors.dart';
 
 class KycScreen extends StatefulWidget {
-  const KycScreen({super.key});
+  const KycScreen({super.key, this.pickDocumentPhoto});
+
+  final Future<XFile?> Function()? pickDocumentPhoto;
 
   @override
   State<KycScreen> createState() => _KycScreenState();
@@ -196,6 +200,8 @@ class _KycScreenState extends State<KycScreen> {
         key == null ||
         stores == null ||
         _referenceOpen ||
+        (_overview?['private_upload_available'] != true &&
+            _overview?['india_direct_upload_available'] != true) ||
         !_isCurrent(version, key))
       return;
     final service = context.read<KycService>();
@@ -213,16 +219,18 @@ class _KycScreenState extends State<KycScreen> {
               ? documentType!
               : 'business_pan',
           isCurrent: current,
-          record: (type, digits) async {
+          record: (type, digits, file) async {
             if (!current()) throw _changedContext();
-            await service.submitDocument(
+            await service.uploadDocument(
               storeId: storeId,
               documentType: type,
               documentNumberLast4: digits,
+              file: file,
               options: ApiRequestOptions(expectedContextVersion: sdkContext),
             );
             if (!current()) throw _changedContext();
           },
+          pickDocumentPhoto: widget.pickDocumentPhoto,
         ),
       );
       if (!mounted) return;
@@ -234,7 +242,9 @@ class _KycScreenState extends State<KycScreen> {
         setState(() => _overview = service.overview);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Reference recorded. Verification pending.'),
+            content: Text(
+              'Private document received. No security scan result yet.',
+            ),
           ),
         );
       }
@@ -246,6 +256,12 @@ class _KycScreenState extends State<KycScreen> {
   @override
   Widget build(BuildContext context) {
     final colors = AppThemeColors.of(context);
+    final canAddDocument =
+        !_loading &&
+        _error == null &&
+        _storeId != null &&
+        (_overview?['private_upload_available'] == true ||
+            _overview?['india_direct_upload_available'] == true);
 
     return Scaffold(
       backgroundColor: colors.card,
@@ -262,21 +278,28 @@ class _KycScreenState extends State<KycScreen> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed:
-            _loading || _referenceOpen || _storeId == null || _error != null
-            ? null
-            : () => _showReferenceDialog(),
-        icon: const Icon(Icons.edit_note),
-        label: const Text('Add reference'),
-      ),
+      floatingActionButton: canAddDocument
+          ? FloatingActionButton.extended(
+              onPressed: _referenceOpen ? null : () => _showReferenceDialog(),
+              icon: const Icon(Icons.edit_note),
+              label: const Text('Add document'),
+            )
+          : null,
       body: Column(
         children: [
-          const ListTile(
-            leading: Icon(Icons.lock_outline),
-            title: Text('Document upload unavailable'),
+          ListTile(
+            leading: const Icon(Icons.lock_outline),
+            title: const Text('Private document upload'),
             subtitle: Text(
-              'Private document upload is not ready. You can record reference digits and refresh status. Do not send identity or bank documents through public media.',
+              _loading
+                  ? 'Checking private upload availability.'
+                  : _error != null
+                  ? 'Verification is unavailable. Retry to check whether private upload is available.'
+                  : _overview?['india_direct_upload_available'] == true
+                  ? 'India upload test: your photo goes directly to private storage. Security scan and provider review are still pending.'
+                  : _overview?['private_upload_available'] == false
+                  ? 'Private upload is unavailable. Your saved status remains visible; retry later.'
+                  : 'Upload verification documents here. A trusted security scan must pass before provider review.',
             ),
           ),
           Expanded(
@@ -303,7 +326,7 @@ class _KycScreenState extends State<KycScreen> {
                             _StatusPanel(overview: overview),
                             const SizedBox(height: 16),
                             Text(
-                              'Required documents',
+                              'Verification documents',
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
@@ -320,7 +343,12 @@ class _KycScreenState extends State<KycScreen> {
                                           item['document_type'] &&
                                       _referenceOnly(doc),
                                 ),
-                                onRecord: _referenceOpen
+                                onRecord:
+                                    _referenceOpen ||
+                                        (overview['private_upload_available'] !=
+                                                true &&
+                                            overview['india_direct_upload_available'] !=
+                                                true)
                                     ? null
                                     : () => _showReferenceDialog(
                                         item['document_type']?.toString(),
@@ -341,7 +369,7 @@ class _KycScreenState extends State<KycScreen> {
                               const _EmptyState(
                                 message: 'No documents submitted yet.',
                                 detail:
-                                    'Record reference digits while private document upload is unavailable. References do not verify a document.',
+                                    'Upload documents privately. Reference digits alone do not verify identity or bank ownership.',
                               )
                             else
                               ...documents.map(
@@ -385,10 +413,16 @@ class _StatusPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = AppThemeColors.of(context);
+    final uploadUnavailable =
+        overview['private_upload_available'] != true &&
+        overview['india_direct_upload_available'] != true;
     final hasReference = (overview['documents'] as List? ?? const [])
         .whereType<Map>()
         .any(_referenceOnly);
-    final status = hasReference
+    final status =
+        hasReference ||
+            (overview['provider_mode'] == 'sandbox' &&
+                overview['overall_status'] == 'verified')
         ? 'in_progress'
         : overview['overall_status']?.toString() ?? 'not_started';
     return Container(
@@ -419,12 +453,16 @@ class _StatusPanel extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  hasReference
-                      ? 'Reference recorded. Provider verification is still required.'
+                  uploadUnavailable
+                      ? overview['next_action']?.toString() ??
+                            'Private document upload is unavailable. Retry later.'
+                      : hasReference
+                      ? 'Reference digits are not verification evidence. Upload a private document.'
                       : overview['provider_mode'] == 'sandbox'
-                      ? 'Sandbox status only. This does not approve live selling.'
+                      ? overview['next_action']?.toString() ??
+                            'Sandbox uploads are not provider reviewed and do not approve live payouts.'
                       : overview['next_action']?.toString() ??
-                            'Private document upload is unavailable.',
+                            'Submit the required documents for provider review.',
                   style: TextStyle(color: colors.textSecondary),
                 ),
               ],
@@ -452,19 +490,47 @@ class _RequirementTile extends StatelessWidget {
     final status = referenceRecorded
         ? 'submitted'
         : item['status']?.toString() ?? 'draft';
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      leading: Icon(_statusIcon(status), color: _statusColor(status)),
-      title: Text(item['title']?.toString() ?? 'Document'),
-      subtitle: Text(
-        referenceRecorded
-            ? 'Reference recorded · Verification pending'
-            : _statusTitle(status),
-      ),
-      trailing: TextButton(
-        key: ValueKey('record-reference-${item['document_type']}'),
-        onPressed: onRecord,
-        child: const Text('Record reference'),
+    final requirement = item['required'] == true
+        ? 'Required'
+        : item['required'] == false
+        ? 'Optional'
+        : null;
+    final progress = referenceRecorded
+        ? 'Reference recorded · Upload required'
+        : _statusTitle(status);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(_statusIcon(status), color: _statusColor(status)),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(item['title']?.toString() ?? 'Document'),
+                    Text(
+                      requirement == null
+                          ? progress
+                          : '$requirement · $progress',
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton(
+              key: ValueKey('record-reference-${item['document_type']}'),
+              onPressed: onRecord,
+              child: const Text('Upload document'),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -496,8 +562,8 @@ class _DocumentTile extends StatelessWidget {
       ),
       subtitle: Text(
         referenceOnly
-            ? 'Reference recorded · Verification pending'
-            : '${_statusTitle(status)} · ${document['file_name'] ?? 'document saved'}',
+            ? 'Reference recorded · Upload required'
+            : '${_documentProgressTitle(document, status)} · ${document['file_name'] ?? 'document saved'}',
       ),
       trailing: IconButton(
         onPressed: onRefresh,
@@ -581,6 +647,20 @@ String _statusTitle(String status) {
   }
 }
 
+String _documentProgressTitle(Map<String, dynamic> document, String status) {
+  if (document['evidence_scan_status'] == 'rejected')
+    return 'Security scan failed';
+  if (document['requires_resubmission'] == true) return 'Replace document';
+  if (status != 'submitted') return _statusTitle(status);
+  switch (document['evidence_scan_status']) {
+    case 'pending':
+      return 'No scan result yet';
+  }
+  if (document['provider_unavailable'] == true) return 'Provider unavailable';
+  if (document['provider_mode'] == 'sandbox') return 'Sandbox received';
+  return 'Awaiting provider review';
+}
+
 IconData _statusIcon(String status) {
   switch (status) {
     case 'verified':
@@ -617,8 +697,7 @@ Color _statusColor(String status) {
 // even when the sandbox adapter returns its historical "verified" status.
 bool _referenceOnly(Map row) =>
     (row['document_number_last4']?.toString().isNotEmpty ?? false) &&
-    !(row['file_url']?.toString().isNotEmpty ?? false) &&
-    !(row['file_name']?.toString().isNotEmpty ?? false);
+    row['has_private_upload'] != true;
 
 class _ReferenceDialog extends StatefulWidget {
   const _ReferenceDialog({
@@ -627,12 +706,14 @@ class _ReferenceDialog extends StatefulWidget {
     required this.initialType,
     required this.isCurrent,
     required this.record,
+    this.pickDocumentPhoto,
   });
   final StoreContext stores;
   final Map<String, String> documentTypes;
   final String initialType;
   final bool Function() isCurrent;
-  final Future<void> Function(String type, String digits) record;
+  final Future<void> Function(String type, String digits, File file) record;
+  final Future<XFile?> Function()? pickDocumentPhoto;
 
   @override
   State<_ReferenceDialog> createState() => _ReferenceDialogState();
@@ -642,6 +723,7 @@ class _ReferenceDialogState extends State<_ReferenceDialog> {
   final _digits = TextEditingController();
   late String _type = widget.initialType;
   bool _saving = false;
+  XFile? _file;
   String? _error;
 
   @override
@@ -653,8 +735,12 @@ class _ReferenceDialogState extends State<_ReferenceDialog> {
   Future<void> _record() async {
     if (_saving || !widget.isCurrent()) return;
     final digits = _digits.text.trim();
-    if (!RegExp(r'^[A-Za-z0-9]{2,8}$').hasMatch(digits)) {
-      setState(() => _error = 'Enter 2–8 reference characters.');
+    if (!RegExp(r'^[A-Za-z0-9]{2,4}$').hasMatch(digits)) {
+      setState(() => _error = 'Enter only the final 2–4 reference characters.');
+      return;
+    }
+    if (_file == null) {
+      setState(() => _error = 'Choose a document photo.');
       return;
     }
     setState(() {
@@ -662,7 +748,7 @@ class _ReferenceDialogState extends State<_ReferenceDialog> {
       _error = null;
     });
     try {
-      await widget.record(_type, digits);
+      await widget.record(_type, digits, File(_file!.path));
       if (!mounted || !widget.isCurrent()) return;
       Navigator.of(context).pop(true);
     } catch (error) {
@@ -670,8 +756,8 @@ class _ReferenceDialogState extends State<_ReferenceDialog> {
       setState(
         () => _error =
             error is ApiException && [401, 403].contains(error.statusCode)
-            ? 'You do not have permission to record a reference.'
-            : 'Reference could not be recorded. Try again.',
+            ? 'You do not have permission to upload this document.'
+            : 'Document could not be uploaded. Try again.',
       );
     } finally {
       if (mounted && widget.isCurrent()) setState(() => _saving = false);
@@ -697,13 +783,13 @@ class _ReferenceDialogState extends State<_ReferenceDialog> {
         );
       }
       return AlertDialog(
-        title: const Text('Record reference'),
+        title: const Text('Upload verification document'),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               const Text(
-                'Record reference digits only. This does not verify a document or approve selling. Private file upload is unavailable.',
+                'Choose a clear photo of your document (JPEG or PNG, under 5 MB). Upload is private and still requires provider review.',
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
@@ -727,12 +813,28 @@ class _ReferenceDialogState extends State<_ReferenceDialog> {
               TextField(
                 controller: _digits,
                 enabled: !_saving,
-                maxLength: 8,
+                maxLength: 4,
                 decoration: const InputDecoration(
                   labelText: 'Reference digits',
                   hintText: 'Last 4 characters, where available',
                 ),
                 textCapitalization: TextCapitalization.characters,
+              ),
+              OutlinedButton.icon(
+                onPressed: _saving
+                    ? null
+                    : () async {
+                        final selected =
+                            await (widget.pickDocumentPhoto?.call() ??
+                                ImagePicker().pickImage(
+                                  source: ImageSource.gallery,
+                                  imageQuality: 90,
+                                ));
+                        if (mounted && widget.isCurrent())
+                          setState(() => _file = selected);
+                      },
+                icon: const Icon(Icons.upload_file),
+                label: Text(_file?.name ?? 'Choose document photo'),
               ),
               if (_error != null)
                 Text(_error!, key: const ValueKey('reference-error')),
@@ -752,7 +854,7 @@ class _ReferenceDialogState extends State<_ReferenceDialog> {
                     height: 20,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : const Text('Record reference'),
+                : const Text('Upload document'),
           ),
         ],
       );

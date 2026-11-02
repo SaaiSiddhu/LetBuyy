@@ -1,4 +1,5 @@
 import { NextRequest } from 'next/server'
+import { resolveLetbuyyPlatformCookieNames } from '@letbuyy/auth-core'
 
 /**
  * Validate a CSRF token by comparing the cookie value with the header value.
@@ -19,7 +20,8 @@ export function validateCsrfToken(cookieToken: string, headerToken: string): boo
  * Reads the letbuyy_csrf cookie and the X-CSRF-Token header.
  */
 export function validateCsrf(request: NextRequest): boolean {
-    const cookieToken = request.cookies.get('letbuyy_csrf')?.value || request.cookies.get('lb_csrf')?.value || ''
+    const names = resolveLetbuyyPlatformCookieNames(process.env.NEXT_PUBLIC_ENV)
+    const cookieToken = request.cookies.get(names.csrf)?.value || request.cookies.get(names.legacyCsrf)?.value || ''
     const headerToken = request.headers.get('X-CSRF-Token') || ''
     return validateCsrfToken(cookieToken, headerToken)
 }

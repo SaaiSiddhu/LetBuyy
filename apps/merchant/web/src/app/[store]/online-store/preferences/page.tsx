@@ -90,6 +90,7 @@ export default function PreferencesPage() {
     const [loadError, setLoadError] = useState<string | null>(null)
     const [form, setForm] = useState<PreferencesFormState>(emptyForm)
     const [initialForm, setInitialForm] = useState<PreferencesFormState>(emptyForm)
+    const [version, setVersion] = useState<number | null>(null)
 
     const beginRead = useReadRequest(store)
     const loadPreferences = useCallback(async () => {
@@ -108,7 +109,10 @@ export default function PreferencesPage() {
                 throw new Error(getErrorMessage(payload, 'Unable to load storefront preferences'))
             }
 
-            const nextForm = formFromSettings((payload?.data || {}) as Record<string, unknown>)
+            const settings = (payload?.data || {}) as Record<string, unknown>
+            if (typeof settings.version !== 'number') throw new Error('Store revision was not returned')
+            setVersion(settings.version)
+            const nextForm = formFromSettings(settings)
             setForm(nextForm)
             setInitialForm(nextForm)
         } catch (error) {
@@ -116,6 +120,7 @@ export default function PreferencesPage() {
             const message = error instanceof Error ? error.message : 'Unable to load storefront preferences'
             setForm(emptyForm)
             setInitialForm(emptyForm)
+            setVersion(null)
             setLoadError(message)
             notify({
                 title: 'Preferences could not load',
@@ -151,6 +156,10 @@ export default function PreferencesPage() {
 
     const handleSave = useCallback(async () => {
         if (saving || !hasUnsavedChanges) return
+        if (version === null) {
+            notify({ title: 'Reload required', description: 'Store revision is unavailable. Reload preferences before saving.', variant: 'critical' })
+            return
+        }
         setSaving(true)
 
         try {
@@ -158,6 +167,7 @@ export default function PreferencesPage() {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
+                    version,
                     seo_title: form.seoTitle,
                     seo_description: form.seoDescription,
                 }),
@@ -167,6 +177,9 @@ export default function PreferencesPage() {
             if (!response.ok) {
                 throw new Error(getErrorMessage(payload, 'Unable to save storefront preferences'))
             }
+
+            if (typeof payload?.data?.version !== 'number') throw new Error('Save completed but revision readback is unavailable. Reload to confirm settings.')
+            setVersion(payload.data.version)
 
             setInitialForm(form)
             notify({
@@ -184,7 +197,7 @@ export default function PreferencesPage() {
         } finally {
             setSaving(false)
         }
-    }, [form, hasUnsavedChanges, notify, saving, store])
+    }, [form, hasUnsavedChanges, notify, saving, store, version])
 
     if (loading) {
         return (

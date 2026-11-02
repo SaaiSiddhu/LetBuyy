@@ -1,5 +1,5 @@
 export type MerchantKycProviderMode = 'sandbox' | 'live';
-export type MerchantKycProvider = 'letbuyy_sandbox_kyc' | 'signzy' | 'hyperverge' | 'manual';
+export type MerchantKycProvider = 'letbuyy_sandbox_kyc' | 'signzy' | 'hyperverge' | 'manual' | 'unconfigured';
 export type MerchantKycDocumentType =
   | 'business_pan'
   | 'gst_certificate'
@@ -20,7 +20,7 @@ export interface VerifyKycDocumentInput {
   documentId: string;
   documentType: MerchantKycDocumentType;
   documentNumberLast4?: string | null;
-  fileUrl?: string | null;
+  privateUploadPresent: boolean;
 }
 
 export interface VerifyKycDocumentResult {
@@ -52,9 +52,11 @@ function sandboxResult(
   credentials: KycVerificationCredentials,
   input: VerifyKycDocumentInput,
 ): VerifyKycDocumentResult {
-  const hasEvidence = Boolean(input.fileUrl || input.documentNumberLast4);
+  const hasEvidence = input.privateUploadPresent === true;
   return {
-    status: hasEvidence ? 'verified' : 'needs_review',
+    // Sandbox evidence proves only that an input was supplied. It cannot verify
+    // identity, bank ownership, or eligibility for real settlement.
+    status: hasEvidence ? 'submitted' : 'needs_review',
     provider: credentials.provider,
     providerMode: credentials.mode,
     providerReference: sandboxReference(input),
@@ -75,7 +77,7 @@ function manualReviewResult(
   credentials: KycVerificationCredentials,
   input: VerifyKycDocumentInput,
 ): VerifyKycDocumentResult {
-  const hasEvidence = Boolean(input.fileUrl || input.documentNumberLast4);
+  const hasEvidence = input.privateUploadPresent === true;
   return {
     status: 'needs_review',
     provider: credentials.provider,
@@ -91,6 +93,9 @@ function manualReviewResult(
 }
 
 export function createKycVerificationAdapter(credentials: KycVerificationCredentials): KycVerificationAdapter {
+  if (credentials.provider === 'unconfigured') {
+    throw new KycProviderUnavailableError('KYC_LIVE_PROVIDER_UNAVAILABLE: no KYC provider is configured');
+  }
   if (credentials.mode === 'live' && credentials.provider === 'manual') {
     return {
       async verifyDocument(input) {

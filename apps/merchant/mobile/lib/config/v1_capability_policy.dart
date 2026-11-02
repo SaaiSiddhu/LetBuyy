@@ -70,13 +70,6 @@ class V1CapabilityPolicy {
           'redeemed at checkout, so the feature stays closed until that works '
           'end to end.',
     ),
-    AppRouteId.connectRazorpay: _GateCopy(
-      title: 'Connecting your own Razorpay account is not ready',
-      description:
-          'Payments currently run through the LetBuyy platform account. '
-          'Entering your own keys here would have no effect on checkout.',
-      availability: FeatureAvailability.providerSetupRequired,
-    ),
   };
 
   /// Capabilities that exist but are only usable on the desktop dashboard.

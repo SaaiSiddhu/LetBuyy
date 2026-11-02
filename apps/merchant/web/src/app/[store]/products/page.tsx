@@ -415,7 +415,7 @@ export default function ProductsPage() {
                 description="Manage products, inventory, publishing status, vendors, and storefront visibility."
                 breadcrumbs={[{ label: 'Home', href: `/${store}/dashboard` }, { label: 'Products' }]}
                 primaryAction={{ label: 'Add product', href: `/${store}/products/new`, icon: <MaterialIcon name="add" /> }}
-                secondaryActions={[{ label: 'Collections', href: `/${store}/products/collections` }]}
+                secondaryActions={[{ label: 'CSV imports', href: `/${store}/products/import` }, { label: 'Collections', href: `/${store}/products/collections` }]}
             />
 
             {accessChanged && <Banner title="Account or store access changed" variant="critical">Reload this store with the intended account before continuing.</Banner>}

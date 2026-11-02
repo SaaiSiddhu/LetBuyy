@@ -14,11 +14,6 @@ import { Button, Input,
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import Script from 'next/script';
-import {
-    readStorefrontApiJson,
-    storefrontBrowserApiFetch,
-    storefrontApiErrorMessage,
-} from '@/lib/api/browser-client';
 import { StorefrontEmptyState } from '@/components/storefront/storefront-states';
 import { GST_STATES, gstStateCodeFromName } from '@letbuyy/checkout-core';
 import { resolveCheckoutPaymentAvailability } from '@/lib/checkout/payment-availability';
@@ -88,7 +83,6 @@ export interface CheckoutOriginCartLine {
 
 interface CheckoutClientProps {
     storeId: string;
-    sellerId: string;
     subdomain: string;
     storeName: string;
     codEnabled: boolean;
@@ -126,7 +120,6 @@ interface FormData {
 type DeliveryOption = 'standard' | 'express';
 // V1 ships Razorpay+COD; Stripe and PayPal deferred (LB-2)
 type PaymentMethod = 'online' | 'cod';
-type ProviderOrderMethod = 'razorpay' | 'cod';
 const passthroughImageLoader = ({ src }: ImageLoaderProps) => src;
 
 interface StoreShippingRate {
@@ -160,16 +153,6 @@ interface AppliedCoupon {
     freeShipping?: boolean;
 }
 
-type RazorpayOrderData = {
-    keyId?: string;
-    key_id?: string;
-    razorpayOrderId?: string;
-    razorpay_order_id?: string;
-    amount?: number;
-    currency?: string;
-};
-
-
 function scrollToCheckoutTop() {
     if (typeof window === 'undefined') return;
     window.requestAnimationFrame(() => {
@@ -177,7 +160,7 @@ function scrollToCheckoutTop() {
     });
 }
 
-export default function CheckoutClient({ storeId, sellerId, subdomain, storeName, codEnabled, onlinePaymentEnabled, paymentAppearance, checkoutOrigin }: CheckoutClientProps) {
+export default function CheckoutClient({ storeId, subdomain, storeName, codEnabled, onlinePaymentEnabled, paymentAppearance, checkoutOrigin }: CheckoutClientProps) {
     // useContext (not useCart()) never throws when there is no CartProvider ancestor — true on
     // the checkout-origin tree, which mounts no CartProvider at all (it belongs to
     // app/store/[subdomain]/layout.tsx only). checkoutOrigin's own cart lines take priority when
@@ -502,38 +485,6 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
         }
     };
 
-    const buildOrderPayload = (method: ProviderOrderMethod) => ({
-        storeId,
-        sellerId,
-        subdomain,
-        ...(checkoutOrigin ? { cartId: checkoutOrigin.cartId, handoff: checkoutOrigin.handoff } : {}),
-        idempotencyKey: getIdempotencyKey(`order-${method}`),
-        customer: {
-            name: formData.name,
-            email: formData.email.toLowerCase(),
-            phone: formData.phone,
-            address: {
-                address: formData.address,
-                city: formData.city,
-                state: formData.state,
-                stateCode: formData.stateCode,
-                pincode: formData.pincode,
-            }
-        },
-        items: items.map(item => ({
-            productId: item.id,
-            variantId: (item as typeof item & { variantId?: string | null }).variantId ?? null,
-            quantity: item.quantity,
-        })),
-        paymentMethod: method,
-        deliveryOption,
-        couponCode: appliedCoupon?.code,
-        // The Gateway compares this reviewed quote token, then the database locks and rechecks the configured rate.
-        shippingRateId: selectedRate?.id ?? null,
-        shippingAmountMinor: selectedRate?.amount_minor ?? null,
-        expectedQuoteFingerprint: totalsQuote?.fingerprint,
-    });
-
     const applyCoupon = async () => {
         const code = couponInput.trim().toUpperCase();
         if (!code) {
@@ -581,16 +532,6 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
         setAppliedCoupon(null);
         setCouponError('');
         setCouponInput('');
-    };
-
-    const createCheckoutOrder = async (method: ProviderOrderMethod): Promise<CreateOrderResult> => {
-        const res = await fetch('/api/orders', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(buildOrderPayload(method)),
-        });
-
-        return res.json();
     };
 
     // Hosted COD completes through the signed-cart checkout state machine. The cart lines,
@@ -788,7 +729,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
         }
         setIsProcessing(true);
         try {
-            const result = checkoutOrigin ? await createHostedCodOrder() : await createCheckoutOrder('cod');
+            const result = checkoutOrigin ? await createHostedCodOrder() : { success: false, error: 'Start a new secure checkout from the store cart.' };
 
             if (result.success && result.order) {
                 setOrderNumber(result.order.orderNumber);
@@ -871,95 +812,8 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                 return;
             }
 
-            const orderResult = await createCheckoutOrder('razorpay');
-            if (!orderResult.success || !orderResult.order) {
-                const message = orderResult.error || 'Order creation failed. Please try again.';
-                if (/delivery (price|option) changed|delivery option is no longer available/i.test(message)) refreshShippingOptions();
-                showCheckoutError(message);
-                setIsProcessing(false);
-                return;
-            }
-
-            const paymentRes = await storefrontBrowserApiFetch(subdomain, '/payments/razorpay/order', {
-                method: 'POST',
-                body: JSON.stringify({
-                    orderId: orderResult.order.id,
-                    idempotencyKey: getIdempotencyKey(`razorpay-create-${orderResult.order.id}`),
-                }),
-            });
-
-            const paymentResult = await readStorefrontApiJson<RazorpayOrderData>(paymentRes);
-            const paymentData = paymentResult.data;
-            const keyId = paymentData?.keyId || paymentData?.key_id;
-            const razorpayOrderId = paymentData?.razorpayOrderId || paymentData?.razorpay_order_id;
-            if (!paymentRes.ok || paymentResult.success === false || !keyId || !razorpayOrderId || !paymentData?.amount) {
-                showCheckoutError(storefrontApiErrorMessage(paymentResult, 'Online payment is not configured for this store yet.'));
-                setIsProcessing(false);
-                return;
-            }
-
-            const options: RazorpayOptions = {
-                key: keyId,
-                amount: paymentData.amount,
-                currency: paymentData.currency || 'INR',
-                name: storeName,
-                description: `Order ${orderResult.order.orderNumber}`,
-                ...(paymentAppearance.image ? { image: paymentAppearance.image } : {}),
-                order_id: razorpayOrderId,
-                handler: async (response) => {
-                    try {
-                        const verifyRes = await storefrontBrowserApiFetch(subdomain, '/payments/razorpay/verify', {
-                            method: 'POST',
-                            body: JSON.stringify({
-                                orderId: orderResult.order!.id,
-                                razorpay_order_id: response.razorpay_order_id,
-                                razorpay_payment_id: response.razorpay_payment_id,
-                                razorpay_signature: response.razorpay_signature,
-                                idempotencyKey: getIdempotencyKey(`razorpay-verify-${response.razorpay_payment_id}`),
-                            }),
-                        });
-
-                        const verifyResult = await readStorefrontApiJson<{ verified?: boolean }>(verifyRes);
-                        if (verifyRes.ok && verifyResult.success !== false) {
-                            setOrderNumber(orderResult.order!.orderNumber);
-                            setIsSuccess(true);
-                            clearCart();
-                            autoCreateCustomer(orderResult.order!.id);
-                        } else {
-                            showCheckoutError(storefrontApiErrorMessage(verifyResult, 'Payment verification failed. Please contact support.'));
-                        }
-                    } catch {
-                        showCheckoutError('Payment verification failed. Please contact support.');
-                    } finally {
-                        setIsProcessing(false);
-                    }
-                },
-                prefill: {
-                    name: formData.name,
-                    email: formData.email,
-                    contact: formData.phone,
-                },
-                notes: {
-                    order_id: orderResult.order.id,
-                    store_id: storeId,
-                    subdomain,
-                },
-                theme: {
-                    color: paymentAppearance.color,
-                },
-                modal: {
-                    ondismiss: function () {
-                        setIsProcessing(false);
-                    }
-                }
-            };
-
-            const rzp = new window.Razorpay(options);
-            rzp.on('payment.failed', function () {
-                setIsProcessing(false);
-                showCheckoutError('Payment failed. Please try again.');
-            });
-            rzp.open();
+            showCheckoutError('Start a new secure checkout from the store cart.');
+            setIsProcessing(false);
         } catch {
             setIsProcessing(false);
             showCheckoutError('Payment failed. Please try again.');

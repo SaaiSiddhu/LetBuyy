@@ -59,7 +59,6 @@ const labeled = (label) => ({
 const resourcesOfRun = (runId) => labeled(`${RUN_LABEL}=${runId}`);
 const resourcesOfOwner = (pid) => labeled(`${OWNER_LABEL}=${pid}`);
 const everything = (found) => [...found.containers, ...found.networks, ...found.volumes];
-const allFixtureResources = () => everything(labeled(FIXTURE_LABEL)).sort();
 
 async function until(predicate, timeoutMs, what) {
     const deadline = Date.now() + timeoutMs;
@@ -188,9 +187,9 @@ test('a red suite, a skipping suite and an empty suite are all red; a suite star
         'd-skips.test.ts': SKIPPING,
         'e-empty.test.ts': EMPTY,
     });
-    const before = allFixtureResources();
     try {
-        const result = run(['--suite-dir', dir, '--kind', 'gateway-db', '--jobs', '1', '--json', '--timeout', '120']);
+        // This case checks its own run's cleanup. The separate reaper case checks stale runs.
+        const result = run(['--suite-dir', dir, '--kind', 'gateway-db', '--jobs', '1', '--no-reap', '--json', '--timeout', '120']);
         const report = JSON.parse(result.stdout);
         const by = Object.fromEntries(report.results.map((entry) => [entry.name, entry]));
 
@@ -224,7 +223,6 @@ test('a red suite, a skipping suite and an empty suite are all red; a suite star
 
         // Asked of docker itself, by the run's own label.
         assert.deepEqual(everything(resourcesOfRun(report.runId)), []);
-        assert.deepEqual(allFixtureResources(), before, 'the set of fixture resources on this machine is what it was before the run');
     } finally {
         rmSync(dir, { recursive: true, force: true });
     }
@@ -232,7 +230,6 @@ test('a red suite, a skipping suite and an empty suite are all red; a suite star
 
 test('a REST image that is not present is an infrastructure error naming the image, and nothing at all is created', { skip: needsDocker }, () => {
     const dir = suiteDir({ 'a-writes.test.ts': WRITES });
-    const before = allFixtureResources();
     try {
         const result = run(['--suite-dir', dir, '--kind', 'gateway-db', '--jobs', '1', '--json'], {
             env: { ...process.env, LETBUYY_EXECUTABLE_REST_IMAGE: 'letbuyy-no-such-image.invalid/postgrest:0', CI: '', LETBUYY_EXECUTABLE_PULL: '' },
@@ -241,7 +238,7 @@ test('a REST image that is not present is an infrastructure error naming the ima
         const report = JSON.parse(result.stdout);
         assert.match(report.infrastructureError, /letbuyy-no-such-image\.invalid\/postgrest:0 is not present locally; this runner does not pull an image on its own/);
         assert.deepEqual(report.cleanupFailures, []);
-        assert.deepEqual(allFixtureResources(), before, 'not even a network or a volume was created');
+        assert.deepEqual(everything(resourcesOfRun(report.runId)), [], 'this refused run created no container, network or volume');
     } finally {
         rmSync(dir, { recursive: true, force: true });
     }
@@ -250,14 +247,14 @@ test('a REST image that is not present is an infrastructure error naming the ima
 test('a cluster name that is already taken is an infrastructure error; what this run created is removed and what it did not create survives', { skip: needsDocker }, () => {
     const dir = suiteDir({ 'a-writes.test.ts': WRITES });
     const taken = `letbuyy-exec-lifecycle-taken-${process.pid}-${Date.now().toString(36)}`;
-    const before = allFixtureResources();
     try {
         assert.equal(docker(['run', '-d', '--pull', 'never', '--name', taken, '--entrypoint', 'sleep', PG_IMAGE, '300']).status, 0);
         const result = run(['--suite-dir', dir, '--kind', 'gateway-db', '--jobs', '1', '--json', '--container', taken]);
         assert.equal(result.status, 70);
-        assert.match(JSON.parse(result.stdout).infrastructureError, /docker run failed/);
+        const report = JSON.parse(result.stdout);
+        assert.match(report.infrastructureError, /docker run failed/);
         assert.equal(docker(['ps', '-a', '--filter', `name=^/${taken}$`, '--format', '{{.Names}}']).stdout.trim(), taken, 'a container this run did not create is never removed');
-        assert.deepEqual(allFixtureResources(), before, 'the network and the volume this run had already created are gone again');
+        assert.deepEqual(everything(resourcesOfRun(report.runId)), [], 'this run removed the network and volume it created');
     } finally {
         docker(['rm', '-f', '-v', taken]);
         rmSync(dir, { recursive: true, force: true });

@@ -55,6 +55,13 @@ function registrarErrorBody(error: unknown) {
     return { error: { code, message } };
 }
 
+// A caller-supplied reference is not evidence of a captured domain payment.
+// Live registrar orders must remain closed until a server-owned payment proof
+// is bound to the quote, site, domain, amount, and idempotency key.
+export function domainPurchaseCheckoutAllowed(providerName: string, checkoutMode: string): boolean {
+    return providerName === 'sandbox' && checkoutMode === 'sandbox';
+}
+
 router.get('/search', async (c) => {
     const parsed = DomainSearchSchema.safeParse({ query: c.req.query('query') || c.req.query('domain') || '' });
     if (!parsed.success) {
@@ -97,15 +104,15 @@ router.post('/purchase', async (c) => {
         return c.json({ error: { code: 'DOMAIN_UNAVAILABLE', message: 'Domain is unavailable', details: quote } }, 409);
     }
     const checkoutMode = parsed.data.checkout_mode || (provider.name === 'sandbox' ? 'sandbox' : 'external_reference');
-    if (checkoutMode === 'sandbox' && provider.name !== 'sandbox') {
+    if (!domainPurchaseCheckoutAllowed(provider.name, checkoutMode)) {
         return c.json({
             error: {
-                code: 'DOMAIN_CHECKOUT_MODE_UNAVAILABLE',
-                message: 'Domain checkout is temporarily unavailable.',
+                code: 'DOMAIN_PAYMENT_VERIFICATION_REQUIRED',
+                message: 'Domain purchase is unavailable until payment is verified by LetBuyy.',
             },
         }, 409);
     }
-    const checkoutStatus = checkoutMode === 'sandbox' ? 'verified' : 'reference_recorded';
+    const checkoutStatus = 'verified';
 
     const { data: order, error: orderError } = await db
         .from('domain_orders')

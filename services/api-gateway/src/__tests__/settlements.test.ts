@@ -3,6 +3,9 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import test from 'node:test';
+import type { SettlementIngestInput } from '@letbuyy/billing-core';
+import type { Env } from '../index';
+import { assertLiveSettlementReady } from '../routes/settlements';
 
 const testDir = dirname(fileURLToPath(import.meta.url));
 const srcRoot = join(testDir, '..');
@@ -15,6 +18,22 @@ function source(path: string): string {
 function repositorySource(path: string): string {
     return readFileSync(join(repositoryRoot, path), 'utf8');
 }
+
+test('global live PA approval cannot create a settlement for an unbound merchant', () => {
+    const env = {
+        RAZORPAY_KEY_ID: 'synthetic-route-key-id',
+        RAZORPAY_ROUTE_KEY_SECRET: 'synthetic-never-contacted-route-secret',
+        RAZORPAY_ROUTE_ACCOUNT_ID: 'acc_global_not_site_bound',
+        RAZORPAY_ROUTE_LIVE_APPROVAL_REFERENCE: 'synthetic-global-reference',
+    } as Env;
+    const input = {
+        provider_mode: 'live',
+        rail: 'pa_split',
+        provider: 'razorpay_route',
+    } as SettlementIngestInput;
+    assert.throws(() => assertLiveSettlementReady(env, input), /site-bound provider approval/);
+    assert.doesNotThrow(() => assertLiveSettlementReady(env, { ...input, provider_mode: 'sandbox' }));
+});
 
 test('Task 013 settlements are monolith routes backed by billing-core and the F6 ledger RPC', () => {
     const indexSource = source('index.ts');
@@ -104,7 +123,7 @@ test('Task 013 live PA split remains human-gated and no rejected service topolog
     assert.match(settlementRoute, /HR-PA-SPLIT-LIVE/);
     assert.match(settlementRoute, /HumanRequiredError/);
     assert.match(settlementRoute, /SETTLEMENT_PROVIDER_SETUP_REQUIRED/);
-    assert.match(settlementRoute, /isLivePASplitProviderReady\('razorpay_route'/);
+    assert.match(settlementRoute, /site-specific evidence can be checked/);
     assert.match(settlementRoute, /input\.rail === 'cod_remittance'[\s\S]*input\.provider === 'cod'[\s\S]*Live COD remittance records must use the COD or manual provider classification/);
     assert.match(settlementRoute, /input\.rail === 'pa_split'[\s\S]*input\.provider === 'razorpay_route'/);
     assert.match(settlementRoute, /input\.rail === 'pa_split' && input\.provider !== 'razorpay_route'[\s\S]*provider-specific execution and reconciliation adapter/);

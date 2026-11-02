@@ -165,13 +165,14 @@ const CHECKOUT_PAYMENT_ROUTE = path.join(
     'services/api-gateway/src/routes/storefront/checkout-payment-routes.ts',
 );
 
-test('LB-7: checkout-payment route imports calculateGstLine', () => {
+test('LB-7: checkout-payment route uses the canonical server tax quote', () => {
     const src = readFileSync(CHECKOUT_PAYMENT_ROUTE, 'utf8');
     assert.match(
         src,
-        /calculateGstLine/,
-        'checkout-payment-routes.ts must import calculateGstLine',
+        /import \{ quoteCheckoutTotals \} from '\.\.\/\.\.\/lib\/checkout-tax-quote'/,
+        'checkout-payment-routes.ts must use the server-owned tax quote',
     );
+    assert.match(src, /quoteCheckoutTotals\(/);
 });
 
 test('LB-7: checkout-payment route resolves current destination rates and rejects changed reviewed amounts', () => {
@@ -227,7 +228,7 @@ test('LB-7: hosted checkout resolves COD and prepaid delivery from the signed si
 });
 
 // ---------------------------------------------------------------------------
-// 6. Storefront checkout client fetches rates and sends shippingRateId.
+// 6. Storefront checkout client fetches rates and passes the selected ID to hosted checkout.
 // ---------------------------------------------------------------------------
 
 const CHECKOUT_CLIENT = path.join(
@@ -244,12 +245,12 @@ test('LB-7: checkout-client.tsx fetches /api/shipping/rates', () => {
     );
 });
 
-test('LB-7: checkout-client.tsx sends shippingRateId in order payload', () => {
+test('LB-7: checkout-client.tsx sends the selected shipping rate to hosted checkout', () => {
     const src = readFileSync(CHECKOUT_CLIENT, 'utf8');
     assert.match(
         src,
-        /shippingRateId/,
-        'checkout-client.tsx must include shippingRateId in the order payload',
+        /shipping_rate_id: selectedRate\.id/,
+        'checkout-client.tsx must include the selected rate in hosted delivery steps',
     );
 });
 
@@ -273,7 +274,7 @@ test('LB-7: storefront rates proxy uses canonical public destination transport w
     const src = readFileSync(STOREFRONT_RATES_PROXY, 'utf8');
     assert.match(
         src,
-        /storefrontApiFetch\(`\/storefront\/\$\{encodeURIComponent\(subdomain\)\}\/shipping-rates\?/,
+        /storefrontApiFetch\(`\/storefront\/\$\{encodeURIComponent\(subdomain\)\}\/shipping-rates`, \{\s*method: 'POST'/,
         'the canonical public storefront route resolves seller configuration',
     );
     assert.match(src,/request\.headers\.get\('origin'\) !== request\.nextUrl\.origin/);
