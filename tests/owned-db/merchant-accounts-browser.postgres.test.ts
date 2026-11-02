@@ -17,7 +17,7 @@ import { hashMerchantPassword } from '../../services/api-gateway/src/lib/merchan
 import { encryptTextAesGcm } from '../../services/api-gateway/src/lib/crypto';
 
 const owned = requireOwnedDatabase();
-const PASSWORD = 'Synthetic-Accounts-Password-42!';
+const PASSWORD = 'Synthetic-Accounts-Password-42!'; // Local synthetic example fixture; no real credential.
 const TOTP_KEY = 'synthetic-accounts-totp-encryption-at-least-32-bytes';
 const TOTP_SEED = 'JBSWY3DPEHPK3PXP';
 const secret = () => Buffer.from(crypto.getRandomValues(new Uint8Array(32))).toString('base64url');
@@ -87,7 +87,7 @@ test('shared Accounts login/signup, MFA, SSO consent, outage retry and draft cre
             NEXT_PUBLIC_API_URL: api, NEXT_PUBLIC_ACCOUNTS_URL: origin, NEXT_PUBLIC_ADMIN_URL: origin, LETBUYY_IDENTITY_ISSUER: origin,
             LETBUYY_IDENTITY_PRIVATE_JWK: JSON.stringify({ ...await exportJWK(keys.privateKey), alg: 'ES256', kid: keys.kid }),
             ACCOUNTS_COOKIE_SECRET: crypto.randomUUID() + crypto.randomUUID(), COOKIE_DOMAIN: '', LETBUYY_MERCHANT_MOBILE_AUTH_ENABLED: 'true',
-            NEXT_PUBLIC_TURNSTILE_SITE_KEY: '1x00000000000000000000AA', TURNSTILE_SECRET_KEY: '1x0000000000000000000000000000000AA',
+            NEXT_PUBLIC_TURNSTILE_SITE_KEY: '1x00000000000000000000AA', TURNSTILE_SECRET_KEY: '1x0000000000000000000000000000000AA', // Local synthetic example fixture; no real credential.
             LETBUYY_ENABLE_DEV_AUTH_BYPASS: 'false', NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS: 'false',
         } });
         await ready(origin, runtime);

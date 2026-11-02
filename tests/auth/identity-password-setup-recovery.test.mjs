@@ -115,7 +115,7 @@ function passwordProxy(cookies = {}) {
     crypto: { getRandomValues: bytes => bytes.fill(7) }, require: name => {
       if (name === 'next/server') return { NextResponse: { next: () => next, redirect: url => ({ kind: 'redirect', location: url.pathname }) } };
       if (name === '@/lib/config/urls') return { getAdminUrl: () => 'https://admin.letbuyy.com' };
-      if (name === '@letbuyy/auth-core') return { LETBUYY_MERCHANT_SESSION_COOKIE: 'lb_session', verifyLetbuyySessionCookieValue: () => ({ accepted: false }) };
+      if (name === '@letbuyy/auth-core') return { LETBUYY_MERCHANT_SESSION_COOKIE: 'lb_session', verifyLetbuyySessionCookieValue: () => ({ accepted: false }), resolveLetbuyyPlatformCookieNames: () => ({ session:'lb_session', csrf:'letbuyy_csrf', legacyCsrf:'lb_csrf', passwordSetIntent:'lb_password_set_intent' }) };
       throw new Error(`Unexpected runtime import: ${name}`);
     } };
   new vm.Script(output).runInContext(vm.createContext(ctx));

@@ -336,6 +336,10 @@ const REVIEWED_DEFINITION_REWRITE_SHA256 = new Set([
 ]);
 const isReviewedDefinitionRewrite = body =>
     REVIEWED_DEFINITION_REWRITE_SHA256.has(createHash('sha256').update(body).digest('hex'));
+// This exact warehouse block revokes a finite set of function grants and
+// tightens search_path. It cannot reopen another function ACL. Changed bodies
+// return to conservative unknown-privilege analysis; no closure is inferred.
+const REVIEWED_NON_REOPENING_ACL_SHA256 = new Set(['21d525a7cc18211a392c97e401fba389ca3058d3a3acd6a73640c73a759e1542']);
 function privilegeEvents(sql) {
     const events = [];
     for (const tokens of sqlStatements(sql)) {
@@ -343,7 +347,8 @@ function privilegeEvents(sql) {
         if (direct) events.push({...direct, start:tokens[0].start});
         else if (tokens[0]?.value === 'do') {
             const body = tokens.length === 3 && tokens[1].kind === 'body' && tokens[2].value === ';' ? tokens[1] : null;
-            if (body && isReviewedDefinitionRewrite(body.value)) continue;
+            if (body && (isReviewedDefinitionRewrite(body.value)
+                || REVIEWED_NON_REOPENING_ACL_SHA256.has(createHash('sha256').update(body.value).digest('hex')))) continue;
             const finite = body && finitePrivileges(body.value);
             if (finite) events.push(...finite.map(change => ({...change,start:tokens[0].start})));
             // Unbound dynamic SQL can select any function and role. A later explicit

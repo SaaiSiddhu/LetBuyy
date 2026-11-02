@@ -621,7 +621,7 @@ const LEGACY_PRE_USE_BLOCKS=new Map([
         '25f3b5af29cce06e7bb3f06ccf61b503098de28642840b020182eb255e0c2240'])],
     ['public.guard_checkout_domain_v1()',new Set(['727d65b1b179fae3d27c4ea305fc5884f422e2e5173fa753e2f568c3ac46a033'])],
     ['public.issue_gift_card(uuid,text,numeric,text,timestamptz,jsonb,uuid,text,text)',new Set(['6eb609ef5b2ca55322cc8a1c4fb3a3c8a1f701225a1436f4b1c738295a8c55e7'])],
-    ['public.commit_store_payment_configuration_v1(uuid,uuid,timestamptz,uuid,text,text,jsonb,boolean,jsonb)',new Set(['770f6e74a3778f6b1133f5c2007d9e9a2cb201518d8a757949f8a36aeff9e498'])],
+    ['public.commit_store_payment_configuration_v1(uuid,uuid,timestamptz,uuid,text,text,jsonb,boolean,jsonb)',new Set(['770f6e74a3778f6b1133f5c2007d9e9a2cb201518d8a757949f8a36aeff9e498','3e42c4b9518dcba32116509d6dfc84a81676b051532968a48323cdc4aabdfaea'])],
     ['public.queue_replaced_kyc_private_object_v1()',new Set(['d101e8cd6c9b1a7527250a3c3eba65c19c0d06ce3227b2bc75393701aa40fb60'])],
     ['public.list_due_kyc_private_cleanup_v1(integer)',new Set(['83de82d3024c017d54117f84d6b186fd4432a047e0470eae46acd98913ea13b5'])],
     ['public.guard_merchant_kyc_india_receipt_v1()',new Set(['482dabc10d90f54859377b2ccf6b8c9e0c6bbdd71e5d8028bb739cd9eff5e8bd'])],

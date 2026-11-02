@@ -49,3 +49,14 @@ test('only matching deployed API environments admit the existing Commerce CNAME 
  }
  assert.notEqual(run({'apps/merchant/web/.env.example':`CUSTOM_DOMAIN_CNAME_TARGET=storefront.${storefront}`}),0);
 });
+
+
+test('native callback exception admits only exact generated OS schemes, never an HTTPS host or suffix',()=>{
+ const file='apps/merchant/mobile/lib/services/merchant_auth_contract.g.dart';
+ for(const scheme of ['com.letbuyy.store.accounts://auth/callback','com.letbuyy.store.accounts.development://auth/callback','com.letbuyy.store.accounts.staging://auth/callback']) {
+  assert.equal(run({[file]:`const callback = '${scheme}';`}),0);
+  assert.notEqual(run({'apps/merchant/mobile/lib/config/local.dart':`const callback = '${scheme}';`}),0);
+ }
+ for(const value of ['https://com.letbuyy.store.accounts/auth/callback','com.letbuyy.store.accounts.evil://auth/callback','com.letbuyy.store.accounts://auth/callback/extra','https://accounts.letbuyy.store'])
+  assert.notEqual(run({[file]:`const callback = '${value}';`}),0,value);
+});

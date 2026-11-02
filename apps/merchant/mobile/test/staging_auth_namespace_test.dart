@@ -55,7 +55,8 @@ void main() {
         }
         if (request.method == 'GET' &&
             request.url.path == '/api/auth/session') {
-          expect(request.headers['Cookie'], 'lb_session_staging=${'s' * 32}');
+          expect(request.headers['Authorization'], 'Bearer ${'s' * 32}');
+          expect(request.headers['Cookie'], isNull);
           return http.Response(
             jsonEncode({
               'authenticated': true,

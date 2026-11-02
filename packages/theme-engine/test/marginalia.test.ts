@@ -43,7 +43,7 @@ test('fresh collection-index defaults pass matching manifest validation before n
     // Canonical Liquid registry document projection, before any editor normalization.
     const config = { themeId: bundle.package.slug, schema_version: bundle.schema_version, engineVersion: bundle.renderer.renderer_version,
       rendererEngine: 'liquid', liquidBundle: bundle, sections: {}, templates: bundle.templates, themeSettings: bundle.config.settings_data.current };
-    const issues = (templateConfig: Record<string, unknown>) => collectThemeTemplateValidationIssues({ templateConfig, runtime, themeSlug: 'letbuyy-dawn' });
+    const issues = (templateConfig: Record<string, unknown>) => collectThemeTemplateValidationIssues({ templateConfig, runtime, trustedPreviousConfig: { templates: bundle.templates }, themeSlug: 'letbuyy-dawn' });
     assert.deepEqual(issues(config), []);
     const wire = JSON.parse(JSON.stringify(config)) as typeof config;
     assert.deepEqual(issues(wire), []);

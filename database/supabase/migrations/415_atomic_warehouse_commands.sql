@@ -264,7 +264,7 @@ GRANT EXECUTE ON FUNCTION public.apply_warehouse_command_v1(uuid,uuid,text,text,
 DO $effects$
 DECLARE signature text; f record; a record; grantee_sql text; original_path text;
 BEGIN
- IF EXISTS(SELECT 1 FROM public.migration_privilege_journal WHERE migration='414') THEN RAISE EXCEPTION 'migration414 provenance already exists';END IF;
+ IF EXISTS(SELECT 1 FROM public.migration_privilege_journal WHERE migration='415') THEN RAISE EXCEPTION 'migration414 provenance already exists';END IF;
  FOREACH signature IN ARRAY ARRAY[
   'public.create_purchase_order_with_lines(uuid,uuid,uuid,jsonb,timestamptz,text,uuid,text,text)',
   'public.receive_purchase_order(uuid,jsonb,uuid,text,text)',
@@ -281,18 +281,18 @@ BEGIN
    RAISE EXCEPTION 'migration414 refuses unreviewed warehouse effect profile: %',signature;END IF;
   original_path:=substr(f.proconfig[1],length('search_path=')+1);
   INSERT INTO public.migration_privilege_journal(migration,object_signature,grantee,privilege,action,object_oid,object_owner,object_definition_hash)
-   VALUES('414',signature,pg_get_userbyid(f.proowner),'WAREHOUSE ORIGINAL SEARCH_PATH='||original_path,'revoked',f.oid,f.proowner,encode(sha256(convert_to(pg_get_functiondef(f.oid),'UTF8')),'hex'));
+   VALUES('415',signature,pg_get_userbyid(f.proowner),'WAREHOUSE ORIGINAL SEARCH_PATH='||original_path,'revoked',f.oid,f.proowner,encode(sha256(convert_to(pg_get_functiondef(f.oid),'UTF8')),'hex'));
   FOR a IN SELECT * FROM aclexplode(coalesce(f.proacl,acldefault('f',f.proowner))) WHERE grantee<>f.proowner LOOP
    IF a.privilege_type<>'EXECUTE' THEN RAISE EXCEPTION 'migration414 refuses unexpected function privilege';END IF;
    grantee_sql:=CASE WHEN a.grantee=0 THEN 'PUBLIC' ELSE quote_ident(pg_get_userbyid(a.grantee)) END;
    INSERT INTO public.migration_privilege_journal(migration,object_signature,grantee,privilege,action,object_oid,object_owner,object_definition_hash)
-    VALUES('414',signature,CASE WHEN a.grantee=0 THEN 'PUBLIC' ELSE pg_get_userbyid(a.grantee) END,
+    VALUES('415',signature,CASE WHEN a.grantee=0 THEN 'PUBLIC' ELSE pg_get_userbyid(a.grantee) END,
      CASE WHEN a.is_grantable THEN 'EXECUTE WITH GRANT OPTION' ELSE 'EXECUTE' END,'revoked',f.oid,f.proowner,encode(sha256(convert_to(pg_get_functiondef(f.oid),'UTF8')),'hex'));
    EXECUTE format('REVOKE ALL ON FUNCTION %s FROM %s',signature,grantee_sql);
   END LOOP;
   EXECUTE format('ALTER FUNCTION %s SET search_path=pg_catalog,public,pg_temp',signature);
   INSERT INTO public.migration_privilege_journal(migration,object_signature,grantee,privilege,action,object_oid,object_owner,object_definition_hash)
-   SELECT '414',signature,pg_get_userbyid(p.proowner),'WAREHOUSE EFFECT FENCE','granted',p.oid,p.proowner,encode(sha256(convert_to(pg_get_functiondef(p.oid),'UTF8')),'hex') FROM pg_proc p WHERE p.oid=f.oid;
+   SELECT '415',signature,pg_get_userbyid(p.proowner),'WAREHOUSE EFFECT FENCE','granted',p.oid,p.proowner,encode(sha256(convert_to(pg_get_functiondef(p.oid),'UTF8')),'hex') FROM pg_proc p WHERE p.oid=f.oid;
  END LOOP;
 END $effects$;
 
@@ -318,11 +318,11 @@ SELECT jsonb_build_object(
  'triggers',(SELECT jsonb_agg(jsonb_build_array(x.tgname,pg_get_triggerdef(x.oid),x.tgenabled) ORDER BY x.tgname) FROM pg_trigger x WHERE x.tgrelid=t.oid AND NOT x.tgisinternal)
  )::text INTO shape FROM pg_class t WHERE t.oid=relation_row.oid;
   INSERT INTO public.migration_privilege_journal(migration,object_signature,grantee,privilege,action,object_oid,object_owner,object_definition_hash)
-   VALUES('414',signature,pg_get_userbyid(relation_row.relowner),'WAREHOUSE METADATA TABLE FENCE','granted',relation_row.oid,relation_row.relowner,encode(sha256(convert_to(shape,'UTF8')),'hex'));
+   VALUES('415',signature,pg_get_userbyid(relation_row.relowner),'WAREHOUSE METADATA TABLE FENCE','granted',relation_row.oid,relation_row.relowner,encode(sha256(convert_to(shape,'UTF8')),'hex'));
   FOR grant_row IN SELECT * FROM aclexplode(coalesce(relation_row.relacl,acldefault('r',relation_row.relowner))) WHERE privilege_type='INSERT' AND grantee<>relation_row.relowner LOOP
    role_sql:=CASE WHEN grant_row.grantee=0 THEN 'PUBLIC' ELSE quote_ident(pg_get_userbyid(grant_row.grantee)) END;
    INSERT INTO public.migration_privilege_journal(migration,object_signature,grantee,privilege,action,object_oid,object_owner,object_definition_hash)
-    VALUES('414',signature,CASE WHEN grant_row.grantee=0 THEN 'PUBLIC' ELSE pg_get_userbyid(grant_row.grantee) END,'WAREHOUSE METADATA INSERT','revoked',relation_row.oid,relation_row.relowner,encode(sha256(convert_to(shape,'UTF8')),'hex'));
+    VALUES('415',signature,CASE WHEN grant_row.grantee=0 THEN 'PUBLIC' ELSE pg_get_userbyid(grant_row.grantee) END,'WAREHOUSE METADATA INSERT','revoked',relation_row.oid,relation_row.relowner,encode(sha256(convert_to(shape,'UTF8')),'hex'));
    EXECUTE format('REVOKE INSERT ON TABLE %s FROM %s',signature,role_sql);
   END LOOP;
  END LOOP;
@@ -334,7 +334,7 @@ BEGIN
  FOREACH signature IN ARRAY ARRAY['public.apply_warehouse_command_v1(uuid,uuid,text,text,uuid,jsonb,text)','public.guard_warehouse_command_receipt_v1()'] LOOP
   SELECT p.* INTO f FROM pg_proc p WHERE p.oid=to_regprocedure(signature);
   INSERT INTO public.migration_privilege_journal(migration,object_signature,grantee,privilege,action,object_oid,object_owner,object_definition_hash)
-  VALUES('414',signature,pg_get_userbyid(f.proowner),'FUNCTION EXECUTION FENCE','granted',f.oid,f.proowner,encode(sha256(convert_to(pg_get_functiondef(f.oid),'UTF8')),'hex'));
+  VALUES('415',signature,pg_get_userbyid(f.proowner),'FUNCTION EXECUTION FENCE','granted',f.oid,f.proowner,encode(sha256(convert_to(pg_get_functiondef(f.oid),'UTF8')),'hex'));
  END LOOP;
 SELECT jsonb_build_object(
  'relation',jsonb_build_array(t.relkind,t.relpersistence,t.relrowsecurity,t.relforcerowsecurity,t.reloptions,t.relreplident),
@@ -347,7 +347,7 @@ SELECT jsonb_build_object(
  )::text INTO shape FROM pg_class t WHERE t.oid='public.warehouse_command_receipts'::regclass;
  SELECT * INTO relation_row FROM pg_class WHERE oid='public.warehouse_command_receipts'::regclass;
  INSERT INTO public.migration_privilege_journal(migration,object_signature,grantee,privilege,action,object_oid,object_owner,object_definition_hash)
- VALUES('414','public.warehouse_command_receipts',pg_get_userbyid(relation_row.relowner),'PRIVATE RECEIPT SHAPE','granted',relation_row.oid,relation_row.relowner,encode(sha256(convert_to(shape,'UTF8')),'hex'));
+ VALUES('415','public.warehouse_command_receipts',pg_get_userbyid(relation_row.relowner),'PRIVATE RECEIPT SHAPE','granted',relation_row.oid,relation_row.relowner,encode(sha256(convert_to(shape,'UTF8')),'hex'));
 END $provenance$;
 NOTIFY pgrst,'reload schema';
 COMMIT;

@@ -17,7 +17,7 @@ class MainActivity : FlutterActivity() {
 
     private fun accountCallback(intent: Intent?): String? {
         val uri = intent?.data ?: return null
-        val hosts = setOf("accounts.letbuyy.com", "accounts.staging.letbuyy.com")
+        val hosts = setOf("accounts.letbuyy.com", "accounts-staging.letbuyy.com")
         val approvedOrigin = (uri.scheme == "https" && uri.host in hosts && uri.port == -1) ||
             (BuildConfig.DEBUG && uri.scheme == "http" && uri.host == "localhost" && uri.port == 9002)
         return if (approvedOrigin && uri.path == "/merchant/auth/callback" && uri.fragment == null && uri.userInfo == null) uri.toString() else null
@@ -54,7 +54,7 @@ class MainActivity : FlutterActivity() {
                 "open" -> {
                     val uri = call.argument<String>("url")?.let { Uri.parse(it) }
                     val allowed = uri != null && uri.path == "/mobile/authorize" && uri.userInfo == null &&
-                        ((uri.scheme == "https" && uri.host in setOf("accounts.letbuyy.com", "accounts.staging.letbuyy.com") && uri.port == -1) ||
+                        ((uri.scheme == "https" && uri.host in setOf("accounts.letbuyy.com", "accounts-staging.letbuyy.com") && uri.port == -1) ||
                             (BuildConfig.DEBUG && uri.scheme == "http" && uri.host in setOf("localhost", "127.0.0.1") && uri.port == 9002))
                     val browserPackage = CustomTabsClient.getPackageName(this, null)
                     if (!allowed || browserPackage == null) {

@@ -149,7 +149,7 @@ test('mounted merchant issue route returns a code only on first commit and refus
         VALUES ('${STORE_ID}', encode(extensions.digest('${randomUUID()}', 'sha256'), 'hex'),
             'TEST', 75, 75, 'INR', 'active', jsonb_build_object('issue_idempotency_key', '${key}'));`);
     assert.match(directDuplicate, /gift_card_accounts_site_issue_key_unique/);
-    const rollback = readFileSync('database/supabase/rollback/415_gift_card_issue_replay_integrity.rollback.sql', 'utf8');
+    const rollback = readFileSync('database/supabase/rollback/414_gift_card_issue_replay_integrity.rollback.sql', 'utf8');
     assert.match(psqlExpectError(rollback), /Cannot restore the unsafe gift-card issue RPC while cards exist/);
 });
 

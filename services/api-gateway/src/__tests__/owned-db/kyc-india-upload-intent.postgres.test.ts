@@ -6,16 +6,16 @@ import { requireOwnedDatabase } from './owned-db-support';
 import { newSyntheticTenant, seedSyntheticTenant } from './synthetic-tenant';
 
 const owned = requireOwnedDatabase();
-const forward = readFileSync(new URL('../../../../../database/supabase/migrations/421_kyc_india_upload_intent.sql', import.meta.url), 'utf8');
-const rollback = readFileSync(new URL('../../../../../database/supabase/rollback/421_kyc_india_upload_intent.rollback.sql', import.meta.url), 'utf8');
-const providerIsolation = readFileSync(new URL('../../../../../database/supabase/migrations/422_kyc_r2_india_provider_isolation.sql', import.meta.url), 'utf8');
-const providerIsolationRollback = readFileSync(new URL('../../../../../database/supabase/rollback/422_kyc_r2_india_provider_isolation.rollback.sql', import.meta.url), 'utf8');
-const scanForward = readFileSync(new URL('../../../../../database/supabase/migrations/423_kyc_india_scanner_verdict.sql', import.meta.url), 'utf8');
-const scanRollback = readFileSync(new URL('../../../../../database/supabase/rollback/423_kyc_india_scanner_verdict.rollback.sql', import.meta.url), 'utf8');
-const cleanupForward = readFileSync(new URL('../../../../../database/supabase/migrations/424_kyc_india_cleanup_due.sql', import.meta.url), 'utf8');
-const cleanupRollback = readFileSync(new URL('../../../../../database/supabase/rollback/424_kyc_india_cleanup_due.rollback.sql', import.meta.url), 'utf8');
-const earlyScanForward = readFileSync(new URL('../../../../../database/supabase/migrations/425_kyc_india_early_scan_retry.sql', import.meta.url), 'utf8');
-const earlyScanRollback = readFileSync(new URL('../../../../../database/supabase/rollback/425_kyc_india_early_scan_retry.rollback.sql', import.meta.url), 'utf8');
+const forward = readFileSync(new URL('../../../../../database/supabase/migrations/425_kyc_india_upload_intent.sql', import.meta.url), 'utf8');
+const rollback = readFileSync(new URL('../../../../../database/supabase/rollback/425_kyc_india_upload_intent.rollback.sql', import.meta.url), 'utf8');
+const providerIsolation = readFileSync(new URL('../../../../../database/supabase/migrations/426_kyc_r2_india_provider_isolation.sql', import.meta.url), 'utf8');
+const providerIsolationRollback = readFileSync(new URL('../../../../../database/supabase/rollback/426_kyc_r2_india_provider_isolation.rollback.sql', import.meta.url), 'utf8');
+const scanForward = readFileSync(new URL('../../../../../database/supabase/migrations/427_kyc_india_scanner_verdict.sql', import.meta.url), 'utf8');
+const scanRollback = readFileSync(new URL('../../../../../database/supabase/rollback/427_kyc_india_scanner_verdict.rollback.sql', import.meta.url), 'utf8');
+const cleanupForward = readFileSync(new URL('../../../../../database/supabase/migrations/428_kyc_india_cleanup_due.sql', import.meta.url), 'utf8');
+const cleanupRollback = readFileSync(new URL('../../../../../database/supabase/rollback/428_kyc_india_cleanup_due.rollback.sql', import.meta.url), 'utf8');
+const earlyScanForward = readFileSync(new URL('../../../../../database/supabase/migrations/429_kyc_india_early_scan_retry.sql', import.meta.url), 'utf8');
+const earlyScanRollback = readFileSync(new URL('../../../../../database/supabase/rollback/429_kyc_india_early_scan_retry.rollback.sql', import.meta.url), 'utf8');
 
 function intent(siteId: string, id: string, key: string, documentType = 'business_pan'): string {
   return `INSERT INTO public.kyc_private_object_cleanup_jobs

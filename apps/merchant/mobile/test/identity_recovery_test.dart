@@ -185,7 +185,8 @@ void main() {
       unavailable = false;
       final restarted = fixture((r) async {
         expect(r.url.path, '/api/auth/session');
-        expect(r.headers['Cookie'], 'lb_session=$originalToken');
+        expect(r.headers['Authorization'], 'Bearer $originalToken');
+        expect(r.headers['Cookie'], isNull);
         return confirmed();
       }, storage: f.storage);
       await restarted.auth.restoreSession();

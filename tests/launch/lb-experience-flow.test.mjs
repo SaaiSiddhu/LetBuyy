@@ -77,9 +77,9 @@ test('C: onboarding captures an industry and sends it as survey.industry', () =>
   assert.match(onboarding, /ONBOARDING_INDUSTRIES/);
   assert.match(onboarding, /useState<string>\('general'\)/);
   assert.match(onboarding, /onChange=\{\(e\) => setIndustry\(e\.target\.value\)\}/);
-  assert.match(onboarding, /survey: \{ industry \}/);
+  assert.match(onboarding, /survey: \{ industry, channels \}/);
   // Onboarding now names its actual default first-party theme before creation.
-  assert.match(onboarding, /<span>Default theme<\/span>\s*<strong>Circuit<\/strong>/);
+  assert.match(onboarding, /<span>Default theme<\/span>\s*<strong>Selected from the current theme catalog<\/strong>/);
 });
 
 test('C: store creation preserves first-party theme design and only overlays legacy Core', () => {

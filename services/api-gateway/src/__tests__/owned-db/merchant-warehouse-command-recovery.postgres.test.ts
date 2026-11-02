@@ -151,7 +151,7 @@ test('opaque acknowledgements deny raw reads, updates and deletes and retained e
  assert.match(owned.psqlExpectError("DELETE FROM warehouse_command_receipts WHERE idempotency_key="+quote(key)+";"),/immutable/);
  await f.gateway.settle();
  const before=owned.psql("SELECT coalesce(jsonb_agg(to_jsonb(t)ORDER BY id),'[]')::text FROM warehouse_command_receipts t;");
- const down=readFileSync(new URL('../../../../../database/supabase/rollback/414_atomic_warehouse_commands.rollback.sql',import.meta.url),'utf8');
+ const down=readFileSync(new URL('../../../../../database/supabase/rollback/415_atomic_warehouse_commands.rollback.sql',import.meta.url),'utf8');
  assert.match(owned.psqlScriptExpectError(down),/rollback414 refuses retained warehouse command receipts/);
  assert.equal(owned.psql("SELECT coalesce(jsonb_agg(to_jsonb(t)ORDER BY id),'[]')::text FROM warehouse_command_receipts t;"),before);
  const replay=await f.request('/purchase-orders',f.create(key),key);assert.equal(replay.status,201,replay.text);assert.deepEqual(replay.json?.data,positive.json?.data);

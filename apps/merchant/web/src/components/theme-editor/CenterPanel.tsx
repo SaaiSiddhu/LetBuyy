@@ -14,6 +14,7 @@ import {
     INSPECTOR_ADD_SECTION_INTENT,
     EDITOR_INSPECTOR_MODE_MESSAGE,
     EDITOR_READY_MESSAGE,
+    EDITOR_VIEWPORT_MESSAGE,
     editorPreviewContextMatches,
     readEditorPreviewSelection,
     type EditorPreviewContext,
@@ -109,13 +110,12 @@ export default function CenterPanel({
         const url = new URL('/preview', storefrontBaseUrl)
         url.searchParams.set('subdomain', storeName)
         url.searchParams.set('editor', '1')
-        url.searchParams.set('viewport', viewport)
         url.searchParams.set('template', previewContext.templateKey)
         if (previewContext.resourceId) url.searchParams.set('resource_id', previewContext.resourceId)
         if (previewContext.page !== undefined) url.searchParams.set('page', String(previewContext.page))
         if (previewToken) url.searchParams.set('theme_preview_token', previewToken)
         return url.toString()
-    }, [previewToken, storefrontBaseUrl, storeName, viewport, previewContext])
+    }, [previewToken, storefrontBaseUrl, storeName, previewContext])
 
     /**
      * The explicit origin the preview iframe is allowed to post messages from.
@@ -162,6 +162,18 @@ export default function CenterPanel({
         }
     }, [previewOrigin, previewContext, identities, selectedSectionId, selectedBlockId, inspectorEnabled])
 
+    // Device changes resize the actual iframe via CSS. Tell the preview bridge about the
+    // new viewport without navigating or replacing that iframe. This must also run while
+    // inspection is off, and again after each real navigation/READY handshake.
+    const postViewportToPreview = useCallback(() => {
+        const frame = iframeRef.current
+        if (!frame?.contentWindow || !previewOrigin || !previewContext || !iframeLoadedRef.current) return
+        frame.contentWindow.postMessage(
+            { type: EDITOR_VIEWPORT_MESSAGE, viewport, context: previewContext },
+            previewOrigin,
+        )
+    }, [previewOrigin, previewContext, viewport])
+
     // The iframe remounts whenever previewUrl changes (key={previewUrl}); mark it not-yet-loaded until
     // its onLoad fires again so we never post to a still-navigating frame.
     // Also clear hover state so a stale chip doesn't linger across navigations.
@@ -181,10 +193,15 @@ export default function CenterPanel({
         postSelectionToPreview()
     }, [postSelectionToPreview])
 
+    useEffect(() => {
+        postViewportToPreview()
+    }, [postViewportToPreview])
+
     const handlePreviewLoad = useCallback(() => {
         iframeLoadedRef.current = true
+        postViewportToPreview()
         postSelectionToPreview()
-    }, [postSelectionToPreview])
+    }, [postViewportToPreview, postSelectionToPreview])
 
     useEffect(() => {
         function handleMessage(event: MessageEvent) {
@@ -204,6 +221,7 @@ export default function CenterPanel({
                     iframeLoadedRef.current = true
                     previewReadyRef.current = true
                     setFrameError(null)
+                    postViewportToPreview()
                     postSelectionToPreview()
                     break
                 }
@@ -250,7 +268,7 @@ export default function CenterPanel({
 
         window.addEventListener('message', handleMessage)
         return () => window.removeEventListener('message', handleMessage)
-    }, [previewOrigin, previewContext, identities, onSelectSection, onSelectBlock, onHoverSection, onAddSectionIntent, postSelectionToPreview])
+    }, [previewOrigin, previewContext, identities, onSelectSection, onSelectBlock, onHoverSection, onAddSectionIntent, postSelectionToPreview, postViewportToPreview])
 
     return (
         <div className="te-center-panel">

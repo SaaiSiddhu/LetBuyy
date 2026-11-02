@@ -14,7 +14,7 @@ test('fully migrated Core catalog carries current canonical section definitions'
  const stable=(value:unknown):string=>JSON.stringify(value,(_key,item)=>item&&typeof item==='object'&&!Array.isArray(item)?Object.fromEntries(Object.entries(item).sort(([a],[b])=>a.localeCompare(b))):item);
  // The factory is deliberately frozen at the admitted pre-426 bytes. Fresh
  // databases apply the guarded 426 catalog footer patch after that seed.
- const migration=readFileSync('database/supabase/migrations/426_core_public_contact_footer.sql','utf8');
+ const migration=readFileSync('database/supabase/migrations/430_core_public_contact_footer.sql','utf8');
  const source=migration.match(/v_from jsonb := \$corefooterjson\$(.*?)\$corefooterjson\$::jsonb;/s);
  const target=migration.match(/v_to jsonb := \$corefooterjson\$(.*?)\$corefooterjson\$::jsonb;/s);
  assert.ok(source&&target,'migration 426 must declare exact source and target footers');
@@ -26,8 +26,8 @@ test('fully migrated Core catalog carries current canonical section definitions'
 });
 
 test('public-contact footer catalog migration is exact, reversible, and leaves merchant documents intact',()=>{
- const forward=readFileSync('database/supabase/migrations/426_core_public_contact_footer.sql','utf8');
- const rollback=readFileSync('database/supabase/rollback/426_core_public_contact_footer.rollback.sql','utf8');
+ const forward=readFileSync('database/supabase/migrations/430_core_public_contact_footer.sql','utf8');
+ const rollback=readFileSync('database/supabase/rollback/430_core_public_contact_footer.rollback.sql','utf8');
  const catalog=()=>owned.psql("SELECT default_template::text FROM themes WHERE slug='letbuyy-core';");
  const quote=(value:string)=>"'"+value.replaceAll("'","''")+"'";
  const restore=(value:string)=>owned.script(`UPDATE themes SET default_template=${quote(value)}::jsonb WHERE slug='letbuyy-core';`);

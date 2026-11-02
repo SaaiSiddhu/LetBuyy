@@ -7,7 +7,7 @@ export function merchantNativeCallback(clientId: string, callbackId: string, env
         return `com.letbuyy.store.accounts${environment === 'production' ? '' : `.${environment}`}://auth/callback`;
     }
     if (clientId === 'merchant_android' && callbackId === 'android_https') {
-        const origin = { production: 'https://accounts.letbuyy.com', staging: 'https://accounts.staging.letbuyy.com', development: 'http://localhost:9002' }[environment];
+        const origin = { production: 'https://accounts.letbuyy.com', staging: 'https://accounts-staging.letbuyy.com', development: 'http://localhost:9002' }[environment];
         return `${origin}/merchant/auth/callback`;
     }
     return null;

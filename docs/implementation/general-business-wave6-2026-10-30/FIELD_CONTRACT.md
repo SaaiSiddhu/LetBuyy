@@ -46,7 +46,7 @@
 
 ## Retention and unresolved production controls
 
-The repository currently preserves immutable issued invoice facts and order/notification snapshots, but this contract does **not** assign a legal retention period. Migration 420 and the Gateway cron retry deletion of replaced KYC objects in owned tests; they do not implement a retention deadline for current documents or completed cleanup receipts. The deployed India-only KYC storage and scanner do not exist yet. Those choices require the selected provider's agreement, security/privacy review, and an explicit retention/deletion implementation before real documents are accepted. No Cashfree Secure ID account is provisioned, and no provider result contract or signed callback is connected. The live payout path must remain closed.
+The selected [KYC evidence retention decision](./KYC_RETENTION_DECISION.md) minimizes raw-document custody: abandoned and replaced objects are removed, final-decision copies are deleted after provider transfer, pending attempts expire after 30 days, and closure triggers deletion; the decision records exact deadlines and exceptions. This is a product policy awaiting implementation and provider/legal acceptance, not an assertion that the deletion path is complete. Migration 420 and the Gateway cron retry deletion of replaced KYC objects in owned tests; they do not yet implement final-decision, timeout, closure, legal-hold or redacted-record expiry. The deployed India-only KYC storage and scanner do not exist yet. No Cashfree Secure ID account is provisioned, and no provider result contract or signed callback is connected. The live payout path must remain closed.
 
 ## Owning source and evidence
 

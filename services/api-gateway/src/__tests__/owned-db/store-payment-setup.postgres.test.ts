@@ -12,8 +12,8 @@ let gateway: Gateway;
 after(async () => { await gateway?.settle(); });
 
 test('payment setup is explicit, revisioned, tenant-bound and never manufactures live readiness', async t => {
-    owned.script(readFileSync('database/supabase/rollback/416_merchant_razorpay_webhook_secret.rollback.sql','utf8'));
-    owned.script(readFileSync('database/supabase/migrations/416_merchant_razorpay_webhook_secret.sql','utf8'));
+    owned.script(readFileSync('database/supabase/rollback/420_merchant_razorpay_webhook_secret.rollback.sql','utf8'));
+    owned.script(readFileSync('database/supabase/migrations/420_merchant_razorpay_webhook_secret.sql','utf8'));
     const tenant = newSyntheticTenant('pay-setup');
     const other = newSyntheticTenant('pay-other');
     seedSyntheticTenant(owned.psql, tenant); seedSyntheticTenant(owned.psql, other);
@@ -205,7 +205,7 @@ test('payment setup is explicit, revisioned, tenant-bound and never manufactures
         assert.ok([403, 404].includes(denied.status), denied.text); assert.ok(!denied.text.includes(credentials.key_id));
     });
     await t.test('405 rollback waits for active commands and preserves all completed receipts and credential history', async () => {
-        const webhookDown=readFileSync('database/supabase/rollback/416_merchant_razorpay_webhook_secret.rollback.sql','utf8');
+        const webhookDown=readFileSync('database/supabase/rollback/420_merchant_razorpay_webhook_secret.rollback.sql','utf8');
         assert.match(owned.psqlScriptExpectError(webhookDown),/Cannot roll back merchant webhook secret configuration after use/);
         const key=randomUUID();
         owned.psql(`INSERT INTO idempotency_keys(site_id,key,scope,request_hash,status,locked_until,expires_at)

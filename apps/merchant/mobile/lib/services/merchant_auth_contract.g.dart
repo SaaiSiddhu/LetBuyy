@@ -6,7 +6,7 @@ const merchantAuthCallbacks = <String, Map<String, String>>{
       'merchant_ios': 'com.letbuyy.store.accounts.development://auth/callback',
     },
     'staging': {
-      'merchant_android': 'https://accounts.staging.letbuyy.com/merchant/auth/callback',
+      'merchant_android': 'https://accounts-staging.letbuyy.com/merchant/auth/callback',
       'merchant_ios': 'com.letbuyy.store.accounts.staging://auth/callback',
     },
     'production': {

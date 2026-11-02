@@ -8,8 +8,8 @@ import { newSyntheticTenant, seedSyntheticTenant } from './synthetic-tenant';
 import { drainKycIndiaObjectCleanup } from '../../lib/kyc-india-object-cleanup';
 
 const owned = requireOwnedDatabase();
-const forward = readFileSync(new URL('../../../../../database/supabase/migrations/424_kyc_india_cleanup_due.sql', import.meta.url), 'utf8');
-const rollback = readFileSync(new URL('../../../../../database/supabase/rollback/424_kyc_india_cleanup_due.rollback.sql', import.meta.url), 'utf8');
+const forward = readFileSync(new URL('../../../../../database/supabase/migrations/428_kyc_india_cleanup_due.sql', import.meta.url), 'utf8');
+const rollback = readFileSync(new URL('../../../../../database/supabase/rollback/428_kyc_india_cleanup_due.rollback.sql', import.meta.url), 'utf8');
 
 test('India cleanup drains only unreferenced exact-key versions and retains current evidence', async () => {
     owned.psql(rollback);

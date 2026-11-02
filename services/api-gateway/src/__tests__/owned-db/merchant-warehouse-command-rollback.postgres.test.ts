@@ -5,8 +5,8 @@ import {randomUUID} from 'node:crypto';
 import {requireOwnedDatabase} from './owned-db-support';
 import {newSyntheticTenant,seedSyntheticTenant} from './synthetic-tenant';
 const owned=requireOwnedDatabase();
-const up=readFileSync(new URL('../../../../../database/supabase/migrations/414_atomic_warehouse_commands.sql',import.meta.url),'utf8');
-const down=readFileSync(new URL('../../../../../database/supabase/rollback/414_atomic_warehouse_commands.rollback.sql',import.meta.url),'utf8');
+const up=readFileSync(new URL('../../../../../database/supabase/migrations/415_atomic_warehouse_commands.sql',import.meta.url),'utf8');
+const down=readFileSync(new URL('../../../../../database/supabase/rollback/415_atomic_warehouse_commands.rollback.sql',import.meta.url),'utf8');
 const names=['create_purchase_order_with_lines','receive_purchase_order','create_inventory_transfer_with_lines','ship_inventory_transfer','receive_inventory_transfer','receive_purchase_order_line','receive_inventory_transfer_line'];
 function effects(){return owned.psql("SELECT jsonb_agg(jsonb_build_object('id',oid,'owner',proowner,'acl',proacl::text,'definition',pg_get_functiondef(oid))ORDER BY proname)::text FROM pg_proc WHERE pronamespace='public'::regnamespace AND proname IN("+names.map(n=>"'"+n+"'").join(',')+");");}
 function present(){return owned.psql("SELECT to_regclass('public.warehouse_command_receipts')IS NOT NULL AND to_regprocedure('public.apply_warehouse_command_v1(uuid,uuid,text,text,uuid,jsonb,text)')IS NOT NULL;");}
@@ -14,12 +14,12 @@ test('empty warehouse rollback and reapply restore exact raw effect definitions 
  assert.equal(present(),'t');assert.equal(owned.psql('SELECT count(*) FROM warehouse_command_receipts;'),'0');
  const before=effects();assert.equal(JSON.parse(before).length,7);
  const metadata=owned.psql("SELECT jsonb_agg(jsonb_build_array(c.oid,c.relacl::text)ORDER BY c.oid)::text FROM pg_class c WHERE c.oid IN('public.inventory_locations'::regclass,'public.suppliers'::regclass);");
- const restored=JSON.parse(owned.psql("SELECT coalesce(jsonb_agg(jsonb_build_array(object_signature,grantee)),'[]')::text FROM migration_privilege_journal WHERE migration='414' AND privilege='WAREHOUSE METADATA INSERT' AND action='revoked';")) as Array<[string,string]>;
+ const restored=JSON.parse(owned.psql("SELECT coalesce(jsonb_agg(jsonb_build_array(object_signature,grantee)),'[]')::text FROM migration_privilege_journal WHERE migration='415' AND privilege='WAREHOUSE METADATA INSERT' AND action='revoked';")) as Array<[string,string]>;
  assert.ok(restored.length>0,'positive control: original metadata grants were captured');
  assert.equal(owned.psql("SELECT has_function_privilege('app_tenant','public.apply_warehouse_command_v1(uuid,uuid,text,text,uuid,jsonb,text)','EXECUTE');"),'t');
  assert.equal(owned.psql("SELECT has_function_privilege('app_tenant','public.create_purchase_order_with_lines(uuid,uuid,uuid,jsonb,timestamptz,text,uuid,text,text)','EXECUTE');"),'f');
  owned.script(down);assert.equal(present(),'f');
- assert.equal(owned.psql("SELECT count(*)FROM migration_privilege_journal WHERE migration='414';"),'0');
+ assert.equal(owned.psql("SELECT count(*)FROM migration_privilege_journal WHERE migration='415';"),'0');
  assert.equal(owned.psql("SELECT has_function_privilege('app_tenant','public.create_purchase_order_with_lines(uuid,uuid,uuid,jsonb,timestamptz,text,uuid,text,text)','EXECUTE');"),'t','actual original named grant is restored on empty DOWN');
  for(const [signature,role] of restored)assert.equal(owned.psql("SELECT has_table_privilege('"+role+"','"+signature+"','INSERT');"),'t','only captured metadata INSERT grants restored');
  owned.script(up);assert.equal(present(),'t');assert.equal(effects(),before);

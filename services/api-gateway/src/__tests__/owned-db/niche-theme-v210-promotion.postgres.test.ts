@@ -32,11 +32,13 @@ const versionCount = (version: string) => Number(owned.psql(`SELECT count(*) FRO
 const catalogVersions = () => JSON.parse(owned.psql(`SELECT jsonb_object_agg(slug,version)::text FROM public.themes
   WHERE slug IN (${sqlSlugs}) AND owned_by_site_id IS NULL;`)) as Record<string, string>;
 
-test('428 promotes editor-valid 2.1.0 packages without changing admitted 2.0.0 captures; rollback and replay preserve history', () => {
-  assert.equal(read('database/supabase/migrations/428_niche_theme_catalog_v210.sql'), pair.up);
-  assert.equal(read('database/supabase/rollback/428_niche_theme_catalog_v210.rollback.sql'), pair.down);
-  assert.equal(sha256(pair.up), 'a2622ffa92adae84caa247fddc01b5ead57b882bade97fe564fe3044ba0b5149');
-  assert.equal(sha256(pair.down), 'eb32fb29346132d8c0a7a331fd8ddd2ba8cf45e2325d2cd2714fa871643f1648');
+test('432 promotes editor-valid 2.1.0 packages without changing admitted 2.0.0 captures; rollback and replay preserve history', () => {
+  assert.equal(read('database/supabase/migrations/432_niche_theme_catalog_v210.sql'), pair.up);
+  assert.equal(read('database/supabase/rollback/432_niche_theme_catalog_v210.rollback.sql'), pair.down);
+  const pin = JSON.parse(read('docs/implementation/niche-theme-programme/release-v210/INTEGRATION_RELEASE.json')) as { upSha256: string; downSha256: string; manifestSha256: string };
+  assert.equal(proposal.manifestSha256, pin.manifestSha256);
+  assert.equal(sha256(pair.up), pin.upSha256);
+  assert.equal(sha256(pair.down), pin.downSha256);
   const entryVersions = new Set(Object.values(catalogVersions()));
   assert.equal(Object.keys(catalogVersions()).length, 9);
   assert(entryVersions.size === 1 && (entryVersions.has('2.0.0') || entryVersions.has('2.1.0')),
@@ -86,12 +88,12 @@ test('428 promotes editor-valid 2.1.0 packages without changing admitted 2.0.0 c
   owned.scriptLarge(pair.up);
   assert.equal(catalogFingerprint(), promotedCatalog, 'UP replay must be a no-op');
   assert.equal(v200CaptureFingerprint(), beforeV200);
-  owned.psql(`UPDATE public.themes SET config=jsonb_set(config,'{nicheV210Promotion428,artifactSha256}',
+  owned.psql(`UPDATE public.themes SET config=jsonb_set(config,'{nicheV210Promotion432,artifactSha256}',
     '"synthetic-stale"'::jsonb) WHERE slug=${quote(first.slug)} AND owned_by_site_id IS NULL;`);
   const staleState = catalogFingerprint();
   assert.match(owned.psqlScriptExpectError(pair.down), /refusing stale rollback/);
   assert.equal(catalogFingerprint(), staleState, 'failed rollback must be atomic');
-  owned.psql(`UPDATE public.themes SET config=jsonb_set(config,'{nicheV210Promotion428,artifactSha256}',
+  owned.psql(`UPDATE public.themes SET config=jsonb_set(config,'{nicheV210Promotion432,artifactSha256}',
     to_jsonb(${quote(first.payloadSha256)}::text)) WHERE slug=${quote(first.slug)} AND owned_by_site_id IS NULL;`);
   assert.equal(catalogFingerprint(), promotedCatalog);
 
@@ -105,6 +107,6 @@ test('428 promotes editor-valid 2.1.0 packages without changing admitted 2.0.0 c
   assert.equal(catalogFingerprint(), promotedCatalog);
   assert.equal(versionCount('2.1.0'), 9);
   assert.equal(v200CaptureFingerprint(), beforeV200);
-  console.info('NICHE428_OWNED', JSON.stringify({ runId: owned.runId, manifestSha256: proposal.manifestSha256,
+  console.info('NICHE432_OWNED', JSON.stringify({ runId: owned.runId, manifestSha256: proposal.manifestSha256,
     migrated: proposal.artifacts.length, beforeV200, promotedCatalog, rollbackVerified: true, replayVerified: true }));
 });

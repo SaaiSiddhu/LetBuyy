@@ -10,8 +10,8 @@ const script='scripts/liquid-parity/build-letbuyy-core-bundle.mjs';
 const footerScript='scripts/liquid-parity/build-core-public-contact-footer.mjs';
 const migration='database/supabase/migrations/368_core_section_catalog_refresh.sql';
 const rollback='database/supabase/rollback/368_core_section_catalog_refresh.rollback.sql';
-const footerMigration='database/supabase/migrations/426_core_public_contact_footer.sql';
-const footerRollback='database/supabase/rollback/426_core_public_contact_footer.rollback.sql';
+const footerMigration='database/supabase/migrations/430_core_public_contact_footer.sql';
+const footerRollback='database/supabase/rollback/430_core_public_contact_footer.rollback.sql';
 const historical='database/supabase/migrations/200_letbuyy_core_liquid_bundle_attach.sql';
 const seed='database/supabase/seeds/generated/letbuyy-core-liquid-bundle.json';
 function fixture(){

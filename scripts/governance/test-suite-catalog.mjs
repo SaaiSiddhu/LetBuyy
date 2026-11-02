@@ -45,9 +45,9 @@ export const HISTORICAL_GATEWAY_MIGRATION_CEILINGS = Object.freeze({
     'services/api-gateway/src/__tests__/owned-db/theme-editor-template-keys.postgres.test.ts': 390,
     'services/api-gateway/src/__tests__/owned-db/pantry-variant-facts.postgres.test.ts': 387,
     // These exercise the admitted 389/391 capture and rollback contract before
-    // successor migration 428 changes the public catalog pointer to 2.1.0.
-    'services/api-gateway/src/__tests__/owned-db/niche-theme-promotion.postgres.test.ts': 427,
-    'services/api-gateway/src/__tests__/owned-db/theme-shared-groups.postgres.test.ts': 427,
+    // successor migration 432 changes the public catalog pointer to 2.1.0.
+    'services/api-gateway/src/__tests__/owned-db/niche-theme-promotion.postgres.test.ts': 431,
+    'services/api-gateway/src/__tests__/owned-db/theme-shared-groups.postgres.test.ts': 431,
 });
 
 export const ROOT_GATEWAY_DB_SUITE_DIR = 'tests/owned-db';

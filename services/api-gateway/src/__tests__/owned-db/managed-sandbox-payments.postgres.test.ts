@@ -20,8 +20,8 @@ test('explicit managed sandbox connections retain per-store authority, immutable
  const keyId=['rzp','test',randomUUID().replaceAll('-','')].join('_');
  owned.psql(`INSERT INTO users_custom(id,email,email_verified,full_name) VALUES('${actor}','${email}',true,'Synthetic Managed Owner');
  UPDATE sites SET custom_user_id='${actor}',online_payment_enabled=false,cod_enabled=true WHERE id IN('${a.siteId}','${b.siteId}');`);
- const down=readFileSync('database/supabase/rollback/415_managed_sandbox_payment_connections.rollback.sql','utf8');
- const up=readFileSync('database/supabase/migrations/415_managed_sandbox_payment_connections.sql','utf8');
+ const down=readFileSync('database/supabase/rollback/417_managed_sandbox_payment_connections.rollback.sql','utf8');
+ const up=readFileSync('database/supabase/migrations/417_managed_sandbox_payment_connections.sql','utf8');
  await t.test('unused migration DOWN/up conserves sites and restores the original uniqueness rule',()=>{
   const before=owned.psql(`SELECT md5(string_agg(to_jsonb(s)::text,'|' ORDER BY id)) FROM sites s WHERE id IN('${a.siteId}','${b.siteId}');`);
   owned.script(down);owned.script(up);

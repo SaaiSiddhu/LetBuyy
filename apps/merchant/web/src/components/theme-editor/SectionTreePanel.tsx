@@ -21,8 +21,8 @@
  * All imports are from @letbuyy/ui — no raw px / hex / rounded-[] values.
  */
 
-import { useRef, useState, type ReactNode } from 'react'
-import { Button, Select } from '@letbuyy/ui'
+import { Fragment, useRef, useState, type ReactNode } from 'react'
+import { Button } from '@letbuyy/ui'
 import {
     ChevronRight,
     Eye,
@@ -31,20 +31,13 @@ import {
     Plus,
     Trash2,
 } from 'lucide-react'
-import type { ExtendedSectionSchema as SectionSchema } from '@letbuyy/theme-engine'
+import type { ExtendedSectionSchema as SectionSchema, EditorSectionCandidate, EditorSectionGroup, EditorSectionInsertionTarget } from '@letbuyy/theme-engine'
 import { BlockChildRow } from './BlockChildRow'
+import SectionCatalogPopover from './SectionCatalogPopover'
 import type { EditorBlockCatalog } from './editor-block-actions'
 
-import type { BlockEntry, SectionEntry, EditorState, EditorSelection } from './editor-view-state'
+import type { SectionEntry, EditorState, EditorSelection } from './editor-view-state'
 export type { BlockEntry } from './editor-view-state'
-
-type AvailableSection = {
-    type: string
-    name: string
-    description: string
-    hasBlocks: boolean
-    settingsCount: number
-}
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -101,6 +94,8 @@ type TreeSectionRowProps = {
     onMoveDown?: () => void
     onToggle: () => void
     onRemove?: () => void
+    onInsertBefore?: () => void
+    onInsertAfter?: () => void
     onDragStart?: React.DragEventHandler
     onDragOver?: React.DragEventHandler
     onDrop?: React.DragEventHandler
@@ -148,6 +143,8 @@ function TreeSectionRow({
     onMoveDown,
     onToggle,
     onRemove,
+    onInsertBefore,
+    onInsertAfter,
     onDragStart,
     onDragOver,
     onDrop,
@@ -199,6 +196,8 @@ function TreeSectionRow({
                 <span>{sectionName}</span>
             </Button>
             <div className="theme-os-tree-section__actions">
+                {onInsertBefore && <Button unstyled type="button" aria-label={`Add section before ${sectionName}`} onClick={onInsertBefore}><Plus size={13} aria-hidden="true" /></Button>}
+                {onInsertAfter && <Button unstyled type="button" aria-label={`Add section after ${sectionName}`} onClick={onInsertAfter}><Plus size={13} aria-hidden="true" /></Button>}
                 <Button unstyled type="button" aria-label={`Toggle ${sectionName} visibility`} aria-pressed={section.visible} onClick={onToggle}>
                     <Eye size={13} aria-hidden="true" />
                 </Button>
@@ -255,11 +254,13 @@ export type SectionTreePanelProps = {
     sectionSchemas: Record<string, SectionSchema>
     blockCatalogs?: Record<string, EditorBlockCatalog>
     selection: EditorSelection
-    addableSections: AvailableSection[]
-    addSectionType: string
+    templateKey: string
+    catalogTarget: EditorSectionInsertionTarget | null
+    sectionCandidates: EditorSectionCandidate[]
     onSelect: (selection: EditorSelection) => void
-    onAddSectionTypeChange: (type: string) => void
-    onAddSection: () => void
+    onOpenCatalog: (target: EditorSectionInsertionTarget) => void
+    onCloseCatalog: () => void
+    onInsertSection: (type: string) => void
     onMoveSection: (sectionId: string, direction: -1 | 1) => void
     onToggleSection: (sectionId: string) => void
     onRemoveSection: (section: SectionEntry) => void
@@ -305,11 +306,13 @@ export default function SectionTreePanel({
     sectionSchemas,
     blockCatalogs,
     selection,
-    addableSections,
-    addSectionType,
+    templateKey,
+    catalogTarget,
+    sectionCandidates,
     onSelect,
-    onAddSectionTypeChange,
-    onAddSection,
+    onOpenCatalog,
+    onCloseCatalog,
+    onInsertSection,
     onMoveSection,
     onToggleSection,
     onRemoveSection,
@@ -321,6 +324,11 @@ export default function SectionTreePanel({
     const [dragIndex, setDragIndex] = useState<number | null>(null)
     const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
     const treeRef = useRef<HTMLDivElement>(null)
+    const open = (group: EditorSectionGroup, position: EditorSectionInsertionTarget['position'], adjacentSectionId?: string) =>
+        onOpenCatalog({ group, templateKey, position, ...(adjacentSectionId ? { adjacentSectionId } : {}) })
+    const catalogAt = (group: EditorSectionGroup, position: EditorSectionInsertionTarget['position'], adjacentSectionId?: string) =>
+        catalogTarget?.group === group && catalogTarget.position === position && catalogTarget.adjacentSectionId === adjacentSectionId
+            ? <SectionCatalogPopover target={catalogTarget} candidates={sectionCandidates} onChoose={onInsertSection} onClose={onCloseCatalog} /> : null
 
     // ── Keyboard navigation ────────────────────────────────────────────────────
     // Event-delegation: listen once on the role="tree" container so individual
@@ -391,8 +399,9 @@ export default function SectionTreePanel({
             {/* Header — pinned, not draggable */}
             <TreeGroup label="Header">
                 {state.sections.header.map(section => (
+                    <Fragment key={section.id}>
+                    {catalogAt('header', 'before', section.id)}
                     <TreeSectionRow
-                        key={section.id}
                         section={section}
                         schema={sectionSchemas[section.type]}
                         blockCatalog={blockCatalogs?.[section.type]}
@@ -403,12 +412,18 @@ export default function SectionTreePanel({
                         onSelect={() => onSelect({ kind: 'section', sectionId: section.id })}
                         onSelectBlock={(blockId) => onSelect({ kind: 'block', sectionId: section.id, blockId })}
                         onToggle={() => onToggleSection(section.id)}
+                        onInsertBefore={() => open('header', 'before', section.id)}
+                        onInsertAfter={() => open('header', 'after', section.id)}
                         onToggleBlock={onToggleBlock}
                         onAddChildBlock={onAddChildBlock}
                         onRemoveChildBlock={onRemoveChildBlock}
                         onMoveChildBlock={onMoveChildBlock}
                     />
+                    {catalogAt('header', 'after', section.id)}
+                    </Fragment>
                 ))}
+                <div className="theme-os-tree__add"><Button unstyled type="button" onClick={() => open('header', 'end')}><Plus size={14} aria-hidden="true" />Add section to Header</Button></div>
+                {catalogAt('header', 'end')}
             </TreeGroup>
 
             {/* Template — ARIA tree widget; rows are draggable */}
@@ -425,8 +440,9 @@ export default function SectionTreePanel({
                         // selection highlight (selected stays false).
                         const isActiveParent = selection.kind === 'block' && selection.sectionId === section.id
                         return (
+                            <Fragment key={section.id}>
+                            {catalogAt('template', 'before', section.id)}
                             <TreeSectionRow
-                                key={section.id}
                                 section={section}
                                 schema={sectionSchemas[section.type]}
                                 blockCatalog={blockCatalogs?.[section.type]}
@@ -448,6 +464,8 @@ export default function SectionTreePanel({
                                 onMoveDown={() => onMoveSection(section.id, 1)}
                                 onToggle={() => onToggleSection(section.id)}
                                 onRemove={() => onRemoveSection(section)}
+                                onInsertBefore={() => open('template', 'before', section.id)}
+                                onInsertAfter={() => open('template', 'after', section.id)}
                                 onDragStart={handleDragStart(index)}
                                 onDragOver={handleDragOver(index)}
                                 onDrop={handleDrop(index)}
@@ -457,29 +475,27 @@ export default function SectionTreePanel({
                                 onRemoveChildBlock={onRemoveChildBlock}
                                 onMoveChildBlock={onMoveChildBlock}
                             />
+                            {catalogAt('template', 'after', section.id)}
+                            </Fragment>
                         )
                     })}
                 </div>
 
                 <div className="theme-os-tree__add">
-                    <Select
-                        unstyled
-                        value={addSectionType}
-                        onChange={(event) => onAddSectionTypeChange(event.target.value)}
-                        options={addableSections.map((section) => ({ label: section.name, value: section.type }))}
-                    />
-                    <Button unstyled type="button" onClick={onAddSection} disabled={!addSectionType}>
+                    <Button unstyled type="button" onClick={() => open('template', 'end')}>
                         <Plus size={14} aria-hidden="true" />
-                        Add
+                        Add section to Template
                     </Button>
                 </div>
+                {catalogAt('template', 'end')}
             </TreeGroup>
 
             {/* Footer — pinned, not draggable */}
             <TreeGroup label="Footer">
                 {state.sections.footer.map(section => (
+                    <Fragment key={section.id}>
+                    {catalogAt('footer', 'before', section.id)}
                     <TreeSectionRow
-                        key={section.id}
                         section={section}
                         schema={sectionSchemas[section.type]}
                         blockCatalog={blockCatalogs?.[section.type]}
@@ -490,12 +506,18 @@ export default function SectionTreePanel({
                         onSelect={() => onSelect({ kind: 'section', sectionId: section.id })}
                         onSelectBlock={(blockId) => onSelect({ kind: 'block', sectionId: section.id, blockId })}
                         onToggle={() => onToggleSection(section.id)}
+                        onInsertBefore={() => open('footer', 'before', section.id)}
+                        onInsertAfter={() => open('footer', 'after', section.id)}
                         onToggleBlock={onToggleBlock}
                         onAddChildBlock={onAddChildBlock}
                         onRemoveChildBlock={onRemoveChildBlock}
                         onMoveChildBlock={onMoveChildBlock}
                     />
+                    {catalogAt('footer', 'after', section.id)}
+                    </Fragment>
                 ))}
+                <div className="theme-os-tree__add"><Button unstyled type="button" onClick={() => open('footer', 'end')}><Plus size={14} aria-hidden="true" />Add section to Footer</Button></div>
+                {catalogAt('footer', 'end')}
             </TreeGroup>
         </div>
     )

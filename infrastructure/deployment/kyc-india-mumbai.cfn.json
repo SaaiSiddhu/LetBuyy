@@ -20,6 +20,20 @@
       "MinLength": 1,
       "MaxLength": 64,
       "AllowedPattern": "^[A-Za-z0-9_.-]+$"
+    },
+    "OpsAlertEmail": {
+      "Type": "String",
+      "Description": "Owner-controlled operations mailbox for queue alarms. Confirm its SNS subscription before enabling real KYC intake.",
+      "MinLength": 3,
+      "MaxLength": 254,
+      "AllowedPattern": "^[^@ ]+@[^@ ]+\\.[^@ ]+$"
+    },
+    "ScanHealthRuleName": {
+      "Type": "String",
+      "Description": "Unique EventBridge rule name for GuardDuty plan Warning/Error and post-scan tag-failure alerts.",
+      "MinLength": 1,
+      "MaxLength": 64,
+      "AllowedPattern": "^[A-Za-z0-9_.-]+$"
     }
   },
   "Resources": {
@@ -124,7 +138,7 @@
                   "Sid": "ReadAndTagScannedVersions",
                   "Effect": "Allow",
                   "Action": [ "s3:GetObject", "s3:GetObjectVersion", "s3:GetObjectTagging", "s3:GetObjectVersionTagging", "s3:PutObjectTagging", "s3:PutObjectVersionTagging" ],
-                  "Resource": { "Fn::Sub": "${PrivateEvidenceBucket.Arn}/*" }
+                  "Resource": { "Fn::Sub": "${PrivateEvidenceBucket.Arn}/kyc/*" }
                 },
                 {
                   "Sid": "EnableBucketEventsAndCheckOwnership",
@@ -137,6 +151,12 @@
                   "Effect": "Allow",
                   "Action": "s3:PutObject",
                   "Resource": { "Fn::Sub": "${PrivateEvidenceBucket.Arn}/malware-protection-resource-validation-object" }
+                },
+                {
+                  "Sid": "ReadGuardDutyValidationObject",
+                  "Effect": "Allow",
+                  "Action": "s3:GetObject",
+                  "Resource": { "Fn::Sub": "${PrivateEvidenceBucket.Arn}/malware-protection-resource-validation-object" }
                 }
               ]
             }
@@ -148,6 +168,7 @@
       "Type": "AWS::GuardDuty::MalwareProtectionPlan",
       "DependsOn": [ "PrivateEvidenceBucketPolicy" ],
       "Properties": {
+        "Actions": { "Tagging": { "Status": "ENABLED" } },
         "ProtectedResource": {
           "S3Bucket": {
             "BucketName": { "Ref": "PrivateEvidenceBucket" },
@@ -162,6 +183,97 @@
       "Properties": {
         "MessageRetentionPeriod": 1209600,
         "SqsManagedSseEnabled": true
+      }
+    },
+    "OpsAlertTopic": {
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "Subscription": [{ "Protocol": "email", "Endpoint": { "Ref": "OpsAlertEmail" } }]
+      }
+    },
+    "OpsAlertTopicPolicy": {
+      "Type": "AWS::SNS::TopicPolicy",
+      "Properties": {
+        "Topics": [{ "Ref": "OpsAlertTopic" }],
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "SameAccountTopicAdministration",
+              "Effect": "Allow",
+              "Principal": { "AWS": { "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:root" } },
+              "Action": [
+                "sns:GetTopicAttributes", "sns:SetTopicAttributes", "sns:AddPermission",
+                "sns:RemovePermission", "sns:DeleteTopic", "sns:Subscribe",
+                "sns:ListSubscriptionsByTopic", "sns:Publish"
+              ],
+              "Resource": { "Ref": "OpsAlertTopic" }
+            },
+            {
+              "Sid": "OnlyThisStacksQueueAlarmsMayPublish",
+              "Effect": "Allow",
+              "Principal": { "Service": "cloudwatch.amazonaws.com" },
+              "Action": "sns:Publish",
+              "Resource": { "Ref": "OpsAlertTopic" },
+              "Condition": {
+                "ArnEquals": {
+                  "aws:SourceArn": [
+                    { "Fn::Sub": "arn:aws:cloudwatch:ap-south-1:${AWS::AccountId}:alarm:letbuyy-kyc-${ScanRuleName}-dlq" },
+                    { "Fn::Sub": "arn:aws:cloudwatch:ap-south-1:${AWS::AccountId}:alarm:letbuyy-kyc-${ScanRuleName}-age" }
+                  ]
+                },
+                "StringEquals": { "aws:SourceAccount": { "Ref": "AWS::AccountId" } }
+              }
+            },
+            {
+              "Sid": "OnlyThisPlanHealthRuleMayPublish",
+              "Effect": "Allow",
+              "Principal": { "Service": "events.amazonaws.com" },
+              "Action": "sns:Publish",
+              "Resource": { "Ref": "OpsAlertTopic" },
+              "Condition": {
+                "ArnEquals": { "aws:SourceArn": { "Fn::Sub": "arn:aws:events:ap-south-1:${AWS::AccountId}:rule/${ScanHealthRuleName}" } },
+                "StringEquals": { "aws:SourceAccount": { "Ref": "AWS::AccountId" } }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "ScanResultDeadLetterAlarm": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "DependsOn": [ "OpsAlertTopicPolicy" ],
+      "Properties": {
+        "AlarmName": { "Fn::Sub": "letbuyy-kyc-${ScanRuleName}-dlq" },
+        "AlarmDescription": "Private KYC scan results reached the dead-letter queue; investigate before accepting new evidence.",
+        "Namespace": "AWS/SQS",
+        "MetricName": "ApproximateNumberOfMessagesVisible",
+        "Dimensions": [{ "Name": "QueueName", "Value": { "Fn::GetAtt": [ "ScanResultDeadLetterQueue", "QueueName" ] } }],
+        "Statistic": "Maximum",
+        "Period": 60,
+        "EvaluationPeriods": 1,
+        "Threshold": 1,
+        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+        "TreatMissingData": "notBreaching",
+        "AlarmActions": [{ "Ref": "OpsAlertTopic" }]
+      }
+    },
+    "ScanResultAgeAlarm": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "DependsOn": [ "OpsAlertTopicPolicy" ],
+      "Properties": {
+        "AlarmName": { "Fn::Sub": "letbuyy-kyc-${ScanRuleName}-age" },
+        "AlarmDescription": "Private KYC scan results have remained unprocessed for at least ten minutes.",
+        "Namespace": "AWS/SQS",
+        "MetricName": "ApproximateAgeOfOldestMessage",
+        "Dimensions": [{ "Name": "QueueName", "Value": { "Fn::GetAtt": [ "ScanResultQueue", "QueueName" ] } }],
+        "Statistic": "Maximum",
+        "Period": 60,
+        "EvaluationPeriods": 1,
+        "Threshold": 600,
+        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+        "TreatMissingData": "notBreaching",
+        "AlarmActions": [{ "Ref": "OpsAlertTopic" }]
       }
     },
     "ScanResultQueue": {
@@ -231,6 +343,37 @@
         ]
       }
     },
+    "ScanHealthRule": {
+      "Type": "AWS::Events::Rule",
+      "DependsOn": [ "OpsAlertTopicPolicy", "ScanResultDeadLetterQueuePolicy" ],
+      "Properties": {
+        "Name": { "Ref": "ScanHealthRuleName" },
+        "State": "ENABLED",
+        "EventPattern": {
+          "source": [ "aws.guardduty" ],
+          "detail-type": [
+            "GuardDuty Malware Protection Resource Status Warning",
+            "GuardDuty Malware Protection Resource Status warning",
+            "GuardDuty Malware Protection Resource Status Error",
+            "GuardDuty Malware Protection Resource Status error",
+            "GuardDuty Malware Protection Post Scan Action Failed"
+          ],
+          "account": [ { "Ref": "AWS::AccountId" } ],
+          "region": [ "ap-south-1" ],
+          "resources": [ { "Fn::GetAtt": [ "MalwareProtectionPlan", "Arn" ] } ]
+        },
+        "Targets": [{
+          "Id": "letbuyy-kyc-plan-health",
+          "Arn": { "Ref": "OpsAlertTopic" },
+          "InputTransformer": {
+            "InputPathsMap": { "eventType": "$.detail-type" },
+            "InputTemplate": "\"LetBuyy KYC GuardDuty alert: <eventType>. Inspect the restricted AWS console.\""
+          },
+          "RetryPolicy": { "MaximumEventAgeInSeconds": 3600, "MaximumRetryAttempts": 12 },
+          "DeadLetterConfig": { "Arn": { "Fn::GetAtt": [ "ScanResultDeadLetterQueue", "Arn" ] } }
+        }]
+      }
+    },
     "ScanResultDeadLetterQueuePolicy": {
       "Type": "AWS::SQS::QueuePolicy",
       "Properties": {
@@ -245,12 +388,136 @@
               "Action": "sqs:SendMessage",
               "Resource": { "Fn::GetAtt": [ "ScanResultDeadLetterQueue", "Arn" ] },
               "Condition": {
-                "ArnEquals": { "aws:SourceArn": { "Fn::Sub": "arn:aws:events:ap-south-1:${AWS::AccountId}:rule/${ScanRuleName}" } },
+                "ArnEquals": { "aws:SourceArn": [
+                  { "Fn::Sub": "arn:aws:events:ap-south-1:${AWS::AccountId}:rule/${ScanRuleName}" },
+                  { "Fn::Sub": "arn:aws:events:ap-south-1:${AWS::AccountId}:rule/${ScanHealthRuleName}" }
+                ] },
                 "StringEquals": { "aws:SourceAccount": { "Ref": "AWS::AccountId" } }
               }
             }
           ]
         }
+      }
+    },
+    "UploadSourceUser": {
+      "Type": "AWS::IAM::User",
+      "Properties": { "Path": "/letbuyy/kyc/" }
+    },
+    "UploadRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [{
+            "Effect": "Allow",
+            "Principal": { "AWS": { "Fn::GetAtt": [ "UploadSourceUser", "Arn" ] } },
+            "Action": "sts:AssumeRole"
+          }]
+        },
+        "Policies": [{
+          "PolicyName": "ExactSessionUploadOnly",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [{
+              "Effect": "Allow",
+              "Action": "s3:PutObject",
+              "Resource": { "Fn::Sub": "${PrivateEvidenceBucket.Arn}/kyc/*" },
+              "Condition": { "StringEquals": { "s3:x-amz-server-side-encryption": "AES256" } }
+            }]
+          }
+        }]
+      }
+    },
+    "UploadSourcePolicy": {
+      "Type": "AWS::IAM::UserPolicy",
+      "Properties": {
+        "UserName": { "Ref": "UploadSourceUser" },
+        "PolicyName": "AssumeExactKycUploadRole",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [{
+            "Effect": "Allow",
+            "Action": "sts:AssumeRole",
+            "Resource": { "Fn::GetAtt": [ "UploadRole", "Arn" ] }
+          }]
+        }
+      }
+    },
+    "HeadUser": {
+      "Type": "AWS::IAM::User",
+      "Properties": {
+        "Path": "/letbuyy/kyc/",
+        "Policies": [{
+          "PolicyName": "InspectKycVersion",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [{
+              "Effect": "Allow",
+              "Action": [ "s3:GetObject", "s3:GetObjectVersion" ],
+              "Resource": { "Fn::Sub": "${PrivateEvidenceBucket.Arn}/kyc/*" }
+            }]
+          }
+        }]
+      }
+    },
+    "ReviewUser": {
+      "Type": "AWS::IAM::User",
+      "Properties": {
+        "Path": "/letbuyy/kyc/",
+        "Policies": [{
+          "PolicyName": "ReviewKycVersion",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [{
+              "Effect": "Allow",
+              "Action": [ "s3:GetObject", "s3:GetObjectVersion" ],
+              "Resource": { "Fn::Sub": "${PrivateEvidenceBucket.Arn}/kyc/*" },
+              "Condition": { "StringEquals": { "s3:ExistingObjectTag/GuardDutyMalwareScanStatus": "NO_THREATS_FOUND" } }
+            }]
+          }
+        }]
+      }
+    },
+    "CleanupUser": {
+      "Type": "AWS::IAM::User",
+      "Properties": {
+        "Path": "/letbuyy/kyc/",
+        "Policies": [{
+          "PolicyName": "DeleteOnlyKycVersions",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Effect": "Allow",
+                "Action": "s3:ListBucketVersions",
+                "Resource": { "Fn::GetAtt": [ "PrivateEvidenceBucket", "Arn" ] },
+                "Condition": { "StringLike": { "s3:prefix": "kyc/*" } }
+              },
+              {
+                "Effect": "Allow",
+                "Action": "s3:DeleteObjectVersion",
+                "Resource": { "Fn::Sub": "${PrivateEvidenceBucket.Arn}/kyc/*" }
+              }
+            ]
+          }
+        }]
+      }
+    },
+    "ScanPollUser": {
+      "Type": "AWS::IAM::User",
+      "Properties": {
+        "Path": "/letbuyy/kyc/",
+        "Policies": [{
+          "PolicyName": "ConsumeExactScanQueue",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [{
+              "Effect": "Allow",
+              "Action": [ "sqs:ReceiveMessage", "sqs:DeleteMessage" ],
+              "Resource": { "Fn::GetAtt": [ "ScanResultQueue", "Arn" ] }
+            }]
+          }
+        }]
       }
     }
   },
@@ -261,6 +528,13 @@
     "ScanQueueUrl": { "Value": { "Ref": "ScanResultQueue" } },
     "ScanQueueArn": { "Value": { "Fn::GetAtt": [ "ScanResultQueue", "Arn" ] } },
     "ScanDeadLetterQueueUrl": { "Value": { "Ref": "ScanResultDeadLetterQueue" } },
-    "ScanDeadLetterQueueArn": { "Value": { "Fn::GetAtt": [ "ScanResultDeadLetterQueue", "Arn" ] } }
+    "ScanDeadLetterQueueArn": { "Value": { "Fn::GetAtt": [ "ScanResultDeadLetterQueue", "Arn" ] } },
+    "UploadSourceUserArn": { "Value": { "Fn::GetAtt": [ "UploadSourceUser", "Arn" ] } },
+    "UploadRoleArn": { "Value": { "Fn::GetAtt": [ "UploadRole", "Arn" ] } },
+    "HeadUserArn": { "Value": { "Fn::GetAtt": [ "HeadUser", "Arn" ] } },
+    "ReviewUserArn": { "Value": { "Fn::GetAtt": [ "ReviewUser", "Arn" ] } },
+    "CleanupUserArn": { "Value": { "Fn::GetAtt": [ "CleanupUser", "Arn" ] } },
+    "ScanPollUserArn": { "Value": { "Fn::GetAtt": [ "ScanPollUser", "Arn" ] } },
+    "OpsAlertTopicArn": { "Value": { "Ref": "OpsAlertTopic" } }
   }
 }

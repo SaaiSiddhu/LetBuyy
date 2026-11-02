@@ -79,7 +79,7 @@ class AppConfig {
   /// Exact first-party Accounts estate; kept separate from diagnostic labels.
   static const String accountsEnvironment = String.fromEnvironment(
     'ACCOUNTS_ENVIRONMENT',
-    defaultValue: 'production',
+    defaultValue: environment == 'local' || environment == 'development' ? 'development' : environment,
   );
 
   /// Public Merchant origin used to validate pasted invitation destinations.

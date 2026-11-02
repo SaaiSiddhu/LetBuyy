@@ -243,3 +243,14 @@ older split-commit Gateway/BFF. Actual command authority/effects still live in t
 canonical Gateway/SQL owner. No new runtime, issuer or local stock writer is added.
 
 Merchant warehouse fresh detail reads (31 October 2026): `apps/merchant/web/src/app/api/stores/[store]/purchase-orders/[id]/route.ts` and `apps/merchant/web/src/app/api/stores/[store]/transfers/[id]/route.ts` are current-account, owned-site, no-store GET proxies in the existing `gateway-proxy` class. Validation and stock authority remain in Gateway/shared contracts. The maintained technical inventory becomes 235; the freeze validator remains unchanged.
+
+
+### Combined develop integration — 2 November 2026
+
+The union of the independently qualified branches contains **247** app API routes:
+the common 231 plus four KYC transports, four warehouse transports and eight
+Accounts native handoff transports. The complete inventory, ownership classes and
+ESLint baseline were regenerated together. Gateway remains the owner of KYC,
+stock and payment decisions; the existing Accounts issuer owns native exchange.
+No new runtime, route class, database writer or identity issuer is introduced.
+The smaller branch-local inventory totals above are historical receipts.

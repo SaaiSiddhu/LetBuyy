@@ -36,8 +36,8 @@ test('public pricing shows provider gates and survives paired catalog rollback',
         assert.equal(findItem(plan, 'Security', 'KYC verification'), undefined);
     }
 
-    const down = readFileSync(new URL('../../../../../database/supabase/rollback/419_provider_gated_pricing_copy.rollback.sql', import.meta.url), 'utf8');
-    const up = readFileSync(new URL('../../../../../database/supabase/migrations/419_provider_gated_pricing_copy.sql', import.meta.url), 'utf8');
+    const down = readFileSync(new URL('../../../../../database/supabase/rollback/423_provider_gated_pricing_copy.rollback.sql', import.meta.url), 'utf8');
+    const up = readFileSync(new URL('../../../../../database/supabase/migrations/423_provider_gated_pricing_copy.sql', import.meta.url), 'utf8');
     owned.script(down);
     const rolledBack = await readPlans();
     for (const plan of rolledBack) {

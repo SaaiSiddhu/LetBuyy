@@ -52,15 +52,15 @@ DECLARE signature text; f record; j record; relation_row record; shape text; all
 BEGIN
  IF EXISTS(SELECT 1 FROM public.warehouse_command_receipts) THEN
   RAISE EXCEPTION 'rollback414 refuses retained warehouse command receipts';END IF;
- IF (SELECT count(*) FROM public.migration_privilege_journal WHERE migration='414' AND privilege IN('FUNCTION EXECUTION FENCE','PRIVATE RECEIPT SHAPE'))<>3
-  OR EXISTS(SELECT 1 FROM public.migration_privilege_journal WHERE migration='414' AND privilege IN('FUNCTION EXECUTION FENCE','PRIVATE RECEIPT SHAPE') AND NOT(object_signature=ANY(signatures) OR object_signature='public.warehouse_command_receipts'))
-  OR EXISTS(SELECT object_signature FROM public.migration_privilege_journal WHERE migration='414' AND privilege IN('FUNCTION EXECUTION FENCE','PRIVATE RECEIPT SHAPE') GROUP BY object_signature HAVING count(*)<>1)
+ IF (SELECT count(*) FROM public.migration_privilege_journal WHERE migration='415' AND privilege IN('FUNCTION EXECUTION FENCE','PRIVATE RECEIPT SHAPE'))<>3
+  OR EXISTS(SELECT 1 FROM public.migration_privilege_journal WHERE migration='415' AND privilege IN('FUNCTION EXECUTION FENCE','PRIVATE RECEIPT SHAPE') AND NOT(object_signature=ANY(signatures) OR object_signature='public.warehouse_command_receipts'))
+  OR EXISTS(SELECT object_signature FROM public.migration_privilege_journal WHERE migration='415' AND privilege IN('FUNCTION EXECUTION FENCE','PRIVATE RECEIPT SHAPE') GROUP BY object_signature HAVING count(*)<>1)
   OR (SELECT count(*) FROM pg_proc WHERE pronamespace='public'::regnamespace AND proname IN('apply_warehouse_command_v1','guard_warehouse_command_receipt_v1'))<>2 THEN
   RAISE EXCEPTION 'rollback414 refuses missing/changed function family or provenance';END IF;
  FOREACH signature IN ARRAY signatures LOOP
   SELECT p.* INTO f FROM pg_proc p WHERE p.oid=to_regprocedure(signature);
   IF NOT FOUND THEN RAISE EXCEPTION 'rollback414 refuses missing typed function %',signature;END IF;
-  SELECT * INTO j FROM public.migration_privilege_journal WHERE migration='414' AND object_signature=signature;
+  SELECT * INTO j FROM public.migration_privilege_journal WHERE migration='415' AND object_signature=signature;
   allowed_role:=CASE WHEN f.proname='apply_warehouse_command_v1' THEN 'app_tenant'::regrole::oid ELSE f.proowner END;
   IF NOT FOUND OR j.object_oid IS DISTINCT FROM f.oid OR j.object_owner IS DISTINCT FROM f.proowner
    OR j.grantee IS DISTINCT FROM pg_get_userbyid(f.proowner) OR j.privilege IS DISTINCT FROM 'FUNCTION EXECUTION FENCE' OR j.action IS DISTINCT FROM 'granted'
@@ -75,7 +75,7 @@ BEGIN
    RAISE EXCEPTION 'rollback414 refuses changed function body/owner/ACL/provenance: %',signature;END IF;
  END LOOP;
  SELECT * INTO relation_row FROM pg_class WHERE oid='public.warehouse_command_receipts'::regclass;
- SELECT * INTO j FROM public.migration_privilege_journal WHERE migration='414' AND object_signature='public.warehouse_command_receipts';
+ SELECT * INTO j FROM public.migration_privilege_journal WHERE migration='415' AND object_signature='public.warehouse_command_receipts';
  IF NOT FOUND OR j.object_oid IS DISTINCT FROM relation_row.oid OR j.object_owner IS DISTINCT FROM relation_row.relowner
   OR j.grantee IS DISTINCT FROM pg_get_userbyid(relation_row.relowner) OR j.privilege IS DISTINCT FROM 'PRIVATE RECEIPT SHAPE' OR j.action IS DISTINCT FROM 'granted'
   OR relation_row.relowner<>(SELECT oid FROM pg_roles WHERE rolname=current_user)
@@ -106,11 +106,11 @@ DECLARE j record; original record; p record; entry record; signature text; origi
   'public.receive_inventory_transfer_line(public.inventory_transfers,public.inventory_transfer_lines,integer,uuid,text,text)'
  ];
 BEGIN
- IF(SELECT count(*) FROM public.migration_privilege_journal WHERE migration='414' AND privilege='WAREHOUSE EFFECT FENCE')<>7
-  OR(SELECT count(DISTINCT object_signature)FROM public.migration_privilege_journal WHERE migration='414' AND privilege='WAREHOUSE EFFECT FENCE')<>7
-  OR EXISTS(SELECT 1 FROM public.migration_privilege_journal WHERE migration='414' AND privilege='WAREHOUSE EFFECT FENCE' AND NOT(object_signature=ANY(effect_signatures))) THEN
+ IF(SELECT count(*) FROM public.migration_privilege_journal WHERE migration='415' AND privilege='WAREHOUSE EFFECT FENCE')<>7
+  OR(SELECT count(DISTINCT object_signature)FROM public.migration_privilege_journal WHERE migration='415' AND privilege='WAREHOUSE EFFECT FENCE')<>7
+  OR EXISTS(SELECT 1 FROM public.migration_privilege_journal WHERE migration='415' AND privilege='WAREHOUSE EFFECT FENCE' AND NOT(object_signature=ANY(effect_signatures))) THEN
   RAISE EXCEPTION 'rollback414 refuses missing effect provenance';END IF;
- FOR j IN SELECT * FROM public.migration_privilege_journal WHERE migration='414' AND privilege='WAREHOUSE EFFECT FENCE' LOOP
+ FOR j IN SELECT * FROM public.migration_privilege_journal WHERE migration='415' AND privilege='WAREHOUSE EFFECT FENCE' LOOP
   signature:=j.object_signature;
   SELECT * INTO p FROM pg_proc WHERE oid=to_regprocedure(signature);
   IF NOT FOUND OR p.oid IS DISTINCT FROM j.object_oid OR p.proowner IS DISTINCT FROM j.object_owner
@@ -119,7 +119,7 @@ BEGIN
    OR encode(sha256(convert_to(pg_get_functiondef(p.oid),'UTF8')),'hex') IS DISTINCT FROM j.object_definition_hash
    OR EXISTS(SELECT 1 FROM aclexplode(coalesce(p.proacl,acldefault('f',p.proowner)))a WHERE a.grantee<>p.proowner OR a.grantor<>p.proowner) THEN
    RAISE EXCEPTION 'rollback414 refuses changed raw effect: %',signature;END IF;
-  SELECT * INTO original FROM public.migration_privilege_journal WHERE migration='414' AND object_signature=signature
+  SELECT * INTO original FROM public.migration_privilege_journal WHERE migration='415' AND object_signature=signature
    AND privilege LIKE 'WAREHOUSE ORIGINAL SEARCH_PATH=%';
   IF NOT FOUND OR original.object_oid IS DISTINCT FROM p.oid OR original.object_owner IS DISTINCT FROM p.proowner THEN
    RAISE EXCEPTION 'rollback414 refuses missing original effect profile';END IF;
@@ -128,7 +128,7 @@ BEGIN
   EXECUTE format('ALTER FUNCTION %s SET search_path=%s',signature,original_path);
   IF encode(sha256(convert_to(pg_get_functiondef(p.oid),'UTF8')),'hex') IS DISTINCT FROM original.object_definition_hash THEN
    RAISE EXCEPTION 'rollback414 refuses changed original function definition';END IF;
-  FOR entry IN SELECT * FROM public.migration_privilege_journal WHERE migration='414' AND object_signature=signature
+  FOR entry IN SELECT * FROM public.migration_privilege_journal WHERE migration='415' AND object_signature=signature
    AND action='revoked' AND privilege IN('EXECUTE','EXECUTE WITH GRANT OPTION') ORDER BY grantee LOOP
    IF entry.grantee NOT IN('PUBLIC','anon','authenticated','app_tenant','service_role') OR entry.privilege<>'EXECUTE' OR entry.object_oid IS DISTINCT FROM p.oid OR entry.object_owner IS DISTINCT FROM p.proowner THEN RAISE EXCEPTION 'rollback414 refuses changed privilege provenance';END IF;
    role_sql:=CASE WHEN entry.grantee='PUBLIC' THEN 'PUBLIC' ELSE quote_ident(entry.grantee) END;
@@ -142,8 +142,8 @@ LOCK TABLE public.inventory_locations,public.suppliers IN ACCESS EXCLUSIVE MODE;
 DO $metadata_restore$
 DECLARE signature text; relation_row record; j record; entry record; shape text; role_sql text;
 BEGIN
- IF (SELECT count(*)FROM public.migration_privilege_journal WHERE migration='414' AND privilege='WAREHOUSE METADATA TABLE FENCE')<>2
-  OR EXISTS(SELECT 1 FROM public.migration_privilege_journal WHERE migration='414' AND privilege LIKE 'WAREHOUSE METADATA %' AND object_signature NOT IN('public.inventory_locations','public.suppliers')) THEN
+ IF (SELECT count(*)FROM public.migration_privilege_journal WHERE migration='415' AND privilege='WAREHOUSE METADATA TABLE FENCE')<>2
+  OR EXISTS(SELECT 1 FROM public.migration_privilege_journal WHERE migration='415' AND privilege LIKE 'WAREHOUSE METADATA %' AND object_signature NOT IN('public.inventory_locations','public.suppliers')) THEN
   RAISE EXCEPTION 'rollback414 refuses missing/changed metadata provenance';END IF;
  FOREACH signature IN ARRAY ARRAY['public.inventory_locations','public.suppliers'] LOOP
   SELECT * INTO relation_row FROM pg_class WHERE oid=to_regclass(signature);
@@ -159,11 +159,11 @@ SELECT jsonb_build_object(
  'policies',(SELECT jsonb_agg(jsonb_build_array(x.polname,x.polcmd,x.polpermissive,x.polroles,pg_get_expr(x.polqual,x.polrelid),pg_get_expr(x.polwithcheck,x.polrelid)) ORDER BY x.polname) FROM pg_policy x WHERE x.polrelid=t.oid),
  'triggers',(SELECT jsonb_agg(jsonb_build_array(x.tgname,pg_get_triggerdef(x.oid),x.tgenabled) ORDER BY x.tgname) FROM pg_trigger x WHERE x.tgrelid=t.oid AND NOT x.tgisinternal)
  )::text INTO shape FROM pg_class t WHERE t.oid=relation_row.oid;
-  SELECT * INTO j FROM public.migration_privilege_journal WHERE migration='414' AND object_signature=signature AND privilege='WAREHOUSE METADATA TABLE FENCE';
+  SELECT * INTO j FROM public.migration_privilege_journal WHERE migration='415' AND object_signature=signature AND privilege='WAREHOUSE METADATA TABLE FENCE';
   IF NOT FOUND OR j.object_oid IS DISTINCT FROM relation_row.oid OR j.object_owner IS DISTINCT FROM relation_row.relowner OR j.grantee IS DISTINCT FROM pg_get_userbyid(relation_row.relowner)
    OR j.action IS DISTINCT FROM 'granted' OR j.object_definition_hash IS DISTINCT FROM encode(sha256(convert_to(shape,'UTF8')),'hex') THEN
    RAISE EXCEPTION 'rollback414 refuses changed metadata shape/provenance';END IF;
-  FOR entry IN SELECT * FROM public.migration_privilege_journal WHERE migration='414' AND object_signature=signature AND privilege='WAREHOUSE METADATA INSERT' LOOP
+  FOR entry IN SELECT * FROM public.migration_privilege_journal WHERE migration='415' AND object_signature=signature AND privilege='WAREHOUSE METADATA INSERT' LOOP
    IF entry.grantee NOT IN('PUBLIC','anon','authenticated','app_tenant','service_role') OR entry.action<>'revoked' OR entry.object_oid IS DISTINCT FROM relation_row.oid
     OR entry.object_owner IS DISTINCT FROM relation_row.relowner OR entry.object_definition_hash IS DISTINCT FROM j.object_definition_hash THEN RAISE EXCEPTION 'rollback414 refuses changed metadata INSERT provenance';END IF;
    role_sql:=CASE WHEN entry.grantee='PUBLIC' THEN 'PUBLIC' ELSE quote_ident(entry.grantee) END;
@@ -175,6 +175,6 @@ END $metadata_restore$;
 DROP FUNCTION public.apply_warehouse_command_v1(uuid,uuid,text,text,uuid,jsonb,text) RESTRICT;
 DROP TABLE public.warehouse_command_receipts RESTRICT;
 DROP FUNCTION public.guard_warehouse_command_receipt_v1() RESTRICT;
-DELETE FROM public.migration_privilege_journal WHERE migration='414';
+DELETE FROM public.migration_privilege_journal WHERE migration='415';
 NOTIFY pgrst,'reload schema';
 COMMIT;

@@ -32,7 +32,7 @@ before(async () => {
     // the frozen346 rollback and its assertions exact; retire only the empty
     // owned successor fixtures, then restore them before current behavior.
     owned.script(file('rollback','416_durable_product_imports.rollback.sql'));
-    owned.script(file('rollback','414_atomic_warehouse_commands.rollback.sql'));
+    owned.script(file('rollback','415_atomic_warehouse_commands.rollback.sql'));
     // Retire the unused GST successors first; their guards correctly protect the writer.
     owned.script(file('rollback','412_invoice_checkout_fact_parity.rollback.sql'));
     owned.script(file('rollback','411_authoritative_checkout_gst.rollback.sql'));
@@ -393,7 +393,7 @@ test('canonical commerce intent executes through the actual pooled SQL parameter
     restore('388_cart_order_fact_snapshots.sql');
     restore('411_authoritative_checkout_gst.sql');
     restore('412_invoice_checkout_fact_parity.sql');
-    restore('414_atomic_warehouse_commands.sql');
+    restore('415_atomic_warehouse_commands.sql');
     restore('416_durable_product_imports.sql');
 
     const metadata={note:'Synthetic "quotes", apostrophe\' and ₹',nested:[true,null,7]};

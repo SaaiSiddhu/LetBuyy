@@ -92,8 +92,8 @@ COMMIT;
 `;
 }
 const outputs = [
-  ['database/supabase/migrations/426_core_public_contact_footer.sql', sql(false)],
-  ['database/supabase/rollback/426_core_public_contact_footer.rollback.sql', sql(true)],
+  ['database/supabase/migrations/430_core_public_contact_footer.sql', sql(false)],
+  ['database/supabase/rollback/430_core_public_contact_footer.rollback.sql', sql(true)],
 ];
 for (const [path, content] of outputs) {
   const target = resolve(root, path);

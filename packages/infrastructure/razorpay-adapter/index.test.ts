@@ -1,7 +1,6 @@
-import { createRazorpayPaymentProvider, fetchRazorpayOrdersByReceipt, fetchRazorpayPlan, fetchRazorpaySubscription, fetchRazorpayInvoice,fetchRazorpayRefund, hmacSha256Hex, verifyRazorpayCredentials } from './index';
+import { createRazorpayPaymentProvider, fetchRazorpayOrdersByReceipt, fetchRazorpayPlan, fetchRazorpaySubscription, fetchRazorpayInvoice, fetchRazorpayRefund, hmacSha256Hex, verifyRazorpayCredentials, createRazorpayOrder } from './index';
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { verifyRazorpayCredentials, createRazorpayOrder, createRazorpayPaymentProvider, fetchRazorpayOrdersByReceipt, fetchRazorpayPlan, fetchRazorpaySubscription, fetchRazorpayInvoice,fetchRazorpayRefund } from './index';
 
 const orderCredentials = { keyId: 'synthetic-key-id', keySecret: 'synthetic-secret' };
 const orderInput = { amount: 100, currency: 'INR', receipt: 'synthetic-order' };

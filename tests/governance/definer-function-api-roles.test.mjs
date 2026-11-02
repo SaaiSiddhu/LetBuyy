@@ -249,3 +249,20 @@ test('fixed invoker body formatting cannot interpolate SQL or invoke an unknown 
         assert.notDeepEqual(currentDefinerClosureOffenders([closed,migration(258,mutant)]),[]);
     }
 });
+
+
+test('reviewed warehouse ACL tightening never admits an altered dynamic privilege body',()=>{
+ const original=readFileSync(join(migrationsDir,'415_atomic_warehouse_commands.sql'),'utf8');
+ const body=original.match(/DO \$effects\$[\s\S]*?\$effects\$;/)[0];
+ const base=migration(257,mint+close);
+ const check=sql=>currentDefinerClosureOffenders([base,migration(415,sql)]);
+ assert.deepEqual(check(body),[]);
+ for(const statement of [
+  "EXECUTE 'GRANT EXECUTE ON FUNCTION public.mint_things(uuid) TO anon';",
+  "EXECUTE format('GRANT EXECUTE ON FUNCTION %s TO authenticated','public.mint_things(uuid)');"
+ ]){
+  const changed=body.replace('BEGIN',()=>`BEGIN ${statement}`);
+  assert.notEqual(changed,body);
+  assert.ok(check(changed).includes('257_synthetic.sql: public.mint_things'));
+ }
+});

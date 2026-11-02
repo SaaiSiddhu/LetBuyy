@@ -5,6 +5,9 @@ interface SessionReadDependencies {
     getSessionCookie(): Promise<string | undefined | null>
     requestSession(token: string): Promise<{ status: number; ok: boolean; json(): Promise<unknown> }>
     setSessionCookie(token: string): Promise<void>
+    includeRotatedToken?: boolean
+    deniedStatus?: number
+    continuation?(): Promise<Record<string, unknown>>
 }
 
 const record = (value: unknown): Record<string, unknown> | null =>
@@ -18,11 +21,11 @@ export function createMerchantSessionRead(dependencies: SessionReadDependencies)
     return async function readSession() {
         try {
             const token = await dependencies.getSessionCookie()
-            if (!token || !verifyLetbuyySessionCookieValue('merchant', token).accepted) return reply({ authenticated: false })
+            if (!token || !verifyLetbuyySessionCookieValue('merchant', token).accepted) return reply({ authenticated: false }, dependencies.deniedStatus ?? 200)
             const response = await dependencies.requestSession(token)
             const payload = record(await response.json())
             if ([200, 401, 403].includes(response.status) && payload?.authenticated === false) {
-                return reply({ authenticated: false })
+                return reply({ authenticated: false }, dependencies.deniedStatus ?? 200)
             }
             // A rejected internal signature or a database/transport failure is
             // not evidence that this user's previously issued token expired.
@@ -32,9 +35,12 @@ export function createMerchantSessionRead(dependencies: SessionReadDependencies)
             const { rotated_session_token: rotatedToken, ...session } = payload
             if (rotatedToken !== undefined) {
                 if (typeof rotatedToken !== 'string' || !verifyLetbuyySessionCookieValue('merchant', rotatedToken).accepted) return unavailable()
-                await dependencies.setSessionCookie(rotatedToken)
+                if (!dependencies.includeRotatedToken) await dependencies.setSessionCookie(rotatedToken)
             }
-            return reply(session)
+            return reply({ ...session,
+                ...(dependencies.includeRotatedToken && rotatedToken ? { rotated_session_token: rotatedToken } : {}),
+                ...await dependencies.continuation?.(),
+            })
         } catch {
             return unavailable()
         }

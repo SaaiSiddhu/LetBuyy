@@ -48,8 +48,8 @@ test('actual Data API roles deny both RPCs while backend calls and the RLS helpe
 });
 
 test('427 named closure is a reversible no-op on the closed catalog and refuses an unexpected open ACL',()=>{
- const forward=readFileSync('database/supabase/migrations/427_attest_current_definer_role_closure.sql','utf8');
- const rollback=readFileSync('database/supabase/rollback/427_attest_current_definer_role_closure.rollback.sql','utf8');
+ const forward=readFileSync('database/supabase/migrations/431_attest_current_definer_role_closure.sql','utf8');
+ const rollback=readFileSync('database/supabase/rollback/431_attest_current_definer_role_closure.rollback.sql','utf8');
  const before=snapshot();
  owned.script(rollback);assert.deepEqual(snapshot(),before,'paired rollback preserves every current definer ACL');
  owned.script(forward);assert.deepEqual(snapshot(),before,'replay preserves function bodies, owners, and ACLs');

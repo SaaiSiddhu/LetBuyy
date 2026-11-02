@@ -166,6 +166,17 @@ function withFirstPartyChildOutlets(base: LiquidThemePackageBundle): LiquidTheme
         host.schema.blocks.push({ type: 'badge', name: badge.schema.name, settings: structuredClone(badge.schema.settings) });
         host.source = host.source.replace(/{% schema %}[\s\S]*?{% endschema %}/, '{% schema %}\n' + JSON.stringify(host.schema) + '\n{% endschema %}');
     }
+    // Placement metadata belongs to this explicit distribution revision.
+    // Frozen defaults and earlier captures keep their exact parsed shape.
+    for (const [type, file] of Object.entries(bundle.sections)) {
+        file.schema.enabled_on.groups = type === 'header' || type === 'announcement-bar'
+            ? ['header'] : type === 'footer' ? ['footer']
+                : type === 'newsletter-signup' ? ['template', 'footer'] : ['template'];
+        file.schema.disabled_on.groups = [];
+        if (type === 'header' || type === 'footer') file.schema.limit = 1;
+        file.source = file.source.replace(/{% schema %}[\s\S]*?{% endschema %}/,
+            '{% schema %}\n' + JSON.stringify(file.schema, null, 2) + '\n{% endschema %}');
+    }
     bundle.package = { ...bundle.package, version: '2.1.0', version_number: 5 };
     delete bundle.package.checksum;
     return LiquidThemePackageBundleSchema.parse(bundle);

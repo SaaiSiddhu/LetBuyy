@@ -43,6 +43,7 @@ CREATE OR REPLACE FUNCTION public.commit_store_payment_configuration_v1(p_site_i
 RETURNS jsonb LANGUAGE plpgsql SECURITY INVOKER SET search_path=pg_catalog,public AS $fn$
 DECLARE s public.sites; receipt public.idempotency_keys; root public.payment_credentials;
  v_id uuid; v_root uuid; v_version integer; c public.payment_credentials; reply jsonb; razor jsonb; now_at timestamptz:=clock_timestamp();
+ managed boolean:=p_payload->>'account_model'='managed_sandbox';
 BEGIN
  IF p_operation IS NULL OR p_operation NOT IN('save','methods') OR jsonb_typeof(p_payload) IS DISTINCT FROM 'object'
   OR jsonb_typeof(p_public_response) IS DISTINCT FROM 'object' OR p_public_response->>'success' IS DISTINCT FROM 'true'
@@ -64,7 +65,8 @@ BEGIN
   RAISE EXCEPTION 'PAYMENT_CONFIG_CONFLICT' USING ERRCODE='22023';
  END IF;
  IF p_operation='save' THEN
-  IF p_credentials_usable IS DISTINCT FROM true OR (SELECT count(*) FROM jsonb_object_keys(p_payload))<>3
+  IF p_credentials_usable IS DISTINCT FROM true OR (SELECT count(*) FROM jsonb_object_keys(p_payload))<>(CASE WHEN managed THEN 4 ELSE 3 END)
+   OR (p_payload ? 'account_model' AND p_payload->>'account_model' IS DISTINCT FROM 'managed_sandbox')
    OR NOT(p_payload ?& ARRAY['credential_id','key_id','key_secret_ciphertext'])
    OR jsonb_typeof(p_payload->'credential_id') IS DISTINCT FROM 'string'
    OR jsonb_typeof(p_payload->'key_id') IS DISTINCT FROM 'string'
@@ -79,20 +81,23 @@ BEGIN
   -- revision. No different store can win a concurrent root-key claim.
   PERFORM pg_advisory_xact_lock(hashtextextended('payment-key:sandbox:'||(p_payload->>'key_id'),0));
   SELECT * INTO root FROM public.payment_credentials WHERE provider='razorpay' AND mode='sandbox'
-   AND provider_key_id=p_payload->>'key_id' AND id=connection_id FOR UPDATE;
+   AND provider_key_id=p_payload->>'key_id' AND id=connection_id
+   AND coalesce(metadata->>'account_model'='managed_sandbox',false)=coalesce(managed,false)
+   AND (NOT coalesce(managed,false) OR site_id=p_site_id) FOR UPDATE;
   IF root.id IS NOT NULL AND root.site_id<>p_site_id THEN
    RAISE EXCEPTION 'PAYMENT_CONNECTION_OWNERSHIP_CONFLICT' USING ERRCODE='22023'; END IF;
   v_root:=coalesce(root.id,v_id);
   SELECT coalesce(max(credential_version),0)+1 INTO v_version FROM public.payment_credentials WHERE connection_id=v_root;
   INSERT INTO public.payment_credentials(id,site_id,provider,mode,status,kms_key_ref,encrypted_credentials,
-   last_verified_at,connection_id,credential_version,provider_key_id,created_by,updated_by)
+   last_verified_at,connection_id,credential_version,provider_key_id,created_by,updated_by,metadata)
   VALUES(v_id,p_site_id,'razorpay','sandbox','active','payment-config:v3:'||split_part(p_payload->>'key_secret_ciphertext',':',2),
-   jsonb_build_object('key_secret_ciphertext',p_payload->>'key_secret_ciphertext'),now_at,v_root,v_version,p_payload->>'key_id',p_actor_id,p_actor_id);
+   jsonb_build_object('key_secret_ciphertext',p_payload->>'key_secret_ciphertext'),now_at,v_root,v_version,p_payload->>'key_id',p_actor_id,p_actor_id,
+   CASE WHEN managed THEN jsonb_build_object('account_model','managed_sandbox') ELSE '{}'::jsonb END);
   UPDATE public.payment_credentials SET selected_for_checkout=false,updated_by=p_actor_id
    WHERE site_id=p_site_id AND mode='sandbox' AND selected_for_checkout;
   razor:=jsonb_build_object('credential_id',v_id,'key_id',p_payload->>'key_id','test_mode',true,'verified',true,
    'connected_at',now_at,'updated_at',now_at);
-  UPDATE public.sites SET payment_settings=jsonb_build_object('mode','ownAccount','gateways',jsonb_build_array('razorpay'),'razorpay',razor),
+  UPDATE public.sites SET payment_settings=jsonb_build_object('mode',CASE WHEN managed THEN 'managedSandbox' ELSE 'ownAccount' END,'gateways',jsonb_build_array('razorpay'),'razorpay',razor),
    online_payment_enabled=false,updated_by=p_actor_id,updated_at=now_at WHERE id=p_site_id RETURNING * INTO s;
  ELSE
   IF (SELECT count(*) FROM jsonb_object_keys(p_payload)) NOT BETWEEN 1 AND 2
@@ -101,11 +106,12 @@ BEGIN
    OR (p_payload ? 'cod_enabled' AND jsonb_typeof(p_payload->'cod_enabled')<>'boolean') THEN
    RAISE EXCEPTION 'PAYMENT_CONFIG_INVALID' USING ERRCODE='22023'; END IF;
   IF p_payload->>'online_payment_enabled'='true' THEN
-   IF p_credentials_usable IS DISTINCT FROM true OR s.payment_settings->>'mode' IS DISTINCT FROM 'ownAccount' THEN
+   IF p_credentials_usable IS DISTINCT FROM true OR coalesce(s.payment_settings->>'mode','') NOT IN('ownAccount','managedSandbox') THEN
     RAISE EXCEPTION 'PAYMENT_NOT_READY' USING ERRCODE='22023'; END IF;
    SELECT * INTO c FROM public.payment_credentials WHERE id=(s.payment_settings->'razorpay'->>'credential_id')::uuid
     AND site_id=p_site_id AND provider='razorpay' AND mode='sandbox' AND status='active' AND deleted_at IS NULL FOR UPDATE;
-   IF c.id IS NULL OR c.last_verified_at IS NULL THEN RAISE EXCEPTION 'PAYMENT_NOT_READY' USING ERRCODE='22023'; END IF;
+   IF c.id IS NULL OR c.last_verified_at IS NULL
+    OR (s.payment_settings->>'mode'='managedSandbox') IS DISTINCT FROM coalesce(c.metadata->>'account_model'='managed_sandbox',false) THEN RAISE EXCEPTION 'PAYMENT_NOT_READY' USING ERRCODE='22023'; END IF;
    UPDATE public.payment_credentials SET selected_for_checkout=false,updated_by=p_actor_id WHERE site_id=p_site_id AND mode='sandbox' AND selected_for_checkout;
    UPDATE public.payment_credentials SET selected_for_checkout=true,updated_by=p_actor_id WHERE id=c.id AND site_id=p_site_id;
   ELSIF p_payload->>'online_payment_enabled'='false' THEN
@@ -128,4 +134,5 @@ REVOKE ALL ON FUNCTION public.commit_store_payment_configuration_v1(uuid,uuid,ti
  FROM PUBLIC,anon,authenticated,app_tenant;
 GRANT EXECUTE ON FUNCTION public.commit_store_payment_configuration_v1(uuid,uuid,timestamptz,uuid,text,text,jsonb,boolean,jsonb) TO service_role;
 NOTIFY pgrst,'reload schema';
+
 COMMIT;

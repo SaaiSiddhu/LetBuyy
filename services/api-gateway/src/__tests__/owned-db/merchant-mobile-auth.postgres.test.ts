@@ -12,7 +12,7 @@ const verifier = 'v'.repeat(43), state = 's'.repeat(43), launchProof = 'l'.repea
 async function fixture() {
     const code = Buffer.from(crypto.getRandomValues(new Uint8Array(32))).toString('base64url');
     const userId = crypto.randomUUID(), email = `syn-native-${userId}@example.invalid`;
-    const password = 'Synthetic-Native-Password-42!';
+    const password = 'Synthetic-Native-Password-42!'; // Local synthetic example fixture; no real credential.
     const hash = await hashMerchantPassword(password);
     owned.psql(`INSERT INTO users_custom(id,email,email_verified,password_hash) VALUES('${userId}','${email}',true,'${hash}');`);
     const keys = await newIdentityKeys(), gateway = new Gateway(gatewayEnv(owned, keys, { ENVIRONMENT: 'local', APP_ENV: 'development', TOTP_ENCRYPTION_KEY: 'synthetic-merchant-native-totp-encryption-key' }));
@@ -137,7 +137,7 @@ test('lost authenticator recovery consumes a code once after password proof and 
     const ciphertext = await encryptTextAesGcm('synthetic-merchant-native-totp-encryption-key', 'JBSWY3DPEHPK3PXP');
     owned.psql(`INSERT INTO merchant_2fa_factors(id,custom_user_id,status,secret_ciphertext,recovery_code_hashes) VALUES('${factorId}','${f.userId}','active','${ciphertext}',ARRAY['${await merchantNativeHash(factorId + ':' + recovery)}']);`);
     assert.equal((await f.call('users/authenticate', { email: f.email, password: f.password })).json?.mfa_required, true);
-    assert.equal((await f.call('users/authenticate', { email: f.email, password: 'Wrong-Password-42!', recovery_code: recovery })).status, 401);
+    assert.equal((await f.call('users/authenticate', { email: f.email, password: 'Wrong-Password-42!', recovery_code: recovery })).status, 401); // Local synthetic example fixture; no real credential.
     const attempts = await Promise.all([1, 2].map(() => f.call('users/authenticate', { email: f.email, password: f.password, recovery_code: recovery })));
     assert.deepEqual(attempts.map(r => r.status).sort(), [200, 401]);
     assert.equal(owned.psql(`SELECT status||':'||cardinality(recovery_code_hashes) FROM merchant_2fa_factors WHERE id='${factorId}';`), 'active:0');
@@ -147,7 +147,7 @@ test('password setup is one-time even when stale verified browser intents race',
     const f = await fixture();
     assert.equal((await f.call('password-set-intents/create', { user_id: f.userId, email: f.email })).status, 409);
     owned.psql(`UPDATE users_custom SET password_hash=NULL WHERE id='${f.userId}';`);
-    const firstPassword = 'Synthetic-First-Password-42!', secondPassword = 'Synthetic-Second-Password-42!';
+    const firstPassword = 'Synthetic-First-Password-42!', secondPassword = 'Synthetic-Second-Password-42!'; // Local synthetic example fixture; no real credential.
     const replies = await Promise.all([firstPassword, secondPassword].map(password => f.call('users/set-password', { user_id: f.userId, email: f.email, password })));
     assert.deepEqual(replies.map(reply => reply.status).sort(), [200, 409]);
     const winningPassword = replies[0].status === 200 ? firstPassword : secondPassword;
@@ -168,8 +168,8 @@ test('a valid authenticator counter cannot be replayed', async () => {
 
 test('paired rollback preserves canonical sessions and reapplying restores the handoff', () => {
     const before = owned.psql('SELECT count(*) FROM sessions;');
-    owned.script(readFileSync('database/supabase/rollback/416_merchant_accounts_mobile_handoff.rollback.sql', 'utf8'));
+    owned.script(readFileSync('database/supabase/rollback/418_merchant_accounts_mobile_handoff.rollback.sql', 'utf8'));
     assert.equal(owned.psql('SELECT count(*) FROM sessions;'), before);
-    owned.script(readFileSync('database/supabase/migrations/416_merchant_accounts_mobile_handoff.sql', 'utf8'));
+    owned.script(readFileSync('database/supabase/migrations/418_merchant_accounts_mobile_handoff.sql', 'utf8'));
     assert.equal(owned.psql("SELECT count(*) FROM information_schema.tables WHERE table_name='merchant_mobile_requests';"), '1');
 });

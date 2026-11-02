@@ -6,10 +6,10 @@ import { requireOwnedDatabase } from './owned-db-support';
 import { newSyntheticTenant, seedSyntheticTenant } from './synthetic-tenant';
 
 const owned = requireOwnedDatabase();
-const migration = readFileSync(new URL('../../../../../database/supabase/migrations/415_kyc_private_metadata_gateway_only.sql', import.meta.url), 'utf8');
-const rollback = readFileSync(new URL('../../../../../database/supabase/rollback/415_kyc_private_metadata_gateway_only.rollback.sql', import.meta.url), 'utf8');
-const referenceLimitMigration = readFileSync(new URL('../../../../../database/supabase/migrations/417_kyc_last_four_reference_limit.sql', import.meta.url), 'utf8');
-const referenceLimitRollback = readFileSync(new URL('../../../../../database/supabase/rollback/417_kyc_last_four_reference_limit.rollback.sql', import.meta.url), 'utf8');
+const migration = readFileSync(new URL('../../../../../database/supabase/migrations/419_kyc_private_metadata_gateway_only.sql', import.meta.url), 'utf8');
+const rollback = readFileSync(new URL('../../../../../database/supabase/rollback/419_kyc_private_metadata_gateway_only.rollback.sql', import.meta.url), 'utf8');
+const referenceLimitMigration = readFileSync(new URL('../../../../../database/supabase/migrations/421_kyc_last_four_reference_limit.sql', import.meta.url), 'utf8');
+const referenceLimitRollback = readFileSync(new URL('../../../../../database/supabase/rollback/421_kyc_last_four_reference_limit.rollback.sql', import.meta.url), 'utf8');
 
 function apply(sql: string) {
     owned.script(sql);

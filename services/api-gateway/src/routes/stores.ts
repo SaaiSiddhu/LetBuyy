@@ -476,7 +476,7 @@ router.post('/:id/payment-config', validate('json', z.union([PaymentConfigSchema
     if ('attach_to_existing' in body) {
         const hydrated = await hydratePaymentCredential(db, store);
         const selected = hydrated.payment_settings?.razorpay;
-        if (!selected?.credential_id || selected.test_mode !== true || selected.verified !== true || !selected.key_id) {
+        if (hydrated.payment_settings?.mode !== 'ownAccount' || !selected?.credential_id || selected.test_mode !== true || selected.verified !== true || !selected.key_id) {
             throw new AppError('This test connection must be reconnected before a webhook secret can be added.', 409, 'PAYMENT_CONNECTION_UPGRADE_REQUIRED');
         }
         const saved = await readStoreRazorpayTestCredentials(hydrated.payment_settings,

@@ -1,7 +1,49 @@
--- Keep merchant webhook secrets in the same immutable credential version and atomic receipt.
--- No callback eligibility or live activation is inferred from saving a secret.
--- Local canonical settings commands: configuration/version selection and the
--- existing HTTP receipt commit together. No provider effect or live activation.
+BEGIN;
+SET LOCAL lock_timeout='5s';
+-- Refuse ABI drift before any schema mutation; CREATE OR REPLACE must not add an overload.
+DO $rollback_precondition$
+DECLARE
+  v_expected record;
+  v_live pg_catalog.pg_proc%ROWTYPE;
+  v_count integer;
+BEGIN
+  FOR v_expected IN SELECT * FROM (VALUES
+    ('commit_store_payment_configuration_v1', 'public.commit_store_payment_configuration_v1(uuid,uuid,timestamptz,uuid,text,text,jsonb,boolean,jsonb)', ARRAY['p_site_id','p_actor_id','p_expected_revision','p_claim_id','p_request_hash','p_operation','p_payload','p_credentials_usable','p_public_response']::text[], 'jsonb', false)
+  ) AS expected(name, signature, input_names, result_type, returns_set)
+  LOOP
+    SELECT count(*) INTO v_count FROM pg_catalog.pg_proc p
+      JOIN pg_catalog.pg_namespace n ON n.oid = p.pronamespace
+     WHERE n.nspname = 'public' AND p.proname = v_expected.name;
+    IF v_count <> 1 OR pg_catalog.to_regprocedure(v_expected.signature) IS NULL THEN
+      RAISE EXCEPTION 'rollback 417 refuses to run: % signature or overload set changed', v_expected.name;
+    END IF;
+    SELECT * INTO v_live FROM pg_catalog.pg_proc p
+     WHERE p.oid = pg_catalog.to_regprocedure(v_expected.signature);
+    IF COALESCE(v_live.proargnames[1:v_live.pronargs], ARRAY[]::text[]) IS DISTINCT FROM v_expected.input_names
+       OR v_live.prorettype IS DISTINCT FROM v_expected.result_type::regtype
+       OR v_live.proretset IS DISTINCT FROM v_expected.returns_set
+       OR v_live.prokind <> 'f' THEN
+      RAISE EXCEPTION 'rollback 417 refuses to run: % input names or result ABI changed', v_expected.name;
+    END IF;
+  END LOOP;
+END;
+$rollback_precondition$;
+
+DO $guard$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.payment_credentials WHERE metadata->>'account_model'='managed_sandbox')
+ OR EXISTS(SELECT 1 FROM public.idempotency_keys WHERE scope ~ '^http:(POST|PATCH):/stores/[^/]+/payment-config$'
+  AND status='processing' AND locked_until>clock_timestamp() AND deleted_at IS NULL) THEN
+  RAISE EXCEPTION '415 rollback requires unused managed sandbox history and drained configuration commands';
+ END IF;
+END $guard$;
+DROP FUNCTION public.store_payment_managed_sandbox_supported_v1();
+DROP TRIGGER managed_payment_credential_v1 ON public.payment_credentials;
+DROP FUNCTION public.guard_managed_payment_credential_v1();
+ALTER TABLE public.payment_credentials DROP CONSTRAINT payment_credentials_managed_sandbox_only;
+DROP INDEX public.payment_credentials_one_managed_sandbox_key;
+DROP INDEX public.payment_credentials_one_manual_key;
+CREATE UNIQUE INDEX payment_credentials_one_manual_key ON public.payment_credentials(provider,mode,provider_key_id)
+ WHERE id=connection_id AND provider_key_id IS NOT NULL;
 CREATE OR REPLACE FUNCTION public.commit_store_payment_configuration_v1(p_site_id uuid,p_actor_id uuid,
  p_expected_revision timestamptz,p_claim_id uuid,p_request_hash text,p_operation text,p_payload jsonb,
  p_credentials_usable boolean,p_public_response jsonb)
@@ -13,7 +55,7 @@ BEGIN
   OR jsonb_typeof(p_public_response) IS DISTINCT FROM 'object' OR p_public_response->>'success' IS DISTINCT FROM 'true'
   OR p_public_response->'data'->>'store_id' IS DISTINCT FROM p_site_id::text
   OR length(p_public_response::text)>16384
-  OR p_public_response::text ~ '"(key_secret|key_secret_ciphertext|webhook_secret|webhook_secret_ciphertext|encrypted_credentials|access_token|refresh_token)"' THEN
+  OR p_public_response::text ~ '"(key_secret|key_secret_ciphertext|encrypted_credentials|access_token|refresh_token)"' THEN
   RAISE EXCEPTION 'PAYMENT_CONFIG_INVALID' USING ERRCODE='22023';
  END IF;
  SELECT * INTO s FROM public.sites WHERE id=p_site_id AND deleted_at IS NULL
@@ -29,20 +71,16 @@ BEGIN
   RAISE EXCEPTION 'PAYMENT_CONFIG_CONFLICT' USING ERRCODE='22023';
  END IF;
  IF p_operation='save' THEN
-  IF p_credentials_usable IS DISTINCT FROM true OR (SELECT count(*) FROM jsonb_object_keys(p_payload)) NOT BETWEEN 3 AND 4
-   OR EXISTS(SELECT 1 FROM jsonb_object_keys(p_payload) k WHERE k NOT IN('credential_id','key_id','key_secret_ciphertext','webhook_secret_ciphertext'))
+  IF p_credentials_usable IS DISTINCT FROM true OR (SELECT count(*) FROM jsonb_object_keys(p_payload))<>3
    OR NOT(p_payload ?& ARRAY['credential_id','key_id','key_secret_ciphertext'])
    OR jsonb_typeof(p_payload->'credential_id') IS DISTINCT FROM 'string'
    OR jsonb_typeof(p_payload->'key_id') IS DISTINCT FROM 'string'
    OR jsonb_typeof(p_payload->'key_secret_ciphertext') IS DISTINCT FROM 'string'
    OR p_payload->>'key_id' !~ '^rzp_test_[A-Za-z0-9]{3,119}$'
-   OR length(p_payload->>'key_secret_ciphertext') NOT BETWEEN 80 AND 4096
-   OR (p_payload ? 'webhook_secret_ciphertext' AND (jsonb_typeof(p_payload->'webhook_secret_ciphertext') IS DISTINCT FROM 'string'
-    OR length(p_payload->>'webhook_secret_ciphertext') NOT BETWEEN 80 AND 4096)) THEN
+   OR length(p_payload->>'key_secret_ciphertext') NOT BETWEEN 80 AND 4096 THEN
    RAISE EXCEPTION 'PAYMENT_CONFIG_INVALID' USING ERRCODE='22023'; END IF;
   v_id:=(p_payload->>'credential_id')::uuid;
-  IF p_payload->>'key_secret_ciphertext' NOT LIKE 'v3:%:'||v_id::text||':%'
-   OR (p_payload ? 'webhook_secret_ciphertext' AND p_payload->>'webhook_secret_ciphertext' NOT LIKE 'v3:%:'||v_id::text||':%') THEN
+  IF p_payload->>'key_secret_ciphertext' NOT LIKE 'v3:%:'||v_id::text||':%' THEN
    RAISE EXCEPTION 'PAYMENT_CONFIG_INVALID' USING ERRCODE='22023'; END IF;
   -- Serialize first ownership of this exact recorded key as well as this site's
   -- revision. No different store can win a concurrent root-key claim.
@@ -56,8 +94,7 @@ BEGIN
   INSERT INTO public.payment_credentials(id,site_id,provider,mode,status,kms_key_ref,encrypted_credentials,
    last_verified_at,connection_id,credential_version,provider_key_id,created_by,updated_by)
   VALUES(v_id,p_site_id,'razorpay','sandbox','active','payment-config:v3:'||split_part(p_payload->>'key_secret_ciphertext',':',2),
-   jsonb_build_object('key_secret_ciphertext',p_payload->>'key_secret_ciphertext')
-    || CASE WHEN p_payload ? 'webhook_secret_ciphertext' THEN jsonb_build_object('webhook_secret_ciphertext',p_payload->>'webhook_secret_ciphertext') ELSE '{}'::jsonb END,now_at,v_root,v_version,p_payload->>'key_id',p_actor_id,p_actor_id);
+   jsonb_build_object('key_secret_ciphertext',p_payload->>'key_secret_ciphertext'),now_at,v_root,v_version,p_payload->>'key_id',p_actor_id,p_actor_id);
   UPDATE public.payment_credentials SET selected_for_checkout=false,updated_by=p_actor_id
    WHERE site_id=p_site_id AND mode='sandbox' AND selected_for_checkout;
   razor:=jsonb_build_object('credential_id',v_id,'key_id',p_payload->>'key_id','test_mode',true,'verified',true,
@@ -98,3 +135,5 @@ REVOKE ALL ON FUNCTION public.commit_store_payment_configuration_v1(uuid,uuid,ti
  FROM PUBLIC,anon,authenticated,app_tenant;
 GRANT EXECUTE ON FUNCTION public.commit_store_payment_configuration_v1(uuid,uuid,timestamptz,uuid,text,text,jsonb,boolean,jsonb) TO service_role;
 NOTIFY pgrst,'reload schema';
+
+COMMIT;

@@ -11,14 +11,14 @@ import { collectThemeTemplateValidationIssues, type ThemeTemplateValidationRunti
 
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../..');
 export const RELEASE_ROOT = path.join(ROOT, 'docs/implementation/niche-theme-programme/release-v210');
-export const MIGRATION = 428;
+export const MIGRATION = 432;
 export const VERSION = '2.1.0';
 const catalogPath = 'database/supabase/migrations/372_first_party_theme_catalog.sql';
 const threadlinePath = 'database/supabase/migrations/382_threadline_catalog_v2.sql';
 const admittedV200ManifestPath = 'docs/implementation/niche-theme-programme/release-v2/proposals/81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f/manifest.json';
 const admittedV200ManifestSha256 = '81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f';
 const orderMarker = '<!-- lb:niche-order-presentation:v1 -->';
-const rollbackKey = 'nicheV210Promotion428';
+const rollbackKey = 'nicheV210Promotion432';
 const sqlDelimiter = '$liquidbundle$';
 const expected = {
   'letbuyy-forge': ['7b669c70-0000-4000-8000-000000000001', 'Circuit', 'electronics'],
@@ -201,7 +201,7 @@ export function renderPromotionPair(proposal: Proposal) {
   assertProposalIntegrity(proposal);
   const payload = canonicalJson(proposal.artifacts); assert.ok(!payload.includes(sqlDelimiter), 'Reserved SQL quote delimiter in theme artifact.');
   const snapshot = `jsonb_build_object(${catalogColumns.flatMap(key => [`'${key}'`, `t.${key}`]).join(',')})`;
-  const up = `-- Proposed migration 428; emit into migration scan only after coordinator accepts the final manifest.
+  const up = `-- Proposed migration 432; emit into migration scan only after coordinator accepts the final manifest.
 -- Manifest SHA-256: ${proposal.manifestSha256}. No installed instance/draft/release is rewritten.
 BEGIN;
 DO $promotion$

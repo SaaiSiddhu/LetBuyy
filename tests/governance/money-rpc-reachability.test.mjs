@@ -95,7 +95,7 @@ function callersOf(name) {
     // calls it. A function reachable from another function is wired.
     for (const { file, text } of bodies) {
         const defines = new RegExp(`CREATE\\s+(?:OR\\s+REPLACE\\s+)?FUNCTION\\s+public\\.${name}\\s*\\(`, 'i');
-        const callsIt = new RegExp(`(?:PERFORM|SELECT|:=|=)\\s*public\\.${name}\\s*\\(`, 'i');
+        const callsIt = new RegExp(`(?:PERFORM|SELECT|RETURN|:=|=)\\s*public\\.${name}\\s*\\(`, 'i');
         if (callsIt.test(text.replace(defines, ' '))) hits.push(`sql:${file}`);
     }
     return hits;

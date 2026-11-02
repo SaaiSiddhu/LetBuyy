@@ -41,7 +41,7 @@ test('fresh Circuit defaults pass the matching persisted manifest before normali
     const runtime = { sectionSchemas: manifest.section_schemas, settingsSchema: manifest.settings_schema } as ThemeTemplateValidationRuntime;
     const config = { themeId: candidate.package.slug, sections: {}, templates: candidate.templates, themeSettings: candidate.config.settings_data.current, liquidBundle: candidate, rendererEngine: 'liquid' };
     for (const templateConfig of [config, JSON.parse(JSON.stringify(config))])
-      assert.deepEqual(collectThemeTemplateValidationIssues({ templateConfig, runtime, themeSlug: candidate.package.slug }), []);
+      assert.deepEqual(collectThemeTemplateValidationIssues({ templateConfig, runtime, trustedPreviousConfig: { templates: candidate.templates }, themeSlug: candidate.package.slug }), []);
     const current = candidate.config.settings_data.current;
     assert.equal(current.headingFontFamily, 'Inter');assert.equal(current.bodyFontFamily, 'Inter');
     for (const key of ['headingFont', 'bodyFont', 'experienceId']) assert.equal(Object.hasOwn(current, key), false, key);

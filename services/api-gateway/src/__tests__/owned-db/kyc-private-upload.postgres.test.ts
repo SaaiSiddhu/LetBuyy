@@ -16,18 +16,18 @@ let gateway: Gateway;
 after(async () => { await gateway?.settle(); });
 
 test('KYC file upload remains private, tenant-owned and pending provider evidence', async () => {
-    const cleanupMigration = readFileSync(new URL('../../../../../database/supabase/migrations/420_kyc_private_object_cleanup.sql', import.meta.url), 'utf8');
-    const cleanupRollback = readFileSync(new URL('../../../../../database/supabase/rollback/420_kyc_private_object_cleanup.rollback.sql', import.meta.url), 'utf8');
-    const indiaMigration = readFileSync(new URL('../../../../../database/supabase/migrations/421_kyc_india_upload_intent.sql', import.meta.url), 'utf8');
-    const indiaRollback = readFileSync(new URL('../../../../../database/supabase/rollback/421_kyc_india_upload_intent.rollback.sql', import.meta.url), 'utf8');
-    const isolationMigration = readFileSync(new URL('../../../../../database/supabase/migrations/422_kyc_r2_india_provider_isolation.sql', import.meta.url), 'utf8');
-    const isolationRollback = readFileSync(new URL('../../../../../database/supabase/rollback/422_kyc_r2_india_provider_isolation.rollback.sql', import.meta.url), 'utf8');
-    const scanMigration = readFileSync(new URL('../../../../../database/supabase/migrations/423_kyc_india_scanner_verdict.sql', import.meta.url), 'utf8');
-    const scanRollback = readFileSync(new URL('../../../../../database/supabase/rollback/423_kyc_india_scanner_verdict.rollback.sql', import.meta.url), 'utf8');
-    const indiaCleanupMigration = readFileSync(new URL('../../../../../database/supabase/migrations/424_kyc_india_cleanup_due.sql', import.meta.url), 'utf8');
-    const indiaCleanupRollback = readFileSync(new URL('../../../../../database/supabase/rollback/424_kyc_india_cleanup_due.rollback.sql', import.meta.url), 'utf8');
-    const earlyScanMigration = readFileSync(new URL('../../../../../database/supabase/migrations/425_kyc_india_early_scan_retry.sql', import.meta.url), 'utf8');
-    const earlyScanRollback = readFileSync(new URL('../../../../../database/supabase/rollback/425_kyc_india_early_scan_retry.rollback.sql', import.meta.url), 'utf8');
+    const cleanupMigration = readFileSync(new URL('../../../../../database/supabase/migrations/424_kyc_private_object_cleanup.sql', import.meta.url), 'utf8');
+    const cleanupRollback = readFileSync(new URL('../../../../../database/supabase/rollback/424_kyc_private_object_cleanup.rollback.sql', import.meta.url), 'utf8');
+    const indiaMigration = readFileSync(new URL('../../../../../database/supabase/migrations/425_kyc_india_upload_intent.sql', import.meta.url), 'utf8');
+    const indiaRollback = readFileSync(new URL('../../../../../database/supabase/rollback/425_kyc_india_upload_intent.rollback.sql', import.meta.url), 'utf8');
+    const isolationMigration = readFileSync(new URL('../../../../../database/supabase/migrations/426_kyc_r2_india_provider_isolation.sql', import.meta.url), 'utf8');
+    const isolationRollback = readFileSync(new URL('../../../../../database/supabase/rollback/426_kyc_r2_india_provider_isolation.rollback.sql', import.meta.url), 'utf8');
+    const scanMigration = readFileSync(new URL('../../../../../database/supabase/migrations/427_kyc_india_scanner_verdict.sql', import.meta.url), 'utf8');
+    const scanRollback = readFileSync(new URL('../../../../../database/supabase/rollback/427_kyc_india_scanner_verdict.rollback.sql', import.meta.url), 'utf8');
+    const indiaCleanupMigration = readFileSync(new URL('../../../../../database/supabase/migrations/428_kyc_india_cleanup_due.sql', import.meta.url), 'utf8');
+    const indiaCleanupRollback = readFileSync(new URL('../../../../../database/supabase/rollback/428_kyc_india_cleanup_due.rollback.sql', import.meta.url), 'utf8');
+    const earlyScanMigration = readFileSync(new URL('../../../../../database/supabase/migrations/429_kyc_india_early_scan_retry.sql', import.meta.url), 'utf8');
+    const earlyScanRollback = readFileSync(new URL('../../../../../database/supabase/rollback/429_kyc_india_early_scan_retry.rollback.sql', import.meta.url), 'utf8');
     owned.psql(earlyScanRollback);
     owned.psql(indiaCleanupRollback);
     owned.psql(scanRollback);
@@ -114,7 +114,7 @@ test('KYC file upload remains private, tenant-owned and pending provider evidenc
     assert.equal(first.json?.data.document.status, 'submitted');
     assert.equal(first.json?.data.document.has_private_upload, true);
     assert.equal(first.json?.data.overview.overall_status, 'in_progress');
-    const unsafeRollback = readFileSync(new URL('../../../../../database/supabase/rollback/415_kyc_private_metadata_gateway_only.rollback.sql', import.meta.url), 'utf8');
+    const unsafeRollback = readFileSync(new URL('../../../../../database/supabase/rollback/419_kyc_private_metadata_gateway_only.rollback.sql', import.meta.url), 'utf8');
     assert.match(owned.psqlExpectError(unsafeRollback), /KYC evidence exists; retain Gateway-only private metadata access/,
         'the rollback cannot reopen direct metadata reads after evidence has been recorded');
     assert.equal(owned.psql(`SELECT status FROM idempotency_keys WHERE site_id='${tenant.siteId}'
@@ -625,7 +625,7 @@ test('canonical business edits atomically revoke only affected KYC evidence unti
             AND metadata->>'malware_scan_status' = 'pending'
             FROM merchant_kyc_documents WHERE site_id='${tenant.siteId}' AND document_type='bank_proof';`), 't');
         assert.equal(objects.size, 2, 'the new bank and PAN proof remain private and site-bound');
-        const unsafeRollback = readFileSync(new URL('../../../../../database/supabase/rollback/418_kyc_profile_change_revocation.rollback.sql', import.meta.url), 'utf8');
+        const unsafeRollback = readFileSync(new URL('../../../../../database/supabase/rollback/422_kyc_profile_change_revocation.rollback.sql', import.meta.url), 'utf8');
         assert.match(owned.psqlExpectError(unsafeRollback), /KYC evidence exists; retain profile-change revocation/);
     } finally {
         await profileGateway.settle();
