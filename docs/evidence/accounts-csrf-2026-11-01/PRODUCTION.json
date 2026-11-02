@@ -1,0 +1,137 @@
+{
+  "recordedUtc": "2026-11-01T04:06:27.612785+00:00",
+  "status": "PRODUCTION-ACTIVATED-public-readback-verified-private-sign-in-user-confirmed",
+  "releaseRevision": "14961c132d814e40cc0dfb268ecbaede3de5f76b",
+  "qualifiedRuntimeRevision": "fc810fe019c441e2f69d54b209fba68588e760b7",
+  "project": "accounts",
+  "projectId": "prj_PN63TtTkFRglGNnI4k3fxE2lDThi",
+  "productionArtifact": "dpl_CgC8rBNFLVwLoMS2AdEN92deQ9mt",
+  "priorArtifact": "dpl_bLKMyqtNFgjZYVWYU9EP4BwaXJCN",
+  "mainStagingLag": 0,
+  "reviewSha256": "ad7b43e890972389b0117a0402183a2140c815dabba48a6f996f8025d18ffbb7",
+  "ownerAcceptance": "Direct scoped approval in this chat on1November2026",
+  "aliases": [
+    {
+      "alias": "accounts.letbuyy.com",
+      "before": "dpl_bLKMyqtNFgjZYVWYU9EP4BwaXJCN",
+      "after": "dpl_CgC8rBNFLVwLoMS2AdEN92deQ9mt",
+      "expected": true
+    },
+    {
+      "alias": "admin.letbuyy.com",
+      "before": "dpl_F9XK6HGGssAodfUDA7xeFPStAvbm",
+      "after": "dpl_F9XK6HGGssAodfUDA7xeFPStAvbm",
+      "expected": true
+    },
+    {
+      "alias": "storefront.letbuyy.com",
+      "before": "dpl_6vAjA1PL6jDdbCr5ugYJXG9nu2TT",
+      "after": "dpl_6vAjA1PL6jDdbCr5ugYJXG9nu2TT",
+      "expected": true
+    },
+    {
+      "alias": "letbuyy.com",
+      "before": "dpl_5mfMjBSLECNWxYHQK4rsy2yG7nFU",
+      "after": "dpl_5mfMjBSLECNWxYHQK4rsy2yG7nFU",
+      "expected": true
+    }
+  ],
+  "livePublicVerification": {
+    "observedUtc": "2026-11-01T04:05:25.812490+00:00",
+    "results": [
+      {
+        "role": "live-production",
+        "deploymentId": "dpl_CgC8rBNFLVwLoMS2AdEN92deQ9mt",
+        "sourceRevision": "14961c132d814e40cc0dfb268ecbaede3de5f76b",
+        "checks": [
+          {
+            "name": "uncached public HEAD issues existing host-only strict secure one-hour JS-readable cookie",
+            "pass": true,
+            "status": 200,
+            "cookieAttributes": {
+              "secure": true,
+              "sameSite": "strict",
+              "domain": "",
+              "path": "/",
+              "maxAge": "3600",
+              "httpOnly": false
+            }
+          },
+          {
+            "name": "published lookup client includes qualified bounded cookie-renewal helper",
+            "pass": true,
+            "chunks": [
+              {
+                "path": "/_next/static/chunks/app/lookup/page-7e1db6ec18e03c2c.js",
+                "sha256": "8a4c2a3a5ab9fadd63d1c15790d3c79af5be8a945dcbc81d25fe6f719e804aab",
+                "bytes": 22855
+              }
+            ]
+          }
+        ],
+        "allPassed": true,
+        "authenticatedStagingSignIn": false,
+        "stagingLoginLimitation": null,
+        "credentialCreated": false,
+        "protectionSettingsChanged": false,
+        "existingProtectionCredentialUsedForPublicRequests": false,
+        "publicRequestsSentOnlyToAccountsHostname": true
+      }
+    ],
+    "allPassed": true,
+    "liveAliasIsApprovedArtifact": true,
+    "additionalLoginProbesSent": 0
+  },
+  "normalExpiredFormProof": "Local production-built Identity + actual Gateway/PostgREST/owned PostgreSQL; missing CSRF403 then one renewal HEAD, one successful credential POST and real Merchant redirect; five retained browser tests pass",
+  "userConfirmedBeforePermanentDeployment": "Reached Merchant after manual renewal of missing cookie",
+  "postReleasePrivateSignIn": {
+    "status": "USER-CONFIRMED",
+    "dateIST": "2026-11-01",
+    "outcome": "Fresh private Accounts sign-in reached Merchant without the reported Invalid request error",
+    "source": "Owner direct reply after activation",
+    "agentEnteredCredentialsOrSolvedChallenge": false
+  },
+  "acceptedLimits": [
+    "Hosted staging login429 before CSRF; full staged sign-in unverified",
+    "CI Gateway build/typechecks2GB heap failure, same unchanged Gateway tsc passes locally with4GB; broad behavioral CI still pending at last observation"
+  ],
+  "unchangedRuntimeTrees": [
+    "services",
+    "database",
+    "packages",
+    "Merchant",
+    "Commerce",
+    "Marketing",
+    "Console",
+    "scripts",
+    "lockfile"
+  ],
+  "excluded": [
+    "Worker deploy",
+    "schema migration",
+    "secret rotation",
+    "DNS",
+    "payment/order",
+    "carrier booking"
+  ],
+  "evidenceDirectory": "/private/tmp/letbuyy-accounts-csrf-20261101",
+  "ownerConfirmationReceipt": "/private/tmp/letbuyy-accounts-csrf-20261101/accounts-live-owner-confirmation.json",
+  "ciLatestObservation": {
+    "workflowRun": 41269888381,
+    "source": "github-ci-owner-confirmation.json",
+    "status": "in_progress",
+    "passedJobs": [
+      "Lint",
+      "Secret hygiene",
+      "Governance",
+      "Mobile merchant Flutter"
+    ],
+    "acceptedHeapFailureJobs": [
+      "Build",
+      "Typecheck",
+      "Merge safety gate"
+    ],
+    "behavioralJob": "in_progress",
+    "newFailedJobsSinceApproval": []
+  }
+}
