@@ -1,3 +1,5 @@
+> EXECUTED PARTIALLY — the reviewed section-insertion and stable-device-preview slice was integrated on 2026-11-02. Remaining research is reference only. DO NOT RE-RUN this document as an execution prompt. Current repository governance and explicit owner scope remain authoritative.
+
 # Future implementation blueprint — no code change in this audit
 
 The coordinator owns shared writer, fixture and browser allocation under `docs/implementation/niche-theme-programme/OWNERSHIP.md`. Reserve one writer for Merchant editor, theme-engine, gateway validator, Commerce renderer and database paths as each slice requires. Use an owned isolated store and preservation/no-reap mode; no historical fixture, order, stock or payment record may be reused merely for screenshots. Every slice below needs a sealed current-source base, exact diff review, and a separately admitted test resource. Cross-theme work belongs in shared contracts, not ten copied editors. Rollback of source is a reviewed revert; database changes need paired DOWN and migration gates; publication rollback is a new immutable release, not in-place editing.

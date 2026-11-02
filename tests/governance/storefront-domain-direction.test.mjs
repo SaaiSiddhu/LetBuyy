@@ -53,10 +53,11 @@ test('only matching deployed API environments admit the existing Commerce CNAME 
 
 test('native callback exception admits only exact generated OS schemes, never an HTTPS host or suffix',()=>{
  const file='apps/merchant/mobile/lib/services/merchant_auth_contract.g.dart';
- for(const scheme of ['com.letbuyy.store.accounts://auth/callback','com.letbuyy.store.accounts.development://auth/callback','com.letbuyy.store.accounts.staging://auth/callback']) {
+ const native='com.'+storefront+'.accounts';
+ for(const scheme of [`${native}://auth/callback`,`${native}.development://auth/callback`,`${native}.staging://auth/callback`]) {
   assert.equal(run({[file]:`const callback = '${scheme}';`}),0);
   assert.notEqual(run({'apps/merchant/mobile/lib/config/local.dart':`const callback = '${scheme}';`}),0);
  }
- for(const value of ['https://com.letbuyy.store.accounts/auth/callback','com.letbuyy.store.accounts.evil://auth/callback','com.letbuyy.store.accounts://auth/callback/extra','https://accounts.letbuyy.store'])
+ for(const value of [`https://${native}/auth/callback`,`${native}.evil://auth/callback`,`${native}://auth/callback/extra`,`https://accounts.${storefront}`])
   assert.notEqual(run({[file]:`const callback = '${value}';`}),0,value);
 });
