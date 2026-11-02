@@ -25,7 +25,7 @@ export function proxy(request: NextRequest) {
         return NextResponse.redirect(redirectUrl)
     }
 
-    if (pathname.startsWith('/api/') || pathname.startsWith('/_next/') || pathname.startsWith('/icons/')) {
+    if (pathname.startsWith('/api/') || pathname.startsWith('/_next/') || pathname.startsWith('/icons/') || pathname.startsWith('/.well-known/')) {
         return NextResponse.next()
     }
 
@@ -55,6 +55,11 @@ export function proxy(request: NextRequest) {
     response.headers.set('X-Frame-Options', 'DENY')
     response.headers.set('X-Content-Type-Options', 'nosniff')
     response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
+    if (pathname.startsWith('/mobile') || pathname.startsWith('/merchant/auth/callback')) {
+        response.headers.set('Cache-Control', 'private, no-store')
+        response.headers.set('Referrer-Policy', 'no-referrer')
+        response.headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive')
+    }
 
     return response
 }

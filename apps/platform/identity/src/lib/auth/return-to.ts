@@ -1,5 +1,11 @@
 import { getAdminUrl } from '../config/urls'
 
+export function accountResultPath(result: { continuation?: string; redirectTo?: string; signInRequired?: boolean }, returnTo?: string | null): string {
+    if (result.signInRequired && result.redirectTo?.startsWith('/login?choose_account=1')) return result.redirectTo
+    if (result.continuation === 'native' && result.redirectTo && ['/mobile', '/mobile/return', '/onboarding', '/security'].includes(result.redirectTo)) return result.redirectTo
+    return safePlatformReturnTo(returnTo) || result.redirectTo || '/select'
+}
+
 /** Preserve approved platform navigation through login/signup/password steps. */
 export function safePlatformReturnTo(value: string | null | undefined): string | null {
     if (!value) return null

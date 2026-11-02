@@ -49,7 +49,7 @@ const translations: Record<Lang, Record<string, string>> = {
         createSite: 'Create Site',
         creating: 'Creating...',
         successTitle: "Workspace created!",
-        successDesc: 'Your LetBuyy workspace is ready. Choose a plan to start selling — Launch starts at ₹199/month during the Founding Program.',
+        successDesc: 'Your draft workspace was created. Review the available plans and finish setup before publishing.',
         dashboardCta: 'Choose your plan',
         redirecting: 'Taking you to plan selection…',
         store: 'Online Store',
@@ -85,7 +85,7 @@ const translations: Record<Lang, Record<string, string>> = {
         draftSaved: 'Progress is saved on this browser.',
         draftRestored: 'Your saved progress has been restored.',
         draftSaving: 'Saving your progress…',
-        draftUnavailable: 'Setup progress could not sync. You can continue, but it may not be available on another device.',
+        draftUnavailable: 'Unable to save setup. Retry before creating your store.',
     },
     hi: {
         whatBuild: 'आप क्या बनाना चाहते हैं?',
@@ -145,7 +145,7 @@ const translations: Record<Lang, Record<string, string>> = {
         draftSaved: 'आपकी प्रगति इस ब्राउज़र में सहेजी गई है।',
         draftRestored: 'आपकी सहेजी गई प्रगति वापस लाई गई है।',
         draftSaving: 'आपकी प्रगति सहेजी जा रही है…',
-        draftUnavailable: 'सेटअप प्रगति सिंक नहीं हो सकी। आप आगे बढ़ सकते हैं, लेकिन यह दूसरे डिवाइस पर उपलब्ध नहीं हो सकती।',
+        draftUnavailable: 'सेटअप सहेजा नहीं जा सका। स्टोर बनाने से पहले फिर प्रयास करें।',
     },
     ta: {
         whatBuild: 'நீங்கள் என்ன உருவாக்க விரும்புகிறீர்கள்?',
@@ -205,7 +205,7 @@ const translations: Record<Lang, Record<string, string>> = {
         draftSaved: 'உங்கள் முன்னேற்றம் இந்த உலாவியில் சேமிக்கப்பட்டது.',
         draftRestored: 'சேமித்த முன்னேற்றம் மீட்டமைக்கப்பட்டது.',
         draftSaving: 'உங்கள் முன்னேற்றம் சேமிக்கப்படுகிறது…',
-        draftUnavailable: 'அமைப்பு முன்னேற்றத்தை ஒத்திசைக்க முடியவில்லை. தொடரலாம்; வேறு சாதனத்தில் இது கிடைக்காமல் போகலாம்.',
+        draftUnavailable: 'அமைப்பைச் சேமிக்க முடியவில்லை. கடையை உருவாக்கும் முன் மீண்டும் முயற்சிக்கவும்.',
     },
 }
 
@@ -235,7 +235,7 @@ const ACQUISITION_SITE_TYPES =
         ? [...SITE_TYPES, ...LEGACY_SITE_TYPES]
         : SITE_TYPES
 
-// Industry guides setup; every new store starts with the canonical Circuit theme.
+// Industry guides setup; the Gateway's current catalog owns the default theme.
 const ONBOARDING_INDUSTRIES = [
     { id: 'electronics', label: 'Electronics & Tech' },
     { id: 'fashion', label: 'Fashion & Apparel' },
@@ -274,6 +274,7 @@ export default function OnboardingPage() {
     const [success, setSuccess] = useState(false)
     const [user, setUser] = useState<SessionUser | null>(null)
     const [authLoading, setAuthLoading] = useState(true)
+    const [sessionUnavailable, setSessionUnavailable] = useState(false)
     const [lang, setLang] = useState<Lang>('en')
     const [showUserMenu, setShowUserMenu] = useState(false)
     const [draftReady, setDraftReady] = useState(false)
@@ -307,10 +308,13 @@ export default function OnboardingPage() {
             try {
                 const response = await fetch('/api/auth/create-store', {
                     method: 'PUT',
+                    signal: AbortSignal.timeout(20000),
                     headers: { ...(await getAuthHeaders()), 'Content-Type': 'application/json' },
                     body: JSON.stringify(draft),
                 })
                 const payload = await response.json() as {
+                    redirectTo?: string
+                    continuation?: string
                     data?: { attempt_id?: string }
                 }
                 if (!response.ok || !payload.data?.attempt_id) throw new Error('Unable to save onboarding draft')
@@ -337,12 +341,16 @@ export default function OnboardingPage() {
     }, [])
 
     useEffect(() => {
-        fetch('/api/auth/session')
-            .then((r) => r.json())
+        fetch('/api/auth/session', { signal: AbortSignal.timeout(20000), cache: 'no-store' })
+            .then((r) => {
+                if (r.status === 401) return { authenticated: false }
+                if (!r.ok) throw new Error('Account verification unavailable')
+                return r.json()
+            })
             .then((data) => {
                 setUser(data.authenticated && data.user ? data.user : null)
             })
-            .catch(() => setUser(null))
+            .catch(() => setSessionUnavailable(true))
             .finally(() => setAuthLoading(false))
     }, [])
 
@@ -356,9 +364,11 @@ export default function OnboardingPage() {
         setDraftAttemptId(null)
         if (!userId) return () => { active = false }
 
-        fetch('/api/auth/create-store', { cache: 'no-store' })
+        fetch('/api/auth/create-store', { cache: 'no-store', signal: AbortSignal.timeout(20000) })
             .then(async (response) => {
                 const payload = await response.json() as {
+                    redirectTo?: string
+                    continuation?: string
                     data?: {
                         attempt?: { attempt_id: string; current_step: number; draft: { version: number; store_name: string; subdomain: string; industry: string }; channels?: SalesChannel[] } | null
                         completed_store?: { id: string; subdomain: string }
@@ -368,6 +378,7 @@ export default function OnboardingPage() {
                 if (!active) return
                 const attempt = payload.data?.attempt
                 if (payload.data?.completed_store?.subdomain) {
+                    if (payload.continuation === 'native' && payload.redirectTo?.startsWith('/mobile/return?site=')) { window.location.replace(payload.redirectTo); return }
                     setSiteType('store')
                     setSubdomain(payload.data.completed_store.subdomain)
                     setSuccess(true)
@@ -482,15 +493,17 @@ export default function OnboardingPage() {
                 subdomain,
                 industry,
                 channels,
-            }).catch(() => null)
+            })
+            if (!savedAttemptId) throw new Error('Save your setup before creating the store. Please retry.')
             const res = await fetch('/api/auth/create-store', {
                 method: 'POST',
+                signal: AbortSignal.timeout(20000),
                 headers: (await getAuthHeaders()),
                 body: JSON.stringify({
                     siteType,
                     storeName: name,
                     subdomain,
-                    survey: { industry },
+                    survey: { industry, channels },
                     attemptId: savedAttemptId || draftAttemptId,
                 }),
             })
@@ -501,7 +514,8 @@ export default function OnboardingPage() {
                 return
             }
             setSuccess(true)
-            setTimeout(() => { window.location.href = getAdminSelectPlanUrl(subdomain) }, 1500)
+            if (data.continuation === 'native' && data.redirectTo?.startsWith('/mobile/return?site=')) window.location.assign(data.redirectTo)
+            else setTimeout(() => { window.location.href = getAdminSelectPlanUrl(subdomain) }, 1500)
         } catch (err: unknown) {
             setError(err instanceof Error ? err.message : 'Something went wrong')
             setLoading(false)
@@ -520,6 +534,10 @@ export default function OnboardingPage() {
                 </div>
             </div>
         )
+    }
+
+    if (sessionUnavailable) {
+        return <main className="auth-container"><div className="auth-card"><BrandLogo /><h1 className="auth-title">Unable to verify your account</h1><p role="alert">Check your connection and retry. Your saved setup is preserved.</p><Button unstyled onClick={() => window.location.reload()}>Retry</Button></div></main>
     }
 
     if (!user) {
@@ -775,7 +793,7 @@ export default function OnboardingPage() {
                             </div>
                             <div className="onboard-review-row">
                                 <span>Default theme</span>
-                                <strong>Circuit</strong>
+                                <strong>Selected from the current theme catalog</strong>
                             </div>
                         </div>
 

@@ -887,8 +887,8 @@ void main() {
             .toList();
         expect(logoutRequests, hasLength(1));
         expect(
-          logoutRequests.single.headers['cookie'],
-          'lb_session=session_123',
+          logoutRequests.single.headers['authorization'],
+          'Bearer session_123',
         );
         expect(logoutRequests.single.method, 'POST');
         expect(find.text('Merchant login reached'), findsOneWidget);
@@ -4507,7 +4507,7 @@ void main() {
       final screen = screenFile.readAsStringSync();
 
       expect(routes, contains("'/features/two-factor'"));
-      expect(routes, contains('TwoFactorScreen'));
+      expect(routes, contains("HostedAccountScreen(purpose: 'manage_security')"));
       expect(blocked, isNot(contains('S-023')));
       expect(blocked, isNot(contains('MOBILE_TWO_FACTOR')));
       expect(screen, isNot(contains('backend contract')));

@@ -9,12 +9,11 @@ import '../services/staff_service.dart';
 import '../screens/settings/accept_staff_invitation_screen.dart';
 import '../services/theme_provider.dart';
 import '../theme/app_theme_colors.dart';
-import '../screens/auth/login_screen.dart';
+import '../screens/auth/hosted_account_screen.dart';
 import '../screens/auth/error_screen.dart';
 import '../screens/main/store_main_screen.dart';
-import '../screens/wizard/create_store_wizard.dart';
 
-enum _AuthState { loading, login, invitation, wizard, main, error }
+enum _AuthState { loading, login, invitation, wizard, select, main, error }
 
 /// Auth Wrapper Widget
 /// Unified auth flow: Login → Store Check → Wizard or Main
@@ -59,7 +58,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
       _showIdentityRecovery();
     } else if (context.read<StaffService>().pendingInvitation != null) {
       setState(() => _authState = _AuthState.invitation);
-    } else if (authService.isSignedIn) {
+    } else if (authService.isSignedIn && !authService.accountTransition) {
       _checkUserState();
     } else {
       setState(() => _authState = _AuthState.login);
@@ -71,13 +70,16 @@ class _AuthWrapperState extends State<AuthWrapper> {
       final event = authState.event;
       final session = authState.session;
 
-      if (event == AuthChangeEvent.sessionUnavailable) {
+      if (event == AuthChangeEvent.verificationUnavailable || event == AuthChangeEvent.sessionUnavailable) {
         _checkVersion++;
         _isChecking = false;
         _checkingActor = null;
         unawaited(context.read<StoreContext>().bindActor(null));
         _showIdentityRecovery();
-      } else if (event == AuthChangeEvent.signedOut ||
+        return;
+      }
+
+      if (event == AuthChangeEvent.signedOut ||
           event == AuthChangeEvent.sessionExpired ||
           session == null) {
         _checkVersion++;
@@ -85,7 +87,6 @@ class _AuthWrapperState extends State<AuthWrapper> {
         _checkingActor = null;
         unawaited(context.read<StoreContext>().bindActor(null));
         setState(() {
-          _identityRecovery = false;
           _authState = context.read<StaffService>().pendingInvitation == null
               ? _AuthState.login
               : _AuthState.invitation;
@@ -96,7 +97,6 @@ class _AuthWrapperState extends State<AuthWrapper> {
       } else if (event == AuthChangeEvent.signedIn ||
           event == AuthChangeEvent.tokenRefreshed ||
           event == AuthChangeEvent.initialSession) {
-        _identityRecovery = false;
         _checkUserState();
       }
     });
@@ -135,6 +135,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
         mounted && version == _checkVersion && auth.currentUser?.id == actor;
 
     try {
+      _identityRecovery = false;
       if (context.read<StaffService>().pendingInvitation != null) {
         setState(() => _authState = _AuthState.invitation);
         return;
@@ -144,11 +145,20 @@ class _AuthWrapperState extends State<AuthWrapper> {
         _loadingStatus = 'Loading store...';
       });
       if (actor == null) throw StateError('Sign in again');
-      final store = await context
-          .read<StoreContext>()
-          .ensureSelectedStoreForActor(actor);
+      final stores = context.read<StoreContext>();
+      var store = await stores.ensureSelectedStoreForActor(actor, force: true);
 
       if (!alive()) return;
+
+      if (auth.preferredSiteId != null &&
+          stores.stores.any((item) => item.id == auth.preferredSiteId)) {
+        await stores.selectStoreById(auth.preferredSiteId!);
+        store = stores.selectedStore;
+        auth.needsStoreSelection = false;
+      } else if (stores.stores.length > 1 && auth.needsStoreSelection) {
+        setState(() => _authState = _AuthState.select);
+        return;
+      }
 
       if (store != null) {
         setState(() => _authState = _AuthState.main);
@@ -211,23 +221,77 @@ class _AuthWrapperState extends State<AuthWrapper> {
           ),
         );
       case _AuthState.login:
-        return LoginScreen(sessionNotice: _loginNotice);
+        return HostedAccountScreen(sessionNotice: _loginNotice);
       case _AuthState.invitation:
         return const AcceptStaffInvitationScreen();
       case _AuthState.wizard:
-        return const CreateStoreWizard();
+        return const HostedAccountScreen(purpose: 'create_store');
       case _AuthState.main:
         return const StoreMainScreen();
+      case _AuthState.select:
+        final stores = context.watch<StoreContext>();
+        return Scaffold(
+          appBar: AppBar(title: const Text('Choose a store')),
+          body: ListView(
+            children: [
+              for (final store in stores.stores)
+                ListTile(
+                  title: Text(store.name),
+                  subtitle: Text(store.subdomain),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () async {
+                    final auth = context.read<StoreAuthService>(),
+                        actor = context
+                            .read<StoreAuthService>()
+                            .currentUser
+                            ?.id;
+                    await stores.selectStore(store);
+                    if (mounted && actor == auth.currentUser?.id) {
+                      auth.needsStoreSelection = false;
+                      setState(() => _authState = _AuthState.main);
+                    }
+                  },
+                ),
+            ],
+          ),
+        );
       case _AuthState.error:
-        return ErrorScreen(
-          title: _errorTitle ?? 'Error',
-          message: _errorMessage ?? 'Something went wrong',
-          onRetry: _identityRecovery ? _retryIdentity : null,
-          onBackToLogin: _identityRecovery
-              ? () async {
-                  await context.read<StoreAuthService>().signOut();
-                }
-              : null,
+        if (_identityRecovery) return ErrorScreen(
+          title: _errorTitle ?? 'Sign-in temporarily unavailable',
+          message: _errorMessage ?? 'Retry to confirm your saved sign-in.',
+          onRetry: _retryIdentity,
+          onBackToLogin: () async { await context.read<StoreAuthService>().signOut(); },
+        );
+        return Scaffold(
+          body: SafeArea(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      _errorTitle ?? 'Unable to load your stores',
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                    Text(
+                      _errorMessage ??
+                          'Your sign-in is preserved. Please retry.',
+                      textAlign: TextAlign.center,
+                    ),
+                    FilledButton(
+                      onPressed: _checkUserState,
+                      child: const Text('Retry loading stores'),
+                    ),
+                    TextButton(
+                      onPressed: context.read<StoreAuthService>().signOut,
+                      child: const Text('Log out'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
         );
     }
   }

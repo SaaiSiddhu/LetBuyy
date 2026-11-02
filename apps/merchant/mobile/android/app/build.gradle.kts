@@ -34,6 +34,7 @@ val releaseSigningReady = releaseKeystoreFile?.exists() == true &&
     releaseStorePassword != null
 
 android {
+    buildFeatures { buildConfig = true }
     namespace = "com.letbuyy.store"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
@@ -56,6 +57,10 @@ android {
         versionCode = flutter.versionCode
         versionName = flutter.versionName
         multiDexEnabled = true
+        manifestPlaceholders["accountsCallbackHost"] = providers.gradleProperty("LETBUYY_ACCOUNTS_CALLBACK_HOST")
+            .orElse("accounts.letbuyy.com").get().also {
+                require(it in listOf("accounts.letbuyy.com", "accounts.staging.letbuyy.com")) { "Accounts callback host must be a registered estate" }
+            }
     }
 
     signingConfigs {
@@ -93,5 +98,6 @@ flutter {
 }
 
 dependencies {
+    implementation("androidx.browser:browser:1.8.0")
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 }

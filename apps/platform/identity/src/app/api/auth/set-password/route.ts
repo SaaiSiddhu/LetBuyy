@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { PasswordUpdateSchema } from '@letbuyy/auth-core'
 import { identityApiRequest } from '@/lib/api/client'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { validatePasswordStrength } from '@/lib/auth/password'
@@ -12,6 +13,7 @@ import {
 import { generateDeviceFingerprint, getOrCreateDevice } from '@/lib/auth/device'
 import { validateCsrf } from '@/lib/auth/csrf'
 import { consumePasswordSetIntent } from '@/lib/auth/password-set-intent'
+import { approveMobileFlow, mobileFailure, MobileAuthError } from '@/lib/auth/mobile'
 
 /** Advisory form readiness only. POST consumes and validates the server intent. */
 export async function GET() {
@@ -29,6 +31,7 @@ export async function GET() {
  * Creates a session and returns redirect to onboarding.
  */
 export async function POST(request: NextRequest) {
+    let savedEmail: string | null = null
     try {
         const ip = request.headers.get('x-forwarded-for') || 'unknown'
 
@@ -46,7 +49,9 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Invalid request. Please refresh and try again.' }, { status: 403 })
         }
 
-        const { password } = await request.json()
+        const parsed = PasswordUpdateSchema.safeParse(await request.json().catch(() => null))
+        if (!parsed.success) return NextResponse.json({ error: 'Password must meet all requirements, including the 128-character limit.' }, { status: 400 })
+        const { password } = parsed.data
 
         if (!password) {
             return NextResponse.json({ error: 'Password is required' }, { status: 400 })
@@ -97,17 +102,28 @@ export async function POST(request: NextRequest) {
             )
         }
         const user = passwordPayload.data
+        savedEmail = intent.email
+
+        // Email proof permits password setup, never bypass of an enrolled factor.
+        const proof = await identityApiRequest('/auth/custom/users/authenticate', { method: 'POST', body: JSON.stringify({ email: intent.email, password }) })
+        const proofPayload = await proof.json() as { data?: { id: string }; mfa_required?: boolean } | null
+        if (!proof.ok || proofPayload?.data?.id !== intent.user_id) {
+            await clearPasswordSetIntentCookie()
+            return NextResponse.json({ success: true, signInRequired: true, redirectTo: `/login?choose_account=1&email=${encodeURIComponent(intent.email)}` }, { headers: { 'Cache-Control': 'private, no-store' } })
+        }
 
         // Create device fingerprint + session
         const userAgent = request.headers.get('user-agent') || ''
         const fingerprint = generateDeviceFingerprint(request.headers, ip)
         const device = await getOrCreateDevice(intent.user_id, fingerprint, userAgent)
         const sessionToken = await createSession(intent.user_id, device.deviceId)
+        const nativeContinuation = await approveMobileFlow(sessionToken)
 
         // Set session cookie
         const response = NextResponse.json({
             success: true,
             redirectTo: '/onboarding',
+            ...nativeContinuation,
         })
 
         await setSessionCookie(sessionToken)
@@ -123,7 +139,12 @@ export async function POST(request: NextRequest) {
 
         return response
     } catch (error) {
-        console.error('Set password error:', error)
+        if (error instanceof MobileAuthError) return mobileFailure(error)
+        console.error(JSON.stringify({ level: 'error', service: 'accounts', reason: 'password_setup_unavailable' }))
+        if (savedEmail) {
+            await clearPasswordSetIntentCookie()
+            return NextResponse.json({ success: true, signInRequired: true, redirectTo: `/login?choose_account=1&email=${encodeURIComponent(savedEmail)}` }, { headers: { 'Cache-Control': 'private, no-store' } })
+        }
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
     }
 }

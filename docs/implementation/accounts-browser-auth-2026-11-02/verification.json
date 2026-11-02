@@ -1,0 +1,142 @@
+{
+  "recorded_at_utc": "2026-11-02T13:16:45.837309+00:00",
+  "branch": "develop",
+  "head": "e4105581e3346041d71694d3db093eb713773e07",
+  "uncommitted_shared_worktree": true,
+  "production_changed": false,
+  "owned_runs": {
+    "browser-delivery": {
+      "runId": "458d3e14a9db",
+      "suites": 1,
+      "tests": 1,
+      "skipped": 0,
+      "wallSeconds": 88,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "pass": 1,
+      "fail": 0,
+      "cancelled": 0,
+      "todo": 0,
+      "failed_suites": 0
+    },
+    "browser-final": {
+      "runId": "5639b5b45deb",
+      "suites": 2,
+      "tests": 2,
+      "skipped": 0,
+      "wallSeconds": 120.7,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "pass": 2,
+      "fail": 0,
+      "cancelled": 0,
+      "todo": 0,
+      "failed_suites": 0
+    },
+    "mobile-db-last": {
+      "runId": "eea427311b6e",
+      "suites": 1,
+      "tests": 14,
+      "skipped": 0,
+      "wallSeconds": 42.8,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "pass": 14,
+      "fail": 0,
+      "cancelled": 0,
+      "todo": 0,
+      "failed_suites": 0
+    },
+    "auth-regression": {
+      "runId": "b32d151f1278",
+      "suites": 2,
+      "tests": 7,
+      "skipped": 0,
+      "wallSeconds": 5.4,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "pass": 7,
+      "fail": 0,
+      "cancelled": 0,
+      "todo": 0,
+      "failed_suites": 0
+    },
+    "tenant-regression": {
+      "runId": "53db2e7baf3d",
+      "suites": 1,
+      "tests": 2,
+      "skipped": 0,
+      "wallSeconds": 8,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "pass": 2,
+      "fail": 0,
+      "cancelled": 0,
+      "todo": 0,
+      "failed_suites": 0
+    }
+  },
+  "artifacts": [
+    {
+      "path": "/Volumes/Projects/LetBuyy/apps/merchant/mobile/build/app/outputs/flutter-apk/app-debug.apk",
+      "sha256": "de9fe5a6b296a93928d3882f2eaf51e22e8491a7f9016ecb5117a64b7001c694",
+      "bytes": 218686749,
+      "kind": "debug APK",
+      "installed_device_verified": false
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/apps/merchant/mobile/build/ios/iphonesimulator/Runner.app/Runner",
+      "sha256": "a371050cdf0e019eb64f51358abeeb276ffa1f8f1bee276cbd1c07c6d5090fdf",
+      "bytes": 40496,
+      "kind": "iOS simulator executable",
+      "installed_device_verified": false
+    }
+  ],
+  "flutter_full_pass": 399,
+  "flutter_final_boundary_pass": 232,
+  "identity_pass": 62,
+  "auth_core_pass": 50,
+  "web_contract_pass": 46,
+  "gateway_auth_pass": 31,
+  "native_static_analysis": "13 items, no issues",
+  "pending": [
+    "installed Android and iOS authentication-browser automatic return",
+    "release signing and Android App Links verification",
+    "hosted source/schema/signer/verifier alignment and server-first flag enablement",
+    "configured email inbox and Turnstile provider acceptance",
+    "release/deletion/whole-client rollback and performance acceptance"
+  ],
+  "session_security_validator_negative_controls_pass": 59,
+  "shared_realm_rbac_oauth_session_regression_pass": 23,
+  "identity_security_gate": "passed; SEC-C2 retargeted to sole Identity public verification and canonical session-security validator"
+}

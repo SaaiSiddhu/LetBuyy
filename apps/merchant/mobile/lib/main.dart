@@ -1,5 +1,6 @@
 import 'dart:async';
-import 'dart:ui' show PlatformDispatcher;
+import 'package:flutter/foundation.dart';
+import 'services/merchant_browser_auth.dart';
 
 import 'package:flutter/material.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart'
@@ -96,8 +97,11 @@ void main() {
         baseUrl: AppConfig.apiBaseUrl,
         tokenProvider: () => authService.accessToken,
         storeIdProvider: () => storeContext.selectedStoreId,
-        contextVersionProvider: () =>
-            (authService.currentUser?.id, storeContext.requestContextKey),
+        contextVersionProvider: () => (
+          authService.currentUser?.id,
+          authService.privateContextVersion,
+          storeContext.requestContextKey,
+        ),
         unauthorizedHandler: (exception) =>
             authService.handleUnauthorized(exception),
         attachSessionCookie: true,
@@ -113,6 +117,14 @@ void main() {
         sessionCookieName: AppConfig.sessionCookieName,
         csrfCookieName: AppConfig.csrfCookieName,
         turnstileTokenProvider: () => AppConfig.turnstileToken,
+      );
+      final browserAuth = MerchantBrowserAuth(
+        auth: authService,
+        identityBaseUrl: AppConfig.identityBaseUrl,
+        environment: AppConfig.accountsEnvironment,
+        clientId: defaultTargetPlatform == TargetPlatform.iOS
+            ? 'merchant_ios'
+            : 'merchant_android',
       );
       final nativePush = NativePushService(
         actorId: () => authService.currentUser?.id,
@@ -135,6 +147,7 @@ void main() {
         ),
       );
       authService.beforeSignOut = () async {
+        await browserAuth.cancel();
         await nativePush.bindActor(null);
         final registration = pushService.lastAttempt;
         try {
@@ -198,7 +211,10 @@ void main() {
           );
         }
 
+        if (state.event == AuthChangeEvent.verificationUnavailable) return;
         final eventName = switch (state.event) {
+          AuthChangeEvent.verificationUnavailable =>
+            MerchantTelemetryEventNames.authSignedOut,
           AuthChangeEvent.signedIn => MerchantTelemetryEventNames.authSignedIn,
           AuthChangeEvent.initialSession =>
             MerchantTelemetryEventNames.authSessionRestored,
@@ -222,6 +238,7 @@ void main() {
       final staffService = StaffService(api: apiClient);
       await staffService.restorePendingInvitation();
       await authService.restoreSession();
+      await browserAuth.initialize();
       unawaited(
         telemetryService.track(
           MerchantTelemetryEventNames.appOpened,
@@ -252,6 +269,9 @@ void main() {
 
             // Auth
             ChangeNotifierProvider<StoreAuthService>.value(value: authService),
+            ChangeNotifierProvider<MerchantBrowserAuth>.value(
+              value: browserAuth,
+            ),
             ChangeNotifierProvider<StoreContext>.value(value: storeContext),
 
             // Data services

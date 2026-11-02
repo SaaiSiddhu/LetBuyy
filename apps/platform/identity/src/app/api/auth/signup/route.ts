@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { OtpRequestSchema } from '@letbuyy/auth-core'
+import { z } from 'zod'
 import { identityApiRequest, getIdentityApiFailureMessage } from '@/lib/api/client'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { verifyTurnstileToken } from '@/lib/turnstile'
@@ -50,7 +52,9 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Invalid request. Please refresh and try again.' }, { status: 403 })
         }
 
-        const { email, turnstileToken } = await request.json()
+        const parsed = OtpRequestSchema.extend({ turnstileToken: z.string().max(4096).optional() }).safeParse(await request.json().catch(() => null))
+        if (!parsed.success) return NextResponse.json({ error: 'Enter a valid email address.' }, { status: 400 })
+        const { email, turnstileToken } = parsed.data
 
         if (!email || typeof email !== 'string') {
             return NextResponse.json({ error: 'Email is required' }, { status: 400 })
@@ -79,6 +83,7 @@ export async function POST(request: NextRequest) {
             data?: {
                 id: string
                 email_verified: boolean
+                has_password?: boolean
             } | null
             error?: {
                 code?: string
@@ -94,11 +99,11 @@ export async function POST(request: NextRequest) {
         const existing = existingPayload?.data || null
 
         if (existing) {
-            if (existing.email_verified) {
+            if (existing.email_verified && existing.has_password !== false) {
                 // Already verified — redirect to login
                 return NextResponse.json({ error: 'An account with this email already exists' }, { status: 409 })
             }
-            // If exists but unverified, resend OTP
+            // An interrupted passwordless signup can safely restart with fresh email proof.
             const otp = await createOTPToken(normalizedEmail, existing.id)
             const emailResult = await sendOTPEmail(normalizedEmail, otp)
             if (!emailResult.success) {

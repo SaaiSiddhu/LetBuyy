@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import type { StorePaymentConfig, StorePaymentSetup } from '@letbuyy/shared-types'
-import { Badge, Banner, Card, ProviderModeBadge, Radio, Section } from '@letbuyy/ui'
+import { Badge, Banner, Button, Card, ProviderModeBadge, Radio, Section } from '@letbuyy/ui'
 
 const reasons: Record<StorePaymentSetup['blocking_reasons'][number], string> = {
     schema_unavailable: 'Payment configuration is temporarily unavailable.',
@@ -9,25 +9,33 @@ const reasons: Record<StorePaymentSetup['blocking_reasons'][number], string> = {
     credentials_unusable: 'The saved credentials could not be read. Reconnect your test account.',
     account_model_unresolved: 'Reconnect your own account to confirm the payment connection.',
     live_checkout_not_qualified: 'Live payments require provider onboarding and settlement qualification.',
+    managed_sandbox_disabled: 'LetBuyy test payments are currently unavailable in this environment.',
 }
 
-export function PaymentSetupOverview({ config, store }: { config: StorePaymentConfig & { setup: StorePaymentSetup }; store: string }) {
+export function PaymentSetupOverview({ config, store, onConnectManaged, disabled = false }: {
+    config: StorePaymentConfig & { setup: StorePaymentSetup }; store: string;
+    onConnectManaged?: () => void; disabled?: boolean;
+}) {
     const setup = config.setup
     return <>
         <Card>
             <Section title="Choose how you accept payments" description="Use one online payment connection for your store. Cash on delivery is managed separately.">
                 <fieldset className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
                     <legend className="sr-only">Online payment connection</legend>
-                    <Radio name="payment-connection" value="own_account" checked readOnly
+                    <Radio name="payment-connection" value="own_account" checked={setup.connection !== 'managed_sandbox'} readOnly
                         label="Your Razorpay account"
                         description="Connect your merchant account. Razorpay handles settlement to your verified bank account when live payments are qualified."
                         className="rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-primary)] bg-[var(--lb-color-primary-soft)] p-[var(--lb-space-4)]" />
-                    <Radio name="payment-connection" value="letbuyy_payments" disabled
+                    <Radio name="payment-connection" value="letbuyy_payments" checked={setup.connection === 'managed_sandbox'} readOnly disabled={!setup.managed_payments.available}
                         label="LetBuyy Payments, powered by Razorpay"
-                        description="Available after provider approval. Merchant onboarding and bank verification must be confirmed before activation."
-                        helperText="Not yet available"
+                        description={setup.managed_payments.available ? 'Try checkout using LetBuyy’s test account. No credentials needed and no real money moves.' : 'Available after provider approval. Merchant onboarding and bank verification must be confirmed before activation.'}
+                        helperText={setup.managed_payments.available ? 'Test mode only · no bank settlement' : 'Not yet available'}
                         className="rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] p-[var(--lb-space-4)]" />
                 </fieldset>
+                {setup.managed_payments.available && onConnectManaged && <Button
+                    onClick={onConnectManaged} disabled={disabled || setup.connection === 'managed_sandbox'}>
+                    {setup.connection === 'managed_sandbox' ? 'LetBuyy test payments connected' : 'Use LetBuyy test payments'}
+                </Button>}
             </Section>
         </Card>
         <Card>

@@ -52,6 +52,7 @@ export default function SelectPage() {
     const [loading, setLoading] = useState<string | null>(null)
     const [initialLoading, setInitialLoading] = useState(true)
     const [sessionExpired, setSessionExpired] = useState(false)
+    const [unavailable, setUnavailable] = useState(false)
     const [lang, setLang] = useState<Lang>(() => (typeof window !== 'undefined' ? (localStorage.getItem('letbuyy_lang') as Lang) || 'en' : 'en'))
 
     const t = translations[lang]
@@ -59,8 +60,12 @@ export default function SelectPage() {
     useEffect(() => {
         let redirecting = false
 
-        fetch('/api/auth/stores')
-            .then((res) => res.json())
+        fetch('/api/auth/stores', { signal: AbortSignal.timeout(20000), cache: 'no-store' })
+            .then(async res => {
+                if (res.status === 401) return { authenticated: false }
+                if (!res.ok) throw new Error('Discovery unavailable')
+                return res.json()
+            })
             .then((data) => {
                 if (redirecting) return
 
@@ -70,7 +75,8 @@ export default function SelectPage() {
                     return
                 }
 
-                const userStores: UserStore[] = data.stores || []
+                if (!Array.isArray(data.stores)) throw new Error('Discovery unavailable')
+                const userStores: UserStore[] = data.stores
 
                 if (userStores.length === 0) {
                     redirecting = true
@@ -85,7 +91,7 @@ export default function SelectPage() {
             })
             .catch(() => {
                 if (!redirecting) {
-                    setSessionExpired(true)
+                    setUnavailable(true)
                     setInitialLoading(false)
                 }
             })
@@ -159,6 +165,8 @@ export default function SelectPage() {
                         <div className="select-loading-spinner" />
                         <p>Loading your sites…</p>
                     </div>
+                ) : unavailable ? (
+                    <><h1 className="auth-title">Unable to load your stores</h1><p role="alert">Your sign-in is preserved. Please retry.</p><Button unstyled className="auth-btn-primary" onClick={() => window.location.reload()}>Retry</Button></>
                 ) : sessionExpired ? (
                     <>
                         <h1 className="auth-title">Sign in to continue</h1>

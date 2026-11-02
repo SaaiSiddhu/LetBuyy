@@ -3,7 +3,7 @@ import { prepareStoreCheckoutDomain } from '../lib/store-checkout-domain';
 import { assertReadyFirstPartyStorefrontDomain, provisionFirstPartyStorefrontDomain } from '../lib/first-party-storefront-domain';
 import type { Env } from '../index';
 import { resolveCustomUser } from '../lib/auth-user';
-import { hydratePaymentCredential, commitPaymentConfiguration } from '../lib/payment-credential-history';
+import { hydratePaymentCredential, commitPaymentConfiguration, managedSandboxAvailable } from '../lib/payment-credential-history';
 import { getSupabaseAdmin, paginated, success } from '../lib/supabase';
 import { validate } from '../middleware/validation';
 import { CreateStoreSchema, PaymentConfigSchema, UpdateStoreSchema } from '../schemas/store.schema';
@@ -202,8 +202,7 @@ router.get('/:id/payment-config', async (c) => {
         return c.json({ error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
     }
 
-    return c.json(success(await projectStorePaymentConfig(await hydratePaymentCredential(db, data),
-        c.env.PAYMENT_CONFIG_ENCRYPTION_KEY, c.env.MERCHANT_RAZORPAY_WEBHOOK_ORIGIN)));
+    return c.json(success(await projectStorePaymentConfig(await hydratePaymentCredential(db, data), c.env.PAYMENT_CONFIG_ENCRYPTION_KEY, await managedSandboxAvailable(c), c.env.MERCHANT_RAZORPAY_WEBHOOK_ORIGIN)));
 });
 
 // GET /stores/:id/health — Mobile Store Health score from real operational signals
@@ -410,13 +409,11 @@ router.get('/:id/health', async (c) => {
 router.post('/:id/payment-config', validate('json', z.union([PaymentConfigSchema, AttachStorePaymentWebhookSchema])), async (c) => {
     const auth = c.get('auth');
     const storeId = c.req.param('id');
-    const body = c.get('validatedBody') as {
-        key_id: string;
-        key_secret: string;
-        webhook_secret?: string;
-        test_mode: boolean;
-        expected_revision?: string;
-    } | { attach_to_existing: true; webhook_secret: string; expected_revision: string };
+    const body = c.get('validatedBody') as z.infer<typeof PaymentConfigSchema> | z.infer<typeof AttachStorePaymentWebhookSchema>;
+    const managed = 'connection' in body;
+    if (managed && !await managedSandboxAvailable(c)) {
+        throw new AppError('LetBuyy test payments are unavailable in this environment. Live payments remain disabled.',503,'MANAGED_SANDBOX_UNAVAILABLE');
+    }
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
@@ -487,6 +484,9 @@ router.post('/:id/payment-config', validate('json', z.union([PaymentConfigSchema
         if (!saved) throw new AppError('Saved test credentials are unavailable. Reconnect the account before adding its webhook.', 503, 'PAYMENT_CONFIG_UNAVAILABLE');
         keyId = saved.keyId;
         keySecret = saved.keySecret;
+    } else if (managed) {
+        keyId = c.env.RAZORPAY_KEY_ID;
+        keySecret = c.env.RAZORPAY_KEY_SECRET;
     } else {
         keyId = body.key_id;
         keySecret = body.key_secret;
@@ -496,9 +496,9 @@ router.post('/:id/payment-config', validate('json', z.union([PaymentConfigSchema
     let webhookSecretCiphertext: string | undefined;
     try {
         keySecretCiphertext = await encryptPaymentSecret(keySecret, c.env.PAYMENT_CONFIG_ENCRYPTION_KEY, {
-            siteId: storeId, keyId, environment: 'sandbox', credentialId,
+            siteId: storeId, keyId, environment: 'sandbox', credentialId, accountMode: managed ? 'managedSandbox' : 'ownAccount',
         });
-        webhookSecretCiphertext = body.webhook_secret
+        webhookSecretCiphertext = 'webhook_secret' in body && body.webhook_secret
             ? await encryptPaymentWebhookSecret(body.webhook_secret, c.env.PAYMENT_CONFIG_ENCRYPTION_KEY, {
                 siteId: storeId, keyId, environment: 'sandbox', credentialId,
             }) : undefined;
@@ -515,7 +515,7 @@ router.post('/:id/payment-config', validate('json', z.union([PaymentConfigSchema
         throw new AppError('Razorpay did not verify these credentials. Your saved connection is unchanged.', 400, 'PAYMENT_CREDENTIALS_INVALID');
     }
     const now = new Date().toISOString();
-    const paymentSettings: PaymentSettings = { mode: 'ownAccount', gateways: ['razorpay'], razorpay: {
+    const paymentSettings: PaymentSettings = { mode: managed ? 'managedSandbox' : 'ownAccount', gateways: ['razorpay'], razorpay: {
         credential_id: credentialId, key_id: keyId, key_secret_ciphertext: keySecretCiphertext,
         ...(webhookSecretCiphertext ? { webhook_secret_ciphertext: webhookSecretCiphertext } : {}),
         test_mode: true, verified: true, connected_at: now, updated_at: now,
@@ -523,7 +523,8 @@ router.post('/:id/payment-config', validate('json', z.union([PaymentConfigSchema
     return c.json(await commitPaymentConfiguration(c, { actorId: customUser.id, current: store,
         proposed: { ...store, payment_settings: paymentSettings, online_payment_enabled: false },
         operation: 'save', payload: { credential_id: credentialId, key_id: keyId, key_secret_ciphertext: keySecretCiphertext,
-            ...(webhookSecretCiphertext ? { webhook_secret_ciphertext: webhookSecretCiphertext } : {}) },
+            ...(webhookSecretCiphertext ? { webhook_secret_ciphertext: webhookSecretCiphertext } : {}),
+            ...(managed ? { account_model: 'managed_sandbox' } : {}) },
         credentialsUsable: true,
     }));
 });
@@ -543,7 +544,7 @@ router.patch('/:id/payment-config', validate('json', UpdateStorePaymentMethodsSc
     if (body.expected_revision && body.expected_revision !== row.updated_at) {
         throw new AppError('Payment settings changed. Reload before saving.', 409, 'PAYMENT_CONFIG_CONFLICT');
     }
-    const before = await projectStorePaymentConfig(await hydratePaymentCredential(db, row), c.env.PAYMENT_CONFIG_ENCRYPTION_KEY);
+    const before = await projectStorePaymentConfig(await hydratePaymentCredential(db, row), c.env.PAYMENT_CONFIG_ENCRYPTION_KEY, await managedSandboxAvailable(c), c.env.MERCHANT_RAZORPAY_WEBHOOK_ORIGIN);
     if (body.online_payment_enabled === true && !before.setup?.can_enable_online) {
         throw new AppError('Complete a verified test connection before enabling online checkout. Live payments remain gated.', 409, 'PAYMENT_NOT_READY');
     }
@@ -1005,7 +1006,7 @@ router.patch('/:id', validate('json', UpdateStoreSchema), async (c) => {
             .eq('id', storeId).or(ownedByCustomUserFilter(customUser.id)).is('deleted_at', null).maybeSingle();
         if (error) throw new AppError('Payment settings are temporarily unavailable.', 503, 'PAYMENT_CONFIG_UNAVAILABLE');
         if (!row) throw new AppError('Store not found.', 404, 'NOT_FOUND');
-        const current = await projectStorePaymentConfig(await hydratePaymentCredential(db, row), c.env.PAYMENT_CONFIG_ENCRYPTION_KEY);
+        const current = await projectStorePaymentConfig(await hydratePaymentCredential(db, row), c.env.PAYMENT_CONFIG_ENCRYPTION_KEY, await managedSandboxAvailable(c), c.env.MERCHANT_RAZORPAY_WEBHOOK_ORIGIN);
         if (body.online_payment_enabled === true && !current.setup?.can_enable_online) {
             throw new AppError('Complete a verified test connection before enabling online checkout. Live payments remain gated.', 409, 'PAYMENT_NOT_READY');
         }

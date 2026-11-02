@@ -18,6 +18,9 @@ import { newSyntheticTenant, seedSyntheticTenant } from './synthetic-tenant';
 import type { PaymentCreateIntentInput, PaymentIntentResult } from '@letbuyy/payments';
 
 const owned = requireOwnedDatabase();
+// The default retains the original own-account regression. Explicit sandbox
+// qualification repeats this same buyer journey with a managed credential.
+const managedCheckout = process.env.LETBUYY_CHECKOUT_BROWSER_MANAGED === '1';
 const site = newSyntheticTenant('browser-checkout');
 const merchantOwnerId = crypto.randomUUID();
 const merchantOwnerEmail = `syn-browser-merchant-${merchantOwnerId}@example.invalid`;
@@ -137,12 +140,15 @@ before(async () => {
 
     for (const [id,keyId,secret] of [[originalCredentialId,originalKeyId,razorpayKeySecret],
         [replacementCredentialId,replacementKeyId,'synthetic-unused-replacement-secret']]) {
-        const encrypted = await encryptPaymentSecret(secret, paymentEncryptionKey, {siteId:site.siteId,keyId,environment:'sandbox',credentialId:id});
-        owned.psql(`INSERT INTO payment_credentials(id,site_id,provider,mode,status,provider_key_id,last_verified_at,encrypted_credentials)
+        const managed = managedCheckout && id === originalCredentialId;
+        const encrypted = await encryptPaymentSecret(secret, paymentEncryptionKey, {siteId:site.siteId,keyId,environment:'sandbox',credentialId:id,
+            accountMode:managed?'managedSandbox':'ownAccount'});
+        owned.psql(`INSERT INTO payment_credentials(id,site_id,provider,mode,status,provider_key_id,last_verified_at,encrypted_credentials,kms_key_ref,metadata)
             VALUES('${id}','${site.siteId}','razorpay','sandbox','active','${keyId}',now(),
-            '${JSON.stringify({key_secret_ciphertext:encrypted})}'::jsonb);`);
+            '${JSON.stringify({key_secret_ciphertext:encrypted})}'::jsonb,'payment-config:v3:synthetic',
+            '${JSON.stringify(managed?{account_model:'managed_sandbox'}:{})}'::jsonb);`);
     }
-    const paymentSettings = {mode:'ownAccount',gateways:['razorpay'],razorpay:{credential_id:originalCredentialId,key_id:originalKeyId,test_mode:true,verified:true}};
+    const paymentSettings = {mode:managedCheckout?'managedSandbox':'ownAccount',gateways:['razorpay'],razorpay:{credential_id:originalCredentialId,key_id:originalKeyId,test_mode:true,verified:true}};
     owned.psql(`UPDATE payment_credentials SET selected_for_checkout=true WHERE id='${originalCredentialId}';
         UPDATE sites SET online_payment_enabled=true,payment_settings='${JSON.stringify(paymentSettings)}'::jsonb WHERE id='${site.siteId}';`);
     const keys = await newIdentityKeys();
@@ -152,6 +158,8 @@ before(async () => {
         NEXT_PUBLIC_STORE_ROOT_DOMAIN: 'localhost',
         CUSTOMER_SESSION_SECRET: 'synthetic-browser-customer-session-secret-at-least-32-bytes',
         LETBUYY_RAZORPAY_MODE: 'sandbox',
+        LETBUYY_PAYMENT_MODE: 'sandbox',
+        LETBUYY_MANAGED_PAYMENTS_MODE: 'sandbox',
         RAZORPAY_KEY_ID: ['rzp', 'test', crypto.randomUUID().replaceAll('-', '')].join('_'),
         RAZORPAY_KEY_SECRET: crypto.randomUUID(),
         PAYMENT_CONFIG_ENCRYPTION_KEY: paymentEncryptionKey,
@@ -161,7 +169,8 @@ before(async () => {
         },
         HOSTED_RAZORPAY_TEST_ADAPTER: hostedRazorpayTestAdapter,
     });
-    rotateEncryptionKey=()=>{env.PAYMENT_CONFIG_ENCRYPTION_KEY=PAYMENT_KEYRING_PREFIX+JSON.stringify({active:replacementEncryptionKey,previous:[paymentEncryptionKey]});};
+    rotateEncryptionKey=()=>{env.PAYMENT_CONFIG_ENCRYPTION_KEY=PAYMENT_KEYRING_PREFIX+JSON.stringify({active:replacementEncryptionKey,previous:[paymentEncryptionKey]});
+        env.LETBUYY_MANAGED_PAYMENTS_MODE=undefined;};
     server = createServer(async (req, res) => {
         try {
             const body = await readBody(req);

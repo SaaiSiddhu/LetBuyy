@@ -429,6 +429,16 @@ class SubscriptionService {
   // GET PAYMENT CONFIG
   // ============================================================
 
+  Future<Map<String, dynamic>> connectManagedTestPayments({
+    required String storeId, required String idempotencyKey, String? expectedRevision,
+  }) async {
+    final res = await _api.stores.paymentConfig.save(storeId, {
+      'connection': 'managed_sandbox',
+      if (expectedRevision != null) 'expected_revision': expectedRevision,
+    }, options: ApiRequestOptions(idempotencyKey: idempotencyKey));
+    return Map<String, dynamic>.from(res['data'] ?? res);
+  }
+
   /// Get payment configuration for order creation
   Future<Map<String, dynamic>> getPaymentConfig(String storeId) async {
     try {

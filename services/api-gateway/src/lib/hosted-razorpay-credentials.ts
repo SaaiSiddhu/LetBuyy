@@ -3,7 +3,7 @@ import type { RazorpayCredentials } from '@letbuyy/infrastructure/razorpay-adapt
 import type { Env } from '../index';
 import { getSupabaseAdmin } from './supabase';
 import { hydratePaymentCredential } from './payment-credential-history';
-import { readStoreRazorpayTestCredentials, type PaymentSettings } from './store-payment-config';
+import { readStoreRazorpayTestCredentials, managedSandboxConfigured, type PaymentSettings } from './store-payment-config';
 
 type StorePaymentRow = { id: string; payment_settings?: PaymentSettings | null; online_payment_enabled?: boolean | null };
 export type HostedRazorpayCredentials = RazorpayCredentials & { credentialId?: string };
@@ -20,6 +20,8 @@ export async function hostedRazorpayTestCredentials(c: Context<{ Bindings: Env }
         ? await hydratePaymentCredential(getSupabaseAdmin(c), data, {
             requireSelected: !priorAttempt, credentialId: priorAttempt?.credentialId,
         }) : data;
+    if (hydrated.payment_settings?.mode === 'managedSandbox'
+        && (c.env.ENVIRONMENT === 'production' || (!priorAttempt && !managedSandboxConfigured(c.env)))) return null;
     const configured = await readStoreRazorpayTestCredentials(hydrated.payment_settings, c.env.PAYMENT_CONFIG_ENCRYPTION_KEY, siteId);
     if (configured) return { ...configured, ...(hydrated.payment_settings?.razorpay?.credential_id
         ? { credentialId: hydrated.payment_settings.razorpay.credential_id } : {}) };

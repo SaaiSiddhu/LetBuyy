@@ -1853,6 +1853,7 @@ export async function verifyBoundDomainReconcileSignature(input: { secret: strin
 }
 
 export * from './merchant-buyer-connection';
+export * from './merchant-native';
 
 export const NOTIFICATION_REQUEST_PATH = '/v1/internal/notification-jobs/execute';
 export const NOTIFICATION_REQUEST_MAX_BYTES = 512_000;

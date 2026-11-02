@@ -44,6 +44,19 @@ void main() {
     expect(enabled.providerEnvironment, 'sandbox');
     expect(enabled.statusText, 'Test checkout enabled');
   });
+  test('managed test readiness requires the explicit sandbox account model and availability', () {
+    final input = ready(enabled: true);
+    (input['payment_settings'] as Map)['mode'] = 'managedSandbox';
+    (input['setup'] as Map)['connection'] = 'managed_sandbox';
+    expect(PaymentConfigModel.fromMap(input, 'site').isReady, false);
+    (input['setup'] as Map)['managed_payments'] = {'available': true, 'reason': 'sandbox_only'};
+    final managed = PaymentConfigModel.fromMap(input, 'site');
+    expect(managed.mode, PaymentMode.managedSandbox);
+    expect(managed.isReady, true);
+    expect(managed.razorpayKeySecret, isNull);
+    (input['setup'] as Map)['environment'] = 'live';
+    expect(PaymentConfigModel.fromMap(input, 'site').isReady, false);
+  });
   test('missing setup conditions never infer checkout readiness', () {
     for (final field in [
       'connection',

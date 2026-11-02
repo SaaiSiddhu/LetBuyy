@@ -10,6 +10,8 @@ export async function originalRefundCredentials(c:AppContext,payment:PaymentSess
     if(payment.mode!=='sandbox')throw new AppError('Live refunds require qualified provider authorization.',503,'REFUND_LIVE_NOT_READY');
     if(!payment.credential_id)throw new AppError('The original payment connection needs reconciliation before refunding.',409,'REFUND_CONNECTION_REQUIRED');
     const row=await hydratePaymentCredential(getSupabaseAdmin(c),{id:payment.site_id},{credentialId:payment.credential_id});
+    if(row.payment_settings?.mode==='managedSandbox'&&c.env.ENVIRONMENT==='production')
+        throw new AppError('Managed test refunds are unavailable in production.',503,'REFUND_LIVE_NOT_READY');
     const credentials=await readStoreRazorpayTestCredentials(row.payment_settings,c.env.PAYMENT_CONFIG_ENCRYPTION_KEY,payment.site_id);
     if(!credentials)throw new AppError('The original payment connection is unavailable. Retry after it is restored.',503,'REFUND_CONNECTION_UNAVAILABLE');
     return credentials;

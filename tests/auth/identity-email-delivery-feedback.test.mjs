@@ -40,7 +40,7 @@ function fixture(status = 200, payload = { success: true }, kind = 'magic_link')
       calls.push({ url, body: JSON.parse(init.body), headers: init.headers });
       return new Response(JSON.stringify(payload), { status, headers: { 'Content-Type': 'application/json' } });
     },
-    window: { location: { href: '' } }, encodeURIComponent,
+    window: { location: { href: '' } }, encodeURIComponent, AbortSignal,
   };
   return { context, calls, errors, countdowns, resendEnabled };
 }
@@ -110,15 +110,12 @@ for (const page of ['lookup', 'check-email']) {
 }
 
 
-test('email lookup stays busy until its automatic magic-link request finishes', async () => {
-  const f = fixture(); const loading = []; let release;
-  f.context.setLoading = value => loading.push(value);
+test('passwordless lookup resumes shared signup without sending an unsolicited link', async () => {
+  const f = fixture(); let sent = false;
   f.context.fetch = async () => new Response(JSON.stringify({ exists: true, hasPassword: false }));
-  f.context.handleSendMagicLink = () => new Promise(resolve => { release = resolve; });
-  const pending = handler('lookup', 'handleEmailContinue', f.context)({ preventDefault() {} });
-  for (let i = 0; i < 10 && !release; i++) await new Promise(resolve => setImmediate(resolve));
-  assert.equal(typeof release, 'function');
-  try { assert.equal(loading.at(-1), true); }
-  finally { release(); await pending; }
-  assert.equal(loading.at(-1), false);
+  f.context.handleSendMagicLink = async () => { sent = true; };
+  f.context.authPathWithReturnTo = path => path; f.context.returnTo = null;
+  await handler('lookup', 'handleEmailContinue', f.context)({ preventDefault() {} });
+  assert.match(f.context.window.location.href, /^\/signup\?email=/);
+  assert.equal(sent, false);
 });

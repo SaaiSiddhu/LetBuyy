@@ -48,6 +48,8 @@ function loadAuthCore() {
       if (specifier === './customer-session') return evaluateModule(AUTH_CORE_CUSTOMER_SESSION_SOURCE);
       if (specifier === './storefront-access') return evaluateModule(AUTH_CORE_STOREFRONT_ACCESS_SOURCE);
       if (specifier === './merchant-buyer-connection') return evaluateModule(AUTH_CORE_CONNECTION_SOURCE);
+      if (specifier === './merchant-native') return evaluateModule('packages/auth-core/src/merchant-native.ts');
+      if (specifier === './merchant-native-registry') return evaluateModule('packages/auth-core/src/merchant-native-registry.ts');
       if (specifier === 'zod') return { z };
       if (specifier === '@letbuyy/shared-types') return { EmailSchema: z.string().email() };
       throw new Error(`Unexpected test require: ${specifier}`);

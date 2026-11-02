@@ -16,6 +16,7 @@ enum AuthChangeEvent {
   tokenRefreshed,
   sessionExpired,
   sessionUnavailable,
+  verificationUnavailable,
 }
 
 class AuthState {
@@ -96,7 +97,13 @@ class MerchantMfaRequiredException implements Exception {
   String toString() => 'Enter your current authenticator code to sign in.';
 }
 
-class MerchantIdentityUnavailableException implements Exception {
+class SessionVerificationUnavailableException implements Exception {
+  const SessionVerificationUnavailableException();
+  @override
+  String toString() => 'Unable to verify your account. Please retry.';
+}
+
+class MerchantIdentityUnavailableException extends SessionVerificationUnavailableException {
   const MerchantIdentityUnavailableException();
   @override
   String toString() => 'Sign-in is temporarily unavailable. Please retry.';
@@ -157,10 +164,27 @@ class StoreAuthService extends ChangeNotifier {
       StreamController<AuthState>.broadcast();
 
   MerchantSession? _session;
+  bool accountTransition = false;
+  bool _signingOut = false;
+  bool? lastLogoutRevocationConfirmed;
+  int privateContextVersion = 0;
+  String? preferredSiteId;
+  bool needsStoreSelection = false;
+  bool get verificationUnavailable => _sessionRecoveryPending;
+  String? get accountActionCredential => _session?.token;
+  void setAccountTransition(bool value) {
+    if (!value && _signingOut) return;
+    if (accountTransition == value) return;
+    accountTransition = value;
+    privateContextVersion++;
+    if (!value && _session != null) _emit(AuthChangeEvent.initialSession);
+    notifyListeners();
+  }
+
 
   MerchantSessionUser? get currentUser => _session?.user;
   bool get isSignedIn => _session != null;
-  String? get accessToken => _session?.token;
+  String? get accessToken => accountTransition || _signingOut ? null : _session?.token;
   DateTime? get sessionExpiresAt => _session?.expiresAt;
   Stream<AuthState> get authStateChanges => _authEvents.stream;
   bool _sessionRecoveryPending = false;
@@ -195,6 +219,42 @@ class StoreAuthService extends ChangeNotifier {
     }
 
     await _recoverSession(token, AuthChangeEvent.initialSession, epoch);
+  }
+
+  Future<void> acceptHostedSession({
+    required String token,
+    required String expectedUserId,
+    String? preferredSiteId,
+    bool Function()? shouldCommit,
+  }) async {
+    final epoch = ++_authEpoch;
+    final candidate = await _validateIdentitySession(token);
+    if (candidate == null || candidate.user.id != expectedUserId)
+      throw StateError('Sign-in is no longer valid');
+    if (_signingOut ||
+        !_isCurrent(epoch) ||
+        (shouldCommit != null && !shouldCommit()))
+      return;
+    final previous = _session;
+    await _persistSession(candidate, epoch);
+    if (!_isCurrent(epoch)) return;
+    if (_signingOut || (shouldCommit != null && !shouldCommit())) {
+      if (previous != null && !_signingOut) {
+        await _persistSession(previous, epoch);
+      } else {
+        await _clearSession(epoch);
+      }
+      return;
+    }
+    _sessionRecoveryPending = false;
+    _authEpoch++;
+    accountTransition = false;
+    privateContextVersion++;
+    this.preferredSiteId = preferredSiteId;
+    needsStoreSelection = true;
+    _session = candidate;
+    _emit(AuthChangeEvent.signedIn);
+    notifyListeners();
   }
 
   Future<MerchantSessionUser?> signInWithPassword(
@@ -345,6 +405,9 @@ class StoreAuthService extends ChangeNotifier {
   Future<void> Function()? beforeSignOut;
 
   Future<void> signOut() async {
+    if (_signingOut) return;
+    _signingOut = true;
+    setAccountTransition(true);
     final epoch = ++_authEpoch;
     final token =
         _session?.token ??
@@ -366,16 +429,18 @@ class StoreAuthService extends ChangeNotifier {
       }
       if (token != null && token.isNotEmpty) {
         try {
-          await _http
-              .post(
-                _identityUri('/api/auth/logout'),
-                headers: {'Cookie': '$_sessionCookieName=$token'},
-              )
+          final request = http.Request('POST', _identityUri('/api/auth/logout'))
+            ..followRedirects = false
+            ..headers['Authorization'] = 'Bearer $token';
+          final response = await http.Response.fromStream(await _http.send(request))
               .timeout(const Duration(seconds: 20));
+          lastLogoutRevocationConfirmed = response.statusCode == 200;
         } catch (_) {
-          debugPrint('Identity sign-out confirmation unavailable.');
+          lastLogoutRevocationConfirmed = false;
         }
       }
+      _signingOut = false;
+      notifyListeners();
     }
   }
 
@@ -564,11 +629,10 @@ class StoreAuthService extends ChangeNotifier {
 
   Future<MerchantSession?> _validateIdentitySession(String token) async {
     try {
-      final response = await _http
-          .get(
-            _identityUri('/api/auth/session'),
-            headers: {'Cookie': '$_sessionCookieName=$token'},
-          )
+      final request = http.Request('GET', _identityUri('/api/auth/session'))
+        ..headers['Authorization'] = 'Bearer $token'
+        ..followRedirects = false;
+      final response = await http.Response.fromStream(await _http.send(request))
           .timeout(const Duration(seconds: 20));
       final body = _decodeBody(response);
       // An HTML protection/login page, timeout or 5xx is not revocation. Only
@@ -590,7 +654,7 @@ class StoreAuthService extends ChangeNotifier {
         throw const MerchantIdentityUnavailableException();
       }
       return MerchantSession(
-        token: _extractCookie(response, _sessionCookieName) ?? token,
+        token: body['rotated_session_token'] is String ? body['rotated_session_token'] as String : _extractCookie(response, _sessionCookieName) ?? token,
         user: user,
         expiresAt: _parseDateTime(body['expires_at'] ?? body['expiresAt']),
       );
@@ -651,6 +715,10 @@ class StoreAuthService extends ChangeNotifier {
     if (!_isCurrent(epoch)) return;
     _session = null;
     _sessionRecoveryPending = false;
+    accountTransition = false;
+    privateContextVersion++;
+    preferredSiteId = null;
+    needsStoreSelection = false;
     _identityCookies.clear();
     await _writeStorage(epoch, () async {
       await _secureStorage.delete(key: _sessionTokenKey);

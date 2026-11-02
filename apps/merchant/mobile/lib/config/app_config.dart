@@ -76,6 +76,12 @@ class AppConfig {
     defaultValue: 'https://accounts.letbuyy.com',
   );
 
+  /// Exact first-party Accounts estate; kept separate from diagnostic labels.
+  static const String accountsEnvironment = String.fromEnvironment(
+    'ACCOUNTS_ENVIRONMENT',
+    defaultValue: 'production',
+  );
+
   /// Public Merchant origin used to validate pasted invitation destinations.
   static const String adminBaseUrl = String.fromEnvironment(
     'ADMIN_BASE_URL',
