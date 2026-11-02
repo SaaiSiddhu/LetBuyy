@@ -1,6 +1,6 @@
 # Local develop integration — 2 November 2026
 
-Status: source candidate assembled; final gate results and actual merge commit are recorded in VALIDATION.json and the execution/branch ledgers.
+Status: locally merged into develop as 745bcd95cdf0dcf3b23f3242178fd5f3a84d7976. The merge tree exactly equals the qualified candidate. Final checks are recorded in VALIDATION.json; MERGE_RECEIPT.json and the execution/branch ledgers record source and recovery details.
 
 ## Authority and scope
 
@@ -35,3 +35,5 @@ The General/Business KYC chat continues independently. After the qualified snaps
 The isolated assembly and original-byte backups live at /private/tmp/letbuyy-integrate-20261102. Original dirty worktrees, secrets, environment files and signing assets were not reset or overwritten. The final merge is a normal no-fast-forward merge in the primary checkout, with a retained stash backup if needed to clear its original dirty state. No stash is reapplied on top of already-integrated bytes.
 
 Web/mobile builds, local owned databases and synthetic browser fixtures do not certify real AWS scans, delivery of alert mail, Cashfree KYC, hosted migrations, device deep links, live payments or payouts. Existing release gates remain open.
+
+Primary post-merge checks: restored frozen workspace dependencies, built 32 Gateway dependency tasks, passed Gateway typecheck and nine overlapping theme/payment regressions, and checked migration sequence, rollback integrity, secret scanning and actual branch ancestry. A missing shipping/tax disposition row was repaired from current containment evidence. The pre-existing ACTIVE claim for codex/order-lifecycle-settings-repair has no local branch; it remains an explicit advisory rather than being marked complete without source.
