@@ -1,0 +1,23 @@
+{
+  "observedAtUtc": "2026-11-02T00:36:34Z",
+  "method": "Read-only native Chrome accessibility inspection of the owner-authorized FUCOMES Razorpay account",
+  "environment": "Razorpay Test Mode",
+  "transactions": {
+    "selectedRange": "2026-10-26 through 2026-11-02",
+    "visibleCount": 5,
+    "visibleDates": "2026-10-27 through 2026-10-30",
+    "capturedCount": 4,
+    "technicalErrorCount": 1,
+    "newWave6PaymentObserved": false
+  },
+  "webhooks": {
+    "visibleCount": 1,
+    "url": "https://theme-e2e-rzp-20261024.letbuyy.com/razorpay",
+    "status": "Disabled",
+    "selectedEventCount": 3,
+    "storeBoundWave6CallbackObserved": false
+  },
+  "accountNotice": "Provider dashboard displayed a ReKYC prompt; no LetBuyy merchant KYC approval was inferred.",
+  "mutations": "None. No payment, key, webhook, or account setting was changed.",
+  "acceptance": "Open: fresh own-account test checkout, signed store-bound callback, exactly-once order and ledger effect, provider statement binding, and reconciliation."
+}

@@ -33,5 +33,23 @@
     "finding": "Newer successor tests and builders assume later search, filter, typography, and heading changes inside the nominal 2.0.0 base. A production cutover requires moving those behaviors to explicit successor versions and requalifying their deltas against the admitted 2.0.0 base.",
     "disposition": "Trial runtime imports and adapted modules removed. No active factory, admitted release, database migration, or published merchant snapshot was changed."
   },
+  "editorCompatibilityDiagnostic": {
+    "method": "For each immutable admitted artifact, build its section/settings manifest and run collectThemeTemplateValidationIssues against its stored theme document using the current canonical editor validator.",
+    "validArtifacts": ["letbuyy-craft"],
+    "invalidArtifacts": {
+      "letbuyy-aura": ["undeclared list-collections subtitle"],
+      "letbuyy-bloom": ["undeclared list-collections subtitle", "undeclared search title"],
+      "letbuyy-dawn": ["undeclared list-collections subtitle"],
+      "letbuyy-forge": ["undeclared bodyFont", "undeclared experienceId", "undeclared headingFont"],
+      "letbuyy-nova": ["undeclared fontFamily"],
+      "letbuyy-refresh": ["undeclared list-collections subtitle"],
+      "letbuyy-ride": ["undeclared list-collections subtitle"],
+      "letbuyy-summit": ["undeclared list-collections subtitle"]
+    },
+    "admittedArtifactsFailingCurrentEditorValidation": 8,
+    "admittedArtifactCount": 9,
+    "trialLatest210FailingAfterHistoricalBaseSwitch": ["letbuyy-dawn", "letbuyy-nova", "letbuyy-summit"],
+    "implication": "An exact-hash historical factory is necessary for provenance, but cannot be routed into new installs or editor drafts without a versioned successor and an explicit compatibility or upgrade path."
+  },
   "qualification": "Exact historical package reproduction is proven, but current runtime promotion and reviewed successor source pins are not. The historical theme promotion gate remains red; no green behavioral gate or Wave 6 release is claimed."
 }
