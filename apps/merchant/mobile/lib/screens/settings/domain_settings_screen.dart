@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -7,6 +8,7 @@ import 'package:share_plus/share_plus.dart';
 import '../../models/store_model.dart';
 import '../../services/custom_domains.dart';
 import '../../theme/app_theme_colors.dart';
+import 'connected_domains_section.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 
 class DomainSettingsScreen extends StatefulWidget {
@@ -35,6 +37,18 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
   String _accessMode = 'public';
   String? _previewUrl;
   DomainPurchaseQuote? _domainQuote;
+  CheckoutDomainSetup? _checkout;
+  String? _checkoutError;
+  bool _checkoutBusy = false;
+  int _checkoutRequest = 0;
+  Object? _loadedContext;
+  int _domainsRevision = 0;
+
+  bool _isCurrentStore(StoreModel? store) =>
+      mounted &&
+      store != null &&
+      context.read<StoreContext>().selectedStoreId == store.id &&
+      context.read<StoreContext>().requestContextKey == _loadedContext;
 
   @override
   void initState() {
@@ -52,31 +66,69 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
     super.dispose();
   }
 
-  Future<void> _loadStore() async {
+  Future<void> _loadStore({bool force = false}) async {
     setState(() => _isLoading = true);
     try {
       final domainService = context.read<DomainService>();
-      final store = await context.read<StoreContext>().ensureSelectedStore();
+      final stores = context.read<StoreContext>();
+      final epoch = stores.requestContextVersion;
+      final store = await stores.ensureSelectedStore(force: force);
       if (!mounted) return;
+      if (epoch != stores.requestContextVersion ||
+          stores.selectedStoreId != store?.id)
+        return;
       setState(() {
+        _loadedContext = stores.requestContextKey;
         _store = store;
+        _checkout = null;
+        _checkoutError = null;
         _snapshot = store == null
             ? null
             : domainService.snapshotForStore(store);
+        _domainQuote = null;
+        _previewUrl = null;
         _customDomainController.text = store?.customDomain ?? '';
         _accessMode = store?.accessMode ?? 'public';
         _accessMessageController.text = store?.accessMessage ?? '';
       });
-    } catch (error) {
-      _showSnackBar('Could not load domain settings: $error');
+      if (store != null) unawaited(_loadCheckout());
+    } catch (_) {
+      _showSnackBar('Domain settings could not load. Refresh to try again.');
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
   }
 
+  Future<void> _loadCheckout({bool prepare = false}) async {
+    final store = _store;
+    if (store == null || !_isCurrentStore(store)) return;
+    final request = ++_checkoutRequest;
+    setState(() {
+      _checkoutBusy = true;
+      _checkoutError = null;
+    });
+    try {
+      final setup = await context.read<DomainService>().checkoutSetup(
+        store.id,
+        prepare: prepare,
+      );
+      if (!_isCurrentStore(store) || request != _checkoutRequest) return;
+      setState(() => _checkout = setup);
+    } catch (_) {
+      if (!_isCurrentStore(store) || request != _checkoutRequest) return;
+      setState(() {
+        _checkout = null;
+        _checkoutError = 'Checkout address could not be loaded. Please retry.';
+      });
+    } finally {
+      if (_isCurrentStore(store) && request == _checkoutRequest)
+        setState(() => _checkoutBusy = false);
+    }
+  }
+
   Future<void> _saveDomain() async {
     final store = _store;
-    if (store == null) return;
+    if (store == null || !_isCurrentStore(store)) return;
     final normalized = DomainService.normalizeDomain(
       _customDomainController.text,
     );
@@ -87,56 +139,60 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
     await _persistDomain(store, normalized);
   }
 
-  Future<void> _clearDomain() async {
-    final store = _store;
-    if (store == null) return;
-    await _persistDomain(store, null);
-  }
-
   Future<void> _persistDomain(StoreModel store, String? domain) async {
+    if (!_isCurrentStore(store)) return;
     setState(() => _isSaving = true);
     try {
       final domainService = context.read<DomainService>();
       final updated = await domainService.saveCustomDomain(store, domain);
-      if (!mounted) return;
+      if (!_isCurrentStore(store)) return;
       setState(() {
         _store = updated;
         _snapshot = domainService.snapshotForStore(updated);
-        _customDomainController.text = updated.customDomain ?? '';
+        _customDomainController.text = domain ?? '';
+        _domainsRevision++;
       });
       _showSnackBar(
         domain == null
             ? 'Custom domain cleared.'
-            : 'Custom domain saved. Add the DNS record, then verify.',
+            : 'Domain saved. Review connected domains and DNS setup.',
       );
-    } catch (error) {
-      _showSnackBar('Could not save domain: $error');
+      unawaited(_loadCheckout());
+    } catch (_) {
+      _showSnackBar(
+        'Domain setup could not be confirmed. Refresh connected domains before retrying.',
+      );
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }
   }
 
   Future<void> _checkAvailability() async {
+    if (!_isCurrentStore(_store)) return;
     setState(() => _isChecking = true);
     try {
       final result = await context.read<DomainService>().checkAvailability(
         _customDomainController.text,
       );
       _showSnackBar(result.message);
-    } catch (error) {
-      _showSnackBar('Could not check domain: $error');
+    } catch (_) {
+      _showSnackBar(
+        'Domain format could not be checked. Review the hostname and try again.',
+      );
     } finally {
       if (mounted) setState(() => _isChecking = false);
     }
   }
 
   Future<void> _searchDomainToBuy() async {
+    final store = _store;
+    if (!_isCurrentStore(store)) return;
     setState(() => _isSearchingDomain = true);
     try {
       final quote = await context.read<DomainService>().searchDomainToBuy(
         _customDomainController.text,
       );
-      if (!mounted) return;
+      if (!_isCurrentStore(store)) return;
       setState(() => _domainQuote = quote);
       _showSnackBar(
         quote.available
@@ -153,7 +209,12 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
   Future<void> _buyDomain() async {
     final store = _store;
     final quote = _domainQuote;
-    if (store == null || quote == null || !quote.available) return;
+    if (store == null ||
+        !_isCurrentStore(store) ||
+        quote == null ||
+        !quote.available ||
+        quote.provider != 'sandbox')
+      return;
     final ownerName = _domainOwnerNameController.text.trim();
     final ownerEmail = _domainOwnerEmailController.text.trim();
     if (ownerName.isEmpty || !ownerEmail.contains('@')) {
@@ -168,7 +229,7 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
         ownerName: ownerName,
         ownerEmail: ownerEmail,
       );
-      if (!mounted) return;
+      if (!_isCurrentStore(store)) return;
       setState(() {
         _customDomainController.text = result.domain;
         _store = store.copyWith(
@@ -187,14 +248,15 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
 
   Future<void> _verifyDomain() async {
     final store = _store;
-    if (store == null) return;
+    if (store == null || !_isCurrentStore(store)) return;
     try {
       final updated = await context.read<DomainService>().verifyDomain(store);
-      if (!mounted) return;
+      if (!_isCurrentStore(store)) return;
       setState(() {
         _store = updated;
         _snapshot = context.read<DomainService>().snapshotForStore(updated);
       });
+      unawaited(_loadCheckout());
     } catch (_) {
       _showSnackBar('Domain verification could not complete.');
     }
@@ -202,12 +264,12 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
 
   Future<void> _refreshSslStatus() async {
     final store = _store;
-    if (store == null) return;
+    if (store == null || !_isCurrentStore(store)) return;
     try {
       final updated = await context.read<DomainService>().refreshSslStatus(
         store,
       );
-      if (!mounted) return;
+      if (!_isCurrentStore(store)) return;
       setState(() {
         _store = updated;
         _snapshot = context.read<DomainService>().snapshotForStore(updated);
@@ -219,7 +281,7 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
 
   Future<void> _saveAccess() async {
     final store = _store;
-    if (store == null) return;
+    if (store == null || !_isCurrentStore(store)) return;
     setState(() => _isSavingAccess = true);
     try {
       final updated = await context.read<DomainService>().updateStoreAccess(
@@ -228,15 +290,17 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
         password: _passwordController.text,
         message: _accessMessageController.text,
       );
-      if (!mounted) return;
+      if (!_isCurrentStore(store)) return;
       setState(() {
         _store = updated;
         _snapshot = context.read<DomainService>().snapshotForStore(updated);
         _passwordController.clear();
       });
       _showSnackBar('Store access updated.');
-    } catch (error) {
-      _showSnackBar('Could not update store access: $error');
+    } catch (_) {
+      _showSnackBar(
+        'Store access could not be confirmed. Refresh its settings before retrying.',
+      );
     } finally {
       if (mounted) setState(() => _isSavingAccess = false);
     }
@@ -245,7 +309,7 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
   Future<void> _createPreviewLink() async {
     final store = _store;
     final snapshot = _snapshot;
-    if (store == null || snapshot == null) return;
+    if (store == null || !_isCurrentStore(store) || snapshot == null) return;
     setState(() => _isCreatingPreview = true);
     try {
       final host = snapshot.customDomain ?? snapshot.defaultDomain;
@@ -253,11 +317,11 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
         store,
         host: host,
       );
-      if (!mounted) return;
+      if (!_isCurrentStore(store)) return;
       setState(() => _previewUrl = result.url);
       _showSnackBar('Preview link created.');
-    } catch (error) {
-      _showSnackBar('Could not create preview link: $error');
+    } catch (_) {
+      _showSnackBar('Preview link could not be created. Please retry.');
     } finally {
       if (mounted) setState(() => _isCreatingPreview = false);
     }
@@ -293,6 +357,11 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
   Widget build(BuildContext context) {
     final colors = AppThemeColors.of(context);
     final snapshot = _snapshot;
+    final stores = context.watch<StoreContext>();
+    final storeChanged =
+        _store != null &&
+        (_store!.id != stores.selectedStoreId ||
+            _loadedContext != stores.requestContextKey);
 
     return Scaffold(
       backgroundColor: colors.bgStart,
@@ -305,6 +374,25 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
           ? Center(
               child: CircularProgressIndicator(
                 color: LetbuyyColorTokens.brandPrimary,
+              ),
+            )
+          : storeChanged
+          ? Center(
+              child: Padding(
+                padding: const EdgeInsets.all(LetbuyySpacingTokens.space20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'The selected store changed. Refresh domains before editing.',
+                    ),
+                    const SizedBox(height: LetbuyySpacingTokens.space12),
+                    FilledButton(
+                      onPressed: _loadStore,
+                      child: const Text('Refresh domains'),
+                    ),
+                  ],
+                ),
               ),
             )
           : snapshot == null
@@ -321,6 +409,14 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
                   const SizedBox(height: LetbuyySpacingTokens.space24),
                   _buildCustomDomain(colors, snapshot),
                   const SizedBox(height: LetbuyySpacingTokens.space24),
+                  ConnectedDomainsSection(
+                    key: ValueKey((_loadedContext, _domainsRevision)),
+                    siteId: snapshot.storeId,
+                    onChanged: () => unawaited(_loadStore(force: true)),
+                  ),
+                  const SizedBox(height: LetbuyySpacingTokens.space24),
+                  _buildCheckoutDomain(colors),
+                  const SizedBox(height: LetbuyySpacingTokens.space24),
                   _buildDomainHealth(colors, snapshot),
                   const SizedBox(height: LetbuyySpacingTokens.space24),
                   _buildBuyDomain(colors, snapshot),
@@ -332,6 +428,106 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
                 ],
               ),
             ),
+    );
+  }
+
+  Widget _buildCheckoutDomain(AppThemeColors colors) {
+    final setup = _checkout;
+    final explanation = switch (setup?.reason) {
+      'PARENT_NOT_VERIFIED' =>
+        'Verify the storefront domain and HTTPS before this checkout address can become active.',
+      'PRIMARY_REQUIRED' =>
+        'This domain must be the verified primary storefront domain before checkout can use it.',
+      'NOT_CONFIGURED' || 'PROVIDER_UNAVAILABLE' =>
+        'Provisioning is temporarily unavailable. Your current secure checkout remains available.',
+      _ =>
+        setup?.isReady == true
+            ? 'Checkout links use this verified address and follow your published theme.'
+            : setup?.source == 'custom'
+            ? 'Add the exact DNS records below, then check status. Your current secure checkout stays available during setup.'
+            : 'LetBuyy prepares this address automatically. No DNS changes are needed for your LetBuyy subdomain.',
+    };
+    return _section(
+      colors,
+      title: 'Secure checkout',
+      description: 'The verified address used by your store’s checkout links.',
+      child: _panel(
+        colors,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (_checkoutBusy) const LinearProgressIndicator(),
+            if (_checkoutError != null)
+              Text(
+                _checkoutError!,
+                style: TextStyle(color: colors.textSecondary),
+              ),
+            if (setup != null) ...[
+              Text(
+                setup.hostname ?? 'Address unavailable',
+                style: TextStyle(
+                  color: colors.textPrimary,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: LetbuyySpacingTokens.space8),
+              _statusPill(
+                colors,
+                setup.isReady
+                    ? 'HTTPS ready'
+                    : setup.status == 'unavailable' || setup.status == 'error'
+                    ? 'Needs attention'
+                    : 'Preparing',
+                setup.isReady,
+              ),
+              const SizedBox(height: LetbuyySpacingTokens.space12),
+              Text(explanation, style: TextStyle(color: colors.textSecondary)),
+              const SizedBox(height: LetbuyySpacingTokens.space12),
+              _dnsLine(colors, 'Currently used address', setup.checkoutOrigin),
+              if (setup.checkoutOrigin != setup.fallbackOrigin)
+                _dnsLine(colors, 'Secure fallback', setup.fallbackOrigin),
+              for (final record in setup.dnsRecords) ...[
+                const SizedBox(height: LetbuyySpacingTokens.space12),
+                Text(
+                  '${record.type} · ${record.name}',
+                  style: TextStyle(
+                    color: colors.textPrimary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: SelectableText(
+                        record.value,
+                        style: TextStyle(color: colors.textSecondary),
+                      ),
+                    ),
+                    IconButton(
+                      tooltip: 'Copy checkout ${record.type} value',
+                      onPressed: () =>
+                          _copy('Checkout ${record.type} value', record.value),
+                      icon: const Icon(Icons.copy_rounded),
+                    ),
+                  ],
+                ),
+              ],
+            ],
+            const SizedBox(height: LetbuyySpacingTokens.space12),
+            _secondaryAction(
+              colors,
+              label: _checkoutBusy
+                  ? 'Checking…'
+                  : _checkoutError != null
+                  ? 'Retry checkout status'
+                  : 'Check checkout status',
+              icon: Icons.refresh_rounded,
+              enabled: !_checkoutBusy,
+              onPressed: () => _loadCheckout(prepare: setup != null),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -348,7 +544,7 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
         ),
         const SizedBox(height: LetbuyySpacingTokens.space8),
         Text(
-          'Connect a branded domain to this store and keep the default LetBuyy domain active as a fallback.',
+          'Connect a branded domain to this store. Your assigned LetBuyy address remains available subject to store visibility and access settings.',
           style: Theme.of(
             context,
           ).textTheme.bodyMedium?.copyWith(color: colors.textSecondary),
@@ -372,7 +568,8 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
     return _section(
       colors,
       title: 'Default domain',
-      description: 'Always active for storefront preview and fallback access.',
+      description:
+          'Your assigned LetBuyy address. Store visibility and access settings control what shoppers can see.',
       child: _panel(
         colors,
         child: Row(
@@ -453,7 +650,7 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
                 ),
                 _secondaryAction(
                   colors,
-                  label: 'Verify',
+                  label: 'Verify primary',
                   icon: Icons.verified_rounded,
                   enabled: snapshot.hasCustomDomain,
                   onPressed: _verifyDomain,
@@ -465,14 +662,6 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
                   enabled: snapshot.hasCustomDomain,
                   onPressed: _refreshSslStatus,
                 ),
-                if (snapshot.hasCustomDomain)
-                  _secondaryAction(
-                    colors,
-                    label: 'Clear',
-                    icon: Icons.close_rounded,
-                    enabled: !_isSaving,
-                    onPressed: _clearDomain,
-                  ),
               ],
             ),
           ],
@@ -526,6 +715,23 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
                         ? 'ready'
                         : health?.renewalStatus == 'action_required'
                         ? 'attention'
+                        : 'unknown',
+                  ),
+                  const SizedBox(height: LetbuyySpacingTokens.space12),
+                  _healthStatusRow(
+                    colors,
+                    icon: Icons.verified_user_rounded,
+                    label: 'Customer verification',
+                    value: switch (health?.customerVerification?.status) {
+                      'ready' => 'Ready for customer verification',
+                      'pending' => 'Waiting for domain readiness',
+                      'capacity_reached' => 'Platform setup needs attention',
+                      'configuration_required' =>
+                        'Platform configuration required',
+                      _ => 'Verification status unavailable',
+                    },
+                    status: health?.customerVerification?.status == 'ready'
+                        ? 'ready'
                         : 'unknown',
                   ),
                   if (snapshot.checkedAtLabel != null) ...[
@@ -604,7 +810,7 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
       colors,
       title: 'Buy a domain',
       description:
-          'Search, pay, and let LetBuyy register the domain and auto-connect DNS.',
+          'Search for a domain. Registration is available only in the development sandbox until LetBuyy verifies payment on the server.',
       child: _panel(
         colors,
         child: Column(
@@ -627,7 +833,7 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
             if (quote != null) ...[
               const SizedBox(height: LetbuyySpacingTokens.space12),
               _domainQuotePanel(colors, quote),
-              if (quote.available) ...[
+              if (quote.available && quote.provider == 'sandbox') ...[
                 const SizedBox(height: LetbuyySpacingTokens.space12),
                 TextField(
                   controller: _domainOwnerNameController,
@@ -647,6 +853,13 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
                   icon: Icons.shopping_cart_checkout_rounded,
                   enabled: !_isBuyingDomain && snapshot.storeId.isNotEmpty,
                   onPressed: _buyDomain,
+                ),
+              ],
+              if (quote.available && quote.provider != 'sandbox') ...[
+                const SizedBox(height: LetbuyySpacingTokens.space12),
+                _warningPanel(
+                  colors,
+                  'Live domain registration is unavailable until payment verification is ready.',
                 ),
               ],
             ],

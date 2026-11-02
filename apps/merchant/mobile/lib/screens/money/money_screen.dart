@@ -4,8 +4,10 @@ import 'package:provider/provider.dart';
 import '../../app/store_context.dart';
 import '../../services/money_service.dart';
 import '../../services/api_client.dart';
+import '../../services/two_factor_service.dart';
 import '../../theme/app_theme_colors.dart';
 import '../../widgets/shared/provider_mode_badge.dart';
+import '../security/two_factor_screen.dart';
 import 'payout_statement_detail_sheet.dart';
 
 class MoneyScreen extends StatefulWidget {
@@ -107,18 +109,44 @@ class _MoneyScreenState extends State<MoneyScreen>
 
   Future<void> _settlePayout(String payoutId) async {
     final storeId = _storeId;
-    if (storeId == null) return;
+    if (storeId == null ||
+        context.read<StoreContext>().selectedStoreId != storeId)
+      return;
     await _runMoneyAction('settle-payout:$payoutId', () async {
       try {
-        await context.read<MoneyService>().settlePayout(payoutId, storeId);
+        final security = context.read<TwoFactorService>();
+        final captured = security.capture();
+        if (captured.storeId != storeId) throw TwoFactorService.changed();
+        final proof = await TwoFactorScreen.approve(
+          context,
+          action: 'payout.release',
+        );
+        if (proof == null || !mounted) return;
+        security.check(captured);
+        if (proof.context != captured) throw TwoFactorService.changed();
+        final payout = await context.read<MoneyService>().settlePayout(
+          payoutId,
+          storeId,
+          approval: proof,
+        );
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Payout settlement updated.')),
+          SnackBar(
+            content: Text(
+              payout['status'] == 'released'
+                  ? 'Payout release recorded.'
+                  : 'Payout release is processing.',
+            ),
+          ),
         );
       } catch (_) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Payout could not be settled now.')),
+          const SnackBar(
+            content: Text(
+              'Payout release was not confirmed. Refresh before retrying the same request.',
+            ),
+          ),
         );
       }
     });
@@ -209,6 +237,9 @@ class _MoneyScreenState extends State<MoneyScreen>
     String actionKey,
     Future<void> Function() action,
   ) async {
+    if (_storeId == null ||
+        context.read<StoreContext>().selectedStoreId != _storeId)
+      return;
     if (_pendingMoneyActions.contains(actionKey)) return;
     setState(() => _pendingMoneyActions.add(actionKey));
     try {
@@ -221,6 +252,7 @@ class _MoneyScreenState extends State<MoneyScreen>
   @override
   Widget build(BuildContext context) {
     final colors = AppThemeColors.of(context);
+    final selectedStoreId = context.watch<StoreContext>().selectedStoreId;
 
     return Scaffold(
       backgroundColor: colors.card,
@@ -239,7 +271,13 @@ class _MoneyScreenState extends State<MoneyScreen>
           ],
         ),
       ),
-      body: _loading
+      body: _storeId != null && selectedStoreId != _storeId
+          ? _EmptyState(
+              message: 'The selected store changed. Reload money details.',
+              actionLabel: 'Reload',
+              onTap: _load,
+            )
+          : _loading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
           ? _EmptyState(message: _error!, actionLabel: 'Retry', onTap: _load)

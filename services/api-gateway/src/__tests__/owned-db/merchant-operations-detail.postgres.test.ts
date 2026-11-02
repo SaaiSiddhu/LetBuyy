@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import test, { afterEach, before } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { requireOwnedDatabase } from './owned-db-support';
+import { createLetbuyyApiClient, LetbuyyApiError } from '@letbuyy/api-client';
 import { Gateway, gatewayEnv, newIdentityKeys, signedIdentityHeaders, tapRest, passThrough } from './gateway-harness';
 
 const owned=requireOwnedDatabase();
@@ -56,6 +57,41 @@ test('supplier and warehouse metrics use complete histories and bounded independ
         assert.equal(new Set(ids).size,20);
         assert.equal(tap.calls.some(call=>['purchase_orders','purchase_order_receipts','inventory_levels'].includes(call.resource)),false,'history rows must stay inside the aggregate');
     } finally {tap.restore()}
+});
+test('operations SDK reads actual complete scoped metrics and retains server authorization denials',async()=>{
+    const api=createLetbuyyApiClient({baseUrl:'https://owned-operations.example.invalid/v1',getHeaders:()=>signedIdentityHeaders(owner,email(owner)),fetch:async(input,init)=>{
+        const url=new URL(typeof input==='string'?input:input instanceof URL?input.href:input.url);
+        assert.equal(url.hostname,'owned-operations.example.invalid');assert.equal(new Headers(init?.headers).get('X-Store-ID'),store);
+        const response=await gateway.request(url.pathname+url.search,init);return new Response(response.text,{status:response.status,headers:response.headers});
+    }});
+    const suppliers=await api.commerceAnalytics.supplierMetrics({store_id:store,page:1,limit:1});assert.equal(suppliers.store_id,store);assert.equal(suppliers.meta.total,2);assert.equal(suppliers.suppliers[0].po_count,1100);
+    const warehouses=await api.commerceAnalytics.warehouseMetrics({store_id:store,page:2,limit:10});assert.equal(warehouses.store_id,store);assert.equal(warehouses.meta.total,52);assert.equal(warehouses.meta.page,2);
+    const transfers=await api.commerceAnalytics.transferMetrics({store_id:store});assert.equal(transfers.store_id,store);assert.equal(transfers.total_count,1);
+    const summary=await api.commerceAnalytics.operationsSummary({store_id:store});assert.equal(summary.store_id,store);assert.equal(summary.po_count,1103);assert.equal(summary.total_sku_count,1103);assert.equal(summary.low_stock_sku_count,1103);
+    const strangerApi=createLetbuyyApiClient({baseUrl:'https://owned-operations.example.invalid/v1',getHeaders:()=>signedIdentityHeaders(stranger,email(stranger)),fetch:async(input,init)=>{
+        const url=new URL(typeof input==='string'?input:input instanceof URL?input.href:input.url);const response=await gateway.request(url.pathname+url.search,init);return new Response(response.text,{status:response.status,headers:response.headers});
+    }});
+    await assert.rejects(()=>strangerApi.commerceAnalytics.operationsSummary({store_id:store}),error=>error instanceof LetbuyyApiError&&error.status===403);
+});
+test('unobserved summary counts remain absent and wholly failed metrics are unavailable',async()=>{
+    const positive=await gateway.request(`/v1/commerce-analytics/operations-summary?store_id=${store}`,{headers:await signedIdentityHeaders(owner,email(owner))});assert.equal(positive.status,200,positive.text);assert.equal(positive.json?.data.po_count,1103);
+    const tap=tapRest(owned.restUrl,async(call,forward)=>call.resource==='purchase_orders'&&call.method==='HEAD'?new Response(null,{status:200}):forward());
+    try {const result=await gateway.request(`/v1/commerce-analytics/operations-summary?store_id=${store}`,{headers:await signedIdentityHeaders(owner,email(owner))});assert.equal(result.status,200,result.text);assert.equal(result.json?.data.po_count,undefined);assert.equal(result.json?.data.open_po_count,undefined);assert.equal(result.json?.data.total_sku_count,1103)} finally {tap.restore()}
+    const all=tapRest(owned.restUrl,async(call,forward)=>call.method==='HEAD'?new Response(null,{status:200}):forward());
+    try {const result=await gateway.request(`/v1/commerce-analytics/operations-summary?store_id=${store}`,{headers:await signedIdentityHeaders(owner,email(owner))});assert.equal(result.status,500,result.text);assert.equal(result.json?.data,undefined)} finally {all.restore()}
+});
+test('malformed operational RPC results never publish fabricated counts or rates',async()=>{
+    for(const resource of ['supplier','warehouse','transfer']) {
+        const tap=tapRest(owned.restUrl,async(call,forward)=>{
+            const response=await forward();if(call.resource!==`rpc/read_merchant_${resource}_metrics`)return response;
+            const body=await response.json() as Record<string,unknown>;
+            if(resource==='supplier') {const rows=body.suppliers as Array<Record<string,unknown>>;assert.ok(rows.length);rows[0].on_time_rate=2;}
+            if(resource==='warehouse') {const rows=body.warehouses as Array<Record<string,unknown>>;assert.ok(rows.length);delete rows[0].total_units;}
+            if(resource==='transfer')body.total_count=-1;
+            return Response.json(body);
+        });
+        try {const response=await gateway.request(`/v1/commerce-analytics/${resource}-metrics?store_id=${store}`,{headers:await signedIdentityHeaders(owner,email(owner))});assert.equal(response.status,500,response.text);assert.equal(response.json?.data,undefined)} finally {tap.restore()}
+    }
 });
 
 test('receipt history is one stable bounded union page with real event timestamps',async()=>{
@@ -116,7 +152,9 @@ test('operational readers validate pages, deny foreign callers and report failed
         ?Promise.resolve(new Response('{"code":"XX000","message":"private-operational-detail"}',{status:500,headers:{'content-type':'application/json'}})):forward());
     try {for(const path of paths) {
         const failed=await gateway.request(`${path}?store_id=${store}`,{headers:await signedIdentityHeaders(owner,email(owner))});
-        assert.equal(failed.status,500,failed.text);
+        const receiptReader=path==='/v1/inventory/receipts';
+        assert.equal(failed.status,receiptReader?503:500,failed.text);
+        if(receiptReader) assert.equal(failed.json?.error.code,'INVENTORY_RECEIPTS_UNAVAILABLE');
         assert.doesNotMatch(failed.text,/private-operational-detail/);
         assert.equal(failed.json?.data,undefined);
     }} finally {fault.restore()}

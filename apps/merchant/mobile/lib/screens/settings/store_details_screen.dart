@@ -464,7 +464,11 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      '${_store?.subdomain ?? 'mystore'}.letbuyy.com',
+                      _store?.publicUrl.replaceFirst(
+                            RegExp(r'^https?://'),
+                            '',
+                          ) ??
+                          '',
                       style: TextStyle(
                         fontFamily: 'monospace',
                         color: colors.textPrimary,

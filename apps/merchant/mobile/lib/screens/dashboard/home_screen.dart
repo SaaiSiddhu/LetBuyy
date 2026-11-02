@@ -111,7 +111,7 @@ class _HomeScreenState extends State<HomeScreen> {
         _payoutSummary = payoutSummary;
         _dashboardProviderMode = providerMode;
       });
-      if (store != null && analytics != null) {
+      if (store != null && analytics != null && analytics.summaryAvailable) {
         unawaited(
           homeWidgetService.publishDashboardSnapshot(
             store: store,
@@ -250,11 +250,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildDashboard(AppThemeColors colors) {
     final analytics = _analytics;
+    final summaryAvailable = analytics?.summaryAvailable == true;
+    final visitorsAvailable = analytics?.viewsAvailable == true;
     final totalOrders = analytics?.totalOrders ?? _store!.totalOrders;
     final totalProducts = analytics?.totalProducts ?? _store!.productCount;
-    final totalVisitors = (analytics?.totalViews ?? 0) > 0
-        ? analytics!.totalViews
-        : _store!.totalVisitors;
+    final totalVisitors = analytics?.totalViews ?? 0;
     final revenue = analytics?.totalRevenue ?? 0.0;
     final averageOrderValue =
         analytics?.averageOrderValue ??
@@ -394,8 +394,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         colors: colors,
                         icon: Icons.shopping_bag_outlined,
                         label: 'Orders',
-                        value: totalOrders.toString(),
-                        trend: analytics == null ? 'Store' : 'Gateway',
+                        value: summaryAvailable ? totalOrders.toString() : '—',
+                        trend: summaryAvailable ? _selectedPeriod : 'No data',
                         color: const Color(0xFF3B82F6),
                       ),
                       const SizedBox(height: 8),
@@ -403,8 +403,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         colors: colors,
                         icon: Icons.account_balance_wallet_outlined,
                         label: 'Revenue',
-                        value: '₹${_formatMoney(revenue)}',
-                        trend: analytics == null ? 'Pending' : 'Gateway',
+                        value: summaryAvailable
+                            ? '₹${_formatMoney(revenue)}'
+                            : '—',
+                        trend: summaryAvailable ? _selectedPeriod : 'No data',
                         color: const Color(0xFF10B981),
                       ),
                     ],
@@ -417,8 +419,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         colors: colors,
                         icon: Icons.visibility_outlined,
                         label: 'Visitors',
-                        value: _formatNumber(totalVisitors),
-                        trend: totalVisitors > 0 ? 'Store' : 'Pending',
+                        value: visitorsAvailable
+                            ? _formatNumber(totalVisitors)
+                            : '—',
+                        trend: visitorsAvailable ? _selectedPeriod : 'No data',
                         color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
                       ),
                       const SizedBox(height: 8),
@@ -426,8 +430,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         colors: colors,
                         icon: Icons.inventory_2_outlined,
                         label: 'Products',
-                        value: totalProducts.toString(),
-                        trend: totalProducts > 0 ? 'Catalog' : 'Add',
+                        value: summaryAvailable
+                            ? totalProducts.toString()
+                            : '—',
+                        trend: summaryAvailable ? 'Current' : 'No data',
                         color: const Color(0xFFF59E0B),
                         isPositive: totalProducts > 0,
                       ),
@@ -441,8 +447,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         colors: colors,
                         icon: Icons.speed_outlined,
                         label: 'Conv. Rate',
-                        value: '$convRate%',
-                        trend: totalVisitors > 0 ? 'Computed' : 'Pending',
+                        value: summaryAvailable && visitorsAvailable
+                            ? '$convRate%'
+                            : '—',
+                        trend: summaryAvailable && visitorsAvailable
+                            ? _selectedPeriod
+                            : 'No data',
                         color: const Color(0xFFEC4899),
                       ),
                       const SizedBox(height: 8),
@@ -450,8 +460,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         colors: colors,
                         icon: Icons.receipt_long_outlined,
                         label: 'Avg. Order',
-                        value: '₹${_formatMoney(averageOrderValue)}',
-                        trend: totalOrders > 0 ? 'Computed' : 'Pending',
+                        value: summaryAvailable
+                            ? '₹${_formatMoney(averageOrderValue)}'
+                            : '—',
+                        trend: summaryAvailable ? _selectedPeriod : 'No data',
                         color: const Color(0xFF06B6D4),
                       ),
                     ],
@@ -465,35 +477,41 @@ class _HomeScreenState extends State<HomeScreen> {
             // Revenue Chart
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child:
-                  AnimatedRevenueChart(
-                        totalRevenue: revenue,
-                        period: _analyticsPeriod,
-                        revenueDates:
-                            analytics?.dailyStats
-                                .map((day) => day.date)
-                                .toList(growable: false) ??
-                            const [],
-                        onPeriodChanged: (period) {
-                          setState(
-                            () => _selectedPeriod = const {
-                              '7d': '7 Days',
-                              '30d': '30 Days',
-                              '90d': '90 Days',
-                              '12m': '12 Months',
-                            }[period]!,
-                          );
-                          _loadStore();
-                        },
-                        revenueData:
-                            analytics?.dailyStats
-                                .map((day) => day.revenue)
-                                .toList(growable: false) ??
-                            const <double>[],
-                      )
-                      .animate(delay: 200.ms)
-                      .fadeIn(duration: 400.ms)
-                      .slideY(begin: 0.1, end: 0),
+              child: !summaryAvailable
+                  ? const Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Text(
+                        'Revenue data could not be loaded. Refresh to retry.',
+                      ),
+                    )
+                  : AnimatedRevenueChart(
+                          totalRevenue: revenue,
+                          period: _analyticsPeriod,
+                          revenueDates:
+                              analytics?.dailyStats
+                                  .map((day) => day.date)
+                                  .toList(growable: false) ??
+                              const [],
+                          onPeriodChanged: (period) {
+                            setState(
+                              () => _selectedPeriod = const {
+                                '7d': '7 Days',
+                                '30d': '30 Days',
+                                '90d': '90 Days',
+                                '12m': '12 Months',
+                              }[period]!,
+                            );
+                            _loadStore();
+                          },
+                          revenueData:
+                              analytics?.dailyStats
+                                  .map((day) => day.revenue)
+                                  .toList(growable: false) ??
+                              const <double>[],
+                        )
+                        .animate(delay: 200.ms)
+                        .fadeIn(duration: 400.ms)
+                        .slideY(begin: 0.1, end: 0),
             ),
 
             const SizedBox(height: 24),
@@ -663,17 +681,22 @@ class _HomeScreenState extends State<HomeScreen> {
   String _formatMoney(double amount) {
     if (amount >= 100000) return '${(amount / 100000).toStringAsFixed(1)}L';
     if (amount >= 1000) return '${(amount / 1000).toStringAsFixed(1)}K';
-    return amount.toStringAsFixed(0);
+    return amount.toStringAsFixed(2);
   }
 
   Widget _buildPayoutVisibilityCard(AppThemeColors colors) {
     final next = _payoutSummary?['next_payout'];
     final nextPayout = next is Map ? Map<String, dynamic>.from(next) : null;
     final amountMinor = (nextPayout?['net_amount_minor'] as num?)?.toDouble();
-    final amount = amountMinor == null
+    final summaryAvailable = _payoutSummary?.containsKey('next_payout') == true;
+    final amount = !summaryAvailable
+        ? 'Payout summary unavailable'
+        : amountMinor == null
         ? 'No payout scheduled'
         : '₹${_formatMoney(amountMinor / 100)}';
-    final subtitle = nextPayout == null
+    final subtitle = !summaryAvailable
+        ? 'Refresh to retry.'
+        : nextPayout == null
         ? 'Paid orders will appear here when settlement is ready.'
         : '${nextPayout['status'] ?? 'pending'} · ${nextPayout['available_on'] ?? 'available soon'}';
     final providerMode = ProviderMode.parse(
@@ -831,13 +854,18 @@ class _HomeScreenState extends State<HomeScreen> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                value,
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: colors.textPrimary,
-                  height: 1,
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  value,
+                  maxLines: 1,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: colors.textPrimary,
+                    height: 1,
+                  ),
                 ),
               ),
               const SizedBox(height: 2),

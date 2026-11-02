@@ -98,6 +98,7 @@ import domainsRouter from './routes/domains';
 import customDomainsRouter, { storeAccessRouter } from './routes/custom-domains';
 import internalCustomDomainReconcileRouter from './routes/internal-custom-domain-reconcile';
 import internalNotificationJobsRouter from './routes/internal-notification-jobs';
+import internalProductImportRouter from './routes/internal-product-import';
 import internalStoreAccessRouter from './routes/internal-store-access';
 import { createAdminGraphQLRouter } from './graphql/admin';
 import { createStorefrontGraphQLRouter } from './graphql/storefront';
@@ -243,6 +244,7 @@ export interface Env {
     WORKER_INTERNAL_API_SECRET?: string;
     INTERNAL_GATEWAY_IP_ALLOWLIST?: string;
     INTERNAL_API_KEYRING?: string;
+    PRODUCT_IMPORT_REQUEST_SECRET?: string;
     STOREFRONT_INTERNAL_PERIMETER?: string;
     STOREFRONT_INTERNAL_REQUEST_KEYRING?: string;
     PLATFORM_CONSOLE_API_TOKEN?: string;
@@ -713,7 +715,7 @@ app.use(
     (c, next) => cors({
         origin: (origin) => resolveCredentialedCorsOrigin(origin, c.env),
         allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-        allowHeaders: ['Content-Type', 'Authorization', 'X-Store-ID', 'X-Request-ID', 'X-Trace-ID', 'X-Idempotency-Key', 'Idempotency-Key', 'X-Platform-Console-Token', 'X-LetBuyy-API-Version', 'LetBuyy-API-Version'],
+        allowHeaders: ['Content-Type', 'Authorization', 'X-Store-ID', 'X-Request-ID', 'X-Trace-ID', 'X-Idempotency-Key', 'Idempotency-Key', 'X-Platform-Console-Token', 'X-LetBuyy-API-Version', 'LetBuyy-API-Version', 'X-LetBuyy-Warehouse-Protocol'],
         exposeHeaders: ['X-Request-ID', 'X-Trace-ID', 'X-RateLimit-Limit', 'X-RateLimit-Remaining', 'X-RateLimit-Reset', 'X-RateLimit-Cost', 'X-RateLimit-Policy', 'X-App-Quota-Limit', 'X-App-Quota-Remaining', 'X-App-Quota-Reset', 'X-App-Quota-Used', 'X-App-Quota-Route', 'X-LetBuyy-API-Version', 'X-Response-Time'],
         maxAge: 86400,
         credentials: true,
@@ -839,6 +841,7 @@ api.route('/internal/events', internalEventsRouter);
 api.route('/internal/store-access', internalStoreAccessRouter);
 api.route('/internal/custom-domain-reconcile', internalCustomDomainReconcileRouter);
 api.route('/internal/notification-jobs', internalNotificationJobsRouter);
+api.route('/internal/product-import', internalProductImportRouter);
 
 // Protected routes (auth required)
 api.use('/*', authMiddleware);

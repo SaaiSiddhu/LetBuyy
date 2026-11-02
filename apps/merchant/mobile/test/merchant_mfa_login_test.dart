@@ -19,6 +19,17 @@ void main() {
             maxRetries: 0,
           );
       final client = MockClient((request) async {
+        if (request.method == 'GET' &&
+            request.url.path == '/api/auth/session') {
+          return http.Response(
+            jsonEncode({
+              'authenticated': true,
+              'user': {'id': 'actor-a', 'email': 'synthetic@example.invalid'},
+              'expiresAt': '2030-01-01T00:00:00Z',
+            }),
+            200,
+          );
+        }
         if (request.method == 'GET' && request.url.path == '/login')
           return http.Response(
             '',

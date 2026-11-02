@@ -1,0 +1,3287 @@
+{
+  "date": "2026-10-30",
+  "source_commit": "f91d8eca0b8dd2d7043e4b85208c847aa089a3b7",
+  "branch": "codex/merchant-mobile-parity",
+  "scope": "source and bounded hosted staging checkpoint; full 122-item acceptance remains in progress",
+  "flutter": {
+    "source_commit": "161504e65689261e720883f1519ba9d192627a81",
+    "tests": 766,
+    "pass": 766,
+    "fail": 0,
+    "analysis": "pass",
+    "log": "/private/tmp/letbuyy-parity-continuation-20261101/native-bundled-font-full-tests.log",
+    "network_blocked_typography_test": "pass",
+    "ui_kit_analysis": "pass",
+    "marketplace_consumer_analysis": "pass"
+  },
+  "shared_dart_transport_context_tests": {
+    "pass": 12,
+    "fail": 0
+  },
+  "storefront_domain_policy_tests": {
+    "pass": 12,
+    "fail": 0
+  },
+  "governance": {
+    "ok": true,
+    "counts": {
+      "PASS": 114,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "SKIP": 0,
+      "NOT_APPLICABLE": 1
+    },
+    "exitCode": 0,
+    "source_commit": "f91d8eca0b8dd2d7043e4b85208c847aa089a3b7",
+    "report": "/private/tmp/letbuyy-parity-continuation-20261101/native-roundtrip-final-governance.log",
+    "disposable_clone_only": true
+  },
+  "owned_database_runs": [
+    {
+      "run_id": "4500cb6bbc09",
+      "tests": 24,
+      "pass": 24,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-money-approval.postgres.test.ts",
+          "tests": 21,
+          "pass": 21,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        },
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/payout-complete-read.postgres.test.ts",
+          "tests": 3,
+          "pass": 3,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        }
+      ],
+      "provider_evidence": "explicit synthetic provider fixtures; not real provider acceptance"
+    },
+    {
+      "run_id": "18910d8675cc",
+      "tests": 10,
+      "pass": 10,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/custom-domain-owned-zones.postgres.test.ts",
+          "tests": 2,
+          "pass": 2,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        },
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/store-branded-checkout-domains.postgres.test.ts",
+          "tests": 8,
+          "pass": 8,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        }
+      ],
+      "provider_evidence": "explicit synthetic provider fixtures; not real provider acceptance"
+    },
+    {
+      "run_id": "b545a4e97bf4",
+      "source_commit": "ff5eada8c409ed7350bec1e872a01a9b669dc32c",
+      "tests": 4,
+      "pass": 4,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-customer-segments.postgres.test.ts",
+          "tests": 4,
+          "pass": 4,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        }
+      ],
+      "provider_evidence": "no external provider in this customer scope"
+    },
+    {
+      "run_id": "4998c1398392",
+      "source_commit": "66543f2b69d52cc32906f874bfb0b5fe5a22d789",
+      "tests": 4,
+      "pass": 4,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-dashboard-honesty.postgres.test.ts",
+          "tests": 4,
+          "pass": 4,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        }
+      ],
+      "provider_evidence": "synthetic rollups/orders and injected read failures; no real provider acceptance"
+    },
+    {
+      "run_id": "cc86ad39d07f",
+      "source_commit": "2c59fae05def3014e2b7239e3c1a59e94bfd7e9f",
+      "tests": 5,
+      "pass": 5,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-catalog-read.postgres.test.ts",
+          "tests": 5,
+          "pass": 5,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        }
+      ],
+      "provider_evidence": "synthetic product fixtures and real auth/worker/database; no provider operation"
+    },
+    {
+      "run_id": "f4f40c591ca4",
+      "source_commit": "a9e2ac797990f236f929f66c59a36d811b38635f",
+      "tests": 96,
+      "pass": 95,
+      "fail": 1,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-product-summary.postgres.test.ts",
+          "tests": 5,
+          "pass": 5,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        },
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/product-atomic-edits.postgres.test.ts",
+          "tests": 90,
+          "pass": 89,
+          "fail": 1,
+          "skipped": 0,
+          "code": 1
+        },
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/real-staff-product-journey.postgres.test.ts",
+          "tests": 1,
+          "pass": 1,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        }
+      ],
+      "qualification": "failed prepared-slot prerequisite (default 0); summary/staff pass; atomic unchanged rerun with supported slots 2",
+      "provider_evidence": "synthetic owned fixtures; no real provider or hosted mutation"
+    },
+    {
+      "run_id": "037c14a5b75d",
+      "source_commit": "a9e2ac797990f236f929f66c59a36d811b38635f",
+      "tests": 90,
+      "pass": 90,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/product-atomic-edits.postgres.test.ts",
+          "tests": 90,
+          "pass": 90,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        }
+      ],
+      "qualification": "all atomic edit/rollback checks pass with explicit owned prepared slots 2",
+      "provider_evidence": "synthetic owned fixtures; no real provider or hosted mutation"
+    },
+    {
+      "run_id": "d87afbb5b086",
+      "source_commit": "preliminary stale-offset recovery patch before 496e8d36a",
+      "tests": 7,
+      "pass": 6,
+      "fail": 1,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-catalog-read.postgres.test.ts",
+          "tests": 7,
+          "pass": 6,
+          "fail": 1,
+          "skipped": 0,
+          "code": 1
+        }
+      ],
+      "qualification": "preliminary stale-offset count was incorrectly shown as zero; fixed in final source"
+    },
+    {
+      "run_id": "8c8f943da31a",
+      "source_commit": "496e8d36a241ed4f3de5025b6ed6a5ca3f3cd99a",
+      "tests": 7,
+      "pass": 7,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-catalog-read.postgres.test.ts",
+          "tests": 7,
+          "pass": 7,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        }
+      ],
+      "qualification": "seven real Gateway catalog journeys including actual empty-offset recovery and failed/missing count refusal"
+    },
+    {
+      "run_id": "bf383e105a03",
+      "tests": 17,
+      "pass": 17,
+      "fail": 0,
+      "prepared_transactions": 2,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "scope": "Existing stock audit/receipt/rollback and reservation lifecycle suites; actual Gateway/PostgREST/PostgreSQL, synthetic tenants; not native mutation or RLS certification"
+    },
+    {
+      "run_id": "08cc52ccd8a6",
+      "tests": 6,
+      "pass": 0,
+      "fail": 6,
+      "scope": "BEFORE populated defect witness; not acceptance",
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    {
+      "run_id": "3de0a46af4e9",
+      "tests": 6,
+      "pass": 6,
+      "fail": 0,
+      "scope": "AFTER history store/permission/page/fault repairs",
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    {
+      "run_id": "086cc05cb2e1",
+      "tests": 6,
+      "pass": 6,
+      "fail": 0,
+      "scope": "Final history read and canonical stored-row/reason conformance",
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    {
+      "run_id": "35e1318027b5",
+      "tests": 7,
+      "pass": 7,
+      "fail": 0,
+      "scope": "Real typed SDK \u2192 actual Gateway \u2192 owned PostgREST/PostgreSQL history; selected-store pages, alternate owned store and denial; no native or production mutations",
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    {
+      "run_id": "e9c3bee7728f",
+      "tests": 5,
+      "pass": 5,
+      "fail": 0,
+      "prepared_transactions": 2,
+      "scope": "Existing canonical supplier/warehouse metrics and receipt RPC baseline with 1,103 POs, 1,119 receipts and 52 warehouses; not new native feature acceptance",
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    {
+      "run_id": "6682bde0a1ca",
+      "source_commit": "df19015379aa92472046a7d8f86ed491337ae7bd",
+      "tests": 13,
+      "pass": 13,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-inventory-records-read.postgres.test.ts",
+          "tests": 8,
+          "pass": 8,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        },
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-operations-detail.postgres.test.ts",
+          "tests": 5,
+          "pass": 5,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        }
+      ],
+      "scope": "Actual SDK \u2192 Gateway/auth \u2192 owned PostgREST/Postgres; reservation and receipt reads plus existing large-population operations, fault and rollback tests. Synthetic data; no hosted/native mutation acceptance."
+    },
+    {
+      "run_id": "c24d399fcd62",
+      "source_commit": "ffdc3f47b349af9ef6bcaaa59903d5fc2aaddbf3",
+      "tests": 8,
+      "pass": 8,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-operations-detail.postgres.test.ts",
+          "tests": 8,
+          "pass": 8,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        }
+      ],
+      "scope": "Actual SDK \u2192 Gateway/auth \u2192 owned PostgREST/Postgres; complete operational histories and malformed/missing metric faults. BFF transport is separately tested; hosted metrics remain unavailable."
+    },
+    {
+      "run_id": "5621a376aadb",
+      "source_commit": "4197b81fc0cf25eea918b0be9fc556013d9689e3",
+      "tests": 67,
+      "pass": 67,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/checkout-tax-authority.postgres.test.ts",
+          "tests": 12,
+          "pass": 12,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        },
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/gst-invoice-issuance.test.ts",
+          "tests": 1,
+          "pass": 1,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        },
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-inventory-history-read.postgres.test.ts",
+          "tests": 7,
+          "pass": 7,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        },
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-inventory-records-read.postgres.test.ts",
+          "tests": 8,
+          "pass": 8,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        },
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-money-approval.postgres.test.ts",
+          "tests": 21,
+          "pass": 21,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        },
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-operations-detail.postgres.test.ts",
+          "tests": 8,
+          "pass": 8,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        },
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/payout-complete-read.postgres.test.ts",
+          "tests": 3,
+          "pass": 3,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        },
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/shipping-profiles.postgres.test.ts",
+          "tests": 1,
+          "pass": 1,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        },
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/shipping-tax-settings.postgres.test.ts",
+          "tests": 6,
+          "pass": 6,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        }
+      ],
+      "provider_evidence": "synthetic owned fixtures only; no provider acceptance"
+    },
+    {
+      "run_id": "9944d6b8ead6",
+      "source_commit": "622e709c7",
+      "tests": 21,
+      "pass": 21,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/checkout-tax-authority.postgres.test.ts",
+          "tests": 12,
+          "pass": 12,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        },
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/shipping-profiles.postgres.test.ts",
+          "tests": 1,
+          "pass": 1,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        },
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/shipping-tax-settings.postgres.test.ts",
+          "tests": 8,
+          "pass": 8,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        }
+      ],
+      "provider_evidence": "synthetic owned fixtures only; no provider acceptance"
+    },
+    {
+      "run_id": "b3986b37d9bf",
+      "source_commit": "863f556b1",
+      "purpose": "before: one real atomicity failure plus one fixture-name collision",
+      "tests": 2,
+      "pass": 0,
+      "fail": 2,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-recovery.postgres.test.ts",
+          "tests": 2,
+          "pass": 0,
+          "fail": 2,
+          "skipped": 0,
+          "code": 1
+        }
+      ],
+      "provider_evidence": "synthetic owned fixture only"
+    },
+    {
+      "run_id": "59d8aedc77e0",
+      "source_commit": "863f556b1",
+      "purpose": "corrected before: split commit and raw app_tenant bypass reproduced",
+      "tests": 2,
+      "pass": 0,
+      "fail": 2,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-recovery.postgres.test.ts",
+          "tests": 2,
+          "pass": 0,
+          "fail": 2,
+          "skipped": 0,
+          "code": 1
+        }
+      ],
+      "provider_evidence": "synthetic owned fixture only"
+    },
+    {
+      "run_id": "8ef6a510021a",
+      "source_commit": "253b84676",
+      "purpose": "fixture missing pooled SQL; no positive runtime proof",
+      "tests": 2,
+      "pass": 0,
+      "fail": 2,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-recovery.postgres.test.ts",
+          "tests": 2,
+          "pass": 0,
+          "fail": 2,
+          "skipped": 0,
+          "code": 1
+        }
+      ],
+      "provider_evidence": "synthetic owned fixture only"
+    },
+    {
+      "run_id": "32ab79fcae2b",
+      "source_commit": "0feafcba9",
+      "purpose": "initial after: actual tenant SQL and atomic receipt fault",
+      "tests": 2,
+      "pass": 2,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-recovery.postgres.test.ts",
+          "tests": 2,
+          "pass": 2,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        }
+      ],
+      "provider_evidence": "synthetic owned fixture only"
+    },
+    {
+      "run_id": "89e9646503f1",
+      "source_commit": "4aec068f1",
+      "purpose": "expanded warehouse lifecycle and rollback",
+      "tests": 12,
+      "pass": 12,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-recovery.postgres.test.ts",
+          "tests": 9,
+          "pass": 9,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        },
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-rollback.postgres.test.ts",
+          "tests": 3,
+          "pass": 3,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        }
+      ],
+      "provider_evidence": "synthetic owned fixture only"
+    },
+    {
+      "run_id": "441313f95296",
+      "source_commit": "4445e6fa5",
+      "purpose": "tenant red-team and exact opaque/raw-access invariant",
+      "tests": 8,
+      "pass": 8,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "path": "tests/executable/service-role-fresh-db-grants-postgres.test.mjs",
+          "tests": 6,
+          "pass": 6,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        },
+        {
+          "path": "tests/executable/tenant-redteam-postgres.test.mjs",
+          "tests": 2,
+          "pass": 2,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        }
+      ],
+      "provider_evidence": "synthetic owned fixture only"
+    },
+    {
+      "run_id": "dc5b4c3be74d",
+      "source_commit": "125bcd1d3",
+      "purpose": "final warehouse lifecycle, actor/scope/context and rollback",
+      "tests": 16,
+      "pass": 16,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-recovery.postgres.test.ts",
+          "tests": 13,
+          "pass": 13,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        },
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-rollback.postgres.test.ts",
+          "tests": 3,
+          "pass": 3,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        }
+      ],
+      "provider_evidence": "synthetic owned fixture only"
+    },
+    {
+      "run_id": "1f67a5b3afd0",
+      "source_commit": "31d17b437fbc9139b5015545579840419d798502",
+      "purpose": "composed warehouse apply/stop lifecycle, authority, whole-paise precision and guarded rollback",
+      "tests": 23,
+      "pass": 23,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-recovery.postgres.test.ts",
+          "tests": 20,
+          "pass": 20,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        },
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-rollback.postgres.test.ts",
+          "tests": 3,
+          "pass": 3,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        }
+      ]
+    },
+    {
+      "run_id": "228fb0ceff59",
+      "source_commit": "31d17b437fbc9139b5015545579840419d798502",
+      "purpose": "current populated tenant red-team and fresh database grants",
+      "tests": 8,
+      "pass": 8,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "path": "tests/executable/service-role-fresh-db-grants-postgres.test.mjs",
+          "tests": 6,
+          "pass": 6,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        },
+        {
+          "path": "tests/executable/tenant-redteam-postgres.test.mjs",
+          "tests": 2,
+          "pass": 2,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        }
+      ]
+    },
+    {
+      "run_id": "9d03afda6438",
+      "source_commit": "cb0f0993d365d76cf43a669274093a4f8210bb19",
+      "purpose": "canonical SDK/Gateway partial warehouse records, deleted children and foreign supplier/line refusal",
+      "tests": 21,
+      "pass": 21,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-recovery.postgres.test.ts",
+          "tests": 21,
+          "pass": 21,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        }
+      ]
+    },
+    {
+      "run_id": "f69cf06138f2",
+      "source_commit": "96153cd20bc3db3dd2c7539e3a77bd159820fb05",
+      "purpose": "connected typed SDK command replay, lost reply recovery, old-client refusal and paired rollback",
+      "tests": 27,
+      "pass": 27,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-recovery.postgres.test.ts",
+          "tests": 24,
+          "pass": 24,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        },
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-rollback.postgres.test.ts",
+          "tests": 3,
+          "pass": 3,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        }
+      ]
+    },
+    {
+      "run_id": "574f385f5ba3",
+      "source_commit": "b1563d2b165feb4fb78556b46d826113296dda2f",
+      "tests": 30,
+      "pass": 30,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-recovery.postgres.test.ts",
+          "tests": 27,
+          "pass": 27,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        },
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-rollback.postgres.test.ts",
+          "tests": 3,
+          "pass": 3,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        }
+      ],
+      "provider_evidence": "synthetic owned PostgreSQL/PostgREST fixtures; no hosted or real-provider acceptance"
+    },
+    {
+      "run_id": "f4fe172c783a",
+      "source_commit": "a45d682829744b8ce4e8bf010fd62b7c5b13a25d",
+      "tests": 32,
+      "pass": 32,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-recovery.postgres.test.ts",
+          "tests": 29,
+          "pass": 29,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        },
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-rollback.postgres.test.ts",
+          "tests": 3,
+          "pass": 3,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        }
+      ],
+      "provider_evidence": "synthetic owned PostgreSQL/PostgREST fixtures; no hosted or real-provider acceptance"
+    },
+    {
+      "run_id": "a933a87029ed",
+      "source_commit": "9bc3b34fcafb3171c6485ca16ad2f624470871cf",
+      "tests": 34,
+      "pass": 34,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-recovery.postgres.test.ts",
+          "tests": 31,
+          "pass": 31,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        },
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-rollback.postgres.test.ts",
+          "tests": 3,
+          "pass": 3,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        }
+      ],
+      "provider_evidence": "owned synthetic PostgreSQL/PostgREST; no hosted/provider acceptance"
+    },
+    {
+      "source_commit": "0cc7141d00f8cc3494274a0f11821d18d74b66ba",
+      "run_id": "90c34525839f",
+      "tests": 51,
+      "pass": 51,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-recovery.postgres.test.ts",
+          "tests": 46,
+          "pass": 46,
+          "fail": 0,
+          "code": 0
+        },
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-rollback.postgres.test.ts",
+          "tests": 5,
+          "pass": 5,
+          "fail": 0,
+          "code": 0
+        }
+      ],
+      "provider_evidence": "owned synthetic fixtures; no hosted or provider mutation"
+    },
+    {
+      "source_commit": "15fca500a08ee8c1c3c4d37a376f8fd81ee97403",
+      "run_id": "25db76a0876b",
+      "tests": 51,
+      "pass": 51,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-recovery.postgres.test.ts",
+          "tests": 46,
+          "pass": 46,
+          "fail": 0,
+          "code": 0
+        },
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-rollback.postgres.test.ts",
+          "tests": 5,
+          "pass": 5,
+          "fail": 0,
+          "code": 0
+        }
+      ],
+      "provider_evidence": "owned synthetic fixtures; no hosted or provider mutation"
+    }
+  ],
+  "ios_simulator_build": {
+    "bundle_manifest_sha256": "0dc24f727644142a9788b6ef3541ca77a12e759937b882490487f2f1f0c33997",
+    "file_count": 301,
+    "total_bytes": 159669411,
+    "dart_payloads": [
+      {
+        "path": "Frameworks/App.framework/flutter_assets/kernel_blob.bin",
+        "bytes": 93529008,
+        "sha256": "95e376babe12a54574f21430162427e9d94217fbf5fbcd935db558e0f70a9834"
+      }
+    ],
+    "artifact_kind": "ios-simulator-debug-no-production-signing",
+    "source_commit": "75984e1efe15b476ea5d6d587b6da7103ce34699"
+  },
+  "android_signing": {
+    "key_properties_present": false,
+    "complete_release_environment_present": false,
+    "signed_release": "unavailable"
+  },
+  "authenticated_native_journeys": "Historical installed source 13d254de: authorized sign-in and read-only primary tabs; latest 288cb3dfa staging-isolation source has no new emulator UI acceptance; hosted SDK/Next backend proofs are recorded separately",
+  "production_account_used": true,
+  "deployment_performed": true,
+  "full_122_acceptance": "in_progress; approved staging415 schema/API/web and bounded current native/Next warehouse proof accepted; ordinary DNS, normal protected login and other per-feature/provider/release gates open; no fully accepted feature row",
+  "previous_source_commit": "13d254de23e29919af5d5d4ce81e567584adc338",
+  "customer_scope_tests": {
+    "pass": 17,
+    "fail": 0
+  },
+  "native_segment_editor_tests": {
+    "pass": 6,
+    "fail": 0
+  },
+  "web_customer_contract_bff_tests": {
+    "pass": 3,
+    "fail": 0
+  },
+  "gateway_customer_unit_contract_tests": {
+    "pass": 11,
+    "fail": 0
+  },
+  "customer_privacy_negative_control": {
+    "unsafe_cache_mutant": "failed as required",
+    "restored_test": "pass",
+    "restored_service_sha256": "8331a55932bbca8dcf8f950fcb3294b153f5fee57037be9842d55b4ebf3aa657"
+  },
+  "android_debug_build": {
+    "source_commit": "15fca500a08ee8c1c3c4d37a376f8fd81ee97403",
+    "path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/apps/merchant/mobile/build/app/outputs/flutter-apk/app-debug.apk",
+    "bytes": 219850329,
+    "sha256": "fec82e09e09c4b88c8adcd781b6961a48bd23adbf58626e6e65b5b6302cc5785",
+    "configuration": "dart-defines/production.json",
+    "kind": "android-debug-apk",
+    "installed": true,
+    "signed_release": false,
+    "installed_sha256": "fec82e09e09c4b88c8adcd781b6961a48bd23adbf58626e6e65b5b6302cc5785",
+    "installed_hash_matches": true,
+    "read_only_acceptance": {
+      "source_commit": "15fca500a08ee8c1c3c4d37a376f8fd81ee97403",
+      "serial": "emulator-5580",
+      "retained_authenticated_tabs": true,
+      "screens": {
+        "Locations": {
+          "screen_observed": true,
+          "create_enabled": false,
+          "warehouse_unavailable": true,
+          "count_unavailable": true,
+          "false_zero_visible": false,
+          "saved_request_pending": false,
+          "password_fields_present": false
+        },
+        "Suppliers": {
+          "screen_observed": true,
+          "create_enabled": false,
+          "warehouse_unavailable": true,
+          "count_unavailable": true,
+          "false_zero_visible": false,
+          "saved_request_pending": false,
+          "password_fields_present": false
+        }
+      },
+      "production_business_writes": false,
+      "private_values_in_evidence": false,
+      "hosted_failure_cause": "not determined by UI; no compatible hosted creation or sync claim"
+    },
+    "observed": "Hash-verified final APK retains sign-in. Products \u2192 Inventory \u2192 Locations and Suppliers observed; both warehouse-unavailable and count-unavailable, creation disabled, no fabricated zero. UI does not determine hosted failure cause. No production business writes."
+  },
+  "production_business_mutations_performed": false,
+  "catalog_continuation": "committed and local/database/governance qualified; final hash-verified Android read/recovery observed; full web/mobile feature acceptance remains in progress",
+  "catalog_scope_tests": {
+    "pass": 13,
+    "fail": 0
+  },
+  "gateway_catalog_unit_contract_tests": {
+    "pass": 19,
+    "fail": 0
+  },
+  "catalog_governance": "pass: 114 pass, zero fail/blocked/skip, one report-only not-applicable",
+  "product_editor_and_media_scope_tests": {
+    "pass": 15,
+    "fail": 0
+  },
+  "android_catalog_checkpoint": {
+    "source_commit": "2c59fae05def3014e2b7239e3c1a59e94bfd7e9f",
+    "bytes": 148734429,
+    "sha256": "414ff104349c866010b40d1a382e5f63198adcf9e6b11971ab51d75242ccd8b7",
+    "kind": "android-debug-apk",
+    "configuration": "dart-defines/production.json",
+    "requested_target_platform": "android-arm64",
+    "packaged_native_abis": [
+      "arm64-v8a",
+      "armeabi-v7a",
+      "x86_64"
+    ],
+    "flutter_engine_abis": [
+      "arm64-v8a"
+    ],
+    "installed_hash_verified": true,
+    "observed": [
+      "page-labelled counts",
+      "nonmatching product search",
+      "explicit unsupported old-server filter outcome"
+    ],
+    "production_business_mutations": false
+  },
+  "shared_dart_models_tests": {
+    "source_commit": "15fca500a08ee8c1c3c4d37a376f8fd81ee97403",
+    "tests": 64,
+    "pass": 64,
+    "fail": 0
+  },
+  "inventory_scope_journal_tests": {
+    "pass": 49,
+    "fail": 0,
+    "included_in_flutter_total": true
+  },
+  "inventory_workspace_tests": {
+    "pass": 24,
+    "fail": 0,
+    "included_in_flutter_total": true,
+    "environment": "rendered Flutter tests, including actual named routes, phone layout, private workspace retirement and Previous recovery"
+  },
+  "web_inventory_tests": {
+    "typecheck": "pass",
+    "component_tests": 8,
+    "pass": 8,
+    "fail": 0,
+    "source_commit": "fff025100c2ced7bcbc2fa0c18b99f0cfc7e800a"
+  },
+  "inventory_continuation": "Web/native original-request recovery and atomic apply/stop are locally qualified. Next add fresh server/BFF protocol preflight before new client dispatch, then complete warehouse pagination/counts/detail/selectors and partial native line editing; continue the remaining ledger. All 122 end-to-end acceptance remains open.",
+  "previous_governance": {
+    "counts": {
+      "PASS": 114,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "SKIP": 0,
+      "NOT_APPLICABLE": 1
+    },
+    "ok": true,
+    "exitCode": 0,
+    "source_commit": "9bc3b34fcafb3171c6485ca16ad2f624470871cf"
+  },
+  "shared_dart_api_suite": {
+    "pass": 97,
+    "skipped": 6,
+    "fail": 0,
+    "skip_scope": "existing buyer sign-in tests require the local-stack environment; skipped cases are not acceptance evidence",
+    "source_commit": "9bc3b34fcafb3171c6485ca16ad2f624470871cf"
+  },
+  "history_types": {
+    "gateway_typecheck": "pass",
+    "typescript_client_typecheck": "pass after required shared-types declaration build",
+    "web_typecheck": "pass"
+  },
+  "inventory_source_contract_variance_tests": {
+    "pass": 32,
+    "fail": 0,
+    "environment": "repository-root source-contract/unit tests, not database evidence"
+  },
+  "inventory_source_checkpoints": [
+    {
+      "source_commit": "fff025100c2ced7bcbc2fa0c18b99f0cfc7e800a",
+      "flutter_pass": 489,
+      "analysis": "pass",
+      "governance_pass": 114
+    },
+    {
+      "source_commit": "c732d03921fc8d67c3fba714ac42b561fee90953",
+      "flutter_pass": 491,
+      "analysis": "pass",
+      "governance_pass": 114
+    }
+  ],
+  "android_inventory_checkpoints": [
+    {
+      "source_commit": "fff025100c2ced7bcbc2fa0c18b99f0cfc7e800a",
+      "bytes": 148754625,
+      "sha256": "2c16d349537257d1090302ca33e46304969de91beac08704abfa65cd2b7476e1",
+      "kind": "android-debug-apk",
+      "configuration": "dart-defines/production.json",
+      "packaged_native_abis": [
+        "arm64-v8a",
+        "armeabi-v7a",
+        "x86_64"
+      ],
+      "flutter_engine_abis": [
+        "arm64-v8a"
+      ],
+      "status": "installed_hash_verified",
+      "serial": "emulator-5580",
+      "installed_sha256": "2c16d349537257d1090302ca33e46304969de91beac08704abfa65cd2b7476e1"
+    },
+    {
+      "source_commit": "c732d03921fc8d67c3fba714ac42b561fee90953",
+      "bytes": 148750430,
+      "sha256": "e7033b7bf753b089a5c48c54c58ca634ef7a470b169781c623ff9699f2a08938",
+      "kind": "android-debug-apk",
+      "configuration": "dart-defines/production.json",
+      "packaged_native_abis": [
+        "arm64-v8a",
+        "armeabi-v7a",
+        "x86_64"
+      ],
+      "flutter_engine_abis": [
+        "arm64-v8a"
+      ],
+      "status": "installed_hash_verified",
+      "serial": "emulator-5580",
+      "installed_sha256": "e7033b7bf753b089a5c48c54c58ca634ef7a470b169781c623ff9699f2a08938",
+      "observed": "Products \u2192 Inventory loaded a real hosted stock row and shown-page metrics; Android System UI ANR limits usability evidence. No business mutation."
+    },
+    {
+      "source_commit": "753734ed581da332bfb1b66def881fa6758c762a",
+      "bytes": 148869275,
+      "sha256": "00be028035c9888a8b8c75babafa9f7d83e4ae086bcd075ab083a95a0455c5a0",
+      "kind": "android-debug-apk",
+      "configuration": "dart-defines/production.json",
+      "packaged_native_abis": [
+        "arm64-v8a",
+        "armeabi-v7a",
+        "x86_64"
+      ],
+      "flutter_engine_abis": [
+        "arm64-v8a"
+      ],
+      "status": "installed_hash_verified",
+      "serial": "emulator-5580",
+      "installed_sha256": "00be028035c9888a8b8c75babafa9f7d83e4ae086bcd075ab083a95a0455c5a0",
+      "native_journey_status": "After owned AVD recovery, retained login/dashboard and Products \u2192 Inventory \u2192 Stock history were observed. Initial and Retry reads showed the honest history scope/count-contract unavailable guard; successful hosted history data remains unaccepted.",
+      "safe_guard_image": {
+        "path": "android-stock-history-guard-753734.png",
+        "sha256": "51869dd698e1e583e0f395096deb97a595c4719fde2cab372218c3b637e1d383"
+      }
+    },
+    {
+      "source_commit": "df19015379aa92472046a7d8f86ed491337ae7bd",
+      "bytes": 148891962,
+      "sha256": "81e5cccaa3fdb332088fe2441cd1c0a9ec09b4eecda7a9dd70bbde5302b0773e",
+      "kind": "android-debug-apk",
+      "configuration": "dart-defines/production.json",
+      "serial": "emulator-5580",
+      "packaged_native_abis": [
+        "arm64-v8a",
+        "armeabi-v7a",
+        "x86_64"
+      ],
+      "flutter_engine_abis": [
+        "arm64-v8a"
+      ],
+      "installed_sha256": "81e5cccaa3fdb332088fe2441cd1c0a9ec09b4eecda7a9dd70bbde5302b0773e",
+      "status": "installed_hash_verified",
+      "native_journey_status": "Products \u2192 Inventory \u2192 Reservations and Receipts, initial and actual Retry returned unavailable-contract guard; no fabricated zero. Does not prove compatible hosted data.",
+      "safe_guard_images": [
+        "android-reservations-guard-df190153.png",
+        "android-receipts-guard-df190153.png"
+      ],
+      "observations": {
+        "receipts": {
+          "screen": "Receipts",
+          "retry_unavailable_guard_observed": true,
+          "false_zero_visible": false,
+          "seconds": 4.4,
+          "source_commit": "df19015379aa92472046a7d8f86ed491337ae7bd",
+          "intentional_business_mutations": false
+        },
+        "reservations": {
+          "screen": "Reservations",
+          "retry_unavailable_guard_observed": true,
+          "false_zero_visible": false,
+          "source_commit": "df19015379aa92472046a7d8f86ed491337ae7bd",
+          "intentional_business_mutations": false
+        }
+      }
+    }
+  ],
+  "previous_android_debug_build": {
+    "source_commit": "496e8d36a241ed4f3de5025b6ed6a5ca3f3cd99a",
+    "bytes": 148731288,
+    "sha256": "6d44501ebe971d1edbf50f365130ae89396ef396799a3d80acd7df7719b8167d",
+    "kind": "android-debug-apk",
+    "configuration": "dart-defines/production.json",
+    "packaged_native_abis": [
+      "arm64-v8a",
+      "armeabi-v7a",
+      "x86_64"
+    ],
+    "flutter_engine_abis": [
+      "arm64-v8a"
+    ],
+    "status": "built_installed_hash_verified",
+    "serial": "emulator-5580",
+    "avd": "LetBuyy_Merchant_Parity",
+    "os": "Android 15/API 35 arm64",
+    "api_origin": "https://bff.letbuyy.com/v1",
+    "identity_origin": "https://accounts.letbuyy.com"
+  },
+  "web_history_follow_up": {
+    "source_commit": "1e5740f223d1098fd727102b9c647b367dca7857",
+    "before": {
+      "tests": 4,
+      "pass": 1,
+      "fail": 3,
+      "scope": "React reproduced malformed/uncounted success, stale actor view and lost page recovery"
+    },
+    "after": {
+      "tests": 69,
+      "pass": 69,
+      "fail": 0,
+      "scope": "web read lifecycle/error recovery suite, includes six history UI/SDK tests"
+    },
+    "typescript_client_typecheck": "pass",
+    "web_typecheck": "pass",
+    "gateway_typecheck": "pass",
+    "governance": "pass: 114, zero fail/blocked/skip; one report-only not-applicable"
+  },
+  "inventory_records_checkpoint": {
+    "source_commit": "df19015379aa92472046a7d8f86ed491337ae7bd",
+    "report": "INVENTORY_RECORDS_PARITY.md",
+    "new_service_model_tests": 20,
+    "new_rendered_navigation_tests": 10,
+    "web_read_lifecycle_sdk_error_recovery_tests": {
+      "pass": 79,
+      "fail": 0
+    },
+    "gateway_typecheck": "pass",
+    "typescript_client_typecheck": "pass",
+    "web_typecheck": "pass",
+    "before_run": "1b7a87428fa0: 1 pass, 5 fail; populated owner-denial control passes",
+    "first_after": "28857a624a8e: new reads 6/6; operations 4/5 until exact receipt 503 assertion was corrected",
+    "intermediate_run": "c6e444923536: 11/11",
+    "final_run": "6682bde0a1ca",
+    "initial_flutter_regression": "531 pass, 1 fail: Purchase orders shortcut moved beyond the visible horizontal row; assertion now scrolls to it, final 532/532",
+    "governance": {
+      "counts": {
+        "PASS": 114,
+        "FAIL": 0,
+        "BLOCKED": 0,
+        "SKIP": 0,
+        "NOT_APPLICABLE": 1
+      },
+      "ok": true,
+      "exitCode": 0,
+      "source_commit": "df19015379aa92472046a7d8f86ed491337ae7bd"
+    },
+    "permission_scope": "existing owner-only reservation/receipt readers preserved; products:read staff remains denied",
+    "deployment_order": "Gateway compatible contract before clients requiring store/count acknowledgement",
+    "native_hosted_acceptance": "Exact debug APK installed/hash verified; initial and Retry unavailable-contract guards observed for reservations and receipts. Hosted data acceptance remains open.",
+    "receiving_command_acceptance": "open"
+  },
+  "history_native_unchanged_checkpoint": {
+    "native_source_unchanged_from": "753734ed581da332bfb1b66def881fa6758c762a",
+    "native_source_unchanged_verification": "git diff 753734ed5..1e5740f22 -- apps/merchant/mobile packages/dart is empty"
+  },
+  "operations_checkpoint": {
+    "source_commit": "ffdc3f47b349af9ef6bcaaa59903d5fc2aaddbf3",
+    "bff_follow_up_commit": "228ccdcefd5b450ebe34fd913f3b1decaee7be0f",
+    "report": "OPERATIONS_PARITY.md",
+    "native_tests": {
+      "new_pass": 28,
+      "fail": 0,
+      "included_in_flutter_total": true
+    },
+    "web_read_lifecycle_sdk_recovery_tests": {
+      "pass": 86,
+      "fail": 0
+    },
+    "gateway_typecheck": "pass",
+    "typescript_client_typecheck": "pass",
+    "web_typecheck": "pass",
+    "shared_models": {
+      "pass": 12,
+      "fail": 0
+    },
+    "shared_api": {
+      "pass": 97,
+      "skipped": 6,
+      "fail": 0
+    },
+    "owned_before": {
+      "run_id": "15d11003033d",
+      "pass": 5,
+      "fail": 3,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "source_commit": "df19015379aa92472046a7d8f86ed491337ae7bd"
+    },
+    "before_setup_failure": {
+      "run_id": "59515f6361ca",
+      "scope": "Failed module loading, not behavioral proof; offline frozen install repaired clone dependency link. Owned cleanup verified."
+    },
+    "owned_after": {
+      "run_id": "c24d399fcd62",
+      "pass": 8,
+      "fail": 0
+    },
+    "bff_transport": {
+      "new_tests_before": {
+        "pass": 0,
+        "fail": 3
+      },
+      "full_suite_after": {
+        "pass": 20,
+        "fail": 0
+      },
+      "typecheck": "pass",
+      "scope": "Actual BFF plus synthetic service binding; not composed Gateway or hosted/device acceptance. Only four exact authenticated GET routes opened.",
+      "governance": {
+        "counts": {
+          "PASS": 114,
+          "FAIL": 0,
+          "BLOCKED": 0,
+          "SKIP": 0,
+          "NOT_APPLICABLE": 1
+        },
+        "ok": true,
+        "exitCode": 0,
+        "source_commit": "228ccdcefd5b450ebe34fd913f3b1decaee7be0f"
+      }
+    },
+    "hosted_unauthenticated_probe": {
+      "status": 403,
+      "json_error_code": null,
+      "interpretation": "Does not identify whether WAF or BFF produced the response."
+    },
+    "governance": {
+      "counts": {
+        "PASS": 114,
+        "FAIL": 0,
+        "BLOCKED": 0,
+        "SKIP": 0,
+        "NOT_APPLICABLE": 1
+      },
+      "ok": true,
+      "exitCode": 0,
+      "source_commit": "ffdc3f47b349af9ef6bcaaa59903d5fc2aaddbf3"
+    },
+    "receiving_command_acceptance": "open"
+  },
+  "operations_native_source_comparison": {
+    "native_source_unchanged_from": "ffdc3f47b349af9ef6bcaaa59903d5fc2aaddbf3",
+    "native_source_unchanged_verification": "git diff ffdc3f47b..228ccdcef -- apps/merchant/mobile packages/dart is empty"
+  },
+  "android_previous_artifacts": [
+    {
+      "source_commit": "ffdc3f47b349af9ef6bcaaa59903d5fc2aaddbf3",
+      "bytes": 148916554,
+      "sha256": "c230a2fa30bb6bc5dda9b9a6961799f2bd067401855366df5eb0e39eeba2ee68",
+      "kind": "android-debug-apk",
+      "configuration": "dart-defines/production.json",
+      "serial": "emulator-5580",
+      "packaged_native_abis": [
+        "arm64-v8a",
+        "armeabi-v7a",
+        "x86_64"
+      ],
+      "flutter_engine_abis": [
+        "arm64-v8a"
+      ],
+      "installed_sha256": "c230a2fa30bb6bc5dda9b9a6961799f2bd067401855366df5eb0e39eeba2ee68",
+      "status": "installed_hash_verified",
+      "native_journey_status": "Products \u2192 Inventory \u2192 horizontal shortcut scrolling \u2192 Operations dashboard observed. Four generic unavailable reads; warehouse Retry returned unavailable with no visible zero. Cause not established by UI.",
+      "safe_unavailable_image": "android-operations-unavailable-ffdc3f47.png",
+      "observations": {
+        "source_commit": "ffdc3f47b349af9ef6bcaaa59903d5fc2aaddbf3",
+        "screen": "Operations dashboard",
+        "initial_generic_error_nodes": 4,
+        "after_warehouse_retry_error_nodes": 4,
+        "retry_control_restored": true,
+        "zero_values_visible": false,
+        "root_cause": "not determined by native UI; source BFF lacks the finite read routes before repair",
+        "intentional_business_mutations": false
+      }
+    },
+    {
+      "source_commit": "863f556b131db3f945f3489d3023a6b14ed3bb1a",
+      "bytes": 148929907,
+      "sha256": "f1921aba760b4dbe346c1d1c09ae373407356ad4717830381afd20625a7bcf39",
+      "installed_hash_matches": true,
+      "serial": "emulator-5580",
+      "avd": "LetBuyy_Merchant_Parity",
+      "signing": "debug",
+      "configuration": "dart-defines/production.json"
+    },
+    {
+      "source_commit": "31d17b437fbc9139b5015545579840419d798502",
+      "bytes": 219779455,
+      "sha256": "0ffb0b96792516a329738615deb1d201f3a639cd1a42b2a767995fd44f79af8d",
+      "serial": "emulator-5580",
+      "avd": "LetBuyy_Merchant_Parity",
+      "signing": "debug",
+      "configuration": "dart-defines/production.json",
+      "installed_hash_matches": true,
+      "adb_port": 15038,
+      "adb_serial": "127.0.0.1:5581",
+      "observed": "Installed hash-verified debug artifact. Restored task emulator has returned to sign-in with security-check-unavailable state. No authenticated warehouse journey or production write was performed on this build."
+    },
+    {
+      "source_commit": "96153cd20bc3db3dd2c7539e3a77bd159820fb05",
+      "bytes": 148974620,
+      "sha256": "36a15b03b23b5677edef2104544413bd023aa7dfb0821e24a245e94e35e7ee54",
+      "serial": "emulator-5580",
+      "avd": "LetBuyy_Merchant_Parity",
+      "signing": "debug",
+      "configuration": "dart-defines/production.json",
+      "target_platform": "android-arm64",
+      "installed_hash_matches": true,
+      "adb_port": 15038,
+      "adb_serial": "127.0.0.1:5581",
+      "read_only_acceptance": {
+        "source_commit": "96153cd20bc3db3dd2c7539e3a77bd159820fb05",
+        "sign_in_visible": true,
+        "security_check_unavailable": true,
+        "warehouse_workspace_observed": false,
+        "authenticated_warehouse_acceptance": false,
+        "production_business_mutations": false,
+        "scope": "allowlisted accessibility-state check after debug install; no private text captured in evidence"
+      },
+      "observed": "Installed hash verified; current UI is sign-in/security-check unavailable. No authenticated latest-build warehouse journey or intentional production business write."
+    },
+    {
+      "source_commit": "dcff47de1d7e0d985906200c2909bb480ac9d820",
+      "bytes": 148982797,
+      "sha256": "537b0d76c0fcda523ef187b575b008c90a4cc63d827520c0947b42e1c9a81bd0",
+      "serial": "emulator-5580",
+      "avd": "LetBuyy_Merchant_Parity",
+      "signing": "debug",
+      "configuration": "dart-defines/production.json",
+      "target_platform": "android-arm64",
+      "installed_hash_matches": true,
+      "adb_port": 15038,
+      "adb_serial": "127.0.0.1:5581",
+      "read_only_acceptance": {
+        "source_commit": "dcff47de1d7e0d985906200c2909bb480ac9d820",
+        "observed_at": "2026-10-31T23:15:35.303495+05:30",
+        "merchant_surface_visible": true,
+        "sign_in_visible": true,
+        "security_check_unavailable": true,
+        "warehouse_observed": false,
+        "authenticated_warehouse_acceptance": false,
+        "intentional_production_business_writes": false
+      },
+      "observed": "Installed hash matches; sign-in/security-check unavailable; authenticated warehouse acceptance remains open."
+    },
+    {
+      "source_commit": "9bc3b34fcafb3171c6485ca16ad2f624470871cf",
+      "bytes": 148998801,
+      "sha256": "ad390df0fb34ec779a374aa6f2f8b1d85dbc90234226eba4c9ab179012a5d11a",
+      "serial": "emulator-5580",
+      "avd": "LetBuyy_Merchant_Parity",
+      "signing": "debug",
+      "configuration": "dart-defines/production.json",
+      "target_platform": "android-arm64",
+      "installed_hash_matches": true,
+      "adb_port": 15038,
+      "adb_serial": "127.0.0.1:5581",
+      "read_only_acceptance": {
+        "source_commit": "9bc3b34fcafb3171c6485ca16ad2f624470871cf",
+        "merchant_surface_visible": true,
+        "sign_in_visible": true,
+        "security_check_unavailable": true,
+        "warehouse_workspace_observed": false,
+        "authenticated_warehouse_acceptance": false,
+        "intentional_production_business_writes": false,
+        "observed_at": "2026-10-31T23:44:50.533819+05:30"
+      },
+      "observed": "Current hash matches; sign-in/security-check unavailable; authenticated latest warehouse journey remains open."
+    },
+    {
+      "source_commit": "8be82e4afb63c388c02bfd9f8392c259e7711fd9",
+      "bytes": 148988532,
+      "sha256": "86051ec64636eb76bf535e26f4f672331447d039793b8446858fe53fdb69b236",
+      "serial": "emulator-5580",
+      "avd": "LetBuyy_Merchant_Parity",
+      "signing": "debug",
+      "configuration": "dart-defines/production.json",
+      "target_platform": "android-arm64",
+      "installed_hash_matches": true,
+      "adb_port": 15038,
+      "adb_serial": "127.0.0.1:5581",
+      "read_only_acceptance": {
+        "source_commit": "8be82e4afb63c388c02bfd9f8392c259e7711fd9",
+        "installed_hash_verified": true,
+        "before": {
+          "merchant_surface_visible": true,
+          "sign_in_visible": true,
+          "retry_control_visible": true,
+          "security_passed_visible": false,
+          "security_unavailable_visible": true
+        },
+        "retry_tapped_once": true,
+        "after_immediate": {
+          "merchant_surface_visible": true,
+          "sign_in_visible": true,
+          "retry_control_visible": false,
+          "security_passed_visible": false,
+          "security_unavailable_visible": false
+        },
+        "credentials_entered": false,
+        "auth_requests_intentionally_submitted": false,
+        "authenticated_warehouse_acceptance": false,
+        "intentional_production_business_writes": false,
+        "observed_at": "2026-11-01T00:14:26.997987+05:30",
+        "after_settled": {
+          "sign_in_visible": true,
+          "retry_control_visible": false,
+          "security_passed_visible": false,
+          "security_unavailable_visible": false,
+          "human_verification_control_offered": true,
+          "observed_at": "2026-11-01T00:15:23.711983+05:30"
+        },
+        "human_control_attempt": {
+          "human_control_candidates": 1,
+          "human_control_tapped_once": true,
+          "security_passed_visible": true,
+          "retry_control_visible": false,
+          "security_unavailable_visible": false,
+          "sign_in_visible": true,
+          "observed_at": "2026-11-01T00:16:48.208864+05:30"
+        }
+      },
+      "observed": "Exact APK hash matches; Retry and user-authorized real checkbox completed, frontend Security check passed. No credentials/auth submission; Mac locked blocks secure input. Owned AVD subsequently reopened visibly with data preserved; proof is not retained across restart."
+    },
+    {
+      "source_commit": "0cc7141d00f8cc3494274a0f11821d18d74b66ba",
+      "path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/apps/merchant/mobile/build/app/outputs/flutter-apk/app-debug.apk",
+      "bytes": 219839802,
+      "sha256": "e7d95f6917caa26457dfa5e4e2cc9f5b113b153bb7dfa0b7fdd941b48729462d",
+      "configuration": "dart-defines/production.json",
+      "kind": "android-debug-apk",
+      "installed": true,
+      "signed_release": false,
+      "installed_sha256": "e7d95f6917caa26457dfa5e4e2cc9f5b113b153bb7dfa0b7fdd941b48729462d",
+      "installed_hash_matches": true
+    }
+  ],
+  "source_reconciliation": {
+    "accepted_remote_develop_and_staging": "77584d19dc3dc557f29f9e2fbc7a967fe38e132c",
+    "local_merge": "4197b81fc0cf25eea918b0be9fc556013d9689e3",
+    "hosted_deployment": false,
+    "primary_untouched_head": "a72196c6ea9cd86b07d6d8414da2b8176c41046a",
+    "primary_dirty_paths_observed": 139,
+    "latest_primary_observation": {
+      "head": "a72196c6ea9cd86b07d6d8414da2b8176c41046a",
+      "dirty_paths": 153,
+      "modified_by_this_task": false,
+      "note": "Primary still includes an unaccepted draft 411_gift_card_issue_replay_integrity.sql; do not copy or overwrite it. Reconcile separately before promotion."
+    },
+    "accepted_refs_rechecked_2026_10_31": {
+      "develop": "77584d19dc3dc557f29f9e2fbc7a967fe38e132c",
+      "staging": "77584d19dc3dc557f29f9e2fbc7a967fe38e132c",
+      "max_migration": 413
+    }
+  },
+  "shipping_tax_checkpoint": {
+    "source_commit": "863f556b131db3f945f3489d3023a6b14ed3bb1a",
+    "focused_native_scope_and_editor_tests": 29,
+    "settings_navigation_tests": 2,
+    "shared_model_contract_tests": 4,
+    "web_read_recovery_settings_tests": 94,
+    "gateway_unit_contract_tests": 1848,
+    "typechecks": [
+      "Gateway",
+      "web",
+      "TypeScript SDK"
+    ],
+    "owned_run": "9944d6b8ead6",
+    "backend_and_sdk_unchanged_since_owned_source": "622e709c7",
+    "evidence": "SHIPPING_TAX_PARITY.md",
+    "android": {
+      "shipping_initial_and_refresh": "unavailable, no mutation control or zero summary",
+      "tax_initial": "unavailable, no mutation control or inclusive switch",
+      "tax_refresh": "unavailable, no mutation control or inclusive switch",
+      "full_hosted_acceptance": false
+    },
+    "fully_accepted_ledger_rows": []
+  },
+  "warehouse_migration_decision": {
+    "owner_decision": "Use current sequence after 413 (Recommended)",
+    "scope": "source/local qualification only, paired rollback required",
+    "next_number_if_unused": 414,
+    "accepted_refs_rechecked": true,
+    "implementation": "Source-only draft 414 canonical-variant lookup corrected and requalified with paired rollback; no hosted migration. Native selectors/multi-line workflows qualified locally; list controls, metadata-creation recovery and actual hosted/release gates remain open.",
+    "evidence": "WAREHOUSE_ATOMICITY.md"
+  },
+  "warehouse_checkpoint": {
+    "backend_source_commit": "9bc3b34fcafb3171c6485ca16ad2f624470871cf",
+    "native_model_source_commit": "9bc3b34fcafb3171c6485ca16ad2f624470871cf",
+    "migration": 414,
+    "owner_authorized_source_and_local_only": true,
+    "owned_final_run": "a933a87029ed",
+    "owned_final_pass": 34,
+    "owned_final_fail": 0,
+    "raw_access_and_tenant_run": "228fb0ceff59",
+    "raw_access_and_tenant_pass": 8,
+    "gateway_units_and_contracts": 1970,
+    "gateway_typecheck": "pass",
+    "web_typecheck": "pass",
+    "sdk_typecheck": "pass",
+    "native_client_recovery": "implemented; encrypted original intent/key, strict acknowledgement, retry/stop and protocol marker locally verified",
+    "safe_abandon_of_unapplied_pending_request": "implemented on server and both clients; applied/cancelled outcomes remain distinct",
+    "hosted_migration": false,
+    "deployed": false,
+    "evidence": "WAREHOUSE_RECEIPT_REVIEW.md",
+    "native_model_fields": [
+      "quantity_ordered",
+      "quantity_requested",
+      "quantity_shipped",
+      "quantity_received"
+    ],
+    "installed_android_source": "9bc3b34fcafb3171c6485ca16ad2f624470871cf",
+    "web_client_recovery": "implemented; actor/stable-site-bound localStorage, browser lock interface, remount recovery, current-context proxy guards and matched receipt before clearing",
+    "native_tests": 630,
+    "shared_model_tests": 60,
+    "authenticated_latest_device_warehouse_acceptance": false,
+    "web_source_commit": "9bc3b34fcafb3171c6485ca16ad2f624470871cf",
+    "qualified_source_commit": "9bc3b34fcafb3171c6485ca16ad2f624470871cf",
+    "web_composed_checks": 218,
+    "web_proxy_checks": 83,
+    "web_browser_journal_checks": 9,
+    "sdk_acknowledgement_checks": 42,
+    "bff_tests": 24,
+    "bff_typecheck": "pass",
+    "route_registration_tests": 6,
+    "normalization_owner": "packages/commerce-core/src/index.ts:prepareWarehouseCommand",
+    "old_client_gate": "X-LetBuyy-Warehouse-Protocol: 1 required on the exact six warehouse POST paths; unsupported/missing version returns 426 before effects/private replay",
+    "server_protocol_preflight": "implemented; fresh private descriptor matching actor/site/protocol/atomic-or-unavailable/stop; unavailable or downlevel server receives no POST; original pending intent/key retained",
+    "headed_browser_acceptance": false,
+    "all_122_accepted": false,
+    "governance_attempts": [
+      {
+        "source_commit": "96153cd20bc3db3dd2c7539e3a77bd159820fb05",
+        "counts": {
+          "PASS": 113,
+          "FAIL": 1,
+          "BLOCKED": 0,
+          "SKIP": 0,
+          "NOT_APPLICABLE": 1
+        },
+        "ok": false,
+        "reason": "new thin stop proxy was missing from maintained route count/baseline; freeze guard retained"
+      },
+      {
+        "source_commit": "3ed8c6078139680b1902273169f5f11cdc17a1e9",
+        "counts": {
+          "PASS": 114,
+          "FAIL": 0,
+          "BLOCKED": 0,
+          "SKIP": 0,
+          "NOT_APPLICABLE": 1
+        },
+        "ok": true,
+        "reason": "exact route registered in existing gateway-proxy class, paired lint baseline and documented rationale; unchanged boundary tests 6/6"
+      },
+      {
+        "source_commit": "b1563d2b165feb4fb78556b46d826113296dda2f",
+        "counts": {
+          "PASS": 114,
+          "FAIL": 0,
+          "BLOCKED": 0,
+          "SKIP": 0,
+          "NOT_APPLICABLE": 1
+        },
+        "ok": true
+      },
+      {
+        "source_commit": "a45d682829744b8ce4e8bf010fd62b7c5b13a25d",
+        "counts": {
+          "PASS": 114,
+          "FAIL": 0,
+          "BLOCKED": 0,
+          "SKIP": 0,
+          "NOT_APPLICABLE": 1
+        },
+        "ok": true
+      },
+      {
+        "source_commit": "9bc3b34fcafb3171c6485ca16ad2f624470871cf",
+        "counts": {
+          "PASS": 114,
+          "FAIL": 0,
+          "BLOCKED": 0,
+          "SKIP": 0,
+          "NOT_APPLICABLE": 1
+        },
+        "ok": true
+      }
+    ],
+    "native_source_commit": "9bc3b34fcafb3171c6485ca16ad2f624470871cf",
+    "sdk_document_page_checks": 51,
+    "warehouse_parent_pages": "implemented across Gateway, SDK, Dart, web and native; exact scoped counts, stable ordering, partial/far pages, older-server refusal and Previous recovery; filter/search/sort UI and detail/selectors still open",
+    "pagination_failed_reproduction": {
+      "source_commit": "dcff47de1d7e0d985906200c2909bb480ac9d820",
+      "run_id": "0844909ec1c8",
+      "tests": 32,
+      "pass": 30,
+      "fail": 2,
+      "reason": "far page past matching population returned DB range error; repaired with exact same-filter count recovery",
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "fresh_details": "implemented across shared contracts, Gateway, SDK, actual web proxies and native verified DTOs; current actor/site/target and complete lines required",
+    "native_partial_receipts": "implemented; fresh document, explicit whole-unit review, skipped zero lines, SKU/variant and document identity; same frozen intent/key through lost reply",
+    "native_ship_precondition": "fresh reserved transfer and explicit confirmation; receiving requires shipped or partially-received state",
+    "app_api_route_inventory": 235,
+    "native_failed_layout_reproduction": {
+      "pass": 629,
+      "fail": 1,
+      "scope": "pre-fix source patch before 9bc3b34fc; full canonical IDs/status pushed transfer action off screen",
+      "corrected_full_native_pass": 630,
+      "receipt": "/private/tmp/letbuyy-warehouse-detail-mobile-tests-complete.log"
+    }
+  },
+  "last_qualified_date": "2026-11-01 UTC",
+  "implementation_commit": "aeef87046a497567e8fcfc8b2aacafe896ce4c87",
+  "warehouse_previous_checkpoints": [
+    {
+      "backend_source_commit": "96153cd20bc3db3dd2c7539e3a77bd159820fb05",
+      "native_model_source_commit": "96153cd20bc3db3dd2c7539e3a77bd159820fb05",
+      "migration": 414,
+      "owner_authorized_source_and_local_only": true,
+      "owned_final_run": "f69cf06138f2",
+      "owned_final_pass": 27,
+      "owned_final_fail": 0,
+      "raw_access_and_tenant_run": "228fb0ceff59",
+      "raw_access_and_tenant_pass": 8,
+      "gateway_units_and_contracts": 1929,
+      "gateway_typecheck": "pass",
+      "web_typecheck": "pass",
+      "sdk_typecheck": "pass",
+      "native_client_recovery": "implemented; encrypted original intent/key, strict acknowledgement, retry/stop and protocol marker locally verified",
+      "safe_abandon_of_unapplied_pending_request": "implemented on server and both clients; applied/cancelled outcomes remain distinct",
+      "hosted_migration": false,
+      "deployed": false,
+      "evidence": "WAREHOUSE_ATOMICITY.md",
+      "native_model_fields": [
+        "quantity_ordered",
+        "quantity_requested",
+        "quantity_shipped",
+        "quantity_received"
+      ],
+      "installed_android_source": "96153cd20bc3db3dd2c7539e3a77bd159820fb05",
+      "web_client_recovery": "implemented; actor/stable-site-bound localStorage, browser lock interface, remount recovery, current-context proxy guards and matched receipt before clearing",
+      "native_tests": 613,
+      "shared_model_tests": 28,
+      "native_journal_focused_tests": 17,
+      "native_workspace_tests": 18,
+      "authenticated_latest_device_warehouse_acceptance": false,
+      "web_source_commit": "96153cd20bc3db3dd2c7539e3a77bd159820fb05",
+      "qualified_source_commit": "3ed8c6078139680b1902273169f5f11cdc17a1e9",
+      "web_composed_checks": 175,
+      "web_proxy_checks": 55,
+      "web_browser_journal_checks": 9,
+      "sdk_acknowledgement_checks": 31,
+      "bff_tests": 21,
+      "bff_typecheck": "pass",
+      "route_registration_tests": 6,
+      "normalization_owner": "packages/commerce-core/src/index.ts:prepareWarehouseCommand",
+      "old_client_gate": "X-LetBuyy-Warehouse-Protocol: 1 required on the exact six warehouse POST paths; unsupported/missing version returns 426 before effects/private replay",
+      "server_protocol_preflight": "not yet implemented; required before a new client sends to an older Gateway/BFF deployment",
+      "headed_browser_acceptance": false,
+      "all_122_accepted": false,
+      "governance_attempts": [
+        {
+          "source_commit": "96153cd20bc3db3dd2c7539e3a77bd159820fb05",
+          "counts": {
+            "PASS": 113,
+            "FAIL": 1,
+            "BLOCKED": 0,
+            "SKIP": 0,
+            "NOT_APPLICABLE": 1
+          },
+          "ok": false,
+          "reason": "new thin stop proxy was missing from maintained route count/baseline; freeze guard retained"
+        },
+        {
+          "source_commit": "3ed8c6078139680b1902273169f5f11cdc17a1e9",
+          "counts": {
+            "PASS": 114,
+            "FAIL": 0,
+            "BLOCKED": 0,
+            "SKIP": 0,
+            "NOT_APPLICABLE": 1
+          },
+          "ok": true,
+          "reason": "exact route registered in existing gateway-proxy class, paired lint baseline and documented rationale; unchanged boundary tests 6/6"
+        }
+      ]
+    },
+    {
+      "backend_source_commit": "a45d682829744b8ce4e8bf010fd62b7c5b13a25d",
+      "native_model_source_commit": "b1563d2b165feb4fb78556b46d826113296dda2f",
+      "migration": 414,
+      "owner_authorized_source_and_local_only": true,
+      "owned_final_run": "f4fe172c783a",
+      "owned_final_pass": 32,
+      "owned_final_fail": 0,
+      "raw_access_and_tenant_run": "228fb0ceff59",
+      "raw_access_and_tenant_pass": 8,
+      "gateway_units_and_contracts": 1958,
+      "gateway_typecheck": "pass",
+      "web_typecheck": "pass",
+      "sdk_typecheck": "pass",
+      "native_client_recovery": "implemented; encrypted original intent/key, strict acknowledgement, retry/stop and protocol marker locally verified",
+      "safe_abandon_of_unapplied_pending_request": "implemented on server and both clients; applied/cancelled outcomes remain distinct",
+      "hosted_migration": false,
+      "deployed": false,
+      "evidence": "WAREHOUSE_PROTOCOL_AND_PAGES.md",
+      "native_model_fields": [
+        "quantity_ordered",
+        "quantity_requested",
+        "quantity_shipped",
+        "quantity_received"
+      ],
+      "installed_android_source": "dcff47de1d7e0d985906200c2909bb480ac9d820",
+      "web_client_recovery": "implemented; actor/stable-site-bound localStorage, browser lock interface, remount recovery, current-context proxy guards and matched receipt before clearing",
+      "native_tests": 623,
+      "shared_model_tests": 29,
+      "native_journal_focused_tests": 17,
+      "native_workspace_tests": 18,
+      "authenticated_latest_device_warehouse_acceptance": false,
+      "web_source_commit": "dcff47de1d7e0d985906200c2909bb480ac9d820",
+      "qualified_source_commit": "a45d682829744b8ce4e8bf010fd62b7c5b13a25d",
+      "web_composed_checks": 200,
+      "web_proxy_checks": 73,
+      "web_browser_journal_checks": 9,
+      "sdk_acknowledgement_checks": 42,
+      "bff_tests": 22,
+      "bff_typecheck": "pass",
+      "route_registration_tests": 6,
+      "normalization_owner": "packages/commerce-core/src/index.ts:prepareWarehouseCommand",
+      "old_client_gate": "X-LetBuyy-Warehouse-Protocol: 1 required on the exact six warehouse POST paths; unsupported/missing version returns 426 before effects/private replay",
+      "server_protocol_preflight": "implemented; fresh private descriptor matching actor/site/protocol/atomic-or-unavailable/stop; unavailable or downlevel server receives no POST; original pending intent/key retained",
+      "headed_browser_acceptance": false,
+      "all_122_accepted": false,
+      "governance_attempts": [
+        {
+          "source_commit": "96153cd20bc3db3dd2c7539e3a77bd159820fb05",
+          "counts": {
+            "PASS": 113,
+            "FAIL": 1,
+            "BLOCKED": 0,
+            "SKIP": 0,
+            "NOT_APPLICABLE": 1
+          },
+          "ok": false,
+          "reason": "new thin stop proxy was missing from maintained route count/baseline; freeze guard retained"
+        },
+        {
+          "source_commit": "3ed8c6078139680b1902273169f5f11cdc17a1e9",
+          "counts": {
+            "PASS": 114,
+            "FAIL": 0,
+            "BLOCKED": 0,
+            "SKIP": 0,
+            "NOT_APPLICABLE": 1
+          },
+          "ok": true,
+          "reason": "exact route registered in existing gateway-proxy class, paired lint baseline and documented rationale; unchanged boundary tests 6/6"
+        },
+        {
+          "source_commit": "b1563d2b165feb4fb78556b46d826113296dda2f",
+          "counts": {
+            "PASS": 114,
+            "FAIL": 0,
+            "BLOCKED": 0,
+            "SKIP": 0,
+            "NOT_APPLICABLE": 1
+          },
+          "ok": true
+        },
+        {
+          "source_commit": "a45d682829744b8ce4e8bf010fd62b7c5b13a25d",
+          "counts": {
+            "PASS": 114,
+            "FAIL": 0,
+            "BLOCKED": 0,
+            "SKIP": 0,
+            "NOT_APPLICABLE": 1
+          },
+          "ok": true
+        }
+      ],
+      "native_source_commit": "dcff47de1d7e0d985906200c2909bb480ac9d820",
+      "sdk_document_page_checks": 39,
+      "warehouse_parent_pages": "implemented across Gateway, SDK, Dart, web and native; exact scoped counts, stable ordering, partial/far pages, older-server refusal and Previous recovery; filter/search/sort UI and detail/selectors still open",
+      "pagination_failed_reproduction": {
+        "source_commit": "dcff47de1d7e0d985906200c2909bb480ac9d820",
+        "run_id": "0844909ec1c8",
+        "tests": 32,
+        "pass": 30,
+        "fail": 2,
+        "reason": "far page past matching population returned DB range error; repaired with exact same-filter count recovery",
+        "cleanup": {
+          "failures": [],
+          "remaining": {
+            "containers": [],
+            "networks": [],
+            "volumes": []
+          }
+        }
+      }
+    }
+  ],
+  "previous_shared_dart_models_tests": [
+    {
+      "source_commit": "b1563d2b165feb4fb78556b46d826113296dda2f",
+      "pass": 29,
+      "fail": 0,
+      "focused_warehouse_before": {
+        "pass": 0,
+        "fail": 4
+      },
+      "focused_warehouse_after": {
+        "pass": 4,
+        "fail": 0
+      },
+      "analysis": "pass",
+      "warehouse_intent_acknowledgement_tests": 8
+    }
+  ],
+  "native_verification_checkpoint": {
+    "source_commit": "8be82e4afb63c388c02bfd9f8392c259e7711fd9",
+    "date": "2026-11-01",
+    "native_pass": 641,
+    "new_lifetime_and_document_checks": 11,
+    "native_analysis": "pass",
+    "governance": {
+      "ok": true,
+      "counts": {
+        "PASS": 114,
+        "FAIL": 0,
+        "BLOCKED": 0,
+        "SKIP": 0,
+        "NOT_APPLICABLE": 1
+      },
+      "exitCode": 0,
+      "source_commit": "8be82e4afb63c388c02bfd9f8392c259e7711fd9"
+    },
+    "backend_packages_database_web_unchanged_from": "9bc3b34fcafb3171c6485ca16ad2f624470871cf",
+    "single_use_inline_proof": true,
+    "old_callback_fencing": true,
+    "independent_retry_control": true,
+    "single_route_completion": true,
+    "nonfatal_subframe_probe_handling": true,
+    "actual_main_frame_and_widget_failures_remain_closed": true,
+    "server_verification_unchanged": true,
+    "frontend_widget_completed_in_emulator": true,
+    "server_siteverify_acceptance": "not attempted",
+    "credential_submission": "not attempted",
+    "authenticated_merchant_session": "not attempted",
+    "current_secure_input_gate": "Computer-control surface reports Mac locked; user manual unlock requested; source work continues",
+    "visible_avd_restart_data_preserved": true,
+    "previous_public_provider_error_code": "600010",
+    "observed_webview_version": "124.0.6367.219",
+    "clock_skew_seconds": 0,
+    "root_cause_not_asserted": true,
+    "password_reset_declaration_preserved": true,
+    "password_reset_declaration_sha256": "877a6b826879ce8bd8b63988c290ddbffeeb1f1267fd2ed73008e4ddde21b419",
+    "public_bff_health_read": {
+      "http_status": 403,
+      "configuration_flags": "unobserved"
+    },
+    "evidence": "NATIVE_VERIFICATION_RECOVERY.md",
+    "full_122_accepted": false,
+    "secure_input_followup": "User unlocked Mac; CUA cannot select non-bundle task emulator. Android Home observed via allowlisted package/control booleans; Merchant opened and sign-in form observed. Direct user sign-in pending. No agent credential entry, new authenticated session or production mutation."
+  },
+  "warehouse_option_checkpoint": {
+    "source_commit": "58030c1c3a0f89e7f77380bfb910beac037e8440",
+    "evidence": "WAREHOUSE_OPTION_READS.md",
+    "owned_run": "8741f18edf45",
+    "owned_pass": 36,
+    "owned_fail": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "gateway_pass": 2006,
+    "native_pass": 675,
+    "shared_models_pass": 63,
+    "shared_dart_api_pass": 97,
+    "shared_dart_api_existing_skips": 6,
+    "web_composed_pass": 229,
+    "web_error_recovery_pass": 1,
+    "bff_pass": 24,
+    "shared_types_pass": 18,
+    "types_lint_analysis": "pass",
+    "emulator_install_for_this_source": false,
+    "native_creation_selectors": "pending",
+    "durable_option_creation": "pending",
+    "hosted_acceptance": "pending"
+  },
+  "warehouse_native_creation_checkpoint": {
+    "source_commit": "97edec1ea36254eeef79d1e09c1e62efcf0b105d",
+    "native_source_commit": "1dd5400bee4991b1036901811ef2ec84bfd046d5",
+    "native_pass": 694,
+    "shared_models_pass": 64,
+    "gateway_pass": 2006,
+    "gateway_types": "pass",
+    "owned_before": {
+      "run_id": "8cd46b4a0cd8",
+      "pass": 36,
+      "fail": 2,
+      "reason": "Nonexistent product_variants.deleted_at in source-only draft migration 414"
+    },
+    "owned_after": {
+      "run_id": "d92e2301d0f2",
+      "pass": 38,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "roles": {
+      "run_id": "0fe15d83d81e",
+      "pass": 8,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "evidence": "WAREHOUSE_NATIVE_CREATION.md",
+    "android_debug": {
+      "source_commit": "1dd5400bee4991b1036901811ef2ec84bfd046d5",
+      "path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/apps/merchant/mobile/build/app/outputs/flutter-apk/app-debug.apk",
+      "bytes": 219833893,
+      "sha256": "fbd7896c7a64b47e433f2efa400d81d25b7c0e778669e6f6545efbb63da6f4af",
+      "kind": "android-debug-production-endpoints-not-release-signed",
+      "installed": false
+    },
+    "installed_current_source": false,
+    "authenticated_current_source": "unobserved"
+  },
+  "warehouse_list_and_metadata_readback_checkpoint": {
+    "source_commit": "a0b7dad6660107063cbd141f80d674f38a8a1f1f",
+    "client_source_commit": "4aa6be3e6fd7e053e656d065c562d076f2a389fd",
+    "evidence": "WAREHOUSE_LIST_FILTERS.md",
+    "native_pass": 706,
+    "shared_models_pass": 64,
+    "web_composed_pass": 235,
+    "web_types_and_lint": "pass",
+    "gateway_unit_pass": 2006,
+    "gateway_types": "pass",
+    "owned_before": {
+      "run_id": "2a1f4a92f603",
+      "pass": 38,
+      "fail": 1,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "owned_after": {
+      "run_id": "6e8b887f8131",
+      "pass": 39,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "client_diff_from_integrated_source": "empty",
+    "durable_metadata_creation_recovery": "pending",
+    "real_cross_client_acceptance": "pending",
+    "current_client_apk_installed": false
+  },
+  "device_acceptance_policy": "Owner approved Android emulator testing. Direct secure sign-in pending because CUA cannot select the non-bundle emulator window; no physical-device prerequisite is imposed.",
+  "warehouse_metadata_recovery_checkpoint": {
+    "source_commit": "15fca500a08ee8c1c3c4d37a376f8fd81ee97403",
+    "integrated_test_source": "15fca500a08ee8c1c3c4d37a376f8fd81ee97403",
+    "protocol_version": "2",
+    "native_tests": 728,
+    "gateway_tests": 2025,
+    "web_composed_tests": 259,
+    "sdk_warehouse_tests": 61,
+    "full_122_acceptance": "in_progress",
+    "owned_run": "25db76a0876b",
+    "owned_tests": 51,
+    "owned_pass": 51,
+    "owned_fail": 0,
+    "owned_cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "sql_rollback_pair": "414",
+    "hosted_migration_applied": false,
+    "production_business_writes": false,
+    "report": "WAREHOUSE_METADATA_RECOVERY.md",
+    "test_only_follow_up": "included in final source; shared wire codec permits SDK imports; web metadata dialogs connected and structured location pincode preserved",
+    "device_read_only_acceptance": {
+      "source_commit": "15fca500a08ee8c1c3c4d37a376f8fd81ee97403",
+      "serial": "emulator-5580",
+      "retained_authenticated_tabs": true,
+      "screens": {
+        "Locations": {
+          "screen_observed": true,
+          "create_enabled": false,
+          "warehouse_unavailable": true,
+          "count_unavailable": true,
+          "false_zero_visible": false,
+          "saved_request_pending": false,
+          "password_fields_present": false
+        },
+        "Suppliers": {
+          "screen_observed": true,
+          "create_enabled": false,
+          "warehouse_unavailable": true,
+          "count_unavailable": true,
+          "false_zero_visible": false,
+          "saved_request_pending": false,
+          "password_fields_present": false
+        }
+      },
+      "production_business_writes": false,
+      "private_values_in_evidence": false,
+      "hosted_failure_cause": "not determined by UI; no compatible hosted creation or sync claim"
+    }
+  },
+  "authenticated_sign_in_20261101": {
+    "native_source": "8be82e4afb63c388c02bfd9f8392c259e7711fd9",
+    "auth_form_left": true,
+    "dashboard_reached": true,
+    "production_business_writes": false,
+    "human_verification_completed_by": "user",
+    "private_values_in_evidence": false
+  },
+  "warehouse_metadata_role_baseline": {
+    "source_commit": "023ca4131",
+    "run_id": "c51c7ba82aaf",
+    "tests": 8,
+    "pass": 8,
+    "fail": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "reuse": "unchanged tenant and metadata INSERT privilege fence; final command behavior also covered by final owned 51 checks"
+  },
+  "warehouse_metadata_prior_governance": [
+    {
+      "ok": true,
+      "counts": {
+        "PASS": 114,
+        "FAIL": 0,
+        "BLOCKED": 0,
+        "SKIP": 0,
+        "NOT_APPLICABLE": 1
+      },
+      "exitCode": 0,
+      "source_commit": "a0b7dad6660107063cbd141f80d674f38a8a1f1f"
+    },
+    {
+      "source_commit": "023ca4131",
+      "ok": false,
+      "counts": {
+        "PASS": 113,
+        "FAIL": 1
+      },
+      "failure": "SDK imported domain layer; fixed by one shared wire codec and domain public re-exports in 15fca500a"
+    }
+  ],
+  "private_signin_input_helper": {
+    "removed": true,
+    "credentials_saved": false,
+    "app_session_preserved": true
+  },
+  "native_environment_boundary_checkpoint": {
+    "source_commit": "13d254de23e29919af5d5d4ce81e567584adc338",
+    "report": "HOSTED_WAREHOUSE_RECOVERY.md",
+    "focused_tests": 19,
+    "full_native_pass": 747,
+    "analysis": "pass",
+    "staging_endpoints_isolated": true,
+    "configuration_checked_before_session_restore": true,
+    "production_debug_artifact": {
+      "sourceRevision": "13d254de23e29919af5d5d4ce81e567584adc338",
+      "configuration": "dart-defines/production.json",
+      "artifact": "debug",
+      "releaseSigning": false,
+      "bytes": 219844402,
+      "sha256": "f18e002298f23dcb46b798e9d4e8950fe374fe8ca880204fb45e1895c589b7db",
+      "installed": true,
+      "installedHashMatches": true,
+      "serial": "emulator-5580",
+      "read_only_device_observation": {
+        "signed_in_tabs_retained": true,
+        "products_reachable": true,
+        "configuration_error_visible": false,
+        "password_fields_present": false,
+        "business_mutation": false,
+        "warehouse_write_or_sync_accepted": false
+      }
+    },
+    "governance": {
+      "sourceRevision": "13d254de23e29919af5d5d4ce81e567584adc338",
+      "resultSource": "completed gate text log; --json-out was ignored by CLI; no machine-readable full matrix emitted",
+      "exitCode": 0,
+      "counts": {
+        "pass": 114,
+        "fail": 0,
+        "blocked": 0,
+        "skip": 0,
+        "notApplicable": 1
+      },
+      "disposableClone": true,
+      "nonBlockingBranchDispositionAdvisories": true
+    },
+    "staging_configuration_or_provider_acceptance": false,
+    "colocated_environment_persistence_acceptance": false
+  },
+  "hosted_warehouse_recovery_checkpoint": {
+    "source_commit": "288cb3dfa02f8b0d2b650de7126504864b3c89b6",
+    "report": "STAGING_WAREHOUSE_ACCEPTANCE.md",
+    "environment": "staging",
+    "migration414": "committed-once; independent history/payload/runtime-guard readback verified",
+    "history_rows_before": 341,
+    "history_rows_after": 342,
+    "quiet_restore_original_tables_preserved": 523,
+    "live_original_table_populations_exact": 522,
+    "live_original_table_population_total": 523,
+    "complete_original_database_byte_equality": false,
+    "live_preservation_limit": "internal_auth_replay_claims expiry/reuse; original eight-row population not fully reconstructable; unchanged function and effect-once replay controls verified",
+    "api_version": "2ec36261-eee3-49b5-95e8-5c6c0b7d9928",
+    "api_all_module_bytes_match": true,
+    "bff_version": "62a1161a-13f8-411d-8d3a-7714d6f590a2",
+    "bff_all_module_bytes_match": true,
+    "worker_secret_names_and_resource_bindings_preserved": true,
+    "api_plain_variable_count": 44,
+    "api_secret_variable_count": 20,
+    "protected_merchant_preview_id": "dpl_EfLAyZXXmP1C6jZcBAVcUgPkwEfD",
+    "protected_accounts_preview_id": "dpl_28HF3PhfWcBKcxUdR3WNDG8aEiYe",
+    "hosted_backend_checks": 13,
+    "deployed_preview_backend_checks": 7,
+    "hosted_stock_checks": 8,
+    "real_web_dart_sdk_both_directions": true,
+    "dart_runtime": "host Dart VM; no emulator UI acceptance",
+    "stock_initial": 20,
+    "stock_purchased_received": 5,
+    "stock_final_total": 25,
+    "stock_final_source": 21,
+    "stock_final_destination": 4,
+    "owned_receipts_final": 13,
+    "all_seven_stock_responses_equal_durable_receipts": true,
+    "fixture_sites_unpublished": true,
+    "production_aliases_unchanged": true,
+    "production_activation": false,
+    "remote_git_push": false,
+    "normal_hosted_password_login": false,
+    "new_source_device_installation": false,
+    "turnstile_single_key_transfer": "approved but deferred by user browser activity; key not accessed",
+    "staging_custom_domain_status": "registered to staging branch; unverified; no alias assignment",
+    "staging_custom_domain_blocker": "missing TXT _vercel.letbuyy.com; isolated OAuth has no DNS write scope; DNS unchanged",
+    "provider_sandbox_acceptance": false,
+    "all_122_accepted": false,
+    "private_receipt_base": "/private/tmp/letbuyy-hosted-warehouse-20261101"
+  },
+  "staging_source_prior_checkpoints": [
+    {
+      "source_commit": "13d254de23e29919af5d5d4ce81e567584adc338",
+      "implementation_commit": "13d254de23e29919af5d5d4ce81e567584adc338",
+      "flutter": {
+        "source_commit": "13d254de23e29919af5d5d4ce81e567584adc338",
+        "tests": 747,
+        "pass": 747,
+        "fail": 0,
+        "analysis": "pass",
+        "log": "/private/tmp/letbuyy-hosted-warehouse-20261101/native-environment-full-tests.log",
+        "analysis_log": "/private/tmp/letbuyy-hosted-warehouse-20261101/native-environment-analyze.log"
+      },
+      "governance": {
+        "ok": true,
+        "counts": {
+          "PASS": 114,
+          "FAIL": 0,
+          "BLOCKED": 0,
+          "SKIP": 0,
+          "NOT_APPLICABLE": 1
+        },
+        "exitCode": 0,
+        "source_commit": "15fca500a08ee8c1c3c4d37a376f8fd81ee97403"
+      },
+      "deployment_performed": false,
+      "full_122_acceptance": "in_progress",
+      "previous_source_commit": "0cc7141d00f8cc3494274a0f11821d18d74b66ba"
+    }
+  ],
+  "hosted_warehouse_previous_checkpoints": [
+    {
+      "backend_web_source": "9b5b89437703cba8527b9e0ca32ca9a7aca495b8",
+      "native_source": "13d254de23e29919af5d5d4ce81e567584adc338",
+      "report": "HOSTED_WAREHOUSE_RECOVERY.md",
+      "production_api_version": "f5d20b78-e4ba-4c26-95f7-65d5ffc17bfa",
+      "production_bff_version": "984c46ab-17d9-4a8b-9320-9a089fcfef84",
+      "actual_native_trace": {
+        "locations": {
+          "bff": 200,
+          "gateway": 200
+        },
+        "suppliers": {
+          "bff": 200,
+          "gateway": 200
+        },
+        "command_capabilities": {
+          "bff": 404,
+          "gateway": 404
+        }
+      },
+      "observed_cause": "deployed API handlers omit the required metadata acknowledgment and capability route; migration 414 is absent",
+      "production_catalog": {
+        "actor_guard": true,
+        "history_count": 341,
+        "metadata_tables": [
+          {
+            "rls": true,
+            "name": "inventory_locations",
+            "owner": "postgres",
+            "force_rls": true
+          },
+          {
+            "rls": true,
+            "name": "suppliers",
+            "owner": "postgres",
+            "force_rls": true
+          }
+        ],
+        "warehouse_owner_function": false,
+        "warehouse_receipt_relation": false,
+        "history_sha256": "db50a4d8614bba02fed5b8fb965495b35274f94f39c474a6401061e7cffc3319"
+      },
+      "staging_catalog": {
+        "history_count": 341,
+        "tail_versions": [
+          "400",
+          "401",
+          "402",
+          "403",
+          "404",
+          "405",
+          "406",
+          "407",
+          "408",
+          "409",
+          "410",
+          "411",
+          "412",
+          "413"
+        ],
+        "actor_guard": true,
+        "warehouse_owner_function": false,
+        "warehouse_receipt_relation": false,
+        "metadata_tables": [
+          {
+            "name": "suppliers",
+            "owner": "postgres",
+            "rls": true,
+            "force_rls": true
+          },
+          {
+            "name": "inventory_locations",
+            "owner": "postgres",
+            "rls": true,
+            "force_rls": true
+          }
+        ],
+        "history_sha256": "db50a4d8614bba02fed5b8fb965495b35274f94f39c474a6401061e7cffc3319"
+      },
+      "approved_encrypted_production_backup": {
+        "created": true,
+        "plaintext_retained": false,
+        "role_passwords_exported": false,
+        "round_trip_verified": true,
+        "ciphertext_sha256": "1b01ff49c4a5f362cdee98a9d6d6a8191dc50b1054da8ad88cca33370d74c76e",
+        "scope": "local migration-414 retained-data restore rehearsal only; initial automatic-review refusal resolved by explicit approval"
+      },
+      "retained_data_rehearsal": {
+        "report": "HOSTED_WAREHOUSE_REHEARSAL.json",
+        "run_id": "d0b2239984e0",
+        "pass": true,
+        "retained_tables": 523,
+        "exactly_preserved_tables": 523,
+        "changes": [],
+        "cleanup": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "local_worker_bundles": {
+        "api": [
+          {
+            "name": "c6f286e6f01e19f49c2439685e34a41f73cf8329-blake2b.wasm",
+            "bytes": 7442,
+            "sha256": "b478c0d889d97d7a8db4d10501457ad78dd406d02dcb4c892c0d844805ef05bb"
+          },
+          {
+            "name": "e4cdc523e88360df8f26f17ea8c50d2f8ff1421b-argon2.wasm",
+            "bytes": 6660,
+            "sha256": "83b5829d20b4312aca1a56819f95eef20492e058c70f282c9ed6929f579b20ed"
+          },
+          {
+            "name": "index.js",
+            "bytes": 8468197,
+            "sha256": "cd641400800125fadde1d8615254834e7cdfc6181ad270b6cf000c13df1095c3"
+          }
+        ],
+        "bff": [
+          {
+            "name": "index.js",
+            "bytes": 1162764,
+            "sha256": "fbe8393288aac8fb548970f4f859d2cec9d65f717c36ff347d3e790de8f619e9"
+          }
+        ]
+      },
+      "local_staging_worker_bundles": {
+        "api-staging-bundle": [
+          {
+            "file": "index.js",
+            "bytes": 8468197,
+            "sha256": "cd641400800125fadde1d8615254834e7cdfc6181ad270b6cf000c13df1095c3"
+          },
+          {
+            "file": "README.md",
+            "bytes": 120,
+            "sha256": "41fc19dca07dd129db1b054ee9b8684d399b310c3bf19ba2443cf6bc5cde66f8"
+          },
+          {
+            "file": "e4cdc523e88360df8f26f17ea8c50d2f8ff1421b-argon2.wasm",
+            "bytes": 6660,
+            "sha256": "83b5829d20b4312aca1a56819f95eef20492e058c70f282c9ed6929f579b20ed"
+          },
+          {
+            "file": "c6f286e6f01e19f49c2439685e34a41f73cf8329-blake2b.wasm",
+            "bytes": 7442,
+            "sha256": "b478c0d889d97d7a8db4d10501457ad78dd406d02dcb4c892c0d844805ef05bb"
+          }
+        ],
+        "bff-staging-bundle": [
+          {
+            "file": "index.js",
+            "bytes": 1162764,
+            "sha256": "fbe8393288aac8fb548970f4f859d2cec9d65f717c36ff347d3e790de8f619e9"
+          },
+          {
+            "file": "README.md",
+            "bytes": 127,
+            "sha256": "732aa8807b19870ed874f42cdd51ecbb12c7741bd8183455ba0d99547da4252f"
+          }
+        ]
+      },
+      "merchant_production_artifact": {
+        "source_revision": "9b5b89437703cba8527b9e0ca32ca9a7aca495b8",
+        "project_id": "prj_BkaBsf3h7TvKRMpmyYQWsVmfP38J",
+        "target": "production",
+        "uploaded": false,
+        "live_alias_changed": false,
+        "external_symlinks": false,
+        "tree_sha256": "0808f1e3e3793d11c154b42f9b697bd13b23f4eb063954a466b9cd0dee12c2ad"
+      },
+      "merchant_preview_artifact": "rejected for staging: required API/Accounts/admin/internal configuration missing",
+      "staging_dependencies": {
+        "merchant_alias": "missing",
+        "accounts_alias": "missing",
+        "bff_internal_secret": "missing",
+        "bff_turnstile_secret": "missing",
+        "maintenance_decision": "requested; pending explicit approval"
+      },
+      "hosted_schema_write": false,
+      "worker_upload_or_activation": false,
+      "vercel_upload_or_alias_change": false,
+      "source_push_or_promotion": false,
+      "production_business_mutations": false,
+      "full_122_acceptance": false
+    }
+  ],
+  "staging_isolation_source_checks": {
+    "source_commit": "288cb3dfa02f8b0d2b650de7126504864b3c89b6",
+    "auth_core_pass": 48,
+    "bff_pass": 25,
+    "identity_pass": 70,
+    "merchant_web_pass": 1598,
+    "gateway_pass": 2025,
+    "shared_dart_api_pass": 99,
+    "shared_dart_api_existing_skips": 6,
+    "relevant_typescript": "pass",
+    "flutter_pass": 750,
+    "governance_pass": 114,
+    "production_names_and_pending_commands_preserved": true
+  },
+  "staging_runtime_setup_20261101": {
+    "runtime_source_revision": "288cb3dfa02f8b0d2b650de7126504864b3c89b6",
+    "report": "STAGING_RUNTIME_SETUP.md",
+    "verifier_transfer_complete": true,
+    "own_generated_credential_bindings_sealed": 7,
+    "accounts_preview": "dpl_Fr4p9vCTyiy4ag3YkP8zDL3BRi2B",
+    "bff_version": "1c53075f-6e92-4a7c-ad63-530b0ff23572",
+    "verified_protected_staging_aliases": [
+      "admin-staging.letbuyy.com",
+      "accounts-staging.letbuyy.com"
+    ],
+    "production_unchanged": true,
+    "migration_414_resubmitted": false,
+    "normal_login_accepted": false,
+    "native_direct_protected_accounts_access_accepted": false,
+    "full_122_acceptance": false
+  },
+  "identity_recovery_previous_checkpoint": {
+    "source_commit": "288cb3dfa02f8b0d2b650de7126504864b3c89b6",
+    "implementation_commit": "288cb3dfa02f8b0d2b650de7126504864b3c89b6",
+    "flutter": {
+      "source_commit": "288cb3dfa02f8b0d2b650de7126504864b3c89b6",
+      "tests": 750,
+      "pass": 750,
+      "fail": 0,
+      "analysis": "pass",
+      "log": "/private/tmp/letbuyy-hosted-warehouse-20261101/cookie-native-full.log",
+      "analysis_log": "/private/tmp/letbuyy-hosted-warehouse-20261101/cookie-native-analyze.log"
+    },
+    "governance": {
+      "ok": true,
+      "counts": {
+        "PASS": 114,
+        "FAIL": 0,
+        "BLOCKED": 0,
+        "SKIP": 0,
+        "NOT_APPLICABLE": 1
+      },
+      "exitCode": 0,
+      "source_commit": "288cb3dfa02f8b0d2b650de7126504864b3c89b6",
+      "report": "/private/tmp/letbuyy-hosted-warehouse-20261101/staging-isolation-governance-final.json",
+      "disposable_clone_only": true
+    }
+  },
+  "identity_recovery_checkpoint": {
+    "report": "IDENTITY_SESSION_RECOVERY.md",
+    "accounts_tests": 77,
+    "auth_core_tests": 48,
+    "focused_native_tests": 19,
+    "negative_control_rejected_blank_user": true,
+    "native_apk_sha256": "d76711ba3582c4a5c94ed63e957c73db725407476748e793c6efa3e0fa8f55b9",
+    "native_apk_bytes": 219865278,
+    "installed_hash_matches": true,
+    "profile": "staging",
+    "accounts_candidate": "dpl_D7ThevfxEBw887k74Jj3ugVsNS4x",
+    "accounts_candidate_last_state": "READY",
+    "cli_timeout_reconciled_no_resubmit": true,
+    "normal_staging_password_captcha_login_accepted": false,
+    "production_application_activation": false,
+    "source_commit": "ce8140b092197a06b7cfd940d154cae4353e886d",
+    "accounts_candidate_alias": "accounts-staging.letbuyy.com",
+    "accounts_candidate_tree_sha256": "eb66ef56418b8132da6a19bfa9f10d4a31873bfa11e632c2d712915409f93a83",
+    "bounded_live_http_checks": 7,
+    "malformed_cookie_signed_out": true,
+    "production_named_cookie_signed_out": true,
+    "anonymous_protection_preserved": true,
+    "readback": "/private/tmp/letbuyy-parity-continuation-20261101/live-session-cookie-shape-readback.json",
+    "prior_candidate": {
+      "id": "dpl_C2rKrfMq6WZFGxsm4phkGXG71SwV",
+      "state": "READY-superseded",
+      "timeout_reconciled_no_resubmit": true
+    },
+    "concurrent_merchant_stage": {
+      "deployment": "dpl_A5ws3ZPqWnu73BWcJskie1fuUMhz",
+      "source": "e4105581e3346041d71694d3db093eb713773e07",
+      "overwritten": false,
+      "local_merge_conflicts": 10,
+      "current_alias_full_parity_accepted": false
+    },
+    "current_staging_challenge": {
+      "ownerApproved": true,
+      "retryAndCheckboxCompleted": true,
+      "observed": "Security check passed",
+      "credentialEntered": false,
+      "authenticatedLoginAccepted": false
+    }
+  },
+  "staging_private_export_checkpoint": {
+    "report": "STAGING_PRIVATE_EXPORTS.md",
+    "policy": "STAGING_EXPORT_CDN_POLICY.json",
+    "stage_rule_id": "448f40ff18614cafbbd72312d69f6458",
+    "exact_expression_ui_readback": true,
+    "nonzero_public_control": 200,
+    "canonical_and_encoded_private_paths": 403,
+    "actual_export_checks": 8,
+    "actual_export_rows": 1,
+    "owner_download": 200,
+    "other_owner_download": 404,
+    "anonymous_download": 401,
+    "missing_signature": 403,
+    "current_actual_dart_sdk_readback": {
+      "locations": 3,
+      "suppliers": 2,
+      "device_ui": false
+    },
+    "production_policy_approval_pending": false,
+    "permanent_private_storage_cutover_accepted": false,
+    "durable_csv_import_accepted": false,
+    "owned_object_absence_readbacks": 7,
+    "all_owned_objects_absent": true,
+    "cleanup_receipt": "/private/tmp/letbuyy-parity-continuation-20261101/owned-export-fixture-cleanup-readback.json"
+  },
+  "source_integration_checkpoint": {
+    "report": "MERCHANT_SOURCE_INTEGRATION.md",
+    "status": "source-local-qualified-and-staging415-api-merchant-verified",
+    "source_base": "bbb9aab758188b1f07fcc44ed9a60b15309e7328",
+    "merge_head": "e4105581e3346041d71694d3db093eb713773e07",
+    "conflicts_resolved": 10,
+    "merchant_pass": 1636,
+    "gateway_unit_pass": 2027,
+    "ui_pass": 75,
+    "typecheck": [
+      "merchant",
+      "gateway",
+      "typescript-api-client",
+      "ui"
+    ],
+    "next_build": "complete-external-closure-admitted-and-hosted-verified",
+    "runtime_source_fingerprint": "594f35b0d3419ebe7da60bad03ca3c5a8417173499ef512c24a0831204485db3",
+    "all_migration_sql_bytes_unchanged": true,
+    "migration_renumbered": true,
+    "integrated_governance_accepted": true,
+    "owned_database_accepted": true,
+    "merchant_deployed": true,
+    "native_source_unchanged": true,
+    "accounts_source_unchanged": true,
+    "bff_source_unchanged": true,
+    "remote_push": false,
+    "production_activation": false,
+    "migration_numbering_owner_approved": true,
+    "gift_card_migration": 415,
+    "warehouse_migration": 414,
+    "migration_sql_bytes_preserved": true,
+    "source_commit": "7b76ffed97e9f1f4c18e9dc0162ada3e7257ddd6",
+    "merge_committed": true,
+    "governance_pass": 114,
+    "owned_gateway_suites": 9,
+    "owned_gateway_pass": 95,
+    "redteam_isolated_top_level_cases_pass": 2,
+    "mixed_redteam_fixture_failure_retained": true,
+    "retained_staging_rehearsal_pass": true,
+    "retained_tables_exactly_preserved": 523,
+    "rehearsal_run": "a019dfea1199",
+    "gift_card_rollback_exact": true,
+    "owned_cleanup_empty": true,
+    "merchant_artifact_tree_sha256": "685cf603aa7ee1cb57b7f03745e1a12fad16cc99e938082bedf5011adda77f04",
+    "api_main_sha256": "34204b6c3396fb9c8771526b9cc4dd0a7ee60d6308bc318305dec333c13eeceb",
+    "hosted415_applied": true,
+    "hosted415_approval_pending": false,
+    "original_prepared_merchant_artifact_rejected_before_upload": true,
+    "current_artifact_report": "STAGING_415_ACCEPTANCE.md"
+  },
+  "latest_integrated_source": "7b76ffed97e9f1f4c18e9dc0162ada3e7257ddd6",
+  "production_export_privacy_checkpoint": {
+    "report": "PRODUCTION_PRIVATE_EXPORTS.md",
+    "policy": "PRODUCTION_EXPORT_CDN_POLICY.json",
+    "ownerApproved": true,
+    "ruleId": "2dfe2ddf5eb24682acc5ccf1ce53619d",
+    "exactUiReadback": true,
+    "beforePublicAndPrivate": 200,
+    "afterPublic": 200,
+    "afterCanonicalAndFourVariants": 403,
+    "canaryCount": 2,
+    "bothOriginAbsent": true,
+    "productionApplicationRelease": false,
+    "schemaWrite": false,
+    "permanentPrivateStorageAccepted": false
+  },
+  "staging415_maintenance_checkpoint": {
+    "report": "STAGING_415_ACCEPTANCE.md",
+    "owner_approved": true,
+    "status": "schema-api-protected-merchant-and-bounded-warehouse-client-verified",
+    "runtime_source": "7b76ffed97e9f1f4c18e9dc0162ada3e7257ddd6",
+    "tooling_source": "200bab0aeedd03285fda6c3a1555a39db7db7885",
+    "staging_only": true,
+    "migration415_dispatches": 1,
+    "history_entries": 343,
+    "warehouse414_preserved": true,
+    "rehearsal": {
+      "run_id": "abe1b64ff78a",
+      "original_tables_exact": 524,
+      "original_warehouse_receipts": 13,
+      "owned_cleanup_empty": true
+    },
+    "hosted_retention": {
+      "unchanged_tables_exact": 517,
+      "operational_tables_original_rows_exact": 6,
+      "short_lived_replay_table_removal_identities_not_captured": 3,
+      "per_row_expiry_removal_proven": false
+    },
+    "api": {
+      "version": "844f3c28-4c13-435b-9ada-5a931d1890fa",
+      "main_sha256": "89f1db61559cfd0a472e39e01e70ab52d46d39f0a0797b03bb5dcf6d7c25ad1b",
+      "actual_three_modules_verified": true,
+      "variables_preserved": 64,
+      "resource_bindings_preserved": 12,
+      "secret_writes": false
+    },
+    "merchant": {
+      "deployment": "dpl_tr4FKGLnQRBh4UmGnPuHtRNrXzp8",
+      "alias": "admin-staging.letbuyy.com",
+      "output_tree_sha256": "8cbfe7f323129dae28a7fb8002755d03bf4b3bb20af05d3453a1628cc3ef7b14",
+      "closure_sha256": "cad17f0728643e709e3e9e22eb4257f9ec71b50c3b0c1bd63fe768a647b910aa",
+      "external_file_closure_verified": true,
+      "protection_preserved": true
+    },
+    "tooling_tests_pass": 18,
+    "current_api_next_existing_native_readback_pass": 6,
+    "earlier_native_api_version": "2ec36261-eee3-49b5-95e8-5c6c0b7d9928",
+    "earlier_native_ui": "bounded pass; one location and one supplier committed, receipts15",
+    "current_api_native_ui": "two bounded real-native journeys pass with host-resolved test-only TLS transport; normal DNS/login excluded",
+    "normal_password_login": false,
+    "browser_visual_acceptance": false,
+    "production_application_schema_activation": false,
+    "remote_push": false,
+    "current_api_next_roundtrip_checks": 10,
+    "active_staff_permission_revocation_checks": 7,
+    "shared_sdk_reciprocal_original_key_replays": "pass; real TS and host Dart VM",
+    "native_dns_accepted": false,
+    "normal_staging_apk_restored": true,
+    "original13_whole_row_receipt_hash_preserved": true,
+    "final_warehouse_receipts": 19,
+    "expected_added_receipts": 6,
+    "stock_total": 25,
+    "all_new_staff_sessions_revoked": true,
+    "native_owner_journey": {
+      "status": "passed-bounded-native-ui-await-hosted-readback",
+      "environment": "staging",
+      "nativeProductSource": "161504e65689261e720883f1519ba9d192627a81",
+      "harnessSource": "0bf5151222f6f3f08f2e2510d616edbfc28d472a",
+      "harnessFileSha256": "d36f04d33da581b09c6844acd51952df5100a94db389c3bed2e589ac2512a175",
+      "emulator": "emulator-5580",
+      "hostedApiSource": "7b76ffed97e9f1f4c18e9dc0162ada3e7257ddd6",
+      "hostedApiVersion": "844f3c28-4c13-435b-9ada-5a931d1890fa",
+      "candidateApiActivationAccepted": true,
+      "normalPasswordLogin": false,
+      "providerSecretsInApp": false,
+      "hostResolvedTestTransport": true,
+      "nativeDnsAccepted": false,
+      "productionWrite": false,
+      "requestedUtc": "2026-11-01T17:48:33.759325+00:00",
+      "commandExit": 0,
+      "nativeResult": {
+        "environment": "staging",
+        "normalPasswordLogin": false,
+        "realNativeScreens": true,
+        "realHostedBff": true,
+        "productionWrite": false,
+        "hostResolvedTestTransport": true,
+        "nativeDnsAccepted": false,
+        "certificateVerification": "default trust roots and original hostname",
+        "checks": [
+          "canonical synthetic owner session and owned store validated",
+          "location native form, hosted readback and resolved encrypted intent",
+          "supplier native form, hosted readback and resolved encrypted intent",
+          "actor switch retires prior rows; populated cross-tenant read denied",
+          "completed"
+        ],
+        "status": "passed-bounded-staging-native-warehouse-ui"
+      },
+      "compiledHarnessApkSha256": "a0651d79aee73842858e9958e91ec2c1866458968d68b2a133d5f5c418c08778",
+      "finishedUtc": "2026-11-01T17:49:40.552339+00:00"
+    },
+    "native_next_roundtrip": {
+      "status": "passed-bounded-native-ui-await-hosted-readback",
+      "environment": "staging",
+      "nativeProductSource": "161504e65689261e720883f1519ba9d192627a81",
+      "harnessSource": "f91d8eca0b8dd2d7043e4b85208c847aa089a3b7",
+      "harnessFileSha256": "ccd7e3b73c997147c0c97a3a000d7a634fb5aca7aad82001d94c0c23b2f18896",
+      "emulator": "emulator-5580",
+      "hostedApiSource": "7b76ffed97e9f1f4c18e9dc0162ada3e7257ddd6",
+      "hostedApiVersion": "844f3c28-4c13-435b-9ada-5a931d1890fa",
+      "candidateApiActivationAccepted": true,
+      "normalPasswordLogin": false,
+      "providerSecretsInApp": false,
+      "hostResolvedTestTransport": true,
+      "nativeDnsAccepted": false,
+      "productionWrite": false,
+      "requestedUtc": "2026-11-01T17:53:55.019354+00:00",
+      "commandExit": 0,
+      "nativeResult": {
+        "environment": "staging",
+        "normalPasswordLogin": false,
+        "realNativeScreens": true,
+        "realHostedBff": true,
+        "productionWrite": false,
+        "hostResolvedTestTransport": true,
+        "nativeDnsAccepted": false,
+        "certificateVerification": "default trust roots and original hostname",
+        "checks": [
+          "canonical synthetic owner session and owned store validated",
+          "location native form, hosted readback and resolved encrypted intent (prior commit reconciled)",
+          "supplier native form, hosted readback and resolved encrypted intent",
+          "actor switch retires prior rows; populated cross-tenant read denied",
+          "completed"
+        ],
+        "status": "passed-bounded-staging-native-warehouse-ui"
+      },
+      "compiledHarnessApkSha256": "04400b43d0a4cff5175ff9d8c0ec3c1f4a02a09a4fe5a456bf9ff7869735c3a1",
+      "finishedUtc": "2026-11-01T17:54:42.771036+00:00"
+    },
+    "next_checks": {
+      "status": "passed-bounded-current-next-native-roundtrip",
+      "environment": "staging",
+      "webDeployment": "dpl_tr4FKGLnQRBh4UmGnPuHtRNrXzp8",
+      "apiVersion": "844f3c28-4c13-435b-9ada-5a931d1890fa",
+      "runtimeSource": "7b76ffed97e9f1f4c18e9dc0162ada3e7257ddd6",
+      "nativeProductSource": "161504e65689261e720883f1519ba9d192627a81",
+      "nativeHarnessSource": "f91d8eca0b8dd2d7043e4b85208c847aa089a3b7",
+      "hostResolvedNativeTestTransport": true,
+      "nativeDnsAccepted": false,
+      "browserVisualAcceptance": false,
+      "normalPasswordLogin": false,
+      "productionWrite": false,
+      "checks": [
+        {
+          "name": "actual Next inventory-locations reads current native and roundtrip rows with exact population and no-store",
+          "status": "pass"
+        },
+        {
+          "name": "actual Next suppliers reads current native and roundtrip rows with exact population and no-store",
+          "status": "pass"
+        },
+        {
+          "name": "same original Next key replays identical complete receipt after native recovery",
+          "status": "pass"
+        },
+        {
+          "name": "changed Next command cannot reuse original key",
+          "status": "pass"
+        },
+        {
+          "name": "foreign mutation origin denied",
+          "status": "pass"
+        },
+        {
+          "name": "body and header command-key mismatch denied",
+          "status": "pass"
+        },
+        {
+          "name": "production-only cookie denied",
+          "status": "pass"
+        },
+        {
+          "name": "retired actor acknowledgement denied",
+          "status": "pass"
+        },
+        {
+          "name": "other owner denied populated fixture store with canonical opaque404",
+          "status": "pass"
+        },
+        {
+          "name": "second owner own-store positive control",
+          "status": "pass"
+        }
+      ],
+      "readUtc": "2026-11-01T17:58:27.171738+00:00"
+    },
+    "native_tls_control": {
+      "status": "passed",
+      "fixture": {
+        "hostname": "bff-staging.letbuyy.com",
+        "ipv4": "104.21.30.148",
+        "resolvedUtc": "2026-11-01T17:45:47.604066+00:00"
+      },
+      "nativeDnsAccepted": false,
+      "hostResolvedTestTransport": true,
+      "noProviderProtectionBypass": true,
+      "certificateVerification": "default trust roots, actual hostname",
+      "requestedUtc": "2026-11-01T17:45:47.604066+00:00",
+      "commandExit": 0,
+      "result": {
+        "environment": "staging",
+        "hostResolvedTestTransport": true,
+        "nativeDnsAccepted": false,
+        "healthStatus": 200,
+        "wrongTlsHostnameDenied": true,
+        "status": "passed-bounded-host-resolved-native-tls"
+      },
+      "finishedUtc": "2026-11-01T17:46:13.286742+00:00"
+    },
+    "normal_apk_restore": {
+      "status": "normal-staging-debug-apk-restored-and-installed-hash-verified",
+      "sourceRevision": "161504e65689261e720883f1519ba9d192627a81",
+      "apkSha256": "e6afa2bb605b0256d90ff85528c1c1fab0bad679e8790e7d35fa6944c7cb2db7",
+      "compiledHarnessInstalled": false,
+      "privateWarehouseFixtureAbsent": true,
+      "debugSigning": true,
+      "normalPasswordLogin": false,
+      "nativeDnsAccepted": false,
+      "productionWrite": false,
+      "restoredUtc": "2026-11-01T17:55:59.905730+00:00"
+    },
+    "final_governance": {
+      "ok": true,
+      "counts": {
+        "PASS": 114,
+        "FAIL": 0,
+        "BLOCKED": 0,
+        "SKIP": 0,
+        "NOT_APPLICABLE": 1
+      },
+      "exitCode": 0,
+      "source_commit": "f91d8eca0b8dd2d7043e4b85208c847aa089a3b7",
+      "report": "/private/tmp/letbuyy-parity-continuation-20261101/native-roundtrip-final-governance.log",
+      "disposable_clone_only": true
+    },
+    "final_api_readback_utc": "2026-11-01T18:01:31.198768Z"
+  },
+  "source_integration_previous_hosted_status": {
+    "report": "MERCHANT_SOURCE_INTEGRATION.md",
+    "status": "source-local-qualified-and-artifacts-admitted-hosted415-maintenance-pending",
+    "source_base": "bbb9aab758188b1f07fcc44ed9a60b15309e7328",
+    "merge_head": "e4105581e3346041d71694d3db093eb713773e07",
+    "conflicts_resolved": 10,
+    "merchant_pass": 1636,
+    "gateway_unit_pass": 2027,
+    "ui_pass": 75,
+    "typecheck": [
+      "merchant",
+      "gateway",
+      "typescript-api-client",
+      "ui"
+    ],
+    "next_build": "pass-local-not-admitted",
+    "runtime_source_fingerprint": "594f35b0d3419ebe7da60bad03ca3c5a8417173499ef512c24a0831204485db3",
+    "all_migration_sql_bytes_unchanged": true,
+    "migration_renumbered": true,
+    "integrated_governance_accepted": true,
+    "owned_database_accepted": true,
+    "merchant_deployed": false,
+    "native_source_unchanged": true,
+    "accounts_source_unchanged": true,
+    "bff_source_unchanged": true,
+    "remote_push": false,
+    "production_activation": false,
+    "migration_numbering_owner_approved": true,
+    "gift_card_migration": 415,
+    "warehouse_migration": 414,
+    "migration_sql_bytes_preserved": true,
+    "source_commit": "7b76ffed97e9f1f4c18e9dc0162ada3e7257ddd6",
+    "merge_committed": true,
+    "governance_pass": 114,
+    "owned_gateway_suites": 9,
+    "owned_gateway_pass": 95,
+    "redteam_isolated_top_level_cases_pass": 2,
+    "mixed_redteam_fixture_failure_retained": true,
+    "retained_staging_rehearsal_pass": true,
+    "retained_tables_exactly_preserved": 523,
+    "rehearsal_run": "a019dfea1199",
+    "gift_card_rollback_exact": true,
+    "owned_cleanup_empty": true,
+    "merchant_artifact_tree_sha256": "685cf603aa7ee1cb57b7f03745e1a12fad16cc99e938082bedf5011adda77f04",
+    "api_main_sha256": "34204b6c3396fb9c8771526b9cc4dd0a7ee60d6308bc318305dec333c13eeceb",
+    "hosted415_applied": false,
+    "hosted415_approval_pending": true
+  },
+  "native_font_checkpoint": {
+    "sourceRevision": "161504e65689261e720883f1519ba9d192627a81",
+    "stagingOnly": true,
+    "debugSigning": true,
+    "apk": "/private/tmp/letbuyy-parity-continuation-20261101/merchant-staging-bundled-font-161504e65.apk",
+    "apkSha256": "e6afa2bb605b0256d90ff85528c1c1fab0bad679e8790e7d35fa6944c7cb2db7",
+    "bytes": 219865526,
+    "bundledInterWeights": 9,
+    "fontBytesMatchPinnedGoogleFontsRegistry": true,
+    "fontRuntimeFetching": false,
+    "providerSecretsInApp": false,
+    "nativeTests": {
+      "pass": 766,
+      "fail": 0
+    },
+    "analysis": {
+      "merchant": "pass",
+      "uiKit": "pass",
+      "marketplaceCompatibility": "pass"
+    },
+    "normalPasswordLogin": false,
+    "createdUtc": "2026-11-01T16:56:04.007325+00:00",
+    "governance": {
+      "pass": 114,
+      "fail": 0,
+      "blocked": 0,
+      "skip": 0,
+      "not_applicable": 1,
+      "disposable_clone_only": true,
+      "source_commit": "161504e65689261e720883f1519ba9d192627a81"
+    },
+    "task_emulator_dns_recovery": {
+      "status": "booted-dns-verified",
+      "emulator": "emulator-5580",
+      "dnsServer": "10.233.27.34",
+      "dnsSource": "current Mac active resolver, validated A answer",
+      "systemDnsChanged": false,
+      "otherAvdsTouched": false,
+      "wipeData": false,
+      "startedUtc": "2026-11-01T17:02:59.325436+00:00",
+      "launcherPid": 58953,
+      "dnsResolutionVerified": true,
+      "finishedUtc": "2026-11-01T17:03:25.429135+00:00",
+      "shell_lookup_only": true
+    },
+    "native_dns_accepted": false,
+    "standard_private_dns_restored": true
+  },
+  "flutter_prior_identity_checkpoint": {
+    "source_commit": "aeef87046a497567e8fcfc8b2aacafe896ce4c87",
+    "native_tested_source": "427e949c0ab3605b0075e1a0d82399d76f20315e",
+    "native_tree_identical": true,
+    "tests": 765,
+    "pass": 765,
+    "fail": 0,
+    "analysis": "pass",
+    "log": "/private/tmp/letbuyy-parity-continuation-20261101/native-identity-qualified-tests.log",
+    "analysis_log": "/private/tmp/letbuyy-parity-continuation-20261101/native-identity-qualified-analysis.log"
+  },
+  "latest_qualified_code_source": "f91d8eca0b8dd2d7043e4b85208c847aa089a3b7",
+  "governance_before_staging415_current_harness": {
+    "ok": true,
+    "counts": {
+      "PASS": 114,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "SKIP": 0,
+      "NOT_APPLICABLE": 1
+    },
+    "exitCode": 0,
+    "source_commit": "aeef87046a497567e8fcfc8b2aacafe896ce4c87",
+    "report": "/private/tmp/letbuyy-parity-continuation-20261101/identity-privacy-governance.json",
+    "disposable_clone_only": true
+  }
+}

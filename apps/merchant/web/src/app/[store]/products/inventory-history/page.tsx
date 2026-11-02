@@ -2,8 +2,10 @@
 
 import { useReadRequest } from '@/lib/api/use-read-request'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useContext, useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
+import { InventoryHistoryEntrySchema, type InventoryHistoryEntry } from '@letbuyy/shared-types'
+import { MerchantSecurityContext } from '@/components/security/MerchantSecurityContext'
 import {
     Badge,
     Banner,
@@ -38,30 +40,8 @@ interface InventoryAnalytics {
 //          + products: { name: string; store_id: string }
 // reason CHECK: sale | return | adjustment | recount | transfer | damaged | reserved | unreserved
 
-type AdjustmentReason =
-    | 'sale'
-    | 'return'
-    | 'adjustment'
-    | 'recount'
-    | 'transfer'
-    | 'damaged'
-    | 'reserved'
-    | 'unreserved'
-
-interface AdjustmentRow {
-    id: string
-    product_id: string
-    variant_id: string | null
-    location_id: string | null
-    quantity_change: number
-    reason: AdjustmentReason
-    reference_id: string | null
-    note: string | null
-    created_by: string | null
-    created_at: string
-    /** Joined from products table */
-    products: { name: string; store_id: string } | null
-}
+type AdjustmentRow = InventoryHistoryEntry
+type AdjustmentReason = InventoryHistoryEntry['reason']
 
 interface PageMeta {
     total: number
@@ -105,33 +85,21 @@ function quantityDisplay(change: number): { label: string; positive: boolean } {
     return { label: String(change), positive: false }
 }
 
-function normalizeRow(raw: Record<string, unknown>): AdjustmentRow {
-    const products = raw.products
-    return {
-        id: String(raw.id ?? ''),
-        product_id: String(raw.product_id ?? ''),
-        variant_id: typeof raw.variant_id === 'string' ? raw.variant_id : null,
-        location_id: typeof raw.location_id === 'string' ? raw.location_id : null,
-        quantity_change: typeof raw.quantity_change === 'number' ? raw.quantity_change : 0,
-        reason: (typeof raw.reason === 'string' ? raw.reason : 'adjustment') as AdjustmentReason,
-        reference_id: typeof raw.reference_id === 'string' ? raw.reference_id : null,
-        note: typeof raw.note === 'string' ? raw.note : null,
-        created_by: typeof raw.created_by === 'string' ? raw.created_by : null,
-        created_at: typeof raw.created_at === 'string' ? raw.created_at : '',
-        products:
-            products && typeof products === 'object' && !Array.isArray(products)
-                ? {
-                      name: String((products as Record<string, unknown>).name ?? ''),
-                      store_id: String((products as Record<string, unknown>).store_id ?? ''),
-                  }
-                : null,
-    }
+function normalizeRow(raw: unknown): AdjustmentRow {
+    const result = InventoryHistoryEntrySchema.safeParse(raw)
+    if (!result.success) throw new Error('History records could not be verified. Refresh to try again.')
+    return result.data
 }
 
 // ── main component ────────────────────────────────────────────────────────────
 
 export default function InventoryHistoryPage() {
     const { store } = useParams<{ store: string }>()
+    const security = useContext(MerchantSecurityContext)
+    return <InventoryHistoryWorkspace key={JSON.stringify([store, security?.actorId ?? null])} store={store} />
+}
+
+function InventoryHistoryWorkspace({ store }: { store: string }) {
     const { notify } = useToast()
 
     const [rows, setRows] = useState<AdjustmentRow[]>([])
@@ -174,6 +142,7 @@ export default function InventoryHistoryPage() {
             const request = beginRead()
             setLoading(true)
             setError(null)
+            setRows([])
             try {
                 const url = new URL(
                     `/api/stores/${encodeURIComponent(store)}/inventory/history`,
@@ -204,18 +173,15 @@ export default function InventoryHistoryPage() {
                     throw new Error(msg)
                 }
 
-                const normalized = (json.data ?? []).map((r) =>
-                    normalizeRow(r as Record<string, unknown>)
-                )
+                if (!Array.isArray(json.data) || !json.meta ||
+                    !Number.isSafeInteger(json.meta.total) || json.meta.total < 0 ||
+                    json.meta.page !== currentPage || !Number.isSafeInteger(json.meta.per_page) ||
+                    json.meta.per_page < 1 || typeof json.meta.has_next !== 'boolean') {
+                    throw new Error('History counts could not be verified. Refresh to try again.')
+                }
+                const normalized = json.data.map(normalizeRow)
                 setRows(normalized)
-                setMeta(
-                    json.meta ?? {
-                        total: normalized.length,
-                        page: currentPage,
-                        per_page: 20,
-                        has_next: false,
-                    }
-                )
+                setMeta(json.meta)
             } catch (err) {
                 if (!request.isCurrent()) return
                 const msg = err instanceof Error ? err.message : 'Unknown error'
@@ -409,9 +375,12 @@ export default function InventoryHistoryPage() {
                         variant="critical"
                         title="Failed to load inventory history"
                         action={
+                            <div className="flex gap-[var(--lb-space-2)]">
+                            {page > 1 && <Button variant="ghost" size="sm" onClick={handlePrevPage}>Previous</Button>}
                             <Button variant="ghost" size="sm" onClick={handleRefresh}>
                                 Try again
                             </Button>
+                            </div>
                         }
                     >
                         {error}

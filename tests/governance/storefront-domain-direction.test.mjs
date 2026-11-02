@@ -7,6 +7,8 @@ import {spawnSync} from 'node:child_process';
 const validator=resolve('scripts/validators/platform-domain-literal-validator.mjs');
 const declaration=readFileSync('packages/shared-types/src/brand.ts','utf8').split('\n').find(l=>l.startsWith('export const DEFAULT_STOREFRONT_DOMAIN ='));
 assert.ok(declaration);assert.match(declaration,/^export const DEFAULT_STOREFRONT_DOMAIN = 'letbuyy\.store';$/);const storefront=declaration.match(/'([^']+)'/)[1];
+const nativeDeclaration=readFileSync('packages/dart/models/lib/src/storefront_config.dart','utf8').split('\n').find(l=>l.startsWith('const defaultStorefrontDomain ='));
+assert.equal(nativeDeclaration,`const defaultStorefrontDomain = '${storefront}';`,'native root must mirror the shared brand contract');
 function run(files){const root=mkdtempSync(join(tmpdir(),'letbuyy-domain-policy-'));try{for(const[path,text]of Object.entries(files)){mkdirSync(dirname(join(root,path)),{recursive:true});writeFileSync(join(root,path),text);}
  const result=spawnSync(process.execPath,[validator],{cwd:root,encoding:'utf8'});assert.equal(result.error,undefined);return result.status;
 }finally{rmSync(root,{recursive:true,force:true});}}
@@ -16,6 +18,11 @@ test('real domain guard admits explicit API tenant root without changing platfor
 });
 test('real domain guard admits only the canonical storefront declaration and exact approved env keys',()=>{
  assert.equal(run({'packages/shared-types/src/brand.ts':declaration,'config/env/production.env.template':`NEXT_PUBLIC_STORE_ROOT_DOMAIN=${storefront}\nSTOREFRONT_ROOT_DOMAIN=${storefront}\nNEXT_PUBLIC_ACCOUNTS_URL=https://accounts.letbuyy.com`}),0);
+});
+test('native storefront declaration is admitted only at the exact shared Dart constant',()=>{
+ assert.equal(run({'packages/dart/models/lib/src/storefront_config.dart':nativeDeclaration}),0);
+ assert.notEqual(run({'apps/merchant/mobile/lib/config/local.dart':nativeDeclaration}),0);
+ assert.notEqual(run({'packages/dart/models/lib/src/storefront_config.dart':`${nativeDeclaration}\nconst account='https://accounts.${storefront}';`}),0);
 });
 for(const[name,path,text]of [
  ['account URL','apps/platform/identity/src/urls.ts',`const account='https://accounts.${storefront}'`],

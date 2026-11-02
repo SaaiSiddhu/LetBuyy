@@ -34,6 +34,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
   String? _errorTitle;
   String? _errorMessage;
   String? _loginNotice;
+  bool _identityRecovery = false;
 
   StreamSubscription<AuthState>? _authSub;
 
@@ -54,7 +55,9 @@ class _AuthWrapperState extends State<AuthWrapper> {
   void _initAuthCheck() {
     final authService = context.read<StoreAuthService>();
 
-    if (context.read<StaffService>().pendingInvitation != null) {
+    if (authService.hasSessionRecovery) {
+      _showIdentityRecovery();
+    } else if (context.read<StaffService>().pendingInvitation != null) {
       setState(() => _authState = _AuthState.invitation);
     } else if (authService.isSignedIn) {
       _checkUserState();
@@ -68,7 +71,13 @@ class _AuthWrapperState extends State<AuthWrapper> {
       final event = authState.event;
       final session = authState.session;
 
-      if (event == AuthChangeEvent.signedOut ||
+      if (event == AuthChangeEvent.sessionUnavailable) {
+        _checkVersion++;
+        _isChecking = false;
+        _checkingActor = null;
+        unawaited(context.read<StoreContext>().bindActor(null));
+        _showIdentityRecovery();
+      } else if (event == AuthChangeEvent.signedOut ||
           event == AuthChangeEvent.sessionExpired ||
           session == null) {
         _checkVersion++;
@@ -76,6 +85,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
         _checkingActor = null;
         unawaited(context.read<StoreContext>().bindActor(null));
         setState(() {
+          _identityRecovery = false;
           _authState = context.read<StaffService>().pendingInvitation == null
               ? _AuthState.login
               : _AuthState.invitation;
@@ -86,9 +96,32 @@ class _AuthWrapperState extends State<AuthWrapper> {
       } else if (event == AuthChangeEvent.signedIn ||
           event == AuthChangeEvent.tokenRefreshed ||
           event == AuthChangeEvent.initialSession) {
+        _identityRecovery = false;
         _checkUserState();
       }
     });
+  }
+
+  void _showIdentityRecovery() {
+    setState(() {
+      _identityRecovery = true;
+      _authState = _AuthState.error;
+      _errorTitle = 'Sign-in temporarily unavailable';
+      _errorMessage =
+          'Your saved sign-in is kept securely. Retry to confirm your account before opening your store.';
+    });
+  }
+
+  Future<void> _retryIdentity() async {
+    setState(() {
+      _authState = _AuthState.loading;
+      _loadingStatus = 'Confirming sign-in...';
+    });
+    try {
+      await context.read<StoreAuthService>().refreshSession();
+    } catch (_) {
+      if (mounted) _showIdentityRecovery();
+    }
   }
 
   Future<void> _checkUserState() async {
@@ -106,7 +139,10 @@ class _AuthWrapperState extends State<AuthWrapper> {
         setState(() => _authState = _AuthState.invitation);
         return;
       }
-      setState(() { _authState = _AuthState.loading; _loadingStatus = 'Loading store...'; });
+      setState(() {
+        _authState = _AuthState.loading;
+        _loadingStatus = 'Loading store...';
+      });
       if (actor == null) throw StateError('Sign in again');
       final store = await context
           .read<StoreContext>()
@@ -186,6 +222,12 @@ class _AuthWrapperState extends State<AuthWrapper> {
         return ErrorScreen(
           title: _errorTitle ?? 'Error',
           message: _errorMessage ?? 'Something went wrong',
+          onRetry: _identityRecovery ? _retryIdentity : null,
+          onBackToLogin: _identityRecovery
+              ? () async {
+                  await context.read<StoreAuthService>().signOut();
+                }
+              : null,
         );
     }
   }

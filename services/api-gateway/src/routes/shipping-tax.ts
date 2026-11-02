@@ -40,6 +40,14 @@ import {
 
 const router = new Hono<{ Bindings: Env }>();
 
+function scopedSettingsPage<T>(data:T[]|null,count:number|null,query:ShippingTaxSettingsListInput) {
+    if(!data || count===null || !Number.isSafeInteger(count) || count<0 || data.length>query.limit || data.length>count) {
+        throw new AppError('Settings counts are unavailable. Try again.',503,'SETTINGS_UNAVAILABLE');
+    }
+    const body=paginated(data,count,query.page,query.limit);
+    return {...body,meta:{...body.meta,store_id:query.store_id}};
+}
+
 type DatabaseErrorLike = {
     message?: string;
     details?: string;
@@ -120,7 +128,7 @@ router.get('/shipping/profiles', validate('query', ShippingTaxSettingsListSchema
         .eq('site_id',query.store_id).is('deleted_at',null).order('name',{ascending:true}).order('id',{ascending:true})
         .range((query.page-1)*query.limit,query.page*query.limit-1);
     if(result.error) throw new AppError('Shipping profiles are unavailable',503,'SHIPPING_PROFILES_UNAVAILABLE');
-    return c.json(paginated(result.data || [],result.count ?? 0,query.page,query.limit));
+    return c.json(scopedSettingsPage(result.data,result.count,query));
 });
 
 router.post('/shipping/profiles', validate('json',CreateShippingProfileSchema), async c => {
@@ -175,7 +183,7 @@ router.get('/shipping/zones', validate('query', ShippingTaxSettingsListSchema), 
         if (isMissingShippingSchemaError(error)) return c.json({ error: { code: 'SHIPPING_SCHEMA_MISSING', message: 'Shipping settings are unavailable.' } }, 503);
         return c.json({ error: { code: 'DB_ERROR', message: 'Unable to access settings' } }, 500);
     }
-    return c.json(paginated(data || [], count ?? 0, query.page, query.limit));
+    return c.json(scopedSettingsPage(data, count, query));
 });
 
 // POST /shipping/zones — Create a shipping zone
@@ -277,7 +285,7 @@ router.get('/shipping', validate('query', ShippingTaxSettingsListSchema), async 
         if (isMissingShippingSchemaError(error)) return c.json({ error: { code: 'SHIPPING_SCHEMA_MISSING', message: 'Shipping settings are unavailable.' } }, 503);
         return c.json({ error: { code: 'DB_ERROR', message: 'Unable to access settings' } }, 500);
     }
-    return c.json(paginated(data || [], count ?? 0, query.page, query.limit));
+    return c.json(scopedSettingsPage(data, count, query));
 });
 
 // POST /shipping — Create a shipping rate
@@ -381,7 +389,7 @@ router.get('/taxes', validate('query', ShippingTaxSettingsListSchema), async (c)
         if (isMissingTaxSchemaError(error)) return c.json({ error: { code: 'TAX_SCHEMA_MISSING', message: 'Tax settings are unavailable.' } }, 503);
         return c.json({ error: { code: 'DB_ERROR', message: 'Unable to access settings' } }, 500);
     }
-    return c.json(paginated((data || []).map(serializeMerchantTaxRate), count ?? 0, query.page, query.limit));
+    return c.json(scopedSettingsPage(data?.map(serializeMerchantTaxRate) ?? null, count, query));
 });
 
 // POST /taxes — Create a tax rate

@@ -1,3 +1,9 @@
+import '../../widgets/shared/warehouse_command_recovery.dart';
+import 'package:letbuyy_models/letbuyy_models.dart'
+    show warehouseOptionStatuses, WarehouseCommandIntent;
+import '../../widgets/shared/warehouse_list_filters.dart';
+import '../../services/api_client.dart' show ApiException;
+import '../../widgets/shared/merchant_store_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../app/store_context.dart';
@@ -19,58 +25,122 @@ class _InventoryLocationsScreenState extends State<InventoryLocationsScreen> {
   bool _isLoading = true;
   String? _storeId;
   String? _error;
+  Object? _viewKey;
+  int _readGeneration = 0;
+  int _page = 1;
+  String _search = '', _status = '', _sort = 'name_asc';
+  bool get _filtered => _search.isNotEmpty || _status.isNotEmpty;
+  int? _total;
+  bool _more = false;
+  bool _warehouseReady = false, _warehouseBusy = false;
+  MerchantStoreView? get _view =>
+      _storeId == null ? null : (key: _viewKey, storeId: _storeId!);
+  bool _matches(MerchantStoreView? view) =>
+      merchantStoreViewCurrent(context, view);
 
   late AppThemeColors colors;
 
   @override
   void initState() {
     super.initState();
+    _viewKey = context.read<StoreContext>().requestContextKey;
     _load();
   }
 
   Future<void> _load() async {
+    if (!mounted) return;
+    final generation = ++_readGeneration;
     setState(() {
       _isLoading = true;
       _error = null;
+      _total = null;
+      _more = false;
+      _locations = [];
     });
-
+    final stores = context.read<StoreContext>();
     try {
-      _storeId ??=
-          (await context.read<StoreContext>().ensureSelectedStore())?.id;
-      if (_storeId == null) {
+      await stores.ensureSelectedStore();
+      if (!mounted || generation != _readGeneration) return;
+      _viewKey = stores.requestContextKey;
+      _storeId = stores.selectedStoreId;
+      final view = _view;
+      if (view == null) {
         setState(() {
-          _locations = const [];
           _isLoading = false;
+          _error = 'Select a store to continue.';
         });
         return;
       }
-      final rows = await context.read<InventoryService>().fetchLocations(
-        _storeId!,
+      final service = context.read<InventoryService>();
+      final rows = await service.fetchLocations(
+        view.storeId,
+        page: _page,
+        search: _search.isEmpty ? null : _search,
+        status: _status.isEmpty ? 'all' : _status,
+        sort: _sort,
       );
-      if (mounted) {
-        setState(() {
-          _locations = rows;
-          _isLoading = false;
-        });
-      }
+      if (!_matches(view) || generation != _readGeneration) return;
+      setState(() {
+        _locations = rows;
+        _total = service.locationsTotal;
+        _more = service.locationsHasMore;
+        _isLoading = false;
+      });
     } catch (error) {
-      if (mounted) {
-        setState(() {
-          _error = error.toString();
-          _isLoading = false;
-        });
-      }
+      if (!mounted || generation != _readGeneration) return;
+      if (_viewKey != stores.requestContextKey &&
+          stores.selectedStoreId != null)
+        return;
+      if (_viewKey != stores.requestContextKey &&
+          error is ApiException &&
+          error.code == 'SESSION_CONTEXT_CHANGED')
+        return;
+      setState(() {
+        _viewKey = stores.requestContextKey;
+        _storeId = stores.selectedStoreId;
+        _locations = [];
+        _error =
+            'Check your connection and current store permissions, then refresh.';
+        _isLoading = false;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
     colors = AppThemeColors.of(context);
+    final stores = context.watch<StoreContext>();
+    if (_viewKey != stores.requestContextKey) {
+      _viewKey = stores.requestContextKey;
+      ++_readGeneration;
+      _storeId = null;
+      _page = 1;
+      _warehouseReady = false;
+      _warehouseBusy = false;
+      _search = '';
+      _status = '';
+      _sort = 'name_asc';
+      _total = null;
+      _more = false;
+      _locations = [];
+      _error = null;
+      _isLoading = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _load();
+      });
+    }
 
     return Scaffold(
       backgroundColor: colors.bgStart,
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: _storeId == null ? null : _createLocation,
+        onPressed:
+            !_warehouseReady ||
+                _warehouseBusy ||
+                _storeId == null ||
+                _isLoading ||
+                _error != null
+            ? null
+            : _createLocation,
         backgroundColor: mobile_tokens.LetbuyyColorTokens.brandPrimary,
         foregroundColor: Colors.white,
         icon: const Icon(Icons.add_location_alt_outlined),
@@ -82,12 +152,91 @@ class _InventoryLocationsScreenState extends State<InventoryLocationsScreen> {
           child: Column(
             children: [
               _header(),
+              if (_view != null)
+                WarehouseCommandRecovery(
+                  view: _view!,
+                  onReady: (ready) {
+                    if (mounted && _warehouseReady != ready)
+                      setState(() => _warehouseReady = ready);
+                  },
+                  onResolved: _load,
+                ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton.icon(
+                    onPressed: _storeId == null ? null : _filter,
+                    icon: const Icon(Icons.filter_list),
+                    label: Text(
+                      _search.isEmpty && _status.isEmpty && _sort == 'name_asc'
+                          ? 'Filter and sort'
+                          : 'Filters applied · Edit',
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  children: [
+                    IconButton(
+                      tooltip: 'Previous page',
+                      onPressed: _isLoading || _page == 1
+                          ? null
+                          : () {
+                              setState(() => _page--);
+                              _load();
+                            },
+                      icon: const Icon(Icons.chevron_left),
+                    ),
+                    Expanded(
+                      child: Text(
+                        _total == null
+                            ? 'Page $_page · Count unavailable'
+                            : '$_total matching records · Page $_page',
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    IconButton(
+                      tooltip: 'Next page',
+                      onPressed: _isLoading || !_more
+                          ? null
+                          : () {
+                              setState(() => _page++);
+                              _load();
+                            },
+                      icon: const Icon(Icons.chevron_right),
+                    ),
+                  ],
+                ),
+              ),
               Expanded(child: _isLoading ? _loading() : _body()),
             ],
           ),
         ),
       ),
     );
+  }
+
+  Future<void> _filter() async {
+    final view = _view;
+    if (!_matches(view)) return;
+    final result = await showWarehouseListFilters(
+      context,
+      view: view!,
+      initial: (search: _search, status: _status, sort: _sort),
+      statuses: warehouseOptionStatuses,
+      documents: false,
+    );
+    if (!_matches(view) || result == null) return;
+    setState(() {
+      _search = result.search;
+      _status = result.status;
+      _sort = result.sort;
+      _page = 1;
+    });
+    _load();
   }
 
   Widget _header() {
@@ -140,8 +289,12 @@ class _InventoryLocationsScreenState extends State<InventoryLocationsScreen> {
     if (_locations.isEmpty) {
       return _centerState(
         Icons.warehouse_outlined,
-        'No locations yet',
-        'Add a warehouse or retail location before receiving stock.',
+        _filtered
+            ? 'No matching locations'
+            : (_page == 1 ? 'No locations yet' : 'No records on this page'),
+        _filtered
+            ? 'Clear or change the filters to find other records.'
+            : 'Add a warehouse or retail location before receiving stock.',
       );
     }
 
@@ -230,6 +383,8 @@ class _InventoryLocationsScreenState extends State<InventoryLocationsScreen> {
   }
 
   Future<void> _createLocation() async {
+    final view = _view;
+    if (!_matches(view) || !_warehouseReady || _warehouseBusy) return;
     final input = await showModalBottomSheet<InventoryLocationInput>(
       context: context,
       isScrollControlled: true,
@@ -237,18 +392,30 @@ class _InventoryLocationsScreenState extends State<InventoryLocationsScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
       ),
-      builder: (_) => _LocationForm(storeId: _storeId!, colors: colors),
+      builder: (_) => guardMerchantStoreView(
+        view,
+        _LocationForm(storeId: view!.storeId, colors: colors),
+      ),
     );
-    if (input == null) return;
+    if (input == null || !_matches(view) || input.storeId != view!.storeId)
+      return;
 
+    if (!_warehouseReady || _warehouseBusy) return;
+    setState(() => _warehouseBusy = true);
     try {
       await context.read<InventoryService>().createLocation(input);
-      if (mounted) {
+      if (_matches(view)) {
         _showSnackBar('Location created');
         _load();
       }
     } catch (error) {
-      if (mounted) _showSnackBar(error.toString(), isError: true);
+      if (_matches(view))
+        _showSnackBar(
+          'Creation could not be confirmed. Check saved requests and current store access before trying again.',
+          isError: true,
+        );
+    } finally {
+      if (_matches(view)) setState(() => _warehouseBusy = false);
     }
   }
 
@@ -315,7 +482,10 @@ class _LocationFormState extends State<_LocationForm> {
   final _city = TextEditingController();
   final _state = TextEditingController();
   final _country = TextEditingController(text: 'IN');
+  final _pincode = TextEditingController();
   bool _isDefault = false;
+
+  String? _validation;
 
   @override
   void dispose() {
@@ -324,6 +494,7 @@ class _LocationFormState extends State<_LocationForm> {
     _city.dispose();
     _state.dispose();
     _country.dispose();
+    _pincode.dispose();
     super.dispose();
   }
 
@@ -360,6 +531,7 @@ class _LocationFormState extends State<_LocationForm> {
               ],
             ),
             _field(_country, 'Country code'),
+            _field(_pincode, 'Pincode (optional)'),
             SwitchListTile.adaptive(
               value: _isDefault,
               activeColor: mobile_tokens.LetbuyyColorTokens.brandPrimary,
@@ -371,21 +543,30 @@ class _LocationFormState extends State<_LocationForm> {
               onChanged: (value) => setState(() => _isDefault = value),
             ),
             const SizedBox(height: 10),
+            if (_validation != null)
+              Text(_validation!, style: TextStyle(color: colors.error)),
             FilledButton.icon(
               onPressed: () {
-                if (_name.text.trim().isEmpty) return;
-                Navigator.pop(
-                  context,
-                  InventoryLocationInput(
-                    storeId: widget.storeId,
-                    name: _name.text,
-                    address: _address.text,
-                    city: _city.text,
-                    state: _state.text,
-                    country: _country.text,
-                    isDefault: _isDefault,
-                  ),
+                final input = InventoryLocationInput(
+                  storeId: widget.storeId,
+                  name: _name.text,
+                  address: _address.text,
+                  city: _city.text,
+                  state: _state.text,
+                  country: _country.text,
+                  pincode: _pincode.text,
+                  isDefault: _isDefault,
                 );
+                try {
+                  WarehouseCommandIntent.location(input);
+                } on FormatException {
+                  setState(
+                    () => _validation =
+                        'Enter a location name, a two-letter country code, and an optional six-digit pincode.',
+                  );
+                  return;
+                }
+                Navigator.pop(context, input);
               },
               icon: const Icon(Icons.save_outlined),
               label: const Text('Create location'),

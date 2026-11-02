@@ -7,6 +7,7 @@ import type { Env } from '../index';
 import { resolveCustomUser, type WorkerAuthUser } from '../lib/auth-user';
 import { getSupabaseAdmin, success } from '../lib/supabase';
 import { assertStaffPermission } from '../middleware/staff-permission';
+import { AppError } from '../lib/errors';
 
 const router = new Hono<{ Bindings: Env }>();
 
@@ -287,14 +288,17 @@ async function loadRollupTrafficSources(db: AnalyticsDb, storeId: string, period
 }
 
 async function loadStoreEntityCounts(db: AnalyticsDb, storeId: string): Promise<{ products: number; customers: number }> {
-    const [{ count: productCount }, { count: customerCount }] = await Promise.all([
-        db.from('products').select('id', { count: 'exact', head: true }).eq('store_id', storeId).eq('status', 'active'),
-        db.from('customers').select('id', { count: 'exact', head: true }).eq('store_id', storeId),
+    const [products, customers] = await Promise.all([
+        db.from('products').select('id', { count: 'exact', head: true }).eq('store_id', storeId).eq('status', 'active').is('deleted_at', null),
+        db.from('store_customers').select('id', { count: 'exact', head: true }).eq('store_id', storeId).is('deleted_at', null),
     ]);
+    if (products.error || customers.error || products.count === null || customers.count === null) {
+        throw new AppError('Analytics are temporarily unavailable. Refresh to retry.', 503, 'ANALYTICS_UNAVAILABLE');
+    }
 
     return {
-        products: productCount || 0,
-        customers: customerCount || 0,
+        products: products.count,
+        customers: customers.count,
     };
 }
 
@@ -310,13 +314,13 @@ async function loadRollupDashboard(db: AnalyticsDb, storeId: string, period: str
 
     const currentRows = rollupRowsBetween(rows, currentSince);
     const previousRows = rollupRowsBetween(rows, previousSince, currentSince);
-    const revenue = Math.round(sumRollup(currentRows, 'revenue.paid_minor') / 100);
-    const prevRevenue = Math.round(sumRollup(previousRows, 'revenue.paid_minor') / 100);
+    const revenue = sumRollup(currentRows, 'revenue.paid_minor') / 100;
+    const prevRevenue = sumRollup(previousRows, 'revenue.paid_minor') / 100;
     const currentOrders = sumRollup(currentRows, 'orders.created');
     const previousOrders = sumRollup(previousRows, 'orders.created');
     const counts = await loadStoreEntityCounts(db, storeId);
-    const currentAverageOrderValue = currentOrders > 0 ? Math.round(revenue / currentOrders) : 0;
-    const previousAverageOrderValue = previousOrders > 0 ? Math.round(prevRevenue / previousOrders) : 0;
+    const currentAverageOrderValue = currentOrders > 0 ? Math.round(revenue * 100 / currentOrders) / 100 : 0;
+    const previousAverageOrderValue = previousOrders > 0 ? Math.round(prevRevenue * 100 / previousOrders) / 100 : 0;
 
     return {
         period,
@@ -370,7 +374,7 @@ async function loadRollupTopProducts(db: AnalyticsDb, storeId: string, limit: nu
         .slice(0, limit)
         .map((product) => ({
             ...product,
-            revenue: Math.round(product.revenue),
+            revenue: Math.round(product.revenue * 100) / 100,
         }));
 }
 
@@ -543,12 +547,16 @@ router.get('/dashboard', async (c) => {
     const prevSince = new Date(Date.now() - days * 2 * 86400000).toISOString();
 
     // Current period orders
-    const { data: orders } = await db.from('orders').select('total, status, payment_status, created_at')
+    const { data: orders, error: currentError } = await db.from('orders').select('total, status, payment_status, created_at')
         .eq('store_id', storeId).gte('created_at', since);
 
     // Previous period orders (for comparison)
-    const { data: prevOrders } = await db.from('orders').select('total, status, payment_status')
+    const { data: prevOrders, error: previousError } = await db.from('orders').select('total, status, payment_status')
         .eq('store_id', storeId).gte('created_at', prevSince).lt('created_at', since);
+
+    if (currentError || previousError || !Array.isArray(orders) || !Array.isArray(prevOrders)) {
+        throw new AppError('Analytics are temporarily unavailable. Refresh to retry.', 503, 'ANALYTICS_UNAVAILABLE');
+    }
 
     const currentOrders = orders || [];
     const previousOrders = prevOrders || [];
@@ -558,8 +566,8 @@ router.get('/dashboard', async (c) => {
 
     const { products: productCount, customers: customerCount } = await loadStoreEntityCounts(db, storeId);
 
-    const currentAverageOrderValue = currentOrders.length > 0 ? Math.round(revenue / currentOrders.length) : 0;
-    const previousAverageOrderValue = previousOrders.length > 0 ? Math.round(prevRevenue / previousOrders.length) : 0;
+    const currentAverageOrderValue = currentOrders.length > 0 ? Math.round(revenue * 100 / currentOrders.length) / 100 : 0;
+    const previousAverageOrderValue = previousOrders.length > 0 ? Math.round(prevRevenue * 100 / previousOrders.length) / 100 : 0;
     const previousPeriodFrom = new Date(prevSince).toISOString().slice(0, 10);
     const previousPeriodTo = new Date(since).toISOString().slice(0, 10);
 

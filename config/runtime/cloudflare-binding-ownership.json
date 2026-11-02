@@ -31,7 +31,6 @@
             "TELEMETRY_ENV",
             "RUNTIME_NAME",
             "PRIMARY_REGION",
-            "EDGE_SCOPE",
             "EVENT_QUEUE_NAME",
             "ANALYTICS_QUEUE_NAME",
             "SEARCH_QUEUE_NAME",

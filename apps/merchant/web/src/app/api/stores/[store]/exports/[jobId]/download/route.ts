@@ -10,7 +10,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         const { job } = await createMerchantApiClient().exports.job(jobId, {
             query: { store_id: resolved.storeId }, signal: merchantApiReadSignal(request.signal),
         })
-        if (job.id !== jobId || job.status !== 'completed' || job.type === 'product_import') {
+        if (job.id !== jobId || job.status !== 'completed' || job.type === 'product_import'
+            || typeof job.download_url !== 'string' || !job.download_url) {
             return NextResponse.json({ error: { message: 'Export is not ready' } }, { status: 409 })
         }
         // Take only the opaque signature. Never fetch an upstream-provided URL.

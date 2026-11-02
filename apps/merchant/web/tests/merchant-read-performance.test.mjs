@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import ts from 'typescript';
 import * as jsx from 'react/jsx-runtime';
 import { NextRequest } from 'next/server.js';
-import { ProductCsvImportSchema } from '@letbuyy/shared-types';
+import * as importContracts from '@letbuyy/shared-types';
 
 // Execute the real server components/helpers with controlled dependency delays.
 // These prove request work and failure behavior, not production database latency.
@@ -36,24 +36,28 @@ class ApiError extends Error {
 class MerchantError extends Error {}
 const store = { id: 'store-a', name: 'Store A', subdomain: 'alpha', site_type: 'store', theme_id: 'modern' };
 
-test('CSV import BFF refuses invalid or oversized envelopes before forwarding a command', async () => {
-    const forwarded = [], storeId = '11111111-1111-4111-8111-111111111111';
-    const { POST } = load('../src/app/api/stores/[store]/products/import/route.ts', {
-        'next/server': { NextResponse: { json: (body, init) => Response.json(body, init) } },
-        '@letbuyy/shared-types': { ProductCsvImportSchema },
-        '@/lib/stores/resolve-owned-store': { resolveOwnedStoreId: async () => ({ storeId }) },
-        '@/lib/api/client': {
-            createMerchantApiClient: () => ({ products: { importCsv: async (...args) => { forwarded.push(args); return { job: { id: 'job-a' } }; } } }),
-            merchantApiErrorResponse: () => Response.json({}, { status: 503 }),
+test('CSV import BFF refuses invalid or oversized envelopes before forwarding the original command', async () => {
+    const forwarded=[],storeId='11111111-1111-4111-8111-111111111111',actorId='22222222-2222-4222-8222-222222222222',key='33333333-3333-4333-8333-333333333333';
+    const {POST}=load('../src/app/api/stores/[store]/products/import/route.ts',{
+        'next/server':{NextResponse:{json:(body,init)=>Response.json(body,init)}},'@letbuyy/shared-types':importContracts,
+        '@/lib/api/merchant-security-scope':{
+            merchantSecurityScope:async()=>({storeId,actorId}),
+            privateSecurityResponse:response=>{response.headers.set('Cache-Control','private, no-store');return response;},
+        },
+        '@/lib/api/client':{
+            createMerchantApiClient:()=>({productImports:{register:async(...args)=>{forwarded.push(args);return {job:{id:'synthetic-payload-fixture',store_id:storeId,actor_id:actorId}};}}}),
+            merchantApiErrorResponse:()=>Response.json({},{status:503}),
         },
     });
-    const send = body => POST(new Request('http://merchant.test/api/stores/alpha/products/import', { method: 'POST', body, headers: { 'Content-Type': 'application/json' } }), { params: Promise.resolve({ store: 'alpha' }) });
-    for (const body of ['{', '{}', '{"csv":42}', '{"csv":" "}']) assert.equal((await send(body)).status, 400);
-    assert.equal((await send(JSON.stringify({ csv: '"'.repeat(530_000) }))).status, 413, 'escaped JSON size, not raw CSV size, governs the existing gateway envelope');
-    assert.equal(forwarded.length, 0);
-    const csv = 'name,description\r\n"東京","  First\r\nSecond  "\r\n';
-    assert.equal((await send(JSON.stringify({ csv }))).status, 202);
-    assert.deepEqual(forwarded, [[{ store_id: storeId, csv }]], 'preserve bytes and the existing command lifetime without retry/deadline arguments');
+    const send=body=>POST(new Request('http://merchant.test/api/stores/alpha/products/import',{method:'POST',body,
+        headers:{'Content-Type':'application/json','X-Idempotency-Key':key}}),{params:Promise.resolve({store:'alpha'})});
+    for(const body of ['{','{}','{"csv":42}','{"csv":" "}'])assert.equal((await send(body)).status,400);
+    assert.equal((await send(JSON.stringify({csv:'"'.repeat(530000)}))).status,413,'escaped JSON bytes remain bounded before forwarding');
+    assert.equal((await send(JSON.stringify({csv:'அ'.repeat(350000)}))).status,413,'the bound counts UTF8 bytes rather than code units');
+    assert.equal(forwarded.length,0);
+    const csv='name,description\r\n"東京","  First\r\nSecond  "\r\n',input={store_id:storeId,csv,idempotency_key:key,contract_version:2};
+    assert.equal((await send(JSON.stringify(input))).status,202);
+    assert.deepEqual(forwarded,[[input]],'preserve the exact source and original request identity');
 });
 
 test('shell authorizes the current store and renders before its optional switcher settles', async () => {
@@ -188,7 +192,7 @@ test('read transport adds a finite deadline, composes caller cancellation, and l
         'next/headers': { cookies: async () => ({ get: () => undefined }) },
         'next/server': { NextResponse: { json: Response.json } },
         '@letbuyy/api-client': { resolveLetbuyyApiBaseUrl: () => 'http://gateway.invalid/v1' },
-        '@letbuyy/auth-core': { LETBUYY_MERCHANT_SESSION_COOKIE: 'lb_session' },
+        '@letbuyy/auth-core': { resolveLetbuyyPlatformCookieNames: () => ({ session: 'lb_session' }) },
     }, {
         fetch: async (url, init) => { calls.push({ url, init }); return Response.json({}); },
         AbortSignal: { timeout: ms => { deadlines.push(ms); return AbortSignal.timeout(ms); }, any: signals => AbortSignal.any(signals) },
@@ -331,7 +335,7 @@ test('best-effort logout bounds a stalled identity request and still clears only
     const { POST } = load('../src/app/api/auth/logout/route.ts', {
         'next/server': { NextResponse: { json: Response.json } },
         'next/headers': { cookies: async () => ({ get: () => ({ value: 'synthetic-session' }), set: (...args) => cleared.push(args) }) },
-        '@letbuyy/auth-core': { LETBUYY_MERCHANT_SESSION_COOKIE: 'lb_session' },
+        '@letbuyy/auth-core': { resolveLetbuyyPlatformCookieNames: () => ({ session: 'lb_session' }) },
         '@/lib/public-urls': { getAccountsUrl: (path = '') => 'https://identity.example.invalid' + path, getAdminUrl: () => 'https://merchant.example.invalid' },
     }, {
         process: { env: { NODE_ENV: 'development' } },
@@ -422,7 +426,7 @@ test('export download streams only the known gateway path and protects private r
 
 test('export download refuses pending/import results and cancels an unsuccessful upstream body', async () => {
     const file = '../src/app/api/stores/[store]/exports/[jobId]/download/route.ts';
-    for (const job of [{ id: 'job-a', type: 'products', status: 'running' }, { id: 'job-a', type: 'product_import', status: 'completed' }]) {
+    for (const job of [{ id: 'job-a', type: 'products', status: 'running' }, { id: 'job-a', type: 'product_import', status: 'completed' }, { id: 'job-a', type: 'products', status: 'completed', download_url: null }]) {
         const { GET } = exportRoute(file, { job: async () => ({ job }) });
         assert.equal((await GET({ signal: new AbortController().signal }, exportParams)).status, 409);
     }
@@ -476,7 +480,7 @@ function publicUrls() {
 test('sign-in return uses the configured app origin and preserves the merchant path/query', () => {
     const { proxy } = load('../src/proxy.ts', {
         'next/server': { NextResponse: { redirect: value => Response.redirect(value, 307), next: () => new Response() } },
-        '@letbuyy/auth-core': { LETBUYY_MERCHANT_SESSION_COOKIE: 'lb_session', verifyLetbuyySessionCookieValue: () => ({ accepted: false }) },
+        '@letbuyy/auth-core': { resolveLetbuyyPlatformCookieNames: () => ({ session: 'lb_session' }), verifyLetbuyySessionCookieValue: () => ({ accepted: false }) },
         '@/lib/public-urls': publicUrls(),
     });
     const request = new NextRequest('http://127.0.0.1:9141/snazz/products?status=draft', { headers: { host: 'untrusted.example.invalid', 'x-forwarded-host': 'untrusted.example.invalid' } });
@@ -499,7 +503,7 @@ test('private proxy overwrites forged return context with the actual route', () 
     const urls = publicUrls();
     const { proxy } = load('../src/proxy.ts', {
         'next/server': { NextResponse: { next: value => value } },
-        '@letbuyy/auth-core': { LETBUYY_MERCHANT_SESSION_COOKIE: 'lb_session', verifyLetbuyySessionCookieValue: () => ({ accepted: true }) },
+        '@letbuyy/auth-core': { resolveLetbuyyPlatformCookieNames: () => ({ session: 'lb_session' }), verifyLetbuyySessionCookieValue: () => ({ accepted: true }) },
         '@/lib/public-urls': urls,
     });
     const request = new NextRequest('http://127.0.0.1:9141/alpha/products?status=draft', { headers: { [urls.MERCHANT_RETURN_PATH_HEADER]: '//foreign.example.invalid' } });

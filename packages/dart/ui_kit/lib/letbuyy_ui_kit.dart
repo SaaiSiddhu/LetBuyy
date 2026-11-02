@@ -8,6 +8,7 @@ export 'src/tokens/letbuyy_tokens.dart';
 export 'src/themes/app_colors.dart';
 export 'src/themes/app_theme.dart';
 export 'src/themes/app_text_styles.dart';
+export 'src/themes/bundled_typography.dart';
 
 // Common Widgets
 export 'src/widgets/network_image_widget.dart';

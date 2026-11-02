@@ -373,7 +373,7 @@ class _HeroStoreCardState extends State<HeroStoreCard>
                       const SizedBox(width: 4),
                       Flexible(
                         child: Text(
-                          '${widget.store.subdomain}.letbuyy.com',
+                          _publicUrl.replaceFirst(RegExp(r'^https?://'), ''),
                           style: TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.w500,
@@ -1004,7 +1004,10 @@ class _QRCodeBottomSheetState extends State<_QRCodeBottomSheet> {
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          '${widget.subdomain}.letbuyy.com',
+                          widget.storeUrl.replaceFirst(
+                            RegExp(r'^https?://'),
+                            '',
+                          ),
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w500,

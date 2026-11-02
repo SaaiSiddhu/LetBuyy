@@ -135,6 +135,18 @@ export const AUTH_TOKEN_EXPIRY_MS: Record<AuthTokenType, number> = {
 export const AUTH_OTP_EXPIRY_MS = 10 * 60 * 1000;
 export const AUTH_SESSION_DURATION_MS = 30 * 24 * 60 * 60 * 1000;
 export const LETBUYY_MERCHANT_SESSION_COOKIE = 'lb_session';
+/** One platform session contract, with isolated names for the staging deployment. */
+export function resolveLetbuyyPlatformCookieNames(environment?: string) {
+  const suffix = environment?.trim().toLowerCase() === 'staging' ? '_staging' : '';
+  return {
+    session: `${LETBUYY_MERCHANT_SESSION_COOKIE}${suffix}`,
+    csrf: `letbuyy_csrf${suffix}`,
+    legacyCsrf: `lb_csrf${suffix}`,
+    accounts: `lb_accounts${suffix}`,
+    device: `lb_device${suffix}`,
+    passwordSetIntent: `lb_password_set_intent${suffix}`,
+  } as const;
+}
 export const LETBUYY_CUSTOMER_SESSION_COOKIE = 'lb_customer_session';
 /**
  * Marketplace buyer session (D-8, 2026-09-05).
@@ -1883,4 +1895,54 @@ export async function verifyNotificationRequest(input: NotificationRequestInput 
   const actual = input.headers.get('X-LetBuyy-Notification-Signature'), expected = await notificationRequestSignature(input, timestamp, jti);
   return actual && /^[a-f0-9]{64}$/.test(actual) && expected && timingSafeEqualHex(expected, actual)
     ? { status: 'accepted', jti } : { status: 'denied' };
+}
+
+// Fixed product-import recovery transport. A dedicated key grants this one
+// operation only; it is never accepted as Identity, Console or app authority.
+export const PRODUCT_IMPORT_INTERNAL_CALLER = 'queue-workers-product-import';
+export const PRODUCT_IMPORT_REQUEST_PATH = '/v1/internal/product-import/run';
+export const PRODUCT_IMPORT_REQUEST_MAX_BYTES = 64;
+export const PRODUCT_IMPORT_REQUEST_MAX_AGE_MS = 120_000;
+const PRODUCT_IMPORT_REQUEST_VERSION = 'product-import-request-v1';
+export function isProductImportRequestTarget(method: string, url: string): boolean {
+  try { const u = new URL(url); return method === 'POST' && u.pathname === PRODUCT_IMPORT_REQUEST_PATH
+    && !u.search && !u.hash && !u.username && !u.password && ['https:', 'http:'].includes(u.protocol); }
+  catch { return false; }
+}
+export function validProductImportRequestSecret(secret: string | undefined): secret is string {
+  return !!secret && secret.trim().length >= 32 && !/placeholder|replace-with|skip_needs_human/i.test(secret);
+}
+type ProductImportRequestInput = { secret: string | undefined; environment: DomainReconcileEnvironment;
+  method: string; url: string; body: Uint8Array };
+async function productImportRequestSignature(input: ProductImportRequestInput, timestamp: string, jti: string) {
+  if (!validProductImportRequestSecret(input.secret) || !isProductImportRequestTarget(input.method,input.url)
+    || !domainReconcileEnvironment({ENVIRONMENT:input.environment}) || input.body.byteLength > PRODUCT_IMPORT_REQUEST_MAX_BYTES) return null;
+  const key = await hmacSha256Hex(input.secret,'letbuyy:queue-product-import-transport:v1');
+  const digest = bytesToHex(await crypto.subtle.digest('SHA-256',new Uint8Array(input.body).buffer));
+  return hmacSha256Hex(key,JSON.stringify([PRODUCT_IMPORT_REQUEST_VERSION,PRODUCT_IMPORT_INTERNAL_CALLER,
+    'api-gateway:product-import',input.environment,input.method,PRODUCT_IMPORT_REQUEST_PATH,digest,timestamp,jti]));
+}
+export async function createProductImportRequestHeaders(input: ProductImportRequestInput & {nowMs?:number;jti?:string}) {
+  const timestamp = String(input.nowMs ?? Date.now()), jti = input.jti ?? crypto.randomUUID();
+  if (!/^\d{13}$/.test(timestamp) || !isSafeLetbuyyInternalJti(jti)) throw new Error('Invalid import request metadata');
+  const signature = await productImportRequestSignature(input,timestamp,jti);
+  if (!signature) throw new Error('Product import transport is not configured');
+  return {'Content-Type':'application/json','X-LetBuyy-Internal-Version':PRODUCT_IMPORT_REQUEST_VERSION,
+    'X-LetBuyy-Internal-Caller':PRODUCT_IMPORT_INTERNAL_CALLER,'X-LetBuyy-Internal-App':'api-gateway:product-import',
+    'X-LetBuyy-Internal-Environment':input.environment,'X-LetBuyy-Internal-Timestamp':timestamp,
+    'X-LetBuyy-Internal-JTI':jti,'X-LetBuyy-Internal-Signature':signature};
+}
+export async function verifyProductImportRequest(input: ProductImportRequestInput & {headers:Headers;nowMs?:number}):
+ Promise<{status:'accepted';jti:string}|{status:'denied'|'unavailable'}> {
+  if (!validProductImportRequestSecret(input.secret)) return {status:'unavailable'};
+  const timestamp = input.headers.get('X-LetBuyy-Internal-Timestamp'),jti = input.headers.get('X-LetBuyy-Internal-JTI');
+  if (input.headers.get('X-LetBuyy-Internal-Version') !== PRODUCT_IMPORT_REQUEST_VERSION
+    || input.headers.get('X-LetBuyy-Internal-Caller') !== PRODUCT_IMPORT_INTERNAL_CALLER
+    || input.headers.get('X-LetBuyy-Internal-App') !== 'api-gateway:product-import'
+    || input.headers.get('X-LetBuyy-Internal-Environment') !== input.environment
+    || !timestamp || !/^\d{13}$/.test(timestamp) || !isSafeLetbuyyInternalJti(jti)
+    || !isFreshLetbuyyInternalTimestamp(timestamp,input.nowMs,PRODUCT_IMPORT_REQUEST_MAX_AGE_MS)) return {status:'denied'};
+  const actual=input.headers.get('X-LetBuyy-Internal-Signature'),expected=await productImportRequestSignature(input,timestamp,jti);
+  return actual && /^[a-f0-9]{64}$/.test(actual) && expected && timingSafeEqualHex(expected,actual)
+    ? {status:'accepted',jti}:{status:'denied'};
 }

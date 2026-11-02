@@ -801,7 +801,10 @@ class _StoreRowState extends State<_StoreRow> {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      '${widget.store.subdomain}.letbuyy.com',
+                      widget.store.publicUrl.replaceFirst(
+                        RegExp(r'^https?://'),
+                        '',
+                      ),
                       style: TextStyle(
                         color: widget.colors.textSecondary,
                         fontSize: 12,

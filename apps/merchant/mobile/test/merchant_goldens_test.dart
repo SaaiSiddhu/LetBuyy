@@ -338,14 +338,10 @@ Map<String, dynamic> _customerJson({
 
 Map<String, dynamic> _customerSegmentJson() => {
   'id': 'segment_1',
-  'site_id': 'store_1',
+  'store_id': 'store_1',
   'name': 'VIP customers',
   'description': 'High-value repeat buyers',
-  'definition': const {
-    'rules': [
-      {'field': 'tag', 'operator': 'contains', 'value': 'vip'},
-    ],
-  },
+  'rules': const { 'tags_any': ['vip'] },
   'customer_count': 1,
   'created_at': '2026-06-01T10:00:00.000Z',
   'updated_at': '2026-06-01T10:00:00.000Z',

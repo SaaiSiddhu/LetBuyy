@@ -69,6 +69,41 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
   bool _isTrending = false;
   bool _isNew = true;
 
+  Object? _boundContext;
+  String? _boundStoreId;
+  bool _retired = false, _editAuthorized = false;
+  bool get _formCurrent =>
+      mounted &&
+      !_retired &&
+      _boundStoreId != null &&
+      context.read<StoreContext>().requestContextKey == _boundContext &&
+      context.read<StoreContext>().selectedStoreId == _boundStoreId;
+
+  Widget _retiredSurface() => Scaffold(
+    appBar: AppBar(title: const Text('Store access changed')),
+    body: Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Close this form and reopen it from the selected store. The previous draft cannot be submitted here.',
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Close'),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+
+  Widget _guardFormSurface(Widget child) => Consumer<StoreContext>(
+    builder: (_, stores, __) => _formCurrent ? child : _retiredSurface(),
+  );
+
   // Specifications form
   final _specKeyController = TextEditingController();
   final _specValueController = TextEditingController();
@@ -76,6 +111,10 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
   @override
   void initState() {
     super.initState();
+    final stores = context.read<StoreContext>();
+    _boundContext = stores.requestContextKey;
+    _boundStoreId = widget.product?.storeId ?? stores.selectedStoreId;
+    _editAuthorized = widget.product == null;
     _initData();
     if (widget.product != null) {
       _loadingEdit = true;
@@ -145,7 +184,32 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final stores = context.watch<StoreContext>();
+    if (stores.requestContextKey != _boundContext ||
+        stores.selectedStoreId != _boundStoreId)
+      _retired = true;
+    if (!_formCurrent) return _retiredSurface();
     final isEdit = widget.product != null;
+    if (!_editAuthorized)
+      return Scaffold(
+        appBar: AppBar(title: const Text('Load product')),
+        body: Center(
+          child: _loadingEdit
+              ? const CircularProgressIndicator()
+              : Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'The current product could not be loaded. Check store access and retry.',
+                    ),
+                    TextButton(
+                      onPressed: () => _checkLatestProduct(initial: true),
+                      child: const Text('Retry product'),
+                    ),
+                  ],
+                ),
+        ),
+      );
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -558,23 +622,31 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
   }
 
   Future<void> _pickAndUploadProductImage(ImageSource source) async {
-    if (_isLoading || _images.length >= 5) return;
+    if (!_formCurrent || _isLoading || _images.length >= 5) return;
 
     setState(() => _isLoading = true);
     try {
-      final image = await pickMerchantMedia(context, source: source, pick: () => ImagePicker().pickImage(
-        source: source, maxWidth: 1600, imageQuality: 88));
-      if (!mounted || image == null) return;
+      final image = await pickMerchantMedia(
+        context,
+        source: source,
+        pick: () => ImagePicker().pickImage(
+          source: source,
+          maxWidth: 1600,
+          imageQuality: 88,
+        ),
+      );
+      if (!_formCurrent || image == null) return;
       final imageUrl = await context.read<ProductService>().uploadProductImage(
         File(image.path),
+        storeId: _boundStoreId!,
       );
-      if (!mounted) return;
+      if (!_formCurrent) return;
       setState(() => _images.add(imageUrl));
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Product image added.')));
     } catch (_) {
-      if (!mounted) return;
+      if (!_formCurrent) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Could not upload product image.')),
       );
@@ -588,31 +660,33 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Add Image'),
-        content: TextField(
-          controller: urlController,
-          decoration: const InputDecoration(
-            labelText: 'Image URL',
-            hintText: 'https://...',
+      builder: (context) => _guardFormSurface(
+        AlertDialog(
+          title: const Text('Add Image'),
+          content: TextField(
+            controller: urlController,
+            decoration: const InputDecoration(
+              labelText: 'Image URL',
+              hintText: 'https://...',
+            ),
+            autofocus: true,
           ),
-          autofocus: true,
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (urlController.text.isNotEmpty) {
+                  setState(() => _images.add(urlController.text));
+                  Navigator.pop(context);
+                }
+              },
+              child: const Text('Add'),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              if (urlController.text.isNotEmpty) {
-                setState(() => _images.add(urlController.text));
-                Navigator.pop(context);
-              }
-            },
-            child: const Text('Add'),
-          ),
-        ],
       ),
     );
   }
@@ -830,9 +904,9 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
     final draft = await showModalBottomSheet<_ProductVariantDraft>(
       context: context,
       isScrollControlled: true,
-      builder: (_) => const _VariantDraftSheet(),
+      builder: (_) => _guardFormSurface(const _VariantDraftSheet()),
     );
-    if (draft == null) return;
+    if (!_formCurrent || draft == null) return;
     setState(() => _variants.add(draft));
   }
 
@@ -843,9 +917,9 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
     final draft = await showModalBottomSheet<_ProductVariantDraft>(
       context: context,
       isScrollControlled: true,
-      builder: (_) => _VariantDraftSheet(variant: variant),
+      builder: (_) => _guardFormSurface(_VariantDraftSheet(variant: variant)),
     );
-    if (draft == null) return;
+    if (!_formCurrent || draft == null) return;
     setState(() => _variants[index] = draft);
   }
 
@@ -854,7 +928,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
       context,
       title: 'Scan product barcode',
     );
-    if (barcode == null || barcode.trim().isEmpty) return;
+    if (!_formCurrent || barcode == null || barcode.trim().isEmpty) return;
     setState(() => _barcodeController.text = barcode.trim());
   }
 
@@ -1072,45 +1146,47 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Add Specification'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: _specKeyController,
-              decoration: const InputDecoration(
-                labelText: 'Name (e.g., Material)',
+      builder: (context) => _guardFormSurface(
+        AlertDialog(
+          title: const Text('Add Specification'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: _specKeyController,
+                decoration: const InputDecoration(
+                  labelText: 'Name (e.g., Material)',
+                ),
               ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: _specValueController,
+                decoration: const InputDecoration(
+                  labelText: 'Value (e.g., Cotton)',
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
             ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _specValueController,
-              decoration: const InputDecoration(
-                labelText: 'Value (e.g., Cotton)',
-              ),
+            ElevatedButton(
+              onPressed: () {
+                if (_specKeyController.text.isNotEmpty &&
+                    _specValueController.text.isNotEmpty) {
+                  setState(
+                    () => _specifications[_specKeyController.text] =
+                        _specValueController.text,
+                  );
+                  Navigator.pop(context);
+                }
+              },
+              child: const Text('Add'),
             ),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              if (_specKeyController.text.isNotEmpty &&
-                  _specValueController.text.isNotEmpty) {
-                setState(
-                  () => _specifications[_specKeyController.text] =
-                      _specValueController.text,
-                );
-                Navigator.pop(context);
-              }
-            },
-            child: const Text('Add'),
-          ),
-        ],
       ),
     );
   }
@@ -1128,6 +1204,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
   }
 
   Future<void> _submitProduct() async {
+    if (!_formCurrent || _isLoading) return;
     if (_pendingEdit == null && !_formKey.currentState!.validate()) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please fill required fields')),
@@ -1148,7 +1225,8 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
       final productService = context.read<ProductService>();
 
       final store = await context.read<StoreContext>().ensureSelectedStore();
-      if (store == null) throw Exception('No store found');
+      if (!_formCurrent || store?.id != _boundStoreId) return;
+      if (store == null) return;
 
       if (widget.product != null) {
         // Update existing
@@ -1187,7 +1265,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
         );
       }
 
-      if (mounted) {
+      if (_formCurrent) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -1197,10 +1275,15 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
         );
         Navigator.pop(context, true); // Return true to indicate success
       }
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error: $e')));
+    } catch (_) {
+      if (!_formCurrent) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'The product save could not be confirmed. Check the catalog before retrying.',
+          ),
+        ),
+      );
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -1208,15 +1291,16 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
 
   Future<void> _checkLatestProduct({bool initial = false}) async {
     final original = widget.product;
-    if (!mounted || original == null) return;
+    if (!_formCurrent || original == null) return;
     setState(() => _loadingEdit = true);
     try {
       final latest = await context.read<ProductService>().fetchProductForEdit(
         original.id,
         original.storeId,
       );
-      if (!mounted) return;
+      if (!_formCurrent) return;
       setState(() {
+        _editAuthorized = true;
         if (initial) {
           _initData(latest);
           _editBlocked = false;
@@ -1229,11 +1313,13 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
         }
       });
     } catch (error) {
-      if (!mounted) return;
+      if (!_formCurrent) return;
       setState(() {
+        if (error is ApiException && [401, 403, 404].contains(error.statusCode))
+          _retired = true;
         _editBlocked = true;
         _editMessage =
-            'Your draft is kept. The latest product could not be checked: $error';
+            'Your draft is kept. The latest product could not be checked. Check store access and retry.';
       });
     } finally {
       if (mounted) setState(() => _loadingEdit = false);
@@ -1244,6 +1330,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
     ProductService service,
     String selectedStore,
   ) async {
+    if (!_formCurrent) return;
     final base = _baseProduct;
     if (base == null || base.version == null || selectedStore != base.storeId) {
       setState(() {
@@ -1276,7 +1363,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
         version: intent.version,
         idempotencyKey: intent.key,
       );
-      if (!mounted) return;
+      if (!_formCurrent) return;
       final newerDraft = _editDraftSignature() != intent.signature;
       final variantsUnchanged =
           jsonEncode(_variantPayloads()) ==
@@ -1301,7 +1388,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
             : null;
       });
       if (needsIdentityReview) await _checkLatestProduct();
-      if (!mounted) return;
+      if (!_formCurrent) return;
       if (!newerDraft) {
         ScaffoldMessenger.of(
           context,
@@ -1309,7 +1396,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
         Navigator.pop(context, true);
       }
     } catch (error) {
-      if (!mounted) return;
+      if (!_formCurrent) return;
       final terminal =
           error is ApiException &&
           error.code != 'SESSION_CONTEXT_CHANGED' &&
@@ -1321,6 +1408,8 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
             'PRODUCT_EDIT_KEY_CONFLICT',
           ].contains(error.code);
       setState(() {
+        if (error is ApiException && [401, 403, 404].contains(error.statusCode))
+          _retired = true;
         if (terminal) _pendingEdit = null;
         _editBlocked =
             conflict ||
@@ -1726,7 +1815,7 @@ class _VariantDraftSheetState extends State<_VariantDraftSheet> {
       context,
       title: 'Scan variant barcode',
     );
-    if (barcode == null || barcode.trim().isEmpty) return;
+    if (!mounted || barcode == null || barcode.trim().isEmpty) return;
     setState(() => _barcodeController.text = barcode.trim());
   }
 }

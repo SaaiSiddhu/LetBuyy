@@ -5,9 +5,12 @@ import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { timingSafeEqualText } from '../lib/crypto';
 import { getSupabaseAdmin, success } from '../lib/supabase';
-import { ProductExecutionAdapter, isProductVariantDiffEnabled } from '../execution/product-execution.adapter';
-import { CreateProductSchema } from '@letbuyy/commerce-core';
-import { ProductCsvImportSchema } from '@letbuyy/shared-types';
+import { ProductImportExecutionAdapter } from '../execution/product-import.adapter';
+import { AppError } from '../lib/errors';
+import { CsvInputError } from '../execution/product-csv-input';
+import { productImportRecoveryConfigured } from '../lib/product-import-internal-request';
+import { ProductCsvImportSchema, ProductImportRegistrationStopSchema, ProductImportJobCommandSchema, ProductImportRowsQuerySchema,
+    ProductImportHistoryQuerySchema, UuidSchema } from '@letbuyy/shared-types';
 
 const router = new Hono<{ Bindings: Env }>();
 
@@ -119,14 +122,7 @@ const PRODUCT_EXPORT_SELECT = PRODUCT_EXPORT_HEADERS.join(',');
 const ORDER_EXPORT_SELECT = ORDER_EXPORT_HEADERS.join(',');
 const CUSTOMER_EXPORT_SELECT = CUSTOMER_EXPORT_HEADERS.join(',');
 const EXPORT_BATCH_SIZE = 1000;
-const PRODUCT_IMPORT_MAX_ROWS = 500;
 
-function createProductExecutionAdapter(c: ExportContext): ProductExecutionAdapter {
-    return new ProductExecutionAdapter(getSupabaseAdmin(c), {
-        mutationEnv: c.env,
-        variantDiffEnabled: isProductVariantDiffEnabled(c.env),
-    });
-}
 const EXPORT_JOB_TTL_SECONDS = 7 * 24 * 60 * 60;
 
 function nowIso(): string {
@@ -188,92 +184,6 @@ function toCsvRow(values: (string | number | boolean | null | undefined)[]): str
                 : s;
         })
         .join(',');
-}
-
-class CsvInputError extends Error {
-    constructor(readonly publicMessage: string, readonly code = 'INVALID_CSV', readonly status: 400 | 413 = 400) {
-        super(publicMessage);
-        this.name = 'CsvInputError';
-    }
-}
-
-/** One bounded pass: record separators inside quoted fields are data. */
-function parseCsv(text: string): string[][] {
-    const rows: string[][] = [];
-    let row: string[] = [], pieces: string[] = [];
-    let start = text.charCodeAt(0) === 0xfeff ? 1 : 0;
-    let quoted = false, closed = false, wasQuoted = false;
-    const field = (end: number) => {
-        pieces.push(text.slice(start, end));
-        const value = pieces.join('');
-        row.push(wasQuoted ? value : value.trim());
-        pieces = []; wasQuoted = false; closed = false;
-    };
-    const record = () => {
-        if (row.some(value => value.trim() !== '')) {
-            rows.push(row);
-            if (rows.length > PRODUCT_IMPORT_MAX_ROWS + 1) throw new CsvInputError(`Product CSV imports are capped at ${PRODUCT_IMPORT_MAX_ROWS} rows per job`, 'IMPORT_TOO_LARGE', 413);
-        }
-        row = [];
-    };
-    for (let index = start; index < text.length; index++) {
-        const ch = text[index];
-        if (quoted) {
-            if (ch !== '"') continue;
-            pieces.push(text.slice(start, index));
-            if (text[index + 1] === '"') { pieces.push('"'); index++; start = index + 1; }
-            else { quoted = false; closed = true; start = index + 1; }
-            continue;
-        }
-        if (ch === ',' || ch === '\r' || ch === '\n') {
-            field(closed ? start : index);
-            if (ch !== ',') {
-                record();
-                if (ch === '\r' && text[index + 1] === '\n') index++;
-            }
-            start = index + 1;
-        } else if (ch === '"') {
-            if (closed || text.slice(start, index).trim() !== '') throw new CsvInputError('CSV contains an unexpected quote.');
-            quoted = true; wasQuoted = true; start = index + 1;
-        } else if (closed && ch !== ' ' && ch !== '\t') {
-            throw new CsvInputError('CSV contains text after a closing quote.');
-        }
-    }
-    if (quoted) throw new CsvInputError('CSV contains an unclosed quoted field.');
-    if (start < text.length || pieces.length || wasQuoted || row.length) {
-        field(closed ? start : text.length);
-        record();
-    }
-    return rows;
-}
-
-function productCsvInputs(csv: string, storeId: string) {
-    const rows = parseCsv(csv);
-    if (rows.length < 2) throw new CsvInputError('CSV must have headers and at least one product row.');
-    const headers = rows[0].map(value => value.trim().toLowerCase());
-    if (!headers.includes('name')) throw new CsvInputError('CSV must have a "name" column.');
-    if (new Set(headers).size !== headers.length) throw new CsvInputError('CSV column names must be unique.');
-    const index = (name: string) => headers.indexOf(name);
-    const name = index('name'), price = index('price'), description = index('description'), category = index('category');
-    const stock = index('stock'), tags = index('tags'), images = index('images');
-    return rows.slice(1).map((row, position) => {
-        if (row.length > headers.length) throw new CsvInputError(`CSV row ${position + 2} has more fields than the header.`);
-        const parsed = CreateProductSchema.safeParse({
-            store_id: storeId, name: row[name] || 'Unnamed Product',
-            description: description >= 0 ? row[description] || '' : '',
-            price: price >= 0 && row[price]?.trim() ? Number(row[price]) : 0,
-            category: category >= 0 ? row[category] || undefined : undefined,
-            stock: stock >= 0 && row[stock]?.trim() ? Number(row[stock]) : 0,
-            tags: tags >= 0 && row[tags] ? row[tags].split(';').map(value => value.trim()).filter(Boolean) : [],
-            images: images >= 0 && row[images] ? row[images].split(';').map(value => value.trim()).filter(Boolean) : [],
-            is_active: true,
-        });
-        if (!parsed.success) {
-            const key = parsed.error.issues[0]?.path.join('.') || 'fields';
-            throw new CsvInputError(`CSV row ${position + 2} has an invalid ${key}.`);
-        }
-        return parsed.data;
-    });
 }
 
 function base64Url(bytes: Uint8Array): string {
@@ -404,18 +314,19 @@ async function serializeJob(c: ExportContext, job: ExportJobRecord) {
         id: job.id,
         type: job.type,
         status: job.status,
-        row_count: job.rowCount,
+        row_count: job.type==='product_import'?null:job.rowCount,
+        row_count_is_verified:job.type!=='product_import',
         filename: job.filename,
         error_code: job.errorCode || null,
         error_message: job.status === 'failed'
-            ? job.type === 'product_import' ? 'Import failed. Retry the import.' : 'Export failed. Retry the export.'
+            ? job.type === 'product_import' ? 'This older import stopped. Review products already created before starting another import.' : 'Export failed. Retry the export.'
             : null,
         created_at: job.createdAt,
         updated_at: job.updatedAt,
         started_at: job.startedAt || null,
         completed_at: job.completedAt || null,
         expires_at: job.expiresAt,
-        download_url: await signedDownloadUrl(c, job),
+        download_url: job.type==='product_import'?null:await signedDownloadUrl(c, job),
         metadata: job.metadata,
     };
 }
@@ -695,37 +606,79 @@ async function processCustomersExport(c: ExportContext, jobId: string): Promise<
     }
 }
 
-async function processProductImport(c: ExportContext, jobId: string): Promise<void> {
-    const initialJob = await readJob(c, jobId);
-    if (!initialJob || !initialJob.sourceKey) return;
-    const sourceKey = initialJob.sourceKey;
-    let job = await updateJob(c, initialJob, { status: 'running', startedAt: nowIso() });
-
-    try {
-        const source = await assertExportStorage(c).get(sourceKey);
-        if (!source) throw new Error('Import source object not found');
-
-        const inputs = productCsvInputs(await source.text(), job.storeIds[0]);
-        const service = createProductExecutionAdapter(c);
-        let imported = 0;
-        for (const input of inputs) {
-            await service.createProduct(input, job.actorId, job.storeIds[0]);
-            imported += 1;
-        }
-
-        job = await updateJob(c, job, { status: 'completed', rowCount: imported, completedAt: nowIso() });
-        await writeJob(c, job);
-    } catch {
-        await updateJob(c, job, {
-            status: 'failed',
-            errorCode: 'IMPORT_FAILED',
-            errorMessage: 'Import failed. Retry the import.',
-            completedAt: nowIso(),
-        });
-    }
+function scheduleProductImport(c:ExportContext,service:ProductImportExecutionAdapter,jobId:string):void {
+    c.executionCtx.waitUntil(service.process(jobId).catch(error=>{
+        console.error(JSON.stringify({level:'error',service:'letbuyy-api',event:'product_import_work_stopped',
+            error_code:error instanceof AppError?error.code:'INTERNAL_ERROR'}));
+    }));
 }
 
+async function productImportRequest(c:ExportContext,storeId:string) {
+    const scope=await resolveExportScope(c,storeId);
+    if('error'in scope)return scope;
+    return {...scope,service:new ProductImportExecutionAdapter(c.env,storeId,scope.actorId)};
+}
+
+function importRequestMismatch(c:ExportContext,storeId:string,key:string):Response|null {
+    const headerKey=c.req.header('X-Idempotency-Key')||c.req.header('Idempotency-Key');
+    const selected=c.req.header('X-Store-ID');
+    if(headerKey!==key||(selected&&selected!==storeId))return c.json({error:{code:'PRODUCT_IMPORT_REQUEST_MISMATCH',
+        message:'Recover the original import from the selected store.'}},400,{'Cache-Control':'private, no-store'});
+    return null;
+}
+
+for(const action of ['retry','stop'] as const)router.post(`/jobs/:id/${action}`,async c=>{
+    const parsed=ProductImportJobCommandSchema.safeParse(await c.req.json().catch(()=>null));
+    if(!parsed.success||parsed.data.job_id!==c.req.param('id'))return c.json({error:{code:'VALIDATION_ERROR',message:'A current original import request is required.'}},400);
+    const input=parsed.data,mismatch=importRequestMismatch(c,input.store_id,input.idempotency_key);if(mismatch)return mismatch;
+    const scope=await productImportRequest(c,input.store_id);if('error'in scope)return scope.error;
+    const job=await scope.service.command(input.job_id,input.idempotency_key,action==='stop');
+    if(action==='retry'&&job.status==='queued')scheduleProductImport(c,scope.service,job.id);
+    return c.json(success({job}),action==='stop'?200:202,{'Cache-Control':'private, no-store'});
+});
+
+router.get('/imports/capabilities',async c=>{
+    const store=UuidSchema.safeParse(c.req.query('store_id'));
+    if(!store.success)throw new AppError('Choose a store.',400,'VALIDATION_ERROR');
+    const scope=await productImportRequest(c,store.data);if('error'in scope)return scope.error;
+    if(!productImportRecoveryConfigured(c.env))throw new AppError('CSV import is temporarily unavailable. Existing work can still be viewed.',503,'PRODUCT_IMPORT_UNAVAILABLE');
+    return c.json(success(await scope.service.capabilities()),200,{'Cache-Control':'private, no-store'});
+});
+
+router.get('/imports/by-key/:key',async c=>{
+    const store=UuidSchema.safeParse(c.req.query('store_id')),key=UuidSchema.safeParse(c.req.param('key'));
+    if(!store.success||!key.success)throw new AppError('An original import identity is required.',400,'VALIDATION_ERROR');
+    const scope=await productImportRequest(c,store.data);if('error'in scope)return scope.error;
+    return c.json(success({job:await scope.service.readKey(key.data)}),200,{'Cache-Control':'private, no-store'});
+});
+
+router.get('/imports',async c=>{
+    const parsed=ProductImportHistoryQuerySchema.safeParse(c.req.query());
+    if(!parsed.success)throw new AppError('Review the import page.',400,'VALIDATION_ERROR');
+    const q=parsed.data,scope=await productImportRequest(c,q.store_id);if('error'in scope)return scope.error;
+    return c.json(success(await scope.service.history(q.page,q.limit)),200,{'Cache-Control':'private, no-store'});
+});
+
+router.get('/jobs/:id/rows',async c=>{
+    const parsed=ProductImportRowsQuerySchema.safeParse(c.req.query());
+    if(!parsed.success||!UuidSchema.safeParse(c.req.param('id')).success)throw new AppError('Review the import rows page.',400,'VALIDATION_ERROR');
+    const q=parsed.data,scope=await productImportRequest(c,q.store_id);if('error'in scope)return scope.error;
+    return c.json(success(await scope.service.rows(c.req.param('id'),q.page,q.limit,q.status)),200,{'Cache-Control':'private, no-store'});
+});
+
+router.get('/imports/:id',async c=>{
+    const store=UuidSchema.safeParse(c.req.query('store_id')),id=UuidSchema.safeParse(c.req.param('id'));
+    if(!store.success||!id.success)throw new AppError('Choose a valid import and store.',400,'VALIDATION_ERROR');
+    const scope=await productImportRequest(c,store.data);if('error'in scope)return scope.error;
+    const job=await scope.service.read(id.data);
+    if(!job)throw new AppError('Import not found',404,'NOT_FOUND');
+    return c.json(success({job}),200,{'Cache-Control':'private, no-store'});
+});
+
 router.get('/jobs/:id', async (c) => {
+    if(!UuidSchema.safeParse(c.req.param('id')).success)return c.json({error:{code:'VALIDATION_ERROR',message:'Choose a valid import or export.'}},400);
+    // Existing export/legacy-import metadata retains its own storage contract.
+    // Durable v2 imports use /imports/:id and never impersonate an export file.
     const job = await readAccessibleJob(c, c.req.param('id'));
     if (!job) {
         return c.json({ error: { code: 'NOT_FOUND', message: 'Export job not found' } }, 404);
@@ -826,53 +779,30 @@ router.get('/customers', async (c) => {
     }
 });
 
-router.post('/import-products', async (c) => {
+router.post('/import-products',c=>c.json({error:{code:'PRODUCT_IMPORT_PROTOCOL_REQUIRED',message:'Update the Merchant app to import CSV safely. Existing legacy import records are read-only.'}},410,{'Cache-Control':'private, no-store'}));
+
+router.post('/imports/stop-registration',async c=>{
+    const parsed=ProductImportRegistrationStopSchema.safeParse(await c.req.json().catch(()=>null));
+    if(!parsed.success)throw new AppError('Use the original import identity.',400,'VALIDATION_ERROR');
+    const input=parsed.data,mismatch=importRequestMismatch(c,input.store_id,input.idempotency_key);if(mismatch)return mismatch;
+    const scope=await productImportRequest(c,input.store_id);if('error'in scope)return scope.error;
+    const job=await scope.service.stopRegistration(input.idempotency_key,input.source_sha256);
+    return c.json(success({job}),200,{'Cache-Control':'private, no-store'});
+});
+
+router.post('/imports/register', async (c) => {
     try {
-        const auth = c.get('auth');
-        const db = getSupabaseAdmin(c);
-        const customUser = await resolveCustomUser(db, auth.user);
-
-        if (!customUser) {
-            return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
-        }
-
-        const parsed = ProductCsvImportSchema.safeParse(await c.req.json().catch(() => null));
-        if (!parsed.success) {
-            return c.json({ error: { code: 'VALIDATION', message: 'store_id and csv string required' } }, 400);
-        }
-        const { store_id: storeId, csv } = parsed.data;
-
-        const ownsStore = await verifySiteOwnership(db, storeId, customUser.id, auth.user.storeId);
-        if (!ownsStore) {
-            return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
-        }
-
-        const inputs = productCsvInputs(csv, storeId);
-
-        const sourceJobId = crypto.randomUUID();
-        const sourceKey = exportSourceKey(sourceJobId);
-        await assertExportStorage(c).put(sourceKey, csv, {
-            httpMetadata: { contentType: 'text/csv; charset=utf-8' },
-        });
-
-        const job = await createJob(c, {
-            type: 'product_import',
-            actorId: customUser.id,
-            storeIds: [storeId],
-            filename: `product-import-${dateStamp()}.csv`,
-            sourceKey,
-            metadata: {
-                requestedRows: inputs.length,
-                processor: 'api-gateway.waitUntil',
-                sourceStorage: 'Cloudflare R2',
-            },
-        });
-
-        c.executionCtx.waitUntil(processProductImport(c, job.id));
-        return c.json(success({ job: await serializeJob(c, job) }), 202);
-    } catch (error) {
-        if (error instanceof CsvInputError) return c.json({ error: { code: error.code, message: error.publicMessage } }, error.status);
-        return c.json({ error: { code: 'IMPORT_UNAVAILABLE', message: 'Import unavailable' } }, 503);
+        const parsed=ProductCsvImportSchema.safeParse(await c.req.json().catch(()=>null));
+        if(!parsed.success)return c.json({error:{code:'VALIDATION_ERROR',message:'A valid original CSV import request is required.'}},400);
+        const input=parsed.data,mismatch=importRequestMismatch(c,input.store_id,input.idempotency_key);if(mismatch)return mismatch;
+        const scope=await productImportRequest(c,input.store_id);if('error'in scope)return scope.error;
+        if(!productImportRecoveryConfigured(c.env))throw new AppError('CSV import is temporarily unavailable. Keep the original file.',503,'PRODUCT_IMPORT_UNAVAILABLE');
+        const job=await scope.service.register(input);
+        if(job.status==='queued')scheduleProductImport(c,scope.service,job.id);
+        return c.json(success({job}),202,{'Cache-Control':'private, no-store'});
+    }catch(error){
+        if(error instanceof CsvInputError)return c.json({error:{code:error.code,message:error.publicMessage}},error.status);
+        throw error;
     }
 });
 

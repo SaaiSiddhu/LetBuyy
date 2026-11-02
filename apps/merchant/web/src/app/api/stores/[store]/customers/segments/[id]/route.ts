@@ -12,7 +12,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
         if (resolved.error) return resolved.error
 
         const body = await request.json() as Record<string, unknown>
-        const segment = await createMerchantApiClient().customers.segments.update(
+        const segment = await createMerchantApiClient(resolved.storeId).customers.segments.update(
             id,
             {
                 ...(body.name !== undefined ? { name: body.name as string } : {}),

@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import test from 'node:test';
 
@@ -21,8 +21,12 @@ const migration215Source = readFileSync(
     join(repoRoot, 'database/supabase/migrations/215_fix_gift_card_digest_search_path.sql'),
     'utf8',
 );
-const migration411Source = readFileSync(
-    join(repoRoot, 'database/supabase/migrations/411_gift_card_issue_replay_integrity.sql'),
+const migrationDirectory = join(repoRoot, 'database/supabase/migrations');
+const giftCardIssueMigrations = readdirSync(migrationDirectory)
+    .filter(name => /^\d+_gift_card_issue_replay_integrity\.sql$/.test(name));
+assert.equal(giftCardIssueMigrations.length, 1, 'exactly one gift-card issue replay migration must exist');
+const giftCardIssueSource = readFileSync(
+    join(migrationDirectory, giftCardIssueMigrations[0]),
     'utf8',
 );
 
@@ -44,9 +48,9 @@ test('migration 215 qualifies every gift-card digest() call to extensions.digest
 });
 
 test('latest gift-card issue RPC restores the lock and marks replay without revealing a new code', () => {
-    assert.match(migration411Source, /pg_advisory_xact_lock\(hashtextextended\(p_store_id::text \|\| ':' \|\| p_idempotency_key, 1\)\)/);
-    assert.match(migration411Source, /'replayed', v_replayed/);
-    assert.match(migration411Source, /gift card issue intent conflict/);
-    assert.match(migration411Source, /extensions\.digest\(p_code, 'sha256'\)/);
-    assert.match(migration411Source, /CREATE UNIQUE INDEX IF NOT EXISTS gift_card_accounts_site_issue_key_unique/);
+    assert.match(giftCardIssueSource, /pg_advisory_xact_lock\(hashtextextended\(p_store_id::text \|\| ':' \|\| p_idempotency_key, 1\)\)/);
+    assert.match(giftCardIssueSource, /'replayed', v_replayed/);
+    assert.match(giftCardIssueSource, /gift card issue intent conflict/);
+    assert.match(giftCardIssueSource, /extensions\.digest\(p_code, 'sha256'\)/);
+    assert.match(giftCardIssueSource, /CREATE UNIQUE INDEX IF NOT EXISTS gift_card_accounts_site_issue_key_unique/);
 });

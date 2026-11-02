@@ -209,3 +209,37 @@ forward JSON to the Gateway. The browser sends file bytes directly to the
 signed Mumbai S3 host; neither Next route parses or forwards the file.
 The Gateway retains tenant, receipt, object-version, scan, and provider authority.
 These routes are test-only at the Gateway and do not open real-document intake.
+
+
+### Merchant warehouse request recovery — 31 October 2026
+
+The maintained route inventory and lint baseline advance together from **231 to
+232** for `apps/merchant/web/src/app/api/v1/stores/[store]/inventory/commands/stop/route.ts`.
+The existing Merchant `gateway-proxy` classification applies. The versioned route
+checks the browser Origin, current account, owned site and matching original
+body/header key, validates the canonical normalized request, and calls the typed
+Gateway SDK. It returns a private acknowledgement bound to the current actor/site.
+It has no database access, token issuance, provider call or local stock writer.
+
+The canonical `/v1/inventory/commands/stop` owner serializes with the original
+warehouse key: it returns an already-applied acknowledgement or stores a cancelled
+request acknowledgement that prevents delayed application. It does not undo an
+applied business stock movement. Those decisions and immutable receipts stay in
+Gateway/SQL. The six actual Next proxy/SDK paths have 55 local positive and
+Origin/account/site/key/receipt refusal tests; source qualification is distinct
+from hosted or device acceptance. The route freeze and inventory/baseline equality
+tests remain enforced for every class; no new exception or runtime is introduced.
+
+
+### Merchant warehouse protocol preflight — 31 October 2026
+
+The paired maintained inventory and lint baseline move **232 → 233** for
+`apps/merchant/web/src/app/api/v1/stores/[store]/inventory/commands/capabilities/route.ts`.
+This is another existing-class `gateway-proxy`, with current account/site binding,
+a no-store GET and typed Gateway descriptor forwarding. It neither accesses a
+database nor grants a permission lease or migration-readiness claim. New clients
+must confirm the guarded protocol before dispatch to prevent bootstrap into an
+older split-commit Gateway/BFF. Actual command authority/effects still live in the
+canonical Gateway/SQL owner. No new runtime, issuer or local stock writer is added.
+
+Merchant warehouse fresh detail reads (31 October 2026): `apps/merchant/web/src/app/api/stores/[store]/purchase-orders/[id]/route.ts` and `apps/merchant/web/src/app/api/stores/[store]/transfers/[id]/route.ts` are current-account, owned-site, no-store GET proxies in the existing `gateway-proxy` class. Validation and stock authority remain in Gateway/shared contracts. The maintained technical inventory becomes 235; the freeze validator remains unchanged.

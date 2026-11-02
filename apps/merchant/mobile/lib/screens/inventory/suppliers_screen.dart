@@ -1,3 +1,9 @@
+import '../../widgets/shared/warehouse_command_recovery.dart';
+import 'package:letbuyy_models/letbuyy_models.dart'
+    show warehouseOptionStatuses, WarehouseCommandIntent;
+import '../../widgets/shared/warehouse_list_filters.dart';
+import '../../services/api_client.dart' show ApiException;
+import '../../widgets/shared/merchant_store_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../app/store_context.dart';
@@ -19,57 +25,121 @@ class _InventorySuppliersScreenState extends State<InventorySuppliersScreen> {
   bool _isLoading = true;
   String? _storeId;
   String? _error;
+  Object? _viewKey;
+  int _readGeneration = 0;
+  int _page = 1;
+  String _search = '', _status = '', _sort = 'name_asc';
+  bool get _filtered => _search.isNotEmpty || _status.isNotEmpty;
+  int? _total;
+  bool _more = false;
+  bool _warehouseReady = false, _warehouseBusy = false;
+  MerchantStoreView? get _view =>
+      _storeId == null ? null : (key: _viewKey, storeId: _storeId!);
+  bool _matches(MerchantStoreView? view) =>
+      merchantStoreViewCurrent(context, view);
 
   late AppThemeColors colors;
 
   @override
   void initState() {
     super.initState();
+    _viewKey = context.read<StoreContext>().requestContextKey;
     _load();
   }
 
   Future<void> _load() async {
+    if (!mounted) return;
+    final generation = ++_readGeneration;
     setState(() {
       _isLoading = true;
       _error = null;
+      _total = null;
+      _more = false;
+      _suppliers = [];
     });
-
+    final stores = context.read<StoreContext>();
     try {
-      _storeId ??=
-          (await context.read<StoreContext>().ensureSelectedStore())?.id;
-      if (_storeId == null) {
+      await stores.ensureSelectedStore();
+      if (!mounted || generation != _readGeneration) return;
+      _viewKey = stores.requestContextKey;
+      _storeId = stores.selectedStoreId;
+      final view = _view;
+      if (view == null) {
         setState(() {
-          _suppliers = const [];
           _isLoading = false;
+          _error = 'Select a store to continue.';
         });
         return;
       }
-      final rows = await context.read<InventoryService>().fetchSuppliers(
-        _storeId!,
+      final service = context.read<InventoryService>();
+      final rows = await service.fetchSuppliers(
+        view.storeId,
+        page: _page,
+        search: _search.isEmpty ? null : _search,
+        status: _status.isEmpty ? 'all' : _status,
+        sort: _sort,
       );
-      if (mounted) {
-        setState(() {
-          _suppliers = rows;
-          _isLoading = false;
-        });
-      }
+      if (!_matches(view) || generation != _readGeneration) return;
+      setState(() {
+        _suppliers = rows;
+        _total = service.suppliersTotal;
+        _more = service.suppliersHasMore;
+        _isLoading = false;
+      });
     } catch (error) {
-      if (mounted) {
-        setState(() {
-          _error = error.toString();
-          _isLoading = false;
-        });
-      }
+      if (!mounted || generation != _readGeneration) return;
+      if (_viewKey != stores.requestContextKey &&
+          stores.selectedStoreId != null)
+        return;
+      if (_viewKey != stores.requestContextKey &&
+          error is ApiException &&
+          error.code == 'SESSION_CONTEXT_CHANGED')
+        return;
+      setState(() {
+        _viewKey = stores.requestContextKey;
+        _storeId = stores.selectedStoreId;
+        _suppliers = [];
+        _error =
+            'Check your connection and current store permissions, then refresh.';
+        _isLoading = false;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
     colors = AppThemeColors.of(context);
+    final stores = context.watch<StoreContext>();
+    if (_viewKey != stores.requestContextKey) {
+      _viewKey = stores.requestContextKey;
+      ++_readGeneration;
+      _storeId = null;
+      _page = 1;
+      _warehouseReady = false;
+      _warehouseBusy = false;
+      _search = '';
+      _status = '';
+      _sort = 'name_asc';
+      _total = null;
+      _more = false;
+      _suppliers = [];
+      _error = null;
+      _isLoading = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _load();
+      });
+    }
     return Scaffold(
       backgroundColor: colors.bgStart,
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: _storeId == null ? null : _createSupplier,
+        onPressed:
+            !_warehouseReady ||
+                _warehouseBusy ||
+                _storeId == null ||
+                _isLoading ||
+                _error != null
+            ? null
+            : _createSupplier,
         backgroundColor: mobile_tokens.LetbuyyColorTokens.brandPrimary,
         foregroundColor: Colors.white,
         icon: const Icon(Icons.person_add_alt_1_outlined),
@@ -81,12 +151,91 @@ class _InventorySuppliersScreenState extends State<InventorySuppliersScreen> {
           child: Column(
             children: [
               _header(),
+              if (_view != null)
+                WarehouseCommandRecovery(
+                  view: _view!,
+                  onReady: (ready) {
+                    if (mounted && _warehouseReady != ready)
+                      setState(() => _warehouseReady = ready);
+                  },
+                  onResolved: _load,
+                ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton.icon(
+                    onPressed: _storeId == null ? null : _filter,
+                    icon: const Icon(Icons.filter_list),
+                    label: Text(
+                      _search.isEmpty && _status.isEmpty && _sort == 'name_asc'
+                          ? 'Filter and sort'
+                          : 'Filters applied · Edit',
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  children: [
+                    IconButton(
+                      tooltip: 'Previous page',
+                      onPressed: _isLoading || _page == 1
+                          ? null
+                          : () {
+                              setState(() => _page--);
+                              _load();
+                            },
+                      icon: const Icon(Icons.chevron_left),
+                    ),
+                    Expanded(
+                      child: Text(
+                        _total == null
+                            ? 'Page $_page · Count unavailable'
+                            : '$_total matching records · Page $_page',
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    IconButton(
+                      tooltip: 'Next page',
+                      onPressed: _isLoading || !_more
+                          ? null
+                          : () {
+                              setState(() => _page++);
+                              _load();
+                            },
+                      icon: const Icon(Icons.chevron_right),
+                    ),
+                  ],
+                ),
+              ),
               Expanded(child: _isLoading ? _loading() : _body()),
             ],
           ),
         ),
       ),
     );
+  }
+
+  Future<void> _filter() async {
+    final view = _view;
+    if (!_matches(view)) return;
+    final result = await showWarehouseListFilters(
+      context,
+      view: view!,
+      initial: (search: _search, status: _status, sort: _sort),
+      statuses: warehouseOptionStatuses,
+      documents: false,
+    );
+    if (!_matches(view) || result == null) return;
+    setState(() {
+      _search = result.search;
+      _status = result.status;
+      _sort = result.sort;
+      _page = 1;
+    });
+    _load();
   }
 
   Widget _header() {
@@ -139,8 +288,12 @@ class _InventorySuppliersScreenState extends State<InventorySuppliersScreen> {
     if (_suppliers.isEmpty) {
       return _centerState(
         Icons.handshake_outlined,
-        'No suppliers yet',
-        'Add suppliers before creating purchase orders.',
+        _filtered
+            ? 'No matching suppliers'
+            : (_page == 1 ? 'No suppliers yet' : 'No records on this page'),
+        _filtered
+            ? 'Clear or change the filters to find other records.'
+            : 'Add suppliers before creating purchase orders.',
       );
     }
     return RefreshIndicator(
@@ -214,6 +367,8 @@ class _InventorySuppliersScreenState extends State<InventorySuppliersScreen> {
   }
 
   Future<void> _createSupplier() async {
+    final view = _view;
+    if (!_matches(view) || !_warehouseReady || _warehouseBusy) return;
     final input = await showModalBottomSheet<InventorySupplierInput>(
       context: context,
       isScrollControlled: true,
@@ -221,18 +376,30 @@ class _InventorySuppliersScreenState extends State<InventorySuppliersScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
       ),
-      builder: (_) => _SupplierForm(storeId: _storeId!, colors: colors),
+      builder: (_) => guardMerchantStoreView(
+        view,
+        _SupplierForm(storeId: view!.storeId, colors: colors),
+      ),
     );
-    if (input == null) return;
+    if (input == null || !_matches(view) || input.storeId != view!.storeId)
+      return;
 
+    if (!_warehouseReady || _warehouseBusy) return;
+    setState(() => _warehouseBusy = true);
     try {
       await context.read<InventoryService>().createSupplier(input);
-      if (mounted) {
+      if (_matches(view)) {
         _showSnackBar('Supplier created');
         _load();
       }
     } catch (error) {
-      if (mounted) _showSnackBar(error.toString(), isError: true);
+      if (_matches(view))
+        _showSnackBar(
+          'Creation could not be confirmed. Check saved requests and current store access before trying again.',
+          isError: true,
+        );
+    } finally {
+      if (_matches(view)) setState(() => _warehouseBusy = false);
     }
   }
 
@@ -300,6 +467,8 @@ class _SupplierFormState extends State<_SupplierForm> {
   final _phone = TextEditingController();
   final _address = TextEditingController();
 
+  String? _validation;
+
   @override
   void dispose() {
     _name.dispose();
@@ -339,20 +508,28 @@ class _SupplierFormState extends State<_SupplierForm> {
             _field(_phone, 'Phone'),
             _field(_address, 'Address'),
             const SizedBox(height: 10),
+            if (_validation != null)
+              Text(_validation!, style: TextStyle(color: colors.error)),
             FilledButton.icon(
               onPressed: () {
-                if (_name.text.trim().isEmpty) return;
-                Navigator.pop(
-                  context,
-                  InventorySupplierInput(
-                    storeId: widget.storeId,
-                    name: _name.text,
-                    contactName: _contact.text,
-                    email: _email.text,
-                    phone: _phone.text,
-                    address: _address.text,
-                  ),
+                final input = InventorySupplierInput(
+                  storeId: widget.storeId,
+                  name: _name.text,
+                  contactName: _contact.text,
+                  email: _email.text,
+                  phone: _phone.text,
+                  address: _address.text,
                 );
+                try {
+                  WarehouseCommandIntent.supplier(input);
+                } on FormatException {
+                  setState(
+                    () => _validation =
+                        'Enter a supplier name, valid email, and contact details within their limits.',
+                  );
+                  return;
+                }
+                Navigator.pop(context, input);
               },
               icon: const Icon(Icons.save_outlined),
               label: const Text('Create supplier'),

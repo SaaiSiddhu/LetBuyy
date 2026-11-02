@@ -7,6 +7,7 @@ import 'package:dio/dio.dart';
 import 'graphql.dart';
 import 'types.dart';
 import 'marketplace.dart';
+import 'product_import.dart';
 
 class ApiClient {
   ApiClient({
@@ -21,6 +22,7 @@ class ApiClient {
     RequestIdFactory? requestIdFactory,
     ApiUnauthorizedHandler? unauthorizedHandler,
     bool attachSessionCookie = false,
+    String sessionCookieName = 'lb_session',
     Dio? dio,
     Duration connectTimeout = const Duration(seconds: 30),
     Duration receiveTimeout = const Duration(seconds: 30),
@@ -35,10 +37,17 @@ class ApiClient {
        _requestIdFactory = requestIdFactory,
        _unauthorizedHandler = unauthorizedHandler,
        _attachSessionCookie = attachSessionCookie,
+       _sessionCookieName = sessionCookieName,
        _maxRetries = maxRetries,
        _dio = dio ?? Dio() {
     if (baseUrl.trim().isEmpty) {
       throw ArgumentError('LetBuyy API client requires a baseUrl');
+    }
+    if (!const {
+      'lb_session',
+      'lb_session_staging',
+    }.contains(sessionCookieName)) {
+      throw ArgumentError('Unsupported Merchant session cookie name');
     }
 
     final trimmedBase = _trimTrailingSlash(baseUrl.trim());
@@ -66,6 +75,7 @@ class ApiClient {
         defaultHeaders: _defaultHeaders,
         requestIdFactory: _requestIdFactory,
         attachSessionCookie: _attachSessionCookie,
+        sessionCookieName: _sessionCookieName,
         contextVersionProvider: _contextVersionProvider,
       ),
     );
@@ -95,6 +105,9 @@ class ApiClient {
   late final AiApi ai = AiApi(this);
   late final CatalogApi categories = CatalogApi(this, '/categories');
   late final InventoryApi inventory = InventoryApi(this);
+  late final CommerceAnalyticsApi commerceAnalytics = CommerceAnalyticsApi(
+    this,
+  );
   late final PagesApi pages = PagesApi(this);
   late final BlogApi blog = BlogApi(this);
   late final MediaApi media = MediaApi(this);
@@ -126,6 +139,7 @@ class ApiClient {
   final RequestIdFactory? _requestIdFactory;
   final ApiUnauthorizedHandler? _unauthorizedHandler;
   final bool _attachSessionCookie;
+  final String _sessionCookieName;
   final Dio _dio;
   final int _maxRetries;
 
@@ -150,6 +164,7 @@ class ApiClient {
     RequestIdFactory? requestIdFactory,
     ApiUnauthorizedHandler? unauthorizedHandler,
     bool? attachSessionCookie,
+    String? sessionCookieName,
     Dio? dio,
     int? maxRetries,
   }) {
@@ -165,6 +180,7 @@ class ApiClient {
       requestIdFactory: requestIdFactory ?? _requestIdFactory,
       unauthorizedHandler: unauthorizedHandler ?? _unauthorizedHandler,
       attachSessionCookie: attachSessionCookie ?? _attachSessionCookie,
+      sessionCookieName: sessionCookieName ?? _sessionCookieName,
       dio: dio ?? Dio(),
       maxRetries: maxRetries ?? _maxRetries,
     );
@@ -441,6 +457,83 @@ class ApiClient {
     ApiRequestOptions? options,
   }) {
     return requestPaginated(path, options: options, decoder: asJsonMap);
+  }
+
+  /// Compose the same finite complete settings view as the TypeScript client.
+  /// Never publish a first page as the whole configuration or cross contexts.
+  Future<List<JsonMap>> _settingsList(
+    String path,
+    String storeId, {
+    ApiRequestOptions? options,
+  }) async {
+    final version = options?.expectedContextVersion ?? captureRequestContext(),
+        rows = <JsonMap>[],
+        ids = <String>{};
+    int? observedTotal;
+    for (var number = 1; number <= 10; number++) {
+      final page = await requestPaginatedJson(
+        path,
+        options: (options ?? const ApiRequestOptions()).copyWith(
+          storeId: storeId,
+          expectedContextVersion: version,
+          query: {'store_id': storeId, 'page': number, 'limit': 100},
+        ),
+      );
+      final meta = page.meta, total = meta['total'];
+      if (captureRequestContext() != version)
+        throw const ApiException(
+          message: 'Store access changed. Reload settings.',
+          statusCode: 409,
+          code: 'SESSION_CONTEXT_CHANGED',
+        );
+      if (meta['store_id'] != storeId ||
+          meta['page'] != number ||
+          meta['per_page'] != 100 ||
+          total is! int ||
+          total < 0 ||
+          meta['has_next'] is! bool ||
+          meta['has_prev'] != (number > 1) ||
+          meta['total_pages'] != (total / 100).ceil() ||
+          meta['has_next'] != (number * 100 < total) ||
+          page.data.length != (total - (number - 1) * 100).clamp(0, 100) ||
+          observedTotal != null && observedTotal != total) {
+        throw const ApiException(
+          message:
+              'The complete settings view could not be verified. Reload settings.',
+          statusCode: 503,
+          code: 'SETTINGS_PAGE_UNVERIFIED',
+        );
+      }
+      if (total > 1000)
+        throw const ApiException(
+          message: 'This settings collection needs a paginated view.',
+          statusCode: 409,
+          code: 'SETTINGS_LIMIT_REACHED',
+        );
+      observedTotal = total;
+      for (final row in page.data) {
+        if (row['id'] is! String ||
+            row['id'].toString().isEmpty ||
+            !ids.add(row['id'] as String) ||
+            row['store_id'] != null && row['store_id'] != storeId ||
+            row['site_id'] != null && row['site_id'] != storeId ||
+            row['shipping_zones'] is Map &&
+                (row['shipping_zones'] as Map)['store_id'] != storeId) {
+          throw const ApiException(
+            message: 'The selected store settings could not be confirmed.',
+            statusCode: 503,
+            code: 'SETTINGS_SCOPE_UNVERIFIED',
+          );
+        }
+        rows.add(row);
+      }
+      if (meta['has_next'] == false) return rows;
+    }
+    throw const ApiException(
+      message: 'This settings collection needs a paginated view.',
+      statusCode: 409,
+      code: 'SETTINGS_LIMIT_REACHED',
+    );
   }
 
   Future<dynamic> request(String path, {ApiRequestOptions? options}) async {
@@ -764,6 +857,86 @@ class CustomDomainsApi {
 
   final ApiClient _client;
 
+  Future<JsonMap> history(
+    String domain,
+    String siteId, {
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/custom/domains/${_encodePathSegment(domain)}/history',
+    options: _mergeOptions(options, query: {'site_id': siteId}),
+  );
+
+  Future<JsonMap> setRedirect(
+    String domain,
+    JsonMap input, {
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/custom/domains/${_encodePathSegment(domain)}',
+    options: _mergeOptions(options, method: HttpMethod.patch, body: input),
+  );
+
+  Future<JsonMap> checkout(String siteId, {ApiRequestOptions? options}) =>
+      _client.requestJson(
+        '/custom/checkout-domain',
+        options: _mergeOptions(options, query: {'site_id': siteId}),
+      );
+
+  Future<JsonMap> prepareCheckout(
+    String siteId, {
+    required ApiRequestOptions options,
+  }) => _client.requestJson(
+    '/custom/checkout-domain',
+    options: _mergeOptions(
+      options,
+      method: HttpMethod.post,
+      body: {'site_id': siteId},
+    ),
+  );
+
+  Future<JsonMap> list(String siteId, {ApiRequestOptions? options}) =>
+      _client.requestJson(
+        '/custom/domains',
+        options: _mergeOptions(options, query: {'site_id': siteId}),
+      );
+
+  Future<JsonMap> connect(JsonMap input, {ApiRequestOptions? options}) =>
+      _client.requestJson(
+        '/custom/domains',
+        options: _mergeOptions(options, method: HttpMethod.post, body: input),
+      );
+
+  Future<JsonMap> verify(JsonMap input, {ApiRequestOptions? options}) =>
+      _client.requestJson(
+        '/custom/domains/verify',
+        options: _mergeOptions(options, method: HttpMethod.post, body: input),
+      );
+
+  Future<JsonMap> setPrimary(
+    String domain,
+    String siteId, {
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/custom/domains/${_encodePathSegment(domain)}/primary',
+    options: _mergeOptions(
+      options,
+      method: HttpMethod.post,
+      body: {'site_id': siteId},
+    ),
+  );
+
+  Future<JsonMap> remove(
+    String domain,
+    String siteId, {
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/custom/domains/${_encodePathSegment(domain)}',
+    options: _mergeOptions(
+      options,
+      method: HttpMethod.delete,
+      query: {'site_id': siteId},
+    ),
+  );
+
   Future<JsonMap> health(
     String domain, {
     required String siteId,
@@ -1004,11 +1177,124 @@ class ProductsApi {
         options: _mergeOptions(options, method: HttpMethod.post, body: input),
       );
 
-  Future<JsonMap> importCsv(JsonMap input, {ApiRequestOptions? options}) =>
-      _client.requestJson(
-        '/export/import-products',
-        options: _mergeOptions(options, method: HttpMethod.post, body: input),
-      );
+  Future<JsonMap> importCsv(JsonMap input, {ApiRequestOptions? options}) {
+    final body = validateProductImportRequest(input);
+    return _client.requestData<JsonMap>(
+      '/export/imports/register',
+      options: _mergeOptions(
+        options,
+        method: HttpMethod.post,
+        body: body,
+        storeId: body['store_id'] as String,
+        idempotencyKey: body['idempotency_key'] as String,
+      ),
+      decoder: asJsonMap,
+    );
+  }
+
+  Future<JsonMap> importCapabilities(
+    String storeId, {
+    ApiRequestOptions? options,
+  }) => _client.requestData<JsonMap>(
+    '/export/imports/capabilities',
+    options: _mergeOptions(
+      options,
+      query: {'store_id': storeId},
+      storeId: storeId,
+    ),
+    decoder: asJsonMap,
+  );
+
+  Future<JsonMap> stopImportRegistration(
+    JsonMap input, {
+    ApiRequestOptions? options,
+  }) => _client.requestData<JsonMap>(
+    '/export/imports/stop-registration',
+    options: _mergeOptions(
+      options,
+      method: HttpMethod.post,
+      body: input,
+      storeId: input['store_id'] as String?,
+      idempotencyKey: input['idempotency_key'] as String?,
+    ),
+    decoder: asJsonMap,
+  );
+  Future<JsonMap> importByKey(
+    String storeId,
+    String key, {
+    ApiRequestOptions? options,
+  }) => _client.requestData<JsonMap>(
+    '/export/imports/by-key/${_encodePathSegment(key)}',
+    options: _mergeOptions(
+      options,
+      query: {'store_id': storeId},
+      storeId: storeId,
+    ),
+    decoder: asJsonMap,
+  );
+  Future<JsonMap> importJob(
+    String storeId,
+    String id, {
+    ApiRequestOptions? options,
+  }) => _client.requestData<JsonMap>(
+    '/export/imports/${_encodePathSegment(id)}',
+    options: _mergeOptions(
+      options,
+      query: {'store_id': storeId},
+      storeId: storeId,
+    ),
+    decoder: asJsonMap,
+  );
+  Future<JsonMap> importHistory(
+    String storeId, {
+    int page = 1,
+    int limit = 20,
+    ApiRequestOptions? options,
+  }) => _client.requestData<JsonMap>(
+    '/export/imports',
+    options: _mergeOptions(
+      options,
+      query: {'store_id': storeId, 'page': page, 'limit': limit},
+      storeId: storeId,
+    ),
+    decoder: asJsonMap,
+  );
+  Future<JsonMap> importRows(
+    String storeId,
+    String id, {
+    int page = 1,
+    int limit = 20,
+    String status = 'all',
+    ApiRequestOptions? options,
+  }) => _client.requestData<JsonMap>(
+    '/export/jobs/${_encodePathSegment(id)}/rows',
+    options: _mergeOptions(
+      options,
+      query: {
+        'store_id': storeId,
+        'page': page,
+        'limit': limit,
+        'status': status,
+      },
+      storeId: storeId,
+    ),
+    decoder: asJsonMap,
+  );
+  Future<JsonMap> recoverImport(
+    JsonMap input, {
+    required bool stop,
+    ApiRequestOptions? options,
+  }) => _client.requestData<JsonMap>(
+    '/export/jobs/${_encodePathSegment(input['job_id'] as String)}/${stop ? 'stop' : 'retry'}',
+    options: _mergeOptions(
+      options,
+      method: HttpMethod.post,
+      body: input,
+      storeId: input['store_id'] as String?,
+      idempotencyKey: input['idempotency_key'] as String?,
+    ),
+    decoder: asJsonMap,
+  );
 }
 
 class OrdersApi {
@@ -2434,19 +2720,87 @@ class CatalogApi {
       );
 }
 
+class CommerceAnalyticsApi {
+  const CommerceAnalyticsApi(this._client);
+  final ApiClient _client;
+  Future<JsonMap> supplierMetrics({
+    QueryParams? query,
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/commerce-analytics/supplier-metrics',
+    options: _mergeOptions(options, query: query),
+  );
+  Future<JsonMap> warehouseMetrics({
+    QueryParams? query,
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/commerce-analytics/warehouse-metrics',
+    options: _mergeOptions(options, query: query),
+  );
+  Future<JsonMap> transferMetrics({
+    QueryParams? query,
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/commerce-analytics/transfer-metrics',
+    options: _mergeOptions(options, query: query),
+  );
+  Future<JsonMap> operationsSummary({
+    QueryParams? query,
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/commerce-analytics/operations-summary',
+    options: _mergeOptions(options, query: query),
+  );
+}
+
 class InventoryApi {
   const InventoryApi(this._client);
 
   final ApiClient _client;
 
-  Future<List<JsonMap>> locations({
+  Future<JsonMap> commandCapabilities({
     required String storeId,
     ApiRequestOptions? options,
-  }) => _client.requestData(
+  }) => _client.requestJson(
+    '/inventory/command-capabilities',
+    options: _mergeOptions(
+      (options ?? const ApiRequestOptions()).copyWith(
+        storeId: storeId,
+        headers: {...?options?.headers, 'Cache-Control': 'no-cache'},
+      ),
+      query: {'store_id': storeId},
+    ),
+  );
+
+  Future<JsonMap> stopWarehouseCommand(
+    JsonMap input, {
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/inventory/commands/stop',
+    options: _mergeOptions(options, method: HttpMethod.post, body: input),
+  );
+
+  Future<PaginatedResponse<JsonMap>> locations({
+    required String storeId,
+    int page = 1,
+    int limit = 20,
+    String? search,
+    String status = 'all',
+    String sort = 'name_asc',
+    ApiRequestOptions? options,
+  }) => _client.requestPaginatedJson(
     '/inventory/locations',
-    options: _mergeOptions(options, query: {'store_id': storeId}),
-    decoder: (value) =>
-        asJsonList(value).map(asJsonMap).toList(growable: false),
+    options: _mergeOptions(
+      (options ?? const ApiRequestOptions()).copyWith(storeId: storeId),
+      query: {
+        'store_id': storeId,
+        'page': page,
+        'limit': limit,
+        'status': status,
+        'sort': sort,
+        if (search != null && search.trim().isNotEmpty) 'search': search.trim(),
+      },
+    ),
   );
 
   Future<JsonMap> createLocation(JsonMap input, {ApiRequestOptions? options}) =>
@@ -2455,14 +2809,27 @@ class InventoryApi {
         options: _mergeOptions(options, method: HttpMethod.post, body: input),
       );
 
-  Future<List<JsonMap>> suppliers({
+  Future<PaginatedResponse<JsonMap>> suppliers({
     required String storeId,
+    int page = 1,
+    int limit = 20,
+    String? search,
+    String status = 'all',
+    String sort = 'name_asc',
     ApiRequestOptions? options,
-  }) => _client.requestData(
+  }) => _client.requestPaginatedJson(
     '/inventory/suppliers',
-    options: _mergeOptions(options, query: {'store_id': storeId}),
-    decoder: (value) =>
-        asJsonList(value).map(asJsonMap).toList(growable: false),
+    options: _mergeOptions(
+      (options ?? const ApiRequestOptions()).copyWith(storeId: storeId),
+      query: {
+        'store_id': storeId,
+        'page': page,
+        'limit': limit,
+        'status': status,
+        'sort': sort,
+        if (search != null && search.trim().isNotEmpty) 'search': search.trim(),
+      },
+    ),
   );
 
   Future<JsonMap> createSupplier(JsonMap input, {ApiRequestOptions? options}) =>
@@ -2471,14 +2838,40 @@ class InventoryApi {
         options: _mergeOptions(options, method: HttpMethod.post, body: input),
       );
 
-  Future<List<JsonMap>> purchaseOrders({
+  Future<PaginatedResponse<JsonMap>> purchaseOrders({
+    required String storeId,
+    int page = 1,
+    int limit = 20,
+    String? status,
+    String? search,
+    String sort = 'newest',
+    ApiRequestOptions? options,
+  }) => _client.requestPaginatedJson(
+    '/inventory/purchase-orders',
+    options: _mergeOptions(
+      (options ?? const ApiRequestOptions()).copyWith(storeId: storeId),
+      query: {
+        'store_id': storeId,
+        'page': page,
+        'limit': limit,
+        'sort': sort,
+        if (status != null) 'status': status,
+        if (search != null) 'search': search,
+      },
+    ),
+  );
+
+  Future<JsonMap> purchaseOrder(
+    String id, {
     required String storeId,
     ApiRequestOptions? options,
-  }) => _client.requestData(
-    '/inventory/purchase-orders',
-    options: _mergeOptions(options, query: {'store_id': storeId}),
-    decoder: (value) =>
-        asJsonList(value).map(asJsonMap).toList(growable: false),
+  }) => _client.requestJson(
+    '/inventory/purchase-orders/${_encodePathSegment(id)}',
+    options: _mergeOptions(
+      (options ?? const ApiRequestOptions()).copyWith(storeId: storeId),
+      method: HttpMethod.get,
+      query: {'store_id': storeId},
+    ),
   );
 
   Future<JsonMap> createPurchaseOrder(
@@ -2498,14 +2891,40 @@ class InventoryApi {
     options: _mergeOptions(options, method: HttpMethod.post, body: input),
   );
 
-  Future<List<JsonMap>> transfers({
+  Future<PaginatedResponse<JsonMap>> transfers({
+    required String storeId,
+    int page = 1,
+    int limit = 20,
+    String? status,
+    String? search,
+    String sort = 'newest',
+    ApiRequestOptions? options,
+  }) => _client.requestPaginatedJson(
+    '/inventory/transfers',
+    options: _mergeOptions(
+      (options ?? const ApiRequestOptions()).copyWith(storeId: storeId),
+      query: {
+        'store_id': storeId,
+        'page': page,
+        'limit': limit,
+        'sort': sort,
+        if (status != null) 'status': status,
+        if (search != null) 'search': search,
+      },
+    ),
+  );
+
+  Future<JsonMap> transfer(
+    String id, {
     required String storeId,
     ApiRequestOptions? options,
-  }) => _client.requestData(
-    '/inventory/transfers',
-    options: _mergeOptions(options, query: {'store_id': storeId}),
-    decoder: (value) =>
-        asJsonList(value).map(asJsonMap).toList(growable: false),
+  }) => _client.requestJson(
+    '/inventory/transfers/${_encodePathSegment(id)}',
+    options: _mergeOptions(
+      (options ?? const ApiRequestOptions()).copyWith(storeId: storeId),
+      method: HttpMethod.get,
+      query: {'store_id': storeId},
+    ),
   );
 
   Future<JsonMap> createTransfer(JsonMap input, {ApiRequestOptions? options}) =>
@@ -2537,6 +2956,29 @@ class InventoryApi {
     ApiRequestOptions? options,
   }) => _client.requestPaginatedJson(
     '/inventory/levels',
+    options: _mergeOptions(options, query: query),
+  );
+
+  Future<PaginatedResponse<JsonMap>> history({
+    QueryParams? query,
+    ApiRequestOptions? options,
+  }) => _client.requestPaginatedJson(
+    '/inventory/history',
+    options: _mergeOptions(options, query: query),
+  );
+
+  Future<PaginatedResponse<JsonMap>> reservations({
+    QueryParams? query,
+    ApiRequestOptions? options,
+  }) => _client.requestPaginatedJson(
+    '/inventory/reservations',
+    options: _mergeOptions(options, query: query),
+  );
+  Future<PaginatedResponse<JsonMap>> receipts({
+    QueryParams? query,
+    ApiRequestOptions? options,
+  }) => _client.requestPaginatedJson(
+    '/inventory/receipts',
     options: _mergeOptions(options, query: query),
   );
 
@@ -2779,10 +3221,48 @@ class UploadApi {
 class ShippingApi {
   ShippingApi(ApiClient client)
     : zones = ShippingZonesApi(client),
-      rates = ShippingRatesApi(client);
+      rates = ShippingRatesApi(client),
+      profiles = ShippingProfilesApi(client);
 
   final ShippingZonesApi zones;
   final ShippingRatesApi rates;
+  final ShippingProfilesApi profiles;
+}
+
+class ShippingProfilesApi {
+  const ShippingProfilesApi(this._client);
+  final ApiClient _client;
+  Future<List<JsonMap>> list(String storeId, {ApiRequestOptions? options}) =>
+      _client._settingsList(
+        '/shipping-tax/shipping/profiles',
+        storeId,
+        options: options,
+      );
+  Future<PaginatedResponse<JsonMap>> listPage(
+    String storeId, {
+    int page = 1,
+    int limit = 100,
+    ApiRequestOptions? options,
+  }) => _client.requestPaginatedJson(
+    '/shipping-tax/shipping/profiles',
+    options: _mergeOptions(
+      options,
+      query: {'store_id': storeId, 'page': page, 'limit': limit},
+    ).copyWith(storeId: storeId),
+  );
+  Future<JsonMap> create(JsonMap input, {ApiRequestOptions? options}) =>
+      _client.requestJson(
+        '/shipping-tax/shipping/profiles',
+        options: _mergeOptions(options, method: HttpMethod.post, body: input),
+      );
+  Future<JsonMap> update(
+    String id,
+    JsonMap input, {
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/shipping-tax/shipping/profiles/${_encodePathSegment(id)}',
+    options: _mergeOptions(options, method: HttpMethod.patch, body: input),
+  );
 }
 
 class ShippingZonesApi {
@@ -2791,12 +3271,24 @@ class ShippingZonesApi {
   final ApiClient _client;
 
   Future<List<JsonMap>> list(String storeId, {ApiRequestOptions? options}) =>
-      _client.requestData(
+      _client._settingsList(
         '/shipping-tax/shipping/zones',
-        options: _mergeOptions(options, query: {'store_id': storeId}),
-        decoder: (value) =>
-            asJsonList(value).map(asJsonMap).toList(growable: false),
+        storeId,
+        options: options,
       );
+
+  Future<PaginatedResponse<JsonMap>> listPage(
+    String storeId, {
+    int page = 1,
+    int limit = 100,
+    ApiRequestOptions? options,
+  }) => _client.requestPaginatedJson(
+    '/shipping-tax/shipping/zones',
+    options: _mergeOptions(
+      options,
+      query: {'store_id': storeId, 'page': page, 'limit': limit},
+    ).copyWith(storeId: storeId),
+  );
 
   Future<JsonMap> create(JsonMap input, {ApiRequestOptions? options}) =>
       _client.requestJson(
@@ -2826,12 +3318,24 @@ class ShippingRatesApi {
   final ApiClient _client;
 
   Future<List<JsonMap>> list(String storeId, {ApiRequestOptions? options}) =>
-      _client.requestData(
+      _client._settingsList(
         '/shipping-tax/shipping',
-        options: _mergeOptions(options, query: {'store_id': storeId}),
-        decoder: (value) =>
-            asJsonList(value).map(asJsonMap).toList(growable: false),
+        storeId,
+        options: options,
       );
+
+  Future<PaginatedResponse<JsonMap>> listPage(
+    String storeId, {
+    int page = 1,
+    int limit = 100,
+    ApiRequestOptions? options,
+  }) => _client.requestPaginatedJson(
+    '/shipping-tax/shipping',
+    options: _mergeOptions(
+      options,
+      query: {'store_id': storeId, 'page': page, 'limit': limit},
+    ).copyWith(storeId: storeId),
+  );
 
   Future<JsonMap> create(JsonMap input, {ApiRequestOptions? options}) =>
       _client.requestJson(
@@ -2861,12 +3365,20 @@ class TaxesApi {
   final ApiClient _client;
 
   Future<List<JsonMap>> list(String storeId, {ApiRequestOptions? options}) =>
-      _client.requestData(
-        '/shipping-tax/taxes',
-        options: _mergeOptions(options, query: {'store_id': storeId}),
-        decoder: (value) =>
-            asJsonList(value).map(asJsonMap).toList(growable: false),
-      );
+      _client._settingsList('/shipping-tax/taxes', storeId, options: options);
+
+  Future<PaginatedResponse<JsonMap>> listPage(
+    String storeId, {
+    int page = 1,
+    int limit = 100,
+    ApiRequestOptions? options,
+  }) => _client.requestPaginatedJson(
+    '/shipping-tax/taxes',
+    options: _mergeOptions(
+      options,
+      query: {'store_id': storeId, 'page': page, 'limit': limit},
+    ).copyWith(storeId: storeId),
+  );
 
   Future<JsonMap> create(JsonMap input, {ApiRequestOptions? options}) =>
       _client.requestJson(
@@ -3407,12 +3919,14 @@ ApiRequestOptions _mergeOptions(
   QueryParams? query,
   Object? body,
   String? idempotencyKey,
+  String? storeId,
 }) {
   return (options ?? const ApiRequestOptions()).copyWith(
     method: method,
     query: query,
     body: body,
     idempotencyKey: idempotencyKey,
+    storeId: storeId,
   );
 }
 
@@ -3462,6 +3976,7 @@ class _AuthHeaderInterceptor extends Interceptor {
     required this.defaultHeaders,
     required this.requestIdFactory,
     required this.attachSessionCookie,
+    required this.sessionCookieName,
     required this.contextVersionProvider,
   });
 
@@ -3472,6 +3987,7 @@ class _AuthHeaderInterceptor extends Interceptor {
   final Map<String, String> defaultHeaders;
   final RequestIdFactory? requestIdFactory;
   final bool attachSessionCookie;
+  final String sessionCookieName;
   final Object? Function()? contextVersionProvider;
 
   @override
@@ -3504,7 +4020,8 @@ class _AuthHeaderInterceptor extends Interceptor {
         options.headers['X-LetBuyy-Session-Token'] = token;
         options.headers['Cookie'] = _appendCookieHeader(
           options.headers['Cookie']?.toString(),
-          'lb_session=$token',
+          sessionCookieName,
+          token,
         );
       }
     }
@@ -3541,10 +4058,19 @@ class _AuthHeaderInterceptor extends Interceptor {
   }
 }
 
-String _appendCookieHeader(String? existing, String cookie) {
-  if (existing == null || existing.trim().isEmpty) return cookie;
-  if (existing.contains('lb_session=')) return existing;
-  return '$existing; $cookie';
+String _appendCookieHeader(String? existing, String name, String token) {
+  final parts = (existing ?? '')
+      .split(';')
+      .map((value) => value.trim())
+      .where(
+        (value) =>
+            value.isNotEmpty &&
+            !const {
+              'lb_session',
+              'lb_session_staging',
+            }.contains(value.split('=').first),
+      );
+  return [...parts, '$name=$token'].join('; ');
 }
 
 String _requestIdFromResponse(Response<Object?> response) {
