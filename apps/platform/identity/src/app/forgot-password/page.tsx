@@ -88,6 +88,7 @@ export default function ForgotPasswordPage() {
         try {
             const res = await fetch('/api/auth/send-reset', {
                 method: 'POST',
+                signal: AbortSignal.timeout(20000),
                 headers: (await getAuthHeaders()),
                 body: JSON.stringify({
                     email: email.trim(),

@@ -9,6 +9,9 @@ function internalReturnPath(value: unknown): value is string {
     try { return new URL(value, 'https://checkout.example.invalid').origin === 'https://checkout.example.invalid' } catch { return false }
 }
 const fingerprint = (body: SubscriptionCheckoutBody) => JSON.stringify([body.store_id, body.plan_slug, body.billing_period, body.site_type, body.coupon_code || null])
+export function matchesSubscriptionCheckoutIntent(intent: SubscriptionCheckoutIntent, actorId: string, body: SubscriptionCheckoutBody): boolean {
+    return intent.actorId === actorId && fingerprint(intent.body) === fingerprint(body)
+}
 export class PendingSubscriptionCheckoutError extends Error {
     constructor(public readonly intent: SubscriptionCheckoutIntent) {
         super('A previous checkout is still pending. Recover its original details before starting another checkout.')

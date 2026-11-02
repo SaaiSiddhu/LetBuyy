@@ -118,7 +118,9 @@ export default function PaymentsSettingsPage() {
         {loadError && <Banner variant="critical" title="Payment settings could not load" action={<Button variant="secondary" onClick={() => void loadData()} disabled={saving}>Retry</Button>}>{loadError}</Banner>}
         {formError && <Banner variant="critical" title="Payment settings need attention" action={<Button variant="secondary" onClick={() => void loadData()} disabled={saving}>Reload saved settings</Button>}>{formError}</Banner>}
         {loading || (!current && !loadError) ? <><Skeleton variant="card" /><Skeleton variant="card" /></> : current && <>
-            <PaymentSetupOverview config={current} store={store} />
+            <PaymentSetupOverview config={current} store={store} disabled={controlsUnavailable}
+                onConnectManaged={() => { void mutate('POST', { connection: 'managed_sandbox',
+                    ...(current.revision ? { expected_revision: current.revision } : {}) }) }} />
             <Card><Section title="Payment methods" description="Your connection and store eligibility determine what appears at checkout.">
                 <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
                     <Switch label="Online payments" checked={current.online_payment_enabled}

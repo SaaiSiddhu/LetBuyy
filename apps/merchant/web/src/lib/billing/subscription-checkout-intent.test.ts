@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import {retainSubscriptionCheckoutIntent,completeSubscriptionCheckoutIntent,readPendingSubscriptionCheckoutIntent,PendingSubscriptionCheckoutError} from './subscription-checkout-intent'
+import {retainSubscriptionCheckoutIntent,completeSubscriptionCheckoutIntent,matchesSubscriptionCheckoutIntent,readPendingSubscriptionCheckoutIntent,PendingSubscriptionCheckoutError} from './subscription-checkout-intent'
 class MemoryStorage {
     private values=new Map<string,string>()
     get length(){return this.values.size}
@@ -14,6 +14,14 @@ function locks():Pick<LockManager,'request'>{
     return {request:((name:string,run:()=>unknown)=>{const previous=tails.get(name)??Promise.resolve();const next=previous.catch(()=>{}).then(run);tails.set(name,next);return next}) as LockManager['request']}
 }
 const body={store_id:'synthetic-store-a',plan_slug:'free',billing_period:'monthly',site_type:'store'}
+test('checkout presentation only resumes the saved actor and exact selected terms',async()=>{
+    const intent=await retainSubscriptionCheckoutIntent('actor-a',{...body,coupon_code:'SAVED'},new MemoryStorage(),locks())
+    assert.equal(matchesSubscriptionCheckoutIntent(intent,'actor-a',{...body,coupon_code:'SAVED'}),true)
+    assert.equal(matchesSubscriptionCheckoutIntent(intent,'actor-b',intent.body),false)
+    for(const change of [{store_id:'synthetic-store-b'},{plan_slug:'growth'},{billing_period:'yearly'},{site_type:'marketplace'},{coupon_code:'CHANGED'},{coupon_code:undefined}]){
+        assert.equal(matchesSubscriptionCheckoutIntent(intent,'actor-a',{...intent.body,...change}),false)
+    }
+})
 test('concurrent identical checkout and fresh caller retain the same intent',async()=>{const storage=new MemoryStorage(),gate=locks();let minted=0;const mint=()=>String(++minted);const [a,b]=await Promise.all([retainSubscriptionCheckoutIntent('actor-a',body,storage,gate,mint),retainSubscriptionCheckoutIntent('actor-a',{...body},storage,gate,mint)]);assert.equal(a.key,b.key);const restarted=await retainSubscriptionCheckoutIntent('actor-a',body,storage,locks(),mint);assert.equal(restarted.key,a.key);assert.equal(minted,1)})
 test('an unresolved checkout cannot be replaced by another cadence',async()=>{const storage=new MemoryStorage(),gate=locks();const first=await retainSubscriptionCheckoutIntent('actor-a',body,storage,gate);await assert.rejects(retainSubscriptionCheckoutIntent('actor-a',{...body,billing_period:'yearly'},storage,gate),/pending|recover|original/i);assert.equal((await retainSubscriptionCheckoutIntent('actor-a',body,storage,gate)).key,first.key)})
 test('an unresolved checkout cannot silently become a different store or plan',async()=>{const storage=new MemoryStorage(),gate=locks();await retainSubscriptionCheckoutIntent('actor-a',body,storage,gate);for(const change of [{store_id:'synthetic-store-b'},{plan_slug:'growth'},{coupon_code:'CHANGED'}])await assert.rejects(retainSubscriptionCheckoutIntent('actor-a',{...body,...change},storage,gate),/pending|recover|original/i)})

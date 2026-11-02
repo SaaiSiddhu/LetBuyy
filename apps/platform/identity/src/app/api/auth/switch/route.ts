@@ -1,32 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createSession, destroySession, validateSession } from '@/lib/auth/session'
-import { getSessionCookie, setSessionCookie, addAccount, getAccounts } from '@/lib/auth/cookies'
-import { generateDeviceFingerprint, getOrCreateDevice } from '@/lib/auth/device'
+import { validateSession } from '@/lib/auth/session'
+import { getSessionCookie, getAccounts } from '@/lib/auth/cookies'
 import { validateCsrf } from '@/lib/auth/csrf'
 import { checkRateLimit } from '@/lib/rate-limit'
-import { identityApiRequest } from '@/lib/api/client'
-import { getAdminDashboardUrl } from '@/lib/config/urls'
+import { z } from 'zod'
+import { readMobileFlow } from '@/lib/auth/mobile'
 
-/**
- * POST /api/auth/switch
- * Switch to a different *already-proven* account on this device.
- *
- * SECURITY — Wave 0 / SEC-C1 fix.
- * This endpoint previously minted a session for ANY `email_verified` user supplied
- * in the request body, with no proof the caller owned that account. Combined with the
- * JS-readable double-submit CSRF cookie, that was an unauthenticated account-takeover
- * (any verified merchant/staff account). The doc-comment claimed an accounts-cookie
- * check that the code never performed.
- *
- * It now enforces, in order: rate limit (SEC-H7) → CSRF → a VALID current session
- * (you must already be signed in to switch) → the target email must be present in the
- * signed, httpOnly `lb_accounts` cookie (i.e. THIS browser previously authenticated
- * that account). A seamless cross-account session is therefore only granted for
- * accounts already proven on this device; unknown accounts are routed to re-authenticate.
- *
- * Full multi-account linking (per-account sessions via `account_links`) is a
- * frozen-target feature for a later wave; this is the secure interim behavior.
- */
+/** SEC-R10: current session + remembered account are necessary hints, not target
+ * credential/MFA proof. Another actor must authenticate through shared Accounts.
+ * Preserve the working session until the replacement completes. */
 export async function POST(request: NextRequest) {
     try {
         const ip = request.headers.get('x-forwarded-for') || 'unknown'
@@ -45,7 +27,9 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Invalid request. Please refresh and try again.' }, { status: 403 })
         }
 
-        const { email } = await request.json()
+        const parsed = z.object({ email: z.email() }).safeParse(await request.json().catch(() => null))
+        if (!parsed.success) return NextResponse.json({ error: 'A valid email is required' }, { status: 400 })
+        const { email } = parsed.data
         if (!email) {
             return NextResponse.json({ error: 'Email is required' }, { status: 400 })
         }
@@ -80,63 +64,16 @@ export async function POST(request: NextRequest) {
             )
         }
 
-        // Switching away from the current account: destroy its session.
-        await destroySession(currentToken)
-
-        // Resolve the target user.
-        const userResponse = await identityApiRequest('/auth/custom/users/by-email', {
-            method: 'POST',
-            body: JSON.stringify({ email: normalizedEmail }),
-        })
-        const userPayload = await userResponse.json().catch(() => null) as {
-            data?: {
-                id: string
-                email: string
-                full_name: string | null
-                avatar_url: string | null
-                email_verified: boolean | null
-            } | null
-        } | null
-        const user = userPayload?.data
-
-        if (!user || !user.email_verified) {
-            return NextResponse.json({ error: 'Account not found or not verified' }, { status: 404 })
+        if (currentSession.email.toLowerCase().trim() !== normalizedEmail) {
+            return NextResponse.json({
+                error: 'Sign in to this account to complete its current security checks.',
+                reauthenticationRequired: true,
+                redirectTo: `/login?choose_account=1&email=${encodeURIComponent(normalizedEmail)}`,
+            }, { status: 403, headers: { 'Cache-Control': 'private, no-store' } })
         }
-
-        // Create new session for target account
-        const fingerprint = generateDeviceFingerprint(request.headers, ip)
-        const userAgent = request.headers.get('user-agent') || ''
-        const { deviceId } = await getOrCreateDevice(user.id, fingerprint, userAgent)
-        const sessionToken = await createSession(user.id, deviceId)
-
-        // Update cookies
-        await setSessionCookie(sessionToken)
-        await addAccount({
-            email: user.email,
-            name: user.full_name,
-            avatar: user.avatar_url,
-            lastLogin: new Date().toISOString(),
-        })
-
-        // Check if user has a store → redirect appropriately
-        const storeResponse = await identityApiRequest('/auth/custom/users/first-store', {
-            method: 'POST',
-            body: JSON.stringify({ user_id: user.id }),
-        })
-        const storePayload = await storeResponse.json().catch(() => null) as {
-            data?: {
-                subdomain?: string | null
-            } | null
-        } | null
-        const store = storeResponse.ok ? storePayload?.data : null
-
-        const redirectTo = store?.subdomain
-            ? getAdminDashboardUrl(store.subdomain)
-            : '/onboarding'
-
-        return NextResponse.json({ success: true, redirectTo })
+        return NextResponse.json({ success: true, redirectTo: await readMobileFlow() ? '/mobile' : '/select' }, { headers: { 'Cache-Control': 'private, no-store' } })
     } catch (error) {
-        console.error('Account switch error:', error)
+        console.error(JSON.stringify({ level: 'error', service: 'accounts', reason: 'account_switch_unavailable' }))
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
     }
 }

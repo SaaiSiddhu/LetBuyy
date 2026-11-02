@@ -5,12 +5,9 @@ import 'package:letbuyy_models/letbuyy_models.dart';
 // will handle optimization at build time
 
 import '../screens/splash/splash_screen.dart';
-import '../screens/auth/login_screen.dart';
-import '../screens/auth/otp_screen.dart';
+import '../screens/auth/hosted_account_screen.dart';
 import '../screens/auth/error_screen.dart';
 import '../screens/auth/turnstile_challenge_screen.dart';
-import '../screens/wizard/create_store_wizard.dart';
-import '../screens/wizard/store_published_screen.dart';
 import '../screens/main/store_main_screen.dart';
 import '../screens/premium/upgrade_screen.dart';
 import '../screens/preview/live_preview_screen.dart';
@@ -52,7 +49,6 @@ import '../screens/orders/orders_screen.dart';
 import '../screens/orders/returns_screen.dart';
 import '../screens/money/money_screen.dart';
 import '../screens/kyc/kyc_screen.dart';
-import '../screens/security/two_factor_screen.dart';
 import '../screens/products/products_screen.dart';
 import '../screens/products/collections_screen.dart';
 import '../screens/store_health/store_health_screen.dart';
@@ -293,19 +289,13 @@ class AppRoutes {
     AppRouteSpec(
       id: AppRouteId.login,
       path: login,
-      builder: (_) => const LoginScreen(),
+      builder: (_) => const HostedAccountScreen(),
     ),
     AppRouteSpec(
       id: AppRouteId.otp,
       path: otp,
-      builder: (settings) {
-        final args = settings.arguments as Map<String, dynamic>? ?? {};
-        return OtpScreen(
-          email: args['email'] as String? ?? '',
-          password: args['password'] as String? ?? '',
-          name: args['name'] as String?,
-        );
-      },
+      // Old deep routes restart the hosted flow; credentials are never read here.
+      builder: (_) => const HostedAccountScreen(),
     ),
     AppRouteSpec(
       id: AppRouteId.turnstileChallenge,
@@ -326,24 +316,17 @@ class AppRoutes {
     AppRouteSpec(
       id: AppRouteId.onboarding,
       path: onboarding,
-      builder: (_) => const CreateStoreWizard(),
+      builder: (_) => const HostedAccountScreen(purpose: 'create_store'),
     ),
     AppRouteSpec(
       id: AppRouteId.createStore,
       path: createStore,
-      builder: (_) => const CreateStoreWizard(),
+      builder: (_) => const HostedAccountScreen(purpose: 'create_store'),
     ),
     AppRouteSpec(
       id: AppRouteId.storePublished,
       path: storePublished,
-      builder: (settings) {
-        final args = settings.arguments as Map<String, dynamic>?;
-        return StorePublishedScreen(
-          storeId: args?['storeId'] ?? '',
-          storeName: args?['storeName'] ?? '',
-          subdomain: args?['subdomain'] ?? '',
-        );
-      },
+      builder: (_) => const AuthWrapper(),
     ),
     AppRouteSpec(
       id: AppRouteId.main,
@@ -591,7 +574,7 @@ class AppRoutes {
     AppRouteSpec(
       id: AppRouteId.twoFactor,
       path: twoFactor,
-      builder: (_) => const TwoFactorScreen(),
+      builder: (_) => const HostedAccountScreen(purpose: 'manage_security'),
     ),
     AppRouteSpec(
       id: AppRouteId.pricing,
@@ -754,7 +737,7 @@ class AppRoutes {
     AppRouteSpec(
       id: AppRouteId.featureTwoFactor,
       path: '/features/two-factor',
-      builder: (_) => const TwoFactorScreen(),
+      builder: (_) => const HostedAccountScreen(purpose: 'manage_security'),
     ),
     AppRouteSpec(
       id: AppRouteId.featureBusiness,

@@ -69,6 +69,7 @@ export const ROOT_GATEWAY_DB_SUITES = [
     'tests/owned-db/order-lifecycle-email.postgres.test.ts',
     'tests/owned-db/notification-worker-transport.postgres.test.ts',
     'tests/owned-db/merchant-collection-membership-browser.postgres.test.ts',
+    'tests/owned-db/merchant-accounts-browser.postgres.test.ts',
     'tests/owned-db/merchant-dashboard-access.postgres.test.ts',
     'tests/owned-db/merchant-entitlement-authority-browser.postgres.test.ts',
     'tests/owned-db/merchant-export.postgres.test.ts',

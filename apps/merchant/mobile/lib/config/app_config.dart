@@ -23,6 +23,12 @@ class AppConfig {
     defaultValue: 'https://accounts.letbuyy.com',
   );
 
+  /// Exact first-party Accounts estate; kept separate from diagnostic labels.
+  static const String accountsEnvironment = String.fromEnvironment(
+    'ACCOUNTS_ENVIRONMENT',
+    defaultValue: 'production',
+  );
+
   /// Public Merchant origin used to validate pasted invitation destinations.
   static const String adminBaseUrl = String.fromEnvironment(
     'ADMIN_BASE_URL',
@@ -75,7 +81,9 @@ class AppConfig {
   static const pushSenderId = String.fromEnvironment('FCM_SENDER_ID');
   static const pushProjectId = String.fromEnvironment('FCM_PROJECT_ID');
   static bool get hasAndroidPushConfiguration =>
-      [pushApiKey,pushAppId,pushSenderId,pushProjectId].every((value)=>value.isNotEmpty && !value.startsWith('SKIP_NEEDS_HUMAN_'));
+      [pushApiKey, pushAppId, pushSenderId, pushProjectId].every(
+        (value) => value.isNotEmpty && !value.startsWith('SKIP_NEEDS_HUMAN_'),
+      );
 
   /// Runtime environment label attached to diagnostics and telemetry.
   static const String environment = String.fromEnvironment(

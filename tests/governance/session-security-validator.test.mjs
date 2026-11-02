@@ -118,7 +118,11 @@ const auth = 'services/api-gateway/src/routes/auth.ts';
 rejects('enrolled MFA helper existence does not replace its authentication call', auth,
   s => replace(s, 'if (mfaResponse) return mfaResponse;', comment('if (mfaResponse) return mfaResponse;')), /execute and enforce enrolled MFA/);
 rejects('enrolled factor must be verified rather than assumed', auth,
-  s => replace(s, 'await verifyTotpCode({ secret: totpSecret, code })', 'true'), /verify the actual actor factor/);
+  s => replace(s, 'await matchingTotpCounter({ secret: totpSecret, code })', '1'), /verify the actual actor factor/);
+rejects('login MFA cannot skip durable proof consumption', auth,
+  s => replace(s, "await db.rpc('consume_merchant_login_factor',", "await db.rpc('unbound_factor_consumer',"), /durably consume/);
+rejects('a later MFA definition cannot accept replayed counters', 'database/supabase/migrations/999_unsafe_session_guard.sql',
+  () => "CREATE OR REPLACE FUNCTION public.consume_merchant_login_factor(p_user_id uuid,p_factor_id uuid,p_secret_hash text,p_counter bigint,p_recovery_hash text) RETURNS boolean LANGUAGE sql AS $$ SELECT true; $$;", /MFA consumption must bind/);
 for (const file of [auth, 'services/api-gateway/src/routes/two-factor.ts']) {
   rejects('TOTP encryption rejects fallback in ' + file, file,
     s => replace(s, 'const secret = env.TOTP_ENCRYPTION_KEY;', 'const secret = env.TOTP_ENCRYPTION_KEY || env.AUTH_SECRET;'), /TOTP encryption must prohibit/);

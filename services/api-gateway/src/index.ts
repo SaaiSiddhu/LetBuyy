@@ -138,6 +138,8 @@ export interface Env {
     AD_PLACEMENT_SIGNING_SECRET?: string;
     LETBUYY_PAYMENT_MODE?: 'sandbox' | 'live';
     LETBUYY_RAZORPAY_MODE?: 'sandbox' | 'live';
+    /** Explicit managed simulation only; production admission is always denied. */
+    LETBUYY_MANAGED_PAYMENTS_MODE?: 'sandbox';
     LETBUYY_CASHFREE_MODE?: 'sandbox' | 'live';
     LETBUYY_UPI_MODE?: 'sandbox' | 'live';
     LETBUYY_COD_MODE?: 'sandbox' | 'live';

@@ -1,6 +1,82 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { createRazorpayPaymentProvider, fetchRazorpayOrdersByReceipt, fetchRazorpayPlan, fetchRazorpaySubscription, fetchRazorpayInvoice,fetchRazorpayRefund } from './index';
+import { createRazorpayOrder, createRazorpayPaymentProvider, fetchRazorpayOrdersByReceipt, fetchRazorpayPlan, fetchRazorpaySubscription, fetchRazorpayInvoice,fetchRazorpayRefund } from './index';
+
+const orderCredentials = { keyId: 'synthetic-key-id', keySecret: 'synthetic-secret' };
+const orderInput = { amount: 100, currency: 'INR', receipt: 'synthetic-order' };
+
+test('Standard Checkout creates an authenticated server order at the 100-paise boundary', async () => {
+  const result = await createRazorpayOrder(orderCredentials, orderInput, { fetch: async (url, init) => {
+    assert.equal(String(url), 'https://api.razorpay.com/v1/orders');
+    assert.equal(init?.method, 'POST');
+    assert.equal(new Headers(init?.headers).get('Authorization'), 'Basic ' + btoa('synthetic-key-id:synthetic-secret'));
+    assert.deepEqual(JSON.parse(String(init?.body)), orderInput);
+    return Response.json({ id: 'order_synthetic', ...orderInput, notes: { private: 'excluded' } });
+  } });
+  assert.deepEqual(result, { id: 'order_synthetic', amount: 100, currency: 'INR' });
+});
+
+test('invalid amounts, currency, receipt and missing credentials cannot reach Razorpay', async () => {
+  let calls = 0;
+  const options = { fetch: (async () => { calls++; throw new Error('must not call'); }) as typeof fetch };
+  for (const amount of [0, -100, 1, 99, 100.5, NaN, Infinity, Number.MAX_SAFE_INTEGER + 1]) {
+    assert.equal((await createRazorpayOrder(orderCredentials, { ...orderInput, amount }, options)).error?.code, 'INVALID_AMOUNT');
+  }
+  for (const input of [{ ...orderInput, currency: 'USD' }, { ...orderInput, receipt: '' },
+    { ...orderInput, receipt: ' '.repeat(4) }, { ...orderInput, receipt: 'a'.repeat(41) }]) {
+    assert.equal((await createRazorpayOrder(orderCredentials, input, options)).error?.code, 'INVALID_ORDER');
+  }
+  for (const credentials of [{ ...orderCredentials, keyId: '' }, { ...orderCredentials, keySecret: '' }]) {
+    assert.equal((await createRazorpayOrder(credentials, orderInput, options)).error?.code, 'PAYMENT_UNAVAILABLE');
+  }
+  assert.equal(calls, 0);
+});
+
+test('provider authentication and API failures expose no private body or order id', async () => {
+  for (const status of [401, 400, 429, 500]) {
+    const result = await createRazorpayOrder(orderCredentials, orderInput, {
+      fetch: async () => Response.json({ id: 'order_untrusted', error: { description: 'private secret' } }, { status }),
+    });
+    assert.equal(result.id, undefined);
+    assert.equal(result.error?.code, status === 401 ? 'PROVIDER_AUTHENTICATION_FAILED' : 'PROVIDER_ORDER_FAILED');
+    assert.doesNotMatch(JSON.stringify(result), /private|secret|untrusted/);
+  }
+});
+
+test('malformed, mismatched or error-shaped success responses cannot open checkout', async () => {
+  const valid = { id: 'order_synthetic', ...orderInput };
+  for (const raw of [null, [], {}, { ...valid, id: 'pay_wrong' }, { ...valid, amount: 101 },
+    { ...valid, amount: '100' }, { ...valid, currency: 'USD' }, { ...valid, receipt: 'another-order' },
+    { ...valid, error: { description: 'private' } }]) {
+    const result = await createRazorpayOrder(orderCredentials, orderInput, { fetch: async () => Response.json(raw) });
+    assert.equal(result.id, undefined);
+    assert.equal(result.error?.code, 'PROVIDER_ORDER_INVALID');
+  }
+  assert.ok((await createRazorpayOrder(orderCredentials, orderInput, { fetch: async () => new Response('not JSON') })).error);
+});
+
+test('an uncertain network result is never retried inside the provider adapter', async () => {
+  let calls = 0;
+  await assert.rejects(createRazorpayOrder(orderCredentials, orderInput, { fetch: async () => {
+    calls++;
+    throw new Error('synthetic lost response');
+  } }), /synthetic lost response/);
+  assert.equal(calls, 1);
+});
+
+test('payment intent creation uses its configured transport and retains only the exact quoted amount', async () => {
+  let calls = 0;
+  const provider = createRazorpayPaymentProvider(orderCredentials, { fetch: async () => {
+    calls++;
+    return Response.json({ id: 'order_synthetic', ...orderInput });
+  } });
+  const result = await provider.createIntent({ storeId: 'synthetic-store', orderId: orderInput.receipt,
+    amount: { amountMinor: 100, currency: 'INR' }, idempotencyKey: 'synthetic-intent-key' });
+  assert.equal(calls, 1);
+  assert.equal(result.references.providerOrderId, 'order_synthetic');
+  assert.equal(result.amount.amountMinor, 100);
+  assert.equal(result.status, 'pending');
+});
 
 test('refund lookup uses the given historical account, encodes the reference and preserves provider facts',async()=>{
  const result=await fetchRazorpayRefund({keyId:'synthetic-key-id',keySecret:'synthetic-key-secret'},'rfnd_a/b',{

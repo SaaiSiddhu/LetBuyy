@@ -110,7 +110,10 @@ class StoreContext extends ChangeNotifier {
 
   /// Bind the authenticated actor and finish its reset before store discovery.
   /// A valid empty response alone means onboarding; errors remain errors.
-  Future<StoreModel?> ensureSelectedStoreForActor(String actor) async {
+  Future<StoreModel?> ensureSelectedStoreForActor(
+    String actor, {
+    bool force = false,
+  }) async {
     if (actor.isEmpty)
       throw const ApiException(
         message: 'Sign in again to load store access.',
@@ -125,7 +128,7 @@ class StoreContext extends ChangeNotifier {
         statusCode: 409,
         code: 'SESSION_CONTEXT_CHANGED',
       );
-    final store = await ensureSelectedStore();
+    final store = await ensureSelectedStore(force: force);
     _checkEpoch(epoch);
     if (_actorId != actor)
       throw const ApiException(

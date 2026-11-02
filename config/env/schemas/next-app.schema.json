@@ -4,6 +4,8 @@
   "type": "object",
   "additionalProperties": true,
   "properties": {
+    "LETBUYY_MERCHANT_MOBILE_AUTH_ENABLED": { "enum": ["true", "false"] },
+    "LETBUYY_ANDROID_APP_LINKS_SHA256": { "type": "string", "description": "Comma-separated public SHA-256 fingerprints of this estate's approved Android signing certificates." },
     "NEXT_PUBLIC_API_URL": { "type": "string", "format": "uri" },
     "NEXT_PUBLIC_API_BASE_URL": { "type": "string", "format": "uri" },
     "NEXT_PUBLIC_ACCOUNTS_URL": { "type": "string", "format": "uri" },

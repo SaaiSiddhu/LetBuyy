@@ -26,6 +26,7 @@ enum PaymentMode {
   shared, // Legacy unresolved setting; never grants payment readiness.
   notConnected,
   ownAccount, // Merchant-owned account; capabilities remain server-authoritative.
+  managedSandbox, // Explicit LetBuyy test connection; never live settlement.
 }
 
 /// Model for store payment configuration
@@ -49,6 +50,7 @@ class PaymentConfigModel {
   final String? providerEnvironment;
   final String? revision;
   final bool canEnableOnline;
+  final bool managedSandboxAvailable;
   final bool onlineCheckoutAvailable;
   final bool onlineRequested;
   final bool codEnabled;
@@ -75,6 +77,7 @@ class PaymentConfigModel {
     this.providerEnvironment,
     this.revision,
     this.canEnableOnline = false,
+    this.managedSandboxAvailable = false,
     this.onlineCheckoutAvailable = false,
     this.onlineRequested = false,
     this.codEnabled = false,
@@ -103,9 +106,11 @@ class PaymentConfigModel {
         ? Map<String, dynamic>.from(map['setup'])
         : <String, dynamic>{};
     final environment = setup['environment'];
+    final managed = setup['managed_payments'];
+    final managedAvailable = managed is Map && managed['available'] == true && managed['reason'] == 'sandbox_only';
     final validTestSetup =
-        settings['mode'] == 'ownAccount' &&
-        setup['connection'] == 'own_account' &&
+        ((settings['mode'] == 'ownAccount' && setup['connection'] == 'own_account') ||
+          (settings['mode'] == 'managedSandbox' && setup['connection'] == 'managed_sandbox' && managedAvailable)) &&
         environment == 'sandbox' &&
         map['schema_ready'] == true &&
         razorpay['verified'] == true &&
@@ -118,6 +123,7 @@ class PaymentConfigModel {
           : null,
       revision: map['revision'] is String ? map['revision'] as String : null,
       canEnableOnline: validTestSetup,
+      managedSandboxAvailable: managedAvailable,
       onlineCheckoutAvailable:
           validTestSetup &&
           setup['online_checkout_available'] == true &&
@@ -159,6 +165,7 @@ class PaymentConfigModel {
       'providerEnvironment': providerEnvironment,
       'revision': revision,
       'canEnableOnline': canEnableOnline,
+      'managedSandboxAvailable': managedSandboxAvailable,
       'onlineCheckoutAvailable': onlineCheckoutAvailable,
       'onlineRequested': onlineRequested,
       'codEnabled': codEnabled,
@@ -179,7 +186,7 @@ class PaymentConfigModel {
 
   /// Check if payment config is ready to use
   bool get isReady =>
-      mode == PaymentMode.ownAccount &&
+      (mode == PaymentMode.ownAccount || mode == PaymentMode.managedSandbox) &&
       verified &&
       testMode &&
       providerEnvironment == 'sandbox' &&
@@ -220,6 +227,9 @@ class PaymentConfigModel {
         return PaymentMode.ownAccount;
       case 'shared':
         return PaymentMode.shared;
+      case 'managedsandbox':
+      case 'managed_sandbox':
+        return PaymentMode.managedSandbox;
       default:
         return PaymentMode.notConnected;
     }
@@ -250,6 +260,7 @@ class PaymentConfigModel {
       providerEnvironment: providerEnvironment,
       revision: revision,
       canEnableOnline: canEnableOnline,
+      managedSandboxAvailable: managedSandboxAvailable,
       onlineCheckoutAvailable: onlineCheckoutAvailable,
       onlineRequested: onlineRequested,
       codEnabled: codEnabled,

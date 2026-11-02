@@ -72,3 +72,19 @@ test('method updates cannot smuggle gateway, credentials or non-boolean grants',
   assert.equal(UpdateStorePaymentMethodsSchema.safeParse({ online_payment_enabled: 'true' }).success, false);
   assert.equal(UpdateStorePaymentMethodsSchema.safeParse({ cod_enabled: true, mode: 'shared' }).success, false);
 });
+
+test('managed sandbox requires explicit availability, exact sandbox credentials and separate online activation', () => {
+  const input = { ...ready, accountMode: 'managedSandbox' as const, managedSandboxAvailable: true };
+  assert.equal(deriveStorePaymentSetup(input).connection, 'managed_sandbox');
+  assert.equal(deriveStorePaymentSetup(input).online_checkout_available, true);
+  assert.equal(deriveStorePaymentSetup({ ...input, onlineRequested: false }).online_checkout_available, false);
+  for (const change of [{ managedSandboxAvailable: false }, { credentialVerified: false },
+    { environment: 'live' as const }, { credentialsUsable: false }]) {
+    assert.equal(deriveStorePaymentSetup({ ...input, ...change }).can_enable_online, false);
+  }
+  assert.deepEqual(SaveStorePaymentConfigSchema.parse({ connection: 'managed_sandbox' }), { connection: 'managed_sandbox' });
+  for (const extra of [{ key_id: 'injected-key' }, { key_secret: 'injected-secret' }, { test_mode: false },
+    { provider_account_id: 'acct_injected' }, { online_payment_enabled: true }]) {
+    assert.equal(SaveStorePaymentConfigSchema.safeParse({ connection: 'managed_sandbox', ...extra }).success, false);
+  }
+});

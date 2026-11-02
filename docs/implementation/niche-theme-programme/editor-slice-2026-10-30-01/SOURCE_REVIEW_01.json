@@ -1,0 +1,77 @@
+{
+  "recordedAt": "2026-10-30T04:25:18.517354+05:30",
+  "status": "CHANGES_REQUIRED_BEFORE_MAIN_INTEGRATION_THREE_REPRODUCIBLE_CONTRACT_GAPS",
+  "reviewOwner": "Themes / 01a164a4-a342-76d3-ab33-65e021ed57db",
+  "sealedCandidate": {
+    "path": "/private/tmp/letbuyy-theme-editor-slice-20261030-02/HANDOFF.json",
+    "sha256": "180b0ffb583231035b2bea7969250a0ce51f273b743bd3f2508b3bb1c21df1c1"
+  },
+  "patch": {
+    "path": "/private/tmp/letbuyy-theme-editor-slice-20261030-02/EDITOR_SLICE_14_PATHS.patch",
+    "sha256": "c649812ceca69d9b9e128bf50133acf159f3066ea5d607ba588bf932f78e52b4"
+  },
+  "closure": {
+    "path": "/private/tmp/letbuyy-theme-editor-slice-20261030-02/SOURCE_CLOSURE_FINAL.json",
+    "sha256": "a9bbcbf1a8bf1e27f4e2c3bb96b333a219c532b96dac58bf088cc153f3bcf5e2"
+  },
+  "pinChecks": {
+    "all14BeforeMainAndAfterCandidate": true,
+    "exactAllocationSet": true,
+    "allEvidenceLogHashes": true,
+    "gitApplyCheck": 0,
+    "initialSourceFiles": 2767,
+    "initialOutsideLeaseMismatches": 0,
+    "additionalReadOnlyFiles": 801,
+    "extraSourcePinsAndCurrentMainMatch": true
+  },
+  "independentFocusedChecks": {
+    "engineAndAdapter": {
+      "passed": 9,
+      "failed": 0
+    },
+    "mountedMerchantWithCorrectTsconfig": {
+      "passed": 3,
+      "failed": 0
+    },
+    "setupCorrection": "Firstcombinedcommand omitted TSX_TSCONFIG_PATH and3mountedtestsfailedalias/JSXresolution. Re-ranonlythose3 withexistingMerchanttsconfig,allpasswithnosourcechange. The9engine/adapter resultswere reused; no inflated15testpassclaim.",
+    "probeCorrection": "Initialownprobe importedCorefactoryfromwrongmodule, correctedtoexistingtheme-bundle-core. ProbeV1missingfakeRPCreceiptfield wascorrectedonly in ownV2 toconfirm actualsave returnsreceipt. Bothresultsets retained."
+  },
+  "findings": [
+    {
+      "id": "ED30-REV01-F1",
+      "priority": "P1",
+      "title": "Legacy section representation bypasses the new server eligibility rule",
+      "location": "packages/theme-engine/src/index.ts:validateLegacySectionSlots / collectThemeTemplateValidationIssues; gateway ThemeExecutionAdapter.saveDraft",
+      "reproduction": "Actualpositivecontrol returnsissues[]. Candidate omits root templates and provides sections.header={id:review-forged-grid,type:product-grid,...} with unchanged Liquidbundle; trustedruntime product-grid groups=[template]. Sharedvalidator returnsissues[] and actualadapter invokes recordingmutate_owned_theme_draft_v1 once and returnsconfirmedreceipt. No realDB/network.",
+      "requiredFix": "Apply the same trusted placement rule to every supported/effective document representation or reject inconsistent representation before mutation. Preserve legitimate oldfixedslots/ownedpriorinstances. Candidateembeddedbundle must not authorize its ownplacements. Cover mixedportable+legacyprojections too; no hidingfailingcase by weakening validation."
+    },
+    {
+      "id": "ED30-REV01-F2",
+      "priority": "P2",
+      "title": "Catalog insertion cap disagrees with server save cap",
+      "location": "packages/theme-engine/src/editor-section-insertion.ts:sectionInsertionRefusal versus index.ts:validateLegacySectionSlots",
+      "reproduction": "With50hero-banner rows, UI sectionInsertionRefusal(...end...) isnull. Resulting51row document with the actualUI legacyprojection is rejected bysharedvalidator: sections.template exceeds the maximum section count.",
+      "requiredFix": "One explicit effectivecount policy shared by UI/server for the supportededitorrepresentation. Do not simplyweaken the pre-existingservermax from50to80 togreen the newhelper; preserve correctlegacy/portable semantics and add50/51/80boundary controls."
+    },
+    {
+      "id": "ED30-REV01-F3",
+      "priority": "P2",
+      "title": "Server allows duplicate section identity in the same rendered composition",
+      "location": "packages/theme-engine/src/index.ts:validatePortableTemplates; editor-section-insertion.ts alreadyrejects duplicateIDs across currentgroups",
+      "reproduction": "Add eligibleannouncement-bar toHeader usingexistingindexbanner-carousel-default ID. Validatorissues[] althoughHeader and selectedpagetemplate nowsharetheID.",
+      "requiredFix": "Reject duplicateIDs across Header+activepagetemplate+Footer and relevantlegacyprojections. Allow legitimate IDreuse between distinctnonsharedtemplatecontexts; do not blanket-rejectalltemplatesglobal. Coverallten currentgeneratedtemplates and positivecompositions."
+    }
+  ],
+  "reproducer": {
+    "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/editor-slice-2026-10-30-01/review01/counterexamples-v2.ts",
+    "sha256": "7acba3cabaff730683abb26461d438f8c78e4e0f60dc3b054ad275bf86c6c5b5"
+  },
+  "result": {
+    "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/editor-slice-2026-10-30-01/review01/counterexamples-v2-result.json",
+    "sha256": "5dbcafca61347c639688401db10b52b41293331cb978a7b808946e1213758d2c"
+  },
+  "otherReviewLimit": "createSectionFromSchema usesruntime sample_blocks ratherthan fullpresetblockpayload; allten currentgenerated2.1.0 definitionshadzero nonemptypresetblocks in independentinventory, so no currentfirstparty runtimebugclaimed. Future nonemptypreset acceptance remains open.",
+  "integrationAuthority": "NONE pending repair/review; Mainbusinesssource unchanged.",
+  "runtimeBrowserDbActions": "None; unitmethods used recordingdependencies only.",
+  "fullThemeCertificates": 0
+}

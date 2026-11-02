@@ -2131,6 +2131,7 @@ export const SubscriptionCancelResultSchema = z.object({
 }).passthrough();
 
 export const SubscriptionOrderResultSchema = z.object({
+  provider_mode: z.enum(['sandbox', 'live']).nullable().optional(),
   tax:SubscriptionTaxSummarySchema.optional(),
   razorpay_order_id: z.string().min(1).optional().nullable(),
   razorpay_subscription_id: z.string().min(1).optional().nullable(),
@@ -2169,7 +2170,7 @@ export { StorePaymentSetupSchema, SaveStorePaymentConfigSchema, UpdateStorePayme
   type StorePaymentSetup, type SaveStorePaymentConfigInput, type UpdateStorePaymentMethodsInput } from './payment-setup';
 
 export const StorePaymentSettingsSchema = z.object({
-  mode: z.enum(['unconfigured', 'shared', 'ownAccount']).default('unconfigured'),
+  mode: z.enum(['unconfigured', 'shared', 'ownAccount', 'managedSandbox']).default('unconfigured'),
   gateways: z.array(z.string().min(1).max(80)).default([]),
   razorpay: z.object({
     key_id: z.string().max(120).optional().nullable(),

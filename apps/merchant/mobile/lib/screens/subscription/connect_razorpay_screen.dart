@@ -127,6 +127,31 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
     }
   }
 
+  Future<void> _connectManagedTestPayments() async {
+    if (_isConnecting) return;
+    final store = _store;
+    final stores = context.read<StoreContext>();
+    final epoch = stores.requestContextVersion;
+    if (store == null || stores.selectedStoreId != store.id) return;
+    final fingerprint = '$epoch:${store.id}:managed-sandbox:${_paymentConfig?.revision}';
+    if (_saveFingerprint != fingerprint) { _saveFingerprint = fingerprint; _saveKey = const Uuid().v4(); }
+    setState(() => _isConnecting = true);
+    try {
+      final response = await context.read<SubscriptionService>().connectManagedTestPayments(
+        storeId: store.id, idempotencyKey: _saveKey!, expectedRevision: _paymentConfig?.revision);
+      if (!mounted || stores.requestContextVersion != epoch || stores.selectedStoreId != store.id) return;
+      final config = PaymentConfigModel.fromMap(response, store.id);
+      setState(() { _paymentConfig = config; _isConnected = false; });
+      _saveKey = null; _saveFingerprint = null;
+      _keyIdController.clear(); _keySecretController.clear();
+      _showSuccessDialog();
+    } catch (_) {
+      if (mounted && stores.requestContextVersion == epoch && stores.selectedStoreId == store.id) {
+        _showError('Test connection could not be confirmed. Reload the saved settings before retrying.');
+      }
+    } finally { if (mounted) setState(() => _isConnecting = false); }
+  }
+
   void _showSuccessDialog() {
     showDialog(
       context: context,
@@ -145,7 +170,7 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
             ),
             const SizedBox(width: 12),
             Text(
-              'Test credentials saved',
+              'Test connection saved',
               style: TextStyle(
                 color: colors.textPrimary,
                 fontWeight: FontWeight.bold,
@@ -154,7 +179,7 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
           ],
         ),
         content: Text(
-          'Your test credentials were verified and saved. Online checkout remains off until explicitly enabled. Test payments do not settle to a bank account; business and bank approval are not confirmed.',
+          'Your test connection was verified and saved. Online checkout remains off until explicitly enabled. Test payments do not settle to a bank account; business and bank approval are not confirmed.',
           style: TextStyle(color: colors.textSecondary),
         ),
         actions: [
@@ -198,21 +223,27 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
   }
 
   Widget _buildContent() {
-    // Check if Professional plan
-    if (_store?.subscriptionPlan != SubscriptionPlan.professional) {
-      return _buildUpgradeRequired();
-    }
-
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildHeader(),
+          if (_paymentConfig?.managedSandboxAvailable == true) ...[
+            const SizedBox(height: 16),
+            const Text('LetBuyy test payments: no real money or bank settlement. Enable online checkout separately after connecting.'),
+            OutlinedButton.icon(
+              onPressed: _isConnecting || _paymentConfig?.mode == PaymentMode.managedSandbox ? null : _connectManagedTestPayments,
+              icon: const Icon(Icons.science_outlined),
+              label: Text(_paymentConfig?.mode == PaymentMode.managedSandbox ? 'LetBuyy test payments connected' : 'Use LetBuyy test payments'),
+            ),
+          ],
           const SizedBox(height: 24),
           _buildInfoCard(),
           const SizedBox(height: 24),
-          if (_isConnected) ...[
+          if (_store?.subscriptionPlan != SubscriptionPlan.professional) ...[
+            _buildUpgradeRequired(),
+          ] else if (_isConnected) ...[
             _buildConnectedCard(),
           ] else ...[
             _buildConnectionForm(),

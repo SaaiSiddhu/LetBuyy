@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { identityApiRequest, getIdentityApiFailureMessage } from '@/lib/api/client'
 import { checkRateLimit } from '@/lib/rate-limit'
+import { OtpRequestSchema } from '@letbuyy/auth-core'
 
 /**
  * POST /api/auth/lookup
@@ -20,7 +21,9 @@ export async function POST(request: NextRequest) {
             )
         }
 
-        const { email } = await request.json()
+        const parsed = OtpRequestSchema.safeParse(await request.json().catch(() => null))
+        if (!parsed.success) return NextResponse.json({ error: 'A valid email is required' }, { status: 400 })
+        const { email } = parsed.data
         if (!email || typeof email !== 'string') {
             return NextResponse.json({ error: 'Email is required' }, { status: 400 })
         }

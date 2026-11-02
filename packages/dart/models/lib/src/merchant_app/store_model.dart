@@ -632,6 +632,9 @@ class StoreModel {
         return PaymentMode.ownAccount;
       case 'shared':
         return PaymentMode.shared;
+      case 'managedsandbox':
+      case 'managed_sandbox':
+        return PaymentMode.managedSandbox;
       default:
         return PaymentMode.notConnected;
     }

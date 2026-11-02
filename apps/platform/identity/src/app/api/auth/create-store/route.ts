@@ -5,6 +5,10 @@ import { validateCsrf } from '@/lib/auth/csrf'
 import { identityApiRequest } from '@/lib/api/client'
 import { getAdminDashboardUrl, getStorefrontUrl } from '@/lib/config/urls'
 import { sendStoreCreatedEmail } from '@/lib/email/resend'
+import { z } from 'zod'
+import { readMobileFlow } from '@/lib/auth/mobile'
+
+const CreateStoreInput = z.object({ siteType: z.string().max(30), storeName: z.string().trim().min(1).max(100), subdomain: z.string().trim().min(1).max(63), templateId: z.string().max(100).optional(), survey: z.object({ industry: z.enum(['electronics','fashion','beauty','furniture','food','sports','books','pet','general']), channels: z.array(z.enum(['online','retail','social','marketplace','events'])).max(5).optional() }).optional(), attemptId: z.uuid() }).strict()
 
 export async function GET() {
     try {
@@ -16,7 +20,9 @@ export async function GET() {
         if (!response.ok) {
             return NextResponse.json({ error: 'Unable to load saved setup progress.' }, { status: response.status })
         }
-        return NextResponse.json(payload)
+        const completed = (payload as { data?: { completed_store?: { id?: string } } } | null)?.data?.completed_store
+        const native = (await readMobileFlow())?.purpose === 'create_store'
+        return NextResponse.json({ ...(payload as Record<string, unknown>), ...(native && completed?.id ? { continuation: 'native', redirectTo: `/mobile/return?site=${encodeURIComponent(completed.id)}` } : {}) }, { headers: { 'Cache-Control': 'private, no-store' } })
     } catch {
         return NextResponse.json({ error: 'Unable to load saved setup progress.' }, { status: 503 })
     }
@@ -91,7 +97,9 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Invalid request. Please refresh and try again.' }, { status: 403 })
         }
 
-        const body = await request.json()
+        const parsed = CreateStoreInput.safeParse(await request.json().catch(() => null))
+        if (!parsed.success) return NextResponse.json({ error: 'Save your setup and check the store details before creating it.' }, { status: 400 })
+        const body = parsed.data
         const {
             siteType,
             storeName,
@@ -129,6 +137,7 @@ export async function POST(request: NextRequest) {
         const storeResponse = await identityApiRequest('/stores', {
             method: 'POST',
             requireSession: true,
+            headers: { 'X-Idempotency-Key': `accounts-store:${session.userId}:${attemptId}` },
             body: JSON.stringify({
                 name: storeName.trim(),
                 subdomain: normalizedSubdomain,
@@ -136,7 +145,7 @@ export async function POST(request: NextRequest) {
                 ...(templateId ? { theme_id: templateId } : {}),
                 template_config: {
                     ...(templateId ? { templateId } : {}),
-                    survey: survey || null,
+                    survey: survey ? { version: 1, ...survey } : null,
                 },
             }),
         })
@@ -212,6 +221,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({
             success: true,
             store: site,
+            ...((await readMobileFlow())?.purpose === 'create_store' ? { continuation: 'native', redirectTo: `/mobile/return?site=${encodeURIComponent(site.id)}` } : {}),
         })
     } catch (error) {
         // The detail goes to the log, not to the browser: an exception message can carry internal

@@ -1,4 +1,5 @@
 export const RAZORPAY_API_ORIGIN = 'https://api.razorpay.com';
+export const RAZORPAY_MIN_ORDER_AMOUNT_MINOR = 100;
 
 import {
   inrMoney,
@@ -33,7 +34,7 @@ export interface RazorpayOrderCreateResult {
   id?: string;
   amount?: number;
   currency?: string;
-  error?: { description?: string };
+  error?: { code?: string; description?: string };
 }
 
 export interface RazorpayOrderRecord {
@@ -128,8 +129,20 @@ function basicAuth(credentials: RazorpayCredentials): string {
 export async function createRazorpayOrder(
   credentials: RazorpayCredentials,
   input: RazorpayOrderCreateInput,
+  options: { fetch?: RazorpayFetch } = {},
 ): Promise<RazorpayOrderCreateResult> {
-  const response = await fetch('https://api.razorpay.com/v1/orders', {
+  if (!Number.isSafeInteger(input.amount) || input.amount < RAZORPAY_MIN_ORDER_AMOUNT_MINOR) {
+    return { error: { code: 'INVALID_AMOUNT', description: 'Payment amount must be at least 100 paise in whole minor units' } };
+  }
+  if (input.currency !== 'INR' || !input.receipt.trim() || input.receipt.length > 40) {
+    return { error: { code: 'INVALID_ORDER', description: 'An INR order and a receipt of at most 40 characters are required' } };
+  }
+  if (!credentials.keyId || !credentials.keySecret) {
+    return { error: { code: 'PAYMENT_UNAVAILABLE', description: 'Razorpay is not configured' } };
+  }
+  // Do not retry a POST here: a lost response may follow a committed provider order.
+  // Checkout owns durable intent/receipt reconciliation before another attempt.
+  const response = await (options.fetch ?? fetch)(`${RAZORPAY_API_ORIGIN}/v1/orders`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -138,14 +151,19 @@ export async function createRazorpayOrder(
     body: JSON.stringify(input),
   });
 
-  const data = await response.json().catch(() => ({})) as RazorpayOrderCreateResult;
+  const raw: unknown = await response.json().catch(() => null);
   if (!response.ok) {
-    return {
-      ...data,
-      error: data.error || { description: `Razorpay order create failed with ${response.status}` },
-    };
+    // Provider bodies can contain private request data. Never pass them to callers.
+    return { error: { code: response.status === 401 ? 'PROVIDER_AUTHENTICATION_FAILED' : 'PROVIDER_ORDER_FAILED',
+      description: `Razorpay order create failed with ${response.status}` } };
   }
-  return data;
+  const data = asRecord(raw);
+  if (data.error || typeof data.id !== 'string' || !data.id.startsWith('order_')
+    || data.id.length > 200 || data.amount !== input.amount || data.currency !== input.currency
+    || (data.receipt !== undefined && data.receipt !== input.receipt)) {
+    return { error: { code: 'PROVIDER_ORDER_INVALID', description: 'Razorpay returned an inconsistent order' } };
+  }
+  return { id: data.id, amount: input.amount, currency: input.currency };
 }
 
 /**
@@ -366,9 +384,9 @@ export function createRazorpayPaymentProvider(
           idempotency_key: idempotencyKey,
           ...metadataNotes(input.metadata),
         },
-      });
+      }, { fetch: fetchImpl });
 
-      if (!providerOrder.id) {
+      if (providerOrder.error || !providerOrder.id) {
         throw new Error(providerOrder.error?.description || 'Razorpay order creation failed');
       }
 

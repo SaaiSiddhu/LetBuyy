@@ -231,6 +231,7 @@ async function resumeCheckout(input:SubscriptionCheckoutInput,charge:Subscriptio
             p_charge:charge.id,p_reference:reference,p_short_url:shortUrl});
     }
     return {body:{data:{...quote.response,key_id:input.env.RAZORPAY_KEY_ID,
+        provider_mode:input.env.RAZORPAY_KEY_ID.startsWith('rzp_test_')?'sandbox':input.env.RAZORPAY_KEY_ID.startsWith('rzp_live_')?'live':null,
         razorpay_order_id:quote.mode==='razorpay_order'?reference:null,
         razorpay_subscription_id:quote.mode==='razorpay_subscription'?reference:null,...(shortUrl?{short_url:shortUrl}:{})}}};
 }
