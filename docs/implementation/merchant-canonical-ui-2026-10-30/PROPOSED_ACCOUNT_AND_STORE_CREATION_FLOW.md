@@ -1,7 +1,7 @@
 # Proposed LetBuyy account and store creation flow
 
-Date: 2 November 2026  
-Status: Proposal for discussion and product review  
+Date: 2 November 2026
+Status: Proposal for discussion and product review
 Scope: Merchant account entry, login, registration, recovery, security review, store selection, store creation, optional onboarding, and first dashboard arrival.
 
 This is a proposed product journey, not an implementation specification or a report of current capability. It authorizes no source changes, account actions, provider configuration, schema changes, billing changes, or deployment. Existing Constitution, canonical systems, and approved commercial terms remain authoritative. Implementation would begin with a comparison against the current Accounts and Merchant journeys.

@@ -34,4 +34,3 @@ for(const resource of ['zones','rates','profiles','taxes'] as const) {
   }
  });
 }
-

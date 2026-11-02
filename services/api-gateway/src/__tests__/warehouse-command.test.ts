@@ -38,4 +38,3 @@ test('a transfer acknowledgement cannot claim more received units than were ship
  const body=result(true);body.lines[0].quantity_received=4;
  assert.equal(WarehouseCommandResultSchema.safeParse(body).success,false);
 });
-

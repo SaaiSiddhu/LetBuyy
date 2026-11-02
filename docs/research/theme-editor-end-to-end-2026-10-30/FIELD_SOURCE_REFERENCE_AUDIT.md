@@ -1210,4 +1210,3 @@
 | `video-hero` | `subheading` | `textarea` | yes | direct | NV | NV | NV |
 | `video-hero` | `videoUrl` | `url` | no | direct | NV | NV | NV |
 | reusable block `badge` | `label` | `text` | yes | direct | NV | NV | NV |
-

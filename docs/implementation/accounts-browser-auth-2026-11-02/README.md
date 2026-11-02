@@ -1,7 +1,7 @@
 # Accounts hosted authentication for Merchant web and Flutter
 
-Date: 2 November 2026  
-Status: **Core source implemented; local qualification recorded; hosted/device acceptance remains open.**  
+Date: 2 November 2026
+Status: **Core source implemented; local qualification recorded; hosted/device acceptance remains open.**
 Source baseline inspected: `develop` at `e4105581e`.
 
 Current implementation, verification evidence and remaining release gates: [Execution report](EXECUTION.md). The numbered documents below preserve the design and acceptance requirements; their original proposal wording is historical.

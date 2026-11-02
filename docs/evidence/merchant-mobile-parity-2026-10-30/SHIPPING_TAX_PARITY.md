@@ -37,4 +37,3 @@ Private test logs/artifacts remain under `/private/tmp/letbuyy-shipping-*`. No c
 ## Remaining gates
 
 Native profile management UI, zone/profile assignment and COD controls, weight editing, product-profile selection, durable settings mutation recovery, concurrent web/mobile edits and conflict handling remain open. Legacy permissive rate/tax field decoders still need full canonical response validation. Above-cap UI pagination, serviceability/carrier labels, GST/invoice mobile views, provider acceptance, hosted compatible responses and both-direction writes remain open. No provider transaction, hosted migration, deployment, production settings write, release signing or production-ready certification was performed.
-

@@ -100,4 +100,3 @@ export const StopWarehouseCommandInputSchema=z.object({
   command:z.record(z.string(),z.unknown()),
 }).strict();
 export type StopWarehouseCommandInput=z.infer<typeof StopWarehouseCommandInputSchema>;
-

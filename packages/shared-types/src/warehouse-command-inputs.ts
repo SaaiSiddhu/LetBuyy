@@ -128,4 +128,3 @@ export function prepareWarehouseCommand(operation:WarehouseCommandOperation,
  if(create!==(targetId===null)||(!create&&!UuidSchema.safeParse(targetId).success))throw new Error('The warehouse target could not be confirmed.');
  return {operation,target_id:targetId,command};
 }
-

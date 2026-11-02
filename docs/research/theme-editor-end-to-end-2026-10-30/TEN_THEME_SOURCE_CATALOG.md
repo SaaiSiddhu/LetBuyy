@@ -922,4 +922,3 @@ Definitions: 23 templates, 45 sections, 1 reusable block type(s). Settings group
 - Global `typography`: `headingFontFamily:text`, `bodyFontFamily:text`.
 - Global `appearance`: `borderRadius:number`.
 - Global `seo`: `metaDescription:textarea`, `socialImageUrl:url`, `faviconUrl:url`.
-

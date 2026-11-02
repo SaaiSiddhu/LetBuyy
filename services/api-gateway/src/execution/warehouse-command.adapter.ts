@@ -41,4 +41,3 @@ export async function executeWarehouseCommand(env:Env,siteId:string,actorId:stri
   throw error;
  }
 }
-
