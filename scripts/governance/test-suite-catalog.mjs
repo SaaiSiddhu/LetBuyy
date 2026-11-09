@@ -82,6 +82,7 @@ export const ROOT_GATEWAY_DB_SUITES = [
     'tests/owned-db/loyalty-earn-worker.postgres.test.ts',
     'tests/owned-db/loyalty-refund-scheduler.postgres.test.ts',
     'tests/owned-db/loyalty-reversal-recovery.postgres.test.ts',
+    'tests/owned-db/managed-hosted-history-upgrade.postgres.test.ts',
     'tests/owned-db/managed-supabase-migration-admission.postgres.test.ts',
     'tests/owned-db/managed-supabase-support-free-admission.postgres.test.ts',
     'tests/owned-db/merchant-category-commands-browser.postgres.test.ts',

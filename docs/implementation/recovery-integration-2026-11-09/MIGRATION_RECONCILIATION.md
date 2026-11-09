@@ -17,7 +17,22 @@ The newer KYC worktree reused identifiers already occupied by the canonical hist
 
 The donor's older 428 theme catalog remains preserved. Canonical catalog migration 432 remains authoritative. Active test and registry references use the actual reconciled basenames. Historical SQL diagnostics retain their original identifiers where source was already preserved by the November 2 reconciliation; tests pin those exact historical labels separately from filenames.
 
-These source identities are not a claim about hosted migration history. The currently authenticated Supabase account did not list a LetBuyy project. Checked-in environment connection strings are templates. Hosted history and exact environment binding must be obtained before any hosted migration plan can execute.
+The isolated LetBuyy CLI context was recovered at `/Volumes/Developer Tools/Config/letbuyy-cli/activate.zsh`. The default Supabase login belongs to other projects and must not be used for LetBuyy. Read-only inspection verified both configured Mumbai projects on PostgreSQL 17.6. No hosted SQL or history row was mutated.
+
+## Actual hosted history and preserved aliases
+
+| Environment | Bound project | Recorded entries | Current schema point | Exact pending canonical source |
+|---|---|---:|---|---|
+| Staging | `yhhhjeaprrpjglriazad` | 343 | Through the two historical 414/415 aliases | 416–444, 29 files |
+| Production | `qtrzgnnqnvboifoqntfi` | 341 | Through 413 | 414–444, 31 files |
+
+Both journals retain five timestamp versions for source 176/177/178/183/186. Their SQL token sequences match canonical source, preserving literals and recursively examining function bodies. Every other recorded payload and managed execution receipt was verified. Baseline 000 is an existing schema, not an unapplied migration to replay.
+
+Staging executed warehouse commands as `414_atomic_warehouse_commands.sql`, then gift-card integrity as `415_gift_card_issue_replay_integrity.sql`. Canonical source has the opposite filename assignment. The gift-card SQL is byte-identical. The warehouse source is exactly preserved at `15fca500a08ee8c1c3c4d37a376f8fd81ee97403`; only its provenance migration identity changed from 414 to 415 during earlier source consolidation. All other source bytes, the deployed execution payload and its receipt were verified. Do not replay either implementation on staging, relabel either provider history row, or rewrite the existing warehouse provenance.
+
+`config/supabase/history-aliases.json` binds these finite identities and hashes to the exact staging project. It grants no execution authority and does not create an applied entry. Canonical 415 DOWN is inapplicable to the staging alias: its truthful history guard must refuse the different recorded payload. Use reviewed forward recovery or separately qualify the original historical pair at its exact schema point. Production uses the canonical 414/415 identities normally.
+
+`managed-hosted-history-upgrade.postgres.test.ts` reproduces both existing history/order profiles with synthetic records on the actual Supabase PostgreSQL 17 image and non-superuser `postgres`. It verifies exact pending execution receipts, preservation of original timestamp/alias rows and warehouse provenance, refusal of replay and mismatched DOWN, and retained warehouse acknowledgement replay/tenant denial after upgrade. This is a local managed-role rehearsal, not a claim that either hosted environment was upgraded.
 
 ## Recovery files for earlier gaps
 
@@ -77,4 +92,4 @@ For a hosted release, first bind the correct project/environment, inspect exact 
 
 Private receipts, logs, migration hashes and preservation archives are retained outside cleanup targets under `/Users/saai_mithra/LetBuyy-Recovery/2026-11-09/mission-211355/`.
 
-This record establishes local implementation and recovery procedures only. Hosted environment/history access is still unresolved. AWS Mumbai/Cashfree sandbox provisioning and mobile release signing remain unavailable per the owner. KYC provider intake stays disabled outside the synthetic test path. Whole-candidate qualification, exact-SHA CI, staging acceptance and production activation remain distinct later gates.
+This record establishes source reconciliation, verified actual history mapping and local recovery procedures. Fresh hosted backup/PITR availability, restoration and retained-state preflight remain release gates; the November 9 read-only API reported PITR disabled and no entries in its backup list for either project. Do not infer a usable recovery checkpoint from that result or from a local physical-copy rehearsal. AWS Mumbai/Cashfree sandbox provisioning and mobile release signing remain unavailable per the owner. KYC provider intake stays disabled outside the synthetic test path. Whole-candidate qualification, exact-SHA CI, staging acceptance and production activation remain distinct later gates.

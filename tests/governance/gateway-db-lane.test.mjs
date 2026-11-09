@@ -47,6 +47,7 @@ test('historical warehouse DOWN qualification cannot downgrade current warehouse
         `${GATEWAY_DB_SUITE_DIR}/merchant-warehouse-command-recovery.postgres.test.ts`,
         `${GATEWAY_DB_SUITE_DIR}/merchant-current-retained-recovery.postgres.test.ts`,
         `${GATEWAY_DB_SUITE_DIR}/merchant-transfer-ship-commit.postgres.test.ts`,
+        'tests/owned-db/managed-hosted-history-upgrade.postgres.test.ts',
         'tests/owned-device/merchant-catalog-local-android.postgres.test.ts',
     ]) assert.equal(HISTORICAL_GATEWAY_MIGRATION_CEILINGS[current], undefined);
 });
@@ -285,6 +286,7 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
         "loyalty-earn-worker.postgres.test.ts",
         "loyalty-refund-scheduler.postgres.test.ts",
         "loyalty-reversal-recovery.postgres.test.ts",
+        "managed-hosted-history-upgrade.postgres.test.ts",
         "managed-supabase-migration-admission.postgres.test.ts",
         "managed-supabase-support-free-admission.postgres.test.ts",
         "merchant-accounts-browser.postgres.test.ts",
