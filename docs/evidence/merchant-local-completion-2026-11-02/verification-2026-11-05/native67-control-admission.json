@@ -1,0 +1,22 @@
+{
+  "source_sha256": "e8cc94edd6649a1fbbeebf1f797d1d65a4959fe87851467d1c37f28399ddc0a4",
+  "changes": "Observed upload button first-line semantic match; append-only separate picker observations; all business/security assertions retained.",
+  "inputs": [
+    {
+      "path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/android-switcher-staff-v67.py",
+      "sha256": "e4cff80e121b87da4513ee340a3eae8e03ba6b5778a81817ffde05d8ba50591c"
+    },
+    {
+      "path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/merchant-switcher-staff-v67-local-android.postgres.test.ts",
+      "sha256": "179c3c465c2b615e53e1c2a6c3e496be6a38de4a8d1e4704694872032f41be99"
+    },
+    {
+      "path": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/run-switcher-v67.py",
+      "sha256": "e972dd67055c718efc041b67fd4621b35f3cc37dce8aecb532c100ff95c24f30"
+    },
+    {
+      "path": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/android-device-receipt-switcher-v67.json",
+      "sha256": "cc30e176f8c3c19ee79811a770b62876431a35a1e45f980321cbd1c958287967"
+    }
+  ]
+}

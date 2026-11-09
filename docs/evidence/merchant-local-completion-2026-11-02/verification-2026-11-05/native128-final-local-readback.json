@@ -1,0 +1,247 @@
+{
+  "at": "2026-11-08T04:48:26.563035+00:00",
+  "status": "BOUNDED_IOS_VARIANT_EDIT_WEB_ROUNDTRIP_AND_PRIVATE_KYC_LOST_REPLY_RESTART_ORIGINAL_REPLAY_DURABLE_WEB_NATIVE_READBACK_PASS;IOS_ACCESSIBILITY_ALIGNMENT_AND_FULL122_OPEN",
+  "source": "merchant-variant-kyc-source-v93",
+  "source_sha256": "fbde9fe512840dcdc0d84ace8143a461aafbdfdac65fd14b626f2187234c10d7",
+  "run_id": "ea0fcb839150",
+  "private_root": "/private/tmp/letbuyy-ios-ui-20261108-133778cee8",
+  "chain": {
+    "backend_exit": 0,
+    "ui_exit": 0,
+    "at": "2026-11-08T04:45:03.016904+00:00"
+  },
+  "runner": {
+    "tests": 1,
+    "assertionsPassed": 1,
+    "assertionsFailed": 0,
+    "skipped": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    }
+  },
+  "phase_attempts_retained": {
+    "Auth-terminal.json": {
+      "exit": 0,
+      "accepted": true,
+      "run_id": "ea0fcb839150",
+      "phase": "Auth",
+      "attempt": 1,
+      "control_file": "/private/tmp/letbuyy-ios-ui-20261108-133778cee8/Auth.swift",
+      "control_sha256": "3648cb23f97d5d34bec03aaff65152bce183e71465d85a5791ef5fe6cc869810"
+    },
+    "Kyc-attempt2-terminal.json": {
+      "exit": 65,
+      "accepted": false,
+      "run_id": "ea0fcb839150",
+      "phase": "Kyc",
+      "attempt": 2,
+      "control_file": "/private/tmp/letbuyy-ios-ui-20261108-133778cee8/Kyc-observed-actual-single-photo.swift",
+      "control_sha256": "d4209060384e6900ee871b6e1b5b5e833a8334898cb27db6832557f696ecba2b"
+    },
+    "Kyc-attempt3-terminal.json": {
+      "exit": 65,
+      "accepted": false,
+      "run_id": "ea0fcb839150",
+      "phase": "Kyc",
+      "attempt": 3,
+      "control_file": "/private/tmp/letbuyy-ios-ui-20261108-133778cee8/Kyc-observed-photo-element-center.swift",
+      "control_sha256": "05f8c5d136dea57404b4deef7c1ec05ee5d00fa94cfbfc73d7fa70029a3d7d81"
+    },
+    "Kyc-attempt4-terminal.json": {
+      "exit": 65,
+      "accepted": false,
+      "run_id": "ea0fcb839150",
+      "phase": "Kyc",
+      "attempt": 4,
+      "control_file": "/private/tmp/letbuyy-ios-ui-20261108-133778cee8/Kyc-observed-current-retained-submit.swift",
+      "control_sha256": "4e56df462d36c761af7a9f8eb8332c45f4991e0ab74047a5208c716150cedd53"
+    },
+    "Kyc-attempt5-terminal.json": {
+      "exit": 65,
+      "accepted": false,
+      "run_id": "ea0fcb839150",
+      "phase": "Kyc",
+      "attempt": 5,
+      "control_file": "/private/tmp/letbuyy-ios-ui-20261108-133778cee8/Kyc-observed-scroll-contained-submit.swift",
+      "control_sha256": "824366da12facccfafaac5c4c567ed4a99192654d924c1fa7ec19f2e29fd231a"
+    },
+    "Kyc-attempt6-terminal.json": {
+      "exit": 65,
+      "accepted": false,
+      "run_id": "ea0fcb839150",
+      "phase": "Kyc",
+      "attempt": 6,
+      "control_file": "/private/tmp/letbuyy-ios-ui-20261108-133778cee8/Kyc-observed-scroll-viewport-gesture.swift",
+      "control_sha256": "8d7b92767f8a985d9a553a69f6bf9dd126fd477f4f5dc5264af04368f4f3d565"
+    },
+    "Kyc-attempt7-terminal.json": {
+      "exit": 65,
+      "accepted": false,
+      "run_id": "ea0fcb839150",
+      "phase": "Kyc",
+      "attempt": 7,
+      "control_file": "/private/tmp/letbuyy-ios-ui-20261108-133778cee8/Kyc-observed-unique-compiled-attempt7.swift",
+      "control_sha256": "38dddea76ae350c401d8655cfde0f87f009b81fe97a8bbc5d09387075ac66a00"
+    },
+    "Kyc-attempt8-terminal.json": {
+      "exit": 65,
+      "accepted": false,
+      "run_id": "ea0fcb839150",
+      "phase": "Kyc",
+      "attempt": 8,
+      "control_file": "/private/tmp/letbuyy-ios-ui-20261108-133778cee8/Kyc-observed-current-pixel-action.swift",
+      "control_sha256": "5820bbf05a0ab7e0a14deb7b7c1c4638294630b199ba0ad60a16d593a5a0dbf0"
+    },
+    "Kyc-attempt9-terminal.json": {
+      "exit": 0,
+      "accepted": true,
+      "run_id": "ea0fcb839150",
+      "phase": "Kyc",
+      "attempt": 9,
+      "control_file": "/private/tmp/letbuyy-ios-ui-20261108-133778cee8/Kyc-observed-acknowledged-durable-readback.swift",
+      "control_sha256": "b7c1b019ad6fea0070c9432cbc69da5b5eafd0f74db874489a00b45650db6d9b"
+    },
+    "Kyc-terminal.json": {
+      "exit": 65,
+      "accepted": false,
+      "run_id": "ea0fcb839150",
+      "phase": "Kyc",
+      "attempt": 1,
+      "control_file": "/private/tmp/letbuyy-ios-ui-20261108-133778cee8/Kyc.swift",
+      "control_sha256": "dd550154aa1d14546a8b29cef9118a4ced3fc4d01e594736ded2f3c829de3c4f"
+    },
+    "KycOpen-terminal.json": {
+      "exit": 0,
+      "accepted": true,
+      "run_id": "ea0fcb839150",
+      "phase": "KycOpen",
+      "attempt": 1,
+      "control_file": "/private/tmp/letbuyy-ios-ui-20261108-133778cee8/KycOpen.swift",
+      "control_sha256": "898c0fef41c3b42d45dac8a0b895ee7040ce979f17f8037c213fa3332913b52d"
+    },
+    "Variants-terminal.json": {
+      "exit": 0,
+      "accepted": true,
+      "run_id": "ea0fcb839150",
+      "phase": "Variants",
+      "attempt": 1,
+      "control_file": "/private/tmp/letbuyy-ios-ui-20261108-133778cee8/Variants.swift",
+      "control_sha256": "72465ed638b72543930fb7420fac92da9a3aaf908d1d1653d839408fabd715e0"
+    }
+  },
+  "failed_control_attempts_count": 8,
+  "failed_attempts_not_erased_or_counted_as_passing": true,
+  "variant_invalid_no_write": {
+    "run_id": "ea0fcb839150",
+    "accepted": true
+  },
+  "variants": [
+    {
+      "id": "4adc7e9e-f00c-488b-8dce-50d6209eb30b",
+      "sku": "M-BLUE",
+      "price": 140,
+      "stock": 0,
+      "title": "M / Blue",
+      "option1": "M",
+      "option2": "Green"
+    },
+    {
+      "id": "53236ee6-4089-45e0-b093-0884a0f0c196",
+      "sku": "L-BLUE",
+      "price": 110,
+      "stock": 0,
+      "title": "L / Blue",
+      "option1": "L",
+      "option2": "Blue"
+    }
+  ],
+  "private_documents": [
+    {
+      "id": "d298485d-f290-401e-8676-a156204a3716",
+      "scan": "pending",
+      "status": "submitted",
+      "private": true,
+      "reference": "1234",
+      "document_type": "bank_proof"
+    }
+  ],
+  "private_storage": {
+    "private_object_sha256": "43878bb6bcddca23359993d492e6699026c7db7bf1f4f92c7d967f160fcdbe01",
+    "private_objects": 1,
+    "public_objects": 0,
+    "private_upload_requests": 2,
+    "original_key_equal": true
+  },
+  "actual_type_reference_locked_and_original_file_explicitly_used": true,
+  "actual_terminate_relaunch_in_attempt3": true,
+  "original_upload_201_lost_then_original_key_200_in_attempt8": true,
+  "persistent_native_document_readback_in_attempt9": true,
+  "no_extra_upload_after_acknowledgement": true,
+  "anonymous_compiled_assets_denied": true,
+  "wire_MIME_and_private_bytes_SHA_equal": true,
+  "web_title": "Settlement bank account",
+  "web_status": "No scan result yet",
+  "native_status": "Bank proof / No scan result yet \u00b7 document saved",
+  "same_record_web_native_readback": true,
+  "installed_artifact": {
+    "run_id": "ea0fcb839150",
+    "all_files_equal": true,
+    "files": 401,
+    "manifest_sha256": "3f8f5967ca220458ad24c923b6c83d075181e4c75d8a331aaf23c2099b7984c0",
+    "recording_camera_microphone_descriptions_packaged": true,
+    "retained": "/private/tmp/letbuyy-ios-ui-20261108-133778cee8/native-ios-v128/qualified-artifact/Runner.app",
+    "installed": "/Users/saai_mithra/Library/Developer/CoreSimulator/Devices/B907B390-5B08-490F-BC6A-8900667B2D94/data/Containers/Bundle/Application/868FFBB9-98A8-4441-BA46-FD6E562FFB08/Runner.app"
+  },
+  "source_projection_core_paths_equal": 4891,
+  "web_proof_png_sha256": {
+    "web-private-kyc-native-readback.png": "b3b2d08b56a638924d73185dd842ccd134627d2bbb2089662f659d801186decf",
+    "web-variant-native-readback.png": "4b07ea7940cf9c8f76986d2974126fd1e49e869876f2052efce82a8dd128be03"
+  },
+  "final_native_proof_png_sha256": {
+    "0383AB94-2C54-4E13-9F43-1658529167BD.png": "1c984acdc813252c82ed046a0575ab22cb473f4fa7b3df02bc1ef22ed5738a46"
+  },
+  "ios_ui_discrepancies": {
+    "private_picker_opener_snapshot": "Photo picker opened asynchronously after original KycOpen snapshot; initial retry was already covered by Photos. No upload sent by failed early controls.",
+    "image_semantics": "Exact owned visible Photos thumbnail reported nonhittable; selected only its observed element center.",
+    "source_runtime_mismatch": "Attempt6runtime log retained previous action sequence; unique method plus runtime markers on attempts7\u20139 confirmed their actual bodies.",
+    "resumed_sheet_AX_position": "Actual screenshot placed action above AX frame; AX taps missed and no API request occurred. Screenshot-derived point reached original request exactly once. Alignment is not accepted or repaired by this proof.",
+    "toast": "Transient success toast was not observed after real200andformclose; actual durable saved-document card was brought onscreen and required before acceptance."
+  },
+  "actual_button_analysis": {
+    "screenshot": "/private/tmp/letbuyy-ios-ui-20261108-133778cee8/private-kyc-attempt7-observed/B56A1FD5-EEB0-43D3-9609-0D1B5FAD476A.png",
+    "sha256": "6d129665e042857a9f5513dd9b16579987cdb7419cb077870555782a7d39dc22",
+    "pixels": [
+      1206,
+      2622
+    ],
+    "point_scale": 3,
+    "observed_visible_filled_action_pixel_y": [
+      2253,
+      2447
+    ],
+    "observed_tap_point": {
+      "x": 297.1666666667,
+      "y": 783.3333333333334
+    },
+    "AX_button_frame": [
+      212.3,
+      809,
+      169.7,
+      48
+    ],
+    "finding": "Visible action center is34points above AX center; resolved AX taps miss. This screenshot-derived tap proves only functional recovery, not iOS accessibility alignment acceptance.",
+    "qualification": "Original control diagnostic retained verbatim. Purple-band bounds can include the filename border; do not infer an exact or portable34point offset. Actual screenshot-derived point reached the intended Upload action and exactly one original-key200. Accessibility alignment remains unaccepted."
+  },
+  "whole_features_accepted": 0,
+  "limits": [
+    "Exact owned iOS26.5simulator and normal signed local debug app,not physical-device or release verification.",
+    "Actual functional native KYC recovery passes across retained phases; eight failed controls remain. iOS AX geometry and XCTest stale-body discrepancy remain open.",
+    "Private R2 owned fixture only; not deployed IndiaS3,provider scan/approval/KYC/live banking acceptance.",
+    "Existing two-axis variant value/price/zero/stableID/invalid-no-write and web140roundtrip;global option management/new matrix/roles/revocation/conflicts/buyer Liquid outcomes remain open."
+  ]
+}

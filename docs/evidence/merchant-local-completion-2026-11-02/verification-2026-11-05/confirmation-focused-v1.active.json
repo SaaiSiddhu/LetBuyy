@@ -1,0 +1,16 @@
+{
+  "started_at": "2026-11-05T20:03:47.902408+00:00",
+  "supervisor_pid": 72510,
+  "source": "confirmation-source-v1",
+  "source_sha256": "a06eeb68501f99020bc8ca61608d22efbd24c48225592592a44fea413dd32adf",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "--timeout",
+    "45s",
+    "test/confirmation_presentation_test.dart"
+  ],
+  "status": "RUNNING",
+  "child_pid": 72514
+}

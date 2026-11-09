@@ -1,0 +1,10 @@
+{
+  "status": "ONLY_MEDIA_FEEDBACK_METHOD_CHANGED",
+  "all_other_file_bytes_equal": true,
+  "outside_method_sha256": "c1e654812ea367511f6ce5f24c0dc7dd81bcd76e5d407c49e30dd2e14e398a8e",
+  "method": "_showMessage",
+  "messages_requests_receipts_permissions_workflow_and_metadata_controllers_unchanged": true,
+  "new_component": false,
+  "new_palette": false,
+  "canonical_owner": "packages/dart/ui_kit/lib/src/widgets/operation_feedback.dart"
+}

@@ -1,3 +1,9 @@
+import 'support/kyc_public_fixture.dart';
+import 'support/editor_steps_fixture.dart';
+import 'dart:async';
+import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart'
+    show LetbuyyFormSheet, initializeLetbuyyTypography;
+import 'package:letbuyy_store/theme/store_theme.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:letbuyy_store/widgets/shared/merchant_export_share.dart';
 import 'package:letbuyy_store/screens/settings/settings_screen.dart';
@@ -15,6 +21,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:letbuyy_store/app/routes.dart';
+import 'package:letbuyy_store/config/app_config.dart';
 import 'package:letbuyy_store/app/store_context.dart';
 import 'package:letbuyy_store/l10n/app_localizations.dart';
 import 'package:letbuyy_models/letbuyy_models.dart' hide JsonMap;
@@ -123,85 +130,299 @@ import 'support/warehouse_fixture.dart' as w;
 
 void main() {
   test('blog form omits absent SEO fields and sends strings when blank', () {
-    const absent = BlogPostInput(storeId: 'store', title: 'Synthetic', content: 'Body');
-    expect(absent.toJson(includeStoreId: true).containsKey('seo_title'), isFalse);
-    const blank = BlogPostInput(storeId: 'store', title: 'Synthetic', content: 'Body', seoTitle: '', seoDescription: '');
+    const absent = BlogPostInput(
+      storeId: 'store',
+      title: 'Synthetic',
+      content: 'Body',
+    );
+    expect(
+      absent.toJson(includeStoreId: true).containsKey('seo_title'),
+      isFalse,
+    );
+    const blank = BlogPostInput(
+      storeId: 'store',
+      title: 'Synthetic',
+      content: 'Body',
+      seoTitle: '',
+      seoDescription: '',
+    );
     final payload = blank.toJson(includeStoreId: true);
     expect(payload['seo_title'], '');
     expect(payload['seo_description'], '');
     expect(payload.values.contains(null), isFalse);
   });
 
-  test('CSV sharing downloads through the authenticated API and attaches file bytes', () async {
-    final api=_FakeApiClient(raw:{'/export/jobs/synthetic-job/download':'name,stock\nSynthetic,3\n'});
-    ShareParams? captured;
-    final result=await shareMerchantExport(api:api,job:{'id':'synthetic-job','status':'completed','filename':'products.csv','download_url':'https://worker.invalid/v1/export/jobs/synthetic-job/download?token=synthetic-proof'},share:(params) async {captured=params;return const ShareResult('dismissed',ShareResultStatus.dismissed);});
-    expect(result.status,ShareResultStatus.dismissed);
-    expect(api.paths.single,'/export/jobs/synthetic-job/download');
-    expect(api.queries[api.paths.single]?['token'],'synthetic-proof');
-    expect(captured!.text,isNull);
-    expect(captured!.fileNameOverrides,['products.csv']);
-    expect(await captured!.files!.single.readAsString(),'name,stock\nSynthetic,3\n');
-  });
-  test('CSV sharing rejects a mismatched job link before reading credentials or sharing', () async {
-    final api=_FakeApiClient();
-    await expectLater(shareMerchantExport(api:api,job:{'id':'one','status':'completed','download_url':'https://worker.invalid/v1/export/jobs/two/download?token=synthetic-proof'}),throwsA(isA<ApiException>()));
-    expect(api.paths,isEmpty);
-  });
+  test(
+    'CSV sharing downloads through the authenticated API and attaches file bytes',
+    () async {
+      final api = _FakeApiClient(
+        raw: {
+          '/export/jobs/synthetic-job/download': 'name,stock\nSynthetic,3\n',
+        },
+      );
+      ShareParams? captured;
+      final result = await shareMerchantExport(
+        api: api,
+        job: {
+          'id': 'synthetic-job',
+          'status': 'completed',
+          'filename': 'products.csv',
+          'download_url':
+              'https://worker.invalid/v1/export/jobs/synthetic-job/download?token=synthetic-proof',
+        },
+        share: (params) async {
+          captured = params;
+          return const ShareResult('dismissed', ShareResultStatus.dismissed);
+        },
+      );
+      expect(result.status, ShareResultStatus.dismissed);
+      expect(api.paths.single, '/export/jobs/synthetic-job/download');
+      expect(api.queries[api.paths.single]?['token'], 'synthetic-proof');
+      expect(captured!.text, isNull);
+      expect(captured!.fileNameOverrides, ['products.csv']);
+      expect(
+        await captured!.files!.single.readAsString(),
+        'name,stock\nSynthetic,3\n',
+      );
+    },
+  );
+  test(
+    'CSV sharing rejects a mismatched job link before reading credentials or sharing',
+    () async {
+      final api = _FakeApiClient();
+      await expectLater(
+        shareMerchantExport(
+          api: api,
+          job: {
+            'id': 'one',
+            'status': 'completed',
+            'download_url':
+                'https://worker.invalid/v1/export/jobs/two/download?token=synthetic-proof',
+          },
+        ),
+        throwsA(isA<ApiException>()),
+      );
+      expect(api.paths, isEmpty);
+    },
+  );
 
   test('coupon validation submits the checkout order-total field', () async {
-    final api = _FakeApiClient(json: {'/coupons/validate': {'valid': true}});
-    await CouponService(api: api).validateCoupon(storeId: 'store_1', code: 'AUDIT', subtotal: 1000);
+    final api = _FakeApiClient(
+      json: {
+        '/coupons/validate': {'valid': true},
+      },
+    );
+    await CouponService(
+      api: api,
+    ).validateCoupon(storeId: 'store_1', code: 'AUDIT', subtotal: 1000);
     expect((api.bodies['/coupons/validate'] as Map)['order_total'], 1000);
-    expect((api.bodies['/coupons/validate'] as Map).containsKey('subtotal'), isFalse);
+    expect(
+      (api.bodies['/coupons/validate'] as Map).containsKey('subtotal'),
+      isFalse,
+    );
   });
 
-  test('inventory commands preserve purchase/transfer identity and address readbacks', () {
-    final po = PurchaseOrderContract.fromJson({'purchase_order': {'id': 'po_1', 'site_id': 'store_1', 'status': 'received'}, 'lines': [{'id': 'line_1', 'quantity_ordered': 2, 'quantity_received': 2, 'unit_cost': 0}]});
-    expect(po.id, 'po_1'); expect(po.status, 'received'); expect(po.lines.single.remainingQuantity, 0);
-    final transfer = InventoryTransferContract.fromJson({'transfer': {'id': 'transfer_1', 'site_id': 'store_1', 'status': 'shipped'}, 'lines': []});
-    expect(transfer.id, 'transfer_1'); expect(transfer.status, 'shipped');
-    final location = InventoryLocationContract.fromJson({'id': 'loc_1', 'store_id': 'store_1', 'address': {'address': 'Warehouse', 'city': 'Chennai', 'state': 'TN', 'country': 'IN'}});
-    expect(location.address, 'Warehouse'); expect(location.city, 'Chennai'); expect(location.state, 'TN');
-  });
+  test(
+    'inventory commands preserve purchase/transfer identity and address readbacks',
+    () {
+      final po = PurchaseOrderContract.fromJson({
+        'purchase_order': {
+          'id': 'po_1',
+          'site_id': 'store_1',
+          'status': 'received',
+        },
+        'lines': [
+          {
+            'id': 'line_1',
+            'quantity_ordered': 2,
+            'quantity_received': 2,
+            'unit_cost': 0,
+          },
+        ],
+      });
+      expect(po.id, 'po_1');
+      expect(po.status, 'received');
+      expect(po.lines.single.remainingQuantity, 0);
+      final transfer = InventoryTransferContract.fromJson({
+        'transfer': {
+          'id': 'transfer_1',
+          'site_id': 'store_1',
+          'status': 'shipped',
+        },
+        'lines': [],
+      });
+      expect(transfer.id, 'transfer_1');
+      expect(transfer.status, 'shipped');
+      final location = InventoryLocationContract.fromJson({
+        'id': 'loc_1',
+        'store_id': 'store_1',
+        'address': {
+          'address': 'Warehouse',
+          'city': 'Chennai',
+          'state': 'TN',
+          'country': 'IN',
+        },
+      });
+      expect(location.address, 'Warehouse');
+      expect(location.city, 'Chennai');
+      expect(location.state, 'TN');
+    },
+  );
 
-  testWidgets('password reset validates input and only acknowledges successful backend reply', (tester) async {
-    var attempts = 0;
-    await tester.pumpWidget(MaterialApp(home: PasswordResetDialog(initialEmail: 'invalid', requestReset: (_) async {
-      attempts++; if (attempts == 1) throw StateError('Synthetic unavailable');
-    })));
-    await tester.tap(find.text('Request reset')); await tester.pump();
-    expect(attempts, 0); expect(find.text('Enter a valid email'), findsOneWidget);
-    await tester.enterText(find.byType(TextFormField), 'synthetic@example.invalid');
-    await tester.tap(find.text('Request reset')); await tester.pumpAndSettle();
-    expect(find.textContaining('could not be requested'), findsOneWidget);
-    expect(find.textContaining('If an account exists'), findsNothing);
-    await tester.tap(find.text('Request reset')); await tester.pumpAndSettle();
-    expect(attempts, 2); expect(find.textContaining('If an account exists'), findsOneWidget);
-  });
+  testWidgets(
+    'password reset validates input and only acknowledges successful backend reply',
+    (tester) async {
+      var attempts = 0;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: PasswordResetDialog(
+            initialEmail: 'invalid',
+            requestReset: (_) async {
+              attempts++;
+              if (attempts == 1) throw StateError('Synthetic unavailable');
+            },
+          ),
+        ),
+      );
+      await tester.tap(find.text('Request reset'));
+      await tester.pump();
+      expect(attempts, 0);
+      expect(find.text('Enter a valid email'), findsOneWidget);
+      await tester.enterText(
+        find.byType(TextFormField),
+        'synthetic@example.invalid',
+      );
+      await tester.tap(find.text('Request reset'));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('could not be requested'), findsOneWidget);
+      expect(find.textContaining('If an account exists'), findsNothing);
+      await tester.tap(find.text('Request reset'));
+      await tester.pumpAndSettle();
+      expect(attempts, 2);
+      expect(find.textContaining('If an account exists'), findsOneWidget);
+    },
+  );
 
-  testWidgets('merchant search calls bounded scoped product/order APIs and retires old store results', (tester) async {
-    SharedPreferences.setMockInitialValues({});
-    final api = _FakeApiClient(paginated: {
-      '/stores': [_storeJson(), _storeJson(id: 'store_2', name: 'Second Store', subdomain: 'second')],
-      '/products': [_productJson()], '/orders': [_orderJson()],
-    });
-    final scope = StoreContext(storeService: StoreService(api: api));
-    await scope.loadStores(); addTearDown(scope.dispose);
-    await tester.pumpWidget(MultiProvider(providers: [
-      Provider<ApiClient>.value(value: api), ChangeNotifierProvider<StoreContext>.value(value: scope),
-    ], child: const MaterialApp(home: Scaffold(body: MerchantSearchSheet()))));
-    await tester.enterText(find.byType(TextField), 'Synthetic');
-    await tester.pump(const Duration(milliseconds: 400)); await tester.pumpAndSettle();
-    expect(api.queries['/products']?['search'], 'Synthetic');
-    expect(api.queries['/orders']?['store_id'], 'store_1');
-    expect(api.queries['/products']?['limit'], 10);
-    expect(find.text('Product'), findsOneWidget);
-    await scope.selectStoreById('store_2'); await tester.pumpAndSettle();
-    expect(find.text('Product'), findsNothing);
-    expect(find.textContaining('selected store changed'), findsOneWidget);
-    await tester.pumpWidget(const SizedBox.shrink());
-  });
+  testWidgets(
+    'debounced search waits for a confirmed empty read before reporting no matches',
+    (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final api = _HoldingSearchApi();
+      final scope = StoreContext(storeService: StoreService(api: api));
+      await scope.loadStores();
+      try {
+        await tester.pumpWidget(
+          MultiProvider(
+            providers: [
+              Provider<ApiClient>.value(value: api),
+              ChangeNotifierProvider<StoreContext>.value(value: scope),
+            ],
+            child: const MaterialApp(
+              home: Scaffold(body: MerchantSearchSheet()),
+            ),
+          ),
+        );
+        await tester.enterText(find.byType(TextField), 'No matching fixture');
+        await tester.pump(const Duration(milliseconds: 100));
+        expect(api.searches, 0);
+        expect(find.text('No matching orders or products'), findsNothing);
+        await tester.pump(const Duration(milliseconds: 400));
+        await tester.pump();
+        expect(api.searches, 2);
+        expect(find.text('No matching orders or products'), findsNothing);
+        api.release.complete();
+        await tester.pumpAndSettle();
+        expect(find.text('No matching orders or products'), findsOneWidget);
+      } finally {
+        if (!api.release.isCompleted) api.release.complete();
+        await tester.pumpWidget(const SizedBox.shrink());
+        await tester.pumpAndSettle();
+        scope.dispose();
+        api.close();
+      }
+    },
+  );
+
+  testWidgets(
+    'merchant search calls bounded scoped product/order APIs and retires old store results',
+    (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final api = _FakeApiClient(
+        paginated: {
+          '/stores': [
+            _storeJson(),
+            _storeJson(
+              id: 'store_2',
+              name: 'Second Store',
+              subdomain: 'second',
+            ),
+          ],
+          '/products': [_productJson()],
+          '/orders': [_orderJson()],
+        },
+      );
+      final scope = StoreContext(storeService: StoreService(api: api));
+      await scope.loadStores();
+      addTearDown(scope.dispose);
+      await tester.pumpWidget(
+        MultiProvider(
+          providers: [
+            Provider<ApiClient>.value(value: api),
+            ChangeNotifierProvider<StoreContext>.value(value: scope),
+          ],
+          child: const MaterialApp(home: Scaffold(body: MerchantSearchSheet())),
+        ),
+      );
+      await tester.enterText(find.byType(TextField), 'Synthetic');
+      await tester.pump(const Duration(milliseconds: 400));
+      await tester.pumpAndSettle();
+      expect(api.queries['/products']?['search'], 'Synthetic');
+      expect(api.queries['/orders']?['store_id'], 'store_1');
+      expect(api.queries['/products']?['limit'], 10);
+      expect(find.text('Product'), findsOneWidget);
+      await scope.selectStoreById('store_2');
+      await tester.pumpAndSettle();
+      expect(find.text('Product'), findsNothing);
+      expect(find.textContaining('selected store changed'), findsOneWidget);
+      await tester.pumpWidget(const SizedBox.shrink());
+    },
+  );
+  testWidgets(
+    'search retires the query and scheduled reads when its bound actor changes before debounce',
+    (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final api = _FakeApiClient(
+        paginated: {
+          '/stores': [_storeJson()],
+        },
+      );
+      final scope = StoreContext(storeService: StoreService(api: api));
+      await scope.bindActor('actor-a');
+      await scope.loadStores();
+      addTearDown(scope.dispose);
+      await tester.pumpWidget(
+        MultiProvider(
+          providers: [
+            Provider<ApiClient>.value(value: api),
+            ChangeNotifierProvider<StoreContext>.value(value: scope),
+          ],
+          child: const MaterialApp(home: Scaffold(body: MerchantSearchSheet())),
+        ),
+      );
+      await tester.enterText(find.byType(TextField), 'Private actor A query');
+      await tester.pump();
+      await scope.bindActor('actor-b');
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(find.text('Private actor A query'), findsNothing);
+      expect(find.textContaining('selected store changed'), findsOneWidget);
+      expect(api.paths, isNot(contains('/products')));
+      expect(api.paths, isNot(contains('/orders')));
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox.shrink());
+    },
+  );
+
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('mobile gateway services', () {
@@ -377,6 +598,8 @@ void main() {
             hasEnabledState: true,
             isEnabled: true,
             hasTapAction: true,
+            hasFocusAction: true,
+            isFocusable: true,
           ),
         );
         expect(
@@ -414,10 +637,9 @@ void main() {
           matching: find.byType(InkWell),
         );
         final settingsFocusableLabel = find.descendant(
-          of: find.descendant(
-            of: settingsInkWell,
-            matching: find.byType(Focus),
-          ).first,
+          of: find
+              .descendant(of: settingsInkWell, matching: find.byType(Focus))
+              .first,
           matching: settingsLabel,
         );
         Focus.of(tester.element(settingsFocusableLabel)).requestFocus();
@@ -471,6 +693,8 @@ void main() {
             hasEnabledState: true,
             isEnabled: true,
             hasTapAction: true,
+            hasFocusAction: true,
+            isFocusable: true,
           ),
         );
         final actionSize = tester.getSize(ordersAction);
@@ -1840,6 +2064,8 @@ void main() {
             hasEnabledState: true,
             isEnabled: true,
             hasTapAction: true,
+            hasFocusAction: true,
+            isFocusable: true,
           ),
         );
         final actionSize = tester.getSize(accountAction);
@@ -1962,6 +2188,8 @@ void main() {
             hasEnabledState: true,
             isEnabled: true,
             hasTapAction: true,
+            hasFocusAction: true,
+            isFocusable: true,
           ),
         );
         final pickerSize = tester.getSize(storePickerAction);
@@ -1986,41 +2214,33 @@ void main() {
         await tester.sendKeyEvent(LogicalKeyboardKey.enter);
         await tester.pumpAndSettle();
 
-        expect(find.bySemanticsLabel('Second Store'), findsOneWidget);
+        final currentChoice = find.byWidgetPredicate(
+          (widget) =>
+              widget is RadioListTile<String> && widget.value == 'store_1',
+        );
+        final nextChoice = find.byWidgetPredicate(
+          (widget) =>
+              widget is RadioListTile<String> && widget.value == 'store_2',
+        );
+        final currentChoiceData = tester
+            .getSemantics(currentChoice)
+            .getSemanticsData();
+        final nextChoiceData = tester
+            .getSemantics(nextChoice)
+            .getSemanticsData();
+        expect(currentChoiceData.label, contains('Demo Store'));
         expect(
-          tester.getSemantics(find.bySemanticsLabel('Demo Store')),
-          matchesSemantics(
-            label: 'Demo Store',
-            hint: 'Current store',
-            isButton: true,
-            hasEnabledState: true,
-            isEnabled: true,
-            hasTapAction: true,
-            hasSelectedState: true,
-            isSelected: true,
-          ),
+          currentChoiceData.hasFlag(SemanticsFlag.hasCheckedState),
+          isTrue,
         );
-        final secondStoreNode = tester.getSemantics(
-          find.bySemanticsLabel('Second Store'),
-        );
-        final secondStoreSize = tester.getSize(
-          find.bySemanticsLabel('Second Store'),
-        );
-        expect(secondStoreSize.width, greaterThanOrEqualTo(48));
-        expect(secondStoreSize.height, greaterThanOrEqualTo(48));
-        expect(
-          secondStoreNode,
-          matchesSemantics(
-            label: 'Second Store',
-            hint: 'Switch to Second Store',
-            isButton: true,
-            hasEnabledState: true,
-            isEnabled: true,
-            hasTapAction: true,
-            hasSelectedState: true,
-            isSelected: false,
-          ),
-        );
+        expect(currentChoiceData.hasFlag(SemanticsFlag.isChecked), isTrue);
+        expect(nextChoiceData.label, contains('Second Store'));
+        expect(nextChoiceData.hasFlag(SemanticsFlag.hasCheckedState), isTrue);
+        expect(nextChoiceData.hasFlag(SemanticsFlag.isChecked), isFalse);
+        expect(nextChoiceData.hasFlag(SemanticsFlag.isEnabled), isTrue);
+        expect(nextChoiceData.hasAction(SemanticsAction.tap), isTrue);
+        expect(tester.getSize(nextChoice).width, greaterThanOrEqualTo(48));
+        expect(tester.getSize(nextChoice).height, greaterThanOrEqualTo(48));
 
         final secondStoreText = find.text('Second Store');
         final secondStoreInkWell = find.ancestor(
@@ -2040,6 +2260,12 @@ void main() {
         await tester.sendKeyEvent(LogicalKeyboardKey.enter);
         await tester.pumpAndSettle();
 
+        expect(storeContext.selectedStoreId, 'store_1');
+        expect(storeChanged, 0);
+        Focus.of(tester.element(find.text('Apply selection'))).requestFocus();
+        await tester.pump();
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pumpAndSettle();
         expect(storeContext.selectedStoreId, 'store_2');
         expect(storeChanged, 1);
         expect(
@@ -2308,7 +2534,8 @@ void main() {
 
     test('StoreContext restores and switches the selected store', () async {
       SharedPreferences.setMockInitialValues({
-        'letbuyy.selected_store_id': 'store_2',
+        'letbuyy.selected_store_id.${AppConfig.persistenceNamespace()}':
+            'store_2',
       });
       final api = _FakeApiClient(
         paginated: {
@@ -2645,6 +2872,18 @@ void main() {
     testWidgets('StoreMainScreen loads each operator tab from gateway data', (
       tester,
     ) async {
+      final messenger =
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+      messenger.setMockMethodCallHandler(
+        AppBadgeService.defaultChannel,
+        (_) async => null,
+      );
+      addTearDown(
+        () => messenger.setMockMethodCallHandler(
+          AppBadgeService.defaultChannel,
+          null,
+        ),
+      );
       SharedPreferences.setMockInitialValues({
         'letbuyy.selected_store_id': 'store_1',
       });
@@ -2680,7 +2919,10 @@ void main() {
       await tester.pump(const Duration(seconds: 1));
 
       expect(find.text('Performance'), findsOneWidget);
-      expect(api.paths, containsAll(['/mobile/dashboard', '/orders']));
+      expect(api.paths, contains('/mobile/dashboard'));
+      expect(api.paths, isNot(contains('/orders')));
+      expect(api.paths, isNot(contains('/products')));
+      expect(api.paths, isNot(contains('/customers')));
       expect(
         api.paths.where((path) => path == '/mobile/dashboard'),
         hasLength(1),
@@ -2690,11 +2932,29 @@ void main() {
 
       await tester.tap(find.bySemanticsLabel('Orders tab'));
       await tester.pump(const Duration(milliseconds: 250));
+      // Wait for useful data across the store-preparation/workspace frames.
+      // Root-shell motion is not the completion signal for this API assertion.
+      for (
+        var frame = 0;
+        frame < 8 &&
+            (shellContext.read<OrderService>().orders.isEmpty ||
+                shellContext.read<OrderService>().isLoading);
+        frame++
+      ) {
+        await tester.pump(const Duration(milliseconds: 100));
+      }
       expect(find.text('Orders'), findsWidgets);
       expect(
         shellContext.read<OrderService>().orders.single.orderNumber,
         'order_1',
       );
+      await _revealOrderControl(
+        tester,
+        find.byKey(const ValueKey('order-card-order_1')),
+      );
+      expect(find.text('order_1'), findsOneWidget);
+      expect(find.text('Loading orders…'), findsNothing);
+      expect(find.text('Refreshing orders…'), findsNothing);
 
       await tester.tap(find.bySemanticsLabel('Products tab'));
       await tester.pump(const Duration(milliseconds: 250));
@@ -2712,8 +2972,28 @@ void main() {
         'Meera Merchant',
       );
 
-      await tester.tap(find.bySemanticsLabel('More tab'));
+      final productReads = api.paths
+          .where((p) => p.startsWith('/products'))
+          .length;
+      await tester.tap(find.bySemanticsLabel('Orders tab'));
       await tester.pump(const Duration(milliseconds: 250));
+      final productContext = tester.element(
+        find.byType(ProductsScreen, skipOffstage: false),
+      );
+      expect(TickerMode.of(productContext), isFalse);
+      await tester.tap(find.bySemanticsLabel('Products tab'));
+      await tester.pump(const Duration(milliseconds: 250));
+      expect(
+        TickerMode.of(tester.element(find.byType(ProductsScreen))),
+        isTrue,
+      );
+      expect(
+        api.paths.where((p) => p.startsWith('/products')).length,
+        productReads,
+        reason: 'Revisiting a mounted branch preserves its read and state.',
+      );
+      await tester.tap(find.bySemanticsLabel('More tab'));
+      await tester.pumpAndSettle();
       expect(find.text('Store Settings'), findsOneWidget);
       expect(find.text('Store Health'), findsOneWidget);
       expect(find.textContaining('S-0'), findsNothing);
@@ -2730,6 +3010,64 @@ void main() {
         ]),
       );
     });
+
+    testWidgets(
+      'root search action opens the canonical sheet and closes to its existing destination',
+      (tester) async {
+        SharedPreferences.setMockInitialValues({});
+        final api = _FakeApiClient(
+          paginated: {
+            '/stores': [_storeJson()],
+          },
+          json: {
+            '/mobile/dashboard': _mobileDashboardJson(
+              revenueValue: 0,
+              orderValue: 0,
+              productCount: 0,
+              averageOrderValue: 0,
+              topProducts: const <Map<String, dynamic>>[],
+              trafficSources: const <Map<String, dynamic>>[],
+            ),
+          },
+        );
+        await tester.pumpWidget(
+          MultiProvider(
+            providers: _merchantShellProviders(api),
+            child: const MaterialApp(
+              localizationsDelegates: [AppLocalizations.delegate],
+              supportedLocales: AppLocalizations.supportedLocales,
+              home: StoreMainScreen(),
+            ),
+          ),
+        );
+        await tester.pump();
+        await tester.pump(const Duration(seconds: 1));
+        await tester.tap(find.byTooltip('Search store'));
+        await tester.pumpAndSettle();
+        expect(find.byType(LetbuyyFormSheet), findsOneWidget);
+        expect(
+          TickerMode.of(
+            tester.element(find.byType(HomeScreen, skipOffstage: false)),
+          ),
+          isFalse,
+        );
+        expect(find.text('Search orders and products'), findsOneWidget);
+        await tester.enterText(
+          find.descendant(
+            of: find.byType(MerchantSearchSheet),
+            matching: find.byType(TextField),
+          ),
+          'x',
+        );
+        await tester.tap(find.byTooltip('Close search'));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 400));
+        expect(find.byType(MerchantSearchSheet), findsNothing);
+        expect(find.text('Performance'), findsOneWidget);
+        expect(TickerMode.of(tester.element(find.byType(HomeScreen))), isTrue);
+        expect(tester.takeException(), isNull);
+      },
+    );
 
     testWidgets('StoreMainScreen AI operator FAB opens the command sheet', (
       tester,
@@ -2771,6 +3109,9 @@ void main() {
       await tester.pump(const Duration(milliseconds: 350));
 
       expect(find.text('AI operator'), findsOneWidget);
+      expect(find.byType(ActionChip), findsNothing);
+      await tester.tap(find.text('Suggested commands'));
+      await tester.pumpAndSettle();
       expect(
         find.text('Create product "Cotton Tee" at INR 499 stock 20'),
         findsOneWidget,
@@ -2853,7 +3194,13 @@ void main() {
         ].firstWhere((file) => file.existsSync());
         final source = sourceFile.readAsStringSync();
 
-        expect(source, contains('LineChart('));
+        expect(source, contains('RecordedHistoryChart('));
+        final chartSource = File.fromUri(
+          sourceFile.uri.resolve(
+            '../../widgets/shared/recorded_history_chart.dart',
+          ),
+        ).readAsStringSync();
+        expect(chartSource, contains('LineChart('));
         expect(source, contains('dailyStats'));
         expect(source, isNot(contains('Charts coming soon')));
         expect(source, isNot(contains('needs a gateway analytics endpoint')));
@@ -2911,7 +3258,10 @@ void main() {
 
       expect(source, contains('_showCancelReasonDialog'));
       expect(source, contains('Cancellation reason'));
-      expect(source, contains('cancelOrder(order.id, reason: reason)'));
+      expect(
+        source,
+        contains(RegExp(r'cancelOrder\(order\.id,\s*reason:\s*reason!?\)')),
+      );
       expect(
         source,
         isNot(contains("updateOrderStatus(order.id, status: 'cancelled'")),
@@ -3044,9 +3394,6 @@ void main() {
       final body = Map<String, dynamic>.from(
         api.bodies['/stores/store_1']! as Map,
       );
-      final businessProfile = Map<String, dynamic>.from(
-        body['business_profile']! as Map,
-      );
       final invoiceAddress = Map<String, dynamic>.from(
         body['invoice_address']! as Map,
       );
@@ -3054,9 +3401,8 @@ void main() {
       expect(body['gstin'], '27ABCDE1234F1Z5');
       expect(body['invoice_prefix'], 'LBY-26');
       expect(body.containsKey('invoice_number_next'), isFalse);
-      expect(businessProfile.containsKey('legal_name'), isFalse);
-      expect(businessProfile.containsKey('gstin'), isFalse);
-      expect(businessProfile.containsKey('gst_state_code'), isFalse);
+      expect(body.containsKey('business_profile'), isFalse);
+      expect(body['gst_state_code'], '27');
       expect(invoiceAddress['zip'], '560001');
       expect(invoiceAddress['phone'], '+919876543210');
     });
@@ -3089,7 +3435,11 @@ void main() {
         final legalField = find.byKey(
           const ValueKey('store-details-legal-name-field'),
         );
-        await tester.ensureVisible(legalField);
+        await tester.scrollUntilVisible(
+          legalField,
+          200,
+          scrollable: find.byType(Scrollable).first,
+        );
         await tester.enterText(legalField, 'Local unsaved legal name');
         await tester.pump();
         errors['/stores/store_1'] = const ApiException(
@@ -3097,7 +3447,7 @@ void main() {
           statusCode: 409,
           code: 'STORE_UPDATE_CONFLICT',
         );
-        await tester.tap(find.widgetWithText(TextButton, 'Save'));
+        await tester.tap(find.text('Save'));
         await tester.pumpAndSettle();
         expect(api.bodies['/stores/store_1'], containsPair('version', 1));
         expect(
@@ -3106,7 +3456,7 @@ void main() {
         );
         expect(
           find.text(
-            'Store details changed elsewhere. Reload to discard these edits.',
+            'The save is unconfirmed. Reload current details before another change.',
           ),
           findsOneWidget,
         );
@@ -3116,6 +3466,9 @@ void main() {
           statusCode: 503,
           code: 'UNAVAILABLE',
         );
+        await tester.tap(find.byTooltip('Reload current store details'));
+        await tester.pumpAndSettle();
+        expect(find.text('Reload store details?'), findsOneWidget);
         await tester.tap(find.text('Reload'));
         await tester.pumpAndSettle();
         expect(
@@ -3123,7 +3476,7 @@ void main() {
           'Local unsaved legal name',
         );
         expect(
-          find.byTooltip('Reload current details'),
+          find.byTooltip('Reload current store details'),
           findsOneWidget,
           reason: 'a failed fresh read must leave a persistent recovery action',
         );
@@ -3138,7 +3491,9 @@ void main() {
             'gst_state_code': '27',
           },
         };
-        await tester.tap(find.byTooltip('Reload current details'));
+        await tester.tap(find.byTooltip('Reload current store details'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Reload'));
         await tester.pumpAndSettle();
         expect(
           tester.widget<TextFormField>(legalField).controller!.text,
@@ -3146,14 +3501,19 @@ void main() {
           reason:
               'the remote clear must replace the stale local draft only after the explicit reload',
         );
-        await tester.ensureVisible(legalField);
+        await tester.scrollUntilVisible(
+          legalField,
+          200,
+          scrollable: find.byType(Scrollable).first,
+        );
         await tester.enterText(legalField, 'New legal name');
         await tester.pump();
-        await tester.tap(find.widgetWithText(TextButton, 'Save'));
+        await tester.tap(find.text('Save'));
         await tester.pumpAndSettle();
         expect(api.bodies['/stores/store_1'], containsPair('version', 2));
         final savedBusinessProfile = Map<String, dynamic>.from(
-          (api.bodies['/stores/store_1'] as Map)['business_profile'] as Map,
+          (api.bodies['/stores/store_1'] as Map)['business_profile'] as Map? ??
+              const {},
         );
         expect(savedBusinessProfile.containsKey('legal_name'), isFalse);
         expect(savedBusinessProfile.containsKey('gstin'), isFalse);
@@ -3187,7 +3547,11 @@ void main() {
         final legalField = find.byKey(
           const ValueKey('store-details-legal-name-field'),
         );
-        await tester.ensureVisible(legalField);
+        await tester.scrollUntilVisible(
+          legalField,
+          200,
+          scrollable: find.byType(Scrollable).first,
+        );
         expect(
           tester.widget<TextFormField>(legalField).controller!.text,
           'Private legal name',
@@ -3200,19 +3564,18 @@ void main() {
           statusCode: 409,
           code: 'STORE_UPDATE_CONFLICT',
         );
-        await tester.tap(find.widgetWithText(TextButton, 'Save'));
+        await tester.tap(find.text('Save'));
         await tester.pumpAndSettle();
         errors['/stores/store_1'] = const ApiException(
           message: 'Store access revoked',
           statusCode: 403,
           code: 'FORBIDDEN',
         );
-        await tester.tap(find.byTooltip('Reload current details'));
+        await tester.tap(find.byTooltip('Reload current store details'));
         await tester.pumpAndSettle();
-        expect(
-          find.text('Store access changed. Open settings again.'),
-          findsOneWidget,
-        );
+        await tester.tap(find.text('Reload'));
+        await tester.pumpAndSettle();
+        expect(find.text('Store access changed'), findsOneWidget);
         expect(
           find.byKey(const ValueKey('store-details-legal-name-field')),
           findsNothing,
@@ -3281,23 +3644,40 @@ void main() {
       expect(AppRoutes.isKnownRoute('/not-a-route'), isFalse);
     });
 
-    test('PushService reports denied OS permission without registering a token', () async {
-      final api = _FakeApiClient();
-      final service = PushService(api:api,tokenProvider:()=>throw const PushPermissionDenied());
-      expect(await service.registerCurrentDeviceToken(),isFalse);
-      expect(service.registrationState,PushRegistrationState.permissionDenied);
-      expect(api.paths,isEmpty);
-    });
+    test(
+      'PushService reports denied OS permission without registering a token',
+      () async {
+        final api = _FakeApiClient();
+        final service = PushService(
+          api: api,
+          tokenProvider: () => throw const PushPermissionDenied(),
+        );
+        expect(await service.registerCurrentDeviceToken(), isFalse);
+        expect(
+          service.registrationState,
+          PushRegistrationState.permissionDenied,
+        );
+        expect(api.paths, isEmpty);
+      },
+    );
 
-    test('PushService registers refreshed token then removes the old account token', () async {
-      final api = _FakeApiClient();
-      final service=PushService(api:api);
-      await service.registerDeviceToken(token:'synthetic-old-token');
-      await service.registerDeviceToken(token:'synthetic-new-token');
-      expect(service.registrationState,PushRegistrationState.registered);
-      expect(api.paths.where((p)=>p=='/notifications/device-tokens').length,3);
-      expect(api.bodies['/notifications/device-tokens'],{'token':'synthetic-old-token'});
-    });
+    test(
+      'PushService registers refreshed token then removes the old account token',
+      () async {
+        final api = _FakeApiClient();
+        final service = PushService(api: api);
+        await service.registerDeviceToken(token: 'synthetic-old-token');
+        await service.registerDeviceToken(token: 'synthetic-new-token');
+        expect(service.registrationState, PushRegistrationState.registered);
+        expect(
+          api.paths.where((p) => p == '/notifications/device-tokens').length,
+          3,
+        );
+        expect(api.bodies['/notifications/device-tokens'], {
+          'token': 'synthetic-old-token',
+        });
+      },
+    );
 
     test('ProductService keeps canonical ProductContract payloads', () async {
       final api = _FakeApiClient(
@@ -3312,16 +3692,23 @@ void main() {
       expect(products.single.containsKey('salePrice'), isFalse);
     });
 
-    test('ProductService deletes a fetched cached product without mutating a fixed list', () async {
-      final api = _FakeApiClient(paginated: {'/products': [_productJson()]});
-      final service = ProductService(api: api);
-      await service.fetchProducts('store_1');
-      final id = service.products.single['id'] as String;
-      await service.deleteProduct(id);
-      expect(service.products, isEmpty);
-      expect(service.productContracts, isEmpty);
-      expect(api.paths, contains('/products/$id'));
-    });
+    test(
+      'ProductService deletes a fetched cached product without mutating a fixed list',
+      () async {
+        final api = _FakeApiClient(
+          paginated: {
+            '/products': [_productJson()],
+          },
+        );
+        final service = ProductService(api: api);
+        await service.fetchProducts('store_1');
+        final id = service.products.single['id'] as String;
+        await service.deleteProduct(id);
+        expect(service.products, isEmpty);
+        expect(service.productContracts, isEmpty);
+        expect(api.paths, contains('/products/$id'));
+      },
+    );
 
     test('high-volume lists preserve cursor pagination metadata', () async {
       final api = _FakeApiClient(
@@ -3429,7 +3816,10 @@ void main() {
       () async {
         final api = _FakeApiClient(
           json: {
-            '/products': _productJson(variants: [_variantJson()]),
+            '/products': {
+              ..._productJson(variants: [_variantJson()]),
+              'version': 1,
+            },
           },
         );
         final service = ProductService(api: api);
@@ -3458,7 +3848,8 @@ void main() {
         );
 
         final body = api.bodies['/products'] as Map<String, dynamic>;
-        final variants = body['variants'] as List<Map<String, dynamic>>;
+        final variants = (body['variants'] as List)
+            .cast<Map<String, dynamic>>();
         expect(body['sku'], 'TEE-BASE');
         expect(body['barcode'], '8901234567890');
         expect(body['url_handle'], 'cotton-tee');
@@ -3529,7 +3920,7 @@ void main() {
         expect(lookup.variantId, 'variant_1');
         expect(lookup.sku, 'TEE-XL');
 
-        final adjusted = await service.adjustScannedStock(
+        await service.adjustScannedStock(
           storeId: 'store_1',
           lookup: lookup,
           delta: 4,
@@ -3538,7 +3929,11 @@ void main() {
           note: 'Cycle count',
         );
 
-        expect(adjusted.available, 14);
+        expect(
+          service.levels,
+          isEmpty,
+          reason: 'The receipt requires current inventory readback',
+        );
         expect(api.paths, contains('/products/barcode/lookup'));
         expect(api.paths, contains('/inventory/adjust'));
         expect(
@@ -3548,62 +3943,36 @@ void main() {
       },
     );
 
-    test(
-      'ProductService lists, creates, updates, and deletes collections',
-      () async {
-        final api = _FakeApiClient(
-          json: {
-            '/products/collections': [_collectionJson()],
-            '/products/collections/collection_1': _collectionJson(
-              title: 'Updated',
-            ),
-            '/export/products': {
-              'job': {'id': 'export_1', 'status': 'queued'},
-            },
-            '/export/jobs/export_1': {
-              'job': {
-                'id': 'export_1',
-                'status': 'completed',
-                'download_url':
-                    'https://gateway.test/v1/export/jobs/export_1/download?token=test',
-              },
+    test('ProductService submits and reads product export jobs', () async {
+      final api = _FakeApiClient(
+        json: {
+          '/products/collections': [_collectionJson()],
+          '/products/collections/collection_1': _collectionJson(
+            title: 'Updated',
+          ),
+          '/export/products': {
+            'job': {'id': 'export_1', 'status': 'queued'},
+          },
+          '/export/jobs/export_1': {
+            'job': {
+              'id': 'export_1',
+              'status': 'completed',
+              'download_url':
+                  'https://gateway.test/v1/export/jobs/export_1/download?token=test',
             },
           },
-        );
-        final service = ProductService(api: api);
+        },
+      );
+      final service = ProductService(api: api);
 
-        final collections = await service.fetchCollections('store_1');
-        final created = await service.createCollection(
-          const ProductCollectionInput(
-            storeId: 'store_1',
-            title: 'Summer picks',
-            description: 'Seasonal merchandising',
-          ),
-        );
+      final export = await service.exportProducts('store_1');
+      final exportJob = await service.fetchExportJob('export_1');
 
-        expect(collections.single.title, 'Summer picks');
-        expect(created.handle, 'summer-picks');
-        expect(api.paths, contains('/products/collections'));
-        final updated = await service.updateCollection(
-          'collection_1',
-          const ProductCollectionInput(storeId: 'store_1', title: 'Updated'),
-        );
-        await service.deleteCollection('collection_1');
-        final export = await service.exportProducts('store_1');
-        final exportJob = await service.fetchExportJob('export_1');
-
-        expect(updated.title, 'Updated');
-        expect((export['job'] as Map)['id'], 'export_1');
-        expect((exportJob['job'] as Map)['status'], 'completed');
-        expect(api.paths, contains('/products/collections/collection_1'));
-        expect(api.paths, contains('/export/products'));
-        expect(api.paths, contains('/export/jobs/export_1'));
-        expect(
-          api.bodies['/products/collections/collection_1'],
-          containsPair('title', 'Updated'),
-        );
-      },
-    );
+      expect((export['job'] as Map)['id'], 'export_1');
+      expect((exportJob['job'] as Map)['status'], 'completed');
+      expect(api.paths, contains('/export/products'));
+      expect(api.paths, contains('/export/jobs/export_1'));
+    });
 
     test('ProductService lists and issues gift cards', () async {
       final api = _FakeApiClient(
@@ -3896,7 +4265,8 @@ void main() {
         reason: 'Customer requested return',
       );
       transportErrors['/orders/order_1/refund'] = const ApiException(
-        message: 'Controlled reply loss', statusCode: 503,
+        message: 'Controlled reply loss',
+        statusCode: 503,
         code: 'CONTROLLED_REPLY_LOSS',
       );
       await expectLater(requestRefund(), throwsA(isA<ApiException>()));
@@ -3930,25 +4300,51 @@ void main() {
         'idempotency_key': originalRequestKey,
       });
       expect(originalRequestKey, matches(RegExp(r'^[a-zA-Z0-9-]{8,200}$')));
-      expect(api.requestOptions['/orders/order_1/refund']!
-          .every((o) => o!.idempotencyKey == originalRequestKey &&
-              o.storeId == 'store_1' && o.expectedContextVersion == 1), isTrue);
+      expect(
+        api.requestOptions['/orders/order_1/refund']!.every(
+          (o) =>
+              o!.idempotencyKey == originalRequestKey &&
+              o.storeId == 'store_1' &&
+              o.expectedContextVersion == 1,
+        ),
+        isTrue,
+      );
       final completionOptions =
           api.requestOptions['/orders/order_1/refund/complete']!.single!;
       expect(api.bodies['/orders/order_1/refund/complete'], {
-        'refund_id': 'refund_1', 'provider_refund_id': 'rfnd_1',
+        'refund_id': 'refund_1',
+        'provider_refund_id': 'rfnd_1',
         'idempotency_key': completionOptions.idempotencyKey,
       });
       _expectContractApproval(completionOptions, approval);
       expect(storage.data.values.join(), isNot(contains(approval.token)));
       final beforeStale = api.paths.length;
       contextEpoch++;
-      expect(() => service.completeRefund('order_1', approval: approval,
-          refundId: 'refund_1'), throwsA(isA<ApiException>().having(
-            (e) => e.code, 'code', 'SESSION_CONTEXT_CHANGED')));
+      expect(
+        () => service.completeRefund(
+          'order_1',
+          approval: approval,
+          refundId: 'refund_1',
+        ),
+        throwsA(
+          isA<ApiException>().having(
+            (e) => e.code,
+            'code',
+            'SESSION_CONTEXT_CHANGED',
+          ),
+        ),
+      );
       expect(api.paths.length, beforeStale);
-      await expectLater(requestRefund(), throwsA(isA<ApiException>().having(
-          (e) => e.code, 'code', 'SESSION_CONTEXT_CHANGED')));
+      await expectLater(
+        requestRefund(),
+        throwsA(
+          isA<ApiException>().having(
+            (e) => e.code,
+            'code',
+            'SESSION_CONTEXT_CHANGED',
+          ),
+        ),
+      );
       expect(api.paths.length, beforeStale);
       expect(api.paths, contains('/orders/order_1'));
       expect(api.paths, contains('/orders/order_1/fulfill'));
@@ -4016,6 +4412,9 @@ void main() {
       final api = _FakeApiClient(
         contextVersionProvider: () => contextEpoch,
         errors: transportErrors,
+        paginatedMeta: {
+          '/returns': {'page': 1, 'per_page': 20, 'total': 1},
+        },
         paginated: {
           '/returns': [_returnJson()],
         },
@@ -4051,12 +4450,15 @@ void main() {
         providerRefundId: 'rfnd_1',
       );
       transportErrors['/returns/return_1/refund/complete'] = const ApiException(
-        message: 'Controlled reply loss', statusCode: 503,
+        message: 'Controlled reply loss',
+        statusCode: 503,
         code: 'CONTROLLED_REPLY_LOSS',
       );
       await expectLater(complete(), throwsA(isA<ApiException>()));
-      final originalKey = api.requestOptions[
-          '/returns/return_1/refund/complete']!.single!.idempotencyKey;
+      final originalKey = api
+          .requestOptions['/returns/return_1/refund/complete']!
+          .single!
+          .idempotencyKey;
       transportErrors.remove('/returns/return_1/refund/complete');
       final refunded = await complete();
 
@@ -4066,21 +4468,33 @@ void main() {
       expect(refunded.status, 'refunded');
       expect(refunded.refundAmount, 499);
       expect(api.bodies['/returns/return_1/refund/complete'], {
-        'refund_id': 'refund_1', 'provider_refund_id': 'rfnd_1',
+        'refund_id': 'refund_1',
+        'provider_refund_id': 'rfnd_1',
         'idempotency_key': originalKey,
       });
       expect(originalKey, matches(RegExp(r'^[a-zA-Z0-9-]{8,200}$')));
-      for (final options in api.requestOptions[
-          '/returns/return_1/refund/complete']!) {
+      for (final options
+          in api.requestOptions['/returns/return_1/refund/complete']!) {
         expect(options!.idempotencyKey, originalKey);
         _expectContractApproval(options, approval);
       }
       expect(storage.data.values.join(), isNot(contains(approval.token)));
       final beforeStale = api.paths.length;
       contextEpoch++;
-      expect(() => service.completeRefund('return_1', approval: approval,
-          refundId: 'refund_1'), throwsA(isA<ApiException>().having(
-            (e) => e.code, 'code', 'SESSION_CONTEXT_CHANGED')));
+      expect(
+        () => service.completeRefund(
+          'return_1',
+          approval: approval,
+          refundId: 'refund_1',
+        ),
+        throwsA(
+          isA<ApiException>().having(
+            (e) => e.code,
+            'code',
+            'SESSION_CONTEXT_CHANGED',
+          ),
+        ),
+      );
       expect(api.paths.length, beforeStale);
       expect(api.paths, contains('/returns'));
       expect(api.paths, contains('/returns/return_1'));
@@ -4092,79 +4506,155 @@ void main() {
       );
     });
 
-    test('product fallback never carries another store catalog into a failed read', () async {
-      final errors = <String, ApiException>{};
-      final api = _FakeApiClient(paginated: {'/products': [_productJson()]}, errors: errors);
-      final service = ProductService(api: api, cache: CacheService.memory());
-      expect(await service.fetchProducts('store_1'), isNotEmpty);
-      errors['/products'] = const ApiException(message: 'Network unavailable', statusCode: 503, code: 'UNAVAILABLE');
-      await expectLater(service.fetchProducts('store_2'), throwsA(isA<ApiException>()));
-      expect(service.products, isEmpty);
-    });
+    test(
+      'product fallback never carries another store catalog into a failed read',
+      () async {
+        final errors = <String, ApiException>{};
+        final api = _FakeApiClient(
+          paginated: {
+            '/products': [_productJson()],
+          },
+          errors: errors,
+        );
+        final service = ProductService(api: api, cache: CacheService.memory());
+        expect(await service.fetchProducts('store_1'), isNotEmpty);
+        errors['/products'] = const ApiException(
+          message: 'Network unavailable',
+          statusCode: 503,
+          code: 'UNAVAILABLE',
+        );
+        await expectLater(
+          service.fetchProducts('store_2'),
+          throwsA(isA<ApiException>()),
+        );
+        expect(service.products, isEmpty);
+      },
+    );
 
-    testWidgets('products show a retry state for failed reads instead of an empty catalog', (tester) async {
-      SharedPreferences.setMockInitialValues({});
-      final api = _FakeApiClient(paginated: {'/stores': [_storeJson()]},
-        errors: {'/products': const ApiException(message: 'Unavailable', statusCode: 503, code: 'UNAVAILABLE')});
-      await tester.pumpWidget(MultiProvider(providers: [..._storeProviders(api),
-        ChangeNotifierProvider(create: (_) => ProductService(api: api))],
-        child: const MaterialApp(home: ProductsScreen())));
-      await tester.pumpAndSettle();
-      expect(find.text('Retry products'), findsOneWidget);
-      expect(find.text('0 Total'), findsNothing);
-      expect(tester.takeException(), isNull);
-    });
+    testWidgets(
+      'products show a retry state for failed reads instead of an empty catalog',
+      (tester) async {
+        SharedPreferences.setMockInitialValues({});
+        final api = _FakeApiClient(
+          paginated: {
+            '/stores': [_storeJson()],
+          },
+          errors: {
+            '/products': const ApiException(
+              message: 'Unavailable',
+              statusCode: 503,
+              code: 'UNAVAILABLE',
+            ),
+          },
+        );
+        await tester.pumpWidget(
+          MultiProvider(
+            providers: [
+              ..._storeProviders(api),
+              ChangeNotifierProvider(create: (_) => ProductService(api: api)),
+            ],
+            child: const MaterialApp(home: ProductsScreen()),
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(find.text('Retry products'), findsOneWidget);
+        expect(find.text('0 Total'), findsNothing);
+        expect(tester.takeException(), isNull);
+      },
+    );
 
-    testWidgets('database product cards fit the S26 viewport without clipping', (tester) async {
-      final errors = <FlutterErrorDetails>[];
-      final previous = FlutterError.onError;
-      FlutterError.onError = errors.add;
-      addTearDown(() => FlutterError.onError = previous);
-      SharedPreferences.setMockInitialValues({});
-      tester.view.physicalSize = const Size(411, 891);
-      tester.view.devicePixelRatio = 1;
-      addTearDown(tester.view.resetPhysicalSize);
-      addTearDown(tester.view.resetDevicePixelRatio);
-      final api = _FakeApiClient(paginated: {'/stores': [_storeJson()],
-        '/products': [{..._productJson(), 'name': 'Bengaluru Street Runner'}]});
-      await tester.pumpWidget(MultiProvider(providers: [..._storeProviders(api),
-        ChangeNotifierProvider(create: (_) => ProductService(api: api))],
-        child: const MaterialApp(home: ProductsScreen())));
-      await tester.pumpAndSettle();
-      FlutterError.onError = previous;
-      expect(find.text('Bengaluru Street Runner'), findsOneWidget);
-      expect(errors.map((e) => e.toString()), isEmpty);
-    });
+    testWidgets(
+      'database product cards fit the S26 viewport without clipping',
+      (tester) async {
+        final errors = <FlutterErrorDetails>[];
+        final previous = FlutterError.onError;
+        FlutterError.onError = errors.add;
+        addTearDown(() => FlutterError.onError = previous);
+        SharedPreferences.setMockInitialValues({});
+        tester.view.physicalSize = const Size(411, 891);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        final api = _FakeApiClient(
+          paginated: {
+            '/stores': [_storeJson()],
+            '/products': [
+              {..._productJson(), 'name': 'Bengaluru Street Runner'},
+            ],
+          },
+        );
+        await tester.pumpWidget(
+          MultiProvider(
+            providers: [
+              ..._storeProviders(api),
+              ChangeNotifierProvider(create: (_) => ProductService(api: api)),
+            ],
+            child: const MaterialApp(home: ProductsScreen()),
+          ),
+        );
+        await tester.pumpAndSettle();
+        FlutterError.onError = previous;
+        expect(find.text('Bengaluru Street Runner'), findsOneWidget);
+        expect(errors.map((e) => e.toString()), isEmpty);
+      },
+    );
 
-    testWidgets('money keeps payouts available when wallet reconciliation is required', (tester) async {
-      SharedPreferences.setMockInitialValues({});
-      final api = _FakeApiClient(
-        paginated: {'/stores': [_storeJson()]},
-        json: {
-          '/payouts': {'payouts': [], 'summary': {'provider_mode': 'sandbox'}},
-          '/commission': _commissionJson(),
-          '/cod/reconciliation': _codJson(),
-        },
-        errors: {'/wallet': const ApiException(message: 'Needs reconciliation',
-          statusCode: 409, code: 'LEDGER_RECONCILIATION_REQUIRED')},
-      );
-      await tester.pumpWidget(MultiProvider(
-        providers: [..._storeProviders(api),
-          ChangeNotifierProvider(create: (_) => MoneyService(api: api))],
-        child: const MaterialApp(home: MoneyScreen()),
-      ));
-      await tester.pumpAndSettle();
-      expect(find.text('No payout statements yet.'), findsOneWidget);
-      // Refresh must never create a payout statement.
-      await tester.widget<RefreshIndicator>(find.byType(RefreshIndicator)).onRefresh();
-      await tester.pumpAndSettle();
-      expect(api.requestOptions['/payouts']!.every((o) => o?.method != HttpMethod.post), isTrue);
-      await tester.tap(find.text('Wallet'));
-      await tester.pumpAndSettle();
-      expect(find.textContaining('ledger reconciliation is verified'), findsOneWidget);
-      expect(find.text('Available balance'), findsNothing);
-      expect(tester.takeException(), isNull);
-    });
+    testWidgets(
+      'money keeps payouts available when wallet reconciliation is required',
+      (tester) async {
+        SharedPreferences.setMockInitialValues({});
+        final api = _FakeApiClient(
+          paginated: {
+            '/stores': [_storeJson()],
+          },
+          json: {
+            '/payouts': {
+              'payouts': [],
+              'summary': {'provider_mode': 'sandbox'},
+            },
+            '/commission': _commissionJson(),
+            '/cod/reconciliation': _codJson(),
+          },
+          errors: {
+            '/wallet': const ApiException(
+              message: 'Needs reconciliation',
+              statusCode: 409,
+              code: 'LEDGER_RECONCILIATION_REQUIRED',
+            ),
+          },
+        );
+        await tester.pumpWidget(
+          MultiProvider(
+            providers: [
+              ..._storeProviders(api),
+              ChangeNotifierProvider(create: (_) => MoneyService(api: api)),
+            ],
+            child: const MaterialApp(home: MoneyScreen()),
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(find.text('No payout statements yet.'), findsOneWidget);
+        // Refresh must never create a payout statement.
+        await tester
+            .widget<RefreshIndicator>(find.byType(RefreshIndicator))
+            .onRefresh();
+        await tester.pumpAndSettle();
+        expect(
+          api.requestOptions['/payouts']!.every(
+            (o) => o?.method != HttpMethod.post,
+          ),
+          isTrue,
+        );
+        await tester.tap(find.text('Wallet'));
+        await tester.pumpAndSettle();
+        expect(
+          find.textContaining('ledger reconciliation is verified'),
+          findsOneWidget,
+        );
+        expect(find.text('Available balance'), findsNothing);
+        expect(tester.takeException(), isNull);
+      },
+    );
 
     test(
       'MoneyService manages payouts, wallet, commission, and COD routes',
@@ -4218,8 +4708,10 @@ void main() {
           json: {'/payouts': _payoutJson(), '/wallet': _walletJson()},
         );
         final storage = MemoryStorage();
-        final service = MoneyService(api: api,
-          securityCommands: SecurityCommandStore(storage: storage));
+        final service = MoneyService(
+          api: api,
+          securityCommands: SecurityCommandStore(storage: storage),
+        );
         final createService = MoneyService(api: createApi);
 
         final payouts = await service.fetchPayouts('store_1');
@@ -4229,14 +4721,24 @@ void main() {
         final commission = await service.fetchCommission('store_1');
         final cod = await service.fetchCodReconciliation('store_1');
         final created = await createService.createPayoutStatement('store_1');
-        final security = TwoFactorService(api: api,
+        final security = TwoFactorService(
+          api: api,
           actorIdProvider: () => 'synthetic-merchant',
-          storeIdProvider: () => 'store_1', storage: storage);
-        final proof = await security.challenge(action: 'payout.release',
-          factorId: 'synthetic-factor', code: '123456',
-          idempotencyKey: 'synthetic-challenge', expectedContext: 1);
-        final settled = await service.settlePayout('payout_1', 'store_1',
-          approval: proof);
+          storeIdProvider: () => 'store_1',
+          storage: storage,
+        );
+        final proof = await security.challenge(
+          action: 'payout.release',
+          factorId: 'synthetic-factor',
+          code: '123456',
+          idempotencyKey: 'synthetic-challenge',
+          expectedContext: 1,
+        );
+        final settled = await service.settlePayout(
+          'payout_1',
+          'store_1',
+          approval: proof,
+        );
         final reconciled = await service.reconcileCommission('store_1');
         final collected = await service.collectCodOrder(
           'store_1',
@@ -4260,8 +4762,10 @@ void main() {
         expect(cod['summary']['expected_amount_minor'], 300000);
         expect(created['id'], 'payout_1');
         expect(settled['status'], 'released');
-        expect(api.requestOptions['/payouts/payout_1/settle']!.single!.headers,
-          containsPair('X-Step-Up-Token', 'synthetic-payout-approval'));
+        expect(
+          api.requestOptions['/payouts/payout_1/settle']!.single!.headers,
+          containsPair('X-Step-Up-Token', 'synthetic-payout-approval'),
+        );
         expect(storage.data, isEmpty);
         expect(reconciled['created'], 1);
         expect(collected['entry']['id'], 'cod_1');
@@ -4340,7 +4844,7 @@ void main() {
               'document': _kycDocumentJson(status: 'verified'),
               'overview': _kycOverviewJson(status: 'verified'),
             },
-            '/kyc/documents/kyc_1/refresh': {
+            '/kyc/documents/8a55c36a-1460-42bb-8fa4-f499c92b5c11/refresh': {
               'document': _kycDocumentJson(status: 'verified'),
               'overview': _kycOverviewJson(status: 'verified'),
             },
@@ -4348,43 +4852,52 @@ void main() {
         );
         final service = KycService(api: api);
 
-        final overview = await service.fetchOverview('store_1');
+        final overview = await service.fetchOverview(
+          '8a55c36a-1460-42bb-8fa4-f499c92b5c01',
+        );
         final pathsBeforeDeniedFile = List<String>.of(api.paths);
         await expectLater(
           service.submitDocument(
-            storeId: 'store_1',
+            storeId: '8a55c36a-1460-42bb-8fa4-f499c92b5c01',
             documentType: 'business_pan',
             fileUrl: 'https://cdn.letbuyy.com/kyc/pan.jpg',
             fileName: 'pan.jpg',
           ),
-          throwsA(isA<ApiException>().having(
-            (error) => error.code,
-            'code',
-            'KYC_PRIVATE_UPLOAD_UNAVAILABLE',
-          )),
+          throwsA(
+            isA<ApiException>().having(
+              (error) => error.code,
+              'code',
+              'KYC_PRIVATE_UPLOAD_UNAVAILABLE',
+            ),
+          ),
         );
         expect(api.paths, pathsBeforeDeniedFile);
         final submitted = await service.submitDocument(
-          storeId: 'store_1',
+          storeId: '8a55c36a-1460-42bb-8fa4-f499c92b5c01',
           documentType: 'business_pan',
           documentNumberLast4: '1234',
         );
-        final refreshed = await service.refreshDocument('kyc_1', 'store_1');
+        final refreshed = await service.refreshDocument(
+          '8a55c36a-1460-42bb-8fa4-f499c92b5c11',
+          '8a55c36a-1460-42bb-8fa4-f499c92b5c01',
+        );
 
         expect(overview['overall_status'], 'in_progress');
         expect(submitted['document']['status'], 'verified');
         expect(refreshed['overview']['overall_status'], 'verified');
         expect(api.paths, contains('/kyc'));
         expect(api.paths, contains('/kyc/documents'));
-        expect(api.paths, contains('/kyc/documents/kyc_1/refresh'));
+        expect(
+          api.paths,
+          contains(
+            '/kyc/documents/8a55c36a-1460-42bb-8fa4-f499c92b5c11/refresh',
+          ),
+        );
         expect(
           api.bodies['/kyc/documents'],
           containsPair('document_type', 'business_pan'),
         );
-        expect(
-          api.bodies['/kyc/documents'],
-          isNot(contains('file_url')),
-        );
+        expect(api.bodies['/kyc/documents'], isNot(contains('file_url')));
       },
     );
 
@@ -4467,20 +4980,32 @@ void main() {
           containsPair('factor_id', '22222222-2222-4222-8222-222222222222'),
         );
         expect(api.bodies['/2fa/disable'], containsPair('code', '123456'));
-        for (final path in ['/2fa/totp/enroll', '/2fa/totp/verify',
-            '/2fa/disable']) {
+        for (final path in [
+          '/2fa/totp/enroll',
+          '/2fa/totp/verify',
+          '/2fa/disable',
+        ]) {
           final options = api.requestOptions[path]!.single!;
           expect(options.storeId, 'store_1');
           expect(options.expectedContextVersion, 1);
-          expect(options.idempotencyKey,
-              matches(RegExp(r'^[a-zA-Z0-9-]{8,200}$')));
+          expect(
+            options.idempotencyKey,
+            matches(RegExp(r'^[a-zA-Z0-9-]{8,200}$')),
+          );
         }
         final previousCalls = api.paths.length;
         contextEpoch++;
         expect(service.overview, isNull);
-        await expectLater(service.fetchOverview(expectedContext: 1),
-            throwsA(isA<ApiException>().having((e) => e.code,
-                'code', 'SESSION_CONTEXT_CHANGED')));
+        await expectLater(
+          service.fetchOverview(expectedContext: 1),
+          throwsA(
+            isA<ApiException>().having(
+              (e) => e.code,
+              'code',
+              'SESSION_CONTEXT_CHANGED',
+            ),
+          ),
+        );
         expect(api.paths.length, previousCalls);
       },
     );
@@ -4507,7 +5032,10 @@ void main() {
       final screen = screenFile.readAsStringSync();
 
       expect(routes, contains("'/features/two-factor'"));
-      expect(routes, contains("HostedAccountScreen(purpose: 'manage_security')"));
+      expect(
+        routes,
+        contains("HostedAccountScreen(purpose: 'manage_security')"),
+      );
       expect(blocked, isNot(contains('S-023')));
       expect(blocked, isNot(contains('MOBILE_TWO_FACTOR')));
       expect(screen, isNot(contains('backend contract')));
@@ -4554,7 +5082,9 @@ void main() {
             },
           },
           '/customers/anu%40example.com': {'deleted': true},
-          '/customers/meera%40example.com/addresses': [_addressJson()],
+          '/customers/meera%40example.com/addresses': [
+            {..._addressJson(), 'customer_email': 'meera@example.com'},
+          ],
           '/customers/meera%40example.com/addresses/address_1': _addressJson(),
         },
       );
@@ -4893,7 +5423,7 @@ void main() {
       final service = InventoryService(api: api);
 
       final levels = await service.fetchLevels('store_1');
-      final adjusted = await service.adjustStock(
+      await service.adjustStock(
         storeId: 'store_1',
         level: levels.single,
         delta: 5,
@@ -4901,58 +5431,160 @@ void main() {
       );
 
       expect(levels.single.sku, 'TEE-001');
-      expect(adjusted.available, 15);
+      expect(
+        service.levels,
+        isEmpty,
+        reason: 'The receipt requires current inventory readback',
+      );
       expect(api.paths, contains('/inventory/levels'));
       expect(api.paths, contains('/inventory/adjust'));
       expect(api.bodies['/inventory/adjust'], containsPair('adjustment', 5));
     });
 
     test('InventoryService creates and advances purchase orders', () async {
-      final input=w.warehousePo(), intent=WarehouseCommandIntent.purchaseOrder(w.warehousePo());
-      final createdAck=w.warehouseAck(intent,input.idempotencyKey);
-      final createdRow=WarehouseCommandAcknowledgement.fromJson(createdAck).purchaseOrder!;
-      final receiveIntent=WarehouseCommandIntent.receivePurchaseOrder(createdRow);
-      final receivedAck=w.warehouseAck(receiveIntent,'po-receive-123',received:4);
-      final api=_FakeApiClient(paginated:{'/inventory/purchase-orders':[w.warehouseDocument()]},
-        paginatedMeta:{'/inventory/purchase-orders':{'store_id':w.warehouseSite,'page':1,'per_page':20,'total':1,'has_next':false,'total_is_exact':true}},json:{'/inventory/purchase-orders/${w.warehouseTarget}/receive':receivedAck},
-        methodJson:{'GET /inventory/command-capabilities':w.warehouseCapabilities(),'POST /inventory/purchase-orders':createdAck});
-      final service=InventoryService(api:api,actorIdProvider:()=>w.warehouseActor,
-        storeIdProvider:()=>w.warehouseSite,commands:SecurityCommandStore(storage:MemoryStorage()));
-      final orders=await service.fetchPurchaseOrders(w.warehouseSite);
-      final created=await service.createPurchaseOrder(input);
-      final received=await service.receivePurchaseOrder(created,idempotencyKey:'po-receive-123');
-      expect(orders.single.totalQuantity,4);expect(created.id,w.warehouseTarget);
-      expect(received.status,'received');expect(received.remainingQuantity,0);
-      expect(api.bodies['/inventory/purchase-orders'],containsPair('idempotency_key',input.idempotencyKey));
-      expect(api.bodies['/inventory/purchase-orders/${w.warehouseTarget}/receive'],containsPair('lines',[
-        {'purchase_order_line_id':w.warehouseLine,'quantity':4}]));
-      expect(await service.pendingWarehouseCommand(w.warehouseSite),isNull);
+      final input = w.warehousePo(),
+          intent = WarehouseCommandIntent.purchaseOrder(w.warehousePo());
+      final createdAck = w.warehouseAck(intent, input.idempotencyKey);
+      final createdRow = WarehouseCommandAcknowledgement.fromJson(
+        createdAck,
+      ).purchaseOrder!;
+      final receiveIntent = WarehouseCommandIntent.receivePurchaseOrder(
+        createdRow,
+      );
+      final receivedAck = w.warehouseAck(
+        receiveIntent,
+        'po-receive-123',
+        received: 4,
+      );
+      final api = _FakeApiClient(
+        paginated: {
+          '/inventory/purchase-orders': [w.warehouseDocument()],
+        },
+        paginatedMeta: {
+          '/inventory/purchase-orders': {
+            'store_id': w.warehouseSite,
+            'page': 1,
+            'per_page': 20,
+            'total': 1,
+            'has_next': false,
+            'total_is_exact': true,
+          },
+        },
+        json: {
+          '/inventory/purchase-orders/${w.warehouseTarget}/receive':
+              receivedAck,
+        },
+        methodJson: {
+          'GET /inventory/command-capabilities': w.warehouseCapabilities(),
+          'POST /inventory/purchase-orders': createdAck,
+        },
+      );
+      final service = InventoryService(
+        api: api,
+        actorIdProvider: () => w.warehouseActor,
+        storeIdProvider: () => w.warehouseSite,
+        commands: SecurityCommandStore(storage: MemoryStorage()),
+      );
+      final orders = await service.fetchPurchaseOrders(w.warehouseSite);
+      final created = await service.createPurchaseOrder(input);
+      final received = await service.receivePurchaseOrder(
+        created,
+        idempotencyKey: 'po-receive-123',
+      );
+      expect(orders.single.totalQuantity, 4);
+      expect(created.id, w.warehouseTarget);
+      expect(received.status, 'received');
+      expect(received.remainingQuantity, 0);
+      expect(
+        api.bodies['/inventory/purchase-orders'],
+        containsPair('idempotency_key', input.idempotencyKey),
+      );
+      expect(
+        api.bodies['/inventory/purchase-orders/${w.warehouseTarget}/receive'],
+        containsPair('lines', [
+          {'purchase_order_line_id': w.warehouseLine, 'quantity': 4},
+        ]),
+      );
+      expect(await service.pendingWarehouseCommand(w.warehouseSite), isNull);
     });
 
     test('InventoryService creates, ships, and receives transfers', () async {
-      final input=w.warehouseTransfer(),intent=WarehouseCommandIntent.transfer(w.warehouseTransfer());
-      final createdAck=w.warehouseAck(intent,input.idempotencyKey);
-      final createdRow=WarehouseCommandAcknowledgement.fromJson(createdAck).transfer!;
-      final shipIntent=WarehouseCommandIntent.ship(createdRow.id);
-      final shippedAck=w.warehouseAck(shipIntent,'transfer-ship-123',shipped:4);
-      final shippedRow=WarehouseCommandAcknowledgement.fromJson(shippedAck).transfer!;
-      final receiveIntent=WarehouseCommandIntent.receiveTransfer(shippedRow);
-      final receivedAck=w.warehouseAck(receiveIntent,'transfer-receive-123',received:4,shipped:4);
-      final api=_FakeApiClient(paginated:{'/inventory/transfers':[w.warehouseDocument(transfer:true,status:'reserved',shipped:0)]},
-        paginatedMeta:{'/inventory/transfers':{'store_id':w.warehouseSite,'page':1,'per_page':20,'total':1,'has_next':false,'total_is_exact':true}},json:{'/inventory/transfers/${w.warehouseTarget}/ship':shippedAck,
-        '/inventory/transfers/${w.warehouseTarget}/receive':receivedAck},
-        methodJson:{'GET /inventory/command-capabilities':w.warehouseCapabilities(),'POST /inventory/transfers':createdAck});
-      final service=InventoryService(api:api,actorIdProvider:()=>w.warehouseActor,
-        storeIdProvider:()=>w.warehouseSite,commands:SecurityCommandStore(storage:MemoryStorage()));
-      final transfers=await service.fetchTransfers(w.warehouseSite);
-      final created=await service.createTransfer(input);
-      final shipped=await service.shipTransfer(created,idempotencyKey:'transfer-ship-123');
-      final received=await service.receiveTransfer(shipped,idempotencyKey:'transfer-receive-123');
-      expect(transfers.single.totalQuantity,4);expect(shipped.status,'shipped');
-      expect(received.status,'received');expect(received.remainingQuantity,0);
-      expect(api.paths,contains('/inventory/transfers/${w.warehouseTarget}/ship'));
-      expect(api.paths,contains('/inventory/transfers/${w.warehouseTarget}/receive'));
-      expect(await service.pendingWarehouseCommand(w.warehouseSite),isNull);
+      final input = w.warehouseTransfer(),
+          intent = WarehouseCommandIntent.transfer(w.warehouseTransfer());
+      final createdAck = w.warehouseAck(intent, input.idempotencyKey);
+      final createdRow = WarehouseCommandAcknowledgement.fromJson(
+        createdAck,
+      ).transfer!;
+      final shipIntent = WarehouseCommandIntent.ship(createdRow.id);
+      final shippedAck = w.warehouseAck(
+        shipIntent,
+        'transfer-ship-123',
+        shipped: 4,
+      );
+      final shippedRow = WarehouseCommandAcknowledgement.fromJson(
+        shippedAck,
+      ).transfer!;
+      final receiveIntent = WarehouseCommandIntent.receiveTransfer(shippedRow);
+      final receivedAck = w.warehouseAck(
+        receiveIntent,
+        'transfer-receive-123',
+        received: 4,
+        shipped: 4,
+      );
+      final api = _FakeApiClient(
+        paginated: {
+          '/inventory/transfers': [
+            w.warehouseDocument(transfer: true, status: 'reserved', shipped: 0),
+          ],
+        },
+        paginatedMeta: {
+          '/inventory/transfers': {
+            'store_id': w.warehouseSite,
+            'page': 1,
+            'per_page': 20,
+            'total': 1,
+            'has_next': false,
+            'total_is_exact': true,
+          },
+        },
+        json: {
+          '/inventory/transfers/${w.warehouseTarget}/ship': shippedAck,
+          '/inventory/transfers/${w.warehouseTarget}/receive': receivedAck,
+        },
+        methodJson: {
+          'GET /inventory/command-capabilities': w.warehouseCapabilities(),
+          'POST /inventory/transfers': createdAck,
+        },
+      );
+      final service = InventoryService(
+        api: api,
+        actorIdProvider: () => w.warehouseActor,
+        storeIdProvider: () => w.warehouseSite,
+        commands: SecurityCommandStore(storage: MemoryStorage()),
+      );
+      final transfers = await service.fetchTransfers(w.warehouseSite);
+      final created = await service.createTransfer(input);
+      final shipped = await service.shipTransfer(
+        created,
+        idempotencyKey: 'transfer-ship-123',
+      );
+      final received = await service.receiveTransfer(
+        shipped,
+        idempotencyKey: 'transfer-receive-123',
+      );
+      expect(transfers.single.totalQuantity, 4);
+      expect(shipped.status, 'shipped');
+      expect(received.status, 'received');
+      expect(received.remainingQuantity, 0);
+      expect(
+        api.paths,
+        contains('/inventory/transfers/${w.warehouseTarget}/ship'),
+      );
+      expect(
+        api.paths,
+        contains('/inventory/transfers/${w.warehouseTarget}/receive'),
+      );
+      expect(await service.pendingWarehouseCommand(w.warehouseSite), isNull);
     });
 
     test('Inventory scanner source is wired to mobile_scanner', () {
@@ -5139,6 +5771,7 @@ void main() {
     });
 
     test('MediaService lists, uploads, updates, and deletes assets', () async {
+      FlutterSecureStorage.setMockInitialValues({});
       final tempDir = Directory.systemTemp.createTempSync('letbuyy-media-test');
       addTearDown(() => tempDir.deleteSync(recursive: true));
       final file = File('${tempDir.path}/hero.png')..writeAsBytesSync([1, 2]);
@@ -5146,13 +5779,23 @@ void main() {
         paginated: {
           '/media': [_mediaJson()],
         },
+        methodJson: {
+          'DELETE /media/media_1': {'deleted': true},
+        },
         json: {
           '/upload': _uploadJson(),
           '/media': _mediaJson(id: 'media_2', filename: 'hero.png'),
-          '/media/media_1': _mediaJson(altText: 'Campaign hero'),
+          '/media/media_1': {
+            ..._mediaJson(altText: 'Campaign hero'),
+            'caption': null,
+          },
         },
       );
-      final service = MediaService(api: api);
+      final service = MediaService(
+        api: api,
+        actorIdProvider: () => 'synthetic-owner',
+        storeIdProvider: () => 'store_1',
+      );
 
       final assets = await service.fetchMedia('store_1');
       final uploaded = await service.uploadAndCreate(
@@ -5183,7 +5826,7 @@ void main() {
         ),
       );
 
-      expect(assets.single.displayName, 'Hero image');
+      expect(assets.single.displayName, 'hero.jpg');
       expect(uploaded.id, 'media_2');
       expect(updated.altText, 'Campaign hero');
       expect(video.isVideo, true);
@@ -5424,22 +6067,34 @@ void main() {
       },
     );
 
-    test('DomainService never sends an unverified live registrar purchase', () async {
-      final api = _FakeApiClient();
-      final service = DomainService(api: api);
-      final store = StoreModel.fromJson(_storeJson());
-      const quote = DomainPurchaseQuote(
-        domain: 'shop.example.in', available: true, currency: 'INR',
-        amountMinor: 79900, provider: 'resellerclub', premium: false);
+    test(
+      'DomainService never sends an unverified live registrar purchase',
+      () async {
+        final api = _FakeApiClient();
+        final service = DomainService(api: api);
+        final store = StoreModel.fromJson(_storeJson());
+        const quote = DomainPurchaseQuote(
+          domain: 'shop.example.in',
+          available: true,
+          currency: 'INR',
+          amountMinor: 79900,
+          provider: 'resellerclub',
+          premium: false,
+        );
 
-      await expectLater(
-        service.purchaseDomain(store, quote: quote,
-          ownerName: 'Demo Merchant', ownerEmail: 'merchant@example.com',
-          paymentReference: 'caller-invented-reference'),
-        throwsStateError,
-      );
-      expect(api.paths, isNot(contains('/domains/purchase')));
-    });
+        await expectLater(
+          service.purchaseDomain(
+            store,
+            quote: quote,
+            ownerName: 'Demo Merchant',
+            ownerEmail: 'merchant@example.com',
+            paymentReference: 'caller-invented-reference',
+          ),
+          throwsStateError,
+        );
+        expect(api.paths, isNot(contains('/domains/purchase')));
+      },
+    );
 
     test('NotificationSettingsService persists preferences', () async {
       final api = _FakeApiClient(
@@ -5510,7 +6165,10 @@ void main() {
       );
       final updated = await service.updateRole(staff.single, 'manager');
       expect(api.bodies['/employees/staff_1'], containsPair('role', 'manager'));
-      expect(api.bodies['/employees/staff_1'], containsPair('expected_updated_at', staff.single.updatedAt));
+      expect(
+        api.bodies['/employees/staff_1'],
+        containsPair('expected_updated_at', staff.single.updatedAt),
+      );
       await service.removeStaff(updated);
 
       expect(staff.single.email, 'riya@example.com');
@@ -5519,7 +6177,10 @@ void main() {
       expect(api.paths, contains('/employees'));
       expect(api.paths, contains('/employees/staff_1'));
       expect(api.bodies['/employees'], containsPair('role', 'editor'));
-      expect(api.bodies['/employees/staff_1'], containsPair('expected_updated_at', updated.updatedAt));
+      expect(
+        api.bodies['/employees/staff_1'],
+        containsPair('expected_updated_at', updated.updatedAt),
+      );
     });
 
     test(
@@ -5886,7 +6547,8 @@ void main() {
             '/ai/operator': {
               'store_id': 'store_1',
               'conversation_id': 'operator_1',
-              'message': 'Last 7 days: INR 1200 revenue. Create the draft work.',
+              'message':
+                  'Last 7 days: INR 1200 revenue. Create the draft work.',
               'created_at': '2026-06-08T10:00:00.000Z',
               'tool_calls': [
                 {
@@ -5974,7 +6636,8 @@ void main() {
 
         final result = await service.runOperatorCommand(
           storeId: 'store_1',
-          message: 'Show sales this week, create product "Cotton Tee", draft 10% coupon LAUNCH10, and add homepage section "New arrivals".',
+          message:
+              'Show sales this week, create product "Cotton Tee", draft 10% coupon LAUNCH10, and add homepage section "New arrivals".',
         );
 
         expect(result.toolCalls, hasLength(4));
@@ -6154,14 +6817,32 @@ void main() {
       },
     );
 
-    test('background push registration failures are reported without escaping sign-in', () async {
-      final failing = PushService(api: _FakeApiClient(errors: {'/notifications/device-tokens': const ApiException(message:'unavailable',statusCode:503,code:'SERVICE_UNAVAILABLE')}), tokenProvider: ()=>'synthetic-token');
-      expect(await failing.registerCurrentDeviceToken(), isFalse);
-      expect(failing.registrationState, PushRegistrationState.failed);
-      final sourceFailure = PushService(api:_FakeApiClient(), tokenProvider:() async=>throw StateError('native provider unavailable'));
-      expect(await sourceFailure.registerCurrentDeviceToken(), isFalse);
-      expect(sourceFailure.registrationState, PushRegistrationState.failed);
-    });
+    test(
+      'background push registration failures are reported without escaping sign-in',
+      () async {
+        final failing = PushService(
+          api: _FakeApiClient(
+            errors: {
+              '/notifications/device-tokens': const ApiException(
+                message: 'unavailable',
+                statusCode: 503,
+                code: 'SERVICE_UNAVAILABLE',
+              ),
+            },
+          ),
+          tokenProvider: () => 'synthetic-token',
+        );
+        expect(await failing.registerCurrentDeviceToken(), isFalse);
+        expect(failing.registrationState, PushRegistrationState.failed);
+        final sourceFailure = PushService(
+          api: _FakeApiClient(),
+          tokenProvider: () async =>
+              throw StateError('native provider unavailable'),
+        );
+        expect(await sourceFailure.registerCurrentDeviceToken(), isFalse);
+        expect(sourceFailure.registrationState, PushRegistrationState.failed);
+      },
+    );
 
     test('AnalyticsService assembles dashboard metrics', () async {
       final api = _FakeApiClient(
@@ -6484,7 +7165,9 @@ void main() {
             '/themes/modern/releases/release_1/rollback': {
               'rollback': {'release_id': 'release_4', 'release_version': 4},
               'restored_release': {'id': 'release_1', 'version': 1},
-              'current_release_id': 'release_4', 'current_release_version': 4, 'replayed': false,
+              'current_release_id': 'release_4',
+              'current_release_version': 4,
+              'replayed': false,
             },
           },
         );
@@ -6642,7 +7325,11 @@ void main() {
         throwsA(isA<ThemeDraftConflictException>()),
       );
       await expectLater(
-        service.publish(storeId: 'store_1', themeSlug: 'modern', baseVersion: 2),
+        service.publish(
+          storeId: 'store_1',
+          themeSlug: 'modern',
+          baseVersion: 2,
+        ),
         throwsA(isA<ThemeDraftConflictException>()),
       );
 
@@ -6685,7 +7372,10 @@ void main() {
             },
           },
         );
-        final service = SubscriptionService(api: api, actorIdProvider: () => 'synthetic-subscription-actor');
+        final service = SubscriptionService(
+          api: api,
+          actorIdProvider: () => 'synthetic-subscription-actor',
+        );
 
         final checkout = await service.createSubscriptionOrder(
           storeId: 'store_1',
@@ -6716,7 +7406,10 @@ void main() {
           '/payments/subscription/history': [_billingHistoryJson()],
         },
       );
-      final service = SubscriptionService(api: api, actorIdProvider: () => 'synthetic-subscription-actor');
+      final service = SubscriptionService(
+        api: api,
+        actorIdProvider: () => 'synthetic-subscription-actor',
+      );
 
       final history = await service.fetchBillingHistory('store_1');
 
@@ -6978,8 +7671,18 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     late final StoreContext storeContext;
     final api = _FakeApiClient(
-      json: {'/orders/order_1': _orderJson()},
-      paginated: {'/stores': [_storeJson()]},
+      json: {
+        '/orders/order_1': _orderJson(
+          riskScore: 72,
+          riskLevel: 'high',
+          fulfillmentState: 'hold',
+          codConfirmationStatus: 'requested',
+          rtoStatus: 'at_risk',
+        ),
+      },
+      paginated: {
+        '/stores': [_storeJson()],
+      },
       contextVersionProvider: () => storeContext.requestContextKey,
     );
     storeContext = StoreContext(storeService: StoreService(api: api));
@@ -7007,35 +7710,49 @@ void main() {
         ),
       ),
     );
-    await tester.pump();
-    for (
-      var attempt = 0;
-      attempt < 10 && find.text('Meera Merchant').evaluate().isEmpty;
-      attempt += 1
-    ) {
-      await tester.pump(const Duration(milliseconds: 100));
-    }
-
+    await tester.pumpAndSettle();
+    expect(api.paths, contains('/orders/order_1'));
+    await tester.scrollUntilVisible(
+      find.text('Refund'),
+      180,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(find.widgetWithText(OutlinedButton, 'Cancel'), findsOneWidget);
+    await tester.scrollUntilVisible(
+      find.text('Risk signal'),
+      180,
+      scrollable: find.byType(Scrollable).first,
+    );
     expect(find.text('Risk signal'), findsOneWidget);
     expect(find.text('High risk'), findsOneWidget);
     expect(find.text('Score 72/100'), findsOneWidget);
     expect(find.text('Fulfillment hold is active.'), findsOneWidget);
     expect(find.text('COD confirmation requested.'), findsOneWidget);
     expect(find.text('RTO watchlist active.'), findsOneWidget);
-    expect(api.paths, isNot(contains('/orders/order_1')));
-    await tester.drag(find.byType(ListView), const Offset(0, -250));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 100));
+    expect(
+      api.paths,
+      contains('/orders/order_1'),
+    ); // A route snapshot is not a live grant.
+    await tester.scrollUntilVisible(
+      find.text('Customer'),
+      180,
+      scrollable: find.byType(Scrollable).first,
+    );
     expect(find.text('Customer'), findsOneWidget);
-    await tester.drag(find.byType(ListView), const Offset(0, -500));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 100));
-
+    await tester.scrollUntilVisible(
+      find.text('Cotton Tee'),
+      180,
+      scrollable: find.byType(Scrollable).first,
+    );
     expect(find.text('Line items'), findsOneWidget);
     expect(find.text('Cotton Tee'), findsOneWidget);
     expect(find.text('Edit'), findsOneWidget);
-    expect(find.text('Refund'), findsOneWidget);
-    expect(find.widgetWithText(OutlinedButton, 'Cancel'), findsOneWidget);
+    await tester.scrollUntilVisible(
+      find.text('Totals'),
+      180,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(find.text('₹499.00'), findsAtLeastNWidgets(1));
   });
 
   testWidgets('OrderDetailScreen cancels an order with a reason', (
@@ -7044,8 +7761,11 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     late final StoreContext storeContext;
     final api = _FakeApiClient(
-      json: {'/orders/order_1': _orderJson(status: 'cancelled')},
-      paginated: {'/stores': [_storeJson()]},
+      json: {'/orders/order_1': _orderJson()},
+      methodJson: {'PATCH /orders/order_1': _orderJson(status: 'cancelled')},
+      paginated: {
+        '/stores': [_storeJson()],
+      },
       contextVersionProvider: () => storeContext.requestContextKey,
     );
     storeContext = StoreContext(storeService: StoreService(api: api));
@@ -7097,6 +7817,9 @@ void main() {
     tester,
   ) async {
     final api = _FakeApiClient(
+      paginatedMeta: {
+        '/returns': {'page': 1, 'per_page': 20, 'total': 1},
+      },
       paginated: {
         '/stores': [_storeJson()],
         '/returns': [_returnJson()],
@@ -7168,6 +7891,7 @@ void main() {
     await tester.pumpWidget(
       MultiProvider(
         providers: [
+          Provider<ApiClient>.value(value: api),
           ..._storeProviders(api),
           ChangeNotifierProvider(create: (_) => CustomerService(api: api)),
         ],
@@ -7178,10 +7902,17 @@ void main() {
     await tester.pump(const Duration(milliseconds: 100));
 
     expect(find.text('Customers'), findsWidgets);
+    await tester.scrollUntilVisible(
+      find.text('Meera Merchant'),
+      180,
+      scrollable: find.byType(Scrollable).first,
+      maxScrolls: 30,
+    );
     expect(find.text('Meera Merchant'), findsOneWidget);
     expect(find.text('meera@example.com'), findsOneWidget);
     expect(find.textContaining('VIP customers'), findsOneWidget);
 
+    await tester.ensureVisible(find.byTooltip('Add customer'));
     await tester.tap(find.byTooltip('Add customer'));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
@@ -7211,6 +7942,12 @@ void main() {
     }
 
     // The list reload is authoritative; this fixed fixture has not added Anu.
+    await tester.scrollUntilVisible(
+      find.text('Meera Merchant'),
+      180,
+      scrollable: find.byType(Scrollable).first,
+      maxScrolls: 30,
+    );
     expect(find.text('Meera Merchant'), findsOneWidget);
     expect(find.text('Customer added.'), findsOneWidget);
     expect(api.bodies['/customers'], {
@@ -7232,7 +7969,9 @@ void main() {
       json: {
         '/customers/meera%40example.com': _customerJson(),
         '/customers/meera%40example.com/notes': [_noteJson()],
-        '/customers/meera%40example.com/addresses': [_addressJson()],
+        '/customers/meera%40example.com/addresses': [
+          {..._addressJson(), 'customer_email': 'meera@example.com'},
+        ],
         '/whatsapp/status': _whatsAppStatusJson(),
         '/whatsapp/timeline': [_whatsAppMessageJson()],
       },
@@ -7269,9 +8008,8 @@ void main() {
     expect(find.byTooltip('Email customer'), findsOneWidget);
     expect(find.byTooltip('WhatsApp customer'), findsOneWidget);
     expect(find.byTooltip('Customer actions'), findsOneWidget);
+    await tester.scrollUntilVisible(find.text('Customer CRM'), 200);
     expect(find.text('Customer CRM'), findsOneWidget);
-    expect(find.text('WhatsApp'), findsOneWidget);
-    expect(find.text('Order update sent.'), findsOneWidget);
     expect(find.text('vip'), findsOneWidget);
     await tester.scrollUntilVisible(find.text('Addresses'), 200);
     await tester.pumpAndSettle();
@@ -7280,6 +8018,9 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Recent orders'), findsOneWidget);
     expect(find.text('order_1'), findsOneWidget);
+    await tester.scrollUntilVisible(find.text('WhatsApp'), 200);
+    expect(find.text('WhatsApp'), findsOneWidget);
+    expect(find.text('Order update sent.'), findsOneWidget);
   });
 
   testWidgets('InventoryScreen renders stock levels and low-stock filter', (
@@ -7309,7 +8050,10 @@ void main() {
     expect(find.text('Adjust'), findsOneWidget);
     expect(find.text('Locations'), findsOneWidget);
     await tester.drag(
-      find.byWidgetPredicate((widget) => widget is ListView && widget.scrollDirection == Axis.horizontal),
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is ListView && widget.scrollDirection == Axis.horizontal,
+      ),
       const Offset(-450, 0),
     );
     await tester.pumpAndSettle();
@@ -7319,10 +8063,12 @@ void main() {
   testWidgets('InventoryLocationsScreen renders WMS locations', (tester) async {
     final api = _FakeApiClient(
       paginated: {
-        '/stores': [{..._storeJson(),'id':w.warehouseSite}],
+        '/stores': [
+          {..._storeJson(), 'id': w.warehouseSite},
+        ],
         '/inventory/locations': [_locationJson()],
       },
-      paginatedMeta:{'/inventory/locations':w.warehousePageMeta()},
+      paginatedMeta: {'/inventory/locations': w.warehousePageMeta()},
     );
 
     await tester.pumpWidget(
@@ -7346,10 +8092,12 @@ void main() {
   ) async {
     final api = _FakeApiClient(
       paginated: {
-        '/stores': [{..._storeJson(),'id':w.warehouseSite}],
-        '/inventory/suppliers':[_supplierJson()],
+        '/stores': [
+          {..._storeJson(), 'id': w.warehouseSite},
+        ],
+        '/inventory/suppliers': [_supplierJson()],
       },
-      paginatedMeta:{'/inventory/suppliers':w.warehousePageMeta()},
+      paginatedMeta: {'/inventory/suppliers': w.warehousePageMeta()},
     );
 
     await tester.pumpWidget(
@@ -7371,10 +8119,21 @@ void main() {
   testWidgets('PurchaseOrdersScreen renders receive workflow', (tester) async {
     final api = _FakeApiClient(
       paginated: {
-        '/stores': [{..._storeJson(),'id':w.warehouseSite}],
+        '/stores': [
+          {..._storeJson(), 'id': w.warehouseSite},
+        ],
         '/inventory/purchase-orders': [_purchaseOrderJson()],
       },
-      paginatedMeta: {'/inventory/purchase-orders':{'store_id':w.warehouseSite,'page':1,'per_page':20,'total':1,'has_next':false,'total_is_exact':true}},
+      paginatedMeta: {
+        '/inventory/purchase-orders': {
+          'store_id': w.warehouseSite,
+          'page': 1,
+          'per_page': 20,
+          'total': 1,
+          'has_next': false,
+          'total_is_exact': true,
+        },
+      },
     );
 
     await tester.pumpWidget(
@@ -7396,12 +8155,25 @@ void main() {
   testWidgets('InventoryTransfersScreen renders transfer actions', (
     tester,
   ) async {
+    SharedPreferences.setMockInitialValues({});
+    FlutterSecureStorage.setMockInitialValues({});
     final api = _FakeApiClient(
       paginated: {
-        '/stores': [{..._storeJson(),'id':w.warehouseSite}],
+        '/stores': [
+          {..._storeJson(), 'id': w.warehouseSite},
+        ],
         '/inventory/transfers': [_transferJson()],
       },
-      paginatedMeta: {'/inventory/transfers':{'store_id':w.warehouseSite,'page':1,'per_page':20,'total':1,'has_next':false,'total_is_exact':true}},
+      paginatedMeta: {
+        '/inventory/transfers': {
+          'store_id': w.warehouseSite,
+          'page': 1,
+          'per_page': 20,
+          'total': 1,
+          'has_next': false,
+          'total_is_exact': true,
+        },
+      },
     );
 
     await tester.pumpWidget(
@@ -7415,13 +8187,19 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Transfers'), findsOneWidget);
-    expect(find.text('${w.warehouseLocation} -> ${w.warehouseDestination}'), findsOneWidget);
+    expect(find.text('Inventory transfers'), findsOneWidget);
+    expect(
+      find.text('Location unavailable → Location unavailable'),
+      findsOneWidget,
+    );
+    expect(find.textContaining(w.warehouseLocation), findsNothing);
     expect(find.text('Ship'), findsOneWidget);
     expect(find.text('Receive'), findsOneWidget);
   });
 
   testWidgets('CouponsScreen renders coupon list and actions', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    FlutterSecureStorage.setMockInitialValues({});
     final api = _FakeApiClient(
       paginated: {
         '/stores': [_storeJson()],
@@ -7440,20 +8218,45 @@ void main() {
     );
     await tester.pumpAndSettle();
 
+    await _revealOrderControl(tester, find.text('SAVE10'));
     expect(find.text('Coupons'), findsWidgets);
     expect(find.text('SAVE10'), findsOneWidget);
-    expect(find.text('Active'), findsWidgets);
+    expect(find.text('Enabled'), findsOneWidget);
   });
 
   testWidgets('CollectionsScreen renders collection merchandising rows', (
     tester,
   ) async {
+    SharedPreferences.setMockInitialValues({});
+    FlutterSecureStorage.setMockInitialValues({});
     final api = _FakeApiClient(
       paginated: {
-        '/stores': [_storeJson()],
+        '/stores': [
+          {..._storeJson(), 'id': w.warehouseSite},
+        ],
+        '/products/collections': [
+          {
+            'id': w.warehouseTarget,
+            'store_id': w.warehouseSite,
+            'title': 'Summer picks',
+            'description': 'Seasonal merchandising',
+            'image_url': null,
+            'created_at': '2026-11-02T00:00:00Z',
+            'is_active': true,
+            'membership_version': 1,
+            'product_count': 6,
+          },
+        ],
       },
-      json: {
-        '/products/collections': [_collectionJson()],
+      paginatedMeta: {
+        '/products/collections': {
+          'page': 1,
+          'per_page': 20,
+          'total': 1,
+          'total_pages': 1,
+          'has_next': false,
+          'has_prev': false,
+        },
       },
     );
 
@@ -7461,7 +8264,13 @@ void main() {
       MultiProvider(
         providers: [
           ..._storeProviders(api),
-          ChangeNotifierProvider(create: (_) => ProductService(api: api)),
+          ChangeNotifierProvider(
+            create: (_) => ProductService(
+              api: api,
+              actorIdProvider: () => w.warehouseActor,
+              storeIdProvider: () => w.warehouseSite,
+            ),
+          ),
         ],
         child: const MaterialApp(home: CollectionsScreen()),
       ),
@@ -7471,14 +8280,14 @@ void main() {
     expect(find.text('Collections'), findsOneWidget);
     expect(find.text('Summer picks'), findsOneWidget);
     expect(find.text('Seasonal merchandising'), findsOneWidget);
-    expect(find.text('6 products'), findsOneWidget);
-    expect(find.text('/collections/summer-picks'), findsOneWidget);
+    expect(find.text('6 assigned products'), findsOneWidget);
     expect(find.text('New collection'), findsOneWidget);
   });
 
   testWidgets('ProductsScreen can seed a sample product for an empty catalog', (
     tester,
   ) async {
+    SharedPreferences.setMockInitialValues({});
     final api = _FakeApiClient(
       paginated: {
         '/stores': [_storeJson()],
@@ -7506,6 +8315,8 @@ void main() {
       'Add sample product',
     );
     await tester.ensureVisible(sampleButton);
+    await tester.pumpAndSettle();
+    expect(sampleButton.hitTestable(), findsOneWidget);
     await tester.tap(sampleButton);
     await tester.pumpAndSettle();
 
@@ -7556,7 +8367,10 @@ void main() {
     await tester.ensureVisible(productCard);
     await pumpRouteTransition();
     final cardSemantics = tester.getSemantics(productCard).getSemanticsData();
-    expect(cardSemantics.label, startsWith('Product Cotton Tee, Active'));
+    expect(
+      cardSemantics.label,
+      startsWith('Product Cotton Tee, Catalog status Unavailable, Active'),
+    );
     expect(cardSemantics.hint, 'Opens product editor');
     expect(cardSemantics.hasFlag(SemanticsFlag.isButton), isTrue);
     expect(cardSemantics.hasFlag(SemanticsFlag.isEnabled), isTrue);
@@ -7572,13 +8386,17 @@ void main() {
     await pumpRouteTransition();
 
     expect(find.text('Edit Product'), findsOneWidget);
-    tester.widget<Stepper>(find.byType(Stepper)).onStepTapped!(4);
-    await pumpRouteTransition();
+    await selectEditorSection(tester, 'Details');
     expect(find.text('Country of origin (optional)'), findsOneWidget);
     expect(find.text('Importer details (optional)'), findsOneWidget);
     expect(
       tester
-          .widget<TextFormField>(find.byKey(const ValueKey('importer-details')))
+          .widget<TextFormField>(
+            find.descendant(
+              of: find.byKey(const ValueKey('importer-details')),
+              matching: find.byType(TextFormField),
+            ),
+          )
           .controller
           ?.text,
       'Example Imports, Mumbai',
@@ -7592,7 +8410,7 @@ void main() {
       find.byKey(const ValueKey('importer-details')),
       ' Updated Imports, Delhi ',
     );
-    await tester.tap(find.widgetWithText(TextButton, 'Update'));
+    await tester.tap(find.widgetWithText(FilledButton, 'Update'));
     await pumpRouteTransition();
 
     expect(
@@ -7609,6 +8427,105 @@ void main() {
       containsPair('importer_details', 'Updated Imports, Delhi'),
     );
   });
+
+  testWidgets(
+    'root product actions stay above navigation without overlapping global FABs',
+    (tester) async {
+      initializeLetbuyyTypography();
+      SharedPreferences.setMockInitialValues({});
+      tester.view.physicalSize = const Size(360, 800);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final api = _FakeApiClient(
+        paginated: {
+          '/stores': [_storeJson()],
+          '/products': [_productJson()],
+        },
+        json: {
+          '/mobile/dashboard': _mobileDashboardJson(
+            revenueValue: 0,
+            orderValue: 0,
+            productCount: 1,
+            averageOrderValue: 0,
+          ),
+        },
+      );
+      final semantics = tester.ensureSemantics();
+      try {
+        await tester.pumpWidget(
+          MultiProvider(
+            providers: _merchantShellProviders(api),
+            child: MaterialApp(
+              theme: StoreTheme.light(),
+              home: const StoreMainScreen(),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.bySemanticsLabel('Products tab'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.bySemanticsLabel('Select'));
+        await tester.pumpAndSettle();
+        final choice = find.byKey(const ValueKey('product-select-prod_1'));
+        final catalogScroll = find
+            .descendant(
+              of: find.byType(ProductsScreen),
+              matching: find.byType(Scrollable),
+            )
+            .first;
+        await tester.scrollUntilVisible(
+          choice,
+          200,
+          scrollable: catalogScroll,
+          maxScrolls: 12,
+        );
+        await tester.pumpAndSettle();
+        expect(choice.hitTestable(), findsOneWidget);
+        await tester.tap(choice);
+        await tester.pumpAndSettle();
+        expect(find.byTooltip('Search store'), findsNothing);
+        expect(find.byTooltip('AI store operator'), findsNothing);
+        final draft = find.bySemanticsLabel('Set as draft');
+        expect(draft.hitTestable(), findsOneWidget);
+        expect(
+          tester.getRect(draft).bottom,
+          lessThanOrEqualTo(
+            tester.getRect(find.bySemanticsLabel('Products tab')).top,
+          ),
+        );
+        await tester.ensureVisible(find.bySemanticsLabel('Home tab'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.bySemanticsLabel('Home tab'));
+        await tester.pumpAndSettle();
+        expect(find.byTooltip('Search store'), findsOneWidget);
+        await tester.ensureVisible(find.bySemanticsLabel('Products tab'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.bySemanticsLabel('Products tab'));
+        await tester.pumpAndSettle();
+        expect(find.byTooltip('Search store'), findsNothing);
+        expect(draft.hitTestable(), findsOneWidget);
+        final cancel = find.text('Cancel');
+        await tester.scrollUntilVisible(
+          cancel,
+          -200,
+          scrollable: catalogScroll,
+          maxScrolls: 12,
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(cancel);
+        await tester.pumpAndSettle();
+        expect(find.byTooltip('Search store'), findsOneWidget);
+        expect(find.byTooltip('AI store operator'), findsOneWidget);
+        expect(api.paths.where((path) => path == '/products'), hasLength(1));
+        expect(api.bodies.containsKey('/products/prod_1'), isFalse);
+        expect(tester.takeException(), isNull);
+      } finally {
+        await tester.pumpWidget(const SizedBox.shrink());
+        semantics.dispose();
+      }
+    },
+  );
 
   testWidgets('product bulk selection announces the selected state', (
     tester,
@@ -7646,12 +8563,17 @@ void main() {
           hasEnabledState: true,
           isEnabled: true,
           hasTapAction: true,
+          hasFocusAction: true,
+          isFocusable: true,
         ),
       );
       await tester.tap(selectionToggle);
       await tester.pumpAndSettle();
 
       final selectProduct = find.byKey(const ValueKey('product-select-prod_1'));
+      await tester.ensureVisible(selectProduct);
+      await tester.pumpAndSettle();
+      expect(selectProduct.hitTestable(), findsOneWidget);
       final unselectedData = tester
           .getSemantics(selectProduct)
           .getSemanticsData();
@@ -7661,15 +8583,13 @@ void main() {
       expect(unselectedData.hasFlag(SemanticsFlag.isSelected), isFalse);
       expect(unselectedData.hasAction(SemanticsAction.tap), isTrue);
 
-      final checkboxInkWell = find.descendant(
-        of: selectProduct,
-        matching: find.byType(InkWell),
+      final checkbox = tester.widget<CheckboxListTile>(
+        find.descendant(
+          of: selectProduct,
+          matching: find.byType(CheckboxListTile),
+        ),
       );
-      final checkboxVisual = find.descendant(
-        of: checkboxInkWell,
-        matching: find.byType(Container),
-      );
-      Focus.of(tester.element(checkboxVisual.first)).requestFocus();
+      checkbox.focusNode!.requestFocus();
       await tester.pump();
       await tester.sendKeyEvent(LogicalKeyboardKey.enter);
       await tester.pumpAndSettle();
@@ -7698,15 +8618,11 @@ void main() {
       expect(selectAllData.hasFlag(SemanticsFlag.isButton), isTrue);
       expect(selectAllData.hasAction(SemanticsAction.tap), isTrue);
 
-      final selectAllInkWell = find.descendant(
-        of: selectAll,
-        matching: find.byType(InkWell),
+      final selectAllButton = tester.widget<OutlinedButton>(
+        find.descendant(of: selectAll, matching: find.byType(OutlinedButton)),
       );
-      final selectAllContainer = find.descendant(
-        of: selectAllInkWell,
-        matching: find.byType(Container),
-      );
-      Focus.of(tester.element(selectAllContainer.first)).requestFocus();
+      expect(selectAll.hitTestable(), findsOneWidget);
+      selectAllButton.focusNode!.requestFocus();
       await tester.pump();
       await tester.sendKeyEvent(LogicalKeyboardKey.enter);
       await tester.pumpAndSettle();
@@ -7752,35 +8668,66 @@ void main() {
       expect(find.text('Cotton Tee'), findsOneWidget);
       expect(find.text('Paused Tee'), findsOneWidget);
 
-      final inactiveFilter = find.byKey(
-        const ValueKey('product-filter-inactive'),
+      final statusChoice = find.widgetWithText(
+        OutlinedButton,
+        'Product status: All',
       );
+      await tester.ensureVisible(statusChoice);
+      await tester.pumpAndSettle();
+      expect(tester.getSize(statusChoice).height, greaterThanOrEqualTo(48));
+      tester.widget<OutlinedButton>(statusChoice).focusNode!.requestFocus();
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
+      final inactiveFilter = find.widgetWithText(
+        RadioListTile<String>,
+        'Inactive',
+      );
+      expect(inactiveFilter.hitTestable(), findsOneWidget);
       final inactiveData = tester
           .getSemantics(inactiveFilter)
           .getSemanticsData();
-      expect(inactiveData.label, 'Inactive products filter');
-      expect(inactiveData.hint, 'Show Inactive products');
-      expect(inactiveData.hasFlag(SemanticsFlag.isButton), isTrue);
-      expect(inactiveData.hasFlag(SemanticsFlag.isEnabled), isTrue);
-      expect(inactiveData.hasFlag(SemanticsFlag.isSelected), isFalse);
-      expect(inactiveData.hasAction(SemanticsAction.tap), isTrue);
-      expect(tester.getSize(inactiveFilter).height, greaterThanOrEqualTo(48));
-
-      final chipText = find.descendant(
+      expect(inactiveData.label, 'Inactive');
+      expect(inactiveData.hasFlag(SemanticsFlag.hasCheckedState), isTrue);
+      expect(inactiveData.hasFlag(SemanticsFlag.isChecked), isFalse);
+      final radioText = find.descendant(
         of: inactiveFilter,
         matching: find.text('Inactive'),
       );
-      Focus.of(tester.element(chipText)).requestFocus();
+      Focus.of(tester.element(radioText)).requestFocus();
       await tester.pump();
-      api._paginated['/products'] = [{..._productJson(), 'id': 'prod_2', 'name': 'Paused Tee', 'is_active': false}];
       await tester.sendKeyEvent(LogicalKeyboardKey.enter);
       await tester.pumpAndSettle();
-
-      final activeFilterData = tester
-          .getSemantics(inactiveFilter)
-          .getSemanticsData();
-      expect(activeFilterData.hasFlag(SemanticsFlag.isSelected), isTrue);
-      expect(activeFilterData.hint, 'Current filter');
+      expect(
+        tester
+            .getSemantics(inactiveFilter)
+            .getSemanticsData()
+            .hasFlag(SemanticsFlag.isChecked),
+        isTrue,
+      );
+      expect(
+        api.queries['/products']?['status'],
+        'all',
+        reason: 'The sheet draft must not apply a query',
+      );
+      api._paginated['/products'] = [
+        {
+          ..._productJson(),
+          'id': 'prod_2',
+          'name': 'Paused Tee',
+          'is_active': false,
+        },
+      ];
+      final apply = find.widgetWithText(FilledButton, 'Apply selection');
+      Focus.of(
+        tester.element(
+          find.descendant(of: apply, matching: find.text('Apply selection')),
+        ),
+      ).requestFocus();
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
+      expect(find.text('Product status: Inactive'), findsOneWidget);
       expect(find.text('Paused Tee'), findsOneWidget);
       expect(api.queries['/products']?['status'], 'inactive');
       expect(find.text('Cotton Tee'), findsNothing);
@@ -7832,36 +8779,60 @@ void main() {
         ).orders,
         hasLength(2),
       );
+      await _revealOrderControl(
+        tester,
+        find.byKey(const ValueKey('order-card-pending_1')),
+      );
       expect(find.text('pending_1'), findsOneWidget);
       expect(find.text('delivered_1'), findsOneWidget);
-
-      final pendingFilter = find.byKey(const ValueKey('order-filter-pending'));
-      final pendingData = tester.getSemantics(pendingFilter).getSemanticsData();
-      expect(pendingData.label, 'Pending orders filter');
-      expect(pendingData.hint, 'Show Pending orders');
-      expect(pendingData.hasFlag(SemanticsFlag.isButton), isTrue);
-      expect(pendingData.hasFlag(SemanticsFlag.isEnabled), isTrue);
-      expect(pendingData.hasFlag(SemanticsFlag.isSelected), isFalse);
-      expect(pendingData.hasAction(SemanticsAction.tap), isTrue);
-      expect(tester.getSize(pendingFilter).height, greaterThanOrEqualTo(48));
-
-      final chipText = find.descendant(
-        of: pendingFilter,
-        matching: find.text('Pending'),
-      );
-      Focus.of(tester.element(chipText)).requestFocus();
+      final readsBeforeFilter = api.paths
+          .where((path) => path == '/orders')
+          .length;
+      final status = find.widgetWithText(OutlinedButton, 'Page status: All');
+      await _revealOrderControl(tester, status);
+      final statusData = tester.getSemantics(status).getSemanticsData();
+      expect(statusData.label, contains('Page status: All'));
+      expect(statusData.hasFlag(SemanticsFlag.isButton), isTrue);
+      expect(statusData.hasFlag(SemanticsFlag.isEnabled), isTrue);
+      expect(statusData.hasAction(SemanticsAction.tap), isTrue);
+      expect(tester.getSize(status).height, greaterThanOrEqualTo(48));
+      Focus.of(
+        tester.element(
+          find.descendant(of: status, matching: find.text('Page status: All')),
+        ),
+      ).requestFocus();
       await tester.pump();
       await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
+      final pending = find.widgetWithText(RadioListTile<String>, 'Pending');
+      await tester.ensureVisible(pending);
+      await tester.tap(pending);
+      await tester.pumpAndSettle();
+      // Changing the sheet draft must leave the underlying page unchanged.
+      expect(
+        find.text('Page status: All', skipOffstage: false),
+        findsOneWidget,
+      );
+      final apply = find.widgetWithText(FilledButton, 'Apply selection');
+      Focus.of(
+        tester.element(
+          find.descendant(of: apply, matching: find.text('Apply selection')),
+        ),
+      ).requestFocus();
       await tester.pump();
-      await tester.pump(const Duration(milliseconds: 500));
-
-      final activeFilterData = tester
-          .getSemantics(pendingFilter)
-          .getSemanticsData();
-      expect(activeFilterData.hasFlag(SemanticsFlag.isSelected), isTrue);
-      expect(activeFilterData.hint, 'Current filter');
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
+      expect(find.text('Page status: Pending'), findsOneWidget);
+      await _revealOrderControl(
+        tester,
+        find.byKey(const ValueKey('order-card-pending_1')),
+      );
       expect(find.text('pending_1'), findsOneWidget);
       expect(find.text('delivered_1'), findsNothing);
+      expect(
+        api.paths.where((path) => path == '/orders').length,
+        readsBeforeFilter,
+      );
       expect(tester.takeException(), isNull);
       expect(api.paths, containsAll(['/stores', '/orders']));
     } finally {
@@ -7903,6 +8874,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 500));
 
       final orderCard = find.byKey(const ValueKey('order-card-pending_1'));
+      await _revealOrderControl(tester, orderCard);
       final cardData = tester.getSemantics(orderCard).getSemanticsData();
       expect(cardData.label, contains('Order pending_1'));
       expect(cardData.label, contains('Customer Meera Merchant'));
@@ -7912,8 +8884,10 @@ void main() {
       expect(cardData.hasAction(SemanticsAction.tap), isTrue);
       expect(tester.getSize(orderCard).height, greaterThanOrEqualTo(48));
 
+      await _revealOrderControl(tester, find.text('Select'));
       await tester.tap(find.text('Select').first);
       await tester.pump();
+      await _revealOrderControl(tester, orderCard);
       final selectionCardData = tester
           .getSemantics(orderCard)
           .getSemanticsData();
@@ -7930,39 +8904,34 @@ void main() {
           .getSemanticsData();
       expect(selectedCardData.hint, 'Tap to deselect order');
       expect(selectedCardData.hasFlag(SemanticsFlag.isSelected), isTrue);
-      expect(find.text('1 selected'), findsOneWidget);
+      expect(find.text('1 selected · Select visible'), findsOneWidget);
 
       final checkbox = find.byKey(const ValueKey('order-select-pending_1'));
+      await _revealOrderControl(tester, checkbox);
       final checkboxData = tester.getSemantics(checkbox).getSemanticsData();
-      expect(checkboxData.label, 'Deselect order pending_1');
-      expect(checkboxData.hasFlag(SemanticsFlag.isButton), isTrue);
-      expect(checkboxData.hasFlag(SemanticsFlag.isSelected), isTrue);
+      expect(checkboxData.label, 'Select order pending_1');
+      expect(checkboxData.hasFlag(SemanticsFlag.hasCheckedState), isTrue);
+      expect(checkboxData.hasFlag(SemanticsFlag.isChecked), isTrue);
       expect(checkboxData.hasAction(SemanticsAction.tap), isTrue);
       expect(tester.getSize(checkbox).height, greaterThanOrEqualTo(48));
 
-      final selectAll = find.byKey(
-        const ValueKey('orders-select-all-visible'),
-      );
+      final selectAll = find.byKey(const ValueKey('orders-select-all-visible'));
       final selectAllData = tester.getSemantics(selectAll).getSemanticsData();
       expect(selectAllData.label, '1 orders selected');
       expect(selectAllData.hint, 'Select all visible orders');
       expect(selectAllData.hasFlag(SemanticsFlag.isButton), isTrue);
       expect(selectAllData.hasAction(SemanticsAction.tap), isTrue);
 
-      final selectAllInkWell = find.descendant(
+      final selectAllLabel = find.descendant(
         of: selectAll,
-        matching: find.byType(InkWell),
+        matching: find.text('1 selected · Select visible'),
       );
-      final selectAllContainer = find.descendant(
-        of: selectAllInkWell,
-        matching: find.byType(Container),
-      );
-      Focus.of(tester.element(selectAllContainer.first)).requestFocus();
+      Focus.of(tester.element(selectAllLabel)).requestFocus();
       await tester.pump();
       await tester.sendKeyEvent(LogicalKeyboardKey.enter);
       await tester.pumpAndSettle();
 
-      expect(find.text('2 selected'), findsOneWidget);
+      expect(find.text('2 selected · Select visible'), findsOneWidget);
       expect(tester.takeException(), isNull);
       expect(api.paths, containsAll(['/stores', '/orders']));
     } finally {
@@ -8025,53 +8994,190 @@ void main() {
     }
   });
 
-  test('dashboard composite distinguishes confirmed zero from missing summary metrics', () async {
-    for (final observed in [false, true]) {
-      final payload = observed
-          ? _mobileDashboardJson(revenueValue: 0, orderValue: 0, productCount: 0, averageOrderValue: 0)
-          : <String, dynamic>{'store_id': 'store_1', 'analytics': {'dashboard': null}, 'payout_summary': null};
-      final snapshot = await AnalyticsService(api: _FakeApiClient(json: {'/mobile/dashboard': payload})).getMobileDashboardSnapshot('store_1');
-      expect(snapshot.analytics.summaryAvailable, observed);
-      expect(snapshot.analytics.viewsAvailable, isFalse);
-    }
-  });
+  test(
+    'dashboard composite distinguishes confirmed zero from missing summary metrics',
+    () async {
+      for (final observed in [false, true]) {
+        final payload = observed
+            ? _mobileDashboardJson(
+                revenueValue: 0,
+                orderValue: 0,
+                productCount: 0,
+                averageOrderValue: 0,
+              )
+            : <String, dynamic>{
+                'store_id': 'store_1',
+                'analytics': {'dashboard': null},
+                'payout_summary': null,
+              };
+        final snapshot = await AnalyticsService(
+          api: _FakeApiClient(json: {'/mobile/dashboard': payload}),
+        ).getMobileDashboardSnapshot('store_1');
+        expect(snapshot.analytics.summaryAvailable, observed);
+        expect(snapshot.analytics.viewsAvailable, isFalse);
+      }
+    },
+  );
 
   for (final observed in [false, true]) {
-    testWidgets('dashboard presents ${observed ? 'fractional amounts' : 'unavailable metrics'} honestly', (tester) async {
+    testWidgets(
+      'dashboard presents ${observed ? 'fractional amounts' : 'unavailable metrics'} honestly',
+      (tester) async {
+        SharedPreferences.setMockInitialValues({});
+        final messenger =
+            TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+        messenger.setMockMethodCallHandler(
+          AppBadgeService.defaultChannel,
+          (_) async => null,
+        );
+        messenger.setMockMethodCallHandler(
+          HomeWidgetService.defaultChannel,
+          (_) async => null,
+        );
+        addTearDown(() {
+          messenger.setMockMethodCallHandler(
+            AppBadgeService.defaultChannel,
+            null,
+          );
+          messenger.setMockMethodCallHandler(
+            HomeWidgetService.defaultChannel,
+            null,
+          );
+        });
+        tester.view.physicalSize = const Size(1000, 1400);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        final payload = observed
+            ? {
+                ..._mobileDashboardJson(
+                  revenueValue: 1,
+                  orderValue: 3,
+                  productCount: 1,
+                  averageOrderValue: 0.33,
+                ),
+                'payout_summary': null,
+              }
+            : <String, dynamic>{
+                'store_id': 'store_1',
+                'analytics': {'dashboard': null},
+                'payout_summary': null,
+              };
+        final api = _FakeApiClient(
+          paginated: {
+            '/stores': [_storeJson()],
+          },
+          json: {'/mobile/dashboard': payload},
+        );
+        await tester.pumpWidget(
+          MultiProvider(
+            providers: _merchantShellProviders(api),
+            child: const MaterialApp(home: HomeScreen()),
+          ),
+        );
+        await tester.pump();
+        await tester.pump(const Duration(seconds: 1));
+        await tester.pump(const Duration(seconds: 1));
+        expect(find.text('Gateway'), findsNothing);
+        expect(find.text('Computed'), findsNothing);
+        expect(find.text('Unavailable · refresh to retry'), findsWidgets);
+        expect(find.text('Payout summary unavailable'), findsOneWidget);
+        expect(find.text('No payout scheduled'), findsNothing);
+        if (observed) {
+          expect(find.text('₹0.33'), findsOneWidget);
+        } else {
+          expect(
+            find.text('Revenue data could not be loaded.'),
+            findsOneWidget,
+          );
+          expect(find.text('₹0.00'), findsNothing);
+        }
+        await tester.pumpWidget(const SizedBox.shrink());
+      },
+    );
+  }
+
+  testWidgets(
+    'dashboard store-settings shortcut opens the actual current-store form',
+    (tester) async {
       SharedPreferences.setMockInitialValues({});
-      final messenger = TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
-      messenger.setMockMethodCallHandler(AppBadgeService.defaultChannel, (_) async => null);
-      messenger.setMockMethodCallHandler(HomeWidgetService.defaultChannel, (_) async => null);
+      final messenger =
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+      messenger.setMockMethodCallHandler(
+        AppBadgeService.defaultChannel,
+        (_) async => null,
+      );
+      messenger.setMockMethodCallHandler(
+        HomeWidgetService.defaultChannel,
+        (_) async => null,
+      );
       addTearDown(() {
-        messenger.setMockMethodCallHandler(AppBadgeService.defaultChannel, null);
-        messenger.setMockMethodCallHandler(HomeWidgetService.defaultChannel, null);
+        messenger.setMockMethodCallHandler(
+          AppBadgeService.defaultChannel,
+          null,
+        );
+        messenger.setMockMethodCallHandler(
+          HomeWidgetService.defaultChannel,
+          null,
+        );
       });
       tester.view.physicalSize = const Size(1000, 1400);
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
-      final payload = observed
-          ? {..._mobileDashboardJson(revenueValue: 1, orderValue: 3, productCount: 1, averageOrderValue: 0.33), 'payout_summary': null}
-          : <String, dynamic>{'store_id': 'store_1', 'analytics': {'dashboard': null}, 'payout_summary': null};
-      final api = _FakeApiClient(paginated: {'/stores': [_storeJson()]}, json: {'/mobile/dashboard': payload});
-      await tester.pumpWidget(MultiProvider(providers: _merchantShellProviders(api), child: const MaterialApp(home: HomeScreen())));
-      await tester.pump();
-      await tester.pump(const Duration(seconds: 1));
-      await tester.pump(const Duration(seconds: 1));
-      expect(find.text('Gateway'), findsNothing);
-      expect(find.text('Computed'), findsNothing);
-      expect(find.text('No data'), findsWidgets);
-      expect(find.text('Payout summary unavailable'), findsOneWidget);
-      expect(find.text('No payout scheduled'), findsNothing);
-      if (observed) {
-        expect(find.text('₹0.33'), findsOneWidget);
-      } else {
-        expect(find.text('Revenue data could not be loaded. Refresh to retry.'), findsOneWidget);
-        expect(find.text('₹0.00'), findsNothing);
+      final semantics = tester.ensureSemantics();
+      try {
+        final api = _FakeApiClient(
+          paginated: {
+            '/stores': [_storeJson()],
+          },
+          json: {
+            '/mobile/dashboard': _mobileDashboardJson(
+              revenueValue: 0,
+              orderValue: 0,
+              productCount: 0,
+              averageOrderValue: 0,
+            ),
+          },
+        );
+        await tester.pumpWidget(
+          MultiProvider(
+            providers: _merchantShellProviders(api),
+            child: MaterialApp(
+              home: const HomeScreen(),
+              routes: {
+                AppRoutes.storeDetails: (_) => const StoreDetailsScreen(),
+              },
+            ),
+          ),
+        );
+        await tester.pump();
+        await tester.pump(const Duration(seconds: 1));
+        await tester.pump(const Duration(seconds: 1));
+        final action = find.byTooltip('Store settings');
+        expect(
+          tester.getSemantics(action).getSemanticsData().tooltip,
+          'Store settings',
+        );
+        expect(
+          tester
+              .getSemantics(action)
+              .getSemanticsData()
+              .hasFlag(SemanticsFlag.isEnabled),
+          isTrue,
+        );
+        await tester.tap(action);
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 600));
+        expect(find.byType(StoreDetailsScreen), findsOneWidget);
+        expect(find.text('Store Details'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+        await tester.pumpWidget(const SizedBox.shrink());
+      } finally {
+        semantics.dispose();
       }
-      await tester.pumpWidget(const SizedBox.shrink());
-    });
-  }
+    },
+  );
 
   testWidgets('dashboard period picker supports keyboard and reloads metrics', (
     tester,
@@ -8145,7 +9251,10 @@ void main() {
       final copyStoreUrlData = tester
           .getSemantics(copyStoreUrl)
           .getSemanticsData();
-      expect(copyStoreUrlData.hint, 'https://demo.${StoreModel.storefrontRootDomain} to clipboard');
+      expect(
+        copyStoreUrlData.hint,
+        'https://demo.${StoreModel.storefrontRootDomain} to clipboard',
+      );
       expect(copyStoreUrlData.hasFlag(SemanticsFlag.isButton), isTrue);
       expect(copyStoreUrlData.hasFlag(SemanticsFlag.isEnabled), isTrue);
       expect(copyStoreUrlData.hasAction(SemanticsAction.tap), isTrue);
@@ -8157,26 +9266,33 @@ void main() {
         'Share store',
         'Store QR code',
       ]) {
-        final action = find.bySemanticsLabel(label);
+        final nativeIcon = label == 'Share store' || label == 'Store QR code';
+        final action = nativeIcon
+            ? find.byTooltip(label)
+            : find.bySemanticsLabel(label);
         final data = tester.getSemantics(action).getSemanticsData();
+        if (nativeIcon) expect(data.tooltip, label);
         expect(data.hasFlag(SemanticsFlag.isButton), isTrue, reason: label);
         expect(data.hasFlag(SemanticsFlag.isEnabled), isTrue, reason: label);
         expect(data.hasAction(SemanticsAction.tap), isTrue, reason: label);
         expect(tester.getSize(action).height, greaterThanOrEqualTo(48));
       }
-      final unavailableSettings = tester
-          .getSemantics(find.bySemanticsLabel('Store settings'))
+      final storeSettingsAction = tester
+          .getSemantics(find.byTooltip('Store settings'))
           .getSemanticsData();
-      expect(unavailableSettings.hasFlag(SemanticsFlag.isButton), isTrue);
-      expect(unavailableSettings.hasFlag(SemanticsFlag.isEnabled), isFalse);
-      expect(unavailableSettings.hasAction(SemanticsAction.tap), isFalse);
+      expect(storeSettingsAction.hasFlag(SemanticsFlag.isButton), isTrue);
+      expect(storeSettingsAction.hasFlag(SemanticsFlag.isEnabled), isTrue);
+      expect(storeSettingsAction.hasAction(SemanticsAction.tap), isTrue);
 
       final copyFocus = find.byKey(const ValueKey('hero-store-url-focus'));
       tester.widget<Focus>(copyFocus).focusNode!.requestFocus();
       await tester.pump();
       await tester.sendKeyEvent(LogicalKeyboardKey.enter);
       await tester.pump();
-      expect(copiedClipboardData?['text'], 'https://demo.${StoreModel.storefrontRootDomain}');
+      expect(
+        copiedClipboardData?['text'],
+        'https://demo.${StoreModel.storefrontRootDomain}',
+      );
       expect(find.text('URL copied!'), findsOneWidget);
       expect(tester.takeException(), isNull);
 
@@ -8226,7 +9342,11 @@ void main() {
       expect(periodData.hasAction(SemanticsAction.tap), isTrue);
       expect(tester.getSize(periodPicker).height, greaterThanOrEqualTo(48));
 
-      Focus.of(tester.element(find.descendant(of: periodPicker, matching: find.text('30 Days')))).requestFocus();
+      Focus.of(
+        tester.element(
+          find.descendant(of: periodPicker, matching: find.text('30 Days')),
+        ),
+      ).requestFocus();
       await tester.pump();
       await tester.sendKeyEvent(LogicalKeyboardKey.enter);
       await tester.pump();
@@ -8235,8 +9355,18 @@ void main() {
 
       await tester.tap(find.text('7 Days'));
       await tester.pump();
+      expect(
+        api.paths.where((path) => path == '/mobile/dashboard'),
+        hasLength(1),
+        reason: 'A reporting-period draft must not issue a new read',
+      );
+      await tester.tap(find.text('Apply'));
+      await tester.pump();
       await tester.pump(const Duration(seconds: 1));
-      expect(find.descendant(of: periodPicker, matching: find.text('7 Days')), findsOneWidget);
+      expect(
+        find.descendant(of: periodPicker, matching: find.text('7 Days')),
+        findsOneWidget,
+      );
       expect(
         api.paths.where((path) => path == '/mobile/dashboard'),
         hasLength(2),
@@ -8331,7 +9461,7 @@ void main() {
 
     expect(productsSource, contains('_openProductEditor(product)'));
     expect(productsSource, contains("_hideSelectedProducts"));
-    expect(productsSource, contains("action: 'deactivate'"));
+    expect(productsSource, contains('changeProductStatuses'));
     expect(settingsSource, contains('AppRoutes.help'));
     expect(errorSource, contains('Navigator.pushReplacementNamed'));
 
@@ -8355,27 +9485,15 @@ void main() {
     await tester.pumpWidget(_productFormPreview());
 
     expect(find.text('Add Product'), findsOneWidget);
-    await tester.tap(find.text('Continue').first, warnIfMissed: false);
-    await tester.pumpAndSettle();
+    await selectEditorSection(tester, 'Images');
     expect(find.text('Add Image'), findsOneWidget);
-
-    for (var i = 0; i < 2; i++) {
-      await tester.tap(find.text('Continue').first, warnIfMissed: false);
-      await tester.pumpAndSettle();
-    }
-
+    await selectEditorSection(tester, 'Variants');
     expect(find.text('Variant matrix'), findsOneWidget);
     expect(find.text('Base SKU'), findsOneWidget);
     expect(find.text('Barcode'), findsOneWidget);
     expect(find.text('Add variant'), findsOneWidget);
 
-    final continueButton = find
-        .widgetWithText(ElevatedButton, 'Continue')
-        .first;
-    await tester.ensureVisible(continueButton);
-    await tester.tap(continueButton, warnIfMissed: false);
-    await tester.pumpAndSettle();
-
+    await selectEditorSection(tester, 'Details');
     expect(find.text('Search listing'), findsOneWidget);
     expect(find.text('Classification'), findsOneWidget);
     expect(find.text('Product type'), findsOneWidget);
@@ -8392,14 +9510,15 @@ void main() {
     final semantics = tester.ensureSemantics();
     try {
       await tester.pumpWidget(_productFormPreview());
-      await tester.tap(find.text('Continue').first, warnIfMissed: false);
-      await tester.pumpAndSettle();
+      await selectEditorSection(tester, 'Images');
 
-      final addImage = find.bySemanticsLabel('Add product image');
+      final addImage = find.widgetWithText(OutlinedButton, 'Add Image');
       expect(
         tester.getSemantics(addImage),
         matchesSemantics(
-          label: 'Add product image',
+          label: 'Add Image',
+          isFocusable: true,
+          hasFocusAction: true,
           isButton: true,
           hasEnabledState: true,
           isEnabled: true,
@@ -8412,16 +9531,23 @@ void main() {
       await tester.pumpAndSettle();
       await tester.enterText(
         find.descendant(
-          of: find.byType(AlertDialog),
+          of: find.byType(LetbuyyFormSheet),
           matching: find.byType(TextField),
         ),
         'https://cdn.example.test/item.jpg',
       );
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Add'));
+      await tester.tap(find.widgetWithText(FilledButton, 'Add'));
       await tester.pumpAndSettle();
 
+      final image = find.byWidgetPredicate(
+        (widget) =>
+            widget is Semantics &&
+            widget.properties.label == 'Product image 1, primary',
+      );
+      await tester.ensureVisible(image);
+      await tester.pumpAndSettle();
       expect(
-        tester.getSemantics(find.bySemanticsLabel('Product image 1, primary')),
+        tester.getSemantics(image),
         matchesSemantics(label: 'Product image 1, primary', isImage: true),
       );
       final removeImage = find.bySemanticsLabel('Remove product image 1');
@@ -8433,11 +9559,15 @@ void main() {
           hasEnabledState: true,
           isEnabled: true,
           hasTapAction: true,
+          isFocusable: true,
+          hasFocusAction: true,
         ),
       );
+      await tester.ensureVisible(removeImage);
+      await tester.pumpAndSettle();
       await tester.tap(removeImage);
       await tester.pumpAndSettle();
-      expect(find.bySemanticsLabel('Add product image'), findsOneWidget);
+      expect(find.widgetWithText(OutlinedButton, 'Add Image'), findsOneWidget);
     } finally {
       semantics.dispose();
     }
@@ -8453,17 +9583,13 @@ void main() {
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
       await tester.pumpWidget(_productFormPreview());
-      final detailsStep = find.text('Details');
+      await selectEditorSection(tester, 'Details');
       final stepperScroll = find.byType(Scrollable).first;
-      await tester.scrollUntilVisible(
-        detailsStep,
-        250,
-        scrollable: stepperScroll,
-      );
-      await tester.tap(detailsStep);
-      await tester.pumpAndSettle();
       expect(find.text('Specifications'), findsOneWidget);
-      final addSpecification = find.widgetWithText(TextButton, 'Add');
+      final addSpecification = find.widgetWithText(
+        TextButton,
+        'Add specification',
+      );
       await tester.scrollUntilVisible(
         addSpecification,
         250,
@@ -8472,17 +9598,20 @@ void main() {
       await tester.tap(addSpecification);
       await tester.pumpAndSettle();
       final fields = find.descendant(
-        of: find.byType(AlertDialog),
+        of: find.byType(LetbuyyFormSheet),
         matching: find.byType(TextField),
       );
       await tester.enterText(fields.at(0), 'Material');
       await tester.enterText(fields.at(1), 'Cotton');
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Add'));
+      await tester.tap(find.widgetWithText(FilledButton, 'Add'));
       await tester.pumpAndSettle();
 
-      final remove = find.byTooltip('Remove specification Material');
+      final remove = find.widgetWithText(
+        TextButton,
+        'Remove specification Material',
+      );
       final removeSemantics = tester.getSemantics(remove).getSemanticsData();
-      expect(removeSemantics.tooltip, 'Remove specification Material');
+      expect(removeSemantics.label, 'Remove specification Material');
       expect(removeSemantics.hasFlag(SemanticsFlag.isButton), isTrue);
       expect(removeSemantics.hasAction(SemanticsAction.tap), isTrue);
       await tester.tap(remove);
@@ -8504,17 +9633,9 @@ void main() {
       addTearDown(tester.view.resetDevicePixelRatio);
       await tester.pumpWidget(_productFormPreview());
 
+      await selectEditorSection(tester, 'Variants');
       final stepperScroll = find.byType(Scrollable).first;
-      final variantsStep = find.text('Variants').first;
-      await tester.scrollUntilVisible(
-        variantsStep,
-        250,
-        scrollable: stepperScroll,
-      );
-      await tester.tap(variantsStep);
-      await tester.pumpAndSettle();
-
-      final addVariant = find.widgetWithText(ElevatedButton, 'Add variant');
+      final addVariant = find.widgetWithText(OutlinedButton, 'Add variant');
       await tester.scrollUntilVisible(
         addVariant.first,
         250,
@@ -8524,22 +9645,25 @@ void main() {
       await tester.pumpAndSettle();
 
       final variantFields = find.descendant(
-        of: find.byType(BottomSheet),
+        of: find.byType(Form),
         matching: find.byType(TextFormField),
       );
       await tester.enterText(variantFields.at(0), 'Size');
       await tester.enterText(variantFields.at(1), 'Small');
       await tester.enterText(variantFields.at(5), '25');
       await tester.enterText(variantFields.at(6), '3');
-      await tester.tap(addVariant.last);
+      await tester.tap(find.widgetWithText(FilledButton, 'Add variant'));
       await tester.pumpAndSettle();
 
-      final delete = find.byTooltip('Delete Small variant');
+      final delete = find.widgetWithText(TextButton, 'Delete Small variant');
       final deleteSemantics = tester.getSemantics(delete).getSemanticsData();
-      expect(deleteSemantics.tooltip, 'Delete Small variant');
+      expect(deleteSemantics.label, 'Delete Small variant');
       expect(deleteSemantics.hasFlag(SemanticsFlag.isButton), isTrue);
       expect(deleteSemantics.hasAction(SemanticsAction.tap), isTrue);
       await tester.tap(delete);
+      await tester.pumpAndSettle();
+      expect(find.text('Remove Small variant?'), findsOneWidget);
+      await tester.tap(find.text('Remove variant'));
       await tester.pumpAndSettle();
       expect(
         find.text(
@@ -8553,11 +9677,27 @@ void main() {
   });
 
   testWidgets('CouponFormScreen renders create form', (tester) async {
-    final api = _FakeApiClient(json: {'/coupons': _couponJson()});
+    SharedPreferences.setMockInitialValues({});
+    FlutterSecureStorage.setMockInitialValues({});
+    final api = _FakeApiClient(
+      json: {'/coupons': _couponJson()},
+      paginated: {
+        '/stores': [_storeJson()],
+      },
+    );
+    final stores = StoreContext(
+      storeService: StoreService(api: api, cache: CacheService.memory()),
+    );
+    await stores.loadStores();
+    addTearDown(stores.dispose);
+    addTearDown(api.close);
 
     await tester.pumpWidget(
-      ChangeNotifierProvider(
-        create: (_) => CouponService(api: api),
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider<StoreContext>.value(value: stores),
+          ChangeNotifierProvider(create: (_) => CouponService(api: api)),
+        ],
         child: const MaterialApp(home: CouponFormScreen(storeId: 'store_1')),
       ),
     );
@@ -8638,7 +9778,10 @@ void main() {
     expect(find.text('New order received'), findsOneWidget);
     expect(find.text('Mark all read'), findsOneWidget);
     expect(find.text('Channels'), findsOneWidget);
-    expect(find.textContaining('Push delivery is not configured'), findsOneWidget);
+    expect(
+      find.textContaining('Push delivery is not configured'),
+      findsOneWidget,
+    );
     await tester.scrollUntilVisible(find.text('New orders'), 180);
     expect(find.text('New orders'), findsOneWidget);
     await tester.scrollUntilVisible(find.text('Low stock'), 120);
@@ -8654,7 +9797,12 @@ void main() {
       },
       json: {
         '/employees': [
-          {..._staffJson(), 'permissions': {'granted': ['products:read']}},
+          {
+            ..._staffJson(),
+            'permissions': {
+              'granted': ['products:read'],
+            },
+          },
         ],
       },
     );
@@ -8678,78 +9826,348 @@ void main() {
     expect(find.text('Add staff'), findsOneWidget);
   });
 
-
-
-  for (final screen in <String, Widget>{'settings':const SettingsScreen(),'dashboard':const HomeScreen()}.entries) {
-    testWidgets('${screen.key} store-read failure clears content and waits for explicit recovery', (tester) async {
-      SharedPreferences.setMockInitialValues({});FlutterSecureStorage.setMockInitialValues({});
-      final api=_FakeApiClient(errors:{'/stores':const ApiException(message:'synthetic private store fault',statusCode:503,code:'SYNTHETIC_STORE_OUTAGE')},paginated:{'/stores':[_storeJson()]});
-      await tester.pumpWidget(MultiProvider(providers:_merchantShellProviders(api),child:MaterialApp(home:screen.value)));
-      await tester.pumpAndSettle();
-      expect(find.text('Store details could not load. Try again.'),findsOneWidget);
-      expect(find.text('Demo Store'),findsNothing);
-      final attempts=api.paths.where((p)=>p=='/stores').length;
-      await tester.pump(const Duration(seconds:10));expect(api.paths.where((p)=>p=='/stores').length,attempts,reason:'an outage must not trigger a rebuild/request loop');
-      api._errors.clear();await tester.tap(find.text('Retry store details'));await tester.pump();await tester.pump(const Duration(seconds:1));await tester.pump(const Duration(seconds:1));
-      expect(find.text('Store details could not load. Try again.'),findsNothing);expect(api.paths.where((p)=>p=='/stores').length,greaterThan(attempts));
-      expect(tester.takeException(),isNull);
-      await tester.pumpWidget(const SizedBox.shrink());
-    });
+  for (final screen in <String, Widget>{
+    'settings': const SettingsScreen(),
+    'dashboard': const HomeScreen(),
+  }.entries) {
+    testWidgets(
+      '${screen.key} store-read failure clears content and waits for explicit recovery',
+      (tester) async {
+        SharedPreferences.setMockInitialValues({});
+        FlutterSecureStorage.setMockInitialValues({});
+        final api = _FakeApiClient(
+          errors: {
+            '/stores': const ApiException(
+              message: 'synthetic private store fault',
+              statusCode: 503,
+              code: 'SYNTHETIC_STORE_OUTAGE',
+            ),
+          },
+          paginated: {
+            '/stores': [_storeJson()],
+          },
+        );
+        await tester.pumpWidget(
+          MultiProvider(
+            providers: _merchantShellProviders(api),
+            child: MaterialApp(home: screen.value),
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(
+          find.text('Store details could not load. Try again.'),
+          findsOneWidget,
+        );
+        expect(find.text('Demo Store'), findsNothing);
+        final attempts = api.paths.where((p) => p == '/stores').length;
+        await tester.pump(const Duration(seconds: 10));
+        expect(
+          api.paths.where((p) => p == '/stores').length,
+          attempts,
+          reason: 'an outage must not trigger a rebuild/request loop',
+        );
+        api._errors.clear();
+        await tester.tap(find.text('Retry store details'));
+        await tester.pump();
+        await tester.pump(const Duration(seconds: 1));
+        await tester.pump(const Duration(seconds: 1));
+        expect(
+          find.text('Store details could not load. Try again.'),
+          findsNothing,
+        );
+        expect(
+          api.paths.where((p) => p == '/stores').length,
+          greaterThan(attempts),
+        );
+        expect(tester.takeException(), isNull);
+        await tester.pumpWidget(const SizedBox.shrink());
+      },
+    );
   }
 
-  for (final shipping in [true, false]) {
-    testWidgets('normal settings opens the actual ${shipping ? 'shipping' : 'tax'} workspace at phone size', (tester) async {
+  testWidgets(
+    'settings overview reflects a fresh selected-store name without stale cards',
+    (tester) async {
       SharedPreferences.setMockInitialValues({});
       FlutterSecureStorage.setMockInitialValues({});
-      tester.view.physicalSize = const Size(390, 844);
+      final api = _FakeApiClient(
+        paginated: {
+          '/stores': [_storeJson()],
+        },
+        json: {'/stores/store_1': _storeJson(name: 'Fresh synthetic name')},
+      );
+      await tester.pumpWidget(
+        MultiProvider(
+          providers: _merchantShellProviders(api),
+          child: const MaterialApp(home: SettingsScreen()),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(
+        tester.widget<StoreInfoCard>(find.byType(StoreInfoCard)).storeName,
+        'Demo Store',
+      );
+      final scope = Provider.of<StoreContext>(
+        tester.element(find.byType(SettingsScreen)),
+        listen: false,
+      );
+      await scope.reloadSelectedStore('store_1');
+      await tester.pumpAndSettle();
+      expect(
+        tester.widget<StoreInfoCard>(find.byType(StoreInfoCard)).storeName,
+        'Fresh synthetic name',
+      );
+    },
+  );
+
+  testWidgets(
+    'settings overview retires an A to B to A read context in one frame',
+    (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      FlutterSecureStorage.setMockInitialValues({});
+      final api = _FakeApiClient(
+        paginated: {
+          '/stores': [
+            _storeJson(),
+            _storeJson(id: 'store_2', name: 'Other store'),
+          ],
+        },
+      );
+      await tester.pumpWidget(
+        MultiProvider(
+          providers: _merchantShellProviders(api),
+          child: const MaterialApp(home: SettingsScreen()),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final scope = Provider.of<StoreContext>(
+        tester.element(find.byType(SettingsScreen)),
+        listen: false,
+      );
+      final before = api.paths
+          .where((path) => path == '/stores/store_1/payment-config')
+          .length;
+      expect(before, greaterThan(0));
+      await scope.selectStoreById('store_2');
+      await scope.selectStoreById('store_1');
+      await tester.pumpAndSettle();
+      expect(
+        api.paths
+            .where((path) => path == '/stores/store_1/payment-config')
+            .length,
+        greaterThan(before),
+      );
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  for (final shipping in [true, false]) {
+    testWidgets(
+      'normal settings opens the actual ${shipping ? 'shipping' : 'tax'} workspace at phone size',
+      (tester) async {
+        SharedPreferences.setMockInitialValues({});
+        FlutterSecureStorage.setMockInitialValues({});
+        tester.view.physicalSize = const Size(390, 844);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        final api = _FakeApiClient(
+          paginated: {
+            '/stores': [_storeJson()],
+          },
+          json: {
+            '/stores/store_1': _storeJson(),
+            '/shipping-tax/shipping/zones': [_shippingZoneJson()],
+            '/shipping-tax/shipping': [_shippingRateJson()],
+            '/shipping-tax/taxes': [_taxRateJson()],
+          },
+        );
+        await tester.pumpWidget(
+          MultiProvider(
+            providers: [
+              ..._merchantShellProviders(api),
+              ChangeNotifierProvider(
+                create: (_) => ShippingTaxService(api: api),
+              ),
+            ],
+            child: MaterialApp(
+              home: const SettingsScreen(),
+              onGenerateRoute: AppRoutes.generateRoute,
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        final entry = find.text(shipping ? 'Shipping' : 'Taxes / GST');
+        await tester.scrollUntilVisible(
+          entry,
+          250,
+          scrollable: find.byType(Scrollable).first,
+        );
+        await tester.ensureVisible(entry);
+        await tester.pumpAndSettle();
+        await tester.tap(entry.hitTestable());
+        await tester.pumpAndSettle();
+        expect(
+          shipping ? find.byType(ShippingScreen) : find.byType(TaxesScreen),
+          findsOneWidget,
+        );
+        expect(find.text(shipping ? 'New zone' : 'New tax'), findsOneWidget);
+        expect(
+          api.paths,
+          contains(
+            shipping ? '/shipping-tax/shipping/zones' : '/shipping-tax/taxes',
+          ),
+        );
+        expect(tester.takeException(), isNull);
+        await tester.pumpWidget(const SizedBox.shrink());
+      },
+    );
+  }
+
+  testWidgets(
+    'normal settings opens canonical invoices and exposes current plan and usage',
+    (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      FlutterSecureStorage.setMockInitialValues({});
+      tester.view.physicalSize = const Size(900, 1200);
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
-      final api = _FakeApiClient(paginated: {'/stores': [_storeJson()]}, json: {
-        '/stores/store_1': _storeJson(),
-        '/shipping-tax/shipping/zones': [_shippingZoneJson()],
-        '/shipping-tax/shipping': [_shippingRateJson()],
-        '/shipping-tax/taxes': [_taxRateJson()],
-      });
-      await tester.pumpWidget(MultiProvider(providers: [
-        ..._merchantShellProviders(api),
-        ChangeNotifierProvider(create: (_) => ShippingTaxService(api: api)),
-      ], child: MaterialApp(home: const SettingsScreen(), onGenerateRoute: AppRoutes.generateRoute)));
+      final api = _FakeApiClient(
+        paginated: {
+          '/stores': [_storeJson()],
+        },
+        json: {
+          'payments/subscription': {
+            'store': {'id': 'store_1', 'trial_status': 'paid'},
+            'subscription': {
+              'id': 'sub_1',
+              'plan': 'growth',
+              'status': 'active',
+              'billing_period': 'monthly',
+              'amount_paid': 69900,
+              'products_limit': 500,
+            },
+            'product_usage': {'count': 12, 'limit_known': true, 'limit': 500},
+          },
+          '/payments/subscription/history': [_billingHistoryJson()],
+        },
+      );
+      await tester.pumpWidget(
+        MultiProvider(
+          providers: _merchantShellProviders(api),
+          child: MaterialApp(
+            home: const SettingsScreen(),
+            routes: {AppRoutes.billing: (_) => const BillingScreen()},
+          ),
+        ),
+      );
       await tester.pumpAndSettle();
-      final entry = find.text(shipping ? 'Shipping' : 'Taxes / GST');
-      await tester.scrollUntilVisible(entry, 250, scrollable: find.byType(Scrollable).first);
-      await tester.ensureVisible(entry);
+      await tester.scrollUntilVisible(
+        find.text('Billing and invoices'),
+        300,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(find.text('Growth • active'), findsOneWidget);
+      expect(find.text('12 / 500 products'), findsOneWidget);
+      await tester.ensureVisible(find.text('Billing and invoices'));
       await tester.pumpAndSettle();
-      await tester.tap(entry.hitTestable());
+      expect(find.text('Billing and invoices').hitTestable(), findsOneWidget);
+      await tester.tap(find.text('Billing and invoices').hitTestable());
       await tester.pumpAndSettle();
-      expect(shipping ? find.byType(ShippingScreen) : find.byType(TaxesScreen), findsOneWidget);
-      expect(find.text(shipping ? 'New zone' : 'New tax'), findsOneWidget);
-      expect(api.paths, contains(shipping ? '/shipping-tax/shipping/zones' : '/shipping-tax/taxes'));
+      expect(find.text('Invoices'), findsOneWidget);
+      expect(find.textContaining('SYN-BILLING-001'), findsOneWidget);
+      expect(find.text('Recorded tax: ₹71.82'), findsOneWidget);
+      expect(find.text('Recorded total: ₹470.82'), findsOneWidget);
       expect(tester.takeException(), isNull);
-      await tester.pumpWidget(const SizedBox.shrink());
-    });
-  }
+    },
+  );
 
-  testWidgets('normal settings opens canonical invoices and exposes current plan and usage', (tester) async {
-    SharedPreferences.setMockInitialValues({});FlutterSecureStorage.setMockInitialValues({});
-    tester.view.physicalSize=const Size(900,1200);tester.view.devicePixelRatio=1;
-    addTearDown(tester.view.resetPhysicalSize);addTearDown(tester.view.resetDevicePixelRatio);
-    final api=_FakeApiClient(paginated:{'/stores':[_storeJson()]},json:{
-      'payments/subscription':{'store':{'id':'store_1','trial_status':'paid'},'subscription':{'id':'sub_1','plan':'growth','status':'active','billing_period':'monthly','amount_paid':69900,'products_limit':500},'product_usage':{'count':12,'limit_known':true,'limit':500}},
-      '/payments/subscription/history':[_billingHistoryJson()],
-    });
-    await tester.pumpWidget(MultiProvider(providers:_merchantShellProviders(api),child:MaterialApp(home:const SettingsScreen(),routes:{AppRoutes.billing:(_)=>const BillingScreen()})));
-    await tester.pumpAndSettle();
-    await tester.scrollUntilVisible(find.text('Billing and invoices'),300,scrollable:find.byType(Scrollable).first);
-    expect(find.text('Growth • active'),findsOneWidget);expect(find.text('12 / 500 products'),findsOneWidget);
-    await tester.ensureVisible(find.text('Billing and invoices'));
-    await tester.pumpAndSettle();
-    expect(find.text('Billing and invoices').hitTestable(),findsOneWidget);
-    await tester.tap(find.text('Billing and invoices').hitTestable());await tester.pumpAndSettle();
-    expect(find.text('Invoices'),findsOneWidget);expect(find.textContaining('SYN-BILLING-001'),findsOneWidget);
-    expect(find.text('Recorded tax: ₹71.82'),findsOneWidget);expect(find.text('Recorded total: ₹470.82'),findsOneWidget);
-    expect(tester.takeException(),isNull);
-  });
+  for (final example in [
+    (name: 'unavailable snapshot', usage: null, label: '—', value: null),
+    (
+      name: 'unknown limit',
+      usage: {'count': 12, 'limit_known': false, 'limit': null},
+      label: '—',
+      value: null,
+    ),
+    (
+      name: 'unlimited',
+      usage: {'count': 12, 'limit_known': true, 'limit': null},
+      label: '∞',
+      value: null,
+    ),
+    (
+      name: 'unknown count',
+      usage: {'count': null, 'limit_known': true, 'limit': 100},
+      label: '—',
+      value: null,
+    ),
+    (
+      name: 'known zero usage',
+      usage: {'count': 0, 'limit_known': true, 'limit': 100},
+      label: '0%',
+      value: 0.0,
+    ),
+    (
+      name: 'known zero allowance',
+      usage: {'count': 12, 'limit_known': true, 'limit': 0},
+      label: '100%',
+      value: 1.0,
+    ),
+  ]) {
+    testWidgets(
+      'settings product usage preserves ${example.name} without fabricated progress',
+      (tester) async {
+        SharedPreferences.setMockInitialValues({});
+        FlutterSecureStorage.setMockInitialValues({});
+        final api = _FakeApiClient(
+          paginated: {
+            '/stores': [_storeJson()],
+          },
+          json: {
+            'payments/subscription': {
+              'store': {'id': 'store_1', 'trial_status': 'active'},
+              if (example.usage != null) 'product_usage': example.usage,
+            },
+          },
+        );
+        await tester.pumpWidget(
+          MultiProvider(
+            providers: _merchantShellProviders(api),
+            child: const MaterialApp(home: SettingsScreen()),
+          ),
+        );
+        await tester.pumpAndSettle();
+        await tester.scrollUntilVisible(
+          find.text('Product Usage'),
+          250,
+          scrollable: find.byType(Scrollable).first,
+        );
+        final tile = find.ancestor(
+          of: find.text('Product Usage'),
+          matching: find.byType(SettingsTile),
+        );
+        expect(
+          find.descendant(of: tile, matching: find.text(example.label)),
+          findsOneWidget,
+        );
+        final meter = find.descendant(
+          of: tile,
+          matching: find.byType(LinearProgressIndicator),
+        );
+        if (example.value == null) {
+          expect(meter, findsNothing);
+        } else {
+          expect(
+            tester.widget<LinearProgressIndicator>(meter).value,
+            example.value,
+          );
+        }
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
 
   testWidgets('BillingScreen renders subscription and invoices', (
     tester,
@@ -8781,7 +10199,10 @@ void main() {
         providers: [
           ..._storeProviders(api),
           Provider<SubscriptionService>(
-            create: (_) => SubscriptionService(api: api, actorIdProvider: () => 'synthetic-subscription-actor'),
+            create: (_) => SubscriptionService(
+              api: api,
+              actorIdProvider: () => 'synthetic-subscription-actor',
+            ),
           ),
         ],
         child: const MaterialApp(home: BillingScreen()),
@@ -8836,7 +10257,10 @@ void main() {
         providers: [
           ..._storeProviders(api),
           Provider<SubscriptionService>(
-            create: (_) => SubscriptionService(api: api, actorIdProvider: () => 'synthetic-subscription-actor'),
+            create: (_) => SubscriptionService(
+              api: api,
+              actorIdProvider: () => 'synthetic-subscription-actor',
+            ),
           ),
         ],
         child: const MaterialApp(home: BillingScreen()),
@@ -8850,7 +10274,7 @@ void main() {
 
     await tester.runAsync(() async {
       await tester.tap(find.text('Retry payment'));
-      await Future<void>.delayed(const Duration(milliseconds:20));
+      await Future<void>.delayed(const Duration(milliseconds: 20));
     });
     await tester.pump();
     for (
@@ -9056,7 +10480,10 @@ void main() {
 
     expect(source, contains('ImageSource.camera'));
     expect(source, contains('ImageSource.gallery'));
-    expect(source, contains('uploadProductImage'));
+    expect(source, contains('MediaLibraryScreen('));
+    expect(source, contains('selectProductImage: true'));
+    expect(source, contains('initialImageSource: source'));
+    expect(source, isNot(contains('.uploadProductImage(')));
     expect(source, contains('Take photo'));
     expect(source, contains('Photo library'));
     expect(source, contains('Image URL'));
@@ -9091,7 +10518,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Media library'), findsOneWidget);
-    expect(find.text('Lookbook.pdf'), findsOneWidget);
+    expect(find.text('lookbook.pdf'), findsOneWidget);
     expect(find.text('Document • 2.0 KB'), findsOneWidget);
     expect(find.text('Upload'), findsOneWidget);
     expect(find.text('Search media'), findsOneWidget);
@@ -9183,8 +10610,19 @@ void main() {
           'services/api-gateway/src/__tests__/upload.security.test.ts',
     );
 
-    expect(route, contains('VIDEO_UPLOAD_LIMIT_BYTES'));
-    expect(route, contains('MODEL_UPLOAD_LIMIT_BYTES'));
+    final uploadPolicy = _readSource(
+      appRelative: '../../../services/api-gateway/src/lib/upload-mime.ts',
+      repoRelative: 'services/api-gateway/src/lib/upload-mime.ts',
+    );
+    expect(route, contains("from '../lib/upload-mime'"));
+    expect(
+      uploadPolicy,
+      contains('const VIDEO_UPLOAD_LIMIT_BYTES = 100 * 1024 * 1024'),
+    );
+    expect(
+      uploadPolicy,
+      contains('const MODEL_UPLOAD_LIMIT_BYTES = 50 * 1024 * 1024'),
+    );
     expect(route, contains('mediaKindForUpload'));
     expect(route, contains('uploadMediaType'));
     expect(route, contains('media_type: mediaType'));
@@ -9513,7 +10951,10 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Domain settings'), findsOneWidget);
-    expect(find.text('demo.${StoreModel.storefrontRootDomain}'), findsOneWidget);
+    expect(
+      find.text('demo.${StoreModel.storefrontRootDomain}'),
+      findsOneWidget,
+    );
     expect(find.text('shop.example.com'), findsWidgets);
     expect(find.text('Save domain'), findsOneWidget);
     await tester.scrollUntilVisible(
@@ -9547,28 +10988,41 @@ void main() {
     expect(find.textContaining('email may stop working'), findsOneWidget);
   });
 
-  testWidgets('DomainSettingsScreen blocks edits after store context is cleared', (
-    tester,
-  ) async {
-    SharedPreferences.setMockInitialValues({});
-    final api = _FakeApiClient(paginated: {'/stores': [_storeJson()]});
-    await tester.pumpWidget(MultiProvider(
-      providers: [
-        ..._storeProviders(api),
-        ChangeNotifierProvider(create: (_) => DomainService(api: api)),
-      ],
-      child: const MaterialApp(home: DomainSettingsScreen()),
-    ));
-    await tester.pumpAndSettle();
-    final stores = Provider.of<StoreContext>(
-      tester.element(find.byType(DomainSettingsScreen)), listen: false);
-    await stores.clearSelection();
-    await tester.pumpAndSettle();
-    expect(find.text('The selected store changed. Refresh domains before editing.'),
-      findsOneWidget);
-    expect(find.text('Save domain'), findsNothing);
-    expect(find.text('Buy and connect'), findsNothing);
-  });
+  testWidgets(
+    'DomainSettingsScreen blocks edits after store context is cleared',
+    (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final api = _FakeApiClient(
+        paginated: {
+          '/stores': [_storeJson()],
+        },
+      );
+      await tester.pumpWidget(
+        MultiProvider(
+          providers: [
+            ..._storeProviders(api),
+            ChangeNotifierProvider(create: (_) => DomainService(api: api)),
+          ],
+          child: const MaterialApp(home: DomainSettingsScreen()),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final stores = Provider.of<StoreContext>(
+        tester.element(find.byType(DomainSettingsScreen)),
+        listen: false,
+      );
+      await stores.clearSelection();
+      await tester.pumpAndSettle();
+      expect(
+        find.text(
+          'The selected store changed. Refresh domains before editing.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.text('Save domain'), findsNothing);
+      expect(find.text('Buy and connect'), findsNothing);
+    },
+  );
 
   testWidgets('SEOSettingsScreen renders and saves storefront SEO', (
     tester,
@@ -9584,7 +11038,7 @@ void main() {
       },
       json: {
         '/stores/store_1': _storeJson(
-          seoTitle: 'Updated Store Title',
+          seoTitle: 'Demo Store India',
           seoDescription: 'Shop premium products from Demo Store.',
         ),
       },
@@ -9604,6 +11058,10 @@ void main() {
 
     await tester.enterText(find.byType(TextField).first, 'Updated Store Title');
     await tester.pumpAndSettle();
+    api._json['/stores/store_1'] = _storeJson(
+      seoTitle: 'Updated Store Title',
+      seoDescription: 'Shop premium products from Demo Store.',
+    );
     await tester.tap(find.text('Save SEO'));
     await tester.pumpAndSettle();
 
@@ -9650,7 +11108,7 @@ void main() {
       expect(api.bodies['/stores/store_1'], containsPair('version', 1));
       expect(
         find.text(
-          'Store SEO changed elsewhere. Reload to discard these edits.',
+          'The SEO save is unconfirmed. Reload current settings before another change.',
         ),
         findsOneWidget,
       );
@@ -9660,6 +11118,9 @@ void main() {
         statusCode: 503,
         code: 'UNAVAILABLE',
       );
+      await tester.tap(find.byTooltip('Refresh SEO settings'));
+      await tester.pumpAndSettle();
+      expect(find.text('Reload SEO settings?'), findsOneWidget);
       await tester.tap(find.text('Reload'));
       await tester.pumpAndSettle();
       expect(
@@ -9675,8 +11136,8 @@ void main() {
       };
       await tester.tap(find.byTooltip('Refresh SEO settings'));
       await tester.pumpAndSettle();
-      expect(find.text('Discard SEO edits?'), findsOneWidget);
-      await tester.tap(find.text('Discard and reload'));
+      expect(find.text('Reload SEO settings?'), findsOneWidget);
+      await tester.tap(find.text('Reload'));
       await tester.pumpAndSettle();
       expect(
         tester.widget<TextField>(find.byType(TextField).first).controller!.text,
@@ -9831,8 +11292,17 @@ void main() {
       },
       json: {
         '/themes/modern/releases': [
-          {..._themeReleaseJson(), 'release_status': 'superseded', 'is_current': false},
-          {..._themeReleaseJson(), 'id': 'release_current_4', 'release_version': 4, 'is_current': true},
+          {
+            ..._themeReleaseJson(),
+            'release_status': 'superseded',
+            'is_current': false,
+          },
+          {
+            ..._themeReleaseJson(),
+            'id': 'release_current_4',
+            'release_version': 4,
+            'is_current': true,
+          },
         ],
         '/themes/modern/releases/release_1/rollback': {
           'rollback': {
@@ -9869,7 +11339,11 @@ void main() {
     expect(find.text('Superseded'), findsOneWidget);
     final rollbackButtons = find.widgetWithText(TextButton, 'Roll back');
     expect(rollbackButtons, findsNWidgets(2));
-    expect(tester.widget<TextButton>(rollbackButtons.first).onPressed, isNull, reason: 'The current release cannot be restored as a prior release.');
+    expect(
+      tester.widget<TextButton>(rollbackButtons.first).onPressed,
+      isNull,
+      reason: 'The current release cannot be restored as a prior release.',
+    );
 
     await tester.tap(rollbackButtons.last);
     await tester.pumpAndSettle();
@@ -9880,7 +11354,9 @@ void main() {
 
     const rollbackPath = '/themes/modern/releases/release_1/rollback';
     expect(api.paths, contains(rollbackPath));
-    final rollbackBody = Map<String, dynamic>.from(api.bodies[rollbackPath]! as Map);
+    final rollbackBody = Map<String, dynamic>.from(
+      api.bodies[rollbackPath]! as Map,
+    );
     expect(rollbackBody['idempotency_key'], isA<String>());
     expect(rollbackBody..remove('idempotency_key'), {
       'store_id': 'store_1',
@@ -9926,12 +11402,30 @@ void main() {
         paginated: {
           '/stores': [_storeJson()],
         },
-        json:{'/payments/plans':[_merchantCatalogPlan('launch','Launch',29900),_merchantCatalogPlan('growth','Growth',69900)],'payments/subscription':{'store':{'id':'store_1','trial_status':'paid'},'subscription':{'id':'sub-launch','plan':'launch','status':'active','billing_period':'monthly','amount_paid':29900}}},
+        json: {
+          '/payments/plans': [
+            _merchantCatalogPlan('launch', 'Launch', 29900),
+            _merchantCatalogPlan('growth', 'Growth', 69900),
+          ],
+          'payments/subscription': {
+            'store': {'id': 'store_1', 'trial_status': 'paid'},
+            'subscription': {
+              'id': 'sub-launch',
+              'plan': 'launch',
+              'status': 'active',
+              'billing_period': 'monthly',
+              'amount_paid': 29900,
+            },
+          },
+        },
       );
       final providers = _storeProviders(api)
         ..add(
           Provider<SubscriptionService>(
-            create: (_) => SubscriptionService(api: api, actorIdProvider: () => 'synthetic-subscription-actor'),
+            create: (_) => SubscriptionService(
+              api: api,
+              actorIdProvider: () => 'synthetic-subscription-actor',
+            ),
           ),
         );
 
@@ -9962,7 +11456,10 @@ void main() {
       expect(starter.hasFlag(SemanticsFlag.isSelected), isFalse);
       expect(starter.hasFlag(SemanticsFlag.isEnabled), isTrue);
       expect(starter.hasAction(SemanticsAction.tap), isTrue);
-      expect(api.paths,containsAll(['/stores','/payments/plans','payments/subscription']));
+      expect(
+        api.paths,
+        containsAll(['/stores', '/payments/plans', 'payments/subscription']),
+      );
     } finally {
       semantics.dispose();
     }
@@ -9976,12 +11473,30 @@ void main() {
       paginated: {
         '/stores': [_storeJson()],
       },
-      json:{'/payments/plans':[_merchantCatalogPlan('launch','Launch',29900),_merchantCatalogPlan('growth','Growth',69900)],'payments/subscription':{'store':{'id':'store_1','trial_status':'paid'},'subscription':{'id':'sub-launch','plan':'launch','status':'active','billing_period':'monthly','amount_paid':29900}}},
+      json: {
+        '/payments/plans': [
+          _merchantCatalogPlan('launch', 'Launch', 29900),
+          _merchantCatalogPlan('growth', 'Growth', 69900),
+        ],
+        'payments/subscription': {
+          'store': {'id': 'store_1', 'trial_status': 'paid'},
+          'subscription': {
+            'id': 'sub-launch',
+            'plan': 'launch',
+            'status': 'active',
+            'billing_period': 'monthly',
+            'amount_paid': 29900,
+          },
+        },
+      },
     );
     final providers = _storeProviders(api)
       ..add(
         Provider<SubscriptionService>(
-          create: (_) => SubscriptionService(api: api, actorIdProvider: () => 'synthetic-subscription-actor'),
+          create: (_) => SubscriptionService(
+            api: api,
+            actorIdProvider: () => 'synthetic-subscription-actor',
+          ),
         ),
       );
 
@@ -10022,14 +11537,26 @@ void main() {
       matching: find.byType(Scrollable),
     );
     await tester.scrollUntilVisible(
-      find.descendant(of:find.byType(BottomSheet),matching:find.text('Custom domain')),
+      find.descendant(
+        of: find.byType(BottomSheet),
+        matching: find.text('Custom domain'),
+      ),
       100,
       scrollable: sheetScroll.first,
     );
-    expect(find.descendant(of:find.byType(BottomSheet),matching:find.text('Custom domain')), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(BottomSheet),
+        matching: find.text('Custom domain'),
+      ),
+      findsOneWidget,
+    );
     expect(find.text('Continue to Payment'), findsOneWidget);
     expect(tester.takeException(), isNull);
-    expect(api.paths,containsAll(['/stores','/payments/plans','payments/subscription']));
+    expect(
+      api.paths,
+      containsAll(['/stores', '/payments/plans', 'payments/subscription']),
+    );
   });
 
   testWidgets('Turnstile sentinel state renders a generic error', (
@@ -10058,6 +11585,23 @@ List<SingleChildWidget> _storeProviders(ApiClient api) {
       create: (_) => StoreContext(storeService: storeService),
     ),
   ];
+}
+
+Future<void> _revealOrderControl(WidgetTester tester, Finder target) async {
+  final scroll = find
+      .descendant(
+        of: find.byType(CustomScrollView).first,
+        matching: find.byType(Scrollable),
+      )
+      .first;
+  if (target.evaluate().isEmpty) {
+    await tester.drag(scroll, const Offset(0, 10000));
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(target, 180, scrollable: scroll);
+  } else {
+    await tester.ensureVisible(target);
+  }
+  await tester.pumpAndSettle();
 }
 
 List<SingleChildWidget> _merchantShellProviders(
@@ -10103,7 +11647,12 @@ List<SingleChildWidget> _merchantShellProviders(
     ),
     Provider<AppBadgeService>.value(value: appBadgeService),
     Provider<HomeWidgetService>(create: (_) => const HomeWidgetService()),
-    Provider<SubscriptionService>(create: (_) => SubscriptionService(api: api, actorIdProvider: () => 'synthetic-subscription-actor')),
+    Provider<SubscriptionService>(
+      create: (_) => SubscriptionService(
+        api: api,
+        actorIdProvider: () => 'synthetic-subscription-actor',
+      ),
+    ),
   ];
 }
 
@@ -10112,11 +11661,10 @@ class _TestMerchantAuthService extends StoreAuthService {
     required super.api,
     required this.currentUserId,
     super.httpClient,
-  })
-    : super(
-        identityBaseUrl: 'https://accounts.test',
-        turnstileTokenProvider: () => 'turnstile-token',
-      );
+  }) : super(
+         identityBaseUrl: 'https://accounts.test',
+         turnstileTokenProvider: () => 'turnstile-token',
+       );
 
   final String? currentUserId;
   int signOutCalls = 0;
@@ -10217,8 +11765,7 @@ void _expectContractApproval(
   ApiRequestOptions options,
   MerchantStepUpProof approval,
 ) {
-  expect(approval.context.actorId,
-      '11111111-1111-4111-8111-111111111111');
+  expect(approval.context.actorId, '11111111-1111-4111-8111-111111111111');
   expect(approval.action, 'refund.approve');
   expect(options.method, HttpMethod.post);
   expect(options.storeId, 'store_1');
@@ -10227,6 +11774,28 @@ void _expectContractApproval(
     'X-Step-Up-Token': 'unit-response-refund-approval',
     'X-Step-Up-Verified-At': '2026-10-16T12:00:00Z',
   });
+}
+
+class _HoldingSearchApi extends _FakeApiClient {
+  _HoldingSearchApi()
+    : super(
+        paginated: {
+          '/stores': [_storeJson()],
+        },
+      );
+  final release = Completer<void>();
+  int searches = 0;
+  @override
+  Future<PaginatedResponse<JsonMap>> requestPaginatedJson(
+    String path, {
+    ApiRequestOptions? options,
+  }) async {
+    if (path == '/products' || path == '/orders') {
+      searches++;
+      await release.future;
+    }
+    return super.requestPaginatedJson(path, options: options);
+  }
 }
 
 class _FakeApiClient extends ApiClient {
@@ -10311,17 +11880,20 @@ class _FakeApiClient extends ApiClient {
     _captureBody(path, options);
     _throwIfConfigured(path);
     final settings = path.startsWith('/shipping-tax/');
+    final membership = path == '/stores';
+    final staff = path == '/employees';
     final rows =
         _paginated[path] ??
-        (settings && _json[path] is List
+        ((settings || staff) && _json[path] is List
             ? asJsonList(_json[path]).map(asJsonMap).toList()
             : const <Map<String, dynamic>>[]);
     final meta = <String, dynamic>{
-      if (settings) ...{
-        'store_id': options?.query?['store_id'],
+      if (settings || membership || staff) ...{
+        if (settings) 'store_id': options?.query?['store_id'],
         'total': rows.length,
         'page': options?.query?['page'] ?? 1,
-        'per_page': options?.query?['limit'] ?? 100,
+        'per_page':
+            options?.query?['limit'] ?? (membership || staff ? 50 : 100),
         'total_pages': rows.isEmpty ? 0 : 1,
         'has_next': false,
         'has_prev': false,
@@ -10565,6 +12137,7 @@ Map<String, dynamic> _storeJson({
   Map<String, dynamic>? invoiceAddress,
 }) => {
   'id': id,
+  'version': 1,
   'seller_id': 'seller_1',
   'name': name,
   'tagline': 'Demo',
@@ -10746,6 +12319,7 @@ Map<String, dynamic> _productJson({List<Map<String, dynamic>>? variants}) => {
   'price': 499,
   'currency': 'INR',
   'stock': 8,
+  'catalog_available_quantity': 8,
   'is_active': true,
   'variants': variants ?? const [],
 };
@@ -10760,6 +12334,7 @@ Map<String, dynamic> _sampleProductJson() => {
   'currency': 'INR',
   'sku': 'LETBUYY-SAMPLE-PRODUCT',
   'stock': 1,
+  'catalog_available_quantity': 1,
   'is_active': false,
   'tags': const ['sample', 'not-for-sale', 'edit-before-publication'],
   'variants': const [],
@@ -10928,14 +12503,34 @@ Map<String, dynamic> _inventoryJson({int available = 10}) => {
   'on_hand': available + 3,
 };
 
-Map<String,dynamic> _locationJson()=>{...w.warehouseLocationRecord(name:'North warehouse'),'is_default':true};
-Map<String,dynamic> _supplierJson()=>{...w.warehouseSupplierRecord(name:'Acme Textiles'),'contact_name':'Riya','email':'riya@example.com','phone':'+911111111111'};
-Map<String,dynamic> _purchaseOrderJson({String status='ordered',int receivedQuantity=0})=>{
- ...w.warehouseDocument(status:status,received:receivedQuantity),'supplier_id':w.warehouseDestination,
- 'supplier':{..._supplierJson()},
+Map<String, dynamic> _locationJson() => {
+  ...w.warehouseLocationRecord(name: 'North warehouse'),
+  'is_default': true,
 };
-Map<String,dynamic> _transferJson({String status='reserved',int receivedQuantity=0})=>w.warehouseDocument(
- transfer:true,status:status,quantity:3,received:receivedQuantity,shipped:status=='reserved'?0:3);
+Map<String, dynamic> _supplierJson() => {
+  ...w.warehouseSupplierRecord(name: 'Acme Textiles'),
+  'contact_name': 'Riya',
+  'email': 'riya@example.com',
+  'phone': '+911111111111',
+};
+Map<String, dynamic> _purchaseOrderJson({
+  String status = 'ordered',
+  int receivedQuantity = 0,
+}) => {
+  ...w.warehouseDocument(status: status, received: receivedQuantity),
+  'supplier_id': w.warehouseDestination,
+  'supplier': {..._supplierJson()},
+};
+Map<String, dynamic> _transferJson({
+  String status = 'reserved',
+  int receivedQuantity = 0,
+}) => w.warehouseDocument(
+  transfer: true,
+  status: status,
+  quantity: 3,
+  received: receivedQuantity,
+  shipped: status == 'reserved' ? 0 : 3,
+);
 
 Map<String, dynamic> _couponJson({
   String id = 'coupon_1',
@@ -11218,6 +12813,7 @@ Map<String, dynamic> _mediaJson({
 };
 
 Map<String, dynamic> _uploadJson() => {
+  'store_id': 'store_1',
   'url': 'https://cdn.test/media/store_1/hero.png',
   'key': 'media/store_1/hero.png',
   'size': 2,
@@ -11661,24 +13257,18 @@ Map<String, dynamic> _codJson() => {
 };
 
 Map<String, dynamic> _kycDocumentJson({String status = 'submitted'}) => {
-  'id': 'kyc_1',
-  'site_id': 'store_1',
-  'document_type': 'business_pan',
-  'status': status,
-  'provider': 'letbuyy_sandbox_kyc',
-  'provider_mode': 'sandbox',
+  ...publicKycDocument(
+    kycSiteA,
+    id: kycDocumentA,
+    kind: 'business_pan',
+    status: status,
+  ),
   'provider_reference': 'kyc_sandbox_store_business_pan',
-  'document_number_last4': '1234',
-  'file_url': 'https://cdn.letbuyy.com/kyc/pan.jpg',
-  'file_name': 'pan.jpg',
-  'metadata': const {'sandbox': true},
-  'submitted_at': '2026-06-01T12:00:00.000Z',
-  'created_at': '2026-06-01T12:00:00.000Z',
-  'updated_at': '2026-06-01T12:00:00.000Z',
 };
 
 Map<String, dynamic> _kycOverviewJson({String status = 'in_progress'}) => {
-  'site_id': 'store_1',
+  'site_id': kycSiteA,
+  'private_upload_available': true,
   'overall_status': status,
   'provider_mode': 'sandbox',
   'required_documents': const [
@@ -11766,21 +13356,37 @@ Map<String, dynamic> _returnJson({
   ],
 };
 
-
-Map<String,dynamic> _merchantCatalogPlan(String slug,String name,int amount)=>{
- 'id':'catalog-$slug','slug':slug,'name':name,'currency':'INR','is_active':true,'purchasable':true,
- 'billing_amount_monthly_minor':amount,'billing_amount_yearly_minor':amount*12,
- 'limits':{'products':slug=='growth'?null:100},'entitlements':{'custom_domain':true},
+Map<String, dynamic> _merchantCatalogPlan(
+  String slug,
+  String name,
+  int amount,
+) => {
+  'id': 'catalog-$slug',
+  'slug': slug,
+  'name': name,
+  'currency': 'INR',
+  'is_active': true,
+  'purchasable': true,
+  'billing_amount_monthly_minor': amount,
+  'billing_amount_yearly_minor': amount * 12,
+  'limits': {'products': slug == 'growth' ? null : 100},
+  'entitlements': {'custom_domain': true},
 };
 
-
 class _ProductFormPreviewStores extends StoreContext {
-  _ProductFormPreviewStores(ApiClient api) : super(storeService:StoreService(api:api));
-  @override String get selectedStoreId => 'store_1';
-  @override StoreModel get selectedStore => StoreModel.fromJson(_storeJson());
+  _ProductFormPreviewStores(ApiClient api)
+    : super(storeService: StoreService(api: api));
+  @override
+  String get selectedStoreId => 'store_1';
+  @override
+  StoreModel get selectedStore => StoreModel.fromJson(_storeJson());
 }
+
 Widget _productFormPreview() {
-  final api = _FakeApiClient(); addTearDown(api.close);
-  return ChangeNotifierProvider<StoreContext>(create: (_) => _ProductFormPreviewStores(api),
-    child: const MaterialApp(home:ProductFormScreen()));
+  final api = _FakeApiClient();
+  addTearDown(api.close);
+  return ChangeNotifierProvider<StoreContext>(
+    create: (_) => _ProductFormPreviewStores(api),
+    child: const MaterialApp(home: ProductFormScreen()),
+  );
 }

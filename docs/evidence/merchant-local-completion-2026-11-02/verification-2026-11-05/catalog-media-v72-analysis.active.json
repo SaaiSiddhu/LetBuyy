@@ -1,0 +1,13 @@
+{
+  "started_at": "2026-11-07T04:52:16.698162+00:00",
+  "supervisor_pid": 34695,
+  "source": "merchant-catalog-media-source-v72",
+  "source_sha256": "d8bb3cf5df966db7f0003c964399c5b89d985a6014a3b4287a6df4405b8a5c39",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "analyze",
+    "--no-pub"
+  ],
+  "status": "RUNNING",
+  "child_pid": 39525
+}

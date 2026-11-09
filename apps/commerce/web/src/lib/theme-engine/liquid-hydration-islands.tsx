@@ -498,6 +498,8 @@ function selectedVariantsFrom(root: ParentNode): Record<string, string> {
 
 function cartItemFromElement(element: HTMLElement): LiquidCartItem | null {
     const sectionRoot = element.closest('[data-section-id],section') || document;
+    if (element.dataset.inventoryKnown === 'false' ||
+        (sectionRoot instanceof HTMLElement && sectionRoot.dataset.inventoryKnown === 'false')) return null;
     const selectedVariant = {
         ...selectedVariantsFrom(sectionRoot),
         ...selectedVariantsFrom(element),
@@ -1286,6 +1288,13 @@ class LbVariantPickerElement extends LiquidIslandBase {
     // Only judges availability once every option group has a selection — a partial selection
     // (e.g. Size chosen, Colour not yet) cannot honestly be marked available or unavailable.
     private applyAvailability() {
+        if (this.closest<HTMLElement>('[data-section-id]')?.dataset.inventoryKnown === 'false') {
+            const status = this.querySelector<HTMLElement>('[data-lb-variant-status]');
+            if (status) status.textContent = 'Stock unavailable. Reload and try again.';
+            this.facts?.update(null, 'unknown');
+            this.dispatchAvailability(false);
+            return;
+        }
         if (this.variants.length === 0) {
             const status = this.querySelector<HTMLElement>('[data-lb-variant-status]');
             if (status) status.textContent = 'Product options are unavailable. Reload and try again.';
@@ -2888,6 +2897,7 @@ function bindHeaderControls(root: HTMLElement): () => void {
 export function bindVariantPurchaseControls(root: HTMLElement, productIds: string[]) {
     const required = new Set(productIds);
     root.querySelectorAll<HTMLElement>('lb-add-to-cart').forEach(element => {
+        if (element.dataset.inventoryKnown === 'false') return;
         const picker = element.closest('[data-section-id],section')?.querySelector<HTMLElement>('lb-variant-picker');
         if (!required.has(element.dataset.productId || '') || picker?.dataset.productId === element.dataset.productId) return;
         element.dataset.productRequiresOptions = 'true';

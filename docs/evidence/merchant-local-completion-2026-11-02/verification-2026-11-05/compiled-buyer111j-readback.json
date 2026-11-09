@@ -1,0 +1,49 @@
+{
+  "at": "2026-11-08T10:58:27.643673+00:00",
+  "status": "BOUNDED_LOCAL_COMPILED_STOCK_ACCEPTANCE_PASS",
+  "source_sha256": "f572b869ac94a24fc7a2f5f9a4c14907fd614995be3f9df7057097fcc6648460",
+  "readback": {
+    "run_id": "50f6c4cc5fbe",
+    "baseEditQuantity": 0,
+    "liveVariantQuantity": 7,
+    "positiveLiquidAndOffer": true,
+    "positiveVariantSelection": true,
+    "immutableInstalledTheme": true,
+    "syntheticUploadGrantWithdrawn": true,
+    "persistedLaunchTrialRestored": true,
+    "inventoryProofs": [
+      {
+        "label": "zero",
+        "serverRendered": true,
+        "javaScriptDisabledVerified": true,
+        "hydrationVerified": true,
+        "offerAvailability": "https://schema.org/OutOfStock",
+        "unknownCartWrites": 0,
+        "screenshot": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-buyer-inventory-50f6c4cc5fbe-zero.png",
+        "retained_screenshot": "docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/buyer-inventory111-accepted-artifacts/zero.png",
+        "screenshot_sha256": "195dfc96cac4e04639bfa4427d512b55156e01d2faadfc9fda0a23522d0ee52c"
+      },
+      {
+        "label": "unknown",
+        "serverRendered": true,
+        "javaScriptDisabledVerified": true,
+        "hydrationVerified": true,
+        "offerAvailability": "omitted",
+        "unknownCartWrites": 0,
+        "screenshot": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-buyer-inventory-50f6c4cc5fbe-unknown.png",
+        "retained_screenshot": "docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/buyer-inventory111-accepted-artifacts/unknown.png",
+        "screenshot_sha256": "cdf55c7b03e0313054323351a89b026a3fd27222cce2d5edea70b7730d37af81"
+      }
+    ],
+    "providerFixtureOnly": true
+  },
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "whole_features_accepted": 0
+}

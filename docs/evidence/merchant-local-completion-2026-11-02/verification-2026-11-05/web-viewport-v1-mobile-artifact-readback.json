@@ -1,0 +1,22 @@
+{
+  "at": "2026-11-06T06:24:52.972677+00:00",
+  "status": "RETAINED_MOBILE_BYTES_AND_IDENTICAL_CURRENT_INPUTS_PASS",
+  "source_sha256": "99dee3d9dc5075e97deaff99f2799dea89dac496c88c163a944b39bfe9dda4f0",
+  "prior_build_source_sha256": "3bdf36a7aeeda56b390310bb931a9584b784666459ce072fcb7d7113ed97c48d",
+  "only_changed_input": [
+    "apps/merchant/web/src/app/globals.css"
+  ],
+  "android": {
+    "path": "/private/tmp/letbuyy-product-optional-v1-android-8whq_r7n/merchant-local-debug.apk",
+    "sha256": "bd1e1050fe380cdd8ec5b3e648ae05500697fea9a44aa19ffc8723a55ea45d98",
+    "bytes": 151926546
+  },
+  "ios": {
+    "path": "/private/tmp/letbuyy-product-optional-v1-ios-cadqds9g/Runner.app",
+    "files": 377,
+    "manifest_sha256": "89e66955922e0e85a5fe4f1d4a72e8a0ffe070619ce59a04dc04b245df501fd4"
+  },
+  "ios_files_read_back": 377,
+  "material_icons_sha256": "d9865b671a09d683d13a863089d8825e0f61a37696ce5d7d448bc8023aa62453",
+  "scope": "Mobile input equality plus independently retained normal Android/iOS debug bytes. No new iOS launch or release;current web layout still needs native56 actual browser acceptance."
+}

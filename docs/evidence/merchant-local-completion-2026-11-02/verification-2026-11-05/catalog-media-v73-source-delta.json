@@ -1,0 +1,14 @@
+{
+  "from": "merchant-catalog-media-source-v72",
+  "to": "merchant-catalog-media-source-v73",
+  "source_sha256": "fea6117e135deda4002896d072904f1655ab872fe949caa7c33455fb0e6c3820",
+  "changed": [
+    "apps/merchant/web/src/app/[store]/products/new/page.tsx",
+    "apps/merchant/web/src/components/products/product-conflict.test.tsx",
+    "packages/commerce-core/src/index.ts",
+    "tests/contracts/product-media-limit.test.ts"
+  ],
+  "mobile_dart_input_count": 861,
+  "mobile_dart_inputs_byte_equal": true,
+  "reuse": "Source72 full Flutter1688, analysis0, Android101 actual runtime apply to exact unchanged mobile/Dart inputs. Fresh web/contracts/governance/browser qualification covers the changed TS schema constant and web editor. No iOS runtime upgrade claim."
+}

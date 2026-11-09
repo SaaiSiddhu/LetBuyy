@@ -1,0 +1,27 @@
+{
+  "at": "2026-11-06T09:20:56.069655+00:00",
+  "root": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4",
+  "source_manifest": "merchant-recovery-source-v11.source.json",
+  "source_sha256": "85c6e28b0e4fa33b40a35cf8f09c4a3c354226802236c8fec04989fd0835abe4",
+  "inputs": [
+    {
+      "path": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/run-switcher-v61.py",
+      "sha256": "9ddd2b00ab67eee5bd6c3ff1a471a81b926a22400f8b61f496aead947cb8d76c"
+    },
+    {
+      "path": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/android-device-receipt-switcher-v61.json",
+      "sha256": "37f4ff2f2b89fc1390f5c4eb078ddf2e1aa534556f3b0e727af7e32c3f54682e"
+    },
+    {
+      "path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/android-switcher-staff-v61.py",
+      "sha256": "5cea996af3b4a1f4d62f628a73d979e6936e83a4027c7569aeaa5c994cf9ff85"
+    },
+    {
+      "path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/merchant-switcher-staff-v61-local-android.postgres.test.ts",
+      "sha256": "e293411b26cdf421238bf890c4c45b538a30c18a70d08fc5a7c804d1acade4f1"
+    }
+  ],
+  "protected_fixture_sha256": "12917f372dee1ecf6610c8888af1caa9a5a80b545388ba0b58570c6b9c6f8510",
+  "scope": "All60 business/security/media assertions retained. Driver handles newly observed retained-signin Back to Login action once, through actual native UI; no app policy edit, ADB clear-data or global namespace reset. Exact owned emulator/source reverified.",
+  "status": "READY_NOT_LAUNCHED"
+}

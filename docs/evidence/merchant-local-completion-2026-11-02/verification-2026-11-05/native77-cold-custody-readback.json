@@ -1,0 +1,247 @@
+{
+  "at": "2026-11-06T18:55:45.268880+00:00",
+  "status": "EXACT_SOURCE_APK_AND_ALLOWLISTED_EVIDENCE_CUSTODY_PASS",
+  "run_id": "6f20417198e9",
+  "qualified_source_sha256": "8d91014727d143e0fce8e1ee5e3dc578c1d4c89f5cafc0eaaca0e50c14e6286a",
+  "qualified_source_inputs": 8484,
+  "apk_sha256": "ae3a903f7be98719b388bd728dc993bdf6c5e0c24d5dd89e7902d872eb75c28a",
+  "ignored_artifact": "artifacts/local-operational-proof/merchant-mobile/native77-6f20417198e9/merchant-local-debug.apk",
+  "source_archive": {
+    "path": "artifacts/local-operational-proof/merchant-mobile/native77-6f20417198e9/qualified-source-v53.tar.gz",
+    "sha256": "32be6a83918358394e7b9f42776f77a78ed23d733b9214abfc15f3f27a19e842",
+    "exact_source_members_verified": 8484,
+    "scope": "Only admitted source regular files; no env/runtime/session/DB dump export."
+  },
+  "safe_evidence": "docs/evidence/merchant-local-completion-2026-11-02/native77-accepted-local-kyc-media-staff",
+  "safe_files": [
+    {
+      "path": "android-device-receipt-switcher-v77.json",
+      "sha256": "56f9f055ec0af99b12531cff097f408c34744618d76a8f79d0398a9866b0b1aa"
+    },
+    {
+      "path": "android-switcher-staff-v77.py",
+      "sha256": "e353a88dedff99ed1a0393667a29f77b6fcf1c2bf068f46c598d8158d3646b05"
+    },
+    {
+      "path": "compiled-workers.json",
+      "sha256": "a76e44db459eebcdc71d8f2fe51eaea5dd7dddff9d27b6233e6416e46e18c6da"
+    },
+    {
+      "path": "merchant-media-atomic-source-v53.source.json",
+      "sha256": "fc29507dd340590be8c070106f368927da2d095ba6ec28a468a241f20b2fdefa"
+    },
+    {
+      "path": "merchant-switcher-staff-v77-local-android.postgres.test.ts",
+      "sha256": "9464a436a7226ea8249d10e3287f8f73f0bf007b5de44c05a0a0fd5892b8ff6a"
+    },
+    {
+      "path": "native-alpha-details-resumed.json",
+      "sha256": "464c7ae70909ff456d1747d1900b6a8c9c532e0c462f955e838b7afd6db2b7da"
+    },
+    {
+      "path": "native-alpha-saved.png",
+      "sha256": "210052a9d292d59c015045bdc945daf975d7f404047c947f2f23b363fa6f3c0f"
+    },
+    {
+      "path": "native-alpha-selected.png",
+      "sha256": "76c115543f4a7768aafd8d1dfb5cf02db2f0bcc85b9ce73ff5b7c244eced72c7"
+    },
+    {
+      "path": "native-auth-observed.json",
+      "sha256": "ca71b45dbb603a2bfc5f876afefc8889dbf42b1c53d490fa6dae0f74ea0a6779"
+    },
+    {
+      "path": "native-beta-restart-selection.png",
+      "sha256": "cc76e4d58edafc6a03d401048c062a35ac5c63e06b36723dd8f5bf8b4a340be6"
+    },
+    {
+      "path": "native-beta-selected.png",
+      "sha256": "583fa1c1d404218d6490aa292f5a817472d816e81de4fd398712f2ac037ddc31"
+    },
+    {
+      "path": "native-beta-web-restart.json",
+      "sha256": "cfe06a67b162b84af6ba52b58cb665a33acc2682273fa0337f2c226e136f9cd5"
+    },
+    {
+      "path": "native-downgrade-denial.png",
+      "sha256": "9aa8290ceaefabe098b37ae4eba27b7891ca7e5ea2f3de6537d54918b756d010"
+    },
+    {
+      "path": "native-downgrade-denied.json",
+      "sha256": "32edca69bf1ba4b46cd77399c710c951cef9ee7a61cb726c9b2513f6dbdfccd0"
+    },
+    {
+      "path": "native-initial-beta-tail-choice.png",
+      "sha256": "a93e12ca70763a63b3dca5eac15b445bc7aaa769af42c42d5d4bb93658f3b9d5"
+    },
+    {
+      "path": "native-initial-picker-observed.json",
+      "sha256": "f9d0492b3f97722d019d7fff5864244a6e240da8d6db8057191ef843957bcc43"
+    },
+    {
+      "path": "native-kyc-document-uploaded.png",
+      "sha256": "da377a7e1fe4c2704b971181c9eff4e28c8e7976f79bf5d1b09d992ba0f1488f"
+    },
+    {
+      "path": "native-kyc-uploaded.json",
+      "sha256": "974db2d0acd5f9d782241e15fd584e8957ba76ca99b775ab37b4c1dec0c18059"
+    },
+    {
+      "path": "native-media-editor-open.png",
+      "sha256": "2183653e4e5b443b2c1ee271929fa2b366d37f7622531e33f47bb5e3771dc875"
+    },
+    {
+      "path": "native-media-interrupted.png",
+      "sha256": "641bdd73e3f25a9e1e1d82e4fba22bf711400c494106859ef04c6ff4ef63f995"
+    },
+    {
+      "path": "native-media-pending.json",
+      "sha256": "4c785a69d4ed8deca2983314bbf66a97474f9ad21fc229dc7d96d789e932f718"
+    },
+    {
+      "path": "native-media-recovered-and-edited.png",
+      "sha256": "a10622c05275dfd922329496e488c2f10d97dbdf979d2e659ca42d32b0810180"
+    },
+    {
+      "path": "native-media-recovered.json",
+      "sha256": "70203e80cf3698a334d46a5666e73d57ac481d10a208d5628f272f1ed95636e4"
+    },
+    {
+      "path": "native-owner-roster53.png",
+      "sha256": "15163e98025bfb153b56ae11dedb8fadbde1fdb4b0f7e108482c8e75f5609590"
+    },
+    {
+      "path": "native-process-restart-observed.json",
+      "sha256": "3ef40a2fc1e0deb6547441cb2c8c9d840ed90c60c7a87fda38c2d5935b062e48"
+    },
+    {
+      "path": "native-process-restart-verified.json",
+      "sha256": "89851f18faa9f60d69bd093f42a943748e0ec37b37ed20b2dd934992fac34f89"
+    },
+    {
+      "path": "native-revoked-beta-absent.png",
+      "sha256": "f98e247688579f60b07de7915b0f9b63408650aa543479ff4c2c9d669d1311c1"
+    },
+    {
+      "path": "native-revoked-store-retired.json",
+      "sha256": "5b8b8cd3ae24176c17a08c02f59f6274fbeaba482ee8e973a0aac4772ef93c46"
+    },
+    {
+      "path": "native-staff-product-saved.png",
+      "sha256": "e237f6c49603465834e1a3ec8c6d26b8c99c0074633e4a7885c15f3334c3edbe"
+    },
+    {
+      "path": "native-staff-roster-verified.json",
+      "sha256": "9db328e3c9a1c43262dba2b368f256d61a551591dc7d23d3d23ab2398d50016d"
+    },
+    {
+      "path": "native-two-stores.json",
+      "sha256": "27f5d9ac9b09a1d18e0749c312cde01b4928575b020807781c9229a137a84e20"
+    },
+    {
+      "path": "native-upload-backend-verified.json",
+      "sha256": "579588950541258fef0e964309bcf801d82ba15283209cc23535fff09da83d49"
+    },
+    {
+      "path": "native-web-alpha-read.png",
+      "sha256": "ca3e136df385026533189b5964ccdf2526a2ceffd1d57714f12f6336874096c9"
+    },
+    {
+      "path": "native-web-gallery-deletion-read.png",
+      "sha256": "b437d7136e80328e183baf4bfa6d31414a4d59aabf2c4bcd56b3105a6db6a3f5"
+    },
+    {
+      "path": "native-web-media-deletion-read.json",
+      "sha256": "f533caa55e045e68983b1be8c79203aec1206b132bfcda640f87c6ea21e63560"
+    },
+    {
+      "path": "native77-control-admission.json",
+      "sha256": "95504bf36ca7a43b3189cc77c8238a48bed88062ce412bbb0af2bde82215ee37"
+    },
+    {
+      "path": "native77-independent-readback.json",
+      "sha256": "e34a914ac57525fa3e80091f672fb8b8372a2ac30a52956e80cc0277a173cfb4"
+    },
+    {
+      "path": "observed-calls.json",
+      "sha256": "3449f803d2073e9709eb13a42e8c931d4e71f00732625f33638c10cea3235e04"
+    },
+    {
+      "path": "owned-rest-status-observed.json",
+      "sha256": "598758403cbd02df6a164a5f0d39b81fe56b8756154f97016c7c7f90092de627"
+    },
+    {
+      "path": "pending-storage-verified.json",
+      "sha256": "2b719df2126c8e632ea27a4cc4a6cc99d7e838c4e8e3bf3e0a5f085ad318edf3"
+    },
+    {
+      "path": "run-switcher-v77.py",
+      "sha256": "4b0a1369366fdeaa919c3348998976faccc1c99dbb277dcf003dc897132415bc"
+    },
+    {
+      "path": "switcher-staff-backend-verified.json",
+      "sha256": "779e7fa42391034a8c4c50f9a76969fcbf63183ad549f2e822d343b2dc037c8f"
+    },
+    {
+      "path": "upload-sql-ack-lost.json",
+      "sha256": "427291ae48815506267853ec6128c863012eaa07c6ec0f8fef7cae63d2ec304a"
+    },
+    {
+      "path": "web-alpha-read-native-and-save.png",
+      "sha256": "1c88087e04787debe34258a9e695a92d123029a92d774a96cd9b52fa18ade5dd"
+    },
+    {
+      "path": "web-alpha-updated.json",
+      "sha256": "3234aad6c9e5c57c982fbcea197b1a0ddb224e336ff2788b5228e254b228a3cc"
+    },
+    {
+      "path": "web-beta-choice-alternate-visible.png",
+      "sha256": "b6e47b4d14e01d3a277a96c5633b28c8d01ba21e3055e0e276d9f8745f84d02a"
+    },
+    {
+      "path": "web-beta-choice-normal-visible.png",
+      "sha256": "a20a58bfdf1606dd58f1e8a96eaf9bde85029ef742821877efbd8eef74852b73"
+    },
+    {
+      "path": "web-beta-switcher-selected.json",
+      "sha256": "f6c65387133f07c870fd38c715ccc359b2643f5da98244933412b231560cd479"
+    },
+    {
+      "path": "web-media-deleted.json",
+      "sha256": "94829cae3604e53126ed8d5347a312370ff461806ace613fe6c72fc6aa7e01de"
+    },
+    {
+      "path": "web-native-kyc-readback.png",
+      "sha256": "d5f948a535eaa4c07b325e675d8fca2b619a5d6fe067d767e0b934c9ea7bc35b"
+    },
+    {
+      "path": "web-native-kyc-verified.json",
+      "sha256": "1e477916d35d4f1e3e59ef48764861c8646790b80210d2a414823a02dac08c99"
+    },
+    {
+      "path": "web-native-upload-readback.png",
+      "sha256": "7a3f775a55ab6b243efc383037dae42e05dc6f7d8899452c2f2d0508d6b7a387"
+    },
+    {
+      "path": "web-product-media-verified.json",
+      "sha256": "192d599c18e1d6188f1a0aa43ea6a4a9aa138cdbfa1d9e2267ca06bbeb0eebdd"
+    },
+    {
+      "path": "web-staff-downgraded.json",
+      "sha256": "ba066caa62d1fbc92164e451518b5e4e316b6ab6f0f2afe39cf187aa7088111b"
+    },
+    {
+      "path": "web-staff-product-mobile-read.png",
+      "sha256": "f4efa3a63776198ff90f3f9b058278d42ccc7cf5bd252f0e65252ac1d8b53596"
+    },
+    {
+      "path": "web-staff-removed.json",
+      "sha256": "ba066caa62d1fbc92164e451518b5e4e316b6ab6f0f2afe39cf187aa7088111b"
+    },
+    {
+      "path": "web-switcher-viewport-verified.json",
+      "sha256": "9bcb80ab973b6ec37588e597f32ca42fa8d1ed3acf9d0cb2307d5b773569ceac"
+    }
+  ],
+  "limits": "Synthetic local accepted cohort only; no hosted/provider India-KYC, physical/iOS runtime, release or full122certification. Temporary readiness/session/JWK/env/VM/wire-ingress records excluded; no private object keys or private document bytes copied."
+}

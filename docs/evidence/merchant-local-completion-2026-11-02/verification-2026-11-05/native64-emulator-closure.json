@@ -1,0 +1,11 @@
+{
+  "at": "2026-11-06T10:15:57.234049+00:00",
+  "verified_pid": 88554,
+  "avd": "LetBuyy_Merchant_Parity_20261106_c6cefc",
+  "serial": "emulator-5580",
+  "adb_port": 15038,
+  "graceful_exact_emulator_stop_requested": true,
+  "process_stopped": true,
+  "userdata_preserved": true,
+  "scope": "Only task emulator after native64terminal/independent readback/coldcustody. Isolated ADB server not reset;no other device or container action."
+}

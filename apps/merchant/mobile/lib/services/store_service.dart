@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:letbuyy_models/letbuyy_models.dart' show PaymentConfigModel;
@@ -60,18 +61,29 @@ class StoreService extends ChangeNotifier {
 
   // ── Read ─────────────────────────────────────────────────
 
-  /// Fetch all stores for the current user.
+  /// Compose the actor's current membership pages before replacing the list.
+  /// Existing offline projections remain a loaded list, not new authorization.
   Future<List<StoreModel>> fetchStores() async {
     final epoch = _sessionEpoch;
+    final context = _api.captureRequestContext();
     await _cacheReset;
     _checkSessionEpoch(epoch);
     _isLoading = true;
     notifyListeners();
 
     try {
-      final page = await _api.stores.list();
+      // This discovery read is actor-wide. An inherited selected-store hint
+      // would restrict the canonical accessible-sites query to that one store.
+      final stores = await _fetchStorePopulation(epoch, context);
       _checkSessionEpoch(epoch);
-      _stores = page.data.map(StoreModel.fromJson).toList();
+      if (_api.captureRequestContext() != context) {
+        throw const ApiException(
+          message: 'Store access changed. Reload the store list.',
+          statusCode: 409,
+          code: 'SESSION_CONTEXT_CHANGED',
+        );
+      }
+      _stores = stores;
       if (_stores.isNotEmpty && _currentStore == null) {
         _currentStore = _stores.first;
       }
@@ -90,6 +102,15 @@ class StoreService extends ChangeNotifier {
       return _stores;
     } catch (e) {
       _checkSessionEpoch(epoch);
+      // A retired reader cannot erase the current session's newer projection.
+      if (_api.captureRequestContext() != context ||
+          e is ApiException && e.code == 'SESSION_CONTEXT_CHANGED') {
+        throw const ApiException(
+          message: 'Store access changed. Reload the store list.',
+          statusCode: 409,
+          code: 'SESSION_CONTEXT_CHANGED',
+        );
+      }
       if (!_allowCachedStore(e)) {
         await clearSessionStores();
         rethrow;
@@ -109,6 +130,64 @@ class StoreService extends ChangeNotifier {
       }
     }
   }
+
+  Future<List<StoreModel>> _fetchStorePopulation(
+    int epoch,
+    Object? context,
+  ) async {
+    const size = 50;
+    final stores = <StoreModel>[], ids = <String>{};
+    int? observedTotal;
+    for (var number = 1; ; number++) {
+      _checkSessionEpoch(epoch);
+      final page = await _api.stores.list(
+        query: {'page': number, 'limit': size},
+        options: ApiRequestOptions(
+          storeId: '',
+          // Foreground startup has an explicit Retry surface. Do not multiply
+          // a transport timeout before that surface can become usable.
+          maxRetries: 0,
+          expectedContextVersion: context,
+        ),
+      );
+      _checkSessionEpoch(epoch);
+      if (_api.captureRequestContext() != context) {
+        throw const ApiException(
+          message: 'Store access changed. Reload the store list.',
+          statusCode: 409,
+          code: 'SESSION_CONTEXT_CHANGED',
+        );
+      }
+      final meta = page.meta, total = meta['total'];
+      if (total is! int ||
+          total < 0 ||
+          meta['page'] != number ||
+          meta['per_page'] != size ||
+          meta['total_pages'] != (total / size).ceil() ||
+          meta['has_next'] != (number * size < total) ||
+          meta['has_prev'] != (number > 1) ||
+          observedTotal != null && observedTotal != total ||
+          page.data.length != (total - (number - 1) * size).clamp(0, size)) {
+        throw _unverifiedStorePopulation();
+      }
+      observedTotal = total;
+      for (final row in page.data) {
+        final id = row['id'];
+        if (id is! String || id.isEmpty || !ids.add(id)) {
+          throw _unverifiedStorePopulation();
+        }
+        stores.add(StoreModel.fromJson(row));
+      }
+      if (meta['has_next'] == false) return stores;
+    }
+  }
+
+  static ApiException _unverifiedStorePopulation() => const ApiException(
+    message:
+        'The store list changed or could not be confirmed. Refresh stores.',
+    statusCode: 503,
+    code: 'STORE_LIST_UNVERIFIED',
+  );
 
   /// Get a single store by ID.
   /// Settings editors must use a fresh authorized response without offline fallback.
@@ -185,6 +264,42 @@ class StoreService extends ChangeNotifier {
     'id': store.id,
     ...store.toJson(),
   };
+
+  /// Settings require a current authorized response. Offline projections never
+  /// resolve a save or refresh, and this reader does not change the selection.
+  /// Reuses the canonical fresh-reader contract from the newer Merchant source.
+  Future<StoreModel> fetchStoreFresh(String id) async {
+    final epoch = _sessionEpoch;
+    final requestContext = _api.captureRequestContext();
+    await _cacheReset;
+    _checkSessionEpoch(epoch);
+    final raw = await _api.stores.get(
+      id,
+      options: ApiRequestOptions(
+        storeId: id,
+        expectedContextVersion: requestContext,
+      ),
+    );
+    _checkSessionEpoch(epoch);
+    if (_api.captureRequestContext() != requestContext) {
+      throw const ApiException(
+        message: 'The selected store changed. Open its settings again.',
+        statusCode: 409,
+        code: 'SESSION_CONTEXT_CHANGED',
+      );
+    }
+    if (raw['id'] != id ||
+        raw['name'] is! String ||
+        raw['version'] is! int ||
+        (raw['version'] as int) <= 0) {
+      throw const ApiException(
+        message: 'Store details could not be confirmed. Reload settings.',
+        statusCode: 503,
+        code: 'STORE_SETTINGS_UNVERIFIED',
+      );
+    }
+    return StoreModel.fromJson(raw);
+  }
 
   Future<Map<String, dynamic>> fetchStoreHealth(String id) async {
     return _api.stores.health(id);
@@ -321,17 +436,58 @@ class StoreService extends ChangeNotifier {
 
   // ── Update ───────────────────────────────────────────────
 
-  Future<String> uploadStoreAsset(File file, {String folder = 'stores'}) {
-    return _api.uploadFile(file, folder: folder);
+  Future<String> uploadStoreAsset(
+    File file, {
+    String folder = 'stores',
+    ApiRequestOptions? options,
+  }) {
+    return _api.uploadFile(file, folder: folder, options: options);
   }
 
   /// Update store fields.
   Future<StoreModel> updateStore(String id, Map<String, dynamic> fields) async {
     final epoch = _sessionEpoch;
+    final requestContext = _api.captureRequestContext();
+    // Freeze nested profile fields before waiting for session/cache work. The
+    // caller's mutable form map must not change an already invoked request.
+    final payload = jsonDecode(jsonEncode(fields)) as Map<String, dynamic>;
+    final expectedVersion = payload['version'];
+    if (payload.containsKey('version') &&
+        (expectedVersion is! int || expectedVersion <= 0)) {
+      throw const ApiException(
+        message: 'Reload the current store revision before saving.',
+        statusCode: 409,
+        code: 'STORE_VERSION_REQUIRED',
+      );
+    }
     await _cacheReset;
     _checkSessionEpoch(epoch);
-    final store = StoreModel.fromJson(await _api.stores.update(id, fields));
+    final raw = await _api.stores.update(
+      id,
+      payload,
+      options: ApiRequestOptions(
+        storeId: id,
+        expectedContextVersion: requestContext,
+      ),
+    );
     _checkSessionEpoch(epoch);
+    if (_api.captureRequestContext() != requestContext) {
+      throw const ApiException(
+        message: 'The selected store changed. Reload its settings.',
+        statusCode: 409,
+        code: 'SESSION_CONTEXT_CHANGED',
+      );
+    }
+    if (raw['id'] != id ||
+        expectedVersion is int &&
+            (raw['version'] is! int || raw['version'] != expectedVersion + 1)) {
+      throw const ApiException(
+        message: 'The saved store could not be confirmed. Reload its settings.',
+        statusCode: 503,
+        code: 'STORE_SETTINGS_UNVERIFIED',
+      );
+    }
+    final store = StoreModel.fromJson(raw);
     final idx = _stores.indexWhere((s) => s.id == id);
     if (idx != -1) _stores[idx] = store;
     if (_currentStore?.id == id) _currentStore = store;
@@ -366,8 +522,12 @@ class StoreService extends ChangeNotifier {
   // ── Logo / Banner upload ─────────────────────────────────
 
   /// Upload an image and return the CDN URL.
-  Future<String> uploadImage(File file, {String folder = 'stores'}) async {
-    return _api.uploadFile(file, folder: folder);
+  Future<String> uploadImage(
+    File file, {
+    String folder = 'stores',
+    ApiRequestOptions? options,
+  }) async {
+    return _api.uploadFile(file, folder: folder, options: options);
   }
 
   // ── Subdomain check ──────────────────────────────────────

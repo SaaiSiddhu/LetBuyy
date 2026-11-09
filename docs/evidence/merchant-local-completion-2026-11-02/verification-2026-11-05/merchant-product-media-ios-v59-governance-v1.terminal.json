@@ -1,0 +1,12 @@
+{
+  "at": "2026-11-06T21:03:16.577914+00:00",
+  "status": "TERMINAL",
+  "exit_code": 0,
+  "capsule": "/private/tmp/letbuyy-merchant-product-media-ios-v59-governance-yl1ch_sn",
+  "purpose": "Disposable validation copy only, no implementation/worktree/merge/push/release",
+  "source_sha256": "999e0d6b6ca0b1064b4b0b4f3dcacaaabd050a44105d5c1a9ecb2be51de44184",
+  "core_inputs_byte_equal": 8486,
+  "original_source_unchanged": true,
+  "original_index_unchanged": true,
+  "report": "merchant-product-media-ios-v59-governance-v1-report.json"
+}

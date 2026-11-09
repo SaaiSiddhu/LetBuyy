@@ -1,0 +1,38 @@
+{
+  "supervisor_pid": 58575,
+  "source_sha256": "823d816f06cb8b21ecedb637f9ea6dc6cdf390c6caeae5fbb7676cf4231dc37a",
+  "started_at": "2026-11-05T19:58:14.220894+00:00",
+  "steps": [
+    {
+      "step": "app-analysis",
+      "exit_code": 0
+    },
+    {
+      "step": "full-flutter",
+      "exit_code": 1
+    },
+    {
+      "step": "governance",
+      "exit_code": 0
+    },
+    {
+      "step": "android-compile",
+      "exit_code": 0
+    },
+    {
+      "step": "ios-compile",
+      "exit_code": 0
+    }
+  ],
+  "status": "TERMINAL_ORDERED_LOCAL_GATES_PASSED_WITH_KNOWN_FULL_SUITE_FAILURE",
+  "ui_kit_analysis": "Reused Supporting2 zero-issue result; all UI-kit bytes unchanged.",
+  "active_step": null,
+  "full_flutter": {
+    "pass": 1478,
+    "fail": 1,
+    "skip": 0,
+    "known_protected_staff_failure_only": true
+  },
+  "finished_at": "2026-11-05T20:01:00.370648+00:00",
+  "source_unchanged": true
+}

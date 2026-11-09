@@ -1,0 +1,17 @@
+{
+  "at": "2026-11-05T17:58:57.085348+00:00",
+  "status": "INDEPENDENT_DEBUG_APK_READBACK_PASS",
+  "source_sha256": "8ffd6e530d90589bd68607a9a910c50414f3389cca26213ceded0c483884aae6",
+  "artifact": {
+    "path": "/private/tmp/letbuyy-security-android-n_tb5q4u/merchant-local-debug.apk",
+    "sha256": "a74ccf977bd79604192d700ccb67b34be0d9e58cdc3d9f05e1774ee44754391c",
+    "bytes": 151909412
+  },
+  "actual_sha256": "a74ccf977bd79604192d700ccb67b34be0d9e58cdc3d9f05e1774ee44754391c",
+  "compiled_arm64_engine": true,
+  "debug_kernel_present": true,
+  "normal_main": true,
+  "installed": false,
+  "runtime_verified": false,
+  "limits": "Current security/Coupon source compile/archive integrity only; no auth/backend/sync/physical/performance/hosted/production acceptance."
+}

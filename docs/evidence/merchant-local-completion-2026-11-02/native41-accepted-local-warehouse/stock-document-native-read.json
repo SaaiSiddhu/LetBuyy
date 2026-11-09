@@ -1,0 +1,13 @@
+{
+  "run_id": "abac88df509d",
+  "steps": [
+    "normal-native-completed-transfer-document-read",
+    "normal-native-completed-PO-document-read",
+    "original-list-return-and-query-retention"
+  ],
+  "evidence": [
+    "/private/tmp/letbuyy-merchant-local-20261106-25feac2c/native-warehouse-v41/native-transfer-full-document-read.png",
+    "/private/tmp/letbuyy-merchant-local-20261106-25feac2c/native-warehouse-v41/native-po-full-document-read.png"
+  ],
+  "scope": "Existing strict detail readers; normal current completed document UI, exact saved quantities/cost. Fixture has one line per document; multi-line layout covered separately by composed tests. No new backend mutation or complete feature acceptance."
+}

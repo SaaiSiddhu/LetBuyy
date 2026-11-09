@@ -1,0 +1,80 @@
+{
+  "status": "BOUNDED_LOCAL_ANDROID_WEB_DATABASE_PASS",
+  "runId": "651256dbe53a",
+  "tests": 1,
+  "passed": 1,
+  "failed": 0,
+  "skipped": 0,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "source_sha256": "171d1c70ee38d8079848ec7205b14e1027a2f7e96885e2b89aecbeda23edb26c",
+  "sourceEntries": 7406,
+  "sourceHeldAndTerminalVerified": true,
+  "sourceArchive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v11/qualified-source",
+  "sourceArchiveVerified": true,
+  "artifact": {
+    "run_id": "651256dbe53a",
+    "source_sha256": "b18af740ff69863d6ea12cf125b87566e5a974e112c90a9c81d0742d91a3e2ba",
+    "apk": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v11/qualified-artifact/merchant-local-debug.apk",
+    "source_build_path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/apps/merchant/mobile/build/app/outputs/flutter-apk/app-debug.apk",
+    "original_bytes_retained": true,
+    "sha256": "76745674740ff0164b03e18d00cad817401dc9118861bf82688eb1a5766d3527",
+    "defines": {
+      "ENVIRONMENT": "local",
+      "BFF_BASE_URL": "http://127.0.0.1:54350/v1",
+      "API_BASE_URL": "http://127.0.0.1:54350/v1",
+      "IDENTITY_BASE_URL": "http://localhost:9002",
+      "ADMIN_BASE_URL": "http://localhost:54353",
+      "STOREFRONT_BASE_URL": "http://localhost:54354",
+      "LOCAL_CHALLENGE_SDK_URL": "http://127.0.0.1:56082/fixtures/turnstile/api.js",
+      "TURNSTILE_SITE_KEY": "1x00000000000000000000AA",
+      "MOBILE_PUSH_DEVICE_TOKEN": "",
+      "SENTRY_DSN": "SKIP_NEEDS_HUMAN_LOCAL_SENTRY_DSN"
+    },
+    "build_method": "flutter-config-only-then-offline-gradle-debug",
+    "installed_readback": true,
+    "scope": "Local debug artifact only; no hosted/provider/release certification."
+  },
+  "observed": [
+    "Normal synthetic Accounts UI through task Chrome with ADB input; automatic return, actual fresh PKCE inspection/exchange, canonical session confirmation.",
+    "Manual ordered membership: actual committed201/200 response interrupted503; same original key/body retry with one receipt; normal web sign-in/native order read, web order save, native reload; exactly2 receipts/audits/outbox.",
+    "Smart native rule/publication create: committed201/wire503; process restart with encrypted original request retained; exact original key/body retry201, one effect; saved preview1match.",
+    "Normal web read of native rule/publication and one-match preview; exact public API product before. Normal web rule save, native fresh rule read and preview2matches; exact public API two products afterward.",
+    "Smart database version2, exactly2metadata receipts/audits/outbox."
+  ],
+  "smartPersisted": {
+    "version": 2,
+    "conditions": [
+      {
+        "op": "contains",
+        "field": "title",
+        "value": "Synthetic"
+      }
+    ],
+    "is_active": true,
+    "receipts": 2,
+    "audits": 2,
+    "outbox": 2
+  },
+  "controllerLimitations": [
+    "UiAutomator did not expose Material input labels, so the empty editor was visually inspected and the same form continued through its visible ordered input controls. No app/data reset.",
+    "Signed-in native screenshots inspected. Field-label omission is an automation observation, not complete accessibility acceptance."
+  ],
+  "remaining": [
+    "Observed low-contrast native collection-editor heading and preview result near bottom gesture area require visual repair and fresh artifact review.",
+    "Native manual metadata CRUD, all rule operators, stale-conflict/delete/staff UI, rendered buyer collection page and full feature acceptance are separate.",
+    "No iOS/physical device/provider/hosted/release/production acceptance."
+  ],
+  "scope": "One bounded compound story, not a122-feature or production-ready certification.",
+  "controllerProcessExits": {
+    "initialCompanion": 1,
+    "resumedSmartCompanion": 0,
+    "explanation": "Initial observer omitted Android field hints; same visually inspected form resumed without application/source/data changes. Canonical runner passed all independent backend assertions."
+  }
+}

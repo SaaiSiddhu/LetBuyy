@@ -1,0 +1,20 @@
+{
+  "at": "2026-11-04T16:56:54.249303+00:00",
+  "status": "FIELDS_V3_LOCAL_QUALIFIED_WITH_EXISTING_PROTECTED_FAILURE_NEW_ARTIFACTS_PENDING",
+  "source": "ce31422f57f32f09b3e38de4dfb553a68935ffc33fe553c6d571ad741081ff99/7462",
+  "archive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-fields-v3-qualified-source",
+  "negative_v1": "0PASS/6FAIL actualRenderParagraphdidExceedMaxLines=true forhelper/expliciterror/validatorerror inboth themes320dp scale2.4",
+  "fixed": "Canonicalhelper/error widgetswrapfullcopy; nativeFormFieldvalidation/priority/callback/inputlimits unchanged. CSVfieldspacedbelowfileactions",
+  "focused_v2": "52PASS/0FAIL originalproduct/CSVrecovery andUIkitformspluscopycases",
+  "full_v3": {
+    "passed": 1059,
+    "failed": 1,
+    "skipped": 0,
+    "existing_failure": "ProtectedStaffnamespacepolicy outsidefrontend",
+    "app_and_ui_kit_analysis_issues": 0,
+    "parsed_preservation_checks": 125
+  },
+  "precedence": "Both explicitcaptionandvalidatorerror tested;validationerrorwins;suppliedcaptionalone doesnotchangeForm.validate originalpolicy",
+  "native": "Newfieldsourcehasno newAndroid/iOSartifactyet;v40Androidv15/iOSv5 archivedproofs applyonlytheirsource",
+  "next": "CollectionsUIcohortperMOBILE_UI_COLLECTIONS_MIGRATION_PLAN.json;sourcewillbeunfrozen;newbroadgovernance/artifactsaftercoherentcohort"
+}

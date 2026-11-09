@@ -1,88 +1,33 @@
 import 'package:flutter/material.dart';
-import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
+import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' as kit;
 
-/// Full-screen loading overlay with optional message
+/// Compatibility facade: existing call sites keep their message/input contract.
+/// Rendering, focus, motion, blocking and semantics have one shared owner.
 class LoadingOverlay extends StatelessWidget {
-  final String? message;
-  final bool isLoading;
-  final Widget child;
-
   const LoadingOverlay({
     super.key,
     this.message,
     required this.isLoading,
     required this.child,
   });
+  final String? message;
+  final bool isLoading;
+  final Widget child;
 
   @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        child,
-        if (isLoading)
-          Container(
-            color: Colors.black.withValues(alpha: 0.5),
-            child: Center(
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.1),
-                      blurRadius: 20,
-                      offset: const Offset(0, 10),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation(AppColors.primary),
-                    ),
-                    if (message != null) ...[
-                      const SizedBox(height: 16),
-                      Text(
-                        message!,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-            ),
-          ),
-      ],
-    );
-  }
+  Widget build(BuildContext context) => kit.LoadingOverlay(
+    isLoading: isLoading,
+    loadingText: message,
+    child: child,
+  );
 }
 
-/// Simple loading indicator for inline use
 class LoadingIndicator extends StatelessWidget {
+  const LoadingIndicator({super.key, this.size = 24, this.color});
   final double size;
   final Color? color;
 
-  const LoadingIndicator({
-    super.key,
-    this.size = 24,
-    this.color,
-  });
-
   @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: size,
-      height: size,
-      child: CircularProgressIndicator(
-        strokeWidth: 2,
-        valueColor: AlwaysStoppedAnimation(color ?? AppColors.primary),
-      ),
-    );
-  }
+  Widget build(BuildContext context) =>
+      kit.LoadingIndicator(size: size, color: color);
 }

@@ -1,0 +1,144 @@
+{
+  "status": "PARTIAL_9_FIXTURE_HOOK_FAILURES_REMAIN",
+  "runId": "47f46ee379b1",
+  "tests": 193,
+  "passed": 184,
+  "failed": 9,
+  "skipped": 0,
+  "results": [
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/current-entitlement-authority.postgres.test.ts",
+      "tests": 6,
+      "pass": 6,
+      "fail": 0,
+      "skipped": 0,
+      "code": 0,
+      "cleanup": {
+        "rest": true,
+        "database": true
+      }
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/inventory-adjustment-audit.postgres.test.ts",
+      "tests": 16,
+      "pass": 16,
+      "fail": 0,
+      "skipped": 0,
+      "code": 0,
+      "cleanup": {
+        "rest": true,
+        "database": true
+      }
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/merchant-category-commands.postgres.test.ts",
+      "tests": 9,
+      "pass": 0,
+      "fail": 9,
+      "skipped": 0,
+      "code": 1,
+      "cleanup": {
+        "rest": true,
+        "database": true
+      }
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-recovery.postgres.test.ts",
+      "tests": 46,
+      "pass": 46,
+      "fail": 0,
+      "skipped": 0,
+      "code": 0,
+      "cleanup": {
+        "rest": true,
+        "database": true
+      }
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-rollback.postgres.test.ts",
+      "tests": 5,
+      "pass": 5,
+      "fail": 0,
+      "skipped": 0,
+      "code": 0,
+      "cleanup": {
+        "rest": true,
+        "database": true
+      }
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/product-atomic-edits.postgres.test.ts",
+      "tests": 90,
+      "pass": 90,
+      "fail": 0,
+      "skipped": 0,
+      "code": 0,
+      "cleanup": {
+        "rest": true,
+        "database": true
+      }
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/product-category-backfill.postgres.test.ts",
+      "tests": 1,
+      "pass": 1,
+      "fail": 0,
+      "skipped": 0,
+      "code": 0,
+      "cleanup": {
+        "rest": true,
+        "database": true
+      }
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/product-import-recovery.postgres.test.ts",
+      "tests": 18,
+      "pass": 18,
+      "fail": 0,
+      "skipped": 0,
+      "code": 0,
+      "cleanup": {
+        "rest": true,
+        "database": true
+      }
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/store-profile-cas-contracts.postgres.test.ts",
+      "tests": 1,
+      "pass": 1,
+      "fail": 0,
+      "skipped": 0,
+      "code": 0,
+      "cleanup": {
+        "rest": true,
+        "database": true
+      }
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/store-profile-cas.postgres.test.ts",
+      "tests": 1,
+      "pass": 1,
+      "fail": 0,
+      "skipped": 0,
+      "code": 0,
+      "cleanup": {
+        "rest": true,
+        "database": true
+      }
+    }
+  ],
+  "failure": "Category test still queries provenance417 after approved category renumber433; hook expected14 rows and observed0. No category route case reached. Correct only the exact fixture provenance references after the held browser source is retired, then rerun all9 controls.",
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "limits": [
+    "Does not certify every122feature or hosted state.",
+    "New retained-data trial resolver434 is present in every migrated owned fixture.",
+    "No complete broad source manifest was captured before this cohort launch; runner records exact migration identities."
+  ]
+}

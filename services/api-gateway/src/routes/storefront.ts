@@ -341,9 +341,9 @@ const STOREFRONT_SITE_COMPAT_SELECT: string =
 const STOREFRONT_SITE_RELEASE_COMPAT_SELECT: string =
     `${STOREFRONT_SITE_COMPAT_SELECT},current_theme_release_id,storefront_release_version`;
 const PRODUCT_SELECT_FULL: string =
-    'id,store_id,name,slug,description,images,price,compare_price,stock,is_active,is_featured,status,category,tags,variants,country_of_origin,importer_details,display_order,created_at,updated_at,seo_title,seo_description,metadata';
+    'id,store_id,name,slug,description,images,price,compare_price,stock,catalog_available_quantity,is_active,is_featured,status,category,tags,variants,country_of_origin,importer_details,display_order,created_at,updated_at,seo_title,seo_description,metadata';
 const PRODUCT_SELECT_COMPAT: string =
-    'id,store_id,name,slug,description,images,price,compare_price,stock,is_active,is_featured,status,category,tags,variants,country_of_origin,display_order,created_at,updated_at,seo_title,seo_description,metadata';
+    'id,store_id,name,slug,description,images,price,compare_price,stock,catalog_available_quantity,is_active,is_featured,status,category,tags,variants,country_of_origin,display_order,created_at,updated_at,seo_title,seo_description,metadata';
 const PRODUCT_SELECT_MINIMAL: string =
     'id,store_id,name,description,images,price,category,tags,created_at,updated_at,seo_title,seo_description';
 const PRODUCT_SELECT_FULL_RELATIONAL: string = PRODUCT_SELECT_FULL.replace(',variants', '');
@@ -499,6 +499,7 @@ async function hydratePublicProductVariants(c: AppContext, products: PublicProdu
         const { data, error } = await db
             .from('product_variants')
             .select('id, product_id, title, price, compare_price, sku, barcode, inventory_qty, weight, weight_unit, option1, option2, option3, image_url, position, metadata')
+            .is('deleted_at', null)
             .in('product_id', Array.from(new Set(productIds)))
             .order('position', { ascending: true });
 
@@ -770,7 +771,7 @@ async function queryPublicProductsFromPooledSql(c: AppContext, storeId: string, 
         ? PRODUCT_SELECT_FULL_RELATIONAL
         : PRODUCT_SELECT_FULL;
     const rows = await sql.unsafe<ProductSqlRow[]>(
-        `select ${selectColumns}${countSelect}
+        `select ${selectColumns.replace('catalog_available_quantity', 'public.catalog_available_quantity(products) AS catalog_available_quantity')}${countSelect}
          from products
          where ${filters.join(' and ')}
          order by display_order asc

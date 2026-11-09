@@ -1,0 +1,12 @@
+{
+  "at": "2026-11-05T20:07:17.143739+00:00",
+  "status": "TERMINAL",
+  "exit_code": 0,
+  "capsule": "/private/tmp/letbuyy-confirmation-governance-bmetyx2w",
+  "purpose": "Disposable validation copy only, no implementation/worktree/merge/push/release",
+  "source_sha256": "1029fe659065f6110351560cecd8ece3f7656665f2b499ec6e9019a9b216eb65",
+  "core_inputs_byte_equal": 8445,
+  "original_source_unchanged": true,
+  "original_index_unchanged": true,
+  "report": "confirmation-governance-v1-report.json"
+}

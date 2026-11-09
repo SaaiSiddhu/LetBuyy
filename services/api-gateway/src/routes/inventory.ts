@@ -1,4 +1,5 @@
 import { resolveMerchantResourceStoreIds } from '../lib/tenant-context';
+import { projectInventoryReservationRead } from '../lib/inventory-reservation-read';
 // ============================================================
 // INVENTORY — Locations, levels, adjustments (Doc 05 + Doc 08 § 6)
 // ============================================================
@@ -7,7 +8,7 @@ import { Hono } from 'hono';
 import { InventoryReservationSchema, InventoryReceiptSchema, WarehouseLocationPageSchema,WarehouseSupplierPageSchema,WarehousePurchaseOrderSchema,WarehouseTransferSchema,WarehousePurchaseOrderPageSchema,WarehouseTransferPageSchema,
  WAREHOUSE_COMMAND_PROTOCOL_HEADER,WAREHOUSE_COMMAND_PROTOCOL_VERSION,isWarehouseCommandPath } from '@letbuyy/shared-types';
 import type { Env } from '../index';
-import { executeInventoryAdjustment } from '../execution/inventory-adjustment.adapter';
+import { executeInventoryAdjustment, executeInventoryAdjustmentBatch } from '../execution/inventory-adjustment.adapter';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { dbFailureBody, failureBody, getSupabaseAdmin, paginated, success } from '../lib/supabase';
@@ -31,7 +32,6 @@ import {
     WarehouseCommandCapabilitiesQuerySchema,
     type WarehouseCommandCapabilitiesQuery,
     type StopWarehouseCommandInput,
-    mapInventoryAdjustmentReason,
     mapInventoryLevelRecord,
     mapProductStockInventoryRecord,
     type BulkAdjustInput,
@@ -350,7 +350,7 @@ router.get('/purchase-orders',validate('query',WarehousePurchaseOrderListQuerySc
     if(!actor||!await verifySiteOwnership(db,query.store_id,actor.id,auth.user.storeId))
         return c.json(failureBody('FORBIDDEN','Your access to this store changed.'),403);
     const buildRead=(head=false)=>{
-        let read=db.from('purchase_orders').select('*, supplier:suppliers(id,site_id,name), lines:purchase_order_lines(*)',{count:'exact',head})
+        let read=db.from('purchase_orders').select('*, supplier:suppliers(id,site_id,name), location:inventory_locations!purchase_orders_location_id_fkey(id,store_id,name,deleted_at), lines:purchase_order_lines(*, product:products(id,store_id,name,sku,deleted_at), variant:product_variants(id,product_id,title,sku))',{count:'exact',head})
             .eq('site_id',query.store_id).is('deleted_at',null).is('lines.deleted_at',null);
         if(query.status)read=read.eq('status',query.status);
         if(query.search)read=read.ilike('po_number','%'+query.search.replace(/[\\%_]/g,'\\$&')+'%');
@@ -398,7 +398,7 @@ router.get('/purchase-orders/:id',validate('param',WarehouseDocumentParamsSchema
     const db=getSupabaseAdmin(c),auth=c.get('auth'),actor=await resolveCustomUser(db,auth.user);
     if(!actor||!await verifySiteOwnership(db,site,actor.id,auth.user.storeId))
         return c.json(failureBody('FORBIDDEN','Your access to this store changed.'),403);
-    const {data,error}=await db.from('purchase_orders').select('*, supplier:suppliers(id,site_id,name), lines:purchase_order_lines(*)')
+    const {data,error}=await db.from('purchase_orders').select('*, supplier:suppliers(id,site_id,name), location:inventory_locations!purchase_orders_location_id_fkey(id,store_id,name,deleted_at), lines:purchase_order_lines(*, product:products(id,store_id,name,sku,deleted_at), variant:product_variants(id,product_id,title,sku))')
         .eq('id',id).eq('site_id',site).is('deleted_at',null).is('lines.deleted_at',null).maybeSingle();
     if(error)return c.json(dbFailureBody(),500);
     if(!data)return c.json(failureBody('NOT_FOUND','Warehouse record not found.'),404);
@@ -455,7 +455,7 @@ router.get('/transfers',validate('query',WarehouseTransferListQuerySchema), asyn
     if(!actor||!await verifySiteOwnership(db,query.store_id,actor.id,auth.user.storeId))
         return c.json(failureBody('FORBIDDEN','Your access to this store changed.'),403);
     const buildRead=(head=false)=>{
-        let read=db.from('inventory_transfers').select('*, lines:inventory_transfer_lines(*)',{count:'exact',head})
+        let read=db.from('inventory_transfers').select('*, source_location:inventory_locations!inventory_transfers_source_location_id_fkey(id,store_id,name,deleted_at), destination_location:inventory_locations!inventory_transfers_destination_location_id_fkey(id,store_id,name,deleted_at), lines:inventory_transfer_lines(*, product:products(id,store_id,name,sku,deleted_at), variant:product_variants(id,product_id,title,sku))',{count:'exact',head})
             .eq('site_id',query.store_id).is('deleted_at',null).is('lines.deleted_at',null);
         if(query.status)read=read.eq('status',query.status);
         if(query.search)read=read.ilike('transfer_number','%'+query.search.replace(/[\\%_]/g,'\\$&')+'%');
@@ -488,7 +488,7 @@ router.get('/transfers/:id',validate('param',WarehouseDocumentParamsSchema),vali
     const db=getSupabaseAdmin(c),auth=c.get('auth'),actor=await resolveCustomUser(db,auth.user);
     if(!actor||!await verifySiteOwnership(db,site,actor.id,auth.user.storeId))
         return c.json(failureBody('FORBIDDEN','Your access to this store changed.'),403);
-    const {data,error}=await db.from('inventory_transfers').select('*, lines:inventory_transfer_lines(*)')
+    const {data,error}=await db.from('inventory_transfers').select('*, source_location:inventory_locations!inventory_transfers_source_location_id_fkey(id,store_id,name,deleted_at), destination_location:inventory_locations!inventory_transfers_destination_location_id_fkey(id,store_id,name,deleted_at), lines:inventory_transfer_lines(*, product:products(id,store_id,name,sku,deleted_at), variant:product_variants(id,product_id,title,sku))')
         .eq('id',id).eq('site_id',site).is('deleted_at',null).is('lines.deleted_at',null).maybeSingle();
     if(error)return c.json(dbFailureBody(),500);
     if(!data)return c.json(failureBody('NOT_FOUND','Warehouse record not found.'),404);
@@ -734,13 +734,14 @@ router.get('/levels', async (c) => {
                 inventory_locations(id,name,is_default,status)
             `, { count: 'exact', head })
             .in('store_id', ownedStoreIds)
-            .in('products.store_id', ownedStoreIds);
+            .in('products.store_id', ownedStoreIds)
+            .is('deleted_at', null);
 
         if (includeProductDeletedAtFilter) query = query.is('products.deleted_at', null);
         if (productId) query = query.eq('product_id', productId);
-        if (lowStockOnly) query = query.lte('available', 10);
+        if (lowStockOnly) query = query.lte('free_quantity', 10);
 
-        query = query.order('available', { ascending: true }).order('id', { ascending: true });
+        query = query.order('free_quantity', { ascending: true }).order('id', { ascending: true });
         return head ? query : query.range(offset, offset + limit - 1);
     };
 
@@ -826,6 +827,10 @@ router.post('/adjust', validate('json', AdjustInventorySchema), async (c) => {
 router.post('/bulk-adjust', validate('json', BulkAdjustSchema), async (c) => {
     const auth = c.get('auth');
     const body = c.get('validatedBody') as BulkAdjustInput;
+    const selectedStore = c.req.header('X-Store-ID');
+    if (selectedStore && selectedStore !== body.store_id) {
+        return c.json({success: false, error: {code: 'FORBIDDEN', message: 'The selected store changed.'}}, 403);
+    }
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
@@ -838,46 +843,19 @@ router.post('/bulk-adjust', validate('json', BulkAdjustSchema), async (c) => {
     const staffBlock = await assertStaffPermission(c, body.store_id, customUser.id, 'products:write');
     if (staffBlock) return staffBlock;
 
-    const results = [];
-
-    for (const adj of body.adjustments) {
-        const { data: product } = await db
-            .from('products')
-            .select('id')
-            .eq('id', adj.product_id)
-            .eq('store_id', body.store_id)
-            .is('deleted_at', null)
-            .single();
-
-        if (!product) {
-            results.push({ product_id: adj.product_id, status: 'not_found' });
-            continue;
-        }
-
-        const { data, error } = await db.rpc('adjust_inventory_level', {
-            p_product_id: adj.product_id,
-            p_variant_id: adj.variant_id || null,
-            p_location_id: adj.location_id || null,
-            p_adjustment: adj.adjustment,
-            p_actor_id: customUser.id,
-            p_reason: mapInventoryAdjustmentReason(adj.reason),
-            p_notes: adj.notes || null,
-            p_request_id: c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || null,
-        });
-
-        results.push({
-            product_id: adj.product_id,
-            status: error ? 'failed' : 'adjusted',
-            level: data || null,
-            error: error ? 'Inventory adjustment failed' : undefined,
-        });
-    }
-
-    return c.json(success({ results, total: results.length }));
+    const raw = await c.req.json<Record<string, unknown>>();
+    const key = c.req.header('X-Idempotency-Key') || c.req.header('Idempotency-Key')
+        || (typeof raw.idempotency_key === 'string' ? raw.idempotency_key : '')
+        || (typeof raw.idempotencyKey === 'string' ? raw.idempotencyKey : '');
+    const result = await executeInventoryAdjustmentBatch(c.env, body.store_id, customUser.id, key, body,
+        c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || crypto.randomUUID());
+    if (result.replayed) c.header('X-Idempotent-Replay', 'true');
+    return c.json(success(result.response));
 });
 
 // GET /inventory/reservations — List inventory reservations (read-only, ownership-checked)
 router.get('/reservations', validate('query', InventoryReservationListQuerySchema), async (c) => {
+    c.header('Cache-Control', 'private, no-store');
     const auth = c.get('auth');
     const q = c.get('validatedQuery') as InventoryReservationListQuery;
     const { status: statusFilter, product_id: productIdFilter, page, limit } = q;
@@ -905,7 +883,7 @@ router.get('/reservations', validate('query', InventoryReservationListQuerySchem
     const unavailable = () => c.json(failureBody('INVENTORY_RESERVATIONS_UNAVAILABLE', 'Inventory reservations are unavailable. Try again.'), 503);
     const buildQuery = (head = false) => {
         let query = db.from('inventory_reservations')
-            .select('id,store_id,product_id,variant_id,location_id,order_id,quantity,status,expires_at,created_at,updated_at,products!inner(name,store_id)', { count: 'exact', head })
+            .select('id,store_id,product_id,variant_id,location_id,order_id,quantity,status,expires_at,created_at,updated_at,products!inner(id,name,store_id),transfer_line:inventory_transfer_lines!inventory_transfer_lines_reservation_id_fkey(id,site_id,transfer_id,reservation_id,product_id,variant_id,quantity_requested,quantity_received,metadata,transfer:inventory_transfers(id,site_id,transfer_number,status,source_location_id))', { count: 'exact', head })
             .in('store_id', ownedStoreIds).in('products.store_id', ownedStoreIds)
             .is('deleted_at', null);
         if (statusFilter) query = query.eq('status', statusFilter);
@@ -923,7 +901,7 @@ router.get('/reservations', validate('query', InventoryReservationListQuerySchem
         return c.json(scopedInventoryPage([], recovered.count, page, limit, storeId));
     }
     if (error || count == null || !Number.isSafeInteger(count) || count < 0 || (data?.length ?? 0) > limit || (data?.length ?? 0) > count) return unavailable();
-    const rows = InventoryReservationSchema.array().safeParse(data ?? []);
+    const rows = InventoryReservationSchema.array().safeParse((data ?? []).map(projectInventoryReservationRead));
     if (!rows.success || rows.data.some(row => !ownedStoreIds.includes(row.store_id) || row.products.store_id !== row.store_id ||
         (productIdFilter && row.product_id !== productIdFilter) || (statusFilter && row.status !== statusFilter))) return unavailable();
     return c.json(scopedInventoryPage(rows.data, count, page, limit, storeId));
@@ -999,16 +977,18 @@ router.get('/analytics', async (c) => {
         transfer_by_status?: Record<string, number>;
     } = {};
 
-    // Low-stock count from inventory_levels (available <= 10 as low threshold)
-    const { data: levelData, error: levelError } = await db
+    // Match the live inventory list: free stock, with exact database count.
+    const { count: lowStockCount, error: levelError } = await db
         .from('inventory_levels')
-        .select('id, products!inner(store_id)', { count: 'exact' })
+        .select('id, products!inner(store_id,deleted_at)', { count: 'exact', head: true })
         .in('store_id', ownedStoreIds)
         .in('products.store_id', ownedStoreIds)
-        .lte('available', 10);
+        .is('deleted_at', null)
+        .is('products.deleted_at', null)
+        .lte('free_quantity', 10);
 
-    if (!levelError && !isInventorySchemaMissingError(levelError)) {
-        analytics.low_stock_count = (levelData || []).length;
+    if (!levelError && lowStockCount !== null && Number.isSafeInteger(lowStockCount) && lowStockCount >= 0) {
+        analytics.low_stock_count = lowStockCount;
     }
 
     // Total SKU count from products table (non-deleted products)

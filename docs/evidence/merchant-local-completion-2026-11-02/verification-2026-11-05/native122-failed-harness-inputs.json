@@ -1,0 +1,22 @@
+{
+  "status": "NORMAL_IOS_AUTH_PASS;HARNESS_DOWNLOAD_INPUT_MISSING_FAIL;NO_MEDIA_RUNTIME_ACCEPTANCE",
+  "source": "merchant-native-selection-source-v91",
+  "run_id": "932f3dd50dcf",
+  "private_root": "/private/tmp/letbuyy-ios-ui-20261108-aee2df597f",
+  "failure": "Missing synthetic-owned-video.mov in loopback download bridge;normal sign-in passed,Download UI failed on actual unavailable server.",
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "device": {
+    "udid": "B907B390-5B08-490F-BC6A-8900667B2D94",
+    "baseline_restored": "Shutdown",
+    "existing_files_and_photos_preserved": true
+  },
+  "continuation": "/private/tmp/letbuyy-ios-ui-20261108-46beaed757",
+  "whole_features_accepted": 0
+}

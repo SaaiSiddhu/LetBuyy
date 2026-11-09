@@ -1,0 +1,17 @@
+{
+  "at": "2026-11-07T05:53:53.390630+00:00",
+  "task_emulator_owned": true,
+  "qemu_open_files_prove_private_avd_root": true,
+  "avd": "LetBuyy_Merchant_Parity_20261106_c6cefc",
+  "serial": "emulator-5580",
+  "adb_port": 15038,
+  "booted": true,
+  "current_reverse_table_empty": true,
+  "current_forward_table_empty": true,
+  "mapping_note": "101asserted exact captured before/after equality. A historical52367forward is absent in this final read; none was recreated, removed or changed by this read-only audit.",
+  "app_data_photos_preserved": true,
+  "ios_state": "Shutdown; compiled73artifact not installed; accepted installed runtime remains70/native95",
+  "owned_backend_ports54350_to54353_empty": true,
+  "host9002_never_touched": true,
+  "scope": "Read-only final existing task AVD check; no input/install/import/reset/stop.101app was force-stopped and no later native controller used it."
+}

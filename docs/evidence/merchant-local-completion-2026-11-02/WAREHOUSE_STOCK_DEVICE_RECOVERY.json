@@ -1,0 +1,464 @@
+{
+  "status": "NATIVE41_BOUNDED_LOCAL_WAREHOUSE_AND_SETTERS_ACCEPTED;FULL_FEATURE_ACCEPTANCE_OPEN",
+  "deviceFailure": {
+    "run_id": "b84227870050",
+    "runnerExit": 143,
+    "uiExit": 1,
+    "noInventoryWritesObserved": true,
+    "diagnosticResumption": "One normal Retry products action recovered the read and enabled menu; no inventory write or acceptance claimed.",
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    },
+    "ownedNextMarkers": [],
+    "source_sha256": "edd42243e3a26fce1ac5f1e24468af08f4f696d70c37088b368da8b023231ea2",
+    "appStopped": true
+  },
+  "exactFailure": "Valid current store and product HTTP200observed; Products UIexplicit read error, Showmenu disabled, independent Inventory unreachable. Controller exited1before any inventory write. One diagnostic normal Retry products recovered menu; this does not accept the failed run.",
+  "sourceNegative": {
+    "v1": "Wrong working-directory preflight only",
+    "v2": "Test exception missing required code; compilation only",
+    "v3": {
+      "existingPass": 20,
+      "newFail": 1,
+      "failure": "Inventory entry unavailable after explicit synthetic product503under current valid store",
+      "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/inventory-navigation-negative-mobile-v3.log"
+    }
+  },
+  "sourceRepair": "Products PopupMenu requires completed loading, current selected store and matching actor/store request-context key. It no longer requires independent product-list success. Every destination continues its own fresh authorized APIread; private product rows remain unavailable on failed read.",
+  "focused": {
+    "pass": 21,
+    "fail": 0,
+    "analyzeExit": 0,
+    "scope": "Routing-only new regression with explicit synthetic destination witness; actual warehouse UI/API/device evidence remains separate."
+  },
+  "currentSource": "inventory-search-source-v1 (accepted native41;later saved-fields4 differs only outside this warehouse journey)",
+  "currentChecks": {
+    "native41": "native41-accepted-local-warehouse/MANIFEST.json",
+    "currentSettersManaged": "verification-2026-11-05/current-setters-managed-v1.terminal.json:20PASS/0FAIL/0SKIP",
+    "currentUnrelatedSource": "saved-fields4;1,478PASS/1knownStaffFAIL;no current warehouse rerun inferred"
+  },
+  "remaining": [
+    "Warehouse metadata edit/delete, wider roles and stock allocation/variant/customer-checkout permutations remain unaccepted.",
+    "Native41 proved bounded location/supplier/PO/transfer/setters through actual owned local runtimes, not hosted or iOS acceptance.",
+    "No hosted/provider/physical/signed release/full119or122feature certification. Native38 original terminal remains unavailable/unknown."
+  ],
+  "v3InfrastructureFailure": {
+    "runId": "9b9ec91a0610",
+    "pass": 0,
+    "fail": 1,
+    "runnerExit": 1,
+    "cause": "No-rebind guard refused stale v2task reverse54352before install/login. No owned port was rebound.",
+    "cleanup": "Owned DB/runtime cleanup empty; explicitly proved and removed only4v2reverse mappings and1v2Chrome forward afterward. Host9002untouched.",
+    "evidence": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v2/owned-adb-cleanup.json"
+  },
+  "harnessRecovery": "checkUi now notices the owned private UI-companion failure file during waits and throws through normal fixture finally; future UI failure no longer needs external runner termination.",
+  "v4OrchestrationFailure": {
+    "runId": "c502a7fb442a",
+    "runnerExit": 1,
+    "uiExit": 1,
+    "pass": 0,
+    "fail": 1,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "cause": "Launcher retained literal android-warehouse-auto-v2.py; controller targeted previous receipt/root. No current native login or inventory acceptance. Current failure channel recorded actual orchestration mismatch and normal finally cleaned owned runtime/ADB maps.",
+    "evidenceLimit": "Misdirected companion overwrote v2ui-attention.json; original v2Showmenu failure is preserved in this report, HANDOFF and tool transcript, but not as an unchanged original raw attention file. Interrupted synthetic credentials explicitly retired."
+  },
+  "v5ControllerLocatorFailure": {
+    "runId": "3c308c423bd3",
+    "runnerExit": 1,
+    "uiExit": 1,
+    "pass": 0,
+    "fail": 1,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "cause": "SettingsTile Android semantics combine title and accessibility hint: Store Details, Open Store Details. Controller searched exact Store Details, then scrolled past it. Corrected only this private selector.",
+    "observedBeforeFailure": [
+      "Fresh native Accounts exchange",
+      "Actual normal Products-to-Inventory navigation under current store",
+      "Native location create/lost-reply/restart/exact-original retry and supplier create",
+      "Normal web reads native metadata and creates location/supplier; native reads both web rows"
+    ],
+    "noWholeInventoryAcceptance": true
+  },
+  "v6ControllerLocatorFailure": {
+    "runId": "748f679dda97",
+    "runnerExit": 1,
+    "uiExit": 1,
+    "pass": 0,
+    "fail": 1,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "cause": "POcard merges its document number/status/supplier/quantities into one accessibility node; exact standalone Ordered selector failed despite actual POcreate201and visible Ordered in correct card.",
+    "repair": "Private status observer now requires visible PO/TR document-number format and exact status line inside its current merged card; no arbitrary substring or success stub.",
+    "observedBeforeFailure": [
+      "Metadata/recovery/bothdirection readback",
+      "Native profile save acknowledged and web read confirmed",
+      "Normal native POcreate201with4units; current one-row list returned200"
+    ],
+    "additionalUnacceptedGap": "POline rendered generic Product x4. Current private record list/detail queries omit product joins although canonical Dart contracts already read nested product. Trace and fix bounded readable names separately with cross-tenant validation and original receipt preservation."
+  },
+  "v7InputObservationFailure": {
+    "runId": "cd697fb91e26",
+    "runnerExit": 1,
+    "uiExit": 1,
+    "pass": 0,
+    "fail": 1,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "cause": "Numeric form input readback did not match and Android scanner camera-permission dialog appeared. No camera permission granted. Metadata/profile/POcreate/partialreceive/restart/originalretry observed; transfer creation not accepted.",
+    "repair": "Private stock input helper selects the unique current numeric default, intersects actual scrollable ancestor viewport, requires stable bounds then actual focused EditText before typing, and verifies exact focused field readback. No permission action or hidden state/API injection.",
+    "unresolved": "Do not infer app defect vs control/layout issue without further actual observation. Whole run remains failed."
+  },
+  "v8FocusDiagnosticFailure": {
+    "runId": "675e48de9576",
+    "runnerExit": 1,
+    "uiExit": 1,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "cause": "Stable visible numeric input bounds still led to scanner permission surface; focus guard stopped before typing. No camera permission granted. Transfer effect not accepted.",
+    "next": "Explicit diagnostic-only fixture mode seeds stock3/location and records draft XML/screens before/after focus, submits no stock command, and asserts transfers/command receipts0. Passing this diagnostic never accepts a feature."
+  },
+  "v9Diagnostic": {
+    "classification": "DIAGNOSTIC_ONLY_NO_FEATURE_ACCEPTANCE",
+    "runId": "67bf7dd7c1fc",
+    "runnerExit": 0,
+    "uiExit": 0,
+    "pass": 1,
+    "fail": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "seededStock": 3,
+    "stockWrites": 0,
+    "cameraPermissionGranted": false,
+    "source": "f2987d1e3e5b3a6befc544b67386362e2ef22e87ba58595616bea80e4176c7d1",
+    "actualFinding": "Quantity EditText bounds42,564..1038,1100cover entire card. Center falls inside scanner control84,785..628,911; screenshot shows actual quantity field below scanner. Both before/after screenshots and XMLinspected. CarddefaultssemanticContainertrue merges distinct controls.",
+    "inputBounds": "[42,564][1038,1100]",
+    "evidence": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v9",
+    "sourceScopeHash": "751058b47a9b8e7e1ef6765d318a3f648499dae9b57f5297a155ab6f8caf9055",
+    "apkSha256": "d6e7fd77e9509856bb092c0bd74d9e0f1f652a83164de251b90ee9c0fb9f9883"
+  },
+  "quantitySemanticsNegative": {
+    "existingPass": 31,
+    "newFail": 2,
+    "POrectHeight": 268,
+    "transferRectHeight": 212,
+    "actualInputHeight": 56,
+    "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-quantity-semantics-negative-v1.log"
+  },
+  "quantitySemanticsRepair": "Shared lineCard semanticContainerfalse plus individual Semantics(container:true)around quantity/cost fields. Card-only repair did not shrink bounds; explicit field boundaries satisfy unchanged metrics. No visual, permission, command or token changes.",
+  "quantitySemanticsChecks": {
+    "negative": {
+      "existingPass": 31,
+      "newFail": 2,
+      "POheight": 268,
+      "transferHeight": 212,
+      "actualInputHeight": 56
+    },
+    "repairV1": "Card-only change failed same rectangle assertions",
+    "repairV2": "Rectangle assertions passed; test-only SemanticsHandle disposal occurred too late",
+    "repairV3": {
+      "pass": 33,
+      "fail": 0,
+      "cleanup": "Handle disposed in test finally before Flutter verification; assertions unchanged",
+      "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-quantity-semantics-repair-v3.log"
+    }
+  },
+  "v10Acceptance": {
+    "status": "LOCALLY_ACCEPTED_BOUNDED_WAREHOUSE_STOCK_JOURNEY",
+    "runId": "28036721b070",
+    "baseline": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+    "source": {
+      "sha256": "5efe4d38620d811426f223a2d316201c30f8ffeab2670c5846f66d74f6d577d6",
+      "entries": 7411,
+      "verifiedUnchangedAfterTerminal": true,
+      "archive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-stock-v5-qualified-source",
+      "fixtureClosureSha256": "cbac1b79cc14fdee22f126fcc9178f8e8bb066883637f28775ad51f6ea1ebb2a"
+    },
+    "apkSha256": "61264acb56cf0f9b025a9c083d0951cb9d86709ec6a78066c4f9ddfc885ee8aa",
+    "runnerExit": 0,
+    "uiExit": 0,
+    "tests": 1,
+    "pass": 1,
+    "fail": 0,
+    "skip": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "scope": "Normal Android PO4units/cost125.50, partialreceive3with lost-reply/restart/exact retry; transfer2reserve/ship/receive1; normal web reads and completes1unit each; native refresh reads final received states. Canonical available4across2locations/no reserved/incoming,11command receipts including4metadata. Product cache/physical-on-hand allocation semantics remain separately unaccepted. No staff/variants/allfinancial/provider/hosted/iOS/release acceptance.",
+    "actualRuntime": "Compiled Android debug artifact, local production-mode Accounts/Merchant Next; actual BFF/Gateway modules on Node with owned real PostgreSQL/PostgREST. Not a compiled Workerd phone run.",
+    "observed": [
+      "Normal native Accounts PKCE sign-in; no injected tokens/API success.",
+      "Native location create committed reply lost; restart and exact-original retry; native supplier create.",
+      "Normal web reads native metadata and creates metadata; native reads both web records.",
+      "Strict native store profile save and normal web readback.",
+      "PO ordered4units at INR125.50; native receives3, lost reply and restart/exact original retry.",
+      "Native transfer2 reserved, shipped2, received1.",
+      "Normal web reads both partial records, completes remaining1unit each.",
+      "Native refresh reads both received records.",
+      "Independent final state: available2at each of2locations, reserved0,incoming0,11command receipts.",
+      "Original native partial receive receipt whole-row digest unchanged.",
+      "Quantity input entered2 without scanner activation; screenshots inspected."
+    ],
+    "evidenceRoot": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v10",
+    "limitations": [
+      "No warehouse metadata edit/delete or normal staff UI acceptance.",
+      "Inventory allocation/product cache/physical-on-hand and checkout reservation semantics remain separate.",
+      "Current screens expose generic product labels/location UUIDs; readable scoped relations follow.",
+      "No hosted/provider/iOS/signed release or full122feature certification."
+    ]
+  },
+  "freshNative39": {
+    "at": "2026-11-05T18:58:17.766842+00:00",
+    "status": "TERMINAL_FAILED_NOT_ACCEPTED_DOCUMENT_ACCESSIBILITY_REPRODUCED",
+    "run_id": "48646a456c6c",
+    "runner_exit": 1,
+    "ui_exit": 1,
+    "pass": 0,
+    "fail": 1,
+    "skip": 0,
+    "source_sha256": "a2a5672ed7707f9b10a0aa6fd49fadb27227410002e60a56af97c23f3c6d9cb3",
+    "source_inputs": 8442,
+    "source_unchanged_at_terminal": true,
+    "apk_sha256": "3a6b4978e4dd2a228ecebb495e48f7435e10b990371ab88dfa89c5330d044a91",
+    "retained_and_installed_apk_equal": true,
+    "cause": "Saved transfer line is visually complete but native accessibility exposes only selectable Product ID; controller cannot observe full saved product/quantity facts, then correctly refuses unobserved scroll input. Actual screenshot and native semantics inspected.",
+    "observed_substeps_only": [
+      "Normal Accounts/browser login and automatic return",
+      "Location lost-reply/restart/original-key recovery",
+      "Supplier creation",
+      "Web metadata read/create and native readback; strict profile save/web read",
+      "PO ordered4units at125.50; native partial3receipt/restart/original replay",
+      "Transfer reserve2, held lifetime web/DB read, ship2, committed lifetime, partial receive1",
+      "Web final receive1for both documents; native current transfer list read"
+    ],
+    "not_reached": [
+      "Full saved transfer/PO line read acceptance",
+      "Native delta setter and web absolute setter acceptance",
+      "Native Staff form acceptance"
+    ],
+    "independent_cleanup": {
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      },
+      "forward_baseline_restored": true,
+      "reverse_baseline_restored": true,
+      "credentials_retired": true
+    },
+    "scope": "Current normal compiled local owner journey only; no full stock/full-feature acceptance, no hosted/provider/physical/iOS/release claims."
+  },
+  "documentSemanticsRepair": {
+    "at": "2026-11-05T19:05:47.072109+00:00",
+    "status": "DOCUMENT1_LOCAL_QUALIFIED_NATIVE40_RUNNING",
+    "source_sha256": "b1ab9fa3bfb563d17d6285aeaeffbc80845ef39d521c5c0cfdcf028856df8e4d",
+    "source_inputs": 8442,
+    "proof": "MOBILE_UI_DOCUMENT_SEMANTICS_FIX.md",
+    "negative": "2realPO/transfer facts-semantics failures before app change;2earlier setup/SDK prerequisites are separate",
+    "focused_pass": 52,
+    "full_flutter": {
+      "pass": 1468,
+      "fail": 1,
+      "known_protected_staff_namespace_failure_only": true,
+      "skip": 0
+    },
+    "app_analysis_issues": 0,
+    "ui_kit": "Unchanged Supporting2 bytes; prior0-issue analysis reused",
+    "governance": {
+      "PASS": 114,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "SKIP": 0,
+      "NOT_APPLICABLE": 1
+    },
+    "android": {
+      "at": "2026-11-05T19:04:55.035087+00:00",
+      "status": "INDEPENDENT_DEBUG_APK_READBACK_PASS",
+      "source_sha256": "b1ab9fa3bfb563d17d6285aeaeffbc80845ef39d521c5c0cfdcf028856df8e4d",
+      "artifact": {
+        "path": "/private/tmp/letbuyy-document-android-5h21_3iu/merchant-local-debug.apk",
+        "sha256": "7a0027844f3870af78dbd0cefcdea088d1fa765bde9aba3083d737b448218c9d",
+        "bytes": 151911728
+      },
+      "actual_sha256": "7a0027844f3870af78dbd0cefcdea088d1fa765bde9aba3083d737b448218c9d",
+      "compiled_arm64_engine": true,
+      "debug_kernel_present": true,
+      "normal_main": true,
+      "installed": false,
+      "runtime_verified": false,
+      "scope": "Normal debug compile/archive only. Native40 is a separate fresh fixture/build."
+    },
+    "ios": {
+      "at": "2026-11-05T19:04:55.035087+00:00",
+      "status": "INDEPENDENT_IOS_DEBUG_ARTIFACT_READBACK_PASS",
+      "source_sha256": "b1ab9fa3bfb563d17d6285aeaeffbc80845ef39d521c5c0cfdcf028856df8e4d",
+      "artifact": {
+        "path": "/private/tmp/letbuyy-document-ios-w9dbcu48/Runner.app",
+        "files": 377,
+        "manifest_sha256": "5e9d1b9f0a0c11ee8a5796aa402331dcf00c5492ea35d00426a6dbc38531aab0"
+      },
+      "all_retained_files_equal": 377,
+      "bundle_id": "com.letbuyy.store",
+      "executable_architecture": "/private/tmp/letbuyy-document-ios-w9dbcu48/Runner.app/Runner: Mach-O 64-bit executable arm64",
+      "owned_simulator_remains_shutdown": true,
+      "scope": "Debug compile/archive only; no iOS launch, auth, backend, sync or release acceptance."
+    },
+    "boundary": "Only Card.semanticContainer=false and2existing-test cases.8,440other canonical inputs unchanged. No domain/command/API/backend changes.",
+    "native40": "Running; fresh ordinary Accounts login/current source APK/full original document+stock assertions. No accepted outcome yet."
+  },
+  "freshNative40": {
+    "at": "2026-11-05T19:23:06.575765+00:00",
+    "status": "TERMINAL_FAILED_BEFORE_STOCK_SETTERS_SEARCH_INPUT_REQUIRES_REPRODUCTION",
+    "run_id": "ef45eab9c346",
+    "runner_exit": 1,
+    "ui_exit": 1,
+    "pass": 0,
+    "fail": 1,
+    "skip": 0,
+    "source_sha256": "b1ab9fa3bfb563d17d6285aeaeffbc80845ef39d521c5c0cfdcf028856df8e4d",
+    "source_unchanged_at_terminal": true,
+    "apk_sha256": "5fbdfaaaac79fe3e2cf26e257d8fb2b90b4046535b741a9cb2ed216537fd6d72",
+    "retained_and_installed_apk_equal": true,
+    "document_semantics_fix_observed_on_android": true,
+    "po_transfer_stage": "Original full native/web document quantities and exact125.50cost observed; source-bound independent state/stock/immutable11receipt assertions completed. Compound run still failed later.",
+    "cause": "Inventory search entry did not equal full intended synthetic location string; no native adjustment POST occurred. Do not infer app vs controller focus cause until reproduction.",
+    "independent_cleanup": {
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      },
+      "reverse_baseline_restored": true,
+      "forward_baseline_restored": true,
+      "credentials_retired": true
+    },
+    "next": "Reproduce incremental search typing/focus and inspect scroll identity before any app or controller correction. Stock-setter and Staff native acceptance remains open."
+  },
+  "freshNative41": {
+    "at": "2026-11-05T19:48:19.605431+00:00",
+    "status": "BOUNDED_LOCAL_NATIVE_WEB_WAREHOUSE_AND_SETTERS_PASS",
+    "run_id": "abac88df509d",
+    "source_sha256": "2d70c5e307ef5fd263f30d85d5c905069e5d6f80d3d78ece70425c3459b69d60",
+    "source_inputs": 8442,
+    "native_dependency_sha256": "17c2f53685f885a2ba9488eb4cab420525ac20cbc38148eb4121e7022d8b39ed",
+    "native_dependency_entries": 4834,
+    "apk_sha256": "8dcb8ed60ac7582479ba67d8be95b6434b006831e03fbaa0199a700b18b2d3aa",
+    "apk": "/private/tmp/letbuyy-merchant-local-20261106-25feac2c/native-warehouse-v41/qualified-artifact/merchant-local-debug.apk",
+    "installed_bytes_independently_equal": true,
+    "compiled_workers": {
+      "run_id": "abac88df509d",
+      "runtime": "workerd",
+      "gateway_sha256": "555853cc5d735552c834697e7c4624af1cfb432af330d09bcdb36ca820b5dd34",
+      "bff_sha256": "4db6627fabda2fc4ff8140faadbd7cd5e2c315b3c7b427553a8b8630456ca8a5",
+      "entrypoints": [
+        "services/api-gateway/src/index.ts",
+        "services/mobile-bff/src/index.ts"
+      ],
+      "transport": "Owned Node HTTP and service-binding observer; no business response stubs",
+      "hosted": false
+    },
+    "runner_pass": 1,
+    "runner_fail": 0,
+    "runner_skip": 0,
+    "controller_exit": 0,
+    "source_and_controller_inputs_unchanged": true,
+    "synthetic_login_inputs_retired": true,
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    },
+    "next_markers_remaining": [],
+    "forward_baseline_restored": true,
+    "reverse_baseline_restored": true,
+    "staff_ui_status": "OBSERVED_OWNER_EMPTY_ROSTER_REQUIRED_INPUT_KEYBOARD_CANCEL_FRESH_READ",
+    "limits": "Normal local owner Android/browser/compiled-Worker/Postgres journey only. Synthetic customer hold prerequisite; no buyer-authenticated checkout, real staff effects, variants/allocation permutations, metadata edit/delete, iOS runtime, real provider, hosted, physical performance, signed release or full feature acceptance. Native38 remains unknown.",
+    "durable_evidence": "native41-accepted-local-warehouse/MANIFEST.json",
+    "independent_visual_review": [
+      "native-web-absolute-stock-read.png:4free/1reserved/5onhand",
+      "native-transfer-full-document-read.png:2requested/2shipped/2received",
+      "native-po-full-document-read.png:4ordered/4received/0remaining/unitcost125.50"
+    ],
+    "historical_native38": "unknown;unavailable original terminal remains unaccepted"
+  },
+  "historicalV10CurrentFields": {
+    "currentSource": "5efe4d38620d811426f223a2d316201c30f8ffeab2670c5846f66d74f6d577d6",
+    "currentChecks": {
+      "fullFlutter": {
+        "pass": 920,
+        "fail": 0,
+        "runnerExit": 0
+      },
+      "focusedWarehouse": {
+        "pass": 33,
+        "fail": 0
+      },
+      "analysisExit": 0,
+      "governance": {
+        "counts": {
+          "PASS": 114,
+          "FAIL": 0,
+          "BLOCKED": 0,
+          "SKIP": 0,
+          "NOT_APPLICABLE": 1
+        },
+        "exitCode": 0,
+        "advisories": 211,
+        "advisoryValidators": [
+          "branch-dispositions-validator.mjs"
+        ],
+        "scope": "Disposable clone; isolated branch-ref advisories are not integration/release proof."
+      },
+      "device": "Full warehousev10launching on verified fixed source; diagnosticfalse. No stock acceptance yet."
+    },
+    "remaining": [
+      "No warehouse metadata edit/delete or normal staff UI acceptance.",
+      "Inventory allocation/product cache/physical-on-hand and checkout reservation semantics remain separate.",
+      "Current screens expose generic product labels/location UUIDs; readable scoped relations follow.",
+      "No hosted/provider/iOS/signed release or full122feature certification."
+    ]
+  }
+}

@@ -3,7 +3,7 @@
 // Exact value hashes are reviewed in config/governance/secret-scan-exceptions.json.
 // Normal browser password sign-in through Identity, Merchant BFF and real Gateway/ownedDB.
 // Existing verified synthetic accounts are fixture inputs, not proof of email/inbox delivery.
-// Official Turnstile test keys exercise the widget/Siteverify transport, not production anti-bot.
+// Turnstile SDK/Siteverify are simulated by an explicit owned loopback provider.
 import { tmpdir as ownedTmpDir } from 'node:os';
 import assert from 'node:assert/strict';
 import test from 'node:test';
@@ -14,6 +14,7 @@ import { hashMerchantPassword } from '../../lib/merchant-password';
 import { Gateway, gatewayEnv, newIdentityKeys, INTERNAL_SECRET, tapRest } from './gateway-harness';
 import { requireOwnedDatabase, startOwnedClientRuntime, stopOwnedClientRuntime, type OwnedClientProcess } from './owned-db-support';
 import { newSyntheticTenant, seedSyntheticTenant } from './synthetic-tenant';
+import {createLocalTurnstileProvider} from './local-turnstile-provider.fixture';
 const owned = requireOwnedDatabase();
 async function freePort() {
     const s = createServer(); await new Promise<void>(r => s.listen(0,'127.0.0.1',r));
@@ -53,9 +54,11 @@ test('normal owner invitation, wrong-account recovery, verified staff consent, l
   NEXT_PUBLIC_ADMIN_URL:merchantOrigin,STAFF_INVITATION_SIGNING_SECRET:crypto.randomUUID()+crypto.randomUUID()}));
  let bridge:Server|undefined,identity:OwnedClientProcess|undefined,merchant:OwnedClientProcess|undefined;
  let browser:Awaited<ReturnType<typeof chromium.launch>>|undefined,page:Page|undefined,staffPage:Page|undefined;
+ let provider:Awaited<ReturnType<typeof createLocalTurnstileProvider>>|undefined;
  const calls:{path:string;status:number}[]=[],errors:string[]=[];
  const redact=(text:string)=>text.replace(/lb-staff-invite-v1\.[a-f0-9-]+\.[a-f0-9]+/gi,'[redacted-invitation]');
  try {
+  provider=await createLocalTurnstileProvider(owned);
   bridge=createServer(async(req,res)=>{
    const chunks:Buffer[]=[];for await(const c of req)chunks.push(Buffer.from(c));const body=Buffer.concat(chunks).toString();
    const headers=new Headers();for(const[k,v]of Object.entries(req.headers))if(typeof v==='string'&&!['host','connection','content-length','transfer-encoding','accept-encoding'].includes(k))headers.set(k,v);
@@ -65,14 +68,14 @@ test('normal owner invitation, wrong-account recovery, verified staff consent, l
   });
   await new Promise<void>(r=>bridge!.listen(0,'127.0.0.1',r));const apiOrigin=`http://127.0.0.1:${(bridge.address() as {port:number}).port}`;
   const shared={INTERNAL_API_SECRET:INTERNAL_SECRET,NEXT_PUBLIC_ACCOUNTS_URL:identityOrigin,NEXT_PUBLIC_ADMIN_URL:merchantOrigin};
-  identity=startOwnedClientRuntime(owned,'identity-next-production',{port:identityPort,env:{...shared,LETBUYY_API_URL:apiOrigin+'/v1',LETBUYY_IDENTITY_ISSUER:identityOrigin,
+  identity=startOwnedClientRuntime(owned,'identity-next-production',{port:identityPort,providerFixture:provider.profile,env:{...shared,LETBUYY_API_URL:apiOrigin+'/v1',LETBUYY_IDENTITY_ISSUER:identityOrigin,
    LETBUYY_IDENTITY_PRIVATE_JWK:JSON.stringify({...await exportJWK(keys.privateKey),alg:'ES256',kid:keys.kid}),
    ACCOUNTS_COOKIE_SECRET:crypto.randomUUID()+crypto.randomUUID(),COOKIE_DOMAIN:'',NEXT_PUBLIC_TURNSTILE_SITE_KEY:'1x00000000000000000000AA',
    TURNSTILE_SECRET_KEY:'1x0000000000000000000000000000000AA',LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false',NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false',RESEND_API_KEY:'',LETBUYY_EMAIL_API_KEY:''}});
   merchant=startOwnedClientRuntime(owned,'merchant-next-production',{port:merchantPort,env:{...shared,LETBUYY_API_BASE_URL:apiOrigin+'/v1'}});
   for(const app of [identity,merchant])app.stderr.on('data',d=>errors.push(redact(d.toString()).slice(0,700)));
   await Promise.all([ready(identityOrigin+'/login',identity),ready(merchantOrigin,merchant)]);
-  browser=await chromium.launch({headless:true});const owner=await browser.newContext();page=await owner.newPage();page.setDefaultTimeout(30_000);page.setDefaultNavigationTimeout(60_000);
+  browser=await chromium.launch({headless:true});const owner=await browser.newContext();await provider.attachBrowser(owner,[identityOrigin,merchantOrigin]);page=await owner.newPage();page.setDefaultTimeout(30_000);page.setDefaultNavigationTimeout(60_000);
   await signIn(page,identityOrigin,ownerEmail,password,merchantOrigin);
   await page.goto(`${merchantOrigin}/${tenant.subdomain}/settings/users`);
   await page.getByRole('button',{name:'Add staff',exact:true}).first().click();
@@ -84,7 +87,7 @@ test('normal owner invitation, wrong-account recovery, verified staff consent, l
   const link=await page.getByLabel('Invitation link',{exact:true}).inputValue();
   const id=owned.psql(`SELECT id FROM employees WHERE store_id='${tenant.siteId}';`);
   assert.equal(owned.psql(`SELECT status||'|'||coalesce(user_id::text,'unlinked') FROM employees WHERE id='${id}';`),'invited|unlinked');
-  const staff=await browser.newContext();staffPage=await staff.newPage();staffPage.setDefaultTimeout(30_000);staffPage.setDefaultNavigationTimeout(60_000);
+  const staff=await browser.newContext();await provider.attachBrowser(staff,[identityOrigin,merchantOrigin]);staffPage=await staff.newPage();staffPage.setDefaultTimeout(30_000);staffPage.setDefaultNavigationTimeout(60_000);
   // First use the wrong real account, then switch through the existing Identity logout/login UI.
   await signIn(staffPage,identityOrigin,ownerEmail,password,merchantOrigin);
   await staffPage.goto(link);await expect(staffPage.getByText('Invitation unavailable',{exact:true})).toBeVisible();
@@ -118,10 +121,12 @@ test('normal owner invitation, wrong-account recovery, verified staff consent, l
   const [removed]=await Promise.all([page.waitForResponse(r=>r.url().endsWith('/users/'+id)&&r.request().method()==='DELETE'),page.getByRole('button',{name:'Remove staff',exact:true}).click()]);assert.equal(removed.status(),200);
   const after=await staff.request.get(`${merchantOrigin}/api/stores/${tenant.subdomain}/products`);assert.ok([403,404].includes(after.status()));
   await staff.close();await owner.close();
+  assert.ok(provider.counts.verified>=3);
+  assert.equal(provider.counts.browserExternalRefused,0);
  }catch(error){
   console.info(JSON.stringify({diagnostic:'staff_invitation_browser_failure',ownerPath:page?new URL(page.url()).pathname:null,staffPath:staffPage?new URL(staffPage.url()).pathname:null,
    ownerText:redact(await page?.locator('body').innerText().catch(()=> '') || ''),staffText:redact(await staffPage?.locator('body').innerText().catch(()=> '') || ''),gatewayCalls:calls.slice(-25),errors:errors.slice(-10)}));
   await page?.screenshot({path:`${ownedTmpDir()}/letbuyy-invitation-owner-${owned.runId}.png`,mask:[page.getByLabel('Invitation link',{exact:true})]}).catch(()=>{});throw error;
  }finally{await browser?.close();await stopOwnedClientRuntime(merchant);await stopOwnedClientRuntime(identity);await gateway.settle();
-  if(bridge){bridge.closeAllConnections();await new Promise<void>(r=>bridge!.close(()=>r()));}}
+  if(bridge){bridge.closeAllConnections();await new Promise<void>(r=>bridge!.close(()=>r()));}await provider?.close();}
 });

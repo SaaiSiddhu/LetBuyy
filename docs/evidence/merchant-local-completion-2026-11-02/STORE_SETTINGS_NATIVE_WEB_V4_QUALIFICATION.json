@@ -1,0 +1,174 @@
+{
+  "run_id": "76f585b6be48",
+  "status": "LOCALLY ACCEPTED for this explicit owner settings roundtrip only",
+  "source_sha256": "c959c19ac3dcd5736570eae37278d6a04c20c6f1d93fb365110a3ef346df831a",
+  "apk_sha256": "932e1ba5410030a7668cf5873f9ffddad1502751ace3aeac66118ec333946850",
+  "passed": 1,
+  "failed": 0,
+  "skipped": 0,
+  "cancelled": 0,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "source_archive": {
+    "source_sha256": "c959c19ac3dcd5736570eae37278d6a04c20c6f1d93fb365110a3ef346df831a",
+    "apk_sha256": "932e1ba5410030a7668cf5873f9ffddad1502751ace3aeac66118ec333946850",
+    "files": 4591,
+    "archive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-settings-v4/qualified-source",
+    "scope": "Exact local observed source; no production records or authentication material exported."
+  },
+  "observations": [
+    "Normal native owner sign-in and actual Dashboard Store Details navigation",
+    "Three identical original-key name attempts committed once; every reply dropped",
+    "Actual scrolled form kept unconfirmed guidance visible and repeat Save disabled while scrolling remained available",
+    "Explicit confirmed current read recovered the name without another mutation",
+    "Settings overview card and switcher showed the refreshed native name",
+    "Normal web sign-in read the native name and General saved name/SEO",
+    "Concurrent stale tab returned409, retained its draft, disabled Save, allowed cancel/review then explicit reload",
+    "Wrong-actor409 and wrong-origin403 BFF requests caused no database effect",
+    "Business details saved legal name",
+    "Preferences read General metadata and saved final SEO",
+    "Billing GSTIN used its observed canonical version and fresh readback",
+    "Native SEO observed exact web Preferences values, saved both as empty text and acknowledged fresh readback",
+    "Fresh native Store Details observed exact web name with retained contact",
+    "Final normal web read observed empty SEO values",
+    "Sites version3 to9 proves exactly six effects; contact/trade/address retained; legal name and GSTIN/state match expected writes"
+  ],
+  "transport": [
+    {
+      "source": "actual-mobile-bff",
+      "status": 200,
+      "wire_status": 503
+    },
+    {
+      "source": "actual-mobile-bff",
+      "status": 200,
+      "wire_status": 503
+    },
+    {
+      "source": "actual-mobile-bff",
+      "status": 200,
+      "wire_status": 503
+    },
+    {
+      "source": "actual-identity",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "status": 409,
+      "wire_status": 409
+    },
+    {
+      "source": "actual-identity",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "status": 200,
+      "wire_status": 200
+    }
+  ],
+  "persisted_synthetic": {
+    "name": "Synthetic web renamed store",
+    "meta_title": "",
+    "meta_description": "",
+    "version": 9,
+    "legal_name": "Synthetic verified local business",
+    "gstin": "29ABCDE1234F1Z5",
+    "gst_state_code": "29",
+    "business_profile": {
+      "email": "synthetic-contact@example.invalid",
+      "trade_name": "Retained synthetic trade"
+    },
+    "invoice_address": {
+      "country": "IN",
+      "attention": "Retained synthetic attention"
+    }
+  },
+  "mobile_full_suite": {
+    "log": "flutter-full-v18.log",
+    "passed": 858,
+    "analysis": "flutter-analysis-v13.log clean",
+    "source_binding": "App source unchanged through compiled artifact and terminal source-snapshot checks; suite ran while same app source was frozen."
+  },
+  "evidence": [
+    {
+      "path": "settings-runtime-v4/native-overview-updated.png",
+      "sha256": "6609d5107c6268c6e2fb7d65b59106d59ef67736a1e0936517f445b4dd0b5f90"
+    },
+    {
+      "path": "settings-runtime-v4/native-read-web-seo.png",
+      "sha256": "a11a5ad1cf8c4f93293847fddb22045590bf06e792e355a37d4368aeb45df591"
+    },
+    {
+      "path": "settings-runtime-v4/native-read-web-store-name.png",
+      "sha256": "4935496141517420d6897195488fd658526b9aad9a566491fc75cc337c3ec620"
+    },
+    {
+      "path": "settings-runtime-v4/native-scroll-recovery-visible.png",
+      "sha256": "9dd1e46dfffd5203c86d91d718a74f2a8ac63fac8a0670ed9e1fca509cb4fcc2"
+    },
+    {
+      "path": "settings-runtime-v4/native-scrolled-save-unconfirmed.png",
+      "sha256": "ddb5402fbb5f17ebf66cef7b6fed1edd7292dce6c5c109baf2a236928c35ba09"
+    },
+    {
+      "path": "settings-runtime-v4/native-seo-cleared.png",
+      "sha256": "cb11c9d5e0e50af5b8f332e35f889d766b20493a55ad6d3b5a0b20439b272dd6"
+    },
+    {
+      "path": "settings-runtime-v4/native-store-read-recovered.png",
+      "sha256": "7d4ec1ffd8221a2e2402378f8f320fc13508f43676feb67ad9de24b09ea93299"
+    },
+    {
+      "path": "settings-runtime-v4/web-billing-gstin-saved.png",
+      "sha256": "93dee1cbefbe2505da704d65d81c92ae563a2cd244cc8ecccf651b9d61912a99"
+    },
+    {
+      "path": "settings-runtime-v4/web-business-saved.png",
+      "sha256": "b8bfe45338c07b226f79c802e061c557de7841c5f5a797945356ce4e970da003"
+    },
+    {
+      "path": "settings-runtime-v4/web-preferences-saved.png",
+      "sha256": "91dda4455ebe3dc2df682cb3db9787409de3a26dff3f378e1084a635fad7bfcc"
+    },
+    {
+      "path": "settings-runtime-v4/web-read-native-seo-clear.png",
+      "sha256": "c126e78e2d7b6eac3e23cc9b40dd6473c0817d5b64696fdf968b42a341bd9daa"
+    },
+    {
+      "path": "settings-runtime-v4/web-settings-saved.png",
+      "sha256": "6350cbef5234e45f17d953fe5081542139a768390e66e3a33f7290e795bfb640"
+    },
+    {
+      "path": "settings-runtime-v4/web-stale-draft-retained.png",
+      "sha256": "708942d6c7d3efa799ba4c1b5109a2962d6f2d376c24dfb805e259b0853e97f6"
+    }
+  ],
+  "limits": [
+    "No durable store-profile business receipts or restart recovery certification",
+    "Native malformed-success revision acknowledgement still needs a fail-closed service regression/repair",
+    "Native contact CUD has widget proof; this device run proves contact retention",
+    "No all-staff, public buyer renderer, remaining settings, hosted/provider/iOS/release or whole122 acceptance",
+    "New schema numbering remains pending; no category417 reconciliation performed"
+  ],
+  "binary_retention": "Installed SHA-256 and exact source were recorded during qualification. Original APK bytes were not separately retained before a later build overwrote the common output path. Do not label a rebuild as that original binary."
+}

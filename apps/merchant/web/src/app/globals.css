@@ -1678,12 +1678,15 @@ body {
   right: 0;
   min-width: 248px;
   max-width: 276px;
+  max-height: calc(100dvh - var(--admin-header-height) - var(--lb-space-4));
   background: var(--bg-secondary);
   border: 1px solid color-mix(in srgb, var(--border) 88%, transparent);
   border-radius: 12px;
   box-shadow: 0 16px 36px rgb(15 23 42 / 16%), 0 1px 0 rgb(255 255 255 / 60%) inset;
   z-index: 100;
   overflow: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   animation: dropdownFadeIn 0.15s ease-out;
 }
 

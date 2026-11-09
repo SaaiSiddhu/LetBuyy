@@ -1,221 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import 'package:provider/provider.dart';
 import 'package:letbuyy_models/letbuyy_models.dart' hide JsonMap;
-import '../../services/api_client.dart';
 import '../../services/inventory_service.dart';
 import '../../services/product_service.dart';
 import '../../theme/app_theme_colors.dart';
 import 'merchant_store_view.dart';
 import 'barcode_scanner_sheet.dart';
-
-/// A bounded selector over current canonical readers, with no option cache.
-Future<T?> _choose<T>(
-  BuildContext context,
-  MerchantStoreView view,
-  String title,
-  Future<PaginatedResponse<T>> Function(int, String) read,
-  String Function(T) label,
-) => showModalBottomSheet<T>(
-  context: context,
-  isScrollControlled: true,
-  builder: (_) => guardMerchantStoreView(
-    view,
-    _WarehouseChoices<T>(view: view, title: title, read: read, label: label),
-  ),
-);
-
-class _WarehouseChoices<T> extends StatefulWidget {
-  const _WarehouseChoices({
-    required this.view,
-    required this.title,
-    required this.read,
-    required this.label,
-  });
-  final MerchantStoreView view;
-  final String title;
-  final Future<PaginatedResponse<T>> Function(int, String) read;
-  final String Function(T) label;
-  @override
-  State<_WarehouseChoices<T>> createState() => _WarehouseChoicesState<T>();
-}
-
-class _WarehouseChoicesState<T> extends State<_WarehouseChoices<T>> {
-  final _search = TextEditingController();
-  String _query = '';
-  int _page = 1, _generation = 0;
-  bool _busy = true, _more = false;
-  String? _error;
-  int? _total;
-  List<T> _rows = [];
-  @override
-  void initState() {
-    super.initState();
-    _load();
-  }
-
-  @override
-  void dispose() {
-    _search.dispose();
-    super.dispose();
-  }
-
-  Future<void> _load() async {
-    final generation = ++_generation;
-    setState(() {
-      _busy = true;
-      _error = null;
-      _rows = [];
-      _total = null;
-      _more = false;
-    });
-    try {
-      final result = await widget.read(_page, _query);
-      if (!mounted ||
-          generation != _generation ||
-          !merchantStoreViewCurrent(context, widget.view))
-        return;
-      setState(() {
-        _rows = result.data;
-        _more = result.hasMore;
-        _total = result.meta['total_is_exact'] == true ? result.total : null;
-        _busy = false;
-      });
-    } catch (_) {
-      if (mounted &&
-          generation == _generation &&
-          merchantStoreViewCurrent(context, widget.view))
-        setState(() {
-          _error =
-              'Choices could not be loaded. Check your connection and current store access.';
-          _busy = false;
-        });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = AppThemeColors.of(context);
-    return FractionallySizedBox(
-      heightFactor: .9,
-      child: Material(
-        color: colors.card,
-        child: SafeArea(
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(
-              16,
-              16,
-              16,
-              MediaQuery.of(context).viewInsets.bottom + 12,
-            ),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        widget.title,
-                        style: TextStyle(
-                          color: colors.textPrimary,
-                          fontSize: 20,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                    IconButton(
-                      tooltip: 'Close choices',
-                      onPressed: () => Navigator.pop(context),
-                      icon: const Icon(Icons.close),
-                    ),
-                  ],
-                ),
-                TextField(
-                  controller: _search,
-                  maxLength: 80,
-                  onSubmitted: (_) {
-                    _query = _search.text.trim();
-                    _page = 1;
-                    _load();
-                  },
-                  decoration: InputDecoration(
-                    labelText: 'Search ${widget.title.toLowerCase()}',
-                    suffixIcon: IconButton(
-                      tooltip: 'Search choices',
-                      onPressed: () {
-                        _query = _search.text.trim();
-                        _page = 1;
-                        _load();
-                      },
-                      icon: const Icon(Icons.search),
-                    ),
-                  ),
-                ),
-                Row(
-                  children: [
-                    IconButton(
-                      tooltip: 'Previous choices',
-                      onPressed: _busy || _page == 1
-                          ? null
-                          : () {
-                              _page--;
-                              _load();
-                            },
-                      icon: const Icon(Icons.chevron_left),
-                    ),
-                    Expanded(
-                      child: Text(
-                        _total == null
-                            ? 'Page $_page'
-                            : '$_total matching choices · Page $_page',
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    IconButton(
-                      tooltip: 'Next choices',
-                      onPressed: _busy || !_more
-                          ? null
-                          : () {
-                              _page++;
-                              _load();
-                            },
-                      icon: const Icon(Icons.chevron_right),
-                    ),
-                  ],
-                ),
-                if (_busy) const LinearProgressIndicator(),
-                if (_error != null) ...[
-                  Text(_error!),
-                  TextButton(
-                    onPressed: _load,
-                    child: const Text('Retry choices'),
-                  ),
-                ],
-                Expanded(
-                  child: ListView(
-                    children: [
-                      if (!_busy && _error == null && _rows.isEmpty)
-                        const ListTile(
-                          title: Text('No matching choices on this page.'),
-                        ),
-                      for (final row in _rows)
-                        ListTile(
-                          title: Text(widget.label(row)),
-                          trailing: const Icon(Icons.chevron_right),
-                          onTap: () {
-                            if (merchantStoreViewCurrent(context, widget.view))
-                              Navigator.pop(context, row);
-                          },
-                        ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
+import 'merchant_option_picker.dart';
 
 class _DraftLine {
   final quantity = TextEditingController(text: '1'),
@@ -251,7 +43,23 @@ class _WarehouseCreateFormState extends State<WarehouseCreateForm> {
   DateTime? _expected;
   bool _busy = false, _readingProduct = false;
   String? _error;
-  bool get _current => merchantStoreViewCurrent(context, widget.view);
+  bool get _current =>
+      mounted && merchantStoreViewCurrent(context, widget.view);
+  bool get _hasChanges =>
+      _location != null ||
+      _destination != null ||
+      _supplier != null ||
+      _expected != null ||
+      _notes.text.isNotEmpty ||
+      _lines.length != 1 ||
+      _lines.any(
+        (line) =>
+            line.product != null ||
+            line.variant != null ||
+            line.quantity.text != '1' ||
+            line.cost.text != '0',
+      );
+
   @override
   void dispose() {
     for (final line in [..._lines, ..._removedLines]) line.dispose();
@@ -263,7 +71,7 @@ class _WarehouseCreateFormState extends State<WarehouseCreateForm> {
     if (_busy || !_current) return;
     setState(() => _busy = true);
     try {
-      final result = await _choose<InventoryLocationContract>(
+      final result = await chooseMerchantOption<InventoryLocationContract>(
         context,
         widget.view,
         'Locations',
@@ -291,7 +99,7 @@ class _WarehouseCreateFormState extends State<WarehouseCreateForm> {
     if (_busy || !_current) return;
     setState(() => _busy = true);
     try {
-      final result = await _choose<InventorySupplierContract>(
+      final result = await chooseMerchantOption<InventorySupplierContract>(
         context,
         widget.view,
         'Suppliers',
@@ -333,7 +141,7 @@ class _WarehouseCreateFormState extends State<WarehouseCreateForm> {
         id = match.productId;
         variantId = match.variantId;
       } else {
-        final choice = await _choose<ProductContract>(
+        final choice = await chooseMerchantOption<ProductContract>(
           context,
           widget.view,
           'Products',
@@ -395,7 +203,7 @@ class _WarehouseCreateFormState extends State<WarehouseCreateForm> {
   }
 
   Future<void> _submit() async {
-    if (_busy || !_current) return;
+    if (_busy || !_current || !isLetbuyySurfaceCurrent(context)) return;
     setState(() {
       _busy = true;
       _error = null;
@@ -455,18 +263,22 @@ class _WarehouseCreateFormState extends State<WarehouseCreateForm> {
         WarehouseCommandIntent.purchaseOrder(input);
       else
         WarehouseCommandIntent.transfer(input as InventoryTransferInput);
-      final review = await showDialog<bool>(
-        context: context,
-        builder: (_) => guardMerchantStoreView(
-          widget.view,
-          AlertDialog(
-            title: Text(
-              widget.transfer ? 'Review transfer' : 'Review purchase order',
-            ),
-            content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
+      final review = await Navigator.of(context).push<bool>(
+        MaterialPageRoute<bool>(
+          settings: RouteSettings(
+            name: widget.transfer
+                ? '/inventory/transfer-create-review'
+                : '/inventory/purchase-order-create-review',
+          ),
+          builder: (reviewContext) => guardMerchantStoreView(
+            widget.view,
+            LetbuyyEditorScaffold(
+              title: widget.transfer
+                  ? 'Review transfer'
+                  : 'Review purchase order',
+              hasChanges: false,
+              body: ListView(
+                padding: const EdgeInsets.all(LetbuyySpacingTokens.space16),
                 children: [
                   Text(
                     widget.transfer
@@ -484,23 +296,30 @@ class _WarehouseCreateFormState extends State<WarehouseCreateForm> {
                     ),
                 ],
               ),
+              actions: OverflowBar(
+                spacing: 12,
+                overflowSpacing: 12,
+                children: [
+                  TextButton(
+                    onPressed: () =>
+                        completeLetbuyySurface(reviewContext, false),
+                    child: const Text('Back to draft'),
+                  ),
+                  FilledButton(
+                    onPressed: () {
+                      if (_current) completeLetbuyySurface(reviewContext, true);
+                    },
+                    child: const Text('Confirm creation'),
+                  ),
+                ],
+              ),
             ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: const Text('Back to draft'),
-              ),
-              FilledButton(
-                onPressed: () {
-                  if (_current) Navigator.pop(context, true);
-                },
-                child: const Text('Confirm creation'),
-              ),
-            ],
+            fullPage: true,
           ),
         ),
       );
-      if (mounted && _current && review == true) Navigator.pop(context, input);
+      if (mounted && _current && review == true)
+        completeLetbuyySurface(context, input);
     } on FormatException {
       if (mounted && _current)
         setState(
@@ -515,133 +334,113 @@ class _WarehouseCreateFormState extends State<WarehouseCreateForm> {
   @override
   Widget build(BuildContext context) {
     final colors = AppThemeColors.of(context);
-    return FractionallySizedBox(
-      heightFactor: .94,
-      child: Material(
-        color: colors.card,
-        child: SafeArea(
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(
-              16,
-              16,
-              16,
-              MediaQuery.of(context).viewInsets.bottom + 12,
-            ),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Expanded(
+    return AnimatedBuilder(
+      animation: Listenable.merge([
+        _notes,
+        for (final line in _lines) ...[line.quantity, line.cost],
+      ]),
+      builder: (context, _) => LetbuyyEditorScaffold(
+        title: widget.transfer ? 'New transfer' : 'New purchase order',
+        hasChanges: _hasChanges,
+        currentHasChanges: () => _hasChanges,
+        currentIsBusy: () => _busy,
+        isBusy: _busy,
+        body: Column(
+          children: [
+            if (_readingProduct)
+              const LinearProgressIndicator(
+                semanticsLabel: 'Loading current product',
+              ),
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.all(LetbuyySpacingTokens.space16),
+                children: [
+                  if (_error != null)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
                       child: Text(
-                        widget.transfer ? 'New transfer' : 'New purchase order',
-                        style: TextStyle(
-                          color: colors.textPrimary,
-                          fontSize: 20,
-                          fontWeight: FontWeight.w700,
-                        ),
+                        _error!,
+                        style: TextStyle(color: colors.error),
                       ),
                     ),
-                    IconButton(
-                      tooltip: 'Close draft',
-                      onPressed: _busy ? null : () => Navigator.pop(context),
-                      icon: const Icon(Icons.close),
-                    ),
-                  ],
-                ),
-                if (_readingProduct) const LinearProgressIndicator(),
-                Expanded(
-                  child: ListView(
-                    children: [
-                      if (_error != null)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          child: Text(
-                            _error!,
-                            style: TextStyle(color: colors.error),
-                          ),
-                        ),
-                      OutlinedButton.icon(
-                        onPressed: _busy ? null : () => _locationChoice(),
-                        icon: const Icon(Icons.warehouse_outlined),
-                        label: Text(
-                          _location?.name ??
-                              (widget.transfer
-                                  ? 'Choose source location'
-                                  : 'Choose receiving location'),
-                        ),
-                      ),
-                      if (widget.transfer)
-                        OutlinedButton.icon(
-                          onPressed: _busy
-                              ? null
-                              : () => _locationChoice(destination: true),
-                          icon: const Icon(Icons.local_shipping_outlined),
-                          label: Text(
-                            _destination?.name ?? 'Choose destination location',
-                          ),
-                        ),
-                      if (!widget.transfer) ...[
-                        OutlinedButton(
-                          onPressed: _busy ? null : _supplierChoice,
-                          child: Text(
-                            _supplier?.name ?? 'Choose supplier (optional)',
-                          ),
-                        ),
-                        if (_supplier != null)
-                          TextButton(
-                            onPressed: _busy
-                                ? null
-                                : () => setState(() => _supplier = null),
-                            child: const Text('Use no supplier'),
-                          ),
-                        OutlinedButton(
-                          onPressed: _busy ? null : _arrival,
-                          child: Text(
-                            _expected == null
-                                ? 'Expected arrival (optional)'
-                                : 'Expected ${_expected!.day}/${_expected!.month}/${_expected!.year}',
-                          ),
-                        ),
-                        if (_expected != null)
-                          TextButton(
-                            onPressed: _busy
-                                ? null
-                                : () => setState(() => _expected = null),
-                            child: const Text('Clear expected arrival'),
-                          ),
-                      ],
-                      for (var i = 0; i < _lines.length; i++)
-                        _lineCard(_lines[i], i, colors),
-                      if (_lines.length < 100)
-                        OutlinedButton.icon(
-                          onPressed: _busy
-                              ? null
-                              : () => setState(() => _lines.add(_DraftLine())),
-                          icon: const Icon(Icons.add),
-                          label: const Text('Add product line'),
-                        ),
-                      TextField(
-                        controller: _notes,
-                        maxLength: 2000,
-                        enabled: !_busy,
-                        decoration: const InputDecoration(labelText: 'Notes'),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  width: double.infinity,
-                  child: FilledButton.icon(
-                    onPressed: _busy ? null : _submit,
-                    icon: const Icon(Icons.fact_check_outlined),
+                  OutlinedButton.icon(
+                    onPressed: _busy ? null : () => _locationChoice(),
+                    icon: const Icon(Icons.warehouse_outlined),
                     label: Text(
-                      widget.transfer
-                          ? 'Create transfer'
-                          : 'Create purchase order',
+                      _location?.name ??
+                          (widget.transfer
+                              ? 'Choose source location'
+                              : 'Choose receiving location'),
                     ),
                   ),
-                ),
-              ],
+                  if (widget.transfer)
+                    OutlinedButton.icon(
+                      onPressed: _busy
+                          ? null
+                          : () => _locationChoice(destination: true),
+                      icon: const Icon(Icons.local_shipping_outlined),
+                      label: Text(
+                        _destination?.name ?? 'Choose destination location',
+                      ),
+                    ),
+                  if (!widget.transfer) ...[
+                    OutlinedButton(
+                      onPressed: _busy ? null : _supplierChoice,
+                      child: Text(
+                        _supplier?.name ?? 'Choose supplier (optional)',
+                      ),
+                    ),
+                    if (_supplier != null)
+                      TextButton(
+                        onPressed: _busy
+                            ? null
+                            : () => setState(() => _supplier = null),
+                        child: const Text('Use no supplier'),
+                      ),
+                    OutlinedButton(
+                      onPressed: _busy ? null : _arrival,
+                      child: Text(
+                        _expected == null
+                            ? 'Expected arrival (optional)'
+                            : 'Expected ${_expected!.day}/${_expected!.month}/${_expected!.year}',
+                      ),
+                    ),
+                    if (_expected != null)
+                      TextButton(
+                        onPressed: _busy
+                            ? null
+                            : () => setState(() => _expected = null),
+                        child: const Text('Clear expected arrival'),
+                      ),
+                  ],
+                  for (var i = 0; i < _lines.length; i++)
+                    _lineCard(_lines[i], i, colors),
+                  if (_lines.length < 100)
+                    OutlinedButton.icon(
+                      onPressed: _busy
+                          ? null
+                          : () => setState(() => _lines.add(_DraftLine())),
+                      icon: const Icon(Icons.add),
+                      label: const Text('Add product line'),
+                    ),
+                  TextField(
+                    controller: _notes,
+                    maxLength: 2000,
+                    enabled: !_busy,
+                    decoration: const InputDecoration(labelText: 'Notes'),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        actions: SizedBox(
+          width: double.infinity,
+          child: FilledButton.icon(
+            onPressed: _busy ? null : _submit,
+            icon: const Icon(Icons.fact_check_outlined),
+            label: Text(
+              widget.transfer ? 'Create transfer' : 'Create purchase order',
             ),
           ),
         ),
@@ -650,6 +449,9 @@ class _WarehouseCreateFormState extends State<WarehouseCreateForm> {
   }
 
   Widget _lineCard(_DraftLine line, int index, AppThemeColors colors) => Card(
+    // Editable quantities, product selection and scanner are distinct controls.
+    // Merging them reports the full card as the quantity's Android focus rect.
+    semanticContainer: false,
     key: ObjectKey(line),
     child: Padding(
       padding: const EdgeInsets.all(12),
@@ -691,26 +493,19 @@ class _WarehouseCreateFormState extends State<WarehouseCreateForm> {
             label: Text('Scan barcode for line ${index + 1}'),
           ),
           if (line.product != null && line.product!.variants.isNotEmpty)
-            DropdownButtonFormField<String>(
+            LetbuyyChoiceField<String>(
               key: ValueKey(
                 'variant-$index-${line.product!.id}-${line.variant?.id}',
               ),
-              isExpanded: true,
-              initialValue: line.variant?.id,
-              decoration: const InputDecoration(
-                labelText: 'Variant (required)',
-              ),
-              items: line.product!.variants
-                  .map(
-                    (v) => DropdownMenuItem(
-                      value: v.id,
-                      child: Text(
-                        '${v.title}${v.sku == null ? '' : ' · ${v.sku}'}',
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  )
-                  .toList(),
+              value: line.variant?.id,
+              label: 'Variant (required)',
+              choices: [
+                for (final v in line.product!.variants)
+                  LetbuyyChoice(
+                    value: v.id,
+                    label: '${v.title}${v.sku == null ? '' : ' · ${v.sku}'}',
+                  ),
+              ],
               onChanged: _busy
                   ? null
                   : (id) => setState(
@@ -719,22 +514,28 @@ class _WarehouseCreateFormState extends State<WarehouseCreateForm> {
                       ),
                     ),
             ),
-          TextField(
-            key: ValueKey('warehouse-quantity-$index'),
-            controller: line.quantity,
-            enabled: !_busy,
-            keyboardType: TextInputType.number,
-            decoration: const InputDecoration(labelText: 'Quantity'),
+          Semantics(
+            container: true,
+            child: TextField(
+              key: ValueKey('warehouse-quantity-$index'),
+              controller: line.quantity,
+              enabled: !_busy,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(labelText: 'Quantity'),
+            ),
           ),
           if (!widget.transfer)
-            TextField(
-              key: ValueKey('warehouse-cost-$index'),
-              controller: line.cost,
-              enabled: !_busy,
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
+            Semantics(
+              container: true,
+              child: TextField(
+                key: ValueKey('warehouse-cost-$index'),
+                controller: line.cost,
+                enabled: !_busy,
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
+                decoration: const InputDecoration(labelText: 'Unit cost (INR)'),
               ),
-              decoration: const InputDecoration(labelText: 'Unit cost (INR)'),
             ),
         ],
       ),

@@ -1,0 +1,13 @@
+{
+  "started_at": "2026-11-07T19:01:03.211647+00:00",
+  "supervisor_pid": 48310,
+  "source": "merchant-native-selection-source-v91",
+  "source_sha256": "5b655a37c2bcc1b2f6e79cea831340addb0329c8b4b60b4a1f4aff33bafdec6c",
+  "command": [
+    "node",
+    "--test",
+    "test/merchant_webm_document.test.mjs"
+  ],
+  "status": "RUNNING",
+  "child_pid": 48341
+}

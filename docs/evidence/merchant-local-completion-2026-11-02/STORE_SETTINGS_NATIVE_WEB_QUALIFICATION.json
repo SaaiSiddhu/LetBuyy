@@ -1,0 +1,84 @@
+{
+  "run_id": "d2bb7b806972",
+  "source_sha256": "1efe9d3bdf50adfc54ad33f0ff8af8e661b7ea33ebef86ff4da596b25b95d960",
+  "apk_sha256": "0610b5a11fa46878d4048886de79a9ac9a95604000bb28807cdc077010f5970d",
+  "passed": 1,
+  "failed": 0,
+  "skipped": 0,
+  "cancelled": 0,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "source_archive": {
+    "source_sha256": "1efe9d3bdf50adfc54ad33f0ff8af8e661b7ea33ebef86ff4da596b25b95d960",
+    "apk_sha256": "0610b5a11fa46878d4048886de79a9ac9a95604000bb28807cdc077010f5970d",
+    "files": 4590,
+    "archive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-settings-v2/qualified-source",
+    "scope": "Exact observed local Store Details/SEO source including SQL forward/rollback/config inputs. No production rows or authentication material exported."
+  },
+  "mobile_full_suite": {
+    "log": "flutter-full-v15.log",
+    "passed": 854,
+    "source_binding": "Executed while the device snapshot remained frozen; every snapshotted input checked unchanged at final browser/native assertions."
+  },
+  "observations": [
+    "Normal local native password sign-in through actual Identity/BFF/Gateway",
+    "Normal dashboard Store Details navigation; latest shared-theme colors visually inspected",
+    "Three automatic original-key name attempts committed once; all replies dropped; actual unconfirmed UI and disabled Save observed",
+    "Explicit confirmed current read recovered the native name without another mutation",
+    "Existing synthetic contact/trade/address metadata retained across changes",
+    "Normal web sign-in read native name and saved a new name/title/description",
+    "Native SEO read exact web title/description and saved both as explicit empty text",
+    "Fresh native Store Details read exact web name",
+    "Normal web reload observed empty SEO title and description",
+    "Database site version advanced3 to6: exactly three effects despite five PATCH transport attempts"
+  ],
+  "transport": [
+    {
+      "source": "actual-mobile-bff",
+      "status": 200,
+      "wire_status": 503
+    },
+    {
+      "source": "actual-mobile-bff",
+      "status": 200,
+      "wire_status": 503
+    },
+    {
+      "source": "actual-mobile-bff",
+      "status": 200,
+      "wire_status": 503
+    },
+    {
+      "source": "actual-identity",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "status": 200,
+      "wire_status": 200
+    }
+  ],
+  "evidence": [
+    "settings-runtime-v2/native-store-save-unconfirmed.png",
+    "settings-runtime-v2/native-store-read-recovered.png",
+    "settings-runtime-v2/web-settings-saved.png",
+    "settings-runtime-v2/native-read-web-seo.png",
+    "settings-runtime-v2/native-seo-cleared.png",
+    "settings-runtime-v2/native-read-web-store-name.png",
+    "settings-runtime-v2/web-read-native-seo-clear.png"
+  ],
+  "limits": [
+    "Optimistic store-version conflicts/stale web editor behavior remain open",
+    "Native contact CUD has synthetic widget proof; this device journey proves contact preservation, not all contact edits",
+    "Settings overview retained a stale store card while its switcher showed the new name; a follow-up repair is required",
+    "Public buyer rendering, staff permutations, remaining settings, hosted/provider/iOS/release and whole122 acceptance are separate",
+    "Category417 numbering conflict still awaits the prepared human decision"
+  ]
+}

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../theme/app_theme_colors.dart';
+import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 
 enum FeatureAvailability {
   available,
@@ -38,68 +38,23 @@ class CapabilityGate extends StatelessWidget {
       return child ?? const SizedBox.shrink();
     }
 
-    final colors = AppThemeColors.of(context);
     final safeTitle = _safeCopy(title, _titleForAvailability(availability));
     final safeDescription = _safeCopy(
       description,
       _descriptionForAvailability(availability),
     );
-
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: colors.card,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: colors.glassMediumBorder),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 72,
-                  height: 72,
-                  decoration: BoxDecoration(
-                    color: colors.accent.withValues(alpha: 0.12),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(icon, color: colors.accent, size: 34),
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  safeTitle,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: colors.textPrimary,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  safeDescription,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: colors.textSecondary,
-                    fontSize: 14,
-                    height: 1.4,
-                  ),
-                ),
-                if (primaryActionLabel != null && onPrimaryAction != null) ...[
-                  const SizedBox(height: 20),
-                  FilledButton(
-                    onPressed: onPrimaryAction,
-                    child: Text(_safeCopy(primaryActionLabel, 'Continue')),
-                  ),
-                ],
-              ],
-            ),
-          ),
-        ),
-      ),
+    return EmptyState(
+      title: safeTitle,
+      message: safeDescription,
+      icon: icon,
+      actionLabel: primaryActionLabel == null
+          ? null
+          : _safeCopy(primaryActionLabel, 'Continue'),
+      onAction: primaryActionLabel == null || onPrimaryAction == null
+          ? null
+          : () {
+              if (isLetbuyySurfaceCurrent(context)) onPrimaryAction!();
+            },
     );
   }
 

@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'authentication_browser.dart';
+import '../config/app_config.dart';
 import 'merchant_auth_contract.g.dart';
 import 'store_auth_service.dart';
 
@@ -30,6 +31,10 @@ class MerchantBrowserAuth extends ChangeNotifier {
     http.Client? httpClient,
   }) : _auth = auth,
        _identity = Uri.parse(identityBaseUrl),
+       _storageNamespace = AppConfig.persistenceNamespace(
+         environmentName: environment,
+         identityUrl: Uri.parse(identityBaseUrl).origin,
+       ),
        _browser = browser ?? PlatformAuthenticationBrowser(),
        _storage = storage ?? const FlutterSecureStorage(),
        _http = httpClient ?? http.Client() {
@@ -54,6 +59,9 @@ class MerchantBrowserAuth extends ChangeNotifier {
   static const pendingKey = 'lb_accounts_pending_v1';
   static const candidateKey = 'lb_accounts_candidate_v1';
   static const _timeout = Duration(seconds: 20);
+  final String _storageNamespace;
+  String get _pendingStorageKey => '$_storageNamespace$pendingKey';
+  String get _candidateStorageKey => '$_storageNamespace$candidateKey';
   final StoreAuthService _auth;
   final Uri _identity;
   final String environment, clientId;
@@ -92,26 +100,27 @@ class MerchantBrowserAuth extends ChangeNotifier {
   Future<void> initialize() async {
     _subscription ??= _browser.callbacks.listen((url) {
       if (url == null) {
-        unawaited(cancel());
+        _browserClosed();
       } else {
         unawaited(handleCallback(url));
       }
     });
     try {
-      final raw = await _storage.read(key: pendingKey);
+      final raw = await _storage.read(key: _pendingStorageKey);
       if (raw != null)
         _pending = Map<String, dynamic>.from(jsonDecode(raw) as Map);
       if (_pending != null && !_validPending(_pending!)) {
-        if (await _storage.read(key: candidateKey) == null)
+        if (await _storage.read(key: _candidateStorageKey) == null)
           await _cancelRemote();
         await _clearPending();
       }
-      if (_pending != null || await _storage.read(key: candidateKey) != null)
+      if (_pending != null ||
+          await _storage.read(key: _candidateStorageKey) != null)
         _auth.setAccountTransition(true);
       final initial = await _browser.initialCallback();
       if (initial != null)
         await handleCallback(initial);
-      else if (await _storage.read(key: candidateKey) != null)
+      else if (await _storage.read(key: _candidateStorageKey) != null)
         await retryVerification();
       else if (_pending != null)
         _state(
@@ -124,6 +133,21 @@ class MerchantBrowserAuth extends ChangeNotifier {
         'Unable to resume sign-in. Please retry from this device.',
       );
     }
+  }
+
+  Timer? _browserCloseTimer;
+  void _browserClosed() {
+    if (_exchanging || _pending == null) return;
+    final generation = _generation;
+    _browserCloseTimer?.cancel();
+    // Android can report its Custom Tab closed immediately before delivering
+    // the return intent. Give that already-dispatched callback one bounded
+    // turn to arrive. Explicit Cancel remains immediate and fences the reply.
+    _browserCloseTimer = Timer(const Duration(milliseconds: 300), () {
+      if (generation == _generation && !_exchanging && _pending != null) {
+        unawaited(cancel());
+      }
+    });
   }
 
   bool _validPending(Map<String, dynamic> pending) =>
@@ -203,7 +227,10 @@ class MerchantBrowserAuth extends ChangeNotifier {
       };
       if (!_validPending(_pending!))
         throw StateError('Invalid account request');
-      await _storage.write(key: pendingKey, value: jsonEncode(_pending));
+      await _storage.write(
+        key: _pendingStorageKey,
+        value: jsonEncode(_pending),
+      );
       _state(
         BrowserAuthStatus.waiting,
         'Complete sign-in in the secure browser.',
@@ -266,6 +293,7 @@ class MerchantBrowserAuth extends ChangeNotifier {
       state: pending['state'] as String,
     );
     if (code == null) return;
+    _browserCloseTimer?.cancel();
     _exchanging = true;
     final generation = _generation;
     _state(BrowserAuthStatus.exchanging);
@@ -273,7 +301,7 @@ class MerchantBrowserAuth extends ChangeNotifier {
       // Retain only cancellation proof across a crash, never a redeemable verifier.
       // Startup cancels an orphaned exchange instead of replaying its one-use code.
       final cleanup = Map<String, dynamic>.from(pending)..remove('verifier');
-      await _storage.write(key: pendingKey, value: jsonEncode(cleanup));
+      await _storage.write(key: _pendingStorageKey, value: jsonEncode(cleanup));
       final response = await _post(
         '/api/auth/mobile/exchange',
         headers: {'Content-Type': 'application/json'},
@@ -294,7 +322,7 @@ class MerchantBrowserAuth extends ChangeNotifier {
           (data['userId'] as String).isEmpty)
         throw StateError('Sign-in was not completed');
       if (generation != _generation) return;
-      await _storage.write(key: candidateKey, value: jsonEncode(data));
+      await _storage.write(key: _candidateStorageKey, value: jsonEncode(data));
       await _clearPending();
       await _browser.close();
       await retryVerification();
@@ -312,7 +340,7 @@ class MerchantBrowserAuth extends ChangeNotifier {
 
   Future<void> retryVerification() async {
     final generation = _generation;
-    final raw = await _storage.read(key: candidateKey);
+    final raw = await _storage.read(key: _candidateStorageKey);
     if (raw == null) {
       _auth.setAccountTransition(false);
       await _auth.restoreSession();
@@ -329,7 +357,7 @@ class MerchantBrowserAuth extends ChangeNotifier {
         shouldCommit: () => generation == _generation,
       );
       if (generation != _generation) return;
-      await _storage.delete(key: candidateKey);
+      await _storage.delete(key: _candidateStorageKey);
       _state(BrowserAuthStatus.idle);
     } on SessionVerificationUnavailableException {
       _state(
@@ -337,7 +365,7 @@ class MerchantBrowserAuth extends ChangeNotifier {
         'Your account needs a connection to finish verification. Retry without signing in again.',
       );
     } catch (_) {
-      await _storage.delete(key: candidateKey);
+      await _storage.delete(key: _candidateStorageKey);
       _state(
         BrowserAuthStatus.unavailable,
         'This sign-in expired. Please start again.',
@@ -346,6 +374,7 @@ class MerchantBrowserAuth extends ChangeNotifier {
   }
 
   Future<void> cancel() async {
+    _browserCloseTimer?.cancel();
     ++_generation;
     await _browser.close();
     await _cancelRemote();
@@ -385,7 +414,7 @@ class MerchantBrowserAuth extends ChangeNotifier {
   }
 
   Future<void> _discardCandidate() async {
-    final raw = await _storage.read(key: candidateKey);
+    final raw = await _storage.read(key: _candidateStorageKey);
     if (raw != null) {
       try {
         final token = (jsonDecode(raw) as Map)['token'];
@@ -399,18 +428,19 @@ class MerchantBrowserAuth extends ChangeNotifier {
         /* An unconfirmed orphan remains governed by canonical session expiry. */
       }
     }
-    await _storage.delete(key: candidateKey);
+    await _storage.delete(key: _candidateStorageKey);
   }
 
   Future<void> _clearPending() async {
     _pending = null;
-    await _storage.delete(key: pendingKey);
+    await _storage.delete(key: _pendingStorageKey);
   }
 
   Map<String, dynamic> _body(http.Response response) =>
       Map<String, dynamic>.from(jsonDecode(response.body) as Map);
   @override
   void dispose() {
+    _browserCloseTimer?.cancel();
     unawaited(_subscription?.cancel());
     super.dispose();
   }

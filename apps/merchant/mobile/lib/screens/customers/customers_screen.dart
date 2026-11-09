@@ -1,61 +1,91 @@
 import 'dart:async';
-import '../../services/api_client.dart';
-import '../../widgets/shared/merchant_export_share.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
 import 'package:provider/provider.dart';
-import '../../app/store_context.dart';
-
-import '../../app/routes.dart';
-import '../../services/customer_service.dart';
-import 'customer_segment_sheet.dart';
-import '../../theme/app_theme_colors.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' as mobile_tokens;
+import '../../app/store_context.dart';
+import '../../app/routes.dart';
+import '../../services/api_client.dart';
+import '../../services/customer_service.dart';
+import '../../widgets/shared/merchant_export_share.dart';
+import '../../widgets/shared/merchant_store_view.dart';
 import '../../widgets/shared/accessible_tap_region.dart';
+import 'customer_segment_sheet.dart';
+import 'customer_profile_create_editor.dart';
 
 class CustomersScreen extends StatefulWidget {
   const CustomersScreen({super.key});
-
   @override
   State<CustomersScreen> createState() => _CustomersScreenState();
 }
 
 class _CustomersScreenState extends State<CustomersScreen> {
-  final TextEditingController _searchController = TextEditingController();
-
+  final _searchController = TextEditingController();
+  final _scroll = ScrollController();
   List<CustomerContract> _customers = [];
   List<CustomerSegmentContract> _segments = [];
-  bool _isLoading = true;
-  String? _storeId;
+  List<CustomerContract>? _acceptedPage;
+  bool _isLoading = true, _creatingCustomer = false, _segmentsLoading = false;
+  bool _hasLoaded = false, _deniedObserved = false;
+  String? _storeId, _selectedSegmentId, _error, _segmentsError;
   String _query = '';
-  String? _selectedSegmentId;
-  String? _error;
-  String? _segmentsError;
-  Object? _viewContext;
-  int _loadGeneration = 0;
-  int _page = 1;
+  Object? _viewContext, _apiContext;
+  int _loadGeneration = 0, _page = 1;
   final Map<int, String?> _pageCursors = {1: null};
   String? _nextCursor;
-  bool _hasMore = false;
-  bool _offline = false;
+  bool _hasMore = false, _offline = false;
   Timer? _searchDebounce;
+  bool _exportBusy = false, _exportUnknown = false;
+  Map<String, dynamic>? _exportJob;
+  String? _exportMessage;
+  ({Object? view, Object? api, String store})? _exportOwner;
 
-  late AppThemeColors colors;
+  CustomerService get _service => context.read<CustomerService>();
+  bool get _current =>
+      mounted &&
+      _viewContext == context.read<StoreContext>().requestContextKey &&
+      _storeId == context.read<StoreContext>().selectedStoreId &&
+      _apiContext == _service.requestContext;
+  bool get _active => _current && ModalRoute.of(context)?.isCurrent == true;
+  bool get _mayPresent =>
+      _current && (_storeId == null || !_service.hasDeniedRead(_storeId!));
+  bool get _ready =>
+      _active &&
+      _mayPresent &&
+      !_isLoading &&
+      _acceptedPage != null &&
+      _service.hasFreshCustomerPage(_acceptedPage!);
+  bool get _exportCurrent =>
+      _active &&
+      _mayPresent &&
+      _exportOwner != null &&
+      _exportOwner!.view == _viewContext &&
+      _exportOwner!.api == _apiContext &&
+      _exportOwner!.store == _storeId;
 
   @override
   void initState() {
     super.initState();
     _viewContext = context.read<StoreContext>().requestContextKey;
-    _loadCustomers();
+    _apiContext = _service.requestContext;
+    Future<void>.microtask(_loadCustomers);
   }
 
   @override
   void dispose() {
+    ++_loadGeneration;
     _searchDebounce?.cancel();
     _searchController.dispose();
+    _scroll.dispose();
     super.dispose();
   }
+
+  bool _scopeCurrent(Object? captured, String storeId) =>
+      mounted &&
+      context.read<StoreContext>().requestContextKey == captured &&
+      context.read<StoreContext>().selectedStoreId == storeId &&
+      _apiContext == _service.requestContext;
 
   Future<void> _loadCustomers() async {
     if (!mounted) return;
@@ -64,36 +94,39 @@ class _CustomersScreenState extends State<CustomersScreen> {
       _isLoading = true;
       _error = null;
       _segmentsError = null;
-      _hasMore = false;
     });
-
     try {
       final stores = context.read<StoreContext>();
       await stores.ensureSelectedStore();
       if (!mounted || generation != _loadGeneration) return;
-      final captured = stores.requestContextKey;
+      final captured = stores.requestContextKey,
+          apiContext = _service.requestContext;
       _viewContext = captured;
+      _apiContext = apiContext;
       final storeId = stores.selectedStoreId;
       _storeId = storeId;
       if (storeId == null) {
-        if (mounted) {
-          setState(() {
-            _customers = [];
-            _segments = [];
-            _isLoading = false;
-          });
-        }
+        setState(() {
+          _retirePage();
+          _segments = [];
+          _isLoading = false;
+        });
         return;
       }
-
-      final service = context.read<CustomerService>();
-      final segmentId = _selectedSegmentId;
-      // Segments are optional to the primary customer list. Observe their error
-      // independently so an unavailable segment endpoint cannot hide customers.
-      final segmentsFuture = service
-          .fetchSegments(storeId)
-          .then<List<CustomerSegmentContract>?>((rows) => rows)
-          .catchError((Object _) => null);
+      final service = _service, segmentId = _selectedSegmentId;
+      _segmentsLoading = true;
+      // Observe optional completion independently. It cannot hold the primary
+      // list pending or settle a later query/store/actor's segment controls.
+      unawaited(
+        _loadSegments(
+          service,
+          captured,
+          apiContext,
+          storeId,
+          segmentId,
+          generation,
+        ),
+      );
       final customers = await (segmentId == null
           ? service.fetchCustomers(
               storeId,
@@ -106,39 +139,80 @@ class _CustomersScreenState extends State<CustomersScreen> {
               storeId: storeId,
               page: _page,
             ));
-      final segments = await segmentsFuture;
-      if (_scopeCurrent(captured, storeId) && generation == _loadGeneration) {
-        setState(() {
-          _customers = customers;
-          _nextCursor = service.customersNextCursor;
-          _hasMore = service.customersHasMore;
-          _offline = service.customersOffline;
-          _segments = segments ?? [];
-          _segmentsError = segments == null
-              ? 'Segments could not be loaded. Refresh to retry.'
-              : null;
-          if (segments != null &&
-              segmentId != null &&
-              !segments.any((segment) => segment.id == segmentId)) {
-            _selectedSegmentId = null;
-            _customers = [];
-          }
-          _isLoading = false;
-        });
-        if (segmentId != null && _selectedSegmentId == null)
-          await _loadCustomers();
-      }
+      if (!_scopeCurrent(captured, storeId) ||
+          apiContext != service.requestContext ||
+          generation != _loadGeneration ||
+          !service.acceptsCustomerPage(customers))
+        return;
+      setState(() {
+        _customers = customers;
+        _acceptedPage = customers;
+        _hasLoaded = true;
+        _nextCursor = service.customersNextCursor;
+        _hasMore = service.customersHasMore;
+        _offline = service.customersOffline;
+        _isLoading = false;
+      });
     } catch (error) {
-      if (mounted &&
-          generation == _loadGeneration &&
-          _viewContext == context.read<StoreContext>().requestContextKey) {
-        setState(() {
-          _customers = [];
-          _error = 'Check your connection and store access, then retry.';
-          _isLoading = false;
-        });
-      }
+      if (!mounted || generation != _loadGeneration || !_current) return;
+      setState(() {
+        _error = _storeId != null && _service.hasDeniedRead(_storeId!)
+            ? 'Customer access could not be confirmed. Recheck access before continuing.'
+            : 'Customers could not be refreshed. Check your connection and retry.';
+        _isLoading = false;
+        _hasMore = false;
+        _acceptedPage = null;
+      });
     }
+  }
+
+  Future<void> _loadSegments(
+    CustomerService service,
+    Object? captured,
+    Object? apiContext,
+    String storeId,
+    String? segmentId,
+    int generation,
+  ) async {
+    try {
+      final rows = await service.fetchSegments(storeId);
+      if (!_scopeCurrent(captured, storeId) ||
+          apiContext != service.requestContext ||
+          generation != _loadGeneration ||
+          service.hasDeniedRead(storeId))
+        return;
+      final removed =
+          segmentId != null && !rows.any((row) => row.id == segmentId);
+      setState(() {
+        _segments = rows;
+        _segmentsLoading = false;
+        _segmentsError = null;
+        if (removed) {
+          _selectedSegmentId = null;
+          _resetPages();
+          _retirePage();
+        }
+      });
+      if (removed) await _loadCustomers();
+    } catch (_) {
+      if (!_scopeCurrent(captured, storeId) ||
+          apiContext != service.requestContext ||
+          generation != _loadGeneration)
+        return;
+      setState(() {
+        _segmentsLoading = false;
+        _segmentsError = 'Segments could not be loaded. Refresh to retry.';
+      });
+    }
+  }
+
+  void _retirePage() {
+    _customers = [];
+    _acceptedPage = null;
+    _hasLoaded = false;
+    _offline = false;
+    _hasMore = false;
+    _nextCursor = null;
   }
 
   void _resetPages() {
@@ -150,117 +224,187 @@ class _CustomersScreenState extends State<CustomersScreen> {
   }
 
   void _searchChanged(String value) {
+    if (!_active || !_mayPresent) return;
     _searchDebounce?.cancel();
     setState(() {
       _query = value;
-      _resetPages();
       if (_selectedSegmentId == null) {
+        _resetPages();
         ++_loadGeneration;
-        _customers = [];
+        _retirePage();
         _isLoading = true;
       }
     });
     if (_selectedSegmentId != null)
-      return; // Segment API supports page browsing, not search.
+      return; // Page-local filter; no search contract here.
     _searchDebounce = Timer(const Duration(milliseconds: 300), () {
-      if (mounted) _loadCustomers();
+      if (_current && _mayPresent) _loadCustomers();
     });
   }
 
   void _changePage(int change) {
-    if (_isLoading || (change < 0 && _page == 1) || (change > 0 && !_hasMore))
+    if (!_ready || (change < 0 && _page == 1) || (change > 0 && !_hasMore))
       return;
     setState(() {
       if (change > 0) _pageCursors[_page + 1] = _nextCursor;
       _page += change;
+      _retirePage();
     });
     _loadCustomers();
   }
 
-  bool _scopeCurrent(Object? captured, String storeId) =>
-      mounted &&
-      context.read<StoreContext>().requestContextKey == captured &&
-      context.read<StoreContext>().selectedStoreId == storeId;
+  void _selectSegment(String? id) {
+    if (!_ready || id == _selectedSegmentId) return;
+    _searchDebounce?.cancel();
+    setState(() {
+      _selectedSegmentId = id;
+      _resetPages();
+      _retirePage();
+    });
+    _loadCustomers();
+  }
 
-  Widget _guardedSheet(
-    BuildContext sheetContext,
-    Object? captured,
-    String storeId,
-    Widget child,
-  ) => Consumer<StoreContext>(
-    builder: (_, stores, __) => _scopeCurrent(captured, storeId)
-        ? child
-        : SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    'Store access changed. Close this form and reload the selected store.',
-                  ),
-                  TextButton(
-                    onPressed: () => Navigator.pop(sheetContext),
-                    child: const Text('Close'),
-                  ),
-                ],
-              ),
-            ),
-          ),
-  );
+  VoidCallback? _action(
+    bool enabled,
+    VoidCallback action, {
+    bool fresh = true,
+    bool allowDenied = false,
+  }) {
+    if (!enabled) return null;
+    final owner = (_viewContext, _apiContext, _storeId),
+        generation = _loadGeneration;
+    return () {
+      if (!_active ||
+          (!allowDenied && !_mayPresent) ||
+          (_viewContext, _apiContext, _storeId) != owner ||
+          generation != _loadGeneration ||
+          (fresh && !_ready))
+        return;
+      action();
+    };
+  }
+
+  Widget _segmentChoice(String label, String? id) {
+    final select = _action(_ready, () => _selectSegment(id));
+    return ChoiceChip(
+      label: Text(label),
+      selected: _selectedSegmentId == id,
+      onSelected: select == null ? null : (_) => select(),
+    );
+  }
+
+  void _refresh() {
+    if (_active && !_isLoading) _loadCustomers();
+  }
+
+  Map<String, dynamic> _readExportJob(
+    Map<String, dynamic> result, {
+    String? expected,
+  }) {
+    final raw = result['job'] is Map ? result['job'] as Map : result;
+    final job = Map<String, dynamic>.from(raw);
+    if (job['id'] is! String ||
+        (job['id'] as String).isEmpty ||
+        (expected != null && job['id'] != expected) ||
+        job['type'] != 'customers' ||
+        !const [
+          'queued',
+          'running',
+          'completed',
+          'failed',
+        ].contains(job['status'])) {
+      throw const ApiException(
+        message: 'Export acknowledgement could not be confirmed.',
+        statusCode: 502,
+        code: 'EXPORT_RESULT_UNCONFIRMED',
+      );
+    }
+    return job;
+  }
 
   Future<void> _exportCustomers() async {
-    final stores = context.read<StoreContext>();
-    final storeId = stores.selectedStoreId;
-    final captured = stores.requestContextKey;
-    if (storeId == null) {
-      _showCustomerSnack('Select a store before exporting customers.');
-      return;
-    }
-
+    if (!_ready || _exportBusy || _exportUnknown) return;
+    final storeId = _storeId!;
+    if (_exportOwner != null && !_exportCurrent) return;
+    _exportOwner ??= (view: _viewContext, api: _apiContext, store: storeId);
+    setState(() {
+      _exportBusy = true;
+      _exportMessage = null;
+    });
     try {
-      final service = context.read<CustomerService>();
-      final result = await service.exportCustomers(storeId);
-      if (!_scopeCurrent(captured, storeId)) return;
-      final job = result['job'] is Map ? result['job'] as Map : const {};
-      var latest = Map<String, dynamic>.from(job);
-      for (var attempt = 0; attempt < 5; attempt += 1) {
-        if (latest['status'] == 'completed' || latest['status'] == 'failed') {
-          break;
-        }
-        await Future<void>.delayed(const Duration(milliseconds: 350));
-        if (!_scopeCurrent(captured, storeId)) return;
-        final jobId = latest['id']?.toString();
-        if (jobId == null || jobId.isEmpty) break;
-        final detail = await service.fetchExportJob(jobId);
-        if (!_scopeCurrent(captured, storeId)) return;
-        latest = detail['job'] is Map
-            ? Map<String, dynamic>.from(detail['job'] as Map)
-            : detail;
-      }
-
-      final status = latest['status']?.toString() ?? 'queued';
-      final downloadUrl = latest['download_url']?.toString();
-      if (status == 'completed' &&
-          downloadUrl != null &&
-          downloadUrl.isNotEmpty) {
-        await shareMerchantExport(api: context.read<ApiClient>(), job: latest);
-        if (!_scopeCurrent(captured, storeId)) return;
-        _showCustomerSnack('Customer CSV export ready to share.');
+      final service = _service;
+      if (_exportJob == null) {
+        // A lost start response cannot safely become another fresh export.
+        _exportUnknown = true;
+        final result = await service.exportCustomers(storeId);
+        if (!_exportCurrent) return;
+        final job = _readExportJob(result);
+        setState(() {
+          _exportJob = job;
+          _exportUnknown = false;
+        });
       } else {
-        _showCustomerSnack('Customer CSV export $status. Try again shortly.');
+        final id = _exportJob!['id'] as String;
+        final result = await service.fetchExportJob(id);
+        if (!_exportCurrent) return;
+        setState(() => _exportJob = _readExportJob(result, expected: id));
+      }
+      for (var attempt = 0; attempt < 5; attempt++) {
+        final job = _exportJob!;
+        if (job['status'] == 'completed' || job['status'] == 'failed') break;
+        await Future<void>.delayed(const Duration(milliseconds: 350));
+        if (!_exportCurrent) return;
+        final id = job['id'] as String,
+            result = await service.fetchExportJob(job['id'] as String);
+        if (!_exportCurrent) return;
+        setState(() => _exportJob = _readExportJob(result, expected: id));
+      }
+      if (!_exportCurrent) return;
+      final job = _exportJob!;
+      if (job['status'] == 'completed') {
+        await shareMerchantExport(
+          api: context.read<ApiClient>(),
+          job: job,
+          isCurrent: () => _exportCurrent,
+        );
+        if (!_exportCurrent) return;
+        setState(
+          () => _exportMessage =
+              'The completed CSV remains available to share again.',
+        );
       }
     } catch (_) {
-      if (_scopeCurrent(captured, storeId))
-        _showCustomerSnack('Could not start customer export.');
+      if (!_exportCurrent) return;
+      setState(
+        () => _exportMessage = _exportUnknown
+            ? 'The export start was not confirmed. It may still be processing. A new export will not be started from this view.'
+            : 'This export could not be checked or shared. Recheck the same job when connected.',
+      );
+    } finally {
+      if (mounted) setState(() => _exportBusy = false);
     }
   }
 
   void _showCustomerSnack(String message) {
-    if (!mounted) return;
+    if (!_active || !_mayPresent) return;
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  void _startAnotherExport(String failedId) {
+    if (!_ready ||
+        !_exportCurrent ||
+        _exportBusy ||
+        _exportUnknown ||
+        _exportJob?['status'] != 'failed' ||
+        _exportJob?['id'] != failedId)
+      return;
+    setState(() {
+      _exportJob = null;
+      _exportMessage = null;
+    });
+    _exportCustomers();
   }
 
   List<CustomerContract> get _filteredCustomers {
@@ -290,171 +434,596 @@ class _CustomersScreenState extends State<CustomersScreen> {
 
   @override
   Widget build(BuildContext context) {
-    colors = AppThemeColors.of(context);
     final stores = context.watch<StoreContext>();
-    if (_viewContext != stores.requestContextKey) {
+    final service = context.watch<CustomerService>();
+    final ownerChanged =
+        _viewContext != stores.requestContextKey ||
+        (_storeId != null && _storeId != stores.selectedStoreId) ||
+        _apiContext != service.requestContext;
+    if (ownerChanged) {
       _viewContext = stores.requestContextKey;
+      _apiContext = service.requestContext;
       ++_loadGeneration;
       _storeId = stores.selectedStoreId;
-      _customers = [];
+      _retirePage();
       _segments = [];
+      _creatingCustomer = false;
       _selectedSegmentId = null;
-      _error = null;
-      _segmentsError = null;
+      _error = _segmentsError = null;
       _query = '';
-      _offline = false;
       _resetPages();
       _searchDebounce?.cancel();
       _searchController.clear();
+      _deniedObserved = false;
       _isLoading = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) _loadCustomers();
       });
     }
-
+    final denied = _storeId != null && service.hasDeniedRead(_storeId!);
+    if (denied && !_deniedObserved) {
+      _deniedObserved = true;
+      _retirePage();
+      _segments = [];
+      _selectedSegmentId = null;
+      _query = '';
+      _searchController.clear();
+      _searchDebounce?.cancel();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      });
+    } else if (!denied) {
+      _deniedObserved = false;
+    }
+    final callbackOwner = (_viewContext, _apiContext, _storeId);
+    final selectedSegments = _segments
+        .where((row) => row.id == _selectedSegmentId)
+        .toList(growable: false);
+    final scheme = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: colors.bgStart,
-      body: Container(
-        decoration: colors.backgroundGradient,
-        child: SafeArea(
-          child: Column(
-            children: [
-              _buildHeader(),
-              _buildSearch(),
-              _buildSegments(),
-              if (_segmentsError != null)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Text(
-                    _segmentsError!,
-                    style: TextStyle(color: colors.textSecondary),
+      appBar: mobile_tokens.CustomAppBar.responsive(
+        context: context,
+        title: 'Customers',
+        actions: [
+          IconButton(
+            tooltip: 'Refresh customers',
+            onPressed: _action(
+              !_isLoading,
+              _refresh,
+              fresh: false,
+              allowDenied: true,
+            ),
+            icon: const Icon(Icons.refresh_rounded),
+          ),
+        ],
+      ),
+      body: SafeArea(
+        top: false,
+        child: RefreshIndicator(
+          onRefresh: () async {
+            if (_active &&
+                !_isLoading &&
+                (_viewContext, _apiContext, _storeId) == callbackOwner)
+              await _loadCustomers();
+          },
+          child: CustomScrollView(
+            controller: _scroll,
+            physics: const AlwaysScrollableScrollPhysics(),
+            slivers: [
+              SliverPadding(
+                padding: const EdgeInsets.all(
+                  mobile_tokens.LetbuyySpacingTokens.space16,
+                ),
+                sliver: SliverToBoxAdapter(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        'Profiles, addresses, and order history',
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
+                      const SizedBox(
+                        height: mobile_tokens.LetbuyySpacingTokens.space16,
+                      ),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          Tooltip(
+                            message: 'Add customer',
+                            excludeFromSemantics: true,
+                            child: FilledButton.icon(
+                              onPressed: _action(
+                                _ready && !_creatingCustomer,
+                                _showCreateCustomerSheet,
+                              ),
+                              icon: const Icon(Icons.person_add_alt_1_outlined),
+                              label: const Text('Add customer'),
+                            ),
+                          ),
+                          OutlinedButton.icon(
+                            onPressed: _action(
+                              _ready,
+                              () => _showSegmentEditor(),
+                            ),
+                            icon: const Icon(Icons.group_work_outlined),
+                            label: const Text('Create segment'),
+                          ),
+                          OutlinedButton.icon(
+                            onPressed: _action(
+                              _ready &&
+                                  !_exportBusy &&
+                                  !_exportUnknown &&
+                                  (_exportOwner == null || _exportCurrent),
+                              _exportCustomers,
+                            ),
+                            icon: const Icon(Icons.download_rounded),
+                            label: Text(
+                              _exportJob == null
+                                  ? 'Export customers'
+                                  : 'Recheck export',
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (_exportCurrent &&
+                          (_exportBusy ||
+                              _exportJob != null ||
+                              _exportUnknown ||
+                              _exportMessage != null)) ...[
+                        const SizedBox(height: 16),
+                        _buildExport(),
+                      ],
+                      if (_exportOwner != null &&
+                          !_exportCurrent &&
+                          !_isLoading)
+                        const Padding(
+                          padding: EdgeInsets.only(top: 16),
+                          child: Text(
+                            'An export belongs to a previous account or store view. Reopen Customers before starting another export. Existing processing was not cancelled.',
+                          ),
+                        ),
+                      if (!denied && _storeId != null) ...[
+                        const SizedBox(height: 20),
+                        TextField(
+                          key: const Key('customer-list-search'),
+                          controller: _searchController,
+                          enabled: _active && _mayPresent,
+                          onChanged: (value) {
+                            if ((_viewContext, _apiContext, _storeId) ==
+                                callbackOwner)
+                              _searchChanged(value);
+                          },
+                          textInputAction: TextInputAction.search,
+                          decoration: InputDecoration(
+                            labelText: _selectedSegmentId == null
+                                ? 'Search customers'
+                                : 'Filter this segment page',
+                            prefixIcon: const Icon(Icons.search_rounded),
+                            suffixIcon: _query.isEmpty
+                                ? null
+                                : IconButton(
+                                    tooltip: 'Clear search',
+                                    onPressed: () {
+                                      if (_active &&
+                                          _mayPresent &&
+                                          (
+                                                _viewContext,
+                                                _apiContext,
+                                                _storeId,
+                                              ) ==
+                                              callbackOwner) {
+                                        _searchController.clear();
+                                        _searchChanged('');
+                                      }
+                                    },
+                                    icon: const Icon(Icons.close_rounded),
+                                  ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          _selectedSegmentId == null
+                              ? 'Searches all customers on the server.'
+                              : 'Filters only the loaded segment page. Browse pages to inspect the rest.',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                        const SizedBox(height: 16),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            _segmentChoice('All customers', null),
+                            for (final segment in _segments)
+                              _segmentChoice(
+                                '${segment.name} (${segment.customerCount})',
+                                segment.id,
+                              ),
+                            if (_selectedSegmentId != null &&
+                                _segments.any(
+                                  (row) => row.id == _selectedSegmentId,
+                                ))
+                              ActionChip(
+                                avatar: const Icon(Icons.edit_outlined),
+                                label: const Text('Edit selected segment'),
+                                onPressed: _action(
+                                  _ready && selectedSegments.length == 1,
+                                  () => _showSegmentEditor(
+                                    segment: selectedSegments.single,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                        if (_segmentsLoading)
+                          const Padding(
+                            padding: EdgeInsets.only(top: 8),
+                            child: Text('Loading optional segments…'),
+                          ),
+                        if (_segmentsError != null)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 8),
+                            child: Text(_segmentsError!),
+                          ),
+                      ],
+                      if (_isLoading)
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                          child: Column(
+                            children: [
+                              mobile_tokens.LoadingIndicator(),
+                              SizedBox(height: 8),
+                              Text('Loading customers…'),
+                            ],
+                          ),
+                        ),
+                      if (denied)
+                        _state(
+                          icon: Icons.lock_outline_rounded,
+                          title: 'Customer access unavailable',
+                          message:
+                              'Private customer information has been removed from this view. Recheck store access to continue.',
+                          retry: !_isLoading,
+                        ),
+                      if (_storeId == null && !_isLoading)
+                        _state(
+                          icon: Icons.store_outlined,
+                          title: 'Choose a store',
+                          message:
+                              'Select a store from the dashboard to view its customers.',
+                        ),
+                      if (!denied && _error != null)
+                        _state(
+                          icon: Icons.cloud_off_outlined,
+                          title: _hasLoaded
+                              ? 'Refresh unavailable'
+                              : 'Could not load customers',
+                          message: _error!,
+                          retry: !_isLoading,
+                        ),
+                      if (!denied && _hasLoaded) ...[
+                        const SizedBox(height: 16),
+                        Text(
+                          'Loaded page $_page',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        const SizedBox(height: 8),
+                        if (_offline)
+                          const Text(
+                            'Saved offline snapshot. Reconnect and refresh before making changes.',
+                          ),
+                        if (_isLoading)
+                          const Text(
+                            'Refreshing the same page. Previously loaded information is shown below.',
+                          ),
+                        if (_customers.isEmpty || _filteredCustomers.isEmpty)
+                          _state(
+                            icon: Icons.search_off_rounded,
+                            title:
+                                _customers.isEmpty &&
+                                    _query.trim().isEmpty &&
+                                    _selectedSegmentId == null &&
+                                    _page == 1
+                                ? 'No customers yet'
+                                : 'No matching customers',
+                            message:
+                                _query.trim().isNotEmpty ||
+                                    _selectedSegmentId != null ||
+                                    _page > 1
+                                ? 'Try another search, segment, or page.'
+                                : 'Create a customer profile or wait for the first order.',
+                          ),
+                      ],
+                    ],
                   ),
                 ),
-              _buildStats(),
-              if (_offline)
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: Text(
-                    'Offline snapshot. Reconnect and refresh for current customer data.',
-                  ),
-                ),
-              Expanded(
-                child: _isLoading ? _buildLoading() : _buildCustomerList(),
               ),
-              if (_page > 1 || _hasMore)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TextButton(
-                      onPressed: _page > 1 && !_isLoading
-                          ? () => _changePage(-1)
-                          : null,
-                      child: const Text('Previous'),
-                    ),
-                    Text('Page $_page'),
-                    TextButton(
-                      onPressed: _hasMore && !_isLoading
-                          ? () => _changePage(1)
-                          : null,
-                      child: const Text('Next'),
-                    ),
-                  ],
+              if (!denied && _hasLoaded)
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  sliver: SliverList.builder(
+                    itemCount: _filteredCustomers.length,
+                    itemBuilder: (_, index) =>
+                        _customerCard(_filteredCustomers[index]),
+                  ),
                 ),
+              if (!denied && _hasLoaded)
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  sliver: SliverToBoxAdapter(child: _buildStats()),
+                ),
+              if (!denied && _hasLoaded && (_page > 1 || _hasMore))
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Wrap(
+                      alignment: WrapAlignment.center,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      spacing: 12,
+                      runSpacing: 8,
+                      children: [
+                        TextButton(
+                          onPressed: _action(
+                            _ready && _page > 1,
+                            () => _changePage(-1),
+                          ),
+                          child: const Text('Previous'),
+                        ),
+                        Text('Page $_page'),
+                        TextButton(
+                          onPressed: _action(
+                            _ready && _hasMore,
+                            () => _changePage(1),
+                          ),
+                          child: const Text('Next'),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              SliverToBoxAdapter(
+                child: SizedBox(
+                  height: MediaQuery.paddingOf(context).bottom + 24,
+                ),
+              ),
             ],
           ),
         ),
       ),
+      backgroundColor: scheme.surface,
     );
   }
 
-  Widget _buildHeader() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Customers',
-                  style: TextStyle(
-                    color: colors.textPrimary,
-                    fontSize: 22,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                Text(
-                  'Profiles, addresses, and order history',
-                  style: TextStyle(color: colors.textSecondary, fontSize: 12),
-                ),
-              ],
+  Widget _buildExport() {
+    final status = _exportJob?['status'] as String?,
+        jobId = _exportJob?['id'] as String?;
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'Whole-store customer CSV',
+              style: Theme.of(context).textTheme.titleMedium,
             ),
-          ),
-          IconButton(
-            tooltip: 'Refresh customers',
-            icon: Icon(Icons.refresh_rounded, color: colors.textSecondary),
-            onPressed: _loadCustomers,
-          ),
-          IconButton(
-            tooltip: 'Export customers',
-            icon: Icon(Icons.download_rounded, color: colors.textSecondary),
-            onPressed: _exportCustomers,
-          ),
-          IconButton(
-            tooltip: 'Add customer',
-            icon: Icon(
-              Icons.person_add_alt_1_outlined,
-              color: colors.textSecondary,
+            const SizedBox(height: 8),
+            const Text(
+              'Exports all supported customers in this store. Search, segment, and page controls do not limit the CSV.',
             ),
-            onPressed: _showCreateCustomerSheet,
-          ),
-          IconButton(
-            tooltip: 'Create segment',
-            icon: Icon(Icons.group_work_outlined, color: colors.textSecondary),
-            onPressed: _showCreateSegmentSheet,
-          ),
-        ],
+            if (_exportBusy)
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: mobile_tokens.LoadingIndicator(),
+              ),
+            if (status != null) Text('Export status: $status'),
+            if (_exportMessage != null) Text(_exportMessage!),
+            if (_exportJob != null && !_exportBusy)
+              TextButton.icon(
+                onPressed: _action(_ready, _exportCustomers),
+                icon: Icon(
+                  status == 'completed'
+                      ? Icons.ios_share_outlined
+                      : Icons.refresh_rounded,
+                ),
+                label: Text(
+                  status == 'completed' ? 'Share CSV' : 'Recheck same export',
+                ),
+              ),
+            if (status == 'failed' && !_exportBusy)
+              TextButton(
+                onPressed: _action(_ready, () => _startAnotherExport(jobId!)),
+                child: const Text('Start another export'),
+              ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildSearch() {
+  Widget _state({
+    required IconData icon,
+    required String title,
+    required String message,
+    bool retry = false,
+  }) => Padding(
+    padding: const EdgeInsets.symmetric(vertical: 20),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: ExcludeSemantics(child: Icon(icon)),
+        ),
+        const SizedBox(height: 8),
+        Text(title, style: Theme.of(context).textTheme.titleMedium),
+        const SizedBox(height: 8),
+        Text(message),
+        if (retry)
+          Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: TextButton(
+              onPressed: _action(
+                !_isLoading,
+                _refresh,
+                fresh: false,
+                allowDenied: true,
+              ),
+              child: const Text('Retry'),
+            ),
+          ),
+      ],
+    ),
+  );
+
+  num? _presentNumber(Object? value) {
+    final number = value is num
+        ? value
+        : value is String
+        ? num.tryParse(value)
+        : null;
+    return number != null && number.isFinite ? number : null;
+  }
+
+  bool _hasCount(CustomerContract row) {
+    final value = _presentNumber(row['order_count']);
+    return value != null && value >= 0 && value == value.roundToDouble();
+  }
+
+  bool _hasSpend(CustomerContract row) =>
+      _presentNumber(row['total_spent']) != null;
+  bool _hasStatus(CustomerContract row) =>
+      row['status'] is String && (row['status'] as String).trim().isNotEmpty;
+  Widget _buildStats() => Padding(
+    padding: const EdgeInsets.symmetric(vertical: 16),
+    child: mobile_tokens.StatGrid(
+      children: [
+        mobile_tokens.StatTile(
+          icon: Icons.people_alt_outlined,
+          label: 'On page',
+          value: _customers.length.toString(),
+        ),
+        mobile_tokens.StatTile(
+          icon: Icons.verified_user_outlined,
+          label: 'Active on page',
+          value: _customers.every(_hasStatus)
+              ? _activeCount.toString()
+              : 'Unavailable',
+        ),
+        mobile_tokens.StatTile(
+          icon: Icons.payments_outlined,
+          label: 'Page spend',
+          value: _customers.every(_hasSpend)
+              ? _money(_totalSpent)
+              : 'Unavailable',
+        ),
+      ],
+    ),
+  );
+
+  Widget _customerCard(CustomerContract customer) {
+    final email = customer.email,
+        captured = _viewContext,
+        api = _apiContext,
+        generation = _loadGeneration;
+    final status = _hasStatus(customer)
+        ? _titleCase(_status(customer))
+        : 'Status unavailable';
+    final orders = _hasCount(customer)
+        ? '${customer.orderCount} orders'
+        : 'Order count unavailable';
+    final spend = _hasSpend(customer)
+        ? _money(customer.totalSpent)
+        : 'Spend unavailable';
+    final canOpen = _ready && email != null && email.trim().isNotEmpty;
+    Future<void> open() async {
+      if (!canOpen ||
+          !_ready ||
+          _viewContext != captured ||
+          _apiContext != api ||
+          _loadGeneration != generation)
+        return;
+      await Navigator.pushNamed(
+        context,
+        AppRoutes.customerDetail,
+        arguments: {'email': email, 'customer': customer},
+      );
+      if (_active &&
+          _mayPresent &&
+          _viewContext == captured &&
+          _apiContext == api)
+        await _loadCustomers();
+    }
+
+    final theme = Theme.of(context);
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-      child: TextField(
-        controller: _searchController,
-        onChanged: _searchChanged,
-        style: TextStyle(color: colors.textPrimary),
-        decoration: InputDecoration(
-          hintText: _selectedSegmentId == null
-              ? 'Search customers by name, email or phone'
-              : 'Filter this segment page',
-          hintStyle: TextStyle(color: colors.textTertiary),
-          prefixIcon: Icon(Icons.search_rounded, color: colors.textTertiary),
-          suffixIcon: _query.isEmpty
-              ? null
-              : IconButton(
-                  icon: Icon(Icons.close_rounded, color: colors.textTertiary),
-                  onPressed: () {
-                    _searchController.clear();
-                    _searchChanged('');
-                  },
-                ),
-          filled: true,
-          fillColor: colors.surfaceVariant,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: colors.divider),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: colors.divider),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(
-              color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
+      padding: const EdgeInsets.only(bottom: 12),
+      child: AccessibleTapRegion(
+        label: '${_customerName(customer)}, $status, $orders, $spend',
+        hint: canOpen
+            ? 'Open customer details'
+            : 'Customer details are unavailable until access is refreshed',
+        onTap: canOpen ? open : null,
+        child: Card(
+          margin: EdgeInsets.zero,
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            excludeFromSemantics: true,
+            onTap: canOpen ? open : null,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ExcludeSemantics(
+                        child: CircleAvatar(child: Text(_initials(customer))),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          _customerName(customer),
+                          style: theme.textTheme.titleMedium,
+                        ),
+                      ),
+                      if (canOpen)
+                        const ExcludeSemantics(
+                          child: Icon(Icons.chevron_right_rounded),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  if (_nonEmpty(email) != null)
+                    Text(email!, style: theme.textTheme.bodyMedium),
+                  if (_nonEmpty(customer.phone) != null)
+                    Text(customer.phone!, style: theme.textTheme.bodyMedium),
+                  if (_nonEmpty(email) == null &&
+                      _nonEmpty(customer.phone) == null)
+                    const Text('No contact'),
+                  const SizedBox(height: 12),
+                  Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: mobile_tokens.LetbuyyStatusBadge(
+                      label: status,
+                      tone: !_hasStatus(customer)
+                          ? mobile_tokens.LetbuyyStatusTone.neutral
+                          : _status(customer) == 'active'
+                          ? mobile_tokens.LetbuyyStatusTone.success
+                          : mobile_tokens.LetbuyyStatusTone.warning,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(orders),
+                  Text(spend),
+                  if (_nonEmpty(customer['last_order_at']) != null)
+                    Text(
+                      'Last order ${_shortDate(customer['last_order_at'].toString())}',
+                    ),
+                ],
+              ),
             ),
           ),
         ),
@@ -462,623 +1031,85 @@ class _CustomersScreenState extends State<CustomersScreen> {
     );
   }
 
-  Widget _buildSegments() {
-    return SizedBox(
-      height: 52,
-      child: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
-        scrollDirection: Axis.horizontal,
-        children: [
-          _segmentChip(
-            label: 'All customers',
-            selected: _selectedSegmentId == null,
-            count: null,
-            onTap: () {
-              if (_selectedSegmentId == null) return;
-              setState(() {
-                _selectedSegmentId = null;
-                _resetPages();
-              });
-              _loadCustomers();
-            },
-          ),
-          const SizedBox(width: 8),
-          if (_selectedSegmentId != null &&
-              _segments.any((row) => row.id == _selectedSegmentId))
-            IconButton(
-              tooltip: 'Edit selected segment',
-              icon: const Icon(Icons.edit_outlined),
-              onPressed: () => _showCreateSegmentSheet(
-                segment: _segments.firstWhere(
-                  (row) => row.id == _selectedSegmentId,
-                ),
-              ),
-            ),
-          ..._segments.map(
-            (segment) => Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: _segmentChip(
-                label: segment.name,
-                selected: _selectedSegmentId == segment.id,
-                count: segment.customerCount,
-                onTap: () {
-                  setState(() {
-                    _selectedSegmentId = segment.id;
-                    _resetPages();
-                  });
-                  _loadCustomers();
-                },
-              ),
-            ),
-          ),
-          ActionChip(
-            avatar: const Icon(Icons.add_rounded, size: 18),
-            label: const Text('Segment'),
-            onPressed: _showCreateSegmentSheet,
-            backgroundColor: colors.surfaceVariant,
-            side: BorderSide(color: colors.divider),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _segmentChip({
-    required String label,
-    required bool selected,
-    required int? count,
-    required VoidCallback onTap,
-  }) {
-    return ChoiceChip(
-      selected: selected,
-      label: Text(count == null ? label : '$label ($count)'),
-      onSelected: (_) => onTap(),
-      selectedColor: mobile_tokens.LetbuyyColorTokens.brandPrimary.withValues(
-        alpha: 0.16,
-      ),
-      backgroundColor: colors.surfaceVariant,
-      side: BorderSide(
-        color: selected
-            ? mobile_tokens.LetbuyyColorTokens.brandPrimary
-            : colors.divider,
-      ),
-      labelStyle: TextStyle(
-        color: selected
-            ? mobile_tokens.LetbuyyColorTokens.brandPrimary
-            : colors.textSecondary,
-        fontWeight: FontWeight.w700,
-      ),
-    );
-  }
-
-  Widget _buildStats() {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-      child: Row(
-        children: [
-          Expanded(
-            child: _metricCard(
-              'On page',
-              _customers.length.toString(),
-              Icons.people_alt_outlined,
-            ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: _metricCard(
-              'Active on page',
-              _activeCount.toString(),
-              Icons.verified_user_outlined,
-            ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: _metricCard(
-              'Page spend',
-              _money(_totalSpent),
-              Icons.payments_outlined,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _metricCard(String label, String value, IconData icon) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: colors.card,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: colors.cardBorder),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(
-            icon,
-            color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
-            size: 18,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            value,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              color: colors.textPrimary,
-              fontSize: 16,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-          Text(
-            label,
-            style: TextStyle(color: colors.textSecondary, fontSize: 11),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _showCreateSegmentSheet({
-    CustomerSegmentContract? segment,
-  }) async {
+  Future<void> _showSegmentEditor({CustomerSegmentContract? segment}) async {
     final stores = context.read<StoreContext>();
     final storeId = stores.selectedStoreId;
     final captured = stores.requestContextKey;
-    if (storeId == null || !mounted) return;
-    final saved = await showModalBottomSheet<CustomerSegmentContract>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: colors.card,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    if (storeId == null || !_ready) return;
+    final saved = await Navigator.of(context).push<CustomerSegmentContract>(
+      MaterialPageRoute<CustomerSegmentContract>(
+        settings: RouteSettings(
+          name: segment == null
+              ? '/customers/segments/new'
+              : '/customers/segments/${segment.id}/edit',
+        ),
+        builder: (_) =>
+            CustomerSegmentSheet(storeId: storeId, segment: segment),
       ),
-      builder: (_) => CustomerSegmentSheet(storeId: storeId, segment: segment),
     );
-    if (saved == null || !_scopeCurrent(captured, storeId)) return;
+    if (saved == null ||
+        !_active ||
+        !_mayPresent ||
+        !_scopeCurrent(captured, storeId))
+      return;
     setState(() {
       _selectedSegmentId = saved.id;
       _query = '';
       _searchController.clear();
       _resetPages();
+      _retirePage();
     });
     await _loadCustomers();
   }
 
   Future<void> _showCreateCustomerSheet() async {
+    if (!_ready ||
+        _creatingCustomer ||
+        ModalRoute.of(context)?.isCurrent != true)
+      return;
     final stores = context.read<StoreContext>();
     final storeId = stores.selectedStoreId;
     final captured = stores.requestContextKey;
-    if (storeId == null || !mounted) return;
-
-    final nameController = TextEditingController();
-    final emailController = TextEditingController();
-    final phoneController = TextEditingController();
-    final tagsController = TextEditingController();
-    bool acceptsMarketing = false;
-    bool isSaving = false;
-    String? formError;
-
-    List<String> splitName(String fullName) {
-      final parts = fullName.trim().split(RegExp(r'\s+'));
-      return [
-        parts.isEmpty ? '' : parts.first,
-        parts.length <= 1 ? '' : parts.skip(1).join(' '),
-      ];
-    }
-
-    List<String> parseTags() => tagsController.text
-        .split(',')
-        .map((tag) => tag.trim())
-        .where((tag) => tag.isNotEmpty)
-        .toList(growable: false);
-
-    bool canSave() =>
-        nameController.text.trim().isNotEmpty &&
-        emailController.text.trim().contains('@');
-
-    await showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: colors.card,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (sheetContext) {
-        return _guardedSheet(
-          sheetContext,
-          captured,
-          storeId,
-          StatefulBuilder(
-            builder: (context, setSheetState) {
-              void markChanged(String _) =>
-                  setSheetState(() => formError = null);
-              return Padding(
-                padding: EdgeInsets.fromLTRB(
-                  20,
-                  16,
-                  20,
-                  MediaQuery.of(context).viewInsets.bottom + 20,
-                ),
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Add customer',
-                        style: TextStyle(
-                          color: colors.textPrimary,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      TextField(
-                        key: const Key('customer-name-field'),
-                        controller: nameController,
-                        onChanged: markChanged,
-                        textInputAction: TextInputAction.next,
-                        style: TextStyle(color: colors.textPrimary),
-                        decoration: const InputDecoration(
-                          labelText: 'Full name',
-                          hintText: 'Anu Buyer',
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      TextField(
-                        key: const Key('customer-email-field'),
-                        controller: emailController,
-                        onChanged: markChanged,
-                        keyboardType: TextInputType.emailAddress,
-                        textInputAction: TextInputAction.next,
-                        style: TextStyle(color: colors.textPrimary),
-                        decoration: const InputDecoration(
-                          labelText: 'Email',
-                          hintText: 'anu@example.com',
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      TextField(
-                        key: const Key('customer-phone-field'),
-                        controller: phoneController,
-                        onChanged: markChanged,
-                        keyboardType: TextInputType.phone,
-                        textInputAction: TextInputAction.next,
-                        style: TextStyle(color: colors.textPrimary),
-                        decoration: const InputDecoration(
-                          labelText: 'Phone',
-                          hintText: '+91 98765 43210',
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      TextField(
-                        key: const Key('customer-tags-field'),
-                        controller: tagsController,
-                        onChanged: markChanged,
-                        style: TextStyle(color: colors.textPrimary),
-                        decoration: const InputDecoration(
-                          labelText: 'Tags',
-                          hintText: 'vip, wholesale',
-                        ),
-                      ),
-                      SwitchListTile.adaptive(
-                        value: acceptsMarketing,
-                        onChanged: (value) =>
-                            setSheetState(() => acceptsMarketing = value),
-                        title: const Text('Accepts marketing'),
-                        contentPadding: EdgeInsets.zero,
-                      ),
-                      if (formError != null) ...[
-                        Text(formError!, style: TextStyle(color: colors.error)),
-                        const SizedBox(height: 10),
-                      ],
-                      SizedBox(
-                        width: double.infinity,
-                        child: FilledButton.icon(
-                          onPressed: isSaving || !canSave()
-                              ? null
-                              : () async {
-                                  if (!_scopeCurrent(captured, storeId)) return;
-                                  setSheetState(() => isSaving = true);
-                                  try {
-                                    final nameParts = splitName(
-                                      nameController.text,
-                                    );
-                                    await context
-                                        .read<CustomerService>()
-                                        .createCustomer(
-                                          storeId: storeId,
-                                          email: emailController.text,
-                                          firstName: nameParts[0],
-                                          lastName: nameParts[1],
-                                          phone: phoneController.text,
-                                          tags: parseTags(),
-                                          acceptsMarketing: acceptsMarketing,
-                                        );
-                                    if (!_scopeCurrent(captured, storeId) ||
-                                        !sheetContext.mounted)
-                                      return;
-                                    Navigator.of(sheetContext).pop();
-                                    setState(() {
-                                      _selectedSegmentId = null;
-                                      _query = '';
-                                      _searchController.clear();
-                                      _resetPages();
-                                    });
-                                    await _loadCustomers();
-                                    _showCustomerSnack('Customer added.');
-                                  } catch (_) {
-                                    if (!_scopeCurrent(captured, storeId) ||
-                                        !sheetContext.mounted)
-                                      return;
-                                    setSheetState(() {
-                                      isSaving = false;
-                                      formError = 'Could not save customer.';
-                                    });
-                                  }
-                                },
-                          icon: isSaving
-                              ? const SizedBox(
-                                  width: 16,
-                                  height: 16,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                  ),
-                                )
-                              : const Icon(Icons.person_add_alt_1_outlined),
-                          label: const Text('Save customer'),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
+    if (storeId == null) return;
+    final MerchantStoreView view = (key: captured, storeId: storeId);
+    var needsReview = false;
+    setState(() => _creatingCustomer = true);
+    try {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      final saved = await Navigator.of(context).push<CustomerContract>(
+        MaterialPageRoute<CustomerContract>(
+          settings: const RouteSettings(name: '/customers/new'),
+          builder: (_) => guardMerchantStoreView(
+            view,
+            CustomerProfileCreateEditor(
+              view: view,
+              onUnconfirmed: () => needsReview = true,
+            ),
+            fullPage: true,
           ),
-        );
-      },
-    );
-  }
-
-  Widget _buildLoading() {
-    return Center(
-      child: CircularProgressIndicator(
-        color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
-      ),
-    );
-  }
-
-  Widget _buildCustomerList() {
-    if (_error != null) {
-      return _centerState(
-        icon: Icons.error_outline_rounded,
-        title: 'Could not load customers',
-        subtitle: _error!,
-        action: TextButton.icon(
-          onPressed: _loadCustomers,
-          icon: const Icon(Icons.refresh_rounded),
-          label: const Text('Retry'),
         ),
       );
-    }
-
-    if (_customers.isEmpty) {
-      if (_query.trim().isNotEmpty || _selectedSegmentId != null || _page > 1) {
-        return _centerState(
-          icon: Icons.search_off_rounded,
-          title: 'No matching customers',
-          subtitle: _selectedSegmentId != null
-              ? 'No customers match this segment on the current page.'
-              : 'Try another search or return to the previous page.',
-        );
+      if (!_scopeCurrent(captured, storeId)) return;
+      if (!_mayPresent) return;
+      if (saved == null) {
+        // An unsent cancel preserves the existing query/list/scroll. A lost
+        // reply rechecks current data without claiming save completion.
+        if (needsReview) await _loadCustomers();
+        return;
       }
-      return _centerState(
-        icon: Icons.people_outline_rounded,
-        title: 'No customers yet',
-        subtitle: 'Create a customer profile or wait for the first order.',
-        action: FilledButton.icon(
-          onPressed: _showCreateCustomerSheet,
-          icon: const Icon(Icons.person_add_alt_1_outlined),
-          label: const Text('Add customer'),
-        ),
-      );
+      setState(() {
+        _selectedSegmentId = null;
+        _query = '';
+        _searchController.clear();
+        _resetPages();
+      });
+      await _loadCustomers();
+      if (_active && _mayPresent && _scopeCurrent(captured, storeId))
+        _showCustomerSnack('Customer added.');
+    } finally {
+      if (_scopeCurrent(captured, storeId))
+        setState(() => _creatingCustomer = false);
     }
-
-    final customers = _filteredCustomers;
-    if (customers.isEmpty) {
-      return _centerState(
-        icon: Icons.search_off_rounded,
-        title: 'No matching customers',
-        subtitle: 'Try another name, email, phone, or GSTIN.',
-      );
-    }
-
-    return RefreshIndicator(
-      color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
-      onRefresh: _loadCustomers,
-      child: ListView.builder(
-        padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
-        itemCount: customers.length,
-        itemBuilder: (context, index) => _customerCard(customers[index]),
-      ),
-    );
-  }
-
-  Widget _customerCard(CustomerContract customer) {
-    final status = _status(customer);
-    final email = customer.email;
-    final canOpen = email != null && email.trim().isNotEmpty;
-    void openCustomer() {
-      if (!canOpen) return;
-      Navigator.pushNamed(
-        context,
-        AppRoutes.customerDetail,
-        arguments: {'email': email, 'customer': customer},
-      ).then((_) => _loadCustomers());
-    }
-
-    return AccessibleTapRegion(
-      label:
-          '${_customerName(customer)}, $status customer, ${customer.orderCount} orders, ${_money(customer.totalSpent)} spent',
-      hint: canOpen ? 'Open customer details' : 'Customer has no email address',
-      onTap: canOpen ? openCustomer : null,
-      child: InkWell(
-        onTap: canOpen ? openCustomer : null,
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          margin: const EdgeInsets.only(bottom: 10),
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            color: colors.card,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: colors.cardBorder),
-          ),
-          child: Row(
-            children: [
-              CircleAvatar(
-                radius: 22,
-                backgroundColor: mobile_tokens.LetbuyyColorTokens.brandPrimary
-                    .withValues(alpha: 0.12),
-                child: Text(
-                  _initials(customer),
-                  style: TextStyle(
-                    color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            _customerName(customer),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              color: colors.textPrimary,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                        ),
-                        _statusChip(status),
-                      ],
-                    ),
-                    const SizedBox(height: 5),
-                    Text(
-                      customer.email ?? customer.phone ?? 'No contact',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: colors.textSecondary,
-                        fontSize: 12,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Wrap(
-                      spacing: 10,
-                      runSpacing: 6,
-                      children: [
-                        _miniMetric(
-                          Icons.shopping_bag_outlined,
-                          '${customer.orderCount} orders',
-                        ),
-                        _miniMetric(
-                          Icons.payments_outlined,
-                          _money(customer.totalSpent),
-                        ),
-                        if (_nonEmpty(customer['last_order_at']) != null)
-                          _miniMetric(
-                            Icons.history_rounded,
-                            _shortDate(customer['last_order_at'].toString()),
-                          ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 8),
-              Icon(Icons.chevron_right_rounded, color: colors.textTertiary),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _statusChip(String status) {
-    final color = status == 'active' ? colors.success : colors.warning;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Text(
-        _titleCase(status),
-        style: TextStyle(
-          color: color,
-          fontSize: 11,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-    );
-  }
-
-  Widget _miniMetric(IconData icon, String value) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, color: colors.textTertiary, size: 14),
-        const SizedBox(width: 4),
-        Text(
-          value,
-          style: TextStyle(color: colors.textSecondary, fontSize: 12),
-        ),
-      ],
-    );
-  }
-
-  Widget _centerState({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    Widget? action,
-  }) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, color: colors.textTertiary, size: 48),
-            const SizedBox(height: 12),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: colors.textPrimary,
-                fontWeight: FontWeight.w800,
-                fontSize: 16,
-              ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              subtitle,
-              textAlign: TextAlign.center,
-              style: TextStyle(color: colors.textSecondary),
-            ),
-            if (action != null) ...[const SizedBox(height: 14), action],
-          ],
-        ),
-      ),
-    );
   }
 
   String _customerName(CustomerContract customer) {

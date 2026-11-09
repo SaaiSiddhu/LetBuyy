@@ -1,0 +1,154 @@
+{
+  "at": "2026-11-05T17:43:32.834333+00:00",
+  "status": "LOCAL_QUALIFICATION_RECORDED_NATIVE38_OUTCOME_UNRECOVERED_CURRENT_SOURCE_COUPONS1",
+  "base_source": "Analytics3:3825de3424739ed105f842a151f4ae9a5f2379936911885833da89b6bc04d3d7",
+  "preimages": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-frontend-preimages.json",
+  "protected_inventory_client_sdk_models": "InventoryService/SDK/models all unchanged from current-turn entry, fresh full1424PASS/1protectedStaffFAIL and114governance. Historical5195baseline/626parsed receipts retained; raw temporary baselines unavailable.",
+  "implemented": [
+    "Canonical WarehouseListScaffold shared by Locations/Suppliers/PO/Transfers: responsive shell, one lazy scroll owner, pinned create, recovery/filter/page reachable atlarge text. Exact queries/commands unchanged.",
+    "Same-query refresh retains labelled prior snapshot; current401/403 retires values/counts, different page/query/store clears. Captured repeated/covered/outgoing actions guarded.",
+    "Long location locality/contact/document labels flow; transfer actions wrap; Operations values no longer shrink. Independent metric reads retained with mounted-first guards.",
+    "Receipt and shipment review now full pages with original line labels/remaining calculations/input parsing. Controllers still live until route.completed. Receipt dirtyBack exposes rapid-before-frame boundary.",
+    "Shared editor live PopEntry reads supplied dirty/busy callbacks synchronously while existing PopScope keeps confirmation. Clean iOS gesture and Customer/editor checks require full gate.",
+    "Root stock and all3read-only registers now use shared lazy scroll shell. Original stock predicates/folds and date/quantity/status mappings retained; primary stock rows publish while journal check still blocks actions.",
+    "Selectable notes and expansion states have distinct storage keys; long selected-product filters and history fields flow; reservation selector is canonical draft/Apply sheet.",
+    "Short stock/scanned adjustment sheets retain exact signed parser, reasons, quantities and command identity; controllers live through actual route completion.",
+    "Barcode scanner retains one camera/manual route, controller and permission/lifecycle authority; synthetic plugin tests only.",
+    "Creation variant chooser exposes complete original labels/IDs with explicit Apply; review completion is route-safe.",
+    "Bootstrap retry no longer requires an existing selected view; current StoreContext key/generation and route still bound."
+  ],
+  "diagnostics": {
+    "v1": "0PASS/8FAIL, includes2RawTooltip test selector errors; not8appbugs",
+    "v2": "0PASS/8real failures after selector correction: heldcompletion2, covered/disposedactions2, contact/locality4",
+    "v3": "38PASS/12FAIL from incorrect ModalRoute dependency in initState; corrected withoutchanging store preparation semantics",
+    "v4": "48PASS/2lazy-list test selector misses; scroll before actual long-contact assertions added",
+    "v5": "14PASS/6real prior-snapshot retention failures on original PO/Transfer; same shell then migrated",
+    "v6": "127PASS/1old textClose selector mismatch after Supplier unavailable state became canonical sheet; original denial/no-command assertions preserved",
+    "v7": "0PASS/2real receipt draft loss on immediate Back",
+    "v8": "128PASS/2receipt rapidBack failures; then shared live reader fix",
+    "v9": "11test-file compile failures from missing explicit Flutter ValueListenable import; fixed",
+    "v10": "189PASS/2confirmation Cancel selector ambiguity; old form Cancel remains under dialog; selector scoped to actual confirmation",
+    "v11": "0PASS/1real repeatedConfirm causes Navigator lock and bool returned as PurchaseOrderInput",
+    "v12": "190PASS/2new receipt test cast mismatch after native field became CustomTextField; selector corrected withoutchanging assertions",
+    "v13": "6PASS/6real small/large-text root and history/reservation findings; all4repaired Back/creation/editor tests pass",
+    "v14": "192PASS/8FAIL:2actual SelectableText nested-scroll PageStorage bool/double collisions,5old action/Apply-selector/layout assumptions and1disabled-refresh trigger timeout. Distinct storage keys and actual supported navigation/choice/query triggers fixed; original no-leak/data/recovery assertions retained",
+    "v15": "200PASS/0FAIL; all focused suites. Four metadata scrollIdentity additions first helper used wrong cwd and made no edit; corrected after terminal15. No application issue inferred.",
+    "v16": "0PASS/2test field-index/scroll-layout assumptions; not a confirmed keyboard app failure",
+    "v17": "0PASS/2real adjustment dropdown layout overflows; canonical sheet and bounded reason field repaired",
+    "v18": "202PASS",
+    "v20": "3PASS/4real covered actions and repeated option completion; original commands preserved",
+    "v21": "209PASS",
+    "v22": "0PASS/4scanner lifetime/manual form/controller errors; same-route camera/manual ownership repaired",
+    "v24": "213PASS",
+    "v26": "0PASS/2selected variant clipping; canonical complete option selection repaired",
+    "v27": "215PASS",
+    "v29": "0PASS/2rapid Back Location/PO draft loss; live dirty callbacks repaired",
+    "v30": "Own mis-scoped source-edit compile failure retained; restored only verified creation preimage and reapplied explicitly scoped UI changes",
+    "v31": "217PASS",
+    "v32": "0PASS/8real bootstrap Refresh dead before selected view; added read-only context/generation/route guards",
+    "v33": "225PASS",
+    "v34": "226PASS; includes held journal blocking commands while primary stock is visible"
+  },
+  "pending": [
+    "Complete iOS2 compile terminal and independent artifact/source/device-state readback.",
+    "Recover task emulator/native fixture controls and rerun bounded Warehouse and Coupon web-mobile readback.",
+    "Continue complete frontend migration; AI/security/supporting discovery prepared; final unique denominator unresolved.",
+    "Retain all frozen/deferred/forbidden capability policies and no backend/persistence/provider/activation/push/merge/deployment expansion."
+  ],
+  "programme": "119applicable open;120/121excluded;122paused;51frozen;unique UI denominator remains null",
+  "focused_v15": {
+    "pass": 200,
+    "fail": 0,
+    "scope": "Actual composed Warehouse/query/recovery/receipt/create/lifecycle and retained Customer tasks/UI foundations. Not full Flutter, DB/device/hosted qualification."
+  },
+  "current_source": {
+    "sha256": "c6cdc0e5e85cafa2e699ba482d151087a8031ca13045ea61e8780fd2aaef6846",
+    "entries": 7504,
+    "manifest": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-warehouse-v6.source.json"
+  },
+  "focused_v34": {
+    "passed": 226,
+    "failed": 0,
+    "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-focused-v34.log"
+  },
+  "parsed_v30": {
+    "checks": 616,
+    "all_unchanged": true,
+    "output": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-source2-preflight-preservation.json"
+  },
+  "source2_full_diagnostic": {
+    "passed": 1368,
+    "failed": 2,
+    "reason": "One exact presentation-title selector stale; same pre-existing protected Staff failure. Sequential qualifier correctly stopped before later gates.",
+    "isolated_test_dependency": "Existing transfer fixture relied on earlier storage initialization; explicit empty test storage added; exact title corrected. Isolated transfer1PASS.",
+    "stronger_creation_assertion": "A blocked Close-text tap targeted the underlying editor instead of current sheet. Select actual hit-testable top-sheet Close, assert each dismissal then original PO return. Creation suite19PASS, no hit-test warning.",
+    "application_bytes_changed_since_source2": false,
+    "test_paths_changed": [
+      "apps/merchant/mobile/test/mobile_services_test.dart",
+      "apps/merchant/mobile/test/warehouse_create_form_test.dart"
+    ],
+    "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-source2-full-flutter.log"
+  },
+  "source3_diagnostic": {
+    "full_flutter": "1369PASS/1knownStaffFAIL/0SKIP",
+    "analysis": "2test-only unused/unnecessary imports removed; no application-byte delta",
+    "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-source3-full-flutter.log"
+  },
+  "native36": "COMPILED_MOBILE_UI_WAREHOUSE_ANDROID_WEB_V36_DIAGNOSTIC.json",
+  "source5": {
+    "focused38": "40PASS/0FAIL; statuscontrast, receipt pointer, page2 exact location/adjustment and existing presentation/keyboard/read suites",
+    "negative35": "New test compile-only error: null passed to Object fixture argument; corrected test type, no app diagnosis",
+    "negative36": "5PASS/2real failures: ordered light badge ratio1.96<4.5 and absent second-page chooser; receipt pointer4PASS",
+    "fixed37": "39PASS/1test payload-key mismatch: existing wire uses adjustment, not UI parameter delta; corrected exact existing key; no domain change",
+    "parsed_preservation": {
+      "checks": 621,
+      "all_unchanged": true,
+      "script": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/ui-preservation-check-v31.dart"
+    },
+    "changes": [
+      "Shared canonical semantic status badges in Warehouse documents, location flags and stock rows; original labels, branch order and quantities retained.",
+      "Stock-location chooser now uses existing strict readLocationsPage+shared bounded choices, preserving all-status population/page20/name_asc; user-driven page/search and exact selected id. No new service/SDK/model changes."
+    ],
+    "native_focus": "App widget pointer4PASS does not establish Android focus. Native37 prepared with safe pre/post numeric-field observations; no input unless actual native focus confirmed.",
+    "android37": "Prepared, not started",
+    "ios16": "Replanned compile-only for source5; old unexecuted source4 script retained"
+  },
+  "native37": "COMPILED_MOBILE_UI_WAREHOUSE_ANDROID_WEB_V37_DIAGNOSTIC.json",
+  "source6": {
+    "changes": [
+      "Canonical CustomTextField introduces Semantics(container:true) only, retaining every original native TextFormField argument and entire prior build/validation/focus/controller bodies after unwrapping that boundary.",
+      "Existing strict PO/Transfer readers now have one shared durable full document view, including all supplied lines, original quantities/costs/references, preserved list query/scroll return and bounded explicit refresh.",
+      "Document and original receipt read entries reject stale query/covered/disposed callbacks. Denied/not-found reads retire private prior data;503 retains labelled coherent prior document."
+    ],
+    "diagnostics": {
+      "negative39": "3PASS/4real receipt semantic-boundary failures:144/164dp target versus76dp field in both themes. Actual native37 bounds/screenshot explain tap above visible input; no receipt command submitted.",
+      "fixed40": "47PASS/5test-harness failures: guessed nonexistent field_copy_presentation filename and4SemanticsHandle teardown after widget verification. Actual boundary assertions succeeded; corrected real field_copy_reflow path and try/finally handle lifetime.",
+      "fixed41": "59PASS/0FAIL canonical fields, receipt semantic-center taps, copy reflow, keyboard, shell and inventory regressions.",
+      "documents42": "26PASS/6new test selector errors:4unbuilt lazy-entry selectors atlarge text and2RawTooltip/IconButton casts. No app read/command defect inferred; original assertions retained with actual scrolling/button predicates.",
+      "documents43": "32PASS/0FAIL, includes16document cases.",
+      "negative44": "0PASS/2real new-entry disposed-context failures; mounted-first guards added.",
+      "fixed45": "84PASS/0FAIL, includes18document cases and preserved shared field/receipt/query/recovery tests."
+    },
+    "full_flutter": {
+      "pass": 1394,
+      "fail": 1,
+      "skip": 0,
+      "known_failure": "Unchanged protected Staff hosted invitation namespace isolation test"
+    },
+    "analyses": {
+      "app_issues": 0,
+      "ui_kit_issues": 0
+    },
+    "parsed_preservation": {
+      "checks": 626,
+      "all_unchanged": true,
+      "script": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/ui-preservation-check-v32.dart"
+    },
+    "governance": "44running; notaccepted until terminal and actualclonebytes",
+    "android": "38prepared/pinned; notstarted",
+    "ios": "16source6compile-only prepared; notstarted",
+    "official_semantics_reference": "https://api.flutter.dev/flutter/widgets/Semantics/container.html"
+  },
+  "current_coupons_source": "MOBILE_UI_COUPONS_PROGRESS.json",
+  "native38_recovery": "MOBILE_UI_CONTINUATION_RECOVERY_2026_11_05.json"
+}

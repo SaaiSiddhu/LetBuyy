@@ -1,0 +1,35 @@
+{
+  "at": "2026-11-06T23:24:43.425330+00:00",
+  "run": "e1efff14bcbd",
+  "source_sha256": "999e0d6b6ca0b1064b4b0b4f3dcacaaabd050a44105d5c1a9ecb2be51de44184",
+  "verdict": "FAILED_FIRST_UPDATE_AFTER_PICKER;BOUNDED84_FUNCTIONAL_READBACK_REMAINS_SEPARATE",
+  "native_ui": {
+    "exit": 65,
+    "native_product_saved": false,
+    "normal_auth": false,
+    "run_id": "e1efff14bcbd"
+  },
+  "backend": {
+    "exit": 1,
+    "runner_pid": 41809,
+    "finished_at": "2026-11-06T23:23:52.674271+00:00"
+  },
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "source_unchanged": true,
+  "artifact": {
+    "at": "2026-11-06T23:19:53.582401+00:00",
+    "source_sha256": "999e0d6b6ca0b1064b4b0b4f3dcacaaabd050a44105d5c1a9ecb2be51de44184",
+    "artifact_manifest_sha256": "9ad323fbd58726289ff6c805c1fd9e27014d877c1a55aee219caf5db236e0ca4",
+    "files": 401,
+    "installed_equal_retained_normal_simulator_build": true,
+    "scope": "Artifact custody only; UI acceptance separate. No physical or release proof."
+  },
+  "note": "Upload201 and Media201 passed; one native Update tap emitted no product call. No accepted phase marker fabricated."
+}

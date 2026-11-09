@@ -1,0 +1,41 @@
+{
+  "run_id": "9fddab6d3827",
+  "passed": 4,
+  "failed": 0,
+  "skipped": 0,
+  "cancelled": 0,
+  "source_identity": {
+    "baseline": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+    "sha256": "36d4099104881206df1eb5423b2018f893ee2691d419123f323b147e89fd03ed",
+    "entries": 7251,
+    "captured_at": "2026-11-03T00:25:02.945387+00:00",
+    "scope": "Code/config/authority inputs held throughout local Liquid browser lane; captured after runner launch and to be rechecked after cleanup. Reports/evidence and ephemeral supervisor markers are separate.",
+    "unchanged_at_terminal": true
+  },
+  "commands": [
+    "node scripts/governance/run-executable-suites.mjs --jobs 1 --no-reap --suite tests/owned-db/published-storefront-recovery-browser.postgres.test.ts --log-dir /private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/liquid-browser-v1-logs --json-out /private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/liquid-browser-v1.json"
+  ],
+  "environment": "Three compiled local Next runtimes, actual Gateway/PostgREST/owned PostgreSQL; verified task TLS listener, exact tenant/checkout loopback origins, ephemeral SPKI; local one-use challenge SDK/verifier. No hosted provider or CAPTCHA.",
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "observations": [
+    "Normal owner password sign-in; actual canonical Liquid editor autosave/preview/publication",
+    "Published saved heading visible in real public Commerce HTML; newer unpublished draft does not change live heading",
+    "Actual buyer catalog/product navigation and Buy now use canonical server cart and HTTPS checkout handoff",
+    "Exactly one cart and zero orders: this journey stops before order/payment creation",
+    "Original owner document retained across normal logout and independently authorized staff sign-in; stale save/publication403 before effects",
+    "Rollback preserves newer working draft; exact original-key retry yields same committed rollback and no duplicated release/receipt/audit/outbox; stale fresh intent409"
+  ],
+  "limits": [
+    "This source evidence does not certify all themes/sections or renderer sandbox/performance",
+    "No new native theme editor observation",
+    "No order placement, provider money effect or signed release",
+    "Source baseline/WIP remains uncommitted and schema reconciliation pending"
+  ]
+}

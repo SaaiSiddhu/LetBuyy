@@ -1,0 +1,254 @@
+{
+  "status": "SOURCE_LOCAL_IMPLEMENTED_BOUNDED_QUALIFICATION_IN_PROGRESS",
+  "ownerDecision": "Approved3November2026: existing collections is sole manual and smart owner",
+  "migration": 435,
+  "pairedRollback": true,
+  "hostedActions": 0,
+  "legacySource": "Retained and sealed; no table deletion",
+  "qualification": {
+    "sql": {
+      "runId": "b388d659859f",
+      "tests": 9,
+      "assertionsPassed": 9,
+      "assertionsFailed": 0,
+      "skipped": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "privateReport": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/unified-collection-db-v4.json"
+    },
+    "api": {
+      "runId": "26d4fb5d38d6",
+      "tests": 12,
+      "assertionsPassed": 12,
+      "assertionsFailed": 0,
+      "skipped": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "privateReport": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/unified-collections-api-v3.json"
+    },
+    "unicodeAndPreview": {
+      "runId": "8ffd9741898a",
+      "tests": 16,
+      "assertionsPassed": 16,
+      "assertionsFailed": 0,
+      "skipped": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "historicalMembershipRetirement": {
+      "runId": "b0bd634c0ad9",
+      "passed": 19,
+      "failed": 0,
+      "skipped": 0,
+      "scope": "Original361 strict retirement on separately owned physical361 SQL database; all current API journeys on untouched435 database. Original rollback remains unchanged."
+    },
+    "nativeV10BoundedCheckpoint": "NATIVE_CATALOG_V10_BOUNDED_CHECKPOINT.json",
+    "currentAndroidWeb": "UNIFIED_COLLECTION_ANDROID_WEB_V12_QUALIFICATION.json",
+    "currentRegressionAndGovernance": "UNIFIED_COLLECTION_CURRENT_GATES.json"
+  },
+  "sourceChecks": {
+    "gatewayUnit": {
+      "passed": 2068,
+      "failed": 0,
+      "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/unified-gateway-unit-v3.log"
+    },
+    "webLifecycle": {
+      "passed": 11,
+      "failed": 0,
+      "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/unified-web-lifecycle-v1.log"
+    },
+    "nativeRecovery": {
+      "passed": 19,
+      "failed": 0,
+      "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/unified-mobile-recovery-v2.log"
+    },
+    "sharedDartConformance": {
+      "passed": 3,
+      "failed": 0,
+      "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/unified-dart-models-v1.log"
+    },
+    "sharedTsConformance": {
+      "passed": 3,
+      "failed": 0,
+      "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/unified-ts-contracts-v1.log"
+    },
+    "nativeFull": {
+      "passed": 905,
+      "failed": 0,
+      "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/unified-mobile-full-v4.log"
+    },
+    "webFull": {
+      "phasePasses": [
+        566,
+        818,
+        295,
+        13
+      ],
+      "failed": 0,
+      "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/unified-web-full-v3.log"
+    },
+    "gatewayWebSdkTypes": "passed; collected terminal exit0",
+    "nativeAnalysis": "v8 clean; collected exit0",
+    "sdkContractCohort": {
+      "passed": 15,
+      "failed": 0,
+      "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/unified-sdk-contracts-v3.log"
+    },
+    "focusedWebLifecycleCurrent": {
+      "passed": 15,
+      "failed": 0
+    },
+    "sharedDartConformanceCurrent": {
+      "passed": 4,
+      "failed": 0
+    },
+    "tsAndSdkCurrent": {
+      "passed": 8,
+      "failed": 0
+    },
+    "localNetworkDenyList": {
+      "passed": 5,
+      "failed": 0
+    },
+    "collectionVisualRecovery": {
+      "passed": 19,
+      "failed": 0,
+      "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/collection-visual-recovery-v1.log"
+    }
+  },
+  "corrections": [
+    "A cross-kind delete must bind its collection type before effects; ninth SQL check proves refusal and delete replay after soft deletion.",
+    "Raw metadata writes are revoked. Manual parent list no longer requests update-dependent row locks; metadata and membership revisions bracket the fixed count read. Twelve mounted API/population checks pass.",
+    "Existing native membership menu label preserved.19 lifecycle/recovery checks pass.",
+    "Web fresh-conflict review reconstructs retained fields after restart, rather than replacing the draft with current fields."
+  ],
+  "pending": [
+    "Broader native manual metadata CRUD, all rule/operator combinations, native stale-conflict/delete/staff UI and rendered buyer collection HTML acceptance.",
+    "Existing retained-source/rollback proofs pass; assess whether wider populated-data cutover evidence is required, using only synthetic owned fixtures, never private backups.",
+    "Continue the other original122 ledger entries; no all-feature/provider/hosted/release acceptance."
+  ],
+  "files": [
+    {
+      "path": "database/supabase/migrations/435_unified_collection_authority.sql",
+      "sha256": "a9943529a33266d63e97e0d9b12cf3770cf2f2a054c2542c769649bfa83a177e"
+    },
+    {
+      "path": "database/supabase/rollback/435_unified_collection_authority.rollback.sql",
+      "sha256": "3ee22f525444bf340402a211b0231f3f4cf70c01e88b005ea15828defe623feb"
+    }
+  ],
+  "compiledBrowserV1": {
+    "status": "FAILED_UNACCEPTED",
+    "runId": "f2cd878d7b96",
+    "passed": 3,
+    "failed": 3,
+    "skipped": 0,
+    "cleanupEmpty": true,
+    "source_sha256": "c6ab54a0951cf92158459881d01b40d5b00d9aa534335fed529b4aeed19d4e32",
+    "sourceEntries": 7403,
+    "sourceHeldAndTerminalVerified": true,
+    "archive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/unified-collection-browser-v1-qualified-source",
+    "finding": "First new test asserted lost-reply count as soon as pending recovery painted, before its HTTP attempt settled. No collection write was recorded. Test closed page with retained original intent; subsequent smart controls were correctly disabled. Wait for retry control enabled before asserting a settled request. No collection acceptance claimed."
+  },
+  "compiledBrowserV3": {
+    "status": "BOUNDED_LOCAL_COMPILED_BROWSER_VERIFIED",
+    "runId": "73ecc4106264",
+    "source_sha256": "6287abad4f99d45fda233bb6156210c7c775ffa2e84055c015840ba8d4d95ac6",
+    "passed": 6,
+    "failed": 0,
+    "skipped": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    }
+  },
+  "compiledBrowserV4": {
+    "status": "BOUNDED_LOCAL_COMPILED_BROWSER_VERIFIED",
+    "runId": "933431604aa3",
+    "source_sha256": "796e7926441fbbd6b62035744b5e70ac42911f4781878d34d23ef126d84e33a0",
+    "passed": 6,
+    "failed": 0,
+    "skipped": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    }
+  },
+  "unicodeSemantics": "Default libc casing mismatch was reproduced. Existing deterministic ICU und-x-icu qualified; migration refuses missing/incompatible capability.2016 representative comparisons pass.",
+  "retirementRegression": {
+    "runId": "b0bd634c0ad9",
+    "passed": 19,
+    "failed": 0,
+    "skipped": 0,
+    "scope": "Original361 physical SQL fences and untouched current435 API stories; unchanged original rollback. Current broader cohort rerun pending."
+  },
+  "nativeFixture": {
+    "qualification": "UNIFIED_COLLECTION_ANDROID_WEB_V12_QUALIFICATION.json",
+    "nativeRun": "ee1f0bbce004",
+    "status": "BOUNDED LOCAL ANDROID/WEB/DATABASE PASS",
+    "controller": "normal ADB companion0; canonical runner0; no auth/code/session injection",
+    "artifact": "Exact original APK/source archived and installed hash read back; local debug only"
+  },
+  "nativeBrowserNamespace": {
+    "negativeReproduction": "3 synthetic production candidate cross-profile leaks reproduced in native-browser-namespace-negative-v1.log",
+    "fix": "Existing environment/issuer persistence namespace used for pending and candidate keys. Production key remains unchanged.",
+    "focusedPassed": 61,
+    "fullMobileIncludesFourthLocalOriginSeparation": true,
+    "scope": "Source/unit only; current actual APK journey starting.",
+    "actualNativeAuthentication": "v10 fresh normal Accounts/automatic Android return and canonical inspection/exchange passed; whole suite failed separately at missing Smart BFF route."
+  },
+  "currentNativeRun": {
+    "name": "native-catalog-v12",
+    "status": "BOUNDED_LOCAL_PASS",
+    "runId": "ee1f0bbce004",
+    "source_sha256": "f501e0749318a4dcc49f089a128efb8f7d523d0873b54ce8f3506f1dcc251c0f",
+    "apk_sha256": "7ebd67a2bd1ded7b93ee80db6602091b866d5895cd9db5e1087d7774d1e262ec",
+    "sourceHeldArchivedAndVerified": true,
+    "runnerExit": 0,
+    "uiExit": 0,
+    "cleanup": "empty",
+    "scope": "One compound normal Accounts/manual membership/smart metadata publication/restart recovery/web\u2194mobile/public API story; not entire-feature acceptance."
+  },
+  "androidReturnRepair": {
+    "sourceOnly": "Exact existing callback wrapped into fixed Merchant package intent on Android; no registry/schema/issuer change. Staging Gradle host spelling corrected to existing canonical accounts-staging host.",
+    "authCoreTests": 56,
+    "identityTests": 71,
+    "identityBoundaryTests": 6,
+    "types": "passed",
+    "actualArtifact": "Unaccepted pending current run; v5 exposed the callback fallback; v6 failed Gradle metadata TLS before APK installation."
+  },
+  "currentAndroidWebV14": {
+    "status": "BOUNDED_LOCAL_PASS",
+    "source_sha256": "c32833a275d63a97c39d21d3f889065f0e1f4ae4b3a85676cc1c61b8d6ee2229",
+    "apk_sha256": "8870cb7429a14d3286f08a83056e60c1d9c217d268c74f532fa49ae10c5bc9b0",
+    "runId": "9d62888d1daa",
+    "qualification": "UNIFIED_COLLECTION_ANDROID_WEB_V14_QUALIFICATION.json",
+    "noFullFeatureOrProductionClaim": true
+  }
+}

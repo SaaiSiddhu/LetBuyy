@@ -1,0 +1,17 @@
+{
+  "at": "2026-11-05T19:27:53.956560+00:00",
+  "status": "LAUNCHING_SOURCE_FROZEN",
+  "root": "/private/tmp/letbuyy-merchant-local-20261106-25feac2c",
+  "launcher": "/private/tmp/letbuyy-merchant-local-20261106-25feac2c/run-warehouse-v41.py",
+  "inputs": {
+    "android-device-receipt-warehouse-v41.json": "3ccc70ebb03c6414c695a7b1e96312702b65a9bd6bfaa89666e197cba44b7a8d",
+    "android-warehouse-auto-v41.py": "bb673b846733896bf0b565113b0d7881874be9bd87a00c40750cb168871dadbd",
+    "run-warehouse-v41.py": "1c9a387dde7b050689aabc14a264372a2ac20e509b586b13e8b684fdce1b3c3e"
+  },
+  "source_sha256": "2d70c5e307ef5fd263f30d85d5c905069e5d6f80d3d78ece70425c3459b69d60",
+  "source_inputs": 8442,
+  "source_manifest": "inventory-search-source-v1.source.json",
+  "scope": "Same original native40 fixture/controller/assertions; only run version advanced. No input retries/selector weakening. Application search lifetime fix must prove complete normal native text entry and all downstream stock checks.",
+  "protected_fixture_sha256": "12917f372dee1ecf6610c8888af1caa9a5a80b545388ba0b58570c6b9c6f8510",
+  "launched_at": "2026-11-05T19:31:12.608337+00:00"
+}

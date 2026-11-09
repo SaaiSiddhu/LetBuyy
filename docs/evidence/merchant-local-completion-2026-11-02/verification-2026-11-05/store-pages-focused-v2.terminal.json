@@ -1,0 +1,29 @@
+{
+  "started_at": "2026-11-06T05:19:22.616840+00:00",
+  "supervisor_pid": 47256,
+  "source": "store-pages-source-v2",
+  "source_sha256": "6c1e2a2d3db86532dbccb72dfcdbe94f19e074d91078452d8818533d39b99951",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "--timeout",
+    "30s",
+    "test/store_membership_pagination_test.dart",
+    "test/store_discovery_transport_test.dart",
+    "test/settings_optional_reads_test.dart",
+    "test/store_switcher_presentation_test.dart",
+    "test/store_session_boundary_test.dart",
+    "test/staff_scope_boundary_test.dart",
+    "test/staff_environment_isolation_test.dart",
+    "test/staff_retry_contract_test.dart",
+    "test/staff_invitation_contract_test.dart",
+    "test/staff_ui_test.dart"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 47258,
+  "exit_code": 0,
+  "finished_at": "2026-11-06T05:19:33.903910+00:00",
+  "source_unchanged": true,
+  "source_readback_sha256": "6c1e2a2d3db86532dbccb72dfcdbe94f19e074d91078452d8818533d39b99951"
+}

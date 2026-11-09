@@ -1,0 +1,17 @@
+{
+  "at": "2026-11-06T16:24:40.835224+00:00",
+  "source_sha256": "e8cc94edd6649a1fbbeebf1f797d1d65a4959fe87851467d1c37f28399ddc0a4",
+  "run_id": "d157e907931b",
+  "status": "UNPLANNED_NATIVE_UPLOAD503_BEFORE_NAMED_FAULT_NOT_ACCEPTANCE",
+  "observation": "Native app retained its original upload/recovery state, but the request503 occurred before the injected receipt completion fault (marker absent); 16second request latency, route/v1/*, no authenticated principal in error event. Cause not established. No claimed native receipt-fault acceptance.",
+  "next": "native69 has one real API readiness check per module, error-code-only API observation, sanitized REST status/latency, robust observed-value input from68b integrated before launch, and real web KYC public-projection/UI readback. No masking retry, app/backend change or weakened fault/conservation expectations.",
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "controller": "Original UI retired pre-input; replacement stopped only after Node backend terminal, separately recorded in native68b-preinput-companion-handoff.json."
+}

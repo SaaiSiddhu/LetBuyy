@@ -1,0 +1,24 @@
+{
+  "at": "2026-11-06T11:53:51.397826+00:00",
+  "status": "HISTORICAL_INITIAL_AUDIT;THREE_DEFECTS_CONFIRMED_AND_REPAIRED_BY_SOURCE28",
+  "source_sha256": "dc5e2e0af9f5da7b4e2ec11a68b3c343cb5953daa83de34009a4c5e6fb228c8c",
+  "observations": [
+    "MediaService now captures account/site across upload\u2192create, but it still has no durable original upload/create command identity or stage across interruption. Current error asks for refresh; uncertain command acceptance remains open.",
+    "Gateway protectedMutationIdempotency already includes /upload and /media. Reuse its existing canonical IdempotencyExecutionAdapter; do not invent a second receipt store or assume these routes lack receipts.",
+    "Generic readJsonBodySnapshot handles only application/json. For multipart uploads the request hash includes content_type (including generated boundary), content_length and empty raw_body. New multipart construction may conflict for identical bytes under a saved key; actual replay/mismatch/concurrency behavior needs owned positive controls.",
+    "The generic middleware has explicit fresh-authority-before-replay checks for products/store settings/shipping settings. Upload/media routes are not in those explicit branches. Outer tenant/session enforcement must be traced and owned current/revoked-owner/staff checks run before claiming a replay bypass.",
+    "Media uses merchant library records plus physical storage registry. Trace their distinct roles and existing register/cleanup/receipt boundaries before choosing any cutover; no new table, runtime or schema change is authorized by this audit."
+  ],
+  "next": [
+    "Trace complete upload/media route and outer tenant/session middleware plus adapter receipt semantics.",
+    "Reproduce positive same-key/same-file replay, changed-byte mismatch, concurrent calls, lost responses at each stage, current permission/revocation, original-account/site binding and source/readback conservation in an owned local Gateway/PG/storage fixture.",
+    "Then finish canonical command/input binding and durable client stage recovery; preserve existing data/receipts and do not silently allocate a new key on an uncertain effect.",
+    "Strict KYC canonical public DTO validation and actual Media Library web/mobile CRUD/native file selection/readback remain open."
+  ],
+  "boundaries": [
+    "No hosted/provider/private production operation",
+    "Source16 remains frozen during native65",
+    "No global cleanup, new persistence owner or authorization weakening"
+  ],
+  "current_readback": "verification-2026-11-05/media-recovery-v28-local-readback.json"
+}

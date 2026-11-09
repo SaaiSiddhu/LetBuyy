@@ -1,0 +1,95 @@
+{
+  "status": "BOUNDED_LOCAL_ANDROID_WEB_COLLECTION_LIFECYCLE_PASS",
+  "runId": "9d62888d1daa",
+  "tests": 1,
+  "passed": 1,
+  "failed": 0,
+  "skipped": 0,
+  "runnerExit": 0,
+  "normalUiControllerExit": 0,
+  "noResumerUsed": true,
+  "wallSeconds": 392.8,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "source": {
+    "baseline": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+    "broadSha256": "c32833a275d63a97c39d21d3f889065f0e1f4ae4b3a85676cc1c61b8d6ee2229",
+    "entries": 7409,
+    "exactCurrentArchive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v14/qualified-source",
+    "heldAndVerifiedAfterTerminal": true,
+    "deviceFixtureInputSha256": "a5b5124e4dd23e76524756d8119d8aadd64964e7deca5d5f7748edf0f65eb087",
+    "differentHashScopes": "Broad freeze includes all first-party code/config inputs; fixture subset covers mobile/Accounts/Merchant/Gateway/BFF/packages/schema and its transport helpers.",
+    "authorityHashes": {
+      "AGENTS.md": "b5bf6a65cf4050eec7867da0014f3dc483aeec86d223084a85d2f51c796ecbc9",
+      "GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md": "c3655482dca86907d7c801b4ef15810319f2d64cd5f8a8af67406da4d0f3500c",
+      "GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CANONICAL_SYSTEMS.md": "5099341c2a273ee0455857fbc613efd2aaa5621c5e829d531bded02e07661cb4"
+    }
+  },
+  "artifact": {
+    "sha256": "8870cb7429a14d3286f08a83056e60c1d9c217d268c74f532fa49ae10c5bc9b0",
+    "path": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v14/qualified-artifact/merchant-local-debug.apk",
+    "originalBytesRetained": true,
+    "buildMethod": "flutter-config-only-then-offline-gradle-debug",
+    "installedReadback": true,
+    "mode": "local Android debug; not release signing"
+  },
+  "acceptedBoundedStories": [
+    "Normal synthetic Accounts browser login, automatic Android return, fresh PKCE exchange and current native session/dashboard. No token/code/session injection.",
+    "Native manual membership order, actual committed reply loss, exact original-key retry, normal web read/save and native fresh ordered read. Exactly2membership receipts/audits/outbox.",
+    "Native Smart rule/publication, committed response loss, encrypted recovery across process restart, exact original request retry and saved preview. Normal web rule edit changes exact publicAPI matching products1\u21922; fresh native rule and preview readback.",
+    "Native manual metadata create and normal web read. Web newer edit causes native stale409; original draft is kept, explicit review reads new revision, new request saves reviewed draft and normal web reads it.",
+    "Normal web deletion while mobile editor is open causes typed canonical404. Cancel and process restart preserve original intent. Explicit discard rechecks the exact original key/body, confirms rejection, releases local intent, and allows a subsequent native create visible on web.",
+    "Native Smart deletion is absent from normal web list and publicAPI. Manual/smart tombstones preserve both catalog products."
+  ],
+  "database": {
+    "smart": {
+      "deleted": true,
+      "version": 3
+    },
+    "manual": {
+      "deleted": true,
+      "version": 4,
+      "description": "Synthetic kept mobile description"
+    },
+    "manual_audits": 4,
+    "manual_outbox": 4,
+    "smart_receipts": 3,
+    "manual_receipts": 4
+  },
+  "catalogProductsRetained": 2,
+  "visualReview": [
+    "native-deleted-target-discarded.png inspected: readable notice, correct remaining manual collection, New collection enabled after original request resolution.",
+    "Earlier same implementation screenshots and current UI-controller readback verify retained draft, disabled new action and saved preview. Full accessibility/large-text acceptance remains separate."
+  ],
+  "relatedGates": {
+    "gatewayUnitPassed": 2068,
+    "flutterPassed": 910,
+    "webPhasesPassed": [
+      576,
+      818,
+      295,
+      13
+    ],
+    "focusedWebRecoveryPassed": 16,
+    "focusedNativeRecoveryPassed": 11,
+    "staffGatewaySqlRun": "a1f9625646f5/12pass",
+    "currentSchemaListRetentionPassingSuites": "928d21944b1b/unified10,list1,retention1; whole run had a separate test-fixture failure retained and corrected in a1f9625646f5",
+    "governance": "v8:114pass,0fail/blocked/skip,1not-applicable on906127d implementation inputs; current broad pin differs only in validation locator. Not branch integration/release proof."
+  },
+  "limits": [
+    "Not all119 supported entries or full122 acceptance.",
+    "Normal staff browser/native journeys, every rule field/operator UI combination, buyer rendered collection HTML and broader metadata/media/accessibility cases remain separate.",
+    "A source-evidenced membership receipt-after-soft-delete issue is queued for owned reproduction; do not certify that recovery class.",
+    "Actual device story uses production-mode local Accounts/Merchant and actual BFF/Gateway modules with owned PostgreSQL, not a current compiled Workerd acceptance claim.",
+    "No iOS/physical hardware/provider/hosted/signed release/production action or readiness certification."
+  ],
+  "privateRun": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v14",
+  "controllerSha256": "e08457f4f2122467624c2932d76225c0b3ab489e8a6784c5edf92e3c167a3e1a",
+  "previousFailedRun": "UNIFIED_COLLECTION_ANDROID_WEB_V13_FAILED_CHECKPOINT.json"
+}

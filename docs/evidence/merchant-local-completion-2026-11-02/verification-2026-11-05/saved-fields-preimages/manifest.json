@@ -1,0 +1,13 @@
+{
+  "at": "2026-11-05T19:47:13.234376+00:00",
+  "source": "inventory-search-source-v1",
+  "files": {
+    "apps/merchant/mobile/lib/screens/settings/shipping_screen.dart": "a8b66afcd5821a1da5c9af9264d76117bc96dddb6eb65e17c124ccc2a48d1a75",
+    "apps/merchant/mobile/lib/screens/content/navigation_screen.dart": "e191fb4b4e7185036d17c34d85eb37c8162f542ede9c5e854d87f04cf3898cc1",
+    "apps/merchant/mobile/lib/services/shipping_tax_service.dart": "5747ad085d65130781dafec1212290ceae7900c74676126c5796c5deb3cf54e5",
+    "apps/merchant/mobile/lib/services/cms_service.dart": "ae68769544408c00f7fe447e22840fe1634d0e072f9217a2981126b41422bf11",
+    "packages/dart/models/lib/src/shipping_tax_contracts.dart": "5d8baac817a8b2708f8d485b094eefd5df1b91385b198ec18ca0b2f74bc3a915",
+    "packages/dart/api_client/lib/src/api_client.dart": "4bef9dbb72c9396a318d5de3bb4c33ee83adc66d72a09d0cc3bfc06e65ad92c8"
+  },
+  "scope": "Read-only preimages before prospective saved-field frontend bindings; current native41 inputs unmodified."
+}

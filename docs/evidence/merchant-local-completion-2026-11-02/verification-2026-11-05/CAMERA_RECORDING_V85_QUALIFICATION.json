@@ -1,0 +1,38 @@
+{
+  "at": "2026-11-07T09:49:07.701729+00:00",
+  "status": "SOURCE_QUALIFIED_IOS113_RUNTIME_IN_PROGRESS_ANDROID114_PREPARED",
+  "source": "merchant-camera-recording-source-v85",
+  "source_sha256": "0cb3bfe0736fb53a642e3e9b14bf033bd8d713d429b8e72a7fa31eb8dee6e279",
+  "source_inputs": 8502,
+  "changed": [
+    "iOS camera and microphone recording usage descriptions",
+    "Photo/video appropriate unavailable-camera recovery copy"
+  ],
+  "delta": "camera-recording-v85-source-delta.json",
+  "gates": {
+    "flutter": {
+      "pass": 1719,
+      "fail": 0,
+      "skip": 0
+    },
+    "analysis_issues": 0,
+    "governance": {
+      "PASS": 114,
+      "FAIL": 0,
+      "NOT_APPLICABLE": 1
+    },
+    "plist_lint": "PASS",
+    "backend": "All backend/shared contract/schema inputs unchanged from84;previous owned Media12,public Range13,types/rootcontracts retained for those unchanged inputs;not freshly rerun under85."
+  },
+  "prior_source84_camera": "native111-final-local-readback.json",
+  "prior_source84_formats": "native112-final-local-readback.json",
+  "ios_active_root": "/private/tmp/letbuyy-ios-ui-20261107-tqj09r6m",
+  "android_prepared_root": "/private/tmp/letbuyy-merchant-local-20261107-545c02880a",
+  "open": [
+    "Current source85 native iOS MOV/WebM runtime acceptance pending",
+    "Current source85 Android combined camera/format run prepared but not executed",
+    "Native picker process-death recovery before byte upload has no purpose/actor/store-bound coordinator yet",
+    "Physical recording/microphone and every remaining applicable feature/buyer/provider criterion"
+  ],
+  "whole_features_accepted": 0
+}

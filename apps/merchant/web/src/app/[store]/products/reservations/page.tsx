@@ -68,6 +68,12 @@ function statusLabel(status: ReservationStatus): string {
     }
 }
 
+function lifetimeLabel(row: ReservationRow): string {
+    if (row.transfer) return ['active', 'hold'].includes(row.status)
+        ? 'Held until shipment' : 'Committed at shipment'
+    return row.expires_at ? formatIndiaDate(row.expires_at) : 'Unavailable'
+}
+
 // ── main component ─────────────────────────────────────────────────────────────
 
 export default function InventoryReservationsPage() {
@@ -289,8 +295,8 @@ function InventoryReservationsWorkspace({ store }: { store: string }) {
                                             <th className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-left font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-secondary)]">Status</th>
                                             <th className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-left font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-secondary)]">Product</th>
                                             <th className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-right font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-secondary)]">Qty</th>
-                                            <th className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-left font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-secondary)]">Order</th>
-                                            <th className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-left font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-secondary)]">Expires</th>
+                                            <th className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-left font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-secondary)]">Order / transfer</th>
+                                            <th className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-left font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-secondary)]">Reservation lifetime</th>
                                             <th className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-left font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-secondary)]">Created</th>
                                         </tr>
                                     </thead>
@@ -321,11 +327,11 @@ function InventoryReservationsWorkspace({ store }: { store: string }) {
                                                 </td>
                                                 <td className="px-[var(--lb-space-4)] py-[var(--lb-space-3)]">
                                                     <span className="text-[length:var(--lb-font-size-xs)] text-[var(--lb-color-text-secondary)]">
-                                                        {row.order_id ? row.order_id.slice(0, 8) + '…' : '—'}
+                                                        {row.transfer?.transfer_number ?? (row.order_id ? row.order_id.slice(0, 8) + '…' : '—')}
                                                     </span>
                                                 </td>
                                                 <td className="whitespace-nowrap px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-[var(--lb-color-text-secondary)]">
-                                                    {row.expires_at ? formatIndiaDate(row.expires_at) : '—'}
+                                                    {lifetimeLabel(row)}
                                                 </td>
                                                 <td className="whitespace-nowrap px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-[var(--lb-color-text-secondary)]">
                                                     {row.created_at ? formatIndiaDate(row.created_at) : '—'}
@@ -354,9 +360,14 @@ function InventoryReservationsWorkspace({ store }: { store: string }) {
                                                 Order: {row.order_id.slice(0, 8)}…
                                             </p>
                                         )}
-                                        {row.expires_at && (
+                                        {row.transfer && (
                                             <p className="text-[length:var(--lb-font-size-xs)] text-[var(--lb-color-text-secondary)]">
-                                                Expires: {formatIndiaDate(row.expires_at)}
+                                                Transfer: {row.transfer.transfer_number}
+                                            </p>
+                                        )}
+                                        {(row.expires_at || row.transfer) && (
+                                            <p className="text-[length:var(--lb-font-size-xs)] text-[var(--lb-color-text-secondary)]">
+                                                {row.transfer ? lifetimeLabel(row) : `Expires: ${lifetimeLabel(row)}`}
                                             </p>
                                         )}
                                         <p className="text-[length:var(--lb-font-size-xs)] text-[var(--lb-color-text-tertiary)]">

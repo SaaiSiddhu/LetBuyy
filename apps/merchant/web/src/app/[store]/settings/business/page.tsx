@@ -1,8 +1,9 @@
 'use client'
 
 import { useReadRequest } from '@/lib/api/use-read-request'
+import { useMerchantSecurityContext } from '@/components/security/MerchantSecurityContext'
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import {
@@ -13,6 +14,7 @@ import {
     Banner,
     Button,
     CheckCircle2,
+    ConfirmDialog,
     Circle,
     Clock,
     CreditCard,
@@ -240,11 +242,24 @@ function formatInr(minor: number, currency = 'INR') {
 
 export default function BusinessSettingsPage() {
     const { store } = useParams<{ store: string }>()
+    const { actorId, siteId } = useMerchantSecurityContext(store)
+    return <BusinessSettingsWorkspace key={JSON.stringify([actorId, siteId, store])} store={store} actorId={actorId} />
+}
+
+function BusinessSettingsWorkspace({ store, actorId }: { store: string; actorId: string }) {
     const { notify } = useToast()
+    const active = useRef(true)
+    useLayoutEffect(() => {
+        active.current = true
+        return () => { active.current = false }
+    }, [])
 
     const [loading, setLoading] = useState(true)
     const [loadError, setLoadError] = useState<string | null>(null)
     const [saveState, setSaveState] = useState<SaveState>('saved')
+    const [siteId, setSiteId] = useState<string | null>(null)
+    const [saveNeedsReload, setSaveNeedsReload] = useState(false)
+    const [reloadDialogOpen, setReloadDialogOpen] = useState(false)
 
     const [data, setData] = useState<BusinessForm>(EMPTY_BUSINESS)
     const [initialData, setInitialData] = useState<BusinessForm | null>(null)
@@ -310,6 +325,8 @@ export default function BusinessSettingsPage() {
         const readSignal = signal ? AbortSignal.any([signal, request.signal]) : request.signal
         void loadOptional(signal)
         setLoading(true)
+        setVersion(null)
+        setSiteId(null)
         setLoadError(null)
         setNextInvoiceNumber(null)
         try {
@@ -318,9 +335,11 @@ export default function BusinessSettingsPage() {
             if (signal?.aborted || !request.isCurrent()) return
             if (!storeRes.ok) throw new Error(getPayloadError(storePayload, 'Unable to load business details'))
             const d = isRecord(storePayload?.data) ? storePayload.data : null
-            if (!d) throw new Error('Business details were not returned')
-            if (typeof d.version !== 'number') throw new Error('Store revision was not returned')
-            setVersion(d.version)
+            if (!d || typeof d.id !== 'string') throw new Error('Business details were not returned')
+            if (!Number.isSafeInteger(d.version) || (d.version as number) <= 0) throw new Error('Store revision was not returned. Reload before editing.')
+            setVersion(d.version as number)
+            setSiteId(d.id)
+            setSaveNeedsReload(false)
             const counter = Number(d.invoice_number_next)
             setNextInvoiceNumber(Number.isSafeInteger(counter) && counter > 0 ? counter : null)
 
@@ -371,11 +390,7 @@ export default function BusinessSettingsPage() {
     // ── Save business identity / GST ──────────────────────────────────────────
 
     const handleSave = useCallback(async () => {
-        if (!hasUnsavedChanges || saveState === 'saving') return
-        if (version === null) {
-            notify({ title: 'Reload required', description: 'Store revision is unavailable. Reload before saving.', variant: 'warning' })
-            return
-        }
+        if (!active.current || saveNeedsReload || version === null || siteId === null || !hasUnsavedChanges || saveState === 'saving') return
         setSaveState('saving')
         try {
             const business_profile = businessProfileForStorePatch(rawBP)
@@ -388,7 +403,7 @@ export default function BusinessSettingsPage() {
 
             const res = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
                 method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'X-LetBuyy-Merchant-Context': actorId, 'X-Idempotency-Key': crypto.randomUUID() },
                 body: JSON.stringify({
                     version,
                     legal_name: data.legal_name || null,
@@ -399,20 +414,25 @@ export default function BusinessSettingsPage() {
                 }),
             })
             const payload = await res.json().catch(() => null) as ApiPayload | null
+            if (!active.current) return
             if (!res.ok) throw new Error(getPayloadError(payload, 'Unable to save business details'))
             const saved = isRecord(payload?.data) ? payload.data : null
-            if (typeof saved?.version !== 'number') throw new Error('Save completed but revision readback is unavailable. Reload to confirm current settings.')
-
-            setVersion(saved.version)
+            if (saved?.id !== siteId || saved?.version !== version + 1) {
+                throw new Error('The save acknowledgement could not be confirmed. Reload current business details.')
+            }
+            setVersion(saved.version as number)
+            setRawBP(business_profile)
             setInitialData(data)
             setSaveState('saved')
             notify({ title: 'Business details saved', description: 'Legal identity and GST details updated.', variant: 'success' })
         } catch (err) {
+            if (!active.current) return
+            setSaveNeedsReload(true)
             const msg = err instanceof Error ? err.message : 'Unable to save business details'
             setSaveState('unsaved')
             notify({ title: 'Could not save business details', description: msg, variant: 'critical' })
         }
-    }, [data, hasUnsavedChanges, notify, rawBP, saveState, store, version])
+    }, [actorId, data, hasUnsavedChanges, notify, rawBP, saveNeedsReload, saveState, siteId, store, version])
 
     const handleDiscard = useCallback(() => {
         if (!initialData) return
@@ -566,13 +586,20 @@ export default function BusinessSettingsPage() {
         ])
 
     return (
+        <>
         <SettingsPane
                 navigationKey="business"
             title="Business details"
             description="Legal identity, GST registration, verification, and settlement fees."
             store={store}
-            saveBar={{ state: activeSaveState, onSave: () => void handleSave(), onDiscard: handleDiscard, saveLabel: 'Save' }}
+            saveBar={{ state: activeSaveState, onSave: () => void handleSave(), onDiscard: handleDiscard, saveLabel: 'Save', saveDisabled: version === null || saveNeedsReload }}
         >
+            {saveNeedsReload && (
+                <Banner variant="warning" title="Reload current business details before another change"
+                    action={<Button variant="secondary" onClick={() => setReloadDialogOpen(true)}>Reload current business details</Button>}>
+                    The save was refused or could not be confirmed. Your edits remain until you reload the current store revision.
+                </Banner>
+            )}
             {loadError && (
                 <Banner variant="critical" title="Business details could not load" action={<Button variant="secondary" onClick={() => void loadAll()}>Retry</Button>}>
                     {loadError}
@@ -862,5 +889,14 @@ export default function BusinessSettingsPage() {
 
             </Section>
         </SettingsPane>
+        <ConfirmDialog
+            open={reloadDialogOpen}
+            title="Reload current business details?"
+            description="Discard this form's unsaved edits and load the current store revision."
+            confirmLabel="Reload business details"
+            onClose={() => setReloadDialogOpen(false)}
+            onConfirm={() => { setReloadDialogOpen(false); void loadAll() }}
+        />
+        </>
     )
 }

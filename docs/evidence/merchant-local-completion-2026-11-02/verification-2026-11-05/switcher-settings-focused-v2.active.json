@@ -1,0 +1,24 @@
+{
+  "started_at": "2026-11-06T04:27:50.617528+00:00",
+  "supervisor_pid": 40513,
+  "source": "switcher-settings-source-v2",
+  "source_sha256": "c7a1e65a73b52b3eeeaf86ea16222bbda13255ae9779bc20b21ab335c2cf72f4",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "--timeout",
+    "30s",
+    "test/store_discovery_transport_test.dart",
+    "test/settings_optional_reads_test.dart",
+    "test/store_switcher_presentation_test.dart",
+    "test/store_session_boundary_test.dart",
+    "test/staff_scope_boundary_test.dart",
+    "test/staff_environment_isolation_test.dart",
+    "test/staff_retry_contract_test.dart",
+    "test/staff_invitation_contract_test.dart",
+    "test/staff_ui_test.dart"
+  ],
+  "status": "RUNNING",
+  "child_pid": 40551
+}

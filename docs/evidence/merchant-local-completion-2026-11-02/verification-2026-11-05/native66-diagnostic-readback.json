@@ -1,0 +1,17 @@
+{
+  "at": "2026-11-06T16:01:55.467582+00:00",
+  "source_sha256": "e8cc94edd6649a1fbbeebf1f797d1d65a4959fe87851467d1c37f28399ddc0a4",
+  "run_id": "701e5ed64d75",
+  "status": "FAIL_TEST_SELECTOR_NOT_UPLOAD_ACCEPTANCE",
+  "observed": "Upload image button includes its subtitle in actual Android semantics. Exact-label test missed it; saved failure controls prove same intended enabled button. No upload sent.",
+  "preserved_checks": "Native ordinary Accounts login,53-store discovery and choice, two memberships,53Staff across2pages, native owner settings save and actual Media GET200 occurred; not full journey acceptance.",
+  "next": "native67 changes only selector to existing first-line matching; same app source and owned authority; first OS picker/upload still pending.",
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  }
+}

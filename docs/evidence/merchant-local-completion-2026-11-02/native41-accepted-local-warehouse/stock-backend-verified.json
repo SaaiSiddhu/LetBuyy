@@ -1,0 +1,2669 @@
+{
+  "run_id": "abac88df509d",
+  "source_sha256": "17c2f53685f885a2ba9488eb4cab420525ac20cbc38148eb4121e7022d8b39ed",
+  "apk_sha256": "8dcb8ed60ac7582479ba67d8be95b6434b006831e03fbaa0199a700b18b2d3aa",
+  "held": {
+    "po": {
+      "id": "ad5ff141-e5b3-437b-ac45-021e0510ced2",
+      "notes": null,
+      "total": 502,
+      "status": "partially_received",
+      "site_id": "5096c120-04b4-4a3a-b61f-442044882b38",
+      "currency": "INR",
+      "metadata": {},
+      "subtotal": 502,
+      "po_number": "PO-20261105-75EC867F",
+      "created_at": "2026-11-05T19:39:03.552462+00:00",
+      "created_by": "2e8e5cef-d097-49d4-acf9-bb242b643be1",
+      "deleted_at": null,
+      "ordered_at": "2026-11-05T19:39:03.552462+00:00",
+      "request_id": "flutter-builder-1793907505359792",
+      "updated_at": "2026-11-05T19:39:31.480998+00:00",
+      "updated_by": "2e8e5cef-d097-49d4-acf9-bb242b643be1",
+      "expected_at": null,
+      "location_id": "9e946ff9-2753-45f5-a483-f05e58e90a99",
+      "received_at": null,
+      "supplier_id": "56b2a5cb-f541-45d1-8684-d31832cb83f3",
+      "cancelled_at": null,
+      "idempotency_key": "5b2a3ad7-875d-4948-b556-39c0cdc7dac6"
+    },
+    "levels": [
+      {
+        "id": "3d439a9d-419b-4cc8-8d54-99ef850c458d",
+        "version": 4,
+        "incoming": 1,
+        "reserved": 2,
+        "store_id": "5096c120-04b4-4a3a-b61f-442044882b38",
+        "available": 3,
+        "created_at": "2026-11-05T19:39:03.552462+00:00",
+        "deleted_at": null,
+        "product_id": "dc5dfd81-4338-451e-bf84-b37d0e2562b4",
+        "updated_at": "2026-11-05T19:41:44.310963+00:00",
+        "variant_id": null,
+        "location_id": "9e946ff9-2753-45f5-a483-f05e58e90a99",
+        "free_quantity": 1,
+        "on_hand_quantity": 3,
+        "incoming_quantity": 1,
+        "reserved_quantity": 2,
+        "available_quantity": 1,
+        "committed_quantity": 0,
+        "unavailable_quantity": 0,
+        "safety_stock_quantity": 0
+      }
+    ],
+    "po_lines": [
+      {
+        "id": "3804ab3e-bdf0-4e0d-b3c0-8380ac8d1e79",
+        "status": "partially_received",
+        "site_id": "5096c120-04b4-4a3a-b61f-442044882b38",
+        "metadata": {},
+        "unit_cost": 125.5,
+        "created_at": "2026-11-05T19:39:03.552462+00:00",
+        "created_by": "2e8e5cef-d097-49d4-acf9-bb242b643be1",
+        "deleted_at": null,
+        "product_id": "dc5dfd81-4338-451e-bf84-b37d0e2562b4",
+        "total_cost": 502,
+        "updated_at": "2026-11-05T19:39:31.480998+00:00",
+        "updated_by": "2e8e5cef-d097-49d4-acf9-bb242b643be1",
+        "variant_id": null,
+        "location_id": "9e946ff9-2753-45f5-a483-f05e58e90a99",
+        "quantity_ordered": 4,
+        "purchase_order_id": "ad5ff141-e5b3-437b-ac45-021e0510ced2",
+        "quantity_received": 3
+      }
+    ],
+    "receipts": [
+      {
+        "target": "57d189e9-13a5-46b7-9054-2fd0fed52025",
+        "operation": "location.create",
+        "key_digest": "673b2015748d856e54c4ba46b613d31de47681765edf8dc9808bfa0e985f77dd",
+        "row_digest": "6e3960d424cef1cb5407b9b1f5542d78fab1ee672063013babac19bccb0b3edd"
+      },
+      {
+        "target": "b7397f42-e676-4331-b8e7-f6fe68a5cb01",
+        "operation": "location.create",
+        "key_digest": "396c58fcb87d6d01d209add98b2849cea258c09e59bc747e4e42b81cabaf5ff9",
+        "row_digest": "b68d8a418fb2b82a2527c5b9583476d704b4c9215907a15d4bfbf103a9541fce"
+      },
+      {
+        "target": "ad5ff141-e5b3-437b-ac45-021e0510ced2",
+        "operation": "purchase_order.create",
+        "key_digest": "47641175dc27927a64cb65940148ff7d35a1ec9d92e34b7202b662b56ccf8acc",
+        "row_digest": "d990e84a192c12d463f3d414f714792325568e8e0decd55469248117448dcd1d"
+      },
+      {
+        "target": "ad5ff141-e5b3-437b-ac45-021e0510ced2",
+        "operation": "purchase_order.receive",
+        "key_digest": "e20ec4a8d35daebc25b06f9c4c0fe205ce2310a0a5f09fff03837ebd02ed3243",
+        "row_digest": "87916017cee870b34961bb07d4a44bf68a8dadf1d734d5837886d476c969c531"
+      },
+      {
+        "target": "56b2a5cb-f541-45d1-8684-d31832cb83f3",
+        "operation": "supplier.create",
+        "key_digest": "8c6d2aaa65717e4d15423d2914c98adae4cf885f76d31fd11dbd8a3a865d150a",
+        "row_digest": "248bf3efb1cd2a118cb57307bd72321024614d2e71c02bc413c820b10757b0d5"
+      },
+      {
+        "target": "ea1ebbdf-3936-4be2-85e2-016c318f5eb6",
+        "operation": "supplier.create",
+        "key_digest": "d67461a073bef6e8e98c8e50c7a0854a724d7285dac2df1cecbaf098a4276476",
+        "row_digest": "9eee7672b20b186d4ec111e8754bd0569cf05e97c24c6dc09fca0c9ef5036bb7"
+      },
+      {
+        "target": "1735e1f1-9e94-470d-a654-deb0afebe0be",
+        "operation": "transfer.create",
+        "key_digest": "f82a09b3eb39ad82b94b25595295becfde27ca83f259ea18b49c7b33ae9880d3",
+        "row_digest": "52d858155dedd2521149eac5c615dbdf1e52bba543077911dc420a8cfad9cad4"
+      }
+    ],
+    "transfer": {
+      "id": "1735e1f1-9e94-470d-a654-deb0afebe0be",
+      "notes": null,
+      "status": "reserved",
+      "site_id": "5096c120-04b4-4a3a-b61f-442044882b38",
+      "metadata": {},
+      "created_at": "2026-11-05T19:41:44.310963+00:00",
+      "created_by": "2e8e5cef-d097-49d4-acf9-bb242b643be1",
+      "deleted_at": null,
+      "request_id": "flutter-builder-1793907665984741",
+      "shipped_at": null,
+      "updated_at": "2026-11-05T19:41:44.310963+00:00",
+      "updated_by": null,
+      "received_at": null,
+      "cancelled_at": null,
+      "idempotency_key": "d044703b-65a8-4811-82a9-86452c284e69",
+      "transfer_number": "TR-20261105-EC591B98",
+      "source_location_id": "9e946ff9-2753-45f5-a483-f05e58e90a99",
+      "destination_location_id": "b7397f42-e676-4331-b8e7-f6fe68a5cb01"
+    },
+    "reservations": [
+      {
+        "id": "bb174ed1-9776-4d98-a17b-0bf962029e27",
+        "status": "active",
+        "order_id": null,
+        "quantity": 2,
+        "store_id": "5096c120-04b4-4a3a-b61f-442044882b38",
+        "created_at": "2026-11-05T19:41:44.310963+00:00",
+        "created_by": "2e8e5cef-d097-49d4-acf9-bb242b643be1",
+        "deleted_at": null,
+        "expires_at": "infinity",
+        "product_id": "dc5dfd81-4338-451e-bf84-b37d0e2562b4",
+        "updated_at": "2026-11-05T19:41:44.310963+00:00",
+        "variant_id": null,
+        "location_id": "9e946ff9-2753-45f5-a483-f05e58e90a99",
+        "released_at": null,
+        "committed_at": null,
+        "release_reason": null,
+        "idempotency_key": "warehouse.transfer:78998316-6f79-493a-948d-84773c3a4b48",
+        "commit_idempotency_key": null,
+        "release_idempotency_key": null
+      }
+    ],
+    "product_stock": 1,
+    "transfer_lines": [
+      {
+        "id": "78998316-6f79-493a-948d-84773c3a4b48",
+        "status": "reserved",
+        "site_id": "5096c120-04b4-4a3a-b61f-442044882b38",
+        "metadata": {},
+        "created_at": "2026-11-05T19:41:44.310963+00:00",
+        "created_by": "2e8e5cef-d097-49d4-acf9-bb242b643be1",
+        "deleted_at": null,
+        "product_id": "dc5dfd81-4338-451e-bf84-b37d0e2562b4",
+        "updated_at": "2026-11-05T19:41:44.310963+00:00",
+        "updated_by": null,
+        "variant_id": null,
+        "transfer_id": "1735e1f1-9e94-470d-a654-deb0afebe0be",
+        "reservation_id": "bb174ed1-9776-4d98-a17b-0bf962029e27",
+        "quantity_shipped": 0,
+        "quantity_received": 0,
+        "quantity_requested": 2
+      }
+    ]
+  },
+  "native": {
+    "po": {
+      "id": "ad5ff141-e5b3-437b-ac45-021e0510ced2",
+      "notes": null,
+      "total": 502,
+      "status": "partially_received",
+      "site_id": "5096c120-04b4-4a3a-b61f-442044882b38",
+      "currency": "INR",
+      "metadata": {},
+      "subtotal": 502,
+      "po_number": "PO-20261105-75EC867F",
+      "created_at": "2026-11-05T19:39:03.552462+00:00",
+      "created_by": "2e8e5cef-d097-49d4-acf9-bb242b643be1",
+      "deleted_at": null,
+      "ordered_at": "2026-11-05T19:39:03.552462+00:00",
+      "request_id": "flutter-builder-1793907505359792",
+      "updated_at": "2026-11-05T19:39:31.480998+00:00",
+      "updated_by": "2e8e5cef-d097-49d4-acf9-bb242b643be1",
+      "expected_at": null,
+      "location_id": "9e946ff9-2753-45f5-a483-f05e58e90a99",
+      "received_at": null,
+      "supplier_id": "56b2a5cb-f541-45d1-8684-d31832cb83f3",
+      "cancelled_at": null,
+      "idempotency_key": "5b2a3ad7-875d-4948-b556-39c0cdc7dac6"
+    },
+    "levels": [
+      {
+        "id": "3d439a9d-419b-4cc8-8d54-99ef850c458d",
+        "version": 5,
+        "incoming": 1,
+        "reserved": 0,
+        "store_id": "5096c120-04b4-4a3a-b61f-442044882b38",
+        "available": 1,
+        "created_at": "2026-11-05T19:39:03.552462+00:00",
+        "deleted_at": null,
+        "product_id": "dc5dfd81-4338-451e-bf84-b37d0e2562b4",
+        "updated_at": "2026-11-05T19:43:03.248829+00:00",
+        "variant_id": null,
+        "location_id": "9e946ff9-2753-45f5-a483-f05e58e90a99",
+        "free_quantity": 1,
+        "on_hand_quantity": 1,
+        "incoming_quantity": 1,
+        "reserved_quantity": 0,
+        "available_quantity": 1,
+        "committed_quantity": 2,
+        "unavailable_quantity": 0,
+        "safety_stock_quantity": 0
+      },
+      {
+        "id": "8c436724-76f0-4f26-ac8b-69cc2cd140bc",
+        "version": 2,
+        "incoming": 0,
+        "reserved": 0,
+        "store_id": "5096c120-04b4-4a3a-b61f-442044882b38",
+        "available": 1,
+        "created_at": "2026-11-05T19:44:42.20308+00:00",
+        "deleted_at": null,
+        "product_id": "dc5dfd81-4338-451e-bf84-b37d0e2562b4",
+        "updated_at": "2026-11-05T19:44:42.20308+00:00",
+        "variant_id": null,
+        "location_id": "b7397f42-e676-4331-b8e7-f6fe68a5cb01",
+        "free_quantity": 1,
+        "on_hand_quantity": 1,
+        "incoming_quantity": 0,
+        "reserved_quantity": 0,
+        "available_quantity": 1,
+        "committed_quantity": 0,
+        "unavailable_quantity": 0,
+        "safety_stock_quantity": 0
+      }
+    ],
+    "po_lines": [
+      {
+        "id": "3804ab3e-bdf0-4e0d-b3c0-8380ac8d1e79",
+        "status": "partially_received",
+        "site_id": "5096c120-04b4-4a3a-b61f-442044882b38",
+        "metadata": {},
+        "unit_cost": 125.5,
+        "created_at": "2026-11-05T19:39:03.552462+00:00",
+        "created_by": "2e8e5cef-d097-49d4-acf9-bb242b643be1",
+        "deleted_at": null,
+        "product_id": "dc5dfd81-4338-451e-bf84-b37d0e2562b4",
+        "total_cost": 502,
+        "updated_at": "2026-11-05T19:39:31.480998+00:00",
+        "updated_by": "2e8e5cef-d097-49d4-acf9-bb242b643be1",
+        "variant_id": null,
+        "location_id": "9e946ff9-2753-45f5-a483-f05e58e90a99",
+        "quantity_ordered": 4,
+        "purchase_order_id": "ad5ff141-e5b3-437b-ac45-021e0510ced2",
+        "quantity_received": 3
+      }
+    ],
+    "receipts": [
+      {
+        "target": "57d189e9-13a5-46b7-9054-2fd0fed52025",
+        "operation": "location.create",
+        "key_digest": "673b2015748d856e54c4ba46b613d31de47681765edf8dc9808bfa0e985f77dd",
+        "row_digest": "6e3960d424cef1cb5407b9b1f5542d78fab1ee672063013babac19bccb0b3edd"
+      },
+      {
+        "target": "b7397f42-e676-4331-b8e7-f6fe68a5cb01",
+        "operation": "location.create",
+        "key_digest": "396c58fcb87d6d01d209add98b2849cea258c09e59bc747e4e42b81cabaf5ff9",
+        "row_digest": "b68d8a418fb2b82a2527c5b9583476d704b4c9215907a15d4bfbf103a9541fce"
+      },
+      {
+        "target": "ad5ff141-e5b3-437b-ac45-021e0510ced2",
+        "operation": "purchase_order.create",
+        "key_digest": "47641175dc27927a64cb65940148ff7d35a1ec9d92e34b7202b662b56ccf8acc",
+        "row_digest": "d990e84a192c12d463f3d414f714792325568e8e0decd55469248117448dcd1d"
+      },
+      {
+        "target": "ad5ff141-e5b3-437b-ac45-021e0510ced2",
+        "operation": "purchase_order.receive",
+        "key_digest": "e20ec4a8d35daebc25b06f9c4c0fe205ce2310a0a5f09fff03837ebd02ed3243",
+        "row_digest": "87916017cee870b34961bb07d4a44bf68a8dadf1d734d5837886d476c969c531"
+      },
+      {
+        "target": "56b2a5cb-f541-45d1-8684-d31832cb83f3",
+        "operation": "supplier.create",
+        "key_digest": "8c6d2aaa65717e4d15423d2914c98adae4cf885f76d31fd11dbd8a3a865d150a",
+        "row_digest": "248bf3efb1cd2a118cb57307bd72321024614d2e71c02bc413c820b10757b0d5"
+      },
+      {
+        "target": "ea1ebbdf-3936-4be2-85e2-016c318f5eb6",
+        "operation": "supplier.create",
+        "key_digest": "d67461a073bef6e8e98c8e50c7a0854a724d7285dac2df1cecbaf098a4276476",
+        "row_digest": "9eee7672b20b186d4ec111e8754bd0569cf05e97c24c6dc09fca0c9ef5036bb7"
+      },
+      {
+        "target": "1735e1f1-9e94-470d-a654-deb0afebe0be",
+        "operation": "transfer.create",
+        "key_digest": "f82a09b3eb39ad82b94b25595295becfde27ca83f259ea18b49c7b33ae9880d3",
+        "row_digest": "52d858155dedd2521149eac5c615dbdf1e52bba543077911dc420a8cfad9cad4"
+      },
+      {
+        "target": "1735e1f1-9e94-470d-a654-deb0afebe0be",
+        "operation": "transfer.receive",
+        "key_digest": "2e44fa2109a7c12d86f1f86310c05848b8cc49b57940c7402d4580e447491354",
+        "row_digest": "7a5c84f201fea9f51265074ab6584f0cbd1e217e54b092f5a1586d47b37e4c07"
+      },
+      {
+        "target": "1735e1f1-9e94-470d-a654-deb0afebe0be",
+        "operation": "transfer.ship",
+        "key_digest": "f54cc453db1ff7ad44941e42526aa1a06cfe401f06d000ee3222011e94624e4c",
+        "row_digest": "80ab751ec2bfb8508704a46d32398db1bff6f5b6a4ad892892427dd8de584a37"
+      }
+    ],
+    "transfer": {
+      "id": "1735e1f1-9e94-470d-a654-deb0afebe0be",
+      "notes": null,
+      "status": "partially_received",
+      "site_id": "5096c120-04b4-4a3a-b61f-442044882b38",
+      "metadata": {},
+      "created_at": "2026-11-05T19:41:44.310963+00:00",
+      "created_by": "2e8e5cef-d097-49d4-acf9-bb242b643be1",
+      "deleted_at": null,
+      "request_id": "flutter-builder-1793907665984741",
+      "shipped_at": "2026-11-05T19:43:03.248829+00:00",
+      "updated_at": "2026-11-05T19:44:42.20308+00:00",
+      "updated_by": "2e8e5cef-d097-49d4-acf9-bb242b643be1",
+      "received_at": null,
+      "cancelled_at": null,
+      "idempotency_key": "d044703b-65a8-4811-82a9-86452c284e69",
+      "transfer_number": "TR-20261105-EC591B98",
+      "source_location_id": "9e946ff9-2753-45f5-a483-f05e58e90a99",
+      "destination_location_id": "b7397f42-e676-4331-b8e7-f6fe68a5cb01"
+    },
+    "reservations": [
+      {
+        "id": "bb174ed1-9776-4d98-a17b-0bf962029e27",
+        "status": "committed",
+        "order_id": null,
+        "quantity": 2,
+        "store_id": "5096c120-04b4-4a3a-b61f-442044882b38",
+        "created_at": "2026-11-05T19:41:44.310963+00:00",
+        "created_by": "2e8e5cef-d097-49d4-acf9-bb242b643be1",
+        "deleted_at": null,
+        "expires_at": "infinity",
+        "product_id": "dc5dfd81-4338-451e-bf84-b37d0e2562b4",
+        "updated_at": "2026-11-05T19:43:03.248829+00:00",
+        "variant_id": null,
+        "location_id": "9e946ff9-2753-45f5-a483-f05e58e90a99",
+        "released_at": null,
+        "committed_at": "2026-11-05T19:43:03.248829+00:00",
+        "release_reason": null,
+        "idempotency_key": "warehouse.transfer:78998316-6f79-493a-948d-84773c3a4b48",
+        "commit_idempotency_key": "warehouse.ship:78998316-6f79-493a-948d-84773c3a4b48",
+        "release_idempotency_key": null
+      }
+    ],
+    "product_stock": 1,
+    "transfer_lines": [
+      {
+        "id": "78998316-6f79-493a-948d-84773c3a4b48",
+        "status": "partially_received",
+        "site_id": "5096c120-04b4-4a3a-b61f-442044882b38",
+        "metadata": {},
+        "created_at": "2026-11-05T19:41:44.310963+00:00",
+        "created_by": "2e8e5cef-d097-49d4-acf9-bb242b643be1",
+        "deleted_at": null,
+        "product_id": "dc5dfd81-4338-451e-bf84-b37d0e2562b4",
+        "updated_at": "2026-11-05T19:44:42.20308+00:00",
+        "updated_by": "2e8e5cef-d097-49d4-acf9-bb242b643be1",
+        "variant_id": null,
+        "transfer_id": "1735e1f1-9e94-470d-a654-deb0afebe0be",
+        "reservation_id": "bb174ed1-9776-4d98-a17b-0bf962029e27",
+        "quantity_shipped": 2,
+        "quantity_received": 1,
+        "quantity_requested": 2
+      }
+    ]
+  },
+  "final": {
+    "po": {
+      "id": "ad5ff141-e5b3-437b-ac45-021e0510ced2",
+      "notes": null,
+      "total": 502,
+      "status": "received",
+      "site_id": "5096c120-04b4-4a3a-b61f-442044882b38",
+      "currency": "INR",
+      "metadata": {},
+      "subtotal": 502,
+      "po_number": "PO-20261105-75EC867F",
+      "created_at": "2026-11-05T19:39:03.552462+00:00",
+      "created_by": "2e8e5cef-d097-49d4-acf9-bb242b643be1",
+      "deleted_at": null,
+      "ordered_at": "2026-11-05T19:39:03.552462+00:00",
+      "request_id": "flutter-builder-1793907505359792",
+      "updated_at": "2026-11-05T19:44:47.344913+00:00",
+      "updated_by": "2e8e5cef-d097-49d4-acf9-bb242b643be1",
+      "expected_at": null,
+      "location_id": "9e946ff9-2753-45f5-a483-f05e58e90a99",
+      "received_at": "2026-11-05T19:44:47.344913+00:00",
+      "supplier_id": "56b2a5cb-f541-45d1-8684-d31832cb83f3",
+      "cancelled_at": null,
+      "idempotency_key": "5b2a3ad7-875d-4948-b556-39c0cdc7dac6"
+    },
+    "levels": [
+      {
+        "id": "3d439a9d-419b-4cc8-8d54-99ef850c458d",
+        "version": 6,
+        "incoming": 0,
+        "reserved": 0,
+        "store_id": "5096c120-04b4-4a3a-b61f-442044882b38",
+        "available": 2,
+        "created_at": "2026-11-05T19:39:03.552462+00:00",
+        "deleted_at": null,
+        "product_id": "dc5dfd81-4338-451e-bf84-b37d0e2562b4",
+        "updated_at": "2026-11-05T19:44:47.344913+00:00",
+        "variant_id": null,
+        "location_id": "9e946ff9-2753-45f5-a483-f05e58e90a99",
+        "free_quantity": 2,
+        "on_hand_quantity": 2,
+        "incoming_quantity": 0,
+        "reserved_quantity": 0,
+        "available_quantity": 2,
+        "committed_quantity": 2,
+        "unavailable_quantity": 0,
+        "safety_stock_quantity": 0
+      },
+      {
+        "id": "8c436724-76f0-4f26-ac8b-69cc2cd140bc",
+        "version": 3,
+        "incoming": 0,
+        "reserved": 0,
+        "store_id": "5096c120-04b4-4a3a-b61f-442044882b38",
+        "available": 2,
+        "created_at": "2026-11-05T19:44:42.20308+00:00",
+        "deleted_at": null,
+        "product_id": "dc5dfd81-4338-451e-bf84-b37d0e2562b4",
+        "updated_at": "2026-11-05T19:44:47.912575+00:00",
+        "variant_id": null,
+        "location_id": "b7397f42-e676-4331-b8e7-f6fe68a5cb01",
+        "free_quantity": 2,
+        "on_hand_quantity": 2,
+        "incoming_quantity": 0,
+        "reserved_quantity": 0,
+        "available_quantity": 2,
+        "committed_quantity": 0,
+        "unavailable_quantity": 0,
+        "safety_stock_quantity": 0
+      }
+    ],
+    "po_lines": [
+      {
+        "id": "3804ab3e-bdf0-4e0d-b3c0-8380ac8d1e79",
+        "status": "received",
+        "site_id": "5096c120-04b4-4a3a-b61f-442044882b38",
+        "metadata": {},
+        "unit_cost": 125.5,
+        "created_at": "2026-11-05T19:39:03.552462+00:00",
+        "created_by": "2e8e5cef-d097-49d4-acf9-bb242b643be1",
+        "deleted_at": null,
+        "product_id": "dc5dfd81-4338-451e-bf84-b37d0e2562b4",
+        "total_cost": 502,
+        "updated_at": "2026-11-05T19:44:47.344913+00:00",
+        "updated_by": "2e8e5cef-d097-49d4-acf9-bb242b643be1",
+        "variant_id": null,
+        "location_id": "9e946ff9-2753-45f5-a483-f05e58e90a99",
+        "quantity_ordered": 4,
+        "purchase_order_id": "ad5ff141-e5b3-437b-ac45-021e0510ced2",
+        "quantity_received": 4
+      }
+    ],
+    "receipts": [
+      {
+        "target": "57d189e9-13a5-46b7-9054-2fd0fed52025",
+        "operation": "location.create",
+        "key_digest": "673b2015748d856e54c4ba46b613d31de47681765edf8dc9808bfa0e985f77dd",
+        "row_digest": "6e3960d424cef1cb5407b9b1f5542d78fab1ee672063013babac19bccb0b3edd"
+      },
+      {
+        "target": "b7397f42-e676-4331-b8e7-f6fe68a5cb01",
+        "operation": "location.create",
+        "key_digest": "396c58fcb87d6d01d209add98b2849cea258c09e59bc747e4e42b81cabaf5ff9",
+        "row_digest": "b68d8a418fb2b82a2527c5b9583476d704b4c9215907a15d4bfbf103a9541fce"
+      },
+      {
+        "target": "ad5ff141-e5b3-437b-ac45-021e0510ced2",
+        "operation": "purchase_order.create",
+        "key_digest": "47641175dc27927a64cb65940148ff7d35a1ec9d92e34b7202b662b56ccf8acc",
+        "row_digest": "d990e84a192c12d463f3d414f714792325568e8e0decd55469248117448dcd1d"
+      },
+      {
+        "target": "ad5ff141-e5b3-437b-ac45-021e0510ced2",
+        "operation": "purchase_order.receive",
+        "key_digest": "e20ec4a8d35daebc25b06f9c4c0fe205ce2310a0a5f09fff03837ebd02ed3243",
+        "row_digest": "87916017cee870b34961bb07d4a44bf68a8dadf1d734d5837886d476c969c531"
+      },
+      {
+        "target": "ad5ff141-e5b3-437b-ac45-021e0510ced2",
+        "operation": "purchase_order.receive",
+        "key_digest": "4aa69eef58d0c1dd49551d5a4e3c20e561b7520dde90d8649be094537008460a",
+        "row_digest": "14fba4a5f28ebf12d47322c981dfc052904122e28d2e5aaa6f593ae776c08508"
+      },
+      {
+        "target": "56b2a5cb-f541-45d1-8684-d31832cb83f3",
+        "operation": "supplier.create",
+        "key_digest": "8c6d2aaa65717e4d15423d2914c98adae4cf885f76d31fd11dbd8a3a865d150a",
+        "row_digest": "248bf3efb1cd2a118cb57307bd72321024614d2e71c02bc413c820b10757b0d5"
+      },
+      {
+        "target": "ea1ebbdf-3936-4be2-85e2-016c318f5eb6",
+        "operation": "supplier.create",
+        "key_digest": "d67461a073bef6e8e98c8e50c7a0854a724d7285dac2df1cecbaf098a4276476",
+        "row_digest": "9eee7672b20b186d4ec111e8754bd0569cf05e97c24c6dc09fca0c9ef5036bb7"
+      },
+      {
+        "target": "1735e1f1-9e94-470d-a654-deb0afebe0be",
+        "operation": "transfer.create",
+        "key_digest": "f82a09b3eb39ad82b94b25595295becfde27ca83f259ea18b49c7b33ae9880d3",
+        "row_digest": "52d858155dedd2521149eac5c615dbdf1e52bba543077911dc420a8cfad9cad4"
+      },
+      {
+        "target": "1735e1f1-9e94-470d-a654-deb0afebe0be",
+        "operation": "transfer.receive",
+        "key_digest": "32fd5c801a67e148d7a8a39e0411f1f6f1c9fb4ff86de16117dc900acf7646a5",
+        "row_digest": "c7d4ab97e513b8aa50bf602982a4a549647f052bbb90980a0dcc31183d5a870f"
+      },
+      {
+        "target": "1735e1f1-9e94-470d-a654-deb0afebe0be",
+        "operation": "transfer.receive",
+        "key_digest": "2e44fa2109a7c12d86f1f86310c05848b8cc49b57940c7402d4580e447491354",
+        "row_digest": "7a5c84f201fea9f51265074ab6584f0cbd1e217e54b092f5a1586d47b37e4c07"
+      },
+      {
+        "target": "1735e1f1-9e94-470d-a654-deb0afebe0be",
+        "operation": "transfer.ship",
+        "key_digest": "f54cc453db1ff7ad44941e42526aa1a06cfe401f06d000ee3222011e94624e4c",
+        "row_digest": "80ab751ec2bfb8508704a46d32398db1bff6f5b6a4ad892892427dd8de584a37"
+      }
+    ],
+    "transfer": {
+      "id": "1735e1f1-9e94-470d-a654-deb0afebe0be",
+      "notes": null,
+      "status": "received",
+      "site_id": "5096c120-04b4-4a3a-b61f-442044882b38",
+      "metadata": {},
+      "created_at": "2026-11-05T19:41:44.310963+00:00",
+      "created_by": "2e8e5cef-d097-49d4-acf9-bb242b643be1",
+      "deleted_at": null,
+      "request_id": "flutter-builder-1793907665984741",
+      "shipped_at": "2026-11-05T19:43:03.248829+00:00",
+      "updated_at": "2026-11-05T19:44:47.912575+00:00",
+      "updated_by": "2e8e5cef-d097-49d4-acf9-bb242b643be1",
+      "received_at": "2026-11-05T19:44:47.912575+00:00",
+      "cancelled_at": null,
+      "idempotency_key": "d044703b-65a8-4811-82a9-86452c284e69",
+      "transfer_number": "TR-20261105-EC591B98",
+      "source_location_id": "9e946ff9-2753-45f5-a483-f05e58e90a99",
+      "destination_location_id": "b7397f42-e676-4331-b8e7-f6fe68a5cb01"
+    },
+    "reservations": [
+      {
+        "id": "bb174ed1-9776-4d98-a17b-0bf962029e27",
+        "status": "committed",
+        "order_id": null,
+        "quantity": 2,
+        "store_id": "5096c120-04b4-4a3a-b61f-442044882b38",
+        "created_at": "2026-11-05T19:41:44.310963+00:00",
+        "created_by": "2e8e5cef-d097-49d4-acf9-bb242b643be1",
+        "deleted_at": null,
+        "expires_at": "infinity",
+        "product_id": "dc5dfd81-4338-451e-bf84-b37d0e2562b4",
+        "updated_at": "2026-11-05T19:43:03.248829+00:00",
+        "variant_id": null,
+        "location_id": "9e946ff9-2753-45f5-a483-f05e58e90a99",
+        "released_at": null,
+        "committed_at": "2026-11-05T19:43:03.248829+00:00",
+        "release_reason": null,
+        "idempotency_key": "warehouse.transfer:78998316-6f79-493a-948d-84773c3a4b48",
+        "commit_idempotency_key": "warehouse.ship:78998316-6f79-493a-948d-84773c3a4b48",
+        "release_idempotency_key": null
+      }
+    ],
+    "product_stock": 2,
+    "transfer_lines": [
+      {
+        "id": "78998316-6f79-493a-948d-84773c3a4b48",
+        "status": "received",
+        "site_id": "5096c120-04b4-4a3a-b61f-442044882b38",
+        "metadata": {},
+        "created_at": "2026-11-05T19:41:44.310963+00:00",
+        "created_by": "2e8e5cef-d097-49d4-acf9-bb242b643be1",
+        "deleted_at": null,
+        "product_id": "dc5dfd81-4338-451e-bf84-b37d0e2562b4",
+        "updated_at": "2026-11-05T19:44:47.912575+00:00",
+        "updated_by": "2e8e5cef-d097-49d4-acf9-bb242b643be1",
+        "variant_id": null,
+        "transfer_id": "1735e1f1-9e94-470d-a654-deb0afebe0be",
+        "reservation_id": "bb174ed1-9776-4d98-a17b-0bf962029e27",
+        "quantity_shipped": 2,
+        "quantity_received": 2,
+        "quantity_requested": 2
+      }
+    ]
+  },
+  "calls": [
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 401,
+      "wire_status": 401
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/rate-limit/check",
+      "method": "POST",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/mobile/requests",
+      "method": "POST",
+      "status": 201,
+      "wire_status": 201
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/mobile/bind",
+      "method": "POST",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 401,
+      "wire_status": 401
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 401,
+      "wire_status": 401
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/rate-limit/check",
+      "method": "POST",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/users/by-email",
+      "method": "POST",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/rate-limit/check",
+      "method": "POST",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/users/authenticate",
+      "method": "POST",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/devices/get-or-create",
+      "method": "POST",
+      "status": 201,
+      "wire_status": 201
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/sessions/create",
+      "method": "POST",
+      "status": 201,
+      "wire_status": 201
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/mobile/approve",
+      "method": "POST",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/emails/send",
+      "method": "POST",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/mobile/complete",
+      "method": "POST",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/rate-limit/check",
+      "method": "POST",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/mobile/exchange",
+      "method": "POST",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/mobile/exchange",
+      "method": "POST",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/stores",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/payments/subscription",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/payments/subscription",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/analytics/top-products",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/analytics/orders",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/analytics/revenue",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/analytics/revenue",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/analytics/traffic-sources",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/analytics/traffic-sources",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/analytics/orders",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/analytics/top-products",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/analytics/dashboard",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/analytics/dashboard",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/payouts/summary",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/payouts/summary",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/products",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/levels",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/locations",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/locations",
+      "method": "POST",
+      "status": 201,
+      "wire_status": 503,
+      "key_digest": "396c58fcb87d6d01d209add98b2849cea258c09e59bc747e4e42b81cabaf5ff9",
+      "body_digest": "e8ae52893a2b8f98250fc4c95acde62217025c9cf90d35b3087025753cb70c02"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/locations",
+      "method": "POST",
+      "status": 201,
+      "wire_status": 503,
+      "key_digest": "396c58fcb87d6d01d209add98b2849cea258c09e59bc747e4e42b81cabaf5ff9",
+      "body_digest": "e8ae52893a2b8f98250fc4c95acde62217025c9cf90d35b3087025753cb70c02"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/locations",
+      "method": "POST",
+      "status": 201,
+      "wire_status": 503,
+      "key_digest": "396c58fcb87d6d01d209add98b2849cea258c09e59bc747e4e42b81cabaf5ff9",
+      "body_digest": "e8ae52893a2b8f98250fc4c95acde62217025c9cf90d35b3087025753cb70c02"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/stores",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/payments/subscription",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/analytics/traffic-sources",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/analytics/revenue",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/analytics/orders",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/analytics/top-products",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/analytics/dashboard",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/payouts/summary",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/products",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/levels",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/locations",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/locations",
+      "method": "POST",
+      "status": 201,
+      "wire_status": 201,
+      "key_digest": "396c58fcb87d6d01d209add98b2849cea258c09e59bc747e4e42b81cabaf5ff9",
+      "body_digest": "e8ae52893a2b8f98250fc4c95acde62217025c9cf90d35b3087025753cb70c02"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/locations",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/suppliers",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/suppliers",
+      "method": "POST",
+      "status": 201,
+      "wire_status": 201,
+      "key_digest": "8c6d2aaa65717e4d15423d2914c98adae4cf885f76d31fd11dbd8a3a865d150a",
+      "body_digest": "05451f990ea8567858f0d19cc05d1c37f9aeab3e453ed54144bea89b426fbea9"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/suppliers",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/rate-limit/check",
+      "method": "POST",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/users/by-email",
+      "method": "POST",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/rate-limit/check",
+      "method": "POST",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/users/authenticate",
+      "method": "POST",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/devices/get-or-create",
+      "method": "POST",
+      "status": 201,
+      "wire_status": 201
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/sessions/create",
+      "method": "POST",
+      "status": 201,
+      "wire_status": 201
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/emails/send",
+      "method": "POST",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-catalog-45e39370",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/5096c120-04b4-4a3a-b61f-442044882b38/payment-config",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/shipping-tax/shipping/zones",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/products",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/orders",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/analytics/orders",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/analytics/dashboard",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-catalog-45e39370",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-catalog-45e39370",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-catalog-45e39370",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/inventory/locations",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-catalog-45e39370",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-catalog-45e39370",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/inventory/locations",
+      "method": "POST",
+      "status": 201,
+      "wire_status": 201,
+      "key_digest": "673b2015748d856e54c4ba46b613d31de47681765edf8dc9808bfa0e985f77dd",
+      "body_digest": "db096d6b4b5a23e8f7bb011ee2cfea077cb51f8462611ee2abe17e20f34808a6"
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-catalog-45e39370",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/inventory/locations",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-catalog-45e39370",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-catalog-45e39370",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-catalog-45e39370",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/inventory/suppliers",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-catalog-45e39370",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-catalog-45e39370",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/inventory/suppliers",
+      "method": "POST",
+      "status": 201,
+      "wire_status": 201,
+      "key_digest": "d67461a073bef6e8e98c8e50c7a0854a724d7285dac2df1cecbaf098a4276476",
+      "body_digest": "a190f70a79184c7f69f06f93c6fa53c29550fce614175a7b31a8d6a13b9cb861"
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-catalog-45e39370",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/inventory/suppliers",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/suppliers",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/locations",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/payments/subscription",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/stores/5096c120-04b4-4a3a-b61f-442044882b38/payment-config",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/stores/5096c120-04b4-4a3a-b61f-442044882b38",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/stores/5096c120-04b4-4a3a-b61f-442044882b38",
+      "method": "PATCH",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/stores/5096c120-04b4-4a3a-b61f-442044882b38",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-catalog-45e39370",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-catalog-45e39370",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/5096c120-04b4-4a3a-b61f-442044882b38",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-catalog-45e39370",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/5096c120-04b4-4a3a-b61f-442044882b38/localization",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/levels",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/purchase-orders",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/locations",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/suppliers",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/products",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/products/dc5dfd81-4338-451e-bf84-b37d0e2562b4",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/purchase-orders",
+      "method": "POST",
+      "status": 201,
+      "wire_status": 201,
+      "key_digest": "47641175dc27927a64cb65940148ff7d35a1ec9d92e34b7202b662b56ccf8acc",
+      "body_digest": "f3fba788727a1f8a583f77989bbf3a4ce96649e2a04390c2c0cce6878c47a20b"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/purchase-orders",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/purchase-orders/ad5ff141-e5b3-437b-ac45-021e0510ced2",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/purchase-orders/ad5ff141-e5b3-437b-ac45-021e0510ced2/receive",
+      "method": "POST",
+      "status": 200,
+      "wire_status": 503,
+      "key_digest": "e20ec4a8d35daebc25b06f9c4c0fe205ce2310a0a5f09fff03837ebd02ed3243",
+      "body_digest": "643aa8af953d1ccee5fae8536ebac70f56b0430f8bb198de4196afb9fb20f0dd"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/purchase-orders/ad5ff141-e5b3-437b-ac45-021e0510ced2/receive",
+      "method": "POST",
+      "status": 200,
+      "wire_status": 503,
+      "key_digest": "e20ec4a8d35daebc25b06f9c4c0fe205ce2310a0a5f09fff03837ebd02ed3243",
+      "body_digest": "643aa8af953d1ccee5fae8536ebac70f56b0430f8bb198de4196afb9fb20f0dd"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/purchase-orders/ad5ff141-e5b3-437b-ac45-021e0510ced2/receive",
+      "method": "POST",
+      "status": 200,
+      "wire_status": 503,
+      "key_digest": "e20ec4a8d35daebc25b06f9c4c0fe205ce2310a0a5f09fff03837ebd02ed3243",
+      "body_digest": "643aa8af953d1ccee5fae8536ebac70f56b0430f8bb198de4196afb9fb20f0dd"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/stores",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/payments/subscription",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/analytics/traffic-sources",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/analytics/revenue",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/analytics/orders",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/analytics/top-products",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/analytics/dashboard",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/payouts/summary",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/products",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/levels",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/purchase-orders",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/purchase-orders/ad5ff141-e5b3-437b-ac45-021e0510ced2/receive",
+      "method": "POST",
+      "status": 200,
+      "wire_status": 200,
+      "key_digest": "e20ec4a8d35daebc25b06f9c4c0fe205ce2310a0a5f09fff03837ebd02ed3243",
+      "body_digest": "643aa8af953d1ccee5fae8536ebac70f56b0430f8bb198de4196afb9fb20f0dd"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/purchase-orders",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/transfers",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/locations",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/locations",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/products",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/products/dc5dfd81-4338-451e-bf84-b37d0e2562b4",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/transfers",
+      "method": "POST",
+      "status": 201,
+      "wire_status": 201,
+      "key_digest": "f82a09b3eb39ad82b94b25595295becfde27ca83f259ea18b49c7b33ae9880d3",
+      "body_digest": "2839799908d33b482c0725291a54db276b174db2299ddae67ae1c840252fe48a"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/transfers",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/reservations",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-catalog-45e39370",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-catalog-45e39370",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/inventory/reservations",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/transfers",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/transfers/1735e1f1-9e94-470d-a654-deb0afebe0be",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/transfers/1735e1f1-9e94-470d-a654-deb0afebe0be/ship",
+      "method": "POST",
+      "status": 200,
+      "wire_status": 200,
+      "key_digest": "f54cc453db1ff7ad44941e42526aa1a06cfe401f06d000ee3222011e94624e4c",
+      "body_digest": "44dd0c2190cf2f8f892102fed71241090b7ea7aa47adf7bbd2cac2999cebd73d"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/transfers",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/reservations",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/transfers",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/transfers/1735e1f1-9e94-470d-a654-deb0afebe0be",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/transfers/1735e1f1-9e94-470d-a654-deb0afebe0be/receive",
+      "method": "POST",
+      "status": 200,
+      "wire_status": 200,
+      "key_digest": "2e44fa2109a7c12d86f1f86310c05848b8cc49b57940c7402d4580e447491354",
+      "body_digest": "5ee209467f5487b0803dc381b5507017023abde01023eae4f8bdbc87436faeb7"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/transfers",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-catalog-45e39370",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-catalog-45e39370",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/inventory/reservations",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-catalog-45e39370",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-catalog-45e39370",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-catalog-45e39370",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-catalog-45e39370",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/inventory/locations",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/inventory/purchase-orders",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-catalog-45e39370",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/inventory/purchase-orders/ad5ff141-e5b3-437b-ac45-021e0510ced2",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-catalog-45e39370",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-catalog-45e39370",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/inventory/purchase-orders/ad5ff141-e5b3-437b-ac45-021e0510ced2/receive",
+      "method": "POST",
+      "status": 200,
+      "wire_status": 200,
+      "key_digest": "4aa69eef58d0c1dd49551d5a4e3c20e561b7520dde90d8649be094537008460a",
+      "body_digest": "5b05eda2e27665ac1d8c7ef6369b63b0340969a6b4da3efa42164850d9de6892"
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-catalog-45e39370",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/inventory/purchase-orders",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-catalog-45e39370",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-catalog-45e39370",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-catalog-45e39370",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-catalog-45e39370",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/inventory/locations",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/inventory/transfers",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-catalog-45e39370",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/inventory/transfers/1735e1f1-9e94-470d-a654-deb0afebe0be",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-catalog-45e39370",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-catalog-45e39370",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/inventory/transfers/1735e1f1-9e94-470d-a654-deb0afebe0be/receive",
+      "method": "POST",
+      "status": 200,
+      "wire_status": 200,
+      "key_digest": "32fd5c801a67e148d7a8a39e0411f1f6f1c9fb4ff86de16117dc900acf7646a5",
+      "body_digest": "fe63a1c2d837be228f7a2259d51100d83b0ffebbb2f4f7de6385273a8ff8cdc1"
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-catalog-45e39370",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/inventory/transfers",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/transfers",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/transfers/1735e1f1-9e94-470d-a654-deb0afebe0be",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/transfers",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/purchase-orders",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/purchase-orders/ad5ff141-e5b3-437b-ac45-021e0510ced2",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/purchase-orders",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/command-capabilities",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    }
+  ],
+  "web_bidirectional": true,
+  "scope": "Normal Android PO4units/cost125.50, partialreceive3with lost-reply/restart/exact retry; transfer2reserve/ship/receive1; normal web reads and completes1unit each; native refresh reads final received states. Canonical available4across2locations/no reserved/incoming,11command receipts including4metadata. Shipment-bound reservation viewed held and committed on both surfaces; physical stock plus transit conserved, default cache1then2read back. Broader allocation permutations remain separately unaccepted. No staff/variants/allfinancial/provider/hosted/iOS/release acceptance."
+}

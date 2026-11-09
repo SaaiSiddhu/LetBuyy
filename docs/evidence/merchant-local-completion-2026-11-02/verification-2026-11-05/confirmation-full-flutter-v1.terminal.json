@@ -1,0 +1,17 @@
+{
+  "started_at": "2026-11-05T20:05:36.401992+00:00",
+  "supervisor_pid": 72771,
+  "source": "confirmation-source-v2",
+  "source_sha256": "1029fe659065f6110351560cecd8ece3f7656665f2b499ec6e9019a9b216eb65",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 72773,
+  "exit_code": 1,
+  "finished_at": "2026-11-05T20:06:18.131021+00:00",
+  "source_unchanged": true,
+  "source_readback_sha256": "1029fe659065f6110351560cecd8ece3f7656665f2b499ec6e9019a9b216eb65"
+}

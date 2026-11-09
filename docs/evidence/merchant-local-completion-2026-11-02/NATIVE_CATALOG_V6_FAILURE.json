@@ -1,0 +1,17 @@
+{
+  "runId": "bf50dee56bc1",
+  "passed": 0,
+  "failed": 1,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "source_sha256": "b4e242b05f8a9e03e6659148da324117c9042cdf15dd3970eb6065b332a94f64",
+  "sourceHeldAndTerminalVerified": true,
+  "failure": "Gradle dynamic androidx.test:runner:1.2+ metadata refresh refused due local JVM TLS certificate path; no new APK installed.",
+  "correction": "Explicit receipt-owned Flutter config-only then normal offline Gradle debug compilation with identical task defines and cached dependencies. No TLS weakening, dependency substitution, SDK mutation, or old APK reuse."
+}

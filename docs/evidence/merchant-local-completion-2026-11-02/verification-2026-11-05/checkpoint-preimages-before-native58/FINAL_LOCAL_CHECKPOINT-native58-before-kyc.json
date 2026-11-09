@@ -1,0 +1,61 @@
+{
+  "at": "2026-11-06T06:55:50.453601+00:00",
+  "status": "BOUNDED_CURRENT_LOCAL_STORESWITCHER_STAFF_ACCEPTED_FULL_PROGRAMME_OPEN",
+  "source_manifest": "web-viewport-source-v1.source.json",
+  "source_sha256": "99dee3d9dc5075e97deaff99f2799dea89dac496c88c163a944b39bfe9dda4f0",
+  "source_inputs": 8457,
+  "head": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+  "full_flutter": {
+    "pass": 1580,
+    "fail": 0,
+    "skip": 0,
+    "basis": "Exact mobile input equality to product-optional-source-v1; current global delta only web CSS"
+  },
+  "focused_flutter": {
+    "pass": 105,
+    "overlaps_full_suite": true
+  },
+  "web": {
+    "fresh_pass": 1732,
+    "fail": 0,
+    "skip": 0,
+    "batches": [
+      606,
+      818,
+      295,
+      13
+    ],
+    "typecheck": "PASS",
+    "production_build": "PASS inside owned native58"
+  },
+  "app_analysis_issues": 0,
+  "governance": {
+    "PASS": 114,
+    "FAIL": 0,
+    "BLOCKED": 0,
+    "SKIP": 0,
+    "NOT_APPLICABLE": 1,
+    "existing_advisories": 211
+  },
+  "debug_artifact_readback": "web-viewport-v1-mobile-artifact-readback.json; no iOS runtime",
+  "native58": {
+    "status": "INDEPENDENT_PASS",
+    "run_id": "92d452e8952f",
+    "runner_exit": 0,
+    "controller_exit": 0,
+    "compound_pass": 1,
+    "fail": 0,
+    "skip": 0,
+    "readback": "native58-independent-readback.json",
+    "custody": "../native58-accepted-local-switcher-staff/MANIFEST.json"
+  },
+  "report": "../STORE_SWITCHER_STAFF_NATIVE_WEB_LOCAL_V4.md",
+  "source_review_unreviewed_rows": 36,
+  "unique_surface_denominator": null,
+  "next": "Reproduce/fix KYC initial-selection/provider lifetime candidates; Staff list/invitation, other product fields, remaining screens/states and all applicable feature acceptance. Preserve unresolved original intents and backend/policy.",
+  "full_feature_set_accepted": false,
+  "ios_runtime_accepted": false,
+  "signed_release": false,
+  "hosted_mutations": false,
+  "prior_checkpoint_preimage": "checkpoint-preimages-before-native58/FINAL_LOCAL_CHECKPOINT.json"
+}

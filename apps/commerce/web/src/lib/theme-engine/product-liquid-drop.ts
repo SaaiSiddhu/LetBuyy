@@ -6,6 +6,16 @@ const VARIANT_DISPLAY_FIELDS = [
     'stock', 'stock_quantity', 'inventory_qty', 'options', 'image', 'image_url',
     'weight', 'weight_unit', 'option1', 'option2', 'option3', 'position',
 ] as const;
+
+/** Keep the routed PDP subject out of its own recommendations, preserving
+ * confirmed other products and their supplied order and availability. */
+export function withoutCurrentLiquidProduct(
+    products: readonly Record<string, unknown>[],
+    currentProduct: Record<string, unknown> | null,
+): Record<string, unknown>[] {
+    return products.filter(product => !currentProduct || product.id !== currentProduct.id);
+}
+
 function variantDisplayFields(variant: NonNullable<ProductModel['variants']>[number]): Record<string, unknown> {
     const output: Record<string, unknown> = {};
     for (const key of VARIANT_DISPLAY_FIELDS) {
@@ -93,7 +103,8 @@ export function productToLiquidDrop(product: ProductModel | null | undefined, ba
         url: `${basePath}/product/${product.id}`,
         featured_image: product.images[0] || null,
         images: product.images,
-        available: product.stock > 0 && product.isActive !== false,
+        available: product.stock !== null && product.stock > 0 && product.isActive !== false,
+        inventory_known: product.stock !== null,
         stock: product.stock,
         tags: product.tags || [],
         apparel: product.apparel ?? null,

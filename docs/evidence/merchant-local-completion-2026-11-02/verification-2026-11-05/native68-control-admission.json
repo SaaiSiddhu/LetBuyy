@@ -1,0 +1,22 @@
+{
+  "source_sha256": "e8cc94edd6649a1fbbeebf1f797d1d65a4959fe87851467d1c37f28399ddc0a4",
+  "changes": "Observe actual current edit dialog title; retain same focused ordered-field replacement/readback; append-only separate OS picker observations. All business/security assertions retained.",
+  "inputs": [
+    {
+      "path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/android-switcher-staff-v68.py",
+      "sha256": "55fc5f68933b0bcd53ef03db462748bf5b57cd8d797921699cb08161a5c8cadf"
+    },
+    {
+      "path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/merchant-switcher-staff-v68-local-android.postgres.test.ts",
+      "sha256": "179c3c465c2b615e53e1c2a6c3e496be6a38de4a8d1e4704694872032f41be99"
+    },
+    {
+      "path": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/run-switcher-v68.py",
+      "sha256": "d6eed180510cbd6ecaf257fbe36732d1e901fb01f255d27992d9d349e7a040bf"
+    },
+    {
+      "path": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/android-device-receipt-switcher-v68.json",
+      "sha256": "df1dbaab3641a3fcb531079b279bdd41bb135db97812053eda218762238e4b68"
+    }
+  ]
+}

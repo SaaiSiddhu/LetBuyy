@@ -1,0 +1,67 @@
+{
+  "scope": "Local exact-receipt India KYC legal hold and current Console release",
+  "date": "2026-11-02",
+  "verdict": "LOCAL_CANDIDATE_ONLY",
+  "runs": [
+    {
+      "runId": "daac72329f6b",
+      "suites": 1,
+      "failedSuites": 0,
+      "tests": 1,
+      "assertionsPassed": 1,
+      "assertionsFailed": 0,
+      "skipped": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    {
+      "runId": "ef4d77cebc95",
+      "suites": 1,
+      "failedSuites": 0,
+      "tests": 1,
+      "assertionsPassed": 1,
+      "assertionsFailed": 0,
+      "skipped": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    }
+  ],
+  "additionalChecks": {
+    "gatewayTypecheck": "passed",
+    "migrationSafety": "passed",
+    "rollbackIntegrity": "passed",
+    "sequentialMigration": "passed",
+    "stagedDiffCheck": "passed"
+  },
+  "sourceSha256": {
+    "database/supabase/migrations/432_kyc_india_exact_legal_hold.sql": "8e5bcbe8aa05a79d0c981be7119297c5ec411e66a520aa1b2fc06eecfd4f1ba7",
+    "database/supabase/rollback/432_kyc_india_exact_legal_hold.rollback.sql": "10092f22d3b96145c67354fe7e9dcc8cbc74a235ed691f202efab6255a50886b",
+    "services/api-gateway/src/lib/kyc-india-object-cleanup.ts": "a861bbc03eed825598cbf0c267b9c9c337226d7bc77e4ef96b4a670fb6604b77",
+    "services/api-gateway/src/index.ts": "b9fa2475a3525b7b5da2147028939a9f6895afdd30490ca84f3a715a388d09f2",
+    "services/api-gateway/src/routes/internal-console/kyc-evidence.ts": "752d4413b66db30cc06d072de478e06e437e06534296856cf7bfe42a892ccb17",
+    "services/api-gateway/src/identity-foundation/console-approval-repository.ts": "289f847476f2aef90a2f87b9f6fcf1a104e17972b49acf96f63234578597be7c",
+    "services/api-gateway/src/__tests__/owned-db/kyc-india-cleanup.postgres.test.ts": "da55389243590a2c27d6f981f2c2b38d9f95b56d10d2955f3d47a606d1a256f4",
+    "services/api-gateway/src/__tests__/owned-db/kyc-india-hold-console.postgres.test.ts": "6d3eeb77b447e32f044125ddae83cff6f8161d33b119cfbcfaecd64591460c03"
+  },
+  "openGates": [
+    "Console hold management UI",
+    "delivered and acknowledged hold-review alert",
+    "real India-region upload/scan/deletion",
+    "provider evidence transfer and contract",
+    "privacy/legal acceptance",
+    "full local gate after migrations 429-432",
+    "hosted/provider/device eight-journey acceptance"
+  ]
+}

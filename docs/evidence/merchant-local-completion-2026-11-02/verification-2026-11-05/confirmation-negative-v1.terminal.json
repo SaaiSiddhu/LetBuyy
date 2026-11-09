@@ -1,0 +1,20 @@
+{
+  "started_at": "2026-11-05T20:02:51.208527+00:00",
+  "supervisor_pid": 72357,
+  "source": "confirmation-negative-v1",
+  "source_sha256": "dc605b9125e246e7d72c74d6f06d6458f7382ab98547b984c74313c80884f3d9",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "--timeout",
+    "45s",
+    "test/confirmation_presentation_test.dart"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 72359,
+  "exit_code": 1,
+  "finished_at": "2026-11-05T20:02:54.341618+00:00",
+  "source_unchanged": true,
+  "source_readback_sha256": "dc605b9125e246e7d72c74d6f06d6458f7382ab98547b984c74313c80884f3d9"
+}

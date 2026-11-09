@@ -1,0 +1,17 @@
+{
+  "stage": "real-workerd-kyc-projection",
+  "exit_code": 0,
+  "source_unchanged": true,
+  "source_sha256": "24650e42a918adc8d2a6fada709de8753049c99bc1b2fcc5ad555e4069564a2e",
+  "command": [
+    "env",
+    "LETBUYY_KYC_PUBLIC_FIXTURE_OUT=/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/kyc-workerd-public-v35.json",
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/kyc_actual_workerd_projection_v35_test.dart",
+    "--reporter",
+    "expanded"
+  ],
+  "cwd": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/apps/merchant/mobile"
+}

@@ -1,0 +1,56 @@
+{
+  "run_id": "385a1a047cdb",
+  "source_sha256": "f0d02dbfb4fbbfaae9736c6363d2b7bc0a43571ccb44db7f05a206926f8b1aa4",
+  "root": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-profile-browser-385a1a047cdb",
+  "persisted_synthetic": {
+    "version": 3,
+    "meta_title": "Synthetic canonical SEO boundary",
+    "meta_description": "Synthetic SEO description dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+  },
+  "normal_sign_in": true,
+  "browser_textarea_input_bounded": true,
+  "forged_overlong_request_denied_without_effect": true,
+  "general_readback": true,
+  "public_bootstrap_metadata": true,
+  "private_contact_absent_from_public": true,
+  "provider_counts": {
+    "issued": 1,
+    "verified": 1,
+    "refused": 0,
+    "browserExternalRefused": 0,
+    "nativeSdkServed": 0,
+    "nativeIssued": 0
+  },
+  "scope": "Compiled normal owner Preferences/General and public Gateway metadata; no buyer HTML renderer, native new artifact, hosted/provider/release or full-feature acceptance.",
+  "passed": 1,
+  "failed": 0,
+  "skipped": 0,
+  "cancelled": 0,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "source_archive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/profile-browser-v2-qualified-source",
+  "source_entries": 4243,
+  "evidence": [
+    {
+      "path": "profile-browser-v2/preferences-canonical-boundary.png",
+      "sha256": "4ea760cc5e6ea128f33063a4273d87b89a9ba73353cfb700c1ead04bc7cc6c40"
+    },
+    {
+      "path": "profile-browser-v2/general-canonical-seo-readback.png",
+      "sha256": "722b9a4eae39716aa9997f206e93158ee8661c7072e8ca1a917354372663dbd5"
+    }
+  ],
+  "prior_failure": "profile-browser-v1/88528988e8a7 was a fixture readiness failure: explicit redirect:manual missing while owned network guard refused redirects. Exact diagnostic retained; verified owned supervisor gracefully stopped; empty cleanup. No application assertions claimed.",
+  "registration": "owned-suite-registration-v1 had13pass/1fail due list order; v2 has14pass without weakening assertions.",
+  "limits": [
+    "No buyer HTML metadata/canonical/indexability proof",
+    "Current native code remains at prior warehouse artifact; this later change affects only web Preferences and local test harnesses",
+    "No hosted/provider/iOS/release or full122 acceptance"
+  ]
+}

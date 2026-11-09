@@ -24,6 +24,86 @@ DateTime? _recordDate(Object? value) =>
     ? DateTime.tryParse(value)
     : null;
 
+/// Mirror of InventoryTransferReservationReference in @letbuyy/shared-types.
+class InventoryTransferReservationReference {
+  const InventoryTransferReservationReference({
+    required this.id,
+    required this.reservationId,
+    required this.lineId,
+    required this.storeId,
+    required this.sourceLocationId,
+    required this.productId,
+    required this.variantId,
+    required this.number,
+    required this.status,
+    required this.quantityRequested,
+    required this.quantityReceived,
+    required this.baseReceived,
+  });
+  factory InventoryTransferReservationReference.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    for (final key in [
+      'id',
+      'reservation_id',
+      'line_id',
+      'site_id',
+      'source_location_id',
+      'product_id',
+    ]) {
+      if (!_recordId(json[key]))
+        throw const FormatException(
+          'The transfer reservation reference could not be confirmed.',
+        );
+    }
+    final requested = _warehouseCount(
+          json['quantity_requested'],
+          minimum: 1,
+          maximum: 2147483647,
+        ),
+        received = _warehouseCount(
+          json['quantity_received'],
+          maximum: 2147483647,
+        ),
+        base = _warehouseCount(json['base_received'], maximum: 2147483647);
+    if (!json.containsKey('variant_id') ||
+        json['variant_id'] != null && !_recordId(json['variant_id']) ||
+        json['transfer_number'] is! String ||
+        (json['transfer_number'] as String).isEmpty ||
+        !warehouseTransferStatuses.contains(json['status']) ||
+        base > received ||
+        received > requested) {
+      throw const FormatException(
+        'The transfer reservation reference could not be confirmed.',
+      );
+    }
+    return InventoryTransferReservationReference(
+      id: json['id'] as String,
+      reservationId: json['reservation_id'] as String,
+      lineId: json['line_id'] as String,
+      storeId: json['site_id'] as String,
+      sourceLocationId: json['source_location_id'] as String,
+      productId: json['product_id'] as String,
+      variantId: _stringValue(json['variant_id']),
+      number: json['transfer_number'] as String,
+      status: json['status'] as String,
+      quantityRequested: requested,
+      quantityReceived: received,
+      baseReceived: base,
+    );
+  }
+  final String id,
+      reservationId,
+      lineId,
+      storeId,
+      sourceLocationId,
+      productId,
+      variantId,
+      number,
+      status;
+  final int quantityRequested, quantityReceived, baseReceived;
+}
+
 class InventoryReservationRecord {
   const InventoryReservationRecord({
     required this.id,
@@ -38,13 +118,28 @@ class InventoryReservationRecord {
     required this.expiresAt,
     required this.createdAt,
     required this.updatedAt,
+    this.transfer,
   });
   factory InventoryReservationRecord.fromJson(Map<String, dynamic> json) {
     final product = _mapValue(json['products']);
     final site = _stringValue(json['store_id']),
         id = _stringValue(json['id']),
         productId = _stringValue(json['product_id']);
-    final quantity = _inventoryQuantity(json['quantity']);
+    final quantity = _warehouseCount(
+      json['quantity'],
+      minimum: 1,
+      maximum: 2147483647,
+    );
+    final rawTransfer = json['transfer'];
+    if (rawTransfer != null && rawTransfer is! Map)
+      throw const FormatException(
+        'The transfer reservation reference could not be confirmed.',
+      );
+    final transfer = rawTransfer is Map
+        ? InventoryTransferReservationReference.fromJson(
+            Map<String, dynamic>.from(rawTransfer),
+          )
+        : null;
     final expires = _recordDate(json['expires_at']),
         created = _recordDate(json['created_at']),
         updated = _recordDate(json['updated_at']);
@@ -57,9 +152,34 @@ class InventoryReservationRecord {
         product['name'] is! String ||
         json['quantity'] is! num ||
         product['store_id'] != site ||
+        product['id'] != null && product['id'] != productId ||
         quantity <= 0 ||
         !inventoryReservationStatuses.contains(json['status']) ||
-        expires == null ||
+        !json.containsKey('expires_at') ||
+        (transfer == null ? expires == null : json['expires_at'] != null) ||
+        (transfer != null &&
+            (![
+                  'reserved',
+                  'shipped',
+                  'partially_received',
+                  'received',
+                ].contains(transfer.status) ||
+                transfer.reservationId != id ||
+                transfer.storeId != site ||
+                transfer.productId != productId ||
+                transfer.variantId != _stringValue(json['variant_id']) ||
+                transfer.sourceLocationId != json['location_id'] ||
+                _stringValue(json['order_id']).isNotEmpty ||
+                transfer.quantityRequested - transfer.baseReceived !=
+                    quantity ||
+                transfer.status == 'reserved' &&
+                    !['active', 'hold'].contains(json['status']) ||
+                [
+                      'shipped',
+                      'partially_received',
+                      'received',
+                    ].contains(transfer.status) &&
+                    json['status'] != 'committed')) ||
         created == null ||
         updated == null) {
       throw const FormatException(
@@ -79,6 +199,7 @@ class InventoryReservationRecord {
       expiresAt: expires,
       createdAt: created,
       updatedAt: updated,
+      transfer: transfer,
     );
   }
   final String id,
@@ -90,7 +211,9 @@ class InventoryReservationRecord {
       orderId,
       status;
   final int quantity;
-  final DateTime expiresAt, createdAt, updatedAt;
+  final DateTime? expiresAt;
+  final DateTime createdAt, updatedAt;
+  final InventoryTransferReservationReference? transfer;
 }
 
 class InventoryReceiptRecord {
@@ -642,13 +765,15 @@ class PurchaseOrderLineContract {
     required this.variantId,
     required this.sku,
     required this.productName,
+    this.variantTitle = '',
+    this.productDeleted = false,
     required this.quantity,
     required this.receivedQuantity,
     required this.unitCost,
   });
 
   factory PurchaseOrderLineContract.fromJson(Map<String, dynamic> json) {
-    final product = json['product'];
+    final product = json['product'], variant = json['variant'];
     final quantity = _warehouseCount(json['quantity_ordered'], minimum: 1);
     final received = _warehouseCount(
       json['quantity_received'],
@@ -662,12 +787,16 @@ class PurchaseOrderLineContract {
       productId: _stringValue(json['product_id']),
       variantId: _stringValue(json['variant_id']),
       sku: _stringValue(
-        json['sku'] ?? (product is Map ? product['sku'] : null),
+        (variant is Map ? variant['sku'] : null) ??
+            (product is Map ? product['sku'] : null) ??
+            json['sku'],
       ),
       productName: _stringValue(
-        json['product_name'] ?? (product is Map ? product['name'] : null),
-        fallback: 'Product',
+        (product is Map ? product['name'] : null) ?? json['product_name'],
+        fallback: 'Product unavailable',
       ),
+      variantTitle: _stringValue(variant is Map ? variant['title'] : null),
+      productDeleted: product is Map && product['deleted_at'] != null,
       quantity: quantity,
       receivedQuantity: received,
       unitCost: cost,
@@ -679,6 +808,15 @@ class PurchaseOrderLineContract {
   final String variantId;
   final String sku;
   final String productName;
+  final String variantTitle;
+  final bool productDeleted;
+
+  String get displayName => [
+    productName + (productDeleted ? ' (deleted)' : ''),
+    if (variantId.isNotEmpty)
+      variantTitle.isEmpty ? 'Variant unavailable' : variantTitle,
+    if (sku.isNotEmpty) sku,
+  ].join(' / ');
   final int quantity;
   final int receivedQuantity;
   final num unitCost;
@@ -705,6 +843,21 @@ void _verifyWarehouseDocument(
       json.containsKey(key) &&
       (json[key] == null || _recordDate(json[key]) != null);
   final site = json['site_id'], target = json['id'], lines = json['lines'];
+  void namedReference(
+    Object? raw,
+    Object? expectedId, {
+    String owner = 'store_id',
+    Object? expectedOwner,
+  }) {
+    if (raw == null) return; // Historical row is missing; retain the document.
+    if (raw is! Map ||
+        raw['id'] != expectedId ||
+        raw[owner] != (expectedOwner ?? site) ||
+        raw['name'] is! String ||
+        (raw['deleted_at'] != null && _recordDate(raw['deleted_at']) == null))
+      invalid();
+  }
+
   if (!_recordId(site) ||
       !_recordId(target) ||
       _recordDate(json['created_at']) == null ||
@@ -717,6 +870,11 @@ void _verifyWarehouseDocument(
       lines.length > 200)
     invalid();
   if (transfer) {
+    namedReference(json['source_location'], json['source_location_id']);
+    namedReference(
+      json['destination_location'],
+      json['destination_location_id'],
+    );
     if (!warehouseTransferStatuses.contains(json['status']) ||
         json['transfer_number'] is! String ||
         (json['transfer_number'] as String).isEmpty ||
@@ -739,6 +897,7 @@ void _verifyWarehouseDocument(
         !money(json['subtotal']) ||
         !money(json['total']))
       invalid();
+    namedReference(json['location'], json['location_id']);
     final supplier = json['supplier'];
     if (supplier != null &&
         (supplier is! Map ||
@@ -761,6 +920,20 @@ void _verifyWarehouseDocument(
         _recordDate(line['created_at']) == null ||
         (line['updated_at'] != null && _recordDate(line['updated_at']) == null))
       invalid();
+    namedReference(line['product'], line['product_id']);
+    final product = line['product'], variant = line['variant'];
+    if (product != null &&
+        (!product.containsKey('sku') ||
+            (product['sku'] != null && product['sku'] is! String)))
+      invalid();
+    if (variant != null &&
+        (variant is! Map ||
+            variant['id'] != line['variant_id'] ||
+            variant['product_id'] != line['product_id'] ||
+            variant['title'] is! String ||
+            !variant.containsKey('sku') ||
+            (variant['sku'] != null && variant['sku'] is! String)))
+      invalid();
     if (transfer) {
       InventoryTransferLineContract.fromJson(line);
     } else {
@@ -778,6 +951,8 @@ class PurchaseOrderContract {
     required this.supplierId,
     required this.supplierName,
     required this.locationId,
+    this.locationName = '',
+    this.locationDeleted = false,
     required this.status,
     required this.expectedAt,
     required this.notes,
@@ -808,6 +983,8 @@ class PurchaseOrderContract {
         fallback: 'No supplier',
       ),
       locationId: _stringValue(json['location_id']),
+      locationName: _stringValue(_mapValue(json['location'])['name']),
+      locationDeleted: _mapValue(json['location'])['deleted_at'] != null,
       status: _stringValue(json['status'], fallback: 'draft'),
       expectedAt: _stringValue(json['expected_at']),
       notes: _stringValue(json['notes']),
@@ -830,6 +1007,11 @@ class PurchaseOrderContract {
   final String supplierId;
   final String supplierName;
   final String locationId;
+  final String locationName;
+  final bool locationDeleted;
+  String get locationLabel => locationName.isEmpty
+      ? (locationId.isEmpty ? 'No location' : 'Location unavailable')
+      : locationName + (locationDeleted ? ' (deleted)' : '');
   final String status;
   final String expectedAt;
   final String notes;
@@ -879,13 +1061,15 @@ class InventoryTransferLineContract {
     required this.variantId,
     required this.sku,
     required this.productName,
+    this.variantTitle = '',
+    this.productDeleted = false,
     required this.quantity,
     required this.receivedQuantity,
     this.shippedQuantity = 0,
   });
 
   factory InventoryTransferLineContract.fromJson(Map<String, dynamic> json) {
-    final product = json['product'];
+    final product = json['product'], variant = json['variant'];
     final quantity = _warehouseCount(json['quantity_requested'], minimum: 1);
     final shipped = _warehouseCount(
       json['quantity_shipped'],
@@ -900,12 +1084,16 @@ class InventoryTransferLineContract {
       productId: _stringValue(json['product_id']),
       variantId: _stringValue(json['variant_id']),
       sku: _stringValue(
-        json['sku'] ?? (product is Map ? product['sku'] : null),
+        (variant is Map ? variant['sku'] : null) ??
+            (product is Map ? product['sku'] : null) ??
+            json['sku'],
       ),
       productName: _stringValue(
-        json['product_name'] ?? (product is Map ? product['name'] : null),
-        fallback: 'Product',
+        (product is Map ? product['name'] : null) ?? json['product_name'],
+        fallback: 'Product unavailable',
       ),
+      variantTitle: _stringValue(variant is Map ? variant['title'] : null),
+      productDeleted: product is Map && product['deleted_at'] != null,
       quantity: quantity,
       receivedQuantity: received,
       shippedQuantity: shipped,
@@ -917,6 +1105,15 @@ class InventoryTransferLineContract {
   final String variantId;
   final String sku;
   final String productName;
+  final String variantTitle;
+  final bool productDeleted;
+
+  String get displayName => [
+    productName + (productDeleted ? ' (deleted)' : ''),
+    if (variantId.isNotEmpty)
+      variantTitle.isEmpty ? 'Variant unavailable' : variantTitle,
+    if (sku.isNotEmpty) sku,
+  ].join(' / ');
   final int quantity;
   final int receivedQuantity;
   final int shippedQuantity;
@@ -931,6 +1128,10 @@ class InventoryTransferContract {
     required this.storeId,
     required this.sourceLocationId,
     required this.destinationLocationId,
+    this.sourceLocationName = '',
+    this.destinationLocationName = '',
+    this.sourceLocationDeleted = false,
+    this.destinationLocationDeleted = false,
     required this.status,
     required this.notes,
     required this.lines,
@@ -954,6 +1155,16 @@ class InventoryTransferContract {
       storeId: _stringValue(json['store_id'] ?? json['site_id']),
       sourceLocationId: _stringValue(json['source_location_id']),
       destinationLocationId: _stringValue(json['destination_location_id']),
+      sourceLocationName: _stringValue(
+        _mapValue(json['source_location'])['name'],
+      ),
+      destinationLocationName: _stringValue(
+        _mapValue(json['destination_location'])['name'],
+      ),
+      sourceLocationDeleted:
+          _mapValue(json['source_location'])['deleted_at'] != null,
+      destinationLocationDeleted:
+          _mapValue(json['destination_location'])['deleted_at'] != null,
       status: _stringValue(json['status'], fallback: 'draft'),
       notes: _stringValue(json['notes']),
       lines: rawLines is List
@@ -974,6 +1185,15 @@ class InventoryTransferContract {
   final String storeId;
   final String sourceLocationId;
   final String destinationLocationId;
+  final String sourceLocationName, destinationLocationName;
+  final bool sourceLocationDeleted, destinationLocationDeleted;
+  String get sourceLocationLabel => sourceLocationName.isEmpty
+      ? 'Location unavailable'
+      : sourceLocationName + (sourceLocationDeleted ? ' (deleted)' : '');
+  String get destinationLocationLabel => destinationLocationName.isEmpty
+      ? 'Location unavailable'
+      : destinationLocationName +
+            (destinationLocationDeleted ? ' (deleted)' : '');
   final String status;
   final String notes;
   final List<InventoryTransferLineContract> lines;

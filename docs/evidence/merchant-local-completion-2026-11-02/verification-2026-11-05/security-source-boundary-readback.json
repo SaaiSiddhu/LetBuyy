@@ -1,0 +1,17 @@
+{
+  "current_source_sha256": "8ffd6e530d90589bd68607a9a910c50414f3389cca26213ceded0c483884aae6",
+  "unchanged_from_coupon_inputs": 8441,
+  "changed_or_added": [
+    "apps/merchant/mobile/lib/screens/security/two_factor_screen.dart",
+    "apps/merchant/mobile/test/security_presentation_test.dart",
+    "apps/merchant/mobile/test/two_factor_screen_test.dart"
+  ],
+  "unexpected": [],
+  "protected_preimages_byte_equal": [
+    "apps/merchant/mobile/lib/services/two_factor_service.dart",
+    "apps/merchant/mobile/lib/services/security_command_store.dart",
+    "apps/merchant/mobile/lib/widgets/shared/capability_gate.dart",
+    "apps/merchant/mobile/lib/app/routes.dart"
+  ],
+  "all_backend_sdk_models_money_identity_tenancy_and_policy_source_unchanged": true
+}

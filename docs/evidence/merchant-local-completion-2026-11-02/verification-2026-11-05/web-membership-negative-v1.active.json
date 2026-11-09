@@ -1,0 +1,14 @@
+{
+  "started_at": "2026-11-06T05:39:37.980301+00:00",
+  "supervisor_pid": 84015,
+  "source": "store-pages-source-v3",
+  "source_sha256": "dee2756c4b94267b7bf2b3b9bcb01a9fcafd87b86643f375b55232523f518e32",
+  "command": [
+    "node",
+    "--test",
+    "--test-name-pattern=web store header includes every|web confirmed empty",
+    "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/web_membership_paging.test.mjs"
+  ],
+  "status": "RUNNING",
+  "child_pid": 84032
+}

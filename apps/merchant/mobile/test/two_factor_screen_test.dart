@@ -41,12 +41,24 @@ class SecurityHarness {
     );
   }
 
-  Widget app({String? action, NavigatorObserver? observer}) => MultiProvider(
+  Widget app({
+    String? action,
+    NavigatorObserver? observer,
+    ThemeData? theme,
+    double scale = 1,
+  }) => MultiProvider(
     providers: [
       ChangeNotifierProvider<StoreContext>.value(value: stores),
       ChangeNotifierProvider<TwoFactorService>.value(value: service),
     ],
     child: MaterialApp(
+      theme: theme,
+      builder: (context, child) => MediaQuery(
+        data: MediaQuery.of(
+          context,
+        ).copyWith(textScaler: TextScaler.linear(scale)),
+        child: child!,
+      ),
       navigatorObservers: [if (observer != null) observer],
       home: Builder(
         builder: (context) => Scaffold(
@@ -124,10 +136,15 @@ void main() {
       await t.pumpWidget(h.app());
       await press(t, 'Open security');
       expect(find.text('Recover your activation result'), findsOneWidget);
-      final previous = h.api.calls.where((call) => call.path == '/2fa/totp/verify').length;
+      final previous = h.api.calls
+          .where((call) => call.path == '/2fa/totp/verify')
+          .length;
       await t.enterText(find.byType(TextField), '123456');
       await press(t, 'Verify and enable');
-      expect(h.api.calls.where((call) => call.path == '/2fa/totp/verify').length, previous + 1);
+      expect(
+        h.api.calls.where((call) => call.path == '/2fa/totp/verify').length,
+        previous + 1,
+      );
       expect(find.text('Save your recovery codes'), findsOneWidget);
       expect(find.text('synthetic-code-a'), findsOneWidget);
       expect(t.takeException(), isNull);

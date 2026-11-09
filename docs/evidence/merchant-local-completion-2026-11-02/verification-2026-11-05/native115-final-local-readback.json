@@ -1,0 +1,129 @@
+{
+  "at": "2026-11-07T10:35:06.823941+00:00",
+  "status": "BOUNDED_CURRENT_IOS_MOV_AVPLAYER_WEBM_WEBKIT_FILES_PLAYBACK_WEB_SYNC_PASS",
+  "source": "merchant-webm-ios-source-v86",
+  "source_sha256": "72eea74898f1efecbb91bd868e286deeeefc42324ff59b6733f288262185cc8e",
+  "fixture_source_sha256": "04cfdeccde911fa1d40e561de5ce1b8c9075a4a58c16ef6fff03326a3e951b76",
+  "fixture_inputs_matching_source86": 4880,
+  "run_id": "2e7021b40e61",
+  "private_root": "/private/tmp/letbuyy-ios-ui-20261107-e7c2b7ad91",
+  "runner": {
+    "tests": 1,
+    "assertionsPassed": 1,
+    "assertionsFailed": 0,
+    "skipped": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    }
+  },
+  "normal_auth_and_actual_safari_files": true,
+  "formats": {
+    "MOV_H264": "AVPlayer",
+    "WebM_VP8": "in-app WebKit through existing controls"
+  },
+  "uploads": 2,
+  "objects": 2,
+  "hashes": {
+    "video/quicktime": "41df40017e22408682731f8eb5686d16b1cdc52d9a9ee0623d98b2dbed62e3c3",
+    "video/webm": "87d37fd5c013df089147c9f05f2bf8962e55906cc3ff8c4ec79017551d18954a"
+  },
+  "no_passive_video_fetch": true,
+  "actual_decode_progress_pause_mute_seek_background": true,
+  "native_web_caption_readback": true,
+  "installed_artifact": {
+    "run_id": "2e7021b40e61",
+    "all_files_equal": true,
+    "files": 401,
+    "manifest_sha256": "b71ab0e4953cc911a39b5cca2d40176297c00a9100e7a9f02401513fe4e18507",
+    "recording_camera_microphone_descriptions_packaged": true,
+    "retained": "/private/tmp/letbuyy-ios-ui-20261107-e7c2b7ad91/native-ios-v115/qualified-artifact/Runner.app",
+    "installed": "/Users/saai_mithra/Library/Developer/CoreSimulator/Devices/B907B390-5B08-490F-BC6A-8900667B2D94/data/Containers/Bundle/Application/0C927B9B-1471-4332-A38C-E187B894EAE0/Runner.app"
+  },
+  "phase_terminals": {
+    "Readback-terminal.json": {
+      "exit": 0,
+      "accepted": true,
+      "run_id": "2e7021b40e61",
+      "phase": "Readback",
+      "attempt": 1,
+      "control_file": "/private/tmp/letbuyy-ios-ui-20261107-e7c2b7ad91/Readback.swift",
+      "control_sha256": "9856a62543de2af7f35a48b7fefebd3a872b8818f94f9352483837352f3a9122"
+    },
+    "Preview-attempt3-terminal.json": {
+      "exit": 0,
+      "accepted": true,
+      "run_id": "2e7021b40e61",
+      "phase": "Preview",
+      "attempt": 3,
+      "control_file": "/private/tmp/letbuyy-ios-ui-20261107-e7c2b7ad91/Preview-observed-WebKit-duration.swift",
+      "control_sha256": "d3cb48d6dc31a9621981cc82f853a3495ce21a1acc8edaad413dd1fc9e1f85fa"
+    },
+    "Download-terminal.json": {
+      "exit": 0,
+      "accepted": true,
+      "run_id": "2e7021b40e61",
+      "phase": "Download",
+      "attempt": 1,
+      "control_file": "/private/tmp/letbuyy-ios-ui-20261107-e7c2b7ad91/Download.swift",
+      "control_sha256": "889a37818d66ebc7fbe999f64824c217fa9f925a437cf7dd7c8b373de15ed286"
+    },
+    "Preview-terminal.json": {
+      "exit": 65,
+      "accepted": false,
+      "run_id": "2e7021b40e61",
+      "phase": "Preview",
+      "attempt": 1,
+      "control_file": "/private/tmp/letbuyy-ios-ui-20261107-e7c2b7ad91/Preview.swift",
+      "control_sha256": "f43bd542e402822e99f9cf31fdc4406f3bd642c32c29d181c3fd4b3c0ea1e08d"
+    },
+    "Preview-attempt2-terminal.json": {
+      "exit": 65,
+      "accepted": false,
+      "run_id": "2e7021b40e61",
+      "phase": "Preview",
+      "attempt": 2,
+      "control_file": "/private/tmp/letbuyy-ios-ui-20261107-e7c2b7ad91/Preview-fresh-compiled-phase.swift",
+      "control_sha256": "a4e37b7ecd9a044495ead9d28c8e7ff31201477c00b338e83fd3bc7700351436"
+    },
+    "Auth-terminal.json": {
+      "exit": 0,
+      "accepted": true,
+      "run_id": "2e7021b40e61",
+      "phase": "Auth",
+      "attempt": 1,
+      "control_file": "/private/tmp/letbuyy-ios-ui-20261107-e7c2b7ad91/Auth.swift",
+      "control_sha256": "3648cb23f97d5d34bec03aaff65152bce183e71465d85a5791ef5fe6cc869810"
+    },
+    "Import-terminal.json": {
+      "exit": 0,
+      "accepted": true,
+      "run_id": "2e7021b40e61",
+      "phase": "Import",
+      "attempt": 1,
+      "control_file": "/private/tmp/letbuyy-ios-ui-20261107-e7c2b7ad91/Import.swift",
+      "control_sha256": "dffc175a7565c7ca37356ff9f92d4f3d7eb3573ba54ca43c53eed953da22c6c7"
+    }
+  },
+  "failed_attempts_retained": "Preview1 ran stale prior Swift method;new immutable source forced compilation. Preview2 MOV controls passed and WebM rendered but duration assertion hard-coded3;Preview3 resumed WebM and required actual0-to-1/2progress,seek/mute/background using observed2/3second duration. No upload or successful write reset.",
+  "observed_rendered_webm_frame": "/private/tmp/letbuyy-ios-ui-20261107-e7c2b7ad91/observed-format-progress-check.png",
+  "readback_compile_metadata": {
+    "at": "2026-11-07T10:19:17.077074+00:00",
+    "file": "/private/tmp/letbuyy-ios-ui-20261107-e7c2b7ad91/Readback.swift",
+    "content_sha256_unchanged": "9856a62543de2af7f35a48b7fefebd3a872b8818f94f9352483837352f3a9122",
+    "mtime_ns_before": 1794046066610907706,
+    "mtime_ns_after": 1794046757077030000,
+    "reason": "Touch only owned unexecuted Readback control metadata at actual current time so copy2 cannot reuse the preceding phase compiler cache;admitted source bytes remain identical."
+  },
+  "device_custody": {
+    "udid": "B907B390-5B08-490F-BC6A-8900667B2D94",
+    "baseline_restored": "Shutdown",
+    "existing_files_and_photos_preserved": true
+  },
+  "whole_features_accepted": 0,
+  "limits": "Current task simulator only,silent generated clips,H264 MOV/VP8 WebM only,normal local Accounts/Next/compiled Workers/owned PostgreSQL/R2. No physical camera/microphone,all codecs/OS versions,provider/hosted/buyer/release/full122 acceptance."
+}

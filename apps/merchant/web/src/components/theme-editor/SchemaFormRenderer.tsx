@@ -1,5 +1,7 @@
 'use client'
 
+import { MediaRecoveryNotice, useMediaUploadTarget } from '@/components/media/MediaRecoveryProvider'
+
 /**
  * SchemaFormRenderer.tsx — Phase U: Shopify-parity theme setting controls
  *
@@ -49,6 +51,7 @@ interface SchemaFormRendererProps {
 export default function SchemaFormRenderer({ schema, values, onChange, storeName }: SchemaFormRendererProps) {
     return (
         <div className="te-form">
+            <MediaRecoveryNotice store={storeName} />
             {Object.entries(schema).map(([key, field]) => {
                 // Conditional visibility: skip fields whose visible_if constraint is not met
                 if (!isFieldVisible(field, values)) return null
@@ -428,13 +431,7 @@ function ColorInput({
     )
 }
 
-function uploadedImageUrl(payload: unknown): string | null {
-    if (!payload || typeof payload !== 'object') return null
-    const data = (payload as { data?: unknown }).data
-    if (!data || typeof data !== 'object') return null
-    const url = (data as { url?: unknown }).url
-    return typeof url === 'string' && url.length > 0 ? url : null
-}
+
 
 function ImageInput({
     label, value, onChange, storeName, helpText,
@@ -446,13 +443,14 @@ function ImageInput({
     helpText?: string
 }) {
     const { notify } = useToast()
+    const mediaUpload = useMediaUploadTarget(storeName, label)
     const [isUploading, setIsUploading] = useState(false)
     const [uploadError, setUploadError] = useState<string | null>(null)
 
     const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0]
         event.target.value = ''
-        if (!file) return
+        if (!file || mediaUpload.blocked) return
 
         if (!storeName) {
             const message = 'Store context is unavailable for uploads.'
@@ -461,33 +459,23 @@ function ImageInput({
             return
         }
 
+        const current = mediaUpload.capture()
         setIsUploading(true)
         setUploadError(null)
 
         try {
-            const formData = new FormData()
-            formData.append('file', file)
-            const response = await fetch(`/api/stores/${encodeURIComponent(storeName)}/upload`, {
-                method: 'POST',
-                body: formData,
-            })
-            const payload = await response.json().catch(() => null)
-            const url = uploadedImageUrl(payload)
-            if (!response.ok || !url) {
-                const message =
-                    payload && typeof payload === 'object' && typeof (payload as { error?: unknown }).error === 'string'
-                        ? (payload as { error: string }).error
-                        : 'Image upload failed.'
-                throw new Error(message)
-            }
+            const asset = await mediaUpload.upload(file)
+            const url = asset.url
+
             onChange(url)
             notify({ title: 'Image uploaded', description: `${label} is ready to save with this draft.`, variant: 'success' })
         } catch (err) {
+                if (!current()) return
             const message = err instanceof Error ? err.message : 'Image upload failed.'
             setUploadError(message)
             notify({ title: 'Image upload failed', description: message, variant: 'critical' })
         } finally {
-            setIsUploading(false)
+            if (current()) setIsUploading(false)
         }
     }
 
@@ -522,7 +510,7 @@ function ImageInput({
                         className="te-field-file-input"
                         type="file"
                         accept="image/*"
-                        disabled={isUploading}
+                        disabled={isUploading || mediaUpload.blocked}
                         onChange={handleFileChange}
                     />
                 </label>

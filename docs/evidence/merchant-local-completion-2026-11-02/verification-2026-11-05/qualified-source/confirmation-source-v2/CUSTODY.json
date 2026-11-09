@@ -1,0 +1,9 @@
+{
+  "source_sha256": "1029fe659065f6110351560cecd8ece3f7656665f2b499ec6e9019a9b216eb65",
+  "files": {
+    "apps/merchant/mobile/lib/widgets/shared/confirm_dialog.dart": "9bb1462395adc56cbf58f70fab1dd2a121c3c036c79498d2d6cd708751d52f9e",
+    "apps/merchant/mobile/test/confirmation_presentation_test.dart": "5da9647388da47c9b3598924791cbc0632abdd4795ab0d34945b0bc2758aa187",
+    "packages/dart/ui_kit/lib/src/widgets/confirmation_dialog.dart": "101f0a9c7652df40ee1b706ccfe834c1402becc59418e73dc1c5c80fa780e8ed"
+  },
+  "role": "Exact3changed presentation/test inputs from saved-fields4;41focusedPASS,broad local qualification pending."
+}

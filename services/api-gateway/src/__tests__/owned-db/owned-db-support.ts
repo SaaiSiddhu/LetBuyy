@@ -34,6 +34,18 @@ import {removeOwnedNextDirectory,validateOwnedNextDirectoryReceipt} from '../../
 
 const GUARD = fileURLToPath(new URL('../../../../../scripts/governance/owned-fixture-guard.mjs', import.meta.url));
 
+/** Fixed read-only source inventory for the owned Merchant profile browser.
+ * Callers cannot select an executable, arguments or filesystem roots. */
+export function listOwnedMerchantProfileSourcePaths(): string[] {
+    requireOwnedDatabase();
+    return execFileSync('git', ['ls-files', '--cached', '--others', '--exclude-standard', '-z', '--',
+        'apps/merchant/web', 'apps/platform/identity', 'services/api-gateway', 'packages', 'database/supabase',
+        'scripts/governance', 'tests/fixtures', 'tests/owned-db/merchant-store-profile-browser.postgres.test.ts'], {
+        cwd: fileURLToPath(new URL('../../../../../', import.meta.url)), encoding: 'utf8', timeout: 10000,
+        maxBuffer: 16 * 1024 * 1024,
+    }).split('\0').filter(Boolean).sort();
+}
+
 interface VerifiedFixture {
     runId: string;
     runnerPid: number;
@@ -313,7 +325,7 @@ async function finishClientDirectory(record:ClientRecord):Promise<void> {
 }
 
 /** Launch only a named test client after database ownership is proven; no raw command/cwd seam. */
-export function startOwnedClientRuntime(owned:OwnedDatabase, kind:ClientKind, options:{ port?:number; env:Record<string,string|undefined>; hostMode?:'canonical-storefront-loopback' }):OwnedClientProcess {
+export function startOwnedClientRuntime(owned:OwnedDatabase, kind:ClientKind, options:{ port?:number; env:Record<string,string|undefined>; hostMode?:'canonical-storefront-loopback'; providerFixture?:{kind:'turnstile-local-v1';origin:string;capability:string} }):OwnedClientProcess {
     if (!CLIENT_KINDS.has(kind)) throw new Error('unapproved owned client runtime kind');
     if (owned !== requireOwnedDatabase() || !clientFixtureEnv) throw new Error('owned client runtime requires the verified database handle');
     if ((kind.endsWith('-next') || kind.endsWith('-next-production')) && (!Number.isInteger(options.port) || options.port! < 1024 || options.port! > 65535)) throw new Error('invalid local Next port');
@@ -323,12 +335,14 @@ export function startOwnedClientRuntime(owned:OwnedDatabase, kind:ClientKind, op
     // Only OS/tool paths cross implicitly. Provider/database credentials and
     // ambient app settings must not leak from the shell into a synthetic journey.
     if (options.env.LETBUYY_OWNED_CLIENT_HOST_MODE !== undefined) throw new Error('owned host mode must use the verified helper option');
+    if (Object.keys(options.env).some(name=>name.startsWith('LETBUYY_OWNED_PROVIDER_'))) throw new Error('owned provider mode must use the verified helper option');
+    if (options.providerFixture && !kind.startsWith('identity-next')) throw new Error('owned provider fixture is limited to Identity clients');
     if (options.hostMode && (!kind.endsWith('-next-production') || options.hostMode !== 'canonical-storefront-loopback')) throw new Error('invalid owned host mode');
     const base:Record<string,string> = {};
     for (const name of ['PATH','HOME','TMPDIR','TMP','TEMP','LANG','LC_ALL','PNPM_HOME','FLUTTER_ROOT','PUB_CACHE','PLAYWRIGHT_BROWSERS_PATH']) {
         if (process.env[name]) base[name] = process.env[name]!;
     }
-    const env = { ...base, ...Object.fromEntries(Object.entries(options.env).filter((entry):entry is [string,string] => typeof entry[1] === 'string')), ...(options.hostMode ? { LETBUYY_OWNED_CLIENT_HOST_MODE: options.hostMode } : {}) };
+    const env = { ...base, ...Object.fromEntries(Object.entries(options.env).filter((entry):entry is [string,string] => typeof entry[1] === 'string')), ...(options.hostMode ? { LETBUYY_OWNED_CLIENT_HOST_MODE: options.hostMode } : {}), ...(options.providerFixture?{LETBUYY_OWNED_PROVIDER_PROFILE:JSON.stringify(options.providerFixture)}:{}) };
     const child = spawn(process.execPath,[LAUNCHER,kind,String(process.pid),process.cwd(),String(options.port ?? 0)],{
         cwd:process.cwd(), env:{ ...base, ...clientFixtureEnv }, stdio:['pipe','pipe','pipe','ipc'], detached:true,
     }) as OwnedClientProcess; // All three pipes are fixed above; the fourth channel is private IPC.
@@ -382,6 +396,7 @@ export async function stopOwnedClientRuntime(child:OwnedClientProcess|undefined)
 }
 
 type OwnedImportCommitStage='row'|'registration'|'registration-stop';
+type OwnedCommitStage=OwnedImportCommitStage|'media';
 export interface OwnedPooledSqlProxy {
     env(): {HYPERDRIVE:{connectionString:string}; STOREFRONT_POOLED_SQL:'on'};
     stop():Promise<void>;
@@ -389,6 +404,9 @@ export interface OwnedPooledSqlProxy {
     /** Named wire fault: forward the real row transaction, lose only its COMMIT ack. */
     dropNextProductImportCommitAcknowledgement(stage?:OwnedImportCommitStage):void;
     droppedProductImportCommitAcknowledgements():number;
+    /** Lose only the actual COMMIT acknowledgement after a canonical Media receipt write. */
+    dropNextMediaCommitAcknowledgement():void;
+    droppedMediaCommitAcknowledgements():number;
 }
 
 /** Actual PostgreSQL wire transport, fixed to the freshly verified owned cluster/database.
@@ -418,7 +436,7 @@ export async function startOwnedPooledSqlProxy(owned:OwnedDatabase):Promise<Owne
     const closed=new Set<Promise<void>>();
     let stopping=false;
     let relayError:string|null=null;
-    let dropImportCommit:OwnedImportCommitStage|null=null,droppedImportCommits=0;
+    let dropImportCommit:OwnedCommitStage|null=null,droppedImportCommits=0,droppedMediaCommits=0;
     const killChildren=()=>{for(const child of children)if(child.pid){try{process.kill(-child.pid,'SIGKILL');}catch{/* already stopped */}}};
     process.once('exit',killChildren);
     const server=createServer(socket=>{
@@ -453,8 +471,8 @@ wait "$letbuyy_writer_pid" 2>/dev/null || true`;
         // Observe protocol framing without logging/buffering entire sessions.
         // Only the fixed import completion statement can arm the named fault;
         // bound values and arbitrary caller-provided SQL never select a target.
-        let frontend=Buffer.alloc(0),backend=Buffer.alloc(0),startup=true,importRow:OwnedImportCommitStage|null=null;
-        const statements=new Map<string,OwnedImportCommitStage|null>(),portals=new Map<string,OwnedImportCommitStage|null>();
+        let frontend=Buffer.alloc(0),backend=Buffer.alloc(0),startup=true,importRow:OwnedCommitStage|null=null;
+        const statements=new Map<string,OwnedCommitStage|null>(),portals=new Map<string,OwnedCommitStage|null>();
         socket.on('data',(chunk:Buffer)=>{
             frontend=Buffer.concat([frontend,chunk]);
             while(frontend.length>=(startup?4:5)){
@@ -470,7 +488,8 @@ wait "$letbuyy_writer_pid" 2>/dev/null || true`;
                     const query=start>=5&&end>start?frame.toString('utf8',start,end):'';
                     const matching=/^SELECT public\.complete_product_import_row_v1\(/.test(query)?'row'
                         :/^SELECT public\.register_product_import_v1\(/.test(query)?'registration'
-                        :/^SELECT public\.stop_product_import_registration_v1\(/.test(query)?'registration-stop':null;
+                        :/^SELECT public\.stop_product_import_registration_v1\(/.test(query)?'registration-stop'
+                        :/^UPDATE public\.idempotency_keys SET status='completed',resource_type='media',/.test(query)?'media':null;
                     if(type==='P')statements.set(frame.toString('utf8',5,nameEnd),matching);
                     else if(dropImportCommit===matching&&matching)importRow=matching;
                 }else if(type==='B'){
@@ -497,7 +516,7 @@ wait "$letbuyy_writer_pid" 2>/dev/null || true`;
                     if(command==='COMMIT'&&importRow&&importRow===dropImportCommit){
                         // PostgreSQL has acknowledged its own actual COMMIT.
                         // Nothing fabricates success or rolls back that state.
-                        dropImportCommit=null;droppedImportCommits++;socket.destroy();return;
+                        dropImportCommit=null;if(importRow==='media')droppedMediaCommits++;else droppedImportCommits++;socket.destroy();return;
                     }
                     if(command==='COMMIT'||command==='ROLLBACK')importRow=null;
                 }
@@ -528,6 +547,11 @@ wait "$letbuyy_writer_pid" 2>/dev/null || true`;
             dropImportCommit=stage;
         },
         droppedProductImportCommitAcknowledgements:()=>droppedImportCommits,
+        dropNextMediaCommitAcknowledgement:()=>{
+            if(stopping||dropImportCommit)throw new Error('Owned COMMIT fault is already armed or stopped');
+            dropImportCommit='media';
+        },
+        droppedMediaCommitAcknowledgements:()=>droppedMediaCommits,
         stop:()=>stopped??=(async()=>{
             stopping=true;
             const serverClosed=new Promise<void>((resolve,reject)=>server.close(error=>error?reject(error):resolve()));
@@ -541,10 +565,10 @@ wait "$letbuyy_writer_pid" 2>/dev/null || true`;
 
 /** SQL-only historical control inside the already verified disposable cluster.
  * It has no REST endpoint and cannot be passed to an owned client runtime.
- *315 and 358 pin schema/physical identities that later DDL cannot recreate.
+ *315,358 and361 pin schema/physical identities that later DDL cannot recreate.
  */
-export function requireOwnedHistoricalSqlDatabase(through: 309 | 315 | 357 | 358): Pick<OwnedDatabase,'database'|'psql'|'psqlAsync'|'psqlExpectError'|'psqlScriptExpectError'|'exec'|'script'|'scriptLarge'> {
-    if(through!==309&&through!==315&&through!==357&&through!==358)throw new Error('unreviewed historical schema point');
+export function requireOwnedHistoricalSqlDatabase(through: 309 | 315 | 346 | 356 | 357 | 358 | 361): Pick<OwnedDatabase,'database'|'psql'|'psqlAsync'|'psqlExpectError'|'psqlScriptExpectError'|'exec'|'script'|'scriptLarge'> {
+    if(through!==309&&through!==315&&through!==346&&through!==356&&through!==357&&through!==358&&through!==361)throw new Error('unreviewed historical schema point');
     const verified=requireOwnedDatabase(); // No environment/container fallback.
     const root=fileURLToPath(new URL('../../../../../',import.meta.url));
     const database=`letbuyy_history_${through}_${crypto.randomUUID().replaceAll('-','').slice(0,12)}`;
@@ -641,7 +665,10 @@ export async function createOwnedManagedSupabaseFixture(owned:OwnedDatabase) {
                 return new Promise((done,fail)=>{
                     const marker='MANAGED_DONE_'+randomBytes(12).toString('hex');
                     pending={marker,done,fail,timer:setTimeout(()=>{child.kill();fail(new Error('Owned managed SQL timed out'));},90_000)};
-                    child.stdin.write(sql+'\n\\echo '+marker+'\n');
+                    // Finish a valid final statement before the completion
+                    // marker. psql can echo while an unterminated SELECT is
+                    // still buffered, which otherwise returns false completion.
+                    child.stdin.write(sql+'\n;\n\\echo '+marker+'\n');
                 });
             },
             close(){if(!child.stdin.destroyed)child.stdin.end();},

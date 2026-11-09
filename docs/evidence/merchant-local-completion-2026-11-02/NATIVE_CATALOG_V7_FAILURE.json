@@ -1,0 +1,17 @@
+{
+  "runId": "e981f95b9651",
+  "passed": 0,
+  "failed": 1,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "source_sha256": "5b78960c1e1e32ac56a70b447c5cedafbef793591cee5d2614e8566081750900",
+  "sourceHeldAndTerminalVerified": true,
+  "failure": "Offline Gradle also refused missing dynamic1.2+ version-list metadata, despite all resolved test AARs being cached. No APK installed.",
+  "correction": "Project-scoped pin for Flutter integration_test dynamic runner/rules/espresso dependencies to the already resolved cached1.3.0/1.2.0/3.3.0 toolchain. No SDK/shared-cache patch or TLS bypass. Dependency graph checked with actual offline Gradle."
+}

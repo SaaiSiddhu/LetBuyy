@@ -1,0 +1,196 @@
+// Actual compiled Worker, isolated Postgres/PostgREST, RLS/GUC SQL and local R2.
+import assert from 'node:assert/strict';
+import test, {before, after} from 'node:test';
+import {randomUUID, createHash} from 'node:crypto';
+import {NativeGateway} from '../../../../../tests/helpers/native-owned-gateway';
+import {requireOwnedDatabase, startOwnedPooledSqlProxy, type OwnedPooledSqlProxy} from './owned-db-support';
+import {newSyntheticTenant, seedSyntheticTenant} from './synthetic-tenant';
+import {gatewayEnv, newIdentityKeys, signedIdentityHeaders} from './gateway-harness';
+
+const owned = requireOwnedDatabase();
+let proxy: OwnedPooledSqlProxy;
+before(async () => { proxy = await startOwnedPooledSqlProxy(owned); });
+after(async () => { await proxy?.stop(); });
+const bytes = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAEklEQVR4nGOYNH3Rf2TMQLoAAOM/LKFDq3imAAAAAElFTkSuQmCC', 'base64');
+
+async function setup(options: {pooled?: boolean; observe?: (request: Request, forward: () => Promise<Response>) => Promise<Response>} = {}) {
+    const tenant = newSyntheticTenant('media-' + randomUUID().slice(0, 8)), owner = randomUUID(), email = `syn-${randomUUID()}@example.invalid`;
+    seedSyntheticTenant(owned.psql, tenant);
+    owned.psql(`INSERT INTO users_custom(id,email,email_verified)VALUES('${owner}','${email}',true);
+        UPDATE sites SET custom_user_id='${owner}'WHERE id='${tenant.siteId}';`);
+    const gateway = await NativeGateway.create(gatewayEnv(owned, await newIdentityKeys(), {
+        UPLOAD_PUBLIC_BASE_URL: 'https://cdn.fixture.invalid/assets', ...(options.pooled === false ? {} : proxy.env()),
+    }) as unknown as Record<string, unknown>, async () => { throw new Error('Media must not send email'); }, options.observe);
+    try {
+        const headers = () => signedIdentityHeaders(owner, email, tenant.siteId);
+        const form = new FormData(); form.set('store_id', tenant.siteId); form.set('folder', 'media');
+        form.set('sha256_hex', createHash('sha256').update(bytes).digest('hex'));
+        form.set('file', new File([bytes], 'owned.png', {type: 'image/png'}));
+        const h = await headers(); delete h['Content-Type']; h['X-Idempotency-Key'] = randomUUID();
+        const wire = new Request('https://gateway.test/v1/upload', {method: 'POST', headers: h, body: form});
+        const uploaded = await gateway.dispatch('/v1/upload', {method: 'POST', headers: wire.headers, body: await wire.arrayBuffer()});
+        assert.equal(uploaded.status, 201, await uploaded.clone().text());
+        const upload = await uploaded.json() as {data: {key: string; url: string; size: number; content_type: string}};
+        const key = 'media-create-' + randomUUID();
+        const input = {store_id: tenant.siteId, filename: 'owned.png', original_name: 'owned.png', url: upload.data.url,
+            storage_key: upload.data.key, mime_type: upload.data.content_type, size_bytes: upload.data.size,
+            folder: 'media', alt_text: 'Synthetic owned media', tags: []};
+        const create = (body: Record<string, unknown> = input, requestKey = key) => call('POST', '', body, requestKey);
+        async function call(method: string, suffix: string, body?: Record<string, unknown>, requestKey: string = randomUUID()) {
+            return gateway.dispatch('/v1/media' + suffix, {method, headers: {...await headers(), 'X-Idempotency-Key': requestKey},
+                ...(body === undefined ? {} : {body: JSON.stringify(body)})});
+        }
+        const effects = () => JSON.parse(owned.psql(`SELECT jsonb_build_array(
+            (SELECT count(*)FROM media WHERE store_id='${tenant.siteId}'),
+            (SELECT count(*)FROM media_assets WHERE site_id='${tenant.siteId}'),
+            (SELECT count(*)FROM outbox_events WHERE site_id='${tenant.siteId}'AND event_type='media.processed'))`)) as number[];
+        const createRow = async () => {const response = await create(); assert.equal(response.status, 201, await response.clone().text()); return (await response.json() as {data: {id: string}}).data;};
+        return {tenant, owner, email, headers, gateway, input, key, call, create, createRow, effects};
+    } catch (error) { await gateway.settle(); throw error; }
+}
+
+test('populated Media create/replay commits one library, registry, typed outbox and original receipt', async () => {
+    const f = await setup(); try {
+        const first = await f.create(); assert.equal(first.status, 201, await first.clone().text());
+        const body = await first.json(), replay = await f.create(); assert.equal(replay.status, 201); assert.deepEqual(await replay.json(), body);
+        assert.deepEqual(f.effects(), [1, 1, 1]);
+        assert.equal(owned.psql(`SELECT status||':'||resource_type FROM idempotency_keys WHERE site_id='${f.tenant.siteId}'AND key='${f.key}'`), 'completed:media');
+    } finally { await f.gateway.settle(); }
+});
+
+test('lost actual Media COMMIT acknowledgement replays the original receipt without duplicating effects', async () => {
+    const f = await setup(); try {
+        const before = proxy.droppedMediaCommitAcknowledgements(); proxy.dropNextMediaCommitAcknowledgement();
+        const first = await f.create(); assert.equal(first.status, 503, await first.clone().text());
+        assert.equal(proxy.droppedMediaCommitAcknowledgements(), before + 1); assert.deepEqual(f.effects(), [1, 1, 1]);
+        const saved = JSON.parse(owned.psql(`SELECT response_body FROM idempotency_keys WHERE site_id='${f.tenant.siteId}'AND key='${f.key}'AND status='completed'`));
+        const retry = await f.create(); assert.equal(retry.status, 201, await retry.clone().text()); assert.deepEqual(await retry.json(), saved);
+        assert.deepEqual(f.effects(), [1, 1, 1]);
+    } finally { await f.gateway.settle(); }
+});
+
+for (const stage of ['registry', 'outbox', 'receipt'] as const) test(`a real ${stage} write failure rolls back all Media effects, then the original command can retry`, async () => {
+    const f = await setup(); const name = 'synthetic_media_' + stage;
+    const table = stage === 'registry' ? 'media_assets' : stage === 'outbox' ? 'outbox_events' : 'idempotency_keys';
+    try {
+        owned.psql(`CREATE FUNCTION public.${name}()RETURNS trigger LANGUAGE plpgsql AS $f$BEGIN
+            IF NEW.site_id='${f.tenant.siteId}'${stage === 'receipt' ? " AND NEW.status='completed'" : ''} THEN
+            RAISE EXCEPTION 'synthetic private ${stage} outage'; END IF; RETURN NEW;END$f$;
+            CREATE TRIGGER ${name} BEFORE ${stage === 'receipt' ? 'UPDATE' : 'INSERT'} ON public.${table}
+            FOR EACH ROW EXECUTE FUNCTION public.${name}();`);
+        try {
+            const failed = await f.create(); assert.equal(failed.status, 503, await failed.clone().text());
+            assert(!JSON.stringify(await failed.json()).includes('synthetic private')); assert.deepEqual(f.effects(), [0, 0, 0]);
+        } finally {owned.psql(`DROP TRIGGER ${name} ON public.${table};DROP FUNCTION public.${name}();`);}
+        await f.createRow(); assert.deepEqual(f.effects(), [1, 1, 1]);
+    } finally {await f.gateway.settle();}
+});
+
+test('strict primitive/unknown-field validation preserves durable metadata and accepts explicit clearing', async () => {
+    const f = await setup(); try {
+        const row = await f.createRow();
+        const before = owned.psql(`SELECT to_jsonb(m)::text FROM media m WHERE id='${row.id}'`);
+        for (const input of [{alt_text: 1234}, {tags: ['valid', false]}, {folder: null}, {filename: ''}, {usage_count: 44}, {}]) {
+            const result = await f.call('PATCH', '/' + row.id, input); assert.equal(result.status, 400, await result.clone().text());
+            assert.equal(owned.psql(`SELECT to_jsonb(m)::text FROM media m WHERE id='${row.id}'`), before);
+        }
+        for (const patch of [{size_bytes: '75'}, {width: 1.5}, {uploaded_by: f.owner}, {storage_path: 'disagrees'}, {url: 'javascript:alert(1)'}]) {
+            const result = await f.create({...f.input, ...patch}, randomUUID()); assert.equal(result.status, 400, await result.clone().text());
+        }
+        const cleared = await f.call('PATCH', '/' + row.id, {alt_text: null, caption: '', tags: []}); assert.equal(cleared.status, 200);
+        assert.equal(owned.psql(`SELECT alt_text IS NULL AND caption=''AND tags='{}'::text[] FROM media WHERE id='${row.id}'`), 't');
+        assert.deepEqual(f.effects(), [1, 1, 1]);
+    } finally {await f.gateway.settle();}
+});
+
+test('metadata update and logical delete also recover lost COMMIT acknowledgements through their original receipts', async () => {
+    const f = await setup(); try {
+        const row = await f.createRow(), updateKey = randomUUID(), deleteKey = randomUUID();
+        proxy.dropNextMediaCommitAcknowledgement();
+        assert.equal((await f.call('PATCH', '/' + row.id, {alt_text: 'Synthetic recovered metadata'}, updateKey)).status, 503);
+        const snapshot = owned.psql(`SELECT to_jsonb(m)::text FROM media m WHERE id='${row.id}'`);
+        assert.equal((await f.call('PATCH', '/' + row.id, {alt_text: 'Synthetic recovered metadata'}, updateKey)).status, 200);
+        assert.equal(owned.psql(`SELECT to_jsonb(m)::text FROM media m WHERE id='${row.id}'`), snapshot);
+        proxy.dropNextMediaCommitAcknowledgement();
+        assert.equal((await f.call('DELETE', '/' + row.id, undefined, deleteKey)).status, 503);
+        const replay = await f.call('DELETE', '/' + row.id, undefined, deleteKey); assert.equal(replay.status, 200); assert.deepEqual(await replay.json(), {data: {deleted: true}});
+        assert.deepEqual(f.effects(), [0, 1, 1]);
+        const bucket = await f.gateway.mf.getR2Bucket('R2_BUCKET'); assert.equal((await bucket.list()).objects.length, 1);
+    } finally {await f.gateway.settle();}
+});
+
+test('unallocated legacy Media receipts stay held and cannot guess a library effect', async () => {
+    const f = await setup(); try {
+        await f.createRow();
+        owned.psql(`UPDATE idempotency_keys SET status='failed',resource_type=NULL,response_body=NULL,locked_until=NULL
+            WHERE site_id='${f.tenant.siteId}'AND key='${f.key}';`);
+        const held = await f.create(); assert.equal(held.status, 409, await held.clone().text());
+        assert.equal((await held.json() as {error: {code: string}}).error.code, 'MEDIA_COMMAND_NEEDS_REVIEW');
+        assert.deepEqual(f.effects(), [1, 1, 1]);
+    } finally {await f.gateway.settle();}
+});
+
+test('current owner and selected/signed tenant gates protect replay and mutation after a populated positive control', async () => {
+    const f = await setup(); try {
+        const row = await f.createRow(), other = newSyntheticTenant('other-' + randomUUID().slice(0, 8)); seedSyntheticTenant(owned.psql, other);
+        const wrong = await f.gateway.dispatch('/v1/media/' + row.id, {method: 'PATCH', headers: {...await f.headers(), 'X-Store-ID': other.siteId, 'X-Idempotency-Key': randomUUID()}, body: JSON.stringify({alt_text: 'forbidden'})});
+        assert.equal(wrong.status, 403); assert.deepEqual(f.effects(), [1, 1, 1]);
+        const actor = randomUUID(); owned.psql(`INSERT INTO users_custom(id,email)VALUES('${actor}','syn-${actor}@example.invalid');UPDATE sites SET custom_user_id='${actor}',user_id=NULL WHERE id='${f.tenant.siteId}';`);
+        assert.equal((await f.create()).status, 403);
+        assert.equal((await f.call('DELETE', '/' + row.id)).status, 403);
+        assert.equal(owned.psql(`SELECT alt_text FROM media WHERE id='${row.id}'`), 'Synthetic owned media');
+        assert.deepEqual(f.effects(), [1, 1, 1]);
+    } finally {await f.gateway.settle();}
+});
+
+test('concurrent same-key creation has one effect and changed input cannot reuse that key', async () => {
+    const f = await setup(); try {
+        const pair = await Promise.all([f.create(), f.create()]);
+        assert(pair.some(response => response.status === 201));
+        for (const response of pair) assert([201, 409].includes(response.status), await response.clone().text());
+        const replay = await f.create(); assert.equal(replay.status, 201); assert.deepEqual(f.effects(), [1, 1, 1]);
+        assert.equal((await f.create({...f.input, alt_text: 'different original input'})).status, 409);
+        assert.deepEqual(f.effects(), [1, 1, 1]);
+        // Populated RLS controls: the correct GUC sees the row; absent/other
+        // context sees zero, rather than passing because no records exist.
+        const count = (sql: string) => {
+            const rows = owned.psql(sql).split('\n').filter(line => /^\d+$/.test(line));
+            assert.equal(rows.length, 1, 'The populated RLS count has exactly one numeric result'); return Number(rows[0]);
+        };
+        assert.equal(count(`BEGIN;SET LOCAL ROLE app_tenant;SET LOCAL app.site_id='${f.tenant.siteId}';SELECT count(*)FROM media;ROLLBACK;`), 1);
+        assert.equal(count('BEGIN;SET LOCAL ROLE app_tenant;SELECT count(*)FROM media;ROLLBACK;'), 0);
+        assert.equal(count(`BEGIN;SET LOCAL ROLE app_tenant;SET LOCAL app.site_id='${randomUUID()}';SELECT count(*)FROM media;ROLLBACK;`), 0);
+    } finally {await f.gateway.settle();}
+});
+
+test('no pooled tenant transaction fails closed before library, registry or outbox writes', async () => {
+    const f = await setup({pooled: false}); try {
+        const response = await f.create(); assert.equal(response.status, 503, await response.clone().text());
+        assert.deepEqual(f.effects(), [0, 0, 0]);
+    } finally {await f.gateway.settle();}
+});
+
+test('a stale reclaim cannot regress a receipt completed while its lookup response was in flight', async () => {
+    let armed = false, fired = false, site = '', key = '';
+    const f = await setup({observe: async (request, forward) => {
+        const url = new URL(request.url), response = await forward();
+        if (armed && request.method === 'GET' && url.pathname.endsWith('/idempotency_keys') && url.searchParams.get('key') === 'eq.' + key) {
+            armed = false; fired = true;
+            // The real SELECT response remains unchanged and stale. Another
+            // claimant's real completion wins before the attempted CAS update.
+            owned.psql(`UPDATE idempotency_keys SET status='completed' WHERE site_id='${site}'AND key='${key}';`);
+        }
+        return response;
+    }});
+    try {
+        const row = await f.createRow(); site = f.tenant.siteId; key = f.key;
+        const body = owned.psql(`SELECT response_body::text FROM idempotency_keys WHERE site_id='${site}'AND key='${key}'`);
+        owned.psql(`UPDATE idempotency_keys SET status='failed',locked_until=NULL WHERE site_id='${site}'AND key='${key}';`);
+        armed = true;
+        assert.equal((await f.create()).status, 409); assert(fired);
+        assert.equal(owned.psql(`SELECT status FROM idempotency_keys WHERE site_id='${site}'AND key='${key}'`), 'completed');
+        assert.equal(owned.psql(`SELECT response_body::text FROM idempotency_keys WHERE site_id='${site}'AND key='${key}'`), body);
+        const recovered = await f.create(); assert.equal(recovered.status, 201); assert.equal((await recovered.json() as {data: {id: string}}).data.id, row.id);
+        assert.deepEqual(f.effects(), [1, 1, 1]);
+    } finally {await f.gateway.settle();}
+});

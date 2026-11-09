@@ -1,0 +1,16 @@
+{
+  "command": [
+    "node",
+    "--import",
+    "tsx",
+    "--test",
+    "docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/buyer-inventory111-authored-theme-render-probe6.test.ts"
+  ],
+  "env": {
+    "TSX_TSCONFIG_PATH": "apps/commerce/web/tsconfig.json"
+  },
+  "exit_code": 0,
+  "source": "merchant-buyer-inventory-source-v111",
+  "retry_reason": "Probe5 omitted required validated liquidBundle in the existing sample contract. Provide exact bundle; preserve version/admission guards and same assertions.",
+  "at": "2026-11-08T10:32:06.123173+00:00"
+}

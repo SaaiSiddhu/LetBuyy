@@ -1,0 +1,17 @@
+{
+  "status": "POSITIVE_DIAGNOSTIC_MARKER_CONTROL_AND_CURRENT_ABSENCE_PASS",
+  "rows": [
+    {
+      "run": 62,
+      "source": "53fbfe21bcd96306473af3fda203cb182fcb7bdddfd727c0ce98322c734e99f3",
+      "trace_marker_present": true,
+      "apk_sha256": "f9d54bc2d46f3f3e6c14b2303a07fa79e7f9ad25a7cde5bc63aa8d5b6ce9c335"
+    },
+    {
+      "run": 64,
+      "source": "0bec68661826a926b358ce28008a105353cf8200d07672b92bac14a55ac6c81c",
+      "trace_marker_present": false,
+      "apk_sha256": "fdf3cfcf138d6aea80c7f7f96ffcf3f62125a558d8c2a677a91c23edfec3609c"
+    }
+  ]
+}

@@ -1136,28 +1136,228 @@ class ProductsApi {
     return data;
   }
 
-  Future<JsonMap> createCollection(
-    JsonMap input, {
+  Future<PaginatedResponse<JsonMap>> categoryPage(
+    String storeId, {
+    int page = 1,
+    int limit = 20,
+    String search = '',
     ApiRequestOptions? options,
-  }) => _client.requestJson(
-    '/products/collections',
-    options: _mergeOptions(options, method: HttpMethod.post, body: input),
+  }) => _client.requestPaginatedJson(
+    '/categories',
+    options: _mergeOptions(
+      options,
+      storeId: storeId,
+      query: {
+        'store_id': storeId,
+        'page': page,
+        'limit': limit,
+        if (search.trim().isNotEmpty) 'search': search.trim(),
+      },
+    ),
   );
 
-  Future<JsonMap> updateCollection(
+  Future<JsonMap> category(
+    String storeId,
+    String id, {
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/categories/${_encodePathSegment(id)}',
+    options: _mergeOptions(
+      options,
+      storeId: storeId,
+      query: {'store_id': storeId},
+    ),
+  );
+
+  Future<JsonMap> categoryCommand(
+    String operation,
+    String? id,
+    JsonMap input, {
+    ApiRequestOptions? options,
+  }) {
+    if (!const ['create', 'update', 'delete'].contains(operation) ||
+        (operation == 'create') != (id == null))
+      throw const FormatException('Choose a valid category operation.');
+    return _client.requestJson(
+      '/categories${id == null ? '' : '/${_encodePathSegment(id)}'}',
+      options: _mergeOptions(
+        options,
+        method: operation == 'create'
+            ? HttpMethod.post
+            : operation == 'update'
+            ? HttpMethod.patch
+            : HttpMethod.delete,
+        storeId: input['store_id'] as String?,
+        body: input,
+        idempotencyKey: input['idempotency_key'] as String?,
+      ),
+    );
+  }
+
+  Future<PaginatedResponse<JsonMap>> collectionPage({
+    required String storeId,
+    int page = 1,
+    int limit = 20,
+    String search = '',
+    String status = 'all',
+    ApiRequestOptions? options,
+  }) => _client.requestPaginatedJson(
+    '/products/collections',
+    options: _mergeOptions(
+      options,
+      storeId: storeId,
+      query: {
+        'store_id': storeId,
+        'page': page,
+        'limit': limit,
+        if (search.trim().isNotEmpty) 'search': search.trim(),
+        if (status != 'all') 'status': status,
+      },
+    ),
+  );
+
+  Future<JsonMap> collectionMembership(
+    String storeId,
+    String id, {
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/products/collections/${_encodePathSegment(id)}/products',
+    options: _mergeOptions(
+      options,
+      storeId: storeId,
+      query: {'store_id': storeId},
+    ),
+  );
+
+  Future<JsonMap> replaceCollectionMembership(
+    String storeId,
     String id,
     JsonMap input, {
     ApiRequestOptions? options,
   }) => _client.requestJson(
-    '/products/collections/${_encodePathSegment(id)}',
-    options: _mergeOptions(options, method: HttpMethod.patch, body: input),
+    '/products/collections/${_encodePathSegment(id)}/products',
+    options: _mergeOptions(
+      options,
+      method: HttpMethod.put,
+      storeId: storeId,
+      query: {'store_id': storeId},
+      body: input,
+      idempotencyKey: input['idempotency_key'] as String?,
+    ),
   );
 
-  Future<JsonMap> removeCollection(String id, {ApiRequestOptions? options}) =>
-      _client.requestJson(
-        '/products/collections/${_encodePathSegment(id)}',
-        options: _mergeOptions(options, method: HttpMethod.delete),
+  Future<JsonMap> collectionMetadata(
+    String storeId,
+    String id, {
+    bool smart = false,
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '${smart ? '/smart-collections' : '/products/collections'}/${_encodePathSegment(id)}',
+    options: _mergeOptions(
+      options,
+      storeId: storeId,
+      query: {'store_id': storeId},
+    ),
+  );
+  Future<PaginatedResponse<JsonMap>> smartCollectionPage(
+    String storeId, {
+    int page = 1,
+    int limit = 20,
+    String search = '',
+    ApiRequestOptions? options,
+  }) => _client.requestPaginatedJson(
+    '/smart-collections',
+    options: _mergeOptions(
+      options,
+      storeId: storeId,
+      query: {
+        'store_id': storeId,
+        'page': page,
+        'limit': limit,
+        if (search.isNotEmpty) 'search': search,
+      },
+    ),
+  );
+  Future<JsonMap> smartCollectionPreview(
+    String storeId,
+    String id, {
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/smart-collections/${_encodePathSegment(id)}/preview',
+    options: _mergeOptions(
+      options,
+      storeId: storeId,
+      query: {'store_id': storeId},
+    ),
+  );
+  Future<JsonMap> collectionMetadataCommand(
+    String operation,
+    String? id,
+    JsonMap input, {
+    ApiRequestOptions? options,
+  }) {
+    if (!const ['create', 'update', 'delete'].contains(operation) ||
+        (operation == 'create') != (id == null))
+      throw const FormatException('Choose a valid collection operation.');
+    final smart = input['collection_type'] == 'smart',
+        store = input['store_id'] as String?,
+        key = input['idempotency_key'] as String?;
+    final JsonMap body;
+    if (smart) {
+      body = {
+        for (final e in input.entries)
+          if (!const [
+            'collection_type',
+            'idempotency_key',
+            'image_url',
+            'store_id',
+          ].contains(e.key))
+            e.key == 'title' ? 'name' : e.key: e.value,
+        if (operation == 'create') 'store_id': store,
+      };
+      if (input.containsKey('image_url'))
+        throw const FormatException(
+          'The smart editor does not own collection media.',
+        );
+    } else {
+      body = Map<String, dynamic>.from(input);
+    }
+    return _client.requestJson(
+      '${smart ? '/smart-collections' : '/products/collections'}${id == null ? '' : '/${_encodePathSegment(id)}'}',
+      options: _mergeOptions(
+        options,
+        storeId: store,
+        idempotencyKey: key,
+        method: operation == 'create'
+            ? HttpMethod.post
+            : operation == 'update'
+            ? HttpMethod.patch
+            : HttpMethod.delete,
+        body: body,
+      ),
+    );
+  }
+
+  Future<JsonMap> createCollection(
+    JsonMap input, {
+    ApiRequestOptions? options,
+  }) => collectionMetadataCommand('create', null, input, options: options);
+  Future<JsonMap> updateCollection(
+    String id,
+    JsonMap input, {
+    ApiRequestOptions? options,
+  }) => collectionMetadataCommand('update', id, input, options: options);
+  Future<JsonMap> removeCollection(
+    String id, {
+    JsonMap? input,
+    ApiRequestOptions? options,
+  }) {
+    if (input == null)
+      throw const FormatException(
+        'Keep the observed collection version and original save key.',
       );
+    return collectionMetadataCommand('delete', id, input, options: options);
+  }
 
   Future<List<JsonMap>> giftCards({
     required String storeId,
@@ -1592,11 +1792,60 @@ class KycApi {
     required File file,
     ApiRequestOptions? options,
   }) async {
-    if (await file.length() > 5 * 1024 * 1024) {
+    const maximumBytes = 5 * 1024 * 1024;
+    final handle = await file.open();
+    late final List<int> bytes;
+    try {
+      // Bound the read itself; a file may change after a metadata length check.
+      bytes = await handle.read(maximumBytes + 1);
+    } finally {
+      await handle.close();
+    }
+    if (bytes.length > maximumBytes) {
       throw const ApiException(
         message: 'Choose a document under 5 MB.',
         statusCode: 413,
         code: 'KYC_FILE_TOO_LARGE',
+      );
+    }
+    final png =
+        bytes.length >= 8 &&
+        [
+          137,
+          80,
+          78,
+          71,
+          13,
+          10,
+          26,
+          10,
+        ].indexed.every((entry) => bytes[entry.$1] == entry.$2);
+    final jpeg =
+        bytes.length >= 3 &&
+        bytes[0] == 255 &&
+        bytes[1] == 216 &&
+        bytes[2] == 255;
+    final pdf =
+        bytes.length >= 5 &&
+        [
+          37,
+          80,
+          68,
+          70,
+          45,
+        ].indexed.every((entry) => bytes[entry.$1] == entry.$2);
+    final contentType = png
+        ? 'image/png'
+        : jpeg
+        ? 'image/jpeg'
+        : pdf
+        ? 'application/pdf'
+        : null;
+    if (contentType == null) {
+      throw const ApiException(
+        message: 'Choose a PDF, JPEG, or PNG document.',
+        statusCode: 415,
+        code: 'KYC_UNSUPPORTED_FILE',
       );
     }
     final name = file.path.split(Platform.pathSeparator).last;
@@ -1604,7 +1853,13 @@ class KycApi {
       'store_id': storeId,
       'document_type': documentType,
       'document_number_last4': documentNumberLast4,
-      'file': await MultipartFile.fromFile(file.path, filename: name),
+      // Native pickers can transform an image while retaining its old suffix.
+      // Declare the exact bytes sent, never a MIME inferred from that suffix.
+      'file': MultipartFile.fromBytes(
+        bytes,
+        filename: name,
+        contentType: DioMediaType.parse(contentType),
+      ),
     });
     return _client.requestJson(
       '/kyc/documents/upload',
@@ -3186,11 +3441,14 @@ class UploadApi {
     File file, {
     String folder = 'uploads',
     String? storeId,
+    String? sha256Hex,
+    String? filename,
     ApiRequestOptions? options,
   }) async {
-    final fileName = file.path.split(Platform.pathSeparator).last;
+    final fileName = filename ?? file.path.split(Platform.pathSeparator).last;
     final formData = FormData.fromMap({
       'folder': folder,
+      if (sha256Hex != null) 'sha256_hex': sha256Hex,
       if (storeId != null && storeId.trim().isNotEmpty)
         'store_id': storeId.trim(),
       'file': await MultipartFile.fromFile(file.path, filename: fileName),
@@ -3200,6 +3458,13 @@ class UploadApi {
       options: _mergeOptions(options, method: HttpMethod.post, body: formData),
     );
   }
+
+  /// Read a completed original upload receipt without sending file bytes again.
+  Future<JsonMap> recover(JsonMap input, {ApiRequestOptions? options}) =>
+      _client.requestJson(
+        '/upload/recover',
+        options: _mergeOptions(options, method: HttpMethod.post, body: input),
+      );
 
   Future<JsonMap> remove(
     String key, {
@@ -3681,12 +3946,52 @@ class EmployeesApi {
   Future<List<JsonMap>> list({
     required String storeId,
     ApiRequestOptions? options,
-  }) => _client.requestData(
-    '/employees',
-    options: _mergeOptions(options, query: {'store_id': storeId}),
-    decoder: (value) =>
-        asJsonList(value).map(asJsonMap).toList(growable: false),
-  );
+  }) async {
+    final frame =
+        options?.expectedContextVersion ?? _client.captureRequestContext();
+    final bound = (options ?? const ApiRequestOptions()).copyWith(
+      expectedContextVersion: frame,
+    );
+    final rows = <JsonMap>[], ids = <String>{};
+    int? observedTotal;
+    const unavailable = ApiException(
+      statusCode: 503,
+      code: 'STAFF_LIST_UNVERIFIED',
+      message: 'The complete staff list could not be confirmed. Refresh staff.',
+    );
+    for (var number = 1; number <= 10000; number++) {
+      final page = await _client.requestPaginatedJson(
+        '/employees',
+        options: _mergeOptions(
+          bound,
+          query: {'store_id': storeId, 'page': number, 'limit': 50},
+        ),
+      );
+      final meta = page.meta, total = meta['total'];
+      if (total is! int ||
+          total < 0 ||
+          meta['page'] != number ||
+          meta['per_page'] != 50 ||
+          meta['total_pages'] != (total / 50).ceil() ||
+          meta['has_prev'] != (number > 1) ||
+          meta['has_next'] != (number * 50 < total) ||
+          observedTotal != null && observedTotal != total ||
+          page.data.length != (total - (number - 1) * 50).clamp(0, 50))
+        throw unavailable;
+      observedTotal = total;
+      for (final row in page.data) {
+        final id = row['id'];
+        if (id is! String ||
+            id.isEmpty ||
+            row['store_id'] != storeId ||
+            !ids.add(id))
+          throw unavailable;
+        rows.add(row);
+      }
+      if (meta['has_next'] == false) return rows;
+    }
+    throw unavailable;
+  }
 
   Future<JsonMap> create(JsonMap input, {ApiRequestOptions? options}) =>
       _client.requestJson(

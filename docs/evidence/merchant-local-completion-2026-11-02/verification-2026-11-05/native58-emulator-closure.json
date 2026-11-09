@@ -1,0 +1,11 @@
+{
+  "at": "2026-11-06T07:00:00.100288+00:00",
+  "verified_pid": 66334,
+  "avd": "LetBuyy_Merchant_Parity_20261106_c6cefc",
+  "serial": "emulator-5580",
+  "adb_port": 15038,
+  "graceful_exact_emulator_stop_requested": true,
+  "process_stopped": true,
+  "userdata_preserved": true,
+  "scope": "Only exact task QEMU after native58terminal/independent readback. No global ADB reset, other device or container action."
+}

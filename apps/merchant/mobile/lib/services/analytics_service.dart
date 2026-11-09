@@ -20,6 +20,7 @@ class StoreAnalytics {
   /// A successful partial composite is not evidence that a missing metric is 0.
   final bool summaryAvailable;
   final bool viewsAvailable;
+  final bool trafficSourcesAvailable;
 
   StoreAnalytics({
     this.totalRevenue = 0,
@@ -35,6 +36,7 @@ class StoreAnalytics {
     this.comparison = const StoreAnalyticsComparison(),
     this.summaryAvailable = true,
     this.viewsAvailable = false,
+    this.trafficSourcesAvailable = false,
   });
 
   factory StoreAnalytics.fromJson(Map<String, dynamic> json) {
@@ -50,6 +52,7 @@ class StoreAnalytics {
           json['totalOrders'] is num &&
           json['totalProducts'] is num,
       viewsAvailable: json['totalViews'] is num,
+      trafficSourcesAvailable: json['trafficSources'] is List,
       ordersByStatus: Map<String, int>.from(json['ordersByStatus'] ?? {}),
       dailyStats:
           (json['dailyStats'] as List?)
@@ -88,12 +91,16 @@ class MobileDashboardSnapshot {
 /// Daily statistics for chart visualization.
 class DailyStats {
   final DateTime date;
+  // Presence metadata only; the original numeric decoding remains unchanged.
+  final bool revenueAvailable, ordersAvailable;
   final double revenue;
   final int orders;
   final int views;
 
   DailyStats({
     required this.date,
+    this.revenueAvailable = false,
+    this.ordersAvailable = false,
     this.revenue = 0,
     this.orders = 0,
     this.views = 0,
@@ -102,6 +109,9 @@ class DailyStats {
   factory DailyStats.fromJson(Map<String, dynamic> json) {
     return DailyStats(
       date: DateTime.parse(json['date'] as String),
+      revenueAvailable:
+          json['revenue'] is num && (json['revenue'] as num).isFinite,
+      ordersAvailable: json['orders'] is int,
       revenue: (json['revenue'] as num?)?.toDouble() ?? 0,
       orders: json['orders'] as int? ?? 0,
       views: json['views'] as int? ?? 0,
@@ -110,11 +120,13 @@ class DailyStats {
 }
 
 class AnalyticsMetricDelta {
+  final bool available;
   final double value;
   final double previous;
   final double changePct;
 
   const AnalyticsMetricDelta({
+    this.available = false,
     this.value = 0,
     this.previous = 0,
     this.changePct = 0,
@@ -122,6 +134,11 @@ class AnalyticsMetricDelta {
 
   factory AnalyticsMetricDelta.fromJson(Map<String, dynamic> json) {
     return AnalyticsMetricDelta(
+      available: const [
+        'value',
+        'prev',
+        'change_pct',
+      ].every((key) => json[key] is num && (json[key] as num).isFinite),
       value: _parseDouble(json['value']),
       previous: _parseDouble(json['prev']),
       changePct: _parseDouble(json['change_pct']),
@@ -196,6 +213,7 @@ class StoreAnalyticsComparison {
 
 /// Top performing product data.
 class TopProduct {
+  final bool revenueAvailable, ordersAvailable;
   final String id;
   final String name;
   final int views;
@@ -203,6 +221,8 @@ class TopProduct {
   final double revenue;
 
   TopProduct({
+    this.revenueAvailable = false,
+    this.ordersAvailable = false,
     required this.id,
     required this.name,
     this.views = 0,
@@ -212,6 +232,12 @@ class TopProduct {
 
   factory TopProduct.fromJson(Map<String, dynamic> json) {
     return TopProduct(
+      revenueAvailable:
+          json['revenue'] is num && (json['revenue'] as num).isFinite,
+      ordersAvailable:
+          json['orders'] is int ||
+          json['total_sold'] is int ||
+          json['units_sold'] is int,
       id: json['id'] as String,
       name: json['name'] as String? ?? '',
       views: json['views'] as int? ?? 0,
@@ -226,12 +252,15 @@ class TopProduct {
 }
 
 class TrafficSourceEntry {
+  final bool sessionsAvailable, percentageAvailable;
   final String label;
   final int sessions;
   final double percentage;
   final Map<String, dynamic> metadata;
 
   const TrafficSourceEntry({
+    this.sessionsAvailable = false,
+    this.percentageAvailable = false,
     required this.label,
     this.sessions = 0,
     this.percentage = 0,
@@ -240,6 +269,10 @@ class TrafficSourceEntry {
 
   factory TrafficSourceEntry.fromJson(Map<String, dynamic> json) {
     return TrafficSourceEntry(
+      sessionsAvailable:
+          json['value'] is num && (json['value'] as num).isFinite,
+      percentageAvailable:
+          json['percentage'] is num && (json['percentage'] as num).isFinite,
       label: json['label']?.toString() ?? '',
       sessions: _parseInt(json['value']),
       percentage: _parseDouble(json['percentage']),
@@ -249,11 +282,13 @@ class TrafficSourceEntry {
 }
 
 class LiveViewEntry {
+  final bool valueAvailable;
   final String label;
   final int value;
   final Map<String, dynamic> metadata;
 
   const LiveViewEntry({
+    this.valueAvailable = false,
     required this.label,
     this.value = 0,
     this.metadata = const {},
@@ -261,6 +296,7 @@ class LiveViewEntry {
 
   factory LiveViewEntry.fromJson(Map<String, dynamic> json) {
     return LiveViewEntry(
+      valueAvailable: json['value'] is num && (json['value'] as num).isFinite,
       label: json['label']?.toString() ?? '',
       value: _parseInt(json['value']),
       metadata: _jsonMapOrEmpty(json['metadata']),
@@ -294,6 +330,7 @@ class LiveViewSignal {
 
 class StoreLiveView {
   final bool available;
+  final bool metricsAvailable;
   final int windowMinutes;
   final int activeSessions;
   final int visitors;
@@ -310,6 +347,7 @@ class StoreLiveView {
   final int refreshAfterSeconds;
 
   const StoreLiveView({
+    this.metricsAvailable = false,
     this.available = false,
     this.windowMinutes = 15,
     this.activeSessions = 0,
@@ -333,6 +371,14 @@ class StoreLiveView {
     );
     final lastSeenAt = json['last_seen_at']?.toString();
     return StoreLiveView(
+      metricsAvailable: const [
+        'active_sessions',
+        'visitors',
+        'page_views',
+        'cart_adds',
+        'checkouts_started',
+        'window_minutes',
+      ].every((key) => json[key] is num && (json[key] as num).isFinite),
       available: json['available'] == true,
       windowMinutes: _parseInt(json['window_minutes'], fallback: 15),
       activeSessions: _parseInt(json['active_sessions']),
@@ -370,6 +416,9 @@ class AnalyticsService extends ChangeNotifier {
   final ApiClient _api;
 
   AnalyticsService({required ApiClient api}) : _api = api;
+
+  /// Read-only presentation lifetime; this does not grant report access.
+  Object? get requestContext => _api.captureRequestContext();
 
   StoreAnalytics? _analytics;
   StoreAnalytics? get analytics => _analytics;
@@ -421,6 +470,9 @@ class AnalyticsService extends ChangeNotifier {
             summary['products'] is num &&
             summary['avg_order_value'] is num,
         viewsAvailable: summary['visitors'] is num,
+        trafficSourcesAvailable:
+            trafficSources['available'] == true &&
+            trafficSources['sources'] is List,
         totalViews: _integer(summary['visitors']),
         totalOrders: _integer(ordersMetric['value']),
         totalProducts: _integer(summary['products']),
@@ -491,6 +543,9 @@ class AnalyticsService extends ChangeNotifier {
             summary['products'] is num &&
             summary['avg_order_value'] is num,
         viewsAvailable: summary['visitors'] is num,
+        trafficSourcesAvailable:
+            trafficSources['available'] == true &&
+            trafficSources['sources'] is List,
         totalViews: _integer(summary['visitors']),
         totalOrders: _integer(ordersMetric['value']),
         totalProducts: _integer(summary['products']),

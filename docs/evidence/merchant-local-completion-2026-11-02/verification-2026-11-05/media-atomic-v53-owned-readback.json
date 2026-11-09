@@ -1,0 +1,16 @@
+{
+  "runId": "dc245872c94c",
+  "tests": 12,
+  "assertionsPassed": 12,
+  "assertionsFailed": 0,
+  "skipped": 0,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "kind": "gateway-db, automatically classified"
+}

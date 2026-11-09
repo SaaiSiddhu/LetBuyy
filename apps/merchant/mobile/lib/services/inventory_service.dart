@@ -624,7 +624,9 @@ class InventoryService extends ChangeNotifier {
             (row.receiptType == 'transfer' && row.parentId == transferId)),
   );
 
-  Future<InventoryLevel> adjustStock({
+  /// Confirms the original command only. A saved receipt is a historical raw
+  /// stock snapshot; current sellable quantities require an authorized read.
+  Future<void> adjustStock({
     required String storeId,
     required InventoryLevel level,
     required int delta,
@@ -646,10 +648,13 @@ class InventoryService extends ChangeNotifier {
         'reason': reason,
         if (note != null && note.trim().isNotEmpty) 'notes': note.trim(),
       }, options: options),
-      InventoryLevel.fromJson,
-      (row) {
-        _levels = [row, ..._levels.where((item) => item.id != row.id)];
-      },
+      (row) => _confirmAdjustmentReceipt(
+        row,
+        product: level.productId,
+        variant: level.variantId,
+        location: level.locationId,
+      ),
+      (_) => _clear('levels'),
       key: idempotencyKey,
     );
   }
@@ -929,7 +934,7 @@ class InventoryService extends ChangeNotifier {
 
   /// A retry replays the original frozen product/location/delta, never a newly
   /// inferred quantity. Only the Gateway's durable receipt confirms the effect.
-  Future<InventoryLevel> submitAdjustment({
+  Future<void> submitAdjustment({
     required String storeId,
     required String productId,
     required String locationId,
@@ -964,7 +969,7 @@ class InventoryService extends ChangeNotifier {
     });
   }
 
-  Future<InventoryLevel> retryPendingAdjustment(String site) {
+  Future<void> retryPendingAdjustment(String site) {
     final c = _commandContext(site);
     return _commands.serialized(() async {
       final command = await _commands.read(
@@ -983,7 +988,7 @@ class InventoryService extends ChangeNotifier {
     });
   }
 
-  Future<InventoryLevel> _sendPendingAdjustment(
+  Future<void> _sendPendingAdjustment(
     MerchantSecurityContext c,
     PendingSecurityCommand command,
   ) async {
@@ -998,32 +1003,57 @@ class InventoryService extends ChangeNotifier {
         intent['reason'] is! String) {
       throw const FormatException('The saved stock change needs review.');
     }
-    final row = await _command(
+    await _command<void>(
       'levels',
       c.storeId,
       (options) => _api.inventory.adjust(intent, options: options),
       (json) {
-        final row = InventoryLevel.fromJson(json);
-        if (row.productId != intent['product_id'] ||
-            row.locationId != intent['location_id'] ||
-            row.variantId != (intent['variant_id'] ?? '')) {
-          throw const ApiException(
-            message: 'The stock change receipt could not be confirmed.',
-            statusCode: 502,
-            code: 'INVENTORY_RECEIPT_MISMATCH',
-          );
-        }
-        return row;
+        _confirmAdjustmentReceipt(
+          json,
+          product: intent['product_id'] as String,
+          variant: (intent['variant_id'] ?? '') as String,
+          location: intent['location_id'] as String,
+        );
       },
-      (_) {},
+      (_) => _clear('levels'),
       key: command.key,
     );
     _checkCommand(c);
     await _commands.complete(c, command, check: () => _checkCommand(c));
-    return row;
   }
 
-  Future<InventoryLevel> adjustScannedStock({
+  void _confirmAdjustmentReceipt(
+    JsonMap row, {
+    required String product,
+    required String variant,
+    String? location,
+  }) {
+    bool count(Object? value) =>
+        value is num &&
+        value.isFinite &&
+        value == value.truncateToDouble() &&
+        value >= 0 &&
+        value <= 2147483647;
+    if (row['id'] is! String ||
+        (row['id'] as String).isEmpty ||
+        row['product_id'] != product ||
+        (row['variant_id'] ?? '') != variant ||
+        row['location_id'] is! String ||
+        (row['location_id'] as String).isEmpty ||
+        (location != null &&
+            location.isNotEmpty &&
+            row['location_id'] != location) ||
+        !count(row['available'] ?? row['available_quantity']) ||
+        !count(row['reserved'] ?? row['reserved_quantity'])) {
+      throw const ApiException(
+        message: 'The stock change receipt could not be confirmed.',
+        statusCode: 502,
+        code: 'INVENTORY_RECEIPT_MISMATCH',
+      );
+    }
+  }
+
+  Future<void> adjustScannedStock({
     required String storeId,
     required InventoryBarcodeLookup lookup,
     required int delta,
@@ -1047,10 +1077,13 @@ class InventoryService extends ChangeNotifier {
         'reason': reason,
         if (note != null && note.trim().isNotEmpty) 'notes': note.trim(),
       }, options: options),
-      InventoryLevel.fromJson,
-      (row) {
-        _levels = [row, ..._levels.where((item) => item.id != row.id)];
-      },
+      (row) => _confirmAdjustmentReceipt(
+        row,
+        product: lookup.productId,
+        variant: lookup.variantId,
+        location: locationId,
+      ),
+      (_) => _clear('levels'),
       key: idempotencyKey,
     );
   }

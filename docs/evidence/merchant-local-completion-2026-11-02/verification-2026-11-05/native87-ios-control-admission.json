@@ -1,0 +1,9 @@
+{
+  "private_root": "/private/tmp/letbuyy-ios-ui-20261107-ca6bb6d5f6",
+  "source_sha256": "999e0d6b6ca0b1064b4b0b4f3dcacaaabd050a44105d5c1a9ecb2be51de44184",
+  "source_inputs": 8486,
+  "fixture_sha256": "eb4d2a4f0ad745ea4740f019dc3535b2d3ad2ebec020b4ccad0b63c9bce9a2a2",
+  "swift_sha256": "9c85c4c8ca2dde7e3c8b01b06b1e06ff6b2ed17bbb50b276c1922777601f98da",
+  "launcher_sha256": "b7eff589bb0940941ae76daeef255f5e109a14f8bc327357aac57fe77b9d0873",
+  "scope": "Qualified source59, no diagnostic trace. Real normal credential/picker flow and one actual window-derived Update tap; no automatic retry. Existing SQL/4x4web decode/web save/native refresh unchanged."
+}

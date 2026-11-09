@@ -1,4 +1,5 @@
 import 'dart:convert';
+import '../../config/app_config.dart';
 
 /// Ephemeral presentation state. Only the existing server can verify a proof.
 /// It is never persisted and supplies no identity, session or permission.
@@ -86,7 +87,7 @@ String merchantTurnstileDocument(
   return '''<!doctype html><html><head>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <style>html,body{margin:0;padding:0;background:transparent;min-height:100%;display:flex;align-items:center;justify-content:${centered ? 'center' : 'flex-start'};}#ts{display:inline-block;min-height:70px;}</style>
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" onerror="TurnstileError.postMessage('script-load')"></script>
+<script src="${const HtmlEscape(HtmlEscapeMode.attribute).convert(AppConfig.challengeScriptUrl)}" onerror="TurnstileError.postMessage('script-load')"></script>
 </head><body><div id="ts"></div><script>
 function renderMerchantVerification(){
  if(!window.turnstile){TurnstileError.postMessage('script-unavailable');return;}

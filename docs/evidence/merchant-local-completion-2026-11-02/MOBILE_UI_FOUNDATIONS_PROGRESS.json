@@ -1,0 +1,288 @@
+{
+  "updated_at": "2026-11-04T09:52:45.296765+00:00",
+  "status": "ACTIVE_FRONTEND_MIGRATION; NOT_FULL_APP_ACCEPTANCE",
+  "source": {
+    "head": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+    "frozen_manifest": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-foundations-v7.source.json",
+    "sha256": "1b47a3d265862016fb7266b2a69116b759d6980f2b0c5b17cc48989643a511db",
+    "entries": 7446
+  },
+  "protected": {
+    "baseline": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-protected-baseline-v1.json",
+    "files": 5195,
+    "changed": [
+      "apps/merchant/mobile/lib/services/staff_service.dart"
+    ],
+    "classification": "The sole diff is Staff frontend presentation lifetime/cache disposal and existing expectedContextVersion dispatch binding. Namespace, durable intent/key/body/ack representation and model parsers preserved; no server/API/BFF/SQL/RLS/auth-policy/provider changes.",
+    "ast_unchanged_checks": [
+      {
+        "owner": "warehouse._submit",
+        "unchanged": true
+      },
+      {
+        "owner": "warehouse._arrival",
+        "unchanged": true
+      },
+      {
+        "owner": "warehouse._locationChoice",
+        "unchanged": true
+      },
+      {
+        "owner": "warehouse._supplierChoice",
+        "unchanged": true
+      },
+      {
+        "owner": "warehouse._productChoice",
+        "unchanged": true
+      },
+      {
+        "owner": "warehouse.dispose",
+        "unchanged": true
+      },
+      {
+        "owner": "warehouse._lineCard",
+        "unchanged": true
+      },
+      {
+        "owner": "StaffMemberContract",
+        "unchanged": true
+      },
+      {
+        "owner": "StaffInviteInput",
+        "unchanged": true
+      },
+      {
+        "owner": "StaffInvitationResult",
+        "unchanged": true
+      },
+      {
+        "owner": "staffInvitationProof",
+        "unchanged": true
+      },
+      {
+        "owner": "_stringValue",
+        "unchanged": true
+      },
+      {
+        "owner": "_boolValue",
+        "unchanged": true
+      },
+      {
+        "owner": "staff._pendingKey",
+        "unchanged": true
+      },
+      {
+        "owner": "staff._invitationKey",
+        "unchanged": true
+      },
+      {
+        "owner": "staff.restorePendingInvitation",
+        "unchanged": true
+      },
+      {
+        "owner": "locations_screen.dart metadata input/validation/return",
+        "unchanged": true
+      },
+      {
+        "owner": "suppliers_screen.dart metadata input/validation/return",
+        "unchanged": true
+      }
+    ],
+    "root_dependency_locks": "Byte-identical to additional pre-migration hash baseline"
+  },
+  "checks": {
+    "staff_negative_v2": {
+      "passed": 0,
+      "failed": 4,
+      "basis": "populated fixture positives; before frontend fix"
+    },
+    "staff_ui_v1": {
+      "passed": 5,
+      "failed": 1,
+      "remaining": "Protected persistence namespace dependency"
+    },
+    "staff_ui_v2": {
+      "passed": 11,
+      "failed": 7,
+      "issue": "Editing incorrectly rendered progress; fixed"
+    },
+    "staff_ui_v3": {
+      "status": "interrupted",
+      "completed_pass": 12,
+      "completed_fail": 1,
+      "issue": "Fixture zero-delay timer cleanup and held-transport wait; terminal shutdown errors retained. Tool exit0 is not a pass."
+    },
+    "staff_ui_v4": {
+      "passed": 18,
+      "failed": 0
+    },
+    "foundations_v1": {
+      "passed": 51,
+      "failed": 0,
+      "analyzer_issues": 3,
+      "next": "Fixed informational ordering and unnecessary nullable comparison"
+    },
+    "foundations_v2": {
+      "passed": 54,
+      "failed": 1,
+      "issue": "Root fixture used unregistered local environment; corrected to existing development registry"
+    },
+    "foundations_v3_full": {
+      "passed": 947,
+      "failed": 2,
+      "skipped": 0,
+      "scope": "Entire local Flutter suite",
+      "remaining": [
+        "Active protected local/hosted Staff persistence check",
+        "New root semantics fixture used widget finder against an excluded subtree"
+      ]
+    },
+    "foundations_v4_root": {
+      "passed": 4,
+      "failed": 0,
+      "basis": "Actual exposed semantic tree; root implementation unchanged from v3"
+    },
+    "foundations_v4_analyze": {
+      "issues": 0,
+      "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-foundations-v4.analyze.log"
+    },
+    "note": "Overlapping cohorts are not additive. No full current-suite green or release claim.",
+    "ui_kit_v4_analyze": {
+      "issues": 0
+    },
+    "foundations_v5_negative": {
+      "passed": 11,
+      "failed": 7,
+      "reason": "Six actual composed outlined/text/elevated contrast failures across both themes plus corrected required-email state failure; matches native v31 findings"
+    },
+    "foundations_v6_focused": {
+      "passed": 28,
+      "failed": 0,
+      "scope": "composed action contrast, root semantics/scaling, IME/controller lifetime, corrected Staff input, exact retry, context retirement and feedback"
+    },
+    "foundations_v6_full": {
+      "passed": 954,
+      "failed": 1,
+      "skipped": 0,
+      "remaining": "Protected Staff invitation namespace dependency; no UI check skipped"
+    },
+    "foundations_v6_analyzers": {
+      "app_issues": 0,
+      "ui_kit_issues": 0
+    },
+    "native_v32": {
+      "runId": "d4097dcaa4e2",
+      "tests": 1,
+      "assertionsPassed": 0,
+      "assertionsFailed": 1,
+      "cancelled": 0,
+      "skipped": 0,
+      "wallSeconds": 185.6,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "classification": "Stopped when the UI probe could not match the old current-theme dropdown action. This did not test the corrected forms and does not prove an app theme failure. Source unchanged, cleanup empty."
+    },
+    "foundations_v7_focused": {
+      "passed": 23,
+      "failed": 0,
+      "scope": "new theme draft/apply/back/focus/scale/motion checks plus existing root and Staff checks"
+    },
+    "foundations_v7_analyzers": {
+      "app_issues": 0,
+      "ui_kit_issues": 0
+    },
+    "foundations_v7_full": {
+      "passed": 959,
+      "failed": 1,
+      "skipped": 0,
+      "remaining": "DEP-STAFF-01 protected shared hosted/local invitation namespace"
+    },
+    "native_v33": {
+      "runId": "f5b55d3315fa",
+      "tests": 1,
+      "assertionsPassed": 0,
+      "assertionsFailed": 1,
+      "cancelled": 0,
+      "skipped": 0,
+      "wallSeconds": 176,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "classification": "Probe stopped at immediate typed-email readback; no application bug established."
+    },
+    "native_v34": {
+      "runId": "7f9fd17da450",
+      "tests": 1,
+      "assertionsPassed": 0,
+      "assertionsFailed": 1,
+      "cancelled": 0,
+      "skipped": 0,
+      "wallSeconds": 478.5,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "classification": "Probe did not distinguish keyboard dismissal after Cancel from route Back; inspected corrected native forms, no app Back defect established."
+    },
+    "native_v35": {
+      "runId": "e33bed18e6d3",
+      "tests": 1,
+      "assertionsPassed": 1,
+      "assertionsFailed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "wallSeconds": 411.3,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "classification": "Terminal bounded UI diagnostic pass; real IME dismissal, header/hardware Back, Cancel retains quantity2, explicit discard and original theme restored."
+    },
+    "governance_v23": {
+      "source": "1b47a3d265862016fb7266b2a69116b759d6980f2b0c5b17cc48989643a511db",
+      "all7446CodeInputsMatched": true,
+      "counts": {
+        "PASS": 114,
+        "FAIL": 0,
+        "BLOCKED": 0,
+        "SKIP": 0,
+        "NOT_APPLICABLE": 1
+      },
+      "initial": "Interrupted by tool-turn interruption after16completed gates; no terminal result claimed",
+      "resumedGateExit": 0,
+      "report": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/governance-category-capsule-v23.resume1.gate.json",
+      "scope": "Disposable test copy only; current subsequent editor changes not covered"
+    }
+  },
+  "current_run": {
+    "status": "TERMINAL_PASS_BOUNDED_UI_DIAGNOSTIC",
+    "report": "COMPILED_MOBILE_UI_ANDROID_V35_DIAGNOSTIC.json",
+    "openVisualFindings": []
+  },
+  "remaining": [
+    "Complete source/caller/state reconciliation of the actual app denominator",
+    "Protected Staff persistence/backend list dependencies",
+    "All remaining UI cohorts, full web/mobile sync, iOS runtime, appropriate native accessibility/performance",
+    "Evidence-gated eligible legacy cleanup only"
+  ],
+  "current_work": "Next category/customer-segment full-page editor migration; v7 held source archived. Full-app migration, iOS and protected dependencies remain pending."
+}

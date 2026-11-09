@@ -1,0 +1,16 @@
+{
+  "command": [
+    "node",
+    "--import",
+    "tsx",
+    "--test",
+    "docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/buyer-inventory111-authored-theme-render-probe2.test.ts"
+  ],
+  "env": {
+    "TSX_TSCONFIG_PATH": "apps/commerce/web/tsconfig.json"
+  },
+  "exit_code": 1,
+  "source": "merchant-buyer-inventory-source-v111",
+  "retry_reason": "Original evidence fixture imported undeclared root jsdom; use the existing public theme-engine/server-dom export",
+  "at": "2026-11-08T10:28:14.960190+00:00"
+}

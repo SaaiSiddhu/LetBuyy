@@ -1,0 +1,174 @@
+{
+  "actor": "00000000-0000-4000-8000-000000000001",
+  "command": {
+    "collection_type": "smart",
+    "store_id": "00000000-0000-4000-8000-000000000002",
+    "idempotency_key": "00000000-0000-4000-8000-000000000004",
+    "version": 7,
+    "description": "Synthetic kept draft",
+    "conditions": [
+      {
+        "field": "title",
+        "op": "contains",
+        "value": "Synthetic"
+      }
+    ],
+    "match_type": "all",
+    "is_active": false
+  },
+  "intent": {
+    "operation": "update",
+    "collection_id": "00000000-0000-4000-8000-000000000003",
+    "command": {
+      "collection_type": "smart",
+      "store_id": "00000000-0000-4000-8000-000000000002",
+      "idempotency_key": "00000000-0000-4000-8000-000000000004",
+      "version": 7,
+      "description": "Synthetic kept draft",
+      "conditions": [
+        {
+          "field": "title",
+          "op": "contains",
+          "value": "Synthetic"
+        }
+      ],
+      "match_type": "all",
+      "is_active": false
+    }
+  },
+  "row": {
+    "id": "00000000-0000-4000-8000-000000000003",
+    "store_id": "00000000-0000-4000-8000-000000000002",
+    "title": "Synthetic collection",
+    "slug": "synthetic-collection",
+    "description": "Synthetic kept draft",
+    "image_url": null,
+    "is_active": false,
+    "collection_type": "smart",
+    "conditions": [
+      {
+        "field": "title",
+        "op": "contains",
+        "value": "Synthetic"
+      }
+    ],
+    "match_type": "all",
+    "version": 8,
+    "membership_version": 1,
+    "created_at": null,
+    "updated_at": "2026-11-03T00:00:00Z",
+    "deleted_at": null,
+    "created_by": "00000000-0000-4000-8000-000000000001",
+    "updated_by": "00000000-0000-4000-8000-000000000001"
+  },
+  "receipt": {
+    "id": "00000000-0000-4000-8000-000000000003",
+    "store_id": "00000000-0000-4000-8000-000000000002",
+    "title": "Synthetic collection",
+    "slug": "synthetic-collection",
+    "description": "Synthetic kept draft",
+    "image_url": null,
+    "is_active": false,
+    "collection_type": "smart",
+    "conditions": [
+      {
+        "field": "title",
+        "op": "contains",
+        "value": "Synthetic"
+      }
+    ],
+    "match_type": "all",
+    "version": 8,
+    "membership_version": 1,
+    "created_at": null,
+    "updated_at": "2026-11-03T00:00:00Z",
+    "deleted_at": null,
+    "created_by": "00000000-0000-4000-8000-000000000001",
+    "updated_by": "00000000-0000-4000-8000-000000000001",
+    "operation": "update",
+    "idempotency_key": "00000000-0000-4000-8000-000000000004",
+    "actor_id": "00000000-0000-4000-8000-000000000001",
+    "expected_version": 7,
+    "request": {
+      "collection_type": "smart",
+      "description": "Synthetic kept draft",
+      "conditions": [
+        {
+          "field": "title",
+          "op": "contains",
+          "value": "Synthetic"
+        }
+      ],
+      "match_type": "all",
+      "is_active": false
+    }
+  },
+  "smart": {
+    "id": "00000000-0000-4000-8000-000000000003",
+    "store_id": "00000000-0000-4000-8000-000000000002",
+    "slug": "synthetic-collection",
+    "description": "Synthetic kept draft",
+    "is_active": false,
+    "conditions": [
+      {
+        "field": "title",
+        "op": "contains",
+        "value": "Synthetic"
+      }
+    ],
+    "match_type": "all",
+    "version": 8,
+    "created_at": null,
+    "created_by": "00000000-0000-4000-8000-000000000001",
+    "updated_by": "00000000-0000-4000-8000-000000000001",
+    "name": "Synthetic collection"
+  },
+  "page": {
+    "success": true,
+    "data": [
+      {
+        "id": "00000000-0000-4000-8000-000000000003",
+        "store_id": "00000000-0000-4000-8000-000000000002",
+        "slug": "synthetic-collection",
+        "description": "Synthetic kept draft",
+        "is_active": false,
+        "conditions": [
+          {
+            "field": "title",
+            "op": "contains",
+            "value": "Synthetic"
+          }
+        ],
+        "match_type": "all",
+        "version": 8,
+        "created_at": null,
+        "created_by": "00000000-0000-4000-8000-000000000001",
+        "updated_by": "00000000-0000-4000-8000-000000000001",
+        "name": "Synthetic collection"
+      }
+    ],
+    "meta": {
+      "store_id": "00000000-0000-4000-8000-000000000002",
+      "page": 1,
+      "per_page": 20,
+      "total": 1,
+      "total_pages": 1,
+      "total_is_exact": true,
+      "has_next": false,
+      "has_prev": false
+    }
+  },
+  "preview": {
+    "store_id": "00000000-0000-4000-8000-000000000002",
+    "collection_id": "00000000-0000-4000-8000-000000000003",
+    "collection_version": 8,
+    "match_type": "all",
+    "condition_count": 1,
+    "count": 0,
+    "sample_product_ids": [],
+    "evaluated_of": 500,
+    "capped_at": 500,
+    "catalog_count": 1005,
+    "count_is_exact": false
+  }
+}

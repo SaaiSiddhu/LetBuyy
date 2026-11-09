@@ -1,0 +1,26 @@
+{
+  "started_at": "2026-11-06T07:58:54.612798+00:00",
+  "supervisor_pid": 32194,
+  "source": "staff-kyc-source-v2",
+  "source_sha256": "6edd14dc4d5e4df10507bfae8e2f08d86a83f0f1d1c12af262aedb277a29b03c",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "test/kyc_upload_surface_test.dart",
+    "test/kyc_containment_test.dart",
+    "test/kyc_india_upload_test.dart",
+    "test/kyc_selection_frame_test.dart",
+    "test/kyc_provider_lifetime_test.dart",
+    "test/staff_scope_boundary_test.dart",
+    "test/staff_environment_isolation_test.dart",
+    "--reporter",
+    "expanded"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 32196,
+  "exit_code": 0,
+  "finished_at": "2026-11-06T07:59:01.850911+00:00",
+  "source_unchanged": true,
+  "source_readback_sha256": "6edd14dc4d5e4df10507bfae8e2f08d86a83f0f1d1c12af262aedb277a29b03c"
+}

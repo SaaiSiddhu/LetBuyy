@@ -1,0 +1,24 @@
+{
+  "status": "PREPARED_NOT_LAUNCHED_QUALIFICATION_REQUIRED",
+  "source_manifest": "merchant-kyc-receipt-source-v43",
+  "source_sha256": "7b3d68cff186f04b58661b987e52954d2b63ae452e0d7befcfbda20a108d355e",
+  "changes": "Current repaired dialog source; exact same native69 fault/permission/database/readback assertions; adds safe open-editor screenshot. Robust observed-value UI entry integrated before launch; no companion handoff needed.",
+  "inputs": [
+    {
+      "path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/merchant-switcher-staff-v70-local-android.postgres.test.ts",
+      "sha256": "547ccfb577872ec645ef787e57c72a4436f9800a580b03b471e957e5a8db2584"
+    },
+    {
+      "path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/android-switcher-staff-v70.py",
+      "sha256": "06a5faa283330a29ea7e2bfa7b046a56f06660a8d8bad3d54ebbf5b60e57c5c4"
+    },
+    {
+      "path": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/run-switcher-v70.py",
+      "sha256": "e0a0cfeb100913cc9876a242a51aca25858d78c135b3dbf0e1f5c6c1753ddf2f"
+    },
+    {
+      "path": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/android-device-receipt-switcher-v70.json",
+      "sha256": "59d75cc3ae62eb3a1aa2fe6050f4a97e2811181299711f6d8187d803394375a7"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "admission_equal": true,
+  "checks": {
+    "fixture_sha256": "4e5905cf0cc545beba4bb9d66be2a112ca8b3a8955197b99378129b9632f4aa6",
+    "swift_sha256": "1a7cd2b0047232dbbf29f6c217e99717d70fdfdff8088d5a02b1f194f3e86ea2",
+    "launcher_sha256": "b40e32383c97cb2dc9c525d5a1ce1ffc4118ab5a59c89a654089ce80ad2a5c74"
+  },
+  "scope": "Actual admitted fixture, successful credential/product Swift and host launcher retained unchanged."
+}

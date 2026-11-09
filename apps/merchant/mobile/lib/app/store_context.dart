@@ -15,6 +15,8 @@ class StoreContext extends ChangeNotifier {
        _prefs = prefs,
        _selectedStoreIdKey = environment == 'staging'
            ? 'letbuyy.selected_store_id.staging'
+           : const {'local', 'development'}.contains(environment)
+           ? 'letbuyy.selected_store_id.${AppConfig.persistenceNamespace(environmentName: environment)}'
            : 'letbuyy.selected_store_id';
 
   final String _selectedStoreIdKey;
@@ -86,17 +88,28 @@ class StoreContext extends ChangeNotifier {
       return _stores;
     }
 
+    final discoveryKey = requestContextKey;
     _isLoading = true;
     _error = null;
 
     try {
       final stores = await _storeService.fetchStores();
       _checkEpoch(epoch);
+      if (requestContextKey != discoveryKey) {
+        throw const ApiException(
+          message: 'Store access changed. Reload the store list.',
+          statusCode: 409,
+          code: 'SESSION_CONTEXT_CHANGED',
+        );
+      }
       _stores = stores;
       await _selectInitialStore(stores, epoch);
       return _stores;
     } catch (error) {
       _checkEpoch(epoch);
+      if (requestContextKey != discoveryKey ||
+          error is ApiException && error.code == 'SESSION_CONTEXT_CHANGED')
+        rethrow;
       if (error is ApiException &&
           error.statusCode >= 400 &&
           error.statusCode < 500) {
@@ -155,38 +168,41 @@ class StoreContext extends ChangeNotifier {
     return _selectedStore;
   }
 
+  /// Refresh the selected member's metadata without trusting a caller-supplied
+  /// model or allowing an old response to undo a store/account switch.
   Future<StoreModel> reloadSelectedStore(String expectedStoreId) async {
-    await _reset;
-    final epoch = _sessionEpoch;
-    if (_selectedStore?.id != expectedStoreId) {
-      throw const ApiException(
-        message: 'The selected store changed. Open its settings again.',
-        statusCode: 409,
-        code: 'SESSION_CONTEXT_CHANGED',
-      );
+    final key = requestContextKey;
+    void requireCurrent() {
+      if (requestContextKey != key || selectedStoreId != expectedStoreId) {
+        throw const ApiException(
+          message: 'The selected store changed. Open its settings again.',
+          statusCode: 409,
+          code: 'SESSION_CONTEXT_CHANGED',
+        );
+      }
     }
+
+    requireCurrent();
+    await _reset;
+    requireCurrent();
     late final StoreModel fresh;
     try {
       fresh = await _storeService.fetchStoreFresh(expectedStoreId);
     } catch (error) {
-      _checkEpoch(epoch);
+      requireCurrent();
       if (error is ApiException &&
-          error.statusCode >= 400 &&
-          error.statusCode < 500) {
+          const {401, 403, 404}.contains(error.statusCode)) {
         await clearSelection();
       }
       rethrow;
     }
-    _checkEpoch(epoch);
-    if (_selectedStore?.id != expectedStoreId) {
-      throw const ApiException(
-        message: 'The selected store changed. Open its settings again.',
-        statusCode: 409,
-        code: 'SESSION_CONTEXT_CHANGED',
-      );
-    }
-    _stores = [..._stores.where((item) => item.id != expectedStoreId), fresh];
+    requireCurrent();
+    _stores = [
+      for (final store in _stores)
+        if (store.id == expectedStoreId) fresh else store,
+    ];
     await selectStore(fresh);
+    requireCurrent();
     return fresh;
   }
 
@@ -293,7 +309,9 @@ class StoreContext extends ChangeNotifier {
       await reset;
       final prefs = await _preferences();
       if (requestContextKey != contextKey) return;
-      await prefs.setString(_selectedStoreIdKey, id);
+      if (!await prefs.setString(_selectedStoreIdKey, id)) {
+        throw StateError('Store selection was not saved on this device.');
+      }
     });
     // Keep later persistence usable even if this caller observes an I/O error.
     _selectionPersistence = write.catchError((Object _) {});

@@ -1,12 +1,16 @@
+import 'collection_metadata_service.dart';
 import 'dart:io';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:uuid/uuid.dart';
 import 'package:letbuyy_models/letbuyy_models.dart' hide JsonMap;
 
 import 'api_client.dart';
 import 'cache_service.dart';
 import 'security_command_store.dart';
+export 'package:letbuyy_models/letbuyy_models.dart'
+    show ProductCollectionContract, ProductCollectionInput;
 
 /// Merchant catalog transport and context-scoped presentation state.
 class ProductService extends ChangeNotifier {
@@ -26,6 +30,12 @@ class ProductService extends ChangeNotifier {
        _commands = commands ?? SecurityCommandStore();
   final String? Function() _actor, _store;
   final SecurityCommandStore _commands;
+  late final collectionMetadata = CollectionMetadataService(
+    api: _api,
+    actorIdProvider: _actor,
+    storeIdProvider: _store,
+    commands: _commands,
+  );
   static const _csvCommand = 'product-csv-import';
 
   MerchantSecurityContext _importContext(String store) {
@@ -53,6 +63,24 @@ class ProductService extends ChangeNotifier {
         expectedContextVersion: c.version,
         maxRetries: 0,
       );
+  Future<T> _productCommandContext<T>(
+    String store,
+    Future<T> Function(MerchantSecurityContext) action,
+  ) {
+    // Identity belongs to the invocation, including time waiting behind another
+    // durable command. A queued old-account action can never adopt its successor.
+    late final MerchantSecurityContext captured;
+    try {
+      captured = _importContext(store);
+    } catch (error, stack) {
+      return Future.error(error, stack);
+    }
+    return _commands.serialized(() async {
+      _checkImport(captured);
+      return action(captured);
+    });
+  }
+
   ProductImportJob _importJob(
     Object? value,
     MerchantSecurityContext c, {
@@ -89,18 +117,16 @@ class ProductService extends ChangeNotifier {
   }
 
   Future<PendingSecurityCommand?> pendingCsvImport(String store) =>
-      _commands.serialized(() {
-        final c = _importContext(store);
+      _productCommandContext(store, (c) {
         return _commands.read(c, _csvCommand, check: () => _checkImport(c));
       });
   Future<ProductImportJob?> recoverCsvRegistration(String store) =>
-      _commands.serialized(() async {
-        final c = _importContext(store),
-            pending = await _commands.read(
-              _importContext(store),
-              _csvCommand,
-              check: () => _checkImport(c),
-            );
+      _productCommandContext(store, (c) async {
+        final pending = await _commands.read(
+          c,
+          _csvCommand,
+          check: () => _checkImport(c),
+        );
         if (pending == null) return null;
         final raw = await _api.products.importByKey(
           store,
@@ -121,8 +147,7 @@ class ProductService extends ChangeNotifier {
   Future<ProductImportJob> importProductCsv(
     String store,
     String csv,
-  ) => _commands.serialized(() async {
-    final c = _importContext(store);
+  ) => _productCommandContext(store, (c) async {
     if (csv.trim().isEmpty || utf8.encode(csv).length > productImportMaxBytes)
       throw const FormatException('Use a CSV of at most one MiB.');
     validateProductImportRequest({
@@ -173,13 +198,12 @@ class ProductService extends ChangeNotifier {
 
   Future<ProductImportJob?> stopCsvRegistration(
     String store,
-  ) => _commands.serialized(() async {
-    final c = _importContext(store),
-        pending = await _commands.read(
-          _importContext(store),
-          _csvCommand,
-          check: () => _checkImport(c),
-        );
+  ) => _productCommandContext(store, (c) async {
+    final pending = await _commands.read(
+      c,
+      _csvCommand,
+      check: () => _checkImport(c),
+    );
     if (pending == null) return null;
     final raw = await _api.products.stopImportRegistration({
       'store_id': store,
@@ -649,10 +673,13 @@ class ProductService extends ChangeNotifier {
     List<String>? tags,
     Map<String, dynamic>? metadata,
     List<Map<String, dynamic>>? variants,
+    List<Map<String, dynamic>>? productOptions,
+    String? idempotencyKey,
   }) async {
-    final captured = _api.captureRequestContext();
-    final created = ProductContract.fromJson(
-      await _api.products.create({
+    return createProductCommand(
+      storeId: storeId,
+      idempotencyKey: idempotencyKey ?? const Uuid().v4(),
+      input: {
         'store_id': storeId,
         'name': name,
         if (description != null) 'description': description,
@@ -682,28 +709,82 @@ class ProductService extends ChangeNotifier {
         'tags': tags ?? [],
         if (metadata != null) 'metadata': metadata,
         if (variants != null) 'variants': variants,
-      }),
+        if (productOptions != null) 'product_options': productOptions,
+      },
+    );
+  }
+
+  static JsonMap _captureProductInput(JsonMap input) {
+    // Catalog schemas own attribute names, including an option named "Code".
+    // Capture a sorted, immutable JSON value for stable original-key retries.
+    Object? freeze(Object? value) => value is Map
+        ? Map<String, dynamic>.unmodifiable({
+            for (final key in value.keys.cast<String>().toList()..sort())
+              key: freeze(value[key]),
+          })
+        : value is List
+        ? List<Object?>.unmodifiable(value.map(freeze))
+        : value;
+    return freeze(jsonDecode(jsonEncode(input))) as JsonMap;
+  }
+
+  /// Dispatch the captured canonical create request with its original retry key.
+  /// The existing Gateway receipt and live permission checks own every effect.
+  Future<Map<String, dynamic>> createProductCommand({
+    required String storeId,
+    required Map<String, dynamic> input,
+    required String idempotencyKey,
+    int? maxRetries,
+  }) async {
+    if (input['store_id'] != storeId) {
+      throw const ApiException(
+        message: 'The product store changed. Reopen the form.',
+        statusCode: 409,
+        code: 'SESSION_CONTEXT_CHANGED',
+      );
+    }
+    final captured = _api.captureRequestContext();
+    final created = ProductContract.fromJson(
+      await _api.products.create(
+        _captureProductInput(input),
+        options: ApiRequestOptions(
+          storeId: storeId,
+          expectedContextVersion: captured,
+          idempotencyKey: idempotencyKey,
+          maxRetries: maxRetries,
+        ),
+      ),
     );
     _checkContext(captured);
-    if (created.storeId != storeId)
+    if (created.storeId != storeId ||
+        created.id.isEmpty ||
+        created.name.trim().isEmpty ||
+        created.version == null ||
+        created.version! <= 0) {
       throw const ApiException(
-        message: 'Product store could not be confirmed.',
+        message:
+            'Product creation could not be confirmed. Retry the original request.',
         statusCode: 502,
-        code: 'PRODUCT_SCOPE_MISMATCH',
+        code: 'PRODUCT_CREATE_INVALID_RESPONSE',
       );
+    }
+    final product = created.toJson();
+    await _cache?.writeJson(
+      CacheService.productDetailKey(created.id, storeId: storeId),
+      product,
+    );
+    _checkContext(captured);
     if (_productsStoreId != storeId || !_contextCurrent) {
       _products = [];
       _productContracts = [];
     }
     _productsStoreId = storeId;
     _productsContext = captured;
-    final product = created.toJson();
-    _productContracts = [..._productContracts, created];
-    _products.add(product);
-    await _cache?.writeJson(
-      CacheService.productDetailKey(created.id, storeId: storeId),
-      product,
-    );
+    _productContracts = [
+      ..._productContracts.where((p) => p.id != created.id),
+      created,
+    ];
+    _products = [..._products.where((p) => p['id'] != created.id), product];
     notifyListeners();
     return product;
   }
@@ -761,7 +842,11 @@ class ProductService extends ChangeNotifier {
         fields,
         version: version,
         idempotencyKey: idempotencyKey,
-        options: ApiRequestOptions(storeId: storeId),
+        options: ApiRequestOptions(
+          storeId: storeId,
+          expectedContextVersion: captured,
+          maxRetries: 0,
+        ),
       ),
     );
     _checkContext(captured);
@@ -789,6 +874,259 @@ class ProductService extends ChangeNotifier {
   }
 
   // ── Delete ───────────────────────────────────────────────
+
+  Future<PendingSecurityCommand?>? _statusInFlight;
+  String? _statusInFlightIntent;
+  Object? _statusInFlightContext;
+  static const _statusCommand = 'product-status-selection';
+
+  List<JsonMap> _statusItems(PendingSecurityCommand command) {
+    final value = command.intent;
+    final rows = value['items'];
+    if (!const ['active', 'draft', 'archived'].contains(value['target']) ||
+        rows is! List ||
+        rows.isEmpty ||
+        rows.length > 500) {
+      throw const FormatException('The saved product changes need review.');
+    }
+    final ids = <String>{};
+    return rows.map((row) {
+      final item = asJsonMap(row);
+      if (item['id'] is! String ||
+          (item['id'] as String).isEmpty ||
+          !ids.add(item['id']) ||
+          item['name'] is! String ||
+          item['version'] is! int ||
+          (item['version'] as int) < 1 ||
+          item['request_key'] is! String ||
+          !RegExp(r'^[a-zA-Z0-9-]{8,200}$').hasMatch(item['request_key']) ||
+          !const [
+            'pending',
+            'confirmed',
+            'conflict',
+          ].contains(item['outcome'])) {
+        throw const FormatException('The saved product changes need review.');
+      }
+      return Map<String, dynamic>.from(item);
+    }).toList();
+  }
+
+  Future<PendingSecurityCommand?> pendingProductStatus(String store) async {
+    if (_actor() == null) return null;
+    final c = _importContext(store);
+    final pending = await _commands.read(
+      c,
+      _statusCommand,
+      check: () => _checkImport(c),
+    );
+    if (pending != null) _statusItems(pending);
+    return pending;
+  }
+
+  Future<PendingSecurityCommand?> changeProductStatuses(
+    String store,
+    List<ProductContract> products,
+    String target,
+  ) {
+    // Snapshot the selected versions before queuing any asynchronous work.
+    final capturedProducts = products
+        .map(
+          (p) => ProductContract.fromJson(
+            jsonDecode(jsonEncode(p.toJson())) as JsonMap,
+          ),
+        )
+        .toList(growable: false);
+    final signature = jsonEncode({
+      'actor': _actor(),
+      'store': store,
+      'target': target,
+      'products': capturedProducts.map((p) => p.toJson()).toList(),
+    });
+    final scope = _api.captureRequestContext();
+    if (_statusInFlight != null) {
+      if (_statusInFlightIntent == signature &&
+          _statusInFlightContext == scope) {
+        return _statusInFlight!;
+      }
+      return Future.error(
+        const ApiException(
+          message: 'Recover the current product changes first.',
+          statusCode: 409,
+          code: 'PENDING_SECURITY_COMMAND',
+        ),
+      );
+    }
+    _statusInFlightIntent = signature;
+    _statusInFlightContext = scope;
+    late final Future<PendingSecurityCommand?> operation;
+    operation = _startProductStatuses(store, capturedProducts, target)
+        .whenComplete(() {
+          if (identical(_statusInFlight, operation)) {
+            _statusInFlight = null;
+            _statusInFlightIntent = null;
+            _statusInFlightContext = null;
+          }
+        });
+    _statusInFlight = operation;
+    return operation;
+  }
+
+  Future<PendingSecurityCommand?> _startProductStatuses(
+    String store,
+    List<ProductContract> products,
+    String target,
+  ) => _productCommandContext(store, (c) async {
+    if (await _commands.read(c, _statusCommand, check: () => _checkImport(c)) !=
+        null) {
+      throw const ApiException(
+        message: 'Recover the saved product changes first.',
+        statusCode: 409,
+        code: 'PENDING_SECURITY_COMMAND',
+      );
+    }
+    final command = PendingSecurityCommand(
+      c.actorId,
+      store,
+      _statusCommand,
+      const Uuid().v4(),
+      {
+        'target': target,
+        'items': products
+            .map(
+              (p) => {
+                'id': p.id,
+                'name': p.name,
+                'version': p.version,
+                'request_key': const Uuid().v4(),
+                'outcome': 'pending',
+              },
+            )
+            .toList(),
+      },
+    );
+    _statusItems(command);
+    if (products.any((p) => p.storeId != store)) {
+      throw const FormatException('Reload products from the selected store.');
+    }
+    final saved = await _commands.prepare(
+      c,
+      _statusCommand,
+      command.intent,
+      proposedKey: command.key,
+      check: () => _checkImport(c),
+    );
+    return _runProductStatuses(c, saved);
+  });
+
+  Future<PendingSecurityCommand?> retryProductStatuses(String store) =>
+      _productCommandContext(store, (c) async {
+        final saved = await _commands.read(
+          c,
+          _statusCommand,
+          check: () => _checkImport(c),
+        );
+        return saved == null ? null : _runProductStatuses(c, saved);
+      });
+
+  Future<PendingSecurityCommand?> _runProductStatuses(
+    MerchantSecurityContext c,
+    PendingSecurityCommand saved,
+  ) async {
+    var current = saved;
+    final items = _statusItems(saved),
+        target = saved.intent['target'] as String;
+    for (var i = 0; i < items.length; i++) {
+      final item = items[i];
+      if (item['outcome'] != 'pending') continue;
+      _checkImport(c);
+      try {
+        final result = await updateProduct(
+          item['id'],
+          {'status': target, 'is_active': target == 'active'},
+          storeId: c.storeId,
+          version: item['version'],
+          idempotencyKey: item['request_key'],
+        );
+        _checkImport(c);
+        if (result['status'] != target ||
+            result['is_active'] != (target == 'active') ||
+            result['version'] is! int ||
+            (result['version'] as int) <= (item['version'] as int)) {
+          throw const ApiException(
+            message:
+                'The product status was not confirmed. Retry the saved request.',
+            statusCode: 502,
+            code: 'PRODUCT_STATUS_UNCONFIRMED',
+          );
+        }
+        items[i] = {...item, 'outcome': 'confirmed'};
+      } on ApiException catch (error) {
+        _checkImport(c);
+        if (error.statusCode != 409 || error.code != 'PRODUCT_VERSION_CONFLICT')
+          rethrow;
+        items[i] = {...item, 'outcome': 'conflict'};
+      }
+      current = await _commands.replaceIntent(c, current, {
+        'target': target,
+        'items': items,
+      }, check: () => _checkImport(c));
+    }
+    if (items.any((item) => item['outcome'] != 'confirmed')) return current;
+    await _commands.complete(c, current, check: () => _checkImport(c));
+    return null;
+  }
+
+  Future<List<ProductContract>> reviewProductStatuses(String store) async {
+    final c = _importContext(store),
+        pending = await pendingProductStatus(store);
+    if (pending == null) return const [];
+    final result = <ProductContract>[];
+    for (final row in _statusItems(
+      pending,
+    ).where((row) => row['outcome'] == 'conflict')) {
+      result.add(await fetchProductForEdit(row['id'], store));
+      _checkImport(c);
+    }
+    return result;
+  }
+
+  Future<PendingSecurityCommand?> applyReviewedProductStatuses(
+    String store,
+    PendingSecurityCommand original,
+    List<ProductContract> reviewed,
+  ) => _productCommandContext(store, (c) async {
+    final items = _statusItems(original);
+    final conflicts = items
+        .where((item) => item['outcome'] == 'conflict')
+        .toList();
+    if (reviewed.length != conflicts.length ||
+        reviewed.isEmpty ||
+        reviewed.map((p) => p.id).toSet().length != reviewed.length) {
+      throw const FormatException(
+        'Review every conflicting product before applying.',
+      );
+    }
+    final rows = {for (final p in reviewed) p.id: p};
+    for (final item in conflicts) {
+      final p = rows[item['id']];
+      if (p == null || p.storeId != store || p.version == null) {
+        throw const FormatException(
+          'The reviewed product belongs to another context.',
+        );
+      }
+      item.addAll({
+        'name': p.name,
+        'version': p.version,
+        'request_key': const Uuid().v4(),
+        'outcome': 'pending',
+      });
+    }
+    final next = await _commands.replaceIntent(c, original, {
+      'target': original.intent['target'],
+      'items': items,
+    }, check: () => _checkImport(c));
+    return _runProductStatuses(c, next);
+  });
 
   /// Soft-delete a product.
   Future<void> deleteProduct(String id, {String? storeId}) async {
@@ -826,7 +1164,16 @@ class ProductService extends ChangeNotifier {
       'store_id': storeId,
     });
     _checkContext(captured);
-    final affected = (res['affected'] ?? res['data']?['affected']) as int? ?? 0;
+    final affected = res['affected'];
+    if (affected is! int ||
+        affected < 0 ||
+        affected > productIds.toSet().length) {
+      throw const ApiException(
+        message: 'The affected product count was not confirmed.',
+        statusCode: 502,
+        code: 'PRODUCT_BULK_UNCONFIRMED',
+      );
+    }
 
     // Refresh the local list
     await fetchProducts(storeId);
@@ -864,30 +1211,479 @@ class ProductService extends ChangeNotifier {
 
   // ── Collections ──────────────────────────────────────────
 
-  Future<List<ProductCollectionContract>> fetchCollections(
-    String storeId,
-  ) async {
-    final rows = await _api.products.collections(storeId: storeId);
-    return rows.map(ProductCollectionContract.fromJson).toList(growable: false);
+  Future<CollectionListPage> readCollectionPage(
+    String store, {
+    int page = 1,
+    int limit = 20,
+    String search = '',
+    String status = 'all',
+  }) async {
+    final c = _importContext(store);
+    final result = await _api.products.collectionPage(
+      storeId: store,
+      page: page,
+      limit: limit,
+      search: search,
+      status: status,
+      options: _importOptions(c),
+    );
+    _checkImport(c);
+    final parsed = CollectionListPage.fromParts(result.data, result.meta);
+    if (parsed.page != page ||
+        parsed.limit != limit ||
+        parsed.rows.any((row) => row.storeId != store)) {
+      throw const FormatException(
+        'The selected collection page could not be confirmed.',
+      );
+    }
+    return parsed;
   }
 
-  Future<ProductCollectionContract> createCollection(
-    ProductCollectionInput input,
-  ) async {
-    final row = await _api.products.createCollection(input.toJson());
-    return ProductCollectionContract.fromJson(row);
+  CollectionMembershipSnapshot _membership(
+    Object? value,
+    MerchantSecurityContext c,
+    String collection,
+  ) {
+    final result = CollectionMembershipSnapshot.fromJson(value);
+    if (result.storeId != c.storeId || result.collectionId != collection) {
+      throw const FormatException(
+        'The collection response belongs to another store or collection.',
+      );
+    }
+    return result;
   }
 
-  Future<ProductCollectionContract> updateCollection(
-    String id,
-    ProductCollectionInput input,
+  Future<CollectionMembershipSnapshot> readCollectionMembership(
+    String store,
+    String collection,
   ) async {
-    final row = await _api.products.updateCollection(id, input.toUpdateJson());
-    return ProductCollectionContract.fromJson(row);
+    final c = _importContext(store);
+    final result = await _api.products.collectionMembership(
+      store,
+      collection,
+      options: _importOptions(c),
+    );
+    _checkImport(c);
+    return _membership(result, c, collection);
   }
 
-  Future<void> deleteCollection(String id) async {
-    await _api.products.removeCollection(id);
+  String _membershipCommand(String collection) =>
+      'collection-membership:$collection';
+  static const _categoryCommand = 'product-category-metadata';
+
+  Future<ProductCategoryPage> readCategoryPage(
+    String store, {
+    int page = 1,
+    int limit = 20,
+    String search = '',
+  }) async {
+    final c = _importContext(store);
+    final raw = await _api.products.categoryPage(
+      store,
+      page: page,
+      limit: limit,
+      search: search,
+      options: _importOptions(c),
+    );
+    _checkImport(c);
+    final result = ProductCategoryPage.fromParts(raw.data, raw.meta);
+    if (result.page != page ||
+        result.limit != limit ||
+        result.rows.any((row) => row.storeId != store))
+      throw const FormatException('Category page scope changed.');
+    return result;
+  }
+
+  Future<ProductCategoryContract> readCategory(String store, String id) async {
+    final c = _importContext(store),
+        raw = await _api.products.category(
+          store,
+          id,
+          options: _importOptions(c),
+        );
+    _checkImport(c);
+    final row = ProductCategoryContract.fromJson(raw);
+    if (row.id != id || row.storeId != store || row.isDeleted)
+      throw const FormatException('Category scope changed.');
+    return row;
+  }
+
+  Future<PendingSecurityCommand?> pendingCategoryCommand(String store) =>
+      _productCommandContext(
+        store,
+        (c) =>
+            _commands.read(c, _categoryCommand, check: () => _checkImport(c)),
+      );
+
+  Future<ProductCategoryReceipt> saveCategory(
+    String store,
+    String operation,
+    JsonMap fields, {
+    String? id,
+  }) {
+    // Capture form contents before the global queue can wait across a store or actor switch.
+    final captured = SecurityCommandStore.captureIntent(fields);
+    return _productCommandContext(store, (c) async {
+      if ((operation == 'create') != (id == null) ||
+          id != null && !categoryUuid(id))
+        throw const FormatException('Choose a valid category operation.');
+      final body =
+          Map<String, dynamic>.of(
+              validateProductCategoryCommand(operation, {
+                ...captured,
+                'store_id': store,
+                'idempotency_key': '00000000-0000-4000-8000-000000000000',
+              }),
+            )
+            ..remove('store_id')
+            ..remove('idempotency_key');
+      if (await _commands.read(
+            c,
+            _categoryCommand,
+            check: () => _checkImport(c),
+          ) !=
+          null)
+        throw const FormatException(
+          'Recover the saved category request before making another change.',
+        );
+      final pending = await _commands.prepare(c, _categoryCommand, {
+        'operation': operation,
+        'category_id': id,
+        'fields': body,
+        'outcome': 'pending',
+      }, check: () => _checkImport(c));
+      return _sendCategory(c, pending, firstAttempt: true);
+    });
+  }
+
+  Future<ProductCategoryReceipt> retryCategory(String store) =>
+      _productCommandContext(store, (c) async {
+        final pending = await _commands.read(
+          c,
+          _categoryCommand,
+          check: () => _checkImport(c),
+        );
+        if (pending == null)
+          throw const FormatException(
+            'No original category request was found.',
+          );
+        return _sendCategory(c, pending);
+      });
+  Future<ProductCategoryContract?> reviewRejectedCategory(
+    String store,
+  ) => _productCommandContext(store, (c) async {
+    final pending = await _commands.read(
+      c,
+      _categoryCommand,
+      check: () => _checkImport(c),
+    );
+    if (pending == null || pending.intent['outcome'] != 'rejected')
+      throw const FormatException(
+        'An unconfirmed category request cannot be discarded. Retry it first.',
+      );
+    final id = pending.intent['category_id'];
+    ProductCategoryContract? row;
+    if (id != null) {
+      if (!categoryUuid(id))
+        throw const FormatException(
+          'The original category identity is unavailable.',
+        );
+      row = await readCategory(store, id);
+    }
+    _checkImport(c);
+    await _commands.complete(c, pending, check: () => _checkImport(c));
+    return row;
+  });
+  Future<ProductCategoryReceipt> _sendCategory(
+    MerchantSecurityContext c,
+    PendingSecurityCommand pending, {
+    bool firstAttempt = false,
+  }) async {
+    final intent = pending.intent,
+        operation = intent['operation'],
+        id = intent['category_id'];
+    if (intent.length != 4 ||
+        !const ['create', 'update', 'delete'].contains(operation) ||
+        (operation == 'create') != (id == null) ||
+        id != null && !categoryUuid(id) ||
+        !const ['pending', 'rejected'].contains(intent['outcome']))
+      throw const FormatException('The saved category request needs review.');
+    final body = validateProductCategoryCommand(operation, {
+      ...asJsonMap(intent['fields']),
+      'store_id': c.storeId,
+      'idempotency_key': pending.key,
+    });
+    try {
+      final raw = await _api.products.categoryCommand(
+        operation,
+        id,
+        body,
+        options: _importOptions(c),
+      );
+      _checkImport(c);
+      final receipt = ProductCategoryReceipt.fromJson(raw),
+          row = receipt.category;
+      if (row.storeId != c.storeId ||
+          id != null && row.id != id ||
+          receipt.operation != operation ||
+          receipt.key != pending.key ||
+          body.containsKey('version') &&
+              row.version <= (body['version'] as num))
+        throw const FormatException(
+          'The original category acknowledgement could not be confirmed.',
+        );
+      final confirmed = row.toJson();
+      for (final field in body.entries) {
+        if (!const [
+              'store_id',
+              'idempotency_key',
+              'version',
+            ].contains(field.key) &&
+            confirmed[field.key] != field.value)
+          throw const FormatException(
+            'The category acknowledgement differs from the original fields.',
+          );
+      }
+      await _commands.complete(c, pending, check: () => _checkImport(c));
+      return receipt;
+    } on ApiException catch (error) {
+      _checkImport(c);
+      if (error.statusCode == 409 &&
+              const [
+                'PRODUCT_CATEGORY_VERSION_CONFLICT',
+                'PRODUCT_CATEGORY_IN_USE',
+                'PRODUCT_CATEGORY_CONFLICT',
+              ].contains(error.code) ||
+          firstAttempt &&
+              error.statusCode == 400 &&
+              error.code == 'VALIDATION_ERROR') {
+        await _commands.replaceIntent(c, pending, {
+          ...intent,
+          'outcome': 'rejected',
+        }, check: () => _checkImport(c));
+      }
+      rethrow;
+    }
+  }
+
+  Future<PendingSecurityCommand?> pendingCollectionMembership(
+    String store,
+    String collection,
+  ) async {
+    final c = _importContext(store);
+    return _commands.read(
+      c,
+      _membershipCommand(collection),
+      check: () => _checkImport(c),
+    );
+  }
+
+  Future<List<PendingSecurityCommand>> pendingCollectionMemberships(
+    String store,
+  ) => _productCommandContext(store, (c) async {
+    final records = await _commands.readPrefix(
+      c,
+      'collection-membership:',
+      check: () => _checkImport(c),
+    );
+    for (final record in records) {
+      final id = record.intent['collection_id'];
+      if (!categoryUuid(id) ||
+          record.command != _membershipCommand(id) ||
+          record.intent.length != 5 ||
+          record.intent['expected_version'] is! int ||
+          (record.intent['expected_version'] as int) < 1 ||
+          !categoryUuid(record.intent['request_key']) ||
+          !const [
+            'pending',
+            'conflict',
+            'rejected',
+            'missing',
+          ].contains(record.intent['outcome'])) {
+        throw const FormatException(
+          'A saved product selection needs recovery.',
+        );
+      }
+      collectionProductIds(record.intent['product_ids']);
+    }
+    _checkImport(c);
+    return records;
+  });
+
+  /// Explicit dismissal only after retrying the original owner-bound command.
+  Future<CollectionMembershipSnapshot?> discardMissingCollectionMembership(
+    String store,
+    String collection,
+  ) => _productCommandContext(store, (c) async {
+    final pending = await _commands.read(
+      c,
+      _membershipCommand(collection),
+      check: () => _checkImport(c),
+    );
+    if (pending == null || pending.intent['outcome'] != 'missing')
+      throw const FormatException(
+        'Retry the saved product selection before discarding it.',
+      );
+    try {
+      return await _sendCollectionMembership(c, pending, collection);
+    } on ApiException catch (error) {
+      _checkImport(c);
+      if (error.statusCode != 404 ||
+          error.code != 'COLLECTION_MEMBERSHIP_NOT_FOUND')
+        rethrow;
+      await _commands.complete(c, pending, check: () => _checkImport(c));
+      return null;
+    }
+  });
+
+  Future<CollectionMembershipSnapshot> replaceCollectionMembership(
+    String store,
+    CollectionMembershipSnapshot original,
+    List<String> ids,
+  ) {
+    final capturedIds = List<String>.unmodifiable(ids);
+    return _productCommandContext(store, (c) async {
+      if (original.storeId != store)
+        throw const FormatException(
+          'Select a collection from the current store.',
+        );
+      final selection = collectionProductIds(capturedIds);
+      final pending = await _commands
+          .prepare(c, _membershipCommand(original.collectionId), {
+            'collection_id': original.collectionId,
+            'expected_version': original.version,
+            'product_ids': selection,
+            'request_key': const Uuid().v4(),
+            'outcome': 'pending',
+          }, check: () => _checkImport(c));
+      return _sendCollectionMembership(
+        c,
+        pending,
+        original.collectionId,
+        firstAttempt: true,
+      );
+    });
+  }
+
+  Future<CollectionMembershipSnapshot> retryCollectionMembership(
+    String store,
+    String collection,
+  ) => _productCommandContext(store, (c) async {
+    final pending = await _commands.read(
+      c,
+      _membershipCommand(collection),
+      check: () => _checkImport(c),
+    );
+    if (pending == null)
+      throw const FormatException('There is no saved collection request.');
+    return _sendCollectionMembership(c, pending, collection);
+  });
+  Future<CollectionMembershipSnapshot> rebaseCollectionMembership(
+    String store,
+    PendingSecurityCommand original,
+    CollectionMembershipSnapshot reviewed,
+  ) => _productCommandContext(store, (c) async {
+    if (original.intent['outcome'] != 'conflict' ||
+        reviewed.storeId != store ||
+        original.intent['collection_id'] != reviewed.collectionId) {
+      throw const FormatException(
+        'Read and review the current conflicting collection first.',
+      );
+    }
+    final pending = await _commands.replaceIntent(c, original, {
+      ...original.intent,
+      'expected_version': reviewed.version,
+      'request_key': const Uuid().v4(),
+      'outcome': 'pending',
+    }, check: () => _checkImport(c));
+    return _sendCollectionMembership(
+      c,
+      pending,
+      reviewed.collectionId,
+      firstAttempt: true,
+    );
+  });
+  Future<void> discardRejectedCollectionMembership(
+    String store,
+    String collection,
+  ) => _productCommandContext(store, (c) async {
+    final pending = await _commands.read(
+      c,
+      _membershipCommand(collection),
+      check: () => _checkImport(c),
+    );
+    if (pending == null ||
+        !const ['conflict', 'rejected'].contains(pending.intent['outcome'])) {
+      throw const FormatException(
+        'An unconfirmed collection request cannot be discarded.',
+      );
+    }
+    await _commands.complete(c, pending, check: () => _checkImport(c));
+  });
+  Future<CollectionMembershipSnapshot> _sendCollectionMembership(
+    MerchantSecurityContext c,
+    PendingSecurityCommand command,
+    String collection, {
+    bool firstAttempt = false,
+  }) async {
+    final intent = command.intent,
+        ids = collectionProductIds(intent['product_ids']),
+        version = intent['expected_version'];
+    if (intent['collection_id'] != collection ||
+        version is! int ||
+        version < 1 ||
+        intent['request_key'] is! String ||
+        !RegExp(
+          r'^[a-fA-F0-9]{8}-(?:[a-fA-F0-9]{4}-){3}[a-fA-F0-9]{12}$',
+        ).hasMatch(intent['request_key'])) {
+      throw const FormatException('The saved collection request needs review.');
+    }
+    _checkImport(c);
+    try {
+      final raw = await _api.products
+          .replaceCollectionMembership(c.storeId, collection, {
+            'product_ids': ids,
+            'expected_version': version,
+            'idempotency_key': intent['request_key'],
+          }, options: _importOptions(c));
+      _checkImport(c);
+      final result = _membership(raw, c, collection);
+      if (result.version <= version || !listEquals(result.productIds, ids)) {
+        throw const ApiException(
+          message:
+              'The collection save was not confirmed. Retry its saved request.',
+          statusCode: 502,
+          code: 'COLLECTION_MEMBERSHIP_UNCONFIRMED',
+        );
+      }
+      await _commands.complete(c, command, check: () => _checkImport(c));
+      return result;
+    } on ApiException catch (error) {
+      _checkImport(c);
+      if (error.statusCode == 404 &&
+          error.code == 'COLLECTION_MEMBERSHIP_NOT_FOUND') {
+        await _commands.replaceIntent(c, command, {
+          ...intent,
+          'outcome': 'missing',
+        }, check: () => _checkImport(c));
+      } else if (error.statusCode == 409 &&
+          error.code == 'COLLECTION_MEMBERSHIP_VERSION_CONFLICT') {
+        await _commands.replaceIntent(c, command, {
+          ...intent,
+          'outcome': 'conflict',
+        }, check: () => _checkImport(c));
+      } else if (firstAttempt &&
+          error.statusCode == 400 &&
+          error.code == 'VALIDATION_ERROR') {
+        // A retry can follow a committed reply loss. Only a known first-attempt
+        // rejection can release the selection for editing with a fresh key.
+        await _commands.replaceIntent(c, command, {
+          ...intent,
+          'outcome': 'rejected',
+        }, check: () => _checkImport(c));
+      }
+      rethrow;
+    }
   }
 
   // ── Gift cards ───────────────────────────────────────────
@@ -907,102 +1703,6 @@ class ProductService extends ChangeNotifier {
     notifyListeners();
     return card;
   }
-}
-
-class ProductCollectionContract {
-  const ProductCollectionContract({
-    required this.id,
-    required this.storeId,
-    required this.title,
-    this.description,
-    this.imageUrl,
-    this.handle,
-    this.isActive = true,
-    this.productCount = 0,
-    this.createdAt,
-    this.updatedAt,
-  });
-
-  factory ProductCollectionContract.fromJson(Map<String, dynamic> data) {
-    final name = data['title'] ?? data['name'];
-    return ProductCollectionContract(
-      id: '${data['id'] ?? ''}',
-      storeId: '${data['store_id'] ?? data['storeId'] ?? ''}',
-      title: name == null ? '' : '$name',
-      description: data['description'] as String?,
-      imageUrl: data['image_url'] as String? ?? data['imageUrl'] as String?,
-      handle: data['handle'] as String? ?? data['slug'] as String?,
-      isActive: data['is_active'] as bool? ?? data['isActive'] as bool? ?? true,
-      productCount:
-          ((data['product_count'] ?? data['products_count'] ?? 0) as num)
-              .toInt(),
-      createdAt: data['created_at'] as String? ?? data['createdAt'] as String?,
-      updatedAt: data['updated_at'] as String? ?? data['updatedAt'] as String?,
-    );
-  }
-
-  final String id;
-  final String storeId;
-  final String title;
-  final String? description;
-  final String? imageUrl;
-  final String? handle;
-  final bool isActive;
-  final int productCount;
-  final String? createdAt;
-  final String? updatedAt;
-
-  Map<String, dynamic> toJson() => {
-    'id': id,
-    'store_id': storeId,
-    'title': title,
-    'description': description,
-    'image_url': imageUrl,
-    'handle': handle,
-    'is_active': isActive,
-    'product_count': productCount,
-    'created_at': createdAt,
-    'updated_at': updatedAt,
-  };
-}
-
-class ProductCollectionInput {
-  const ProductCollectionInput({
-    required this.storeId,
-    required this.title,
-    this.description,
-    this.imageUrl,
-  });
-
-  factory ProductCollectionInput.fromContract(
-    ProductCollectionContract collection,
-  ) {
-    return ProductCollectionInput(
-      storeId: collection.storeId,
-      title: collection.title,
-      description: collection.description,
-      imageUrl: collection.imageUrl,
-    );
-  }
-
-  final String storeId;
-  final String title;
-  final String? description;
-  final String? imageUrl;
-
-  Map<String, dynamic> toJson() => {
-    'store_id': storeId,
-    'title': title,
-    if (description != null && description!.trim().isNotEmpty)
-      'description': description,
-    if (imageUrl != null && imageUrl!.trim().isNotEmpty) 'image_url': imageUrl,
-  };
-
-  Map<String, dynamic> toUpdateJson() => {
-    'title': title,
-    if (description != null) 'description': description,
-    if (imageUrl != null) 'image_url': imageUrl,
-  };
 }
 
 class GiftCardContract {

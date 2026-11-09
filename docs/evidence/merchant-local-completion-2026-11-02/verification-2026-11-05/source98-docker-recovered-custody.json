@@ -1,0 +1,37 @@
+{
+  "at": "2026-11-08T07:20:21.449822+00:00",
+  "Docker_API_responding": true,
+  "normal_restart_timed_out": true,
+  "SIGKILL_executed": false,
+  "recovery": "Targeted TERM completed with delayed graceful exit, then Docker reopened",
+  "interrupted_runner_pid": 38264,
+  "removed_only_verified_unattached_synthetic_resources": [
+    {
+      "kind": "network",
+      "id": "66cd301da5f9",
+      "labels": {
+        "com.letbuyy.executable-fixture": "1",
+        "com.letbuyy.executable-fixture.owner-pid": "38264",
+        "com.letbuyy.executable-fixture.role": "network",
+        "com.letbuyy.executable-fixture.run-id": "22cd1c05c73e"
+      },
+      "unattached": true
+    },
+    {
+      "kind": "volume",
+      "id": "letbuyy-exec-22cd1c05c73e-1-data",
+      "labels": {
+        "com.letbuyy.executable-fixture": "1",
+        "com.letbuyy.executable-fixture.owner-pid": "38264",
+        "com.letbuyy.executable-fixture.role": "volume",
+        "com.letbuyy.executable-fixture.run-id": "22cd1c05c73e"
+      },
+      "unattached": true
+    }
+  ],
+  "remaining": {
+    "network": [],
+    "volume": []
+  },
+  "host9002": "Never contacted; no emulator processes or data changed"
+}

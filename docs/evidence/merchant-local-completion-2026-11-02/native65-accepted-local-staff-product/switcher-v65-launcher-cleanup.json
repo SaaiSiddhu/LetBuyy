@@ -1,0 +1,13 @@
+{
+  "at": "2026-11-06T11:58:27.335490+00:00",
+  "serial": "emulator-5580",
+  "adb_port": 15038,
+  "runner_exit": 0,
+  "controller_exit": 0,
+  "baseline": [],
+  "before": [],
+  "removed": [],
+  "refused": [],
+  "after": [],
+  "scope": "Only current-run exact reverse tuples on task emulator. Host9002 never accessed."
+}

@@ -1,0 +1,23 @@
+{
+  "source_sha256": "e8cc94edd6649a1fbbeebf1f797d1d65a4959fe87851467d1c37f28399ddc0a4",
+  "controls": [
+    {
+      "path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/android-switcher-staff-v66.py",
+      "sha256": "d878886432d9e1b7278daad14a3b9f8b16c18b8f96c82119d1909fe9b7ae99f8"
+    },
+    {
+      "path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/merchant-switcher-staff-v66-local-android.postgres.test.ts",
+      "sha256": "179c3c465c2b615e53e1c2a6c3e496be6a38de4a8d1e4704694872032f41be99"
+    },
+    {
+      "path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/restart_native66_emulator.py",
+      "sha256": "6e52b21bc84f01c88da0ad6fdfc7dff4bfcd6f9cf45fbfa682d6ab3791037633"
+    },
+    {
+      "path": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/run-switcher-v66.py",
+      "sha256": "dd2e694c6bd9554e00602adec0ea1bbfd8a3d333a26a28b7867a2af1d1618556"
+    }
+  ],
+  "protected_fixture_sha256": "12917f372dee1ecf6610c8888af1caa9a5a80b545388ba0b58570c6b9c6f8510",
+  "purpose": "Actual native picker/restart/public receipt recovery and private test upload; no hosted/provider release."
+}

@@ -1,0 +1,23 @@
+{
+  "source_manifest": "merchant-kyc-receipt-source-v43",
+  "source_sha256": "7b3d68cff186f04b58661b987e52954d2b63ae452e0d7befcfbda20a108d355e",
+  "changes": "Observe exact alt text line in actual unique combined media-card semantics, retaining visible/current/class/type guards. No production code or business/security expectation change.",
+  "inputs": [
+    {
+      "path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/merchant-switcher-staff-v71-local-android.postgres.test.ts",
+      "sha256": "547ccfb577872ec645ef787e57c72a4436f9800a580b03b471e957e5a8db2584"
+    },
+    {
+      "path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/android-switcher-staff-v71.py",
+      "sha256": "11b84131c6ccf618bdef8847c1cafda6daec1e45021ae5e4caf935fbc442371b"
+    },
+    {
+      "path": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/run-switcher-v71.py",
+      "sha256": "f1ddc31aa4aa2530006908f4bcc7624ac86f85fff649fbc7f3d5c40f16928555"
+    },
+    {
+      "path": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/android-device-receipt-switcher-v71.json",
+      "sha256": "44cd9090a528dd744b637273a9453b3eaf7eb02565a18a03b943e86ff6860f74"
+    }
+  ]
+}

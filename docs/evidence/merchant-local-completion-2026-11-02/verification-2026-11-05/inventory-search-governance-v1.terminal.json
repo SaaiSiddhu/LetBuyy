@@ -1,0 +1,12 @@
+{
+  "at": "2026-11-05T19:28:06.623550+00:00",
+  "status": "TERMINAL",
+  "exit_code": 0,
+  "capsule": "/private/tmp/letbuyy-inventory-search-governance-umu_b05u",
+  "purpose": "Disposable validation copy only, no implementation/worktree/merge/push/release",
+  "source_sha256": "2d70c5e307ef5fd263f30d85d5c905069e5d6f80d3d78ece70425c3459b69d60",
+  "core_inputs_byte_equal": 8442,
+  "original_source_unchanged": true,
+  "original_index_unchanged": true,
+  "report": "inventory-search-governance-v1-report.json"
+}

@@ -1,0 +1,12 @@
+{
+  "at": "2026-11-06T05:45:23.200346+00:00",
+  "status": "TERMINAL",
+  "exit_code": 0,
+  "capsule": "/private/tmp/letbuyy-web-mobile-switcher-v2-governance-blconun4",
+  "purpose": "Disposable validation copy only, no implementation/worktree/merge/push/release",
+  "source_sha256": "6b04cb93b05b5cc2a745b8720d44a02e866283be64efc7c831019a3a24491eda",
+  "core_inputs_byte_equal": 8456,
+  "original_source_unchanged": true,
+  "original_index_unchanged": true,
+  "report": "web-mobile-switcher-v2-governance-v1-report.json"
+}

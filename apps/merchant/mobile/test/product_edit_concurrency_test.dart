@@ -1,3 +1,4 @@
+import 'support/editor_steps_fixture.dart';
 import 'dart:async';
 // Mounted actual form + ProductService + shared ProductsApi. Synthetic transport
 // outcomes are separate from the real Gateway/app_tenant effects in the owned suite.
@@ -200,11 +201,9 @@ void main() {
       final api = ProductTransport('lost');
       await mount(tester, api);
       await tester.enterText(nameField(), 'First valid save');
-      await tester.tap(find.widgetWithText(TextButton, 'Update'));
+      await tester.tap(find.widgetWithText(FilledButton, 'Update'));
       await tester.pumpAndSettle();
-      await tester.ensureVisible(find.text('Pricing'));
-      await tester.tap(find.text('Pricing'));
-      await tester.pumpAndSettle();
+      await selectEditorSection(tester, 'Pricing');
       final price = find.widgetWithText(TextFormField, 'Sale Price *');
       await tester.enterText(price, '');
       await tester.tap(find.text('Retry pending save'));
@@ -226,33 +225,33 @@ void main() {
       addTearDown(tester.view.resetDevicePixelRatio);
       final api = ProductTransport('lost');
       await mount(tester, api);
-      await tester.ensureVisible(find.text('Variants'));
-      await tester.tap(find.text('Variants'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Add variant'));
+      await selectEditorSection(tester, 'Variants');
+      await tester.tap(find.widgetWithText(OutlinedButton, 'Add variant'));
       await tester.pumpAndSettle();
       await tester.enterText(find.widgetWithText(TextFormField, 'Value'), 'L');
+      await tester.enterText(
+        find.widgetWithText(TextFormField, 'Option 2 value'),
+        'Blue',
+      );
       await tester.enterText(
         find.widgetWithText(TextFormField, 'Price'),
         '100',
       );
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Add variant').last);
+      await tester.tap(find.widgetWithText(FilledButton, 'Add variant').last);
       await tester.pumpAndSettle();
-      await tester.tap(find.widgetWithText(TextButton, 'Update'));
+      await tester.tap(find.widgetWithText(FilledButton, 'Update'));
       await tester.pumpAndSettle();
       expect((api.calls.single.body as Map)['variants'], hasLength(2));
       expect(
         ((api.calls.single.body as Map)['variants'] as List).last['id'],
         isNull,
       );
-      await tester.ensureVisible(find.text('Basic Info'));
-      await tester.tap(find.text('Basic Info'));
-      await tester.pumpAndSettle();
+      await selectEditorSection(tester, 'Basic Info');
       await tester.enterText(nameField(), 'Newer scalar draft');
       await tester.tap(find.text('Retry pending save'));
       await tester.pumpAndSettle();
       expect(nameText(tester), 'Newer scalar draft');
-      await tester.tap(find.widgetWithText(TextButton, 'Update'));
+      await tester.tap(find.widgetWithText(FilledButton, 'Update'));
       await tester.pumpAndSettle();
       expect(api.calls, hasLength(3));
       final rows = (api.calls.last.body as Map)['variants'] as List;
@@ -268,13 +267,13 @@ void main() {
       final api = ProductTransport('conflict');
       await mount(tester, api);
       await tester.enterText(nameField(), 'My unsaved draft');
-      await tester.tap(find.widgetWithText(TextButton, 'Update'));
+      await tester.tap(find.widgetWithText(FilledButton, 'Update'));
       await tester.pumpAndSettle();
       expect(nameText(tester), 'My unsaved draft');
       expect(find.textContaining('Server winner'), findsOneWidget);
       expect(
         tester
-            .widget<TextButton>(find.widgetWithText(TextButton, 'Update'))
+            .widget<FilledButton>(find.widgetWithText(FilledButton, 'Update'))
             .onPressed,
         isNull,
       );
@@ -283,7 +282,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(nameText(tester), 'Server winner');
       await tester.enterText(nameField(), 'Reviewed after reload');
-      await tester.tap(find.widgetWithText(TextButton, 'Update'));
+      await tester.tap(find.widgetWithText(FilledButton, 'Update'));
       await tester.pumpAndSettle();
       expect((api.calls.last.body as Map)['version'], 23);
       expect(
@@ -299,7 +298,7 @@ void main() {
       final api = ProductTransport('lost');
       await mount(tester, api);
       await tester.enterText(nameField(), 'First save');
-      await tester.tap(find.widgetWithText(TextButton, 'Update'));
+      await tester.tap(find.widgetWithText(FilledButton, 'Update'));
       await tester.pumpAndSettle();
       expect(find.text('Retry pending save'), findsOneWidget);
       await tester.enterText(nameField(), 'Newer unsaved draft');
@@ -310,7 +309,7 @@ void main() {
       expect(api.calls[1].body, api.calls[0].body);
       expect(nameText(tester), 'Newer unsaved draft');
       expect(find.textContaining('Your newer draft is kept'), findsOneWidget);
-      await tester.tap(find.widgetWithText(TextButton, 'Update'));
+      await tester.tap(find.widgetWithText(FilledButton, 'Update'));
       await tester.pumpAndSettle();
       expect((api.calls.last.body as Map)['version'], 13);
       expect((api.calls.last.body as Map)['name'], 'Newer unsaved draft');
@@ -327,7 +326,7 @@ void main() {
       final api = ProductTransport('success');
       await mount(tester, api);
       await tester.enterText(nameField(), 'Renamed product');
-      await tester.tap(find.widgetWithText(TextButton, 'Update'));
+      await tester.tap(find.widgetWithText(FilledButton, 'Update'));
       await tester.pumpAndSettle();
       final body = api.calls.single.body as Map;
       expect(body['version'], 7);
@@ -358,7 +357,7 @@ void main() {
       await mount(tester, api);
       expect(find.text('Retry product'), findsOneWidget);
       expect(find.byType(TextFormField), findsNothing);
-      expect(find.widgetWithText(TextButton, 'Update'), findsNothing);
+      expect(find.widgetWithText(FilledButton, 'Update'), findsNothing);
       expect(api.calls, isEmpty);
       api.readFails = false;
       await tester.tap(find.text('Retry product'));
@@ -366,7 +365,7 @@ void main() {
       expect(nameText(tester), 'Original product');
       expect(
         tester
-            .widget<TextButton>(find.widgetWithText(TextButton, 'Update'))
+            .widget<FilledButton>(find.widgetWithText(FilledButton, 'Update'))
             .onPressed,
         isNotNull,
       );
@@ -389,7 +388,7 @@ void main() {
       final h = await mount(tester, api);
       api.heldSave = Completer<JsonMap>();
       await tester.enterText(nameField(), 'Old private draft');
-      await tester.tap(find.widgetWithText(TextButton, 'Update'));
+      await tester.tap(find.widgetWithText(FilledButton, 'Update'));
       await tester.pump();
       expect(api.calls, hasLength(1));
       h.stores.selection = 'other';
@@ -446,7 +445,7 @@ void main() {
       final api = ProductTransport('denied');
       await mount(tester, api);
       expect(nameText(tester), 'Original product');
-      await tester.tap(find.widgetWithText(TextButton, 'Update'));
+      await tester.tap(find.widgetWithText(FilledButton, 'Update'));
       await tester.pumpAndSettle();
       expect(api.calls, hasLength(1));
       expect(find.text('Store access changed'), findsOneWidget);

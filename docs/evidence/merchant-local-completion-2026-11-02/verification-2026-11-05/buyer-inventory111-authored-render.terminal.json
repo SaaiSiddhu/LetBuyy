@@ -1,0 +1,16 @@
+{
+  "command": [
+    "node",
+    "--import",
+    "tsx",
+    "--test",
+    "docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/buyer-inventory111-authored-theme-render-probe.test.ts"
+  ],
+  "env": {
+    "TSX_TSCONFIG_PATH": "apps/commerce/web/tsconfig.json"
+  },
+  "exit_code": 1,
+  "source": "merchant-buyer-inventory-source-v111",
+  "scope": "20 actual source-level2.1.0 authored theme product/collection unknown render cases; no installed/hosted/native theme acceptance",
+  "at": "2026-11-08T10:27:50.609427+00:00"
+}

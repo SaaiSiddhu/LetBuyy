@@ -1,0 +1,61 @@
+{
+  "status": "PASS",
+  "source_sha256": "9022d5635f60b108196bc9863fbd92aaf318fb9d80804e57081a8c97493629f4",
+  "results": [
+    {
+      "stage": "identity-unit",
+      "exit": 0,
+      "source_unchanged": true,
+      "command": [
+        "pnpm",
+        "test"
+      ],
+      "cwd": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/apps/platform/identity"
+    },
+    {
+      "stage": "identity-types",
+      "exit": 0,
+      "source_unchanged": true,
+      "command": [
+        "pnpm",
+        "exec",
+        "tsc",
+        "--noEmit",
+        "--incremental",
+        "false"
+      ],
+      "cwd": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/apps/platform/identity"
+    },
+    {
+      "stage": "shared-ui-unit",
+      "exit": 0,
+      "source_unchanged": true,
+      "command": [
+        "pnpm",
+        "test"
+      ],
+      "cwd": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/packages/typescript/ui"
+    },
+    {
+      "stage": "shared-ui-build",
+      "exit": 0,
+      "source_unchanged": true,
+      "command": [
+        "pnpm",
+        "build"
+      ],
+      "cwd": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/packages/typescript/ui"
+    },
+    {
+      "stage": "governance",
+      "exit": 0,
+      "source_unchanged": true,
+      "command": [
+        "python3",
+        "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/merchant_product_media_ios_v57_governance_capsule.py"
+      ],
+      "cwd": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy"
+    }
+  ],
+  "finished_at": "2026-11-06T20:10:14.278757+00:00"
+}

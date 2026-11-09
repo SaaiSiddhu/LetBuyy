@@ -1,0 +1,44 @@
+{
+  "at": "2026-11-04T18:57:25.805382+00:00",
+  "status": "READ_ONLY_REFINEMENT_WHILE_ORDERS13_SOURCE_FROZEN_FOR_NATIVE20",
+  "implementation_not_started": true,
+  "boundaries": "Frontend controllers/widgets, safe response admission and narrow read presentation metadata only. No API/backend/persistence/auth/money rule changes. Existing Order/Return journals, approvals, units, payloads and typed form returns preserved.",
+  "reviewed": {
+    "Detail": "All1800original lines plus wrappers/actions/form bodies/numeric helpers revisited; source unchanged.",
+    "Returns": "All543original lines and full230lineReturnService revisited; source unchanged.",
+    "routes": "AppRoutes detail initialOrder and orderId arguments; returns and feature alias retained.",
+    "server_read_only": "returns.ts list exact count/page/limit/site filtering and primary-refund projection, canonical shared return schema facade; shipping-labels provider-mode/rates fields read."
+  },
+  "confirmed_findings": [
+    "Detail initial/cached order short-circuits without any live GET, so current permission/data/freshness is not established. It needs a populated failing test before correction.",
+    "OrderService.fetchOrder currently catches current denial and returns persisted detail bytes. Classify proposed read-lifetime/freshness change before editing; keep CacheService and all commands exact.",
+    "Detail permission/record/context checks must cover load catch, forms, MFA pending-read, child route return, native share and delayed commands; mounted alone does not establish current actor/visible destination.",
+    "Detail mutation controls remain enabled while pending journal and form/approval are opening, before _isMutating is set. A separate UI operation lifetime must prevent duplicate preparation without changing command identity.",
+    "Detail refund quantity and line-edit collections need full-page editors with preserved itemID/quantity mapping and validation. Fulfillment/carrier/package workflow is complex and needs a durable editor; cancellation and completion-reference tasks fit sheets.",
+    "Original detail _orderTotal fallback is a protected calculation. Raw total/subtotals/lines need honest optional formatting; do not change its arithmetic or promote missing numeric DTO defaults to confirmed values.",
+    "Detail timeline fallback is a current state summary, not dated historical events. Preserve canonical received timeline and label fallback honestly.",
+    "Detail shipping provider-mode badge is hardcoded sandbox. Existing GET /shipping-labels/provider-mode supplies provider_mode and capabilities; use exact supported SDK/read path if available, otherwise mark not checked. No credential or carrier policy edits.",
+    "Return list currently reads persistent service rows directly and has no generation/query presentation ownership. Returned rows must match captured current store/query before presentation. Existing read API supplies exact count/page/limit, so pagination can be exposed by narrow presentation metadata without changing requests.",
+    "ReturnService is already request-context-bound for commands and completion proof; preserve all command bodies. MerchantReturn.refundAmount missing-to-zero getter must remain untouched; use toJson raw nullability for displayed amount instead.",
+    "Return creation restock defaults true in UI while service default false. Preserve both original defaults and original_payment/gift_card/manual values exactly; do not reconcile them as a design decision.",
+    "Long errors/IDs/amounts/status buttons and whole app safe areas/large text need real geometry probes before claiming runtime quality."
+  ],
+  "next_tests_planned_not_executed": [
+    "Initial populated detail must still perform a live GET and replace saved content with fresh result.",
+    "Current401/403/404 cannot be replaced by cached content; a later503 cannot resurrect an observed-denied record.",
+    "Different detail ID/store, A\u2192B\u2192A, superseded route reads and disposal cannot settle stale private presentation.",
+    "Opening a pending refund journal twice produces one preparation; original typed request/MFA/security/key ordering stays exact.",
+    "Loss/denial/owner retirement during forms/approval/commands cannot announce a stale private result or issue a subsequent command.",
+    "320dp,large text,keyboard,many line items; persistent errors and pinned primary/secondary actions reachable.",
+    "Current return page/query/count metadata compared with actual SDK/server response; no20rows=>hasMore inference.",
+    "Existing refund property/concurrency/ledger suites remain separate, with no provider or full feature certification from frontend tests."
+  ],
+  "source_to_edit_after_native_terminal": [
+    "Order detail UI",
+    "Return list/create/reference UI",
+    "Classified read-only presentation methods/metadata in their existing services only where needed",
+    "Shared shells/fields only for demonstrated shared defects"
+  ],
+  "open_copy_correction": "Orders13selection caption overstates refresh clearing retained selection. Correct after fixed-source native terminal, preserving selection behavior.",
+  "acceptance_limits": "No native20result at plan time; no Detail/Returns change or test proof yet.119programme and unique screen denominator remain open."
+}

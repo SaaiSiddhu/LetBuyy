@@ -1,613 +1,210 @@
 'use client'
-
-import { useReadRequest } from '@/lib/api/use-read-request'
-
-import React, { useState, useEffect, useCallback } from 'react'
+import { useState, useRef, useLayoutEffect, useEffect } from 'react'
 import { useParams } from 'next/navigation'
-import {
-    Badge,
-    Banner,
-    Button,
-    Card,
-    Input,
-    MaterialIcon,
-    Modal,
-    Page,
-    PageHeader,
-    Section,
-    Select,
-    Skeleton,
-    Spinner,
-    useToast,
-    type SelectOption,
-} from '@letbuyy/ui'
-import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
-import { slugifyCmsTitle as slugify } from '@letbuyy/cms-core'
-import type {
-    SmartCollection,
-    SmartCondition,
-    SmartConditionField,
-    SmartConditionOp,
-    SmartMatchType,
-    SmartCollectionPreviewResult,
-} from '@letbuyy/api-client'
+import { Page, PageHeader, Card, Section, Button, Input, Textarea, Banner, Badge, Select, Checkbox, ConfirmDialog } from '@letbuyy/ui'
+import { Plus, Trash2 } from 'lucide-react'
+import { SmartCollectionPageSchema, SmartCollectionSchema, SmartCollectionPreviewSchema,
+    CollectionMetadataCommandIntentSchema, confirmCollectionMetadataReceipt, SmartConditionFieldSchema, SmartConditionOpSchema,
+    type SmartCollection, type SmartCollectionPage, type SmartCondition, type SmartCollectionPreviewResult } from '@letbuyy/shared-types'
+import { useMerchantSecurityContext } from '@/components/security/MerchantSecurityContext'
+import { readCollectionCommand, retainCollectionCommand, clearCollectionCommand, withCollectionExecution, type SavedCollectionCommand } from '@/lib/products/collection-command-journal'
+import { collectionCommandRejection } from '@/lib/products/collection-command-recovery'
 
-// ── Vocabulary ────────────────────────────────────────────────────────────────
-
-const FIELD_OPTIONS: SelectOption[] = [
-    { label: 'Title', value: 'title' },
-    { label: 'Product type', value: 'product_type' },
-    { label: 'Vendor', value: 'vendor' },
-    { label: 'Tag', value: 'tag' },
-    { label: 'Price (₹)', value: 'price' },
-    { label: 'Inventory quantity', value: 'inventory_quantity' },
-]
-
-const OP_OPTIONS: SelectOption[] = [
-    { label: 'equals', value: 'equals' },
-    { label: 'does not equal', value: 'not_equals' },
-    { label: 'contains', value: 'contains' },
-    { label: 'starts with', value: 'starts_with' },
-    { label: 'ends with', value: 'ends_with' },
-    { label: 'is greater than', value: 'gt' },
-    { label: 'is less than', value: 'lt' },
-]
-
-const MATCH_TYPE_OPTIONS: SelectOption[] = [
-    { label: 'All conditions (AND)', value: 'all' },
-    { label: 'Any condition (OR)', value: 'any' },
-]
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-function emptyCondition(): SmartCondition {
-    return { field: 'title', op: 'contains', value: '' }
-}
-
-interface CollectionForm {
-    name: string
-    slug: string
-    description: string
-    match_type: SmartMatchType
-    conditions: SmartCondition[]
-}
-
-function emptyForm(): CollectionForm {
-    return { name: '', slug: '', description: '', match_type: 'all', conditions: [emptyCondition()] }
-}
-
-// ── Rule builder ──────────────────────────────────────────────────────────────
-
-interface RuleBuilderProps {
-    conditions: SmartCondition[]
-    matchType: SmartMatchType
-    onChange: (conditions: SmartCondition[]) => void
-    onMatchTypeChange: (mt: SmartMatchType) => void
-    disabled?: boolean
-}
-
-function RuleBuilder({ conditions, matchType, onChange, onMatchTypeChange, disabled }: RuleBuilderProps) {
-    function updateCondition(index: number, patch: Partial<SmartCondition>) {
-        onChange(conditions.map((c, i) => (i === index ? { ...c, ...patch } : c)))
-    }
-
-    function addCondition() {
-        onChange([...conditions, emptyCondition()])
-    }
-
-    function removeCondition(index: number) {
-        onChange(conditions.filter((_, i) => i !== index))
-    }
-
-    return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--lb-space-3)' }}>
-            {/* Match type toggle */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--lb-space-2)', flexWrap: 'wrap' }}>
-                <span style={{ fontSize: 'var(--lb-font-size-body)', color: 'var(--lb-color-text-secondary)' }}>
-                    Products must match
-                </span>
-                <div style={{ minWidth: '10rem' }}>
-                    <Select
-                        label="Match type"
-                        hideLabel
-                        options={MATCH_TYPE_OPTIONS}
-                        value={matchType}
-                        onChange={(e) => onMatchTypeChange(e.currentTarget.value as SmartMatchType)}
-                        disabled={disabled}
-                    />
-                </div>
-                <span style={{ fontSize: 'var(--lb-font-size-body)', color: 'var(--lb-color-text-secondary)' }}>
-                    of the following conditions:
-                </span>
-            </div>
-
-            {conditions.length === 0 && (
-                <p style={{ margin: 0, fontSize: 'var(--lb-font-size-body)', color: 'var(--lb-color-text-subdued)' }}>
-                    No conditions — all active products will be included.
-                </p>
-            )}
-
-            {/* Condition rows */}
-            {conditions.map((cond, i) => (
-                <div
-                    key={i}
-                    style={{
-                        display: 'grid',
-                        gridTemplateColumns: '1fr 1fr 1fr auto',
-                        gap: 'var(--lb-space-2)',
-                        alignItems: 'end',
-                    }}
-                >
-                    <Select
-                        label="Field"
-                        hideLabel
-                        options={FIELD_OPTIONS}
-                        value={cond.field}
-                        onChange={(e) => updateCondition(i, { field: e.currentTarget.value as SmartConditionField })}
-                        disabled={disabled}
-                    />
-                    <Select
-                        label="Operator"
-                        hideLabel
-                        options={OP_OPTIONS}
-                        value={cond.op}
-                        onChange={(e) => updateCondition(i, { op: e.currentTarget.value as SmartConditionOp })}
-                        disabled={disabled}
-                    />
-                    <Input
-                        label="Value"
-                        aria-label="Condition value"
-                        placeholder="Value"
-                        value={cond.value}
-                        onChange={(e) => updateCondition(i, { value: e.currentTarget.value })}
-                        disabled={disabled}
-                    />
-                    <Button
-                        unstyled
-                        type="button"
-                        onClick={() => removeCondition(i)}
-                        disabled={disabled}
-                        aria-label="Remove condition"
-                        style={{
-                            background: 'none',
-                            border: '1px solid var(--lb-color-border)',
-                            borderRadius: 'var(--lb-radius-md)',
-                            cursor: disabled ? 'not-allowed' : 'pointer',
-                            color: 'var(--lb-color-critical)',
-                            padding: 'var(--lb-space-2)',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            height: 'var(--lb-size-control-md)',
-                            width: 'var(--lb-size-control-md)',
-                        }}
-                    >
-                        <MaterialIcon name="delete_outline" size={18} />
-                    </Button>
-                </div>
-            ))}
-
-            <div>
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={addCondition}
-                    disabled={disabled}
-                    type="button"
-                >
-                    <MaterialIcon name="add" size={16} style={{ marginRight: 'var(--lb-space-1)' }} />
-                    Add condition
-                </Button>
-            </div>
-        </div>
-    )
-}
-
-// ── Collection form modal ─────────────────────────────────────────────────────
-
-interface CollectionModalProps {
-    open: boolean
-    onClose: () => void
-    onSaved: (collection: SmartCollection) => void
-    store: string
-    editing?: SmartCollection | null
-}
-
-function CollectionModal({ open, onClose, onSaved, store, editing }: CollectionModalProps) {
-    const [form, setForm] = useState<CollectionForm>(emptyForm())
-    const [saving, setSaving] = useState(false)
-    const [error, setError] = useState<string | null>(null)
-    const [preview, setPreview] = useState<SmartCollectionPreviewResult | null>(null)
-    const [previewing, setPreviewing] = useState(false)
-    const { notify } = useToast()
-
-    useEffect(() => {
-        if (editing) {
-            setForm({
-                name: editing.name,
-                slug: editing.slug,
-                description: editing.description ?? '',
-                match_type: editing.match_type,
-                conditions: editing.conditions?.length ? editing.conditions : [emptyCondition()],
-            })
-        } else {
-            setForm(emptyForm())
-        }
-        setError(null)
-        setPreview(null)
-    }, [editing, open])
-
-    function handleNameChange(e: React.ChangeEvent<HTMLInputElement>) {
-        const name = e.currentTarget.value
-        setForm((f) => ({
-            ...f,
-            name,
-            ...(editing ? {} : { slug: slugify(name) }),
-        }))
-    }
-
-    async function handlePreview() {
-        if (!editing) {
-            notify({ title: 'Save the collection first to preview matching products.', variant: 'info' })
-            return
-        }
-        setError(null)
-        setPreviewing(true)
-        setPreview(null)
-        try {
-            const res = await fetch(
-                `/api/stores/${encodeURIComponent(store)}/smart-collections/${editing.id}/preview`
-            )
-            if (!res.ok) throw new Error('Preview failed')
-            const json = await res.json() as { data?: SmartCollectionPreviewResult }
-            setPreview(json.data ?? null)
-        } catch {
-            setError('Unable to load preview. Please try again.')
-        } finally {
-            setPreviewing(false)
-        }
-    }
-
-    async function handleSave() {
-        setError(null)
-        if (!form.name.trim()) { setError('Name is required.'); return }
-        if (!form.slug.trim()) { setError('Slug is required.'); return }
-
-        setSaving(true)
-        try {
-            const url = editing
-                ? `/api/stores/${encodeURIComponent(store)}/smart-collections/${editing.id}`
-                : `/api/stores/${encodeURIComponent(store)}/smart-collections`
-
-            const method = editing ? 'PATCH' : 'POST'
-            const payload = {
-                name: form.name,
-                slug: form.slug,
-                description: form.description || null,
-                match_type: form.match_type,
-                conditions: form.conditions,
-            }
-
-            const res = await fetch(url, {
-                method,
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload),
-            })
-
-            if (res.status === 409) {
-                setError('A collection with this slug already exists. Please choose a different slug.')
-                return
-            }
-
-            if (!res.ok) {
-                const json = await res.json() as { error?: string }
-                throw new Error(json.error ?? 'Failed to save')
-            }
-
-            const json = await res.json() as { data: SmartCollection }
-            notify({ title: editing ? 'Collection updated.' : 'Collection created.', variant: 'success' })
-            onSaved(json.data)
-            onClose()
-        } catch (err) {
-            setError(err instanceof Error ? err.message : 'Unable to save. Please try again.')
-        } finally {
-            setSaving(false)
-        }
-    }
-
-    const footer = (
-        <div style={{ display: 'flex', gap: 'var(--lb-space-2)', justifyContent: 'flex-end' }}>
-            <Button variant="outline" onClick={onClose} disabled={saving} type="button">
-                Cancel
-            </Button>
-            <Button variant="primary" onClick={handleSave} disabled={saving} type="button">
-                {saving ? 'Saving…' : 'Save'}
-            </Button>
-        </div>
-    )
-
-    return (
-        <Modal
-            open={open}
-            onClose={onClose}
-            title={editing ? 'Edit smart collection' : 'Create smart collection'}
-            footer={footer}
-        >
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--lb-space-4)' }}>
-                {error && (
-                    <Banner variant="critical" title="Error">
-                        {error}
-                    </Banner>
-                )}
-
-                <Input
-                    label="Collection name"
-                    value={form.name}
-                    onChange={handleNameChange}
-                    placeholder="e.g. Summer Sale"
-                    disabled={saving}
-                    // eslint-disable-next-line jsx-a11y/no-autofocus
-                    autoFocus
-                />
-                <Input
-                    label="Slug"
-                    value={form.slug}
-                    onChange={(e) => setForm((f) => ({ ...f, slug: e.currentTarget.value }))}
-                    placeholder="e.g. summer-sale"
-                    helperText="Used in the storefront URL. Lowercase letters, numbers, and hyphens only."
-                    disabled={saving}
-                />
-                <Input
-                    label="Description"
-                    value={form.description}
-                    onChange={(e) => setForm((f) => ({ ...f, description: e.currentTarget.value }))}
-                    placeholder="Optional description"
-                    disabled={saving}
-                />
-
-                {/* Conditions block */}
-                <div
-                    style={{
-                        padding: 'var(--lb-space-3)',
-                        borderRadius: 'var(--lb-radius-md)',
-                        border: '1px solid var(--lb-color-border)',
-                        background: 'var(--lb-color-surface-subdued)',
-                    }}
-                >
-                    <p style={{ margin: '0 0 var(--lb-space-3) 0', fontWeight: 600, fontSize: 'var(--lb-font-size-body)' }}>
-                        Conditions
-                    </p>
-                    <RuleBuilder
-                        conditions={form.conditions}
-                        matchType={form.match_type}
-                        onChange={(conditions) => setForm((f) => ({ ...f, conditions }))}
-                        onMatchTypeChange={(mt) => setForm((f) => ({ ...f, match_type: mt }))}
-                        disabled={saving}
-                    />
-                </div>
-
-                {/* Preview (only for saved collections) */}
-                {editing && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--lb-space-2)' }}>
-                        <div>
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={handlePreview}
-                                disabled={previewing || saving}
-                                type="button"
-                            >
-                                {previewing
-                                    ? <><Spinner size="sm" />&nbsp;Loading preview…</>
-                                    : <><MaterialIcon name="visibility" size={16} style={{ marginRight: 'var(--lb-space-1)' }} />Preview saved rules</>
-                                }
-                            </Button>
-                        </div>
-
-                        {preview && (
-                            <div
-                                style={{
-                                    padding: 'var(--lb-space-3)',
-                                    borderRadius: 'var(--lb-radius-md)',
-                                    background: 'var(--lb-color-surface-subdued)',
-                                    fontSize: 'var(--lb-font-size-body)',
-                                    border: '1px solid var(--lb-color-border)',
-                                }}
-                            >
-                                Saved rules: <strong>{preview.count}</strong> product{preview.count !== 1 ? 's' : ''} match
-                                {' '}(evaluated {preview.evaluated_of} active products
-                                {preview.evaluated_of >= preview.capped_at ? `, evaluation limited to ${preview.capped_at}` : ''}).
-                                {preview.sample_product_ids.length > 0 && (
-                                    <p style={{ marginTop: 'var(--lb-space-1)', color: 'var(--lb-color-text-subdued)', fontSize: 'var(--lb-font-size-caption)' }}>
-                                        Sample IDs: {preview.sample_product_ids.slice(0, 5).join(', ')}
-                                        {preview.sample_product_ids.length > 5 && ` and ${preview.sample_product_ids.length - 5} more`}
-                                    </p>
-                                )}
-                            </div>
-                        )}
-                    </div>
-                )}
-            </div>
-        </Modal>
-    )
-}
-
-// ── Main page ─────────────────────────────────────────────────────────────────
-
+type Form = { title: string; slug: string; description: string; match_type: 'all' | 'any'; conditions: SmartCondition[]; is_active: boolean }
+const blank = (): Form => ({ title: '', slug: '', description: '', match_type: 'all', conditions: [], is_active: false })
+const toForm = (row: SmartCollection): Form => ({ title: row.name, slug: row.slug, description: row.description ?? '', match_type: row.match_type, conditions: row.conditions, is_active: row.is_active })
+const fields = { title: 'Title', product_type: 'Product type', vendor: 'Vendor', tag: 'Tag', price: 'Price (₹)', inventory_quantity: 'Inventory quantity' }
+const ops = { equals: 'equals', not_equals: 'does not equal', contains: 'contains', starts_with: 'starts with', ends_with: 'ends with', gt: 'is greater than', lt: 'is less than' }
+const options = (values: Record<string, string>) => Object.entries(values).map(([value, label]) => ({ value, label }))
 export default function SmartCollectionsPage() {
-    const params = useParams<{ store: string }>()
-    const store = params.store ?? ''
-
-    const [collections, setCollections] = useState<SmartCollection[]>([])
-    const [loading, setLoading] = useState(true)
-    const [loadError, setLoadError] = useState<string | null>(null)
-    const [modalOpen, setModalOpen] = useState(false)
-    const [editing, setEditing] = useState<SmartCollection | null>(null)
-
-    const beginLoad = useReadRequest(store)
-    const load = useCallback(async () => {
-        const request = beginLoad()
-        setLoading(true)
-        setLoadError(null)
-        try {
-            const res = await fetch(`/api/stores/${encodeURIComponent(store)}/smart-collections`, { cache: 'no-store', signal: request.signal })
-            if (!request.isCurrent()) return
-            if (!res.ok) throw new Error('Failed to load')
-            const json = await res.json() as { data: SmartCollection[] }
-            if (!request.isCurrent()) return
-            setCollections(json.data ?? [])
-        } catch {
-            if (!request.isCurrent()) return
-            setLoadError('Unable to load smart collections. Please refresh the page.')
-        } finally {
-            if (request.isCurrent()) setLoading(false)
+    const { store } = useParams<{ store: string }>(), scope = useMerchantSecurityContext(store)
+    if (!scope.siteId) return <Page><Banner variant="critical">Reload the selected store before opening collections.</Banner></Page>
+    return <Workspace key={`${scope.actorId}:${scope.siteId}`} store={store} actorId={scope.actorId} siteId={scope.siteId} />
+}
+function Workspace({ store, actorId, siteId }: { store: string; actorId: string; siteId: string }) {
+    const [page, setPage] = useState<SmartCollectionPage | null>(null), [number, setNumber] = useState(1), [search, setSearch] = useState('')
+    const [busy, setBusy] = useState(false), [error, setError] = useState<string | null>(null), [notice, setNotice] = useState<string | null>(null), [denied, setDenied] = useState(false)
+    const [pending, setPending] = useState<SavedCollectionCommand | null>(null), [reviewable, setReviewable] = useState(false)
+    const [editing, setEditing] = useState<SmartCollection | null>(null), [form, setForm] = useState<Form | null>(null), [discard, setDiscard] = useState(false), [removing, setRemoving] = useState(false)
+    const [preview, setPreview] = useState<SmartCollectionPreviewResult | null>(null)
+    const [missing, setMissing] = useState(false), [discardMissing, setDiscardMissing] = useState(false)
+    const noticeRegion = useRef<HTMLDivElement | null>(null)
+    const alive = useRef(false), active = useRef(true), flight = useRef(false), controller = useRef<AbortController | null>(null), epoch = useRef(0)
+    useLayoutEffect(() => { alive.current = true; return () => { alive.current = false; controller.current?.abort() } }, [])
+    useEffect(() => { if (!busy && (pending || error)) noticeRegion.current?.focus() }, [busy, pending, error])
+    const dirty = form !== null && JSON.stringify(form) !== JSON.stringify(editing ? toForm(editing) : blank())
+    useEffect(() => {
+        if (!dirty || pending) return
+        const prevent = (event: BeforeUnloadEvent) => { event.preventDefault(); event.returnValue = '' }
+        window.addEventListener('beforeunload', prevent); return () => window.removeEventListener('beforeunload', prevent)
+    }, [dirty, pending])
+    function check() { if (!alive.current || !active.current) throw new Error('Account or store access changed. Reload this store.') }
+    function dependencies() {
+        if (!navigator.locks) throw new Error('This browser cannot safely retain collection requests. Use a browser with secure request locking.')
+        return { storage: window.localStorage, locks: navigator.locks }
+    }
+    async function request(path: string, method = 'GET', body?: unknown, key?: string) {
+        check(); const captured = controller.current!, generation = epoch.current
+        const response = await fetch(`/api/stores/${encodeURIComponent(store)}/smart-collections${path}`, { method, cache: 'no-store',
+            signal: AbortSignal.any([captured.signal, AbortSignal.timeout(20000)]), headers: { 'X-LetBuyy-Merchant-Context': actorId,
+                ...(body ? { 'Content-Type': 'application/json' } : {}), ...(key ? { 'X-Idempotency-Key': key } : {}) }, ...(body ? { body: JSON.stringify(body) } : {}) })
+        const value = await response.json().catch(() => null); check()
+        if (response.status === 401 || response.status === 403 || response.status === 409 && value?.error?.code === 'SESSION_CONTEXT_CHANGED') {
+            epoch.current++; active.current = false; setDenied(true); setPage(null); setEditing(null); setForm(null); setPreview(null)
+            throw new Error('Store access changed. Reload this store.')
         }
-    }, [beginLoad, store])
-
-    useEffect(() => { void load() }, [load])
-
-    function openCreate() {
-        setEditing(null)
-        setModalOpen(true)
+        if (controller.current !== captured || captured.signal.aborted || generation !== epoch.current) throw new Error('A newer access check superseded this request.')
+        if (!response.ok) throw Object.assign(new Error(value?.error?.message || 'The collection outcome could not be confirmed.'), { status: response.status, code: value?.error?.code })
+        return value
     }
-
-    function openEdit(collection: SmartCollection) {
-        setEditing(collection)
-        setModalOpen(true)
+    async function run(work: () => Promise<void>) {
+        if (flight.current || !alive.current || !active.current) return
+        flight.current = true; controller.current?.abort(); controller.current = new AbortController(); setBusy(true); setError(null); setNotice(null)
+        try { await work() } catch (e) { if (alive.current) setError(e instanceof Error && e.name !== 'ZodError' ? e.message : 'The collection response could not be confirmed. Keep the original request.') }
+        finally { flight.current = false; if (alive.current) setBusy(false) }
     }
-
-    function handleSaved(collection: SmartCollection) {
-        setCollections((prev) => {
-            const idx = prev.findIndex((c) => c.id === collection.id)
-            return idx >= 0
-                ? prev.map((c, i) => (i === idx ? collection : c))
-                : [collection, ...prev]
+    async function load(n = number, term = search) {
+        const value = SmartCollectionPageSchema.parse(await request(`?page=${n}&limit=20&search=${encodeURIComponent(term)}`))
+        if (value.meta.store_id !== siteId || value.meta.page !== n || value.meta.per_page !== 20) throw new Error('Collection page scope changed.')
+        check(); setPage(value); setNumber(n)
+    }
+    async function refresh() { await run(async () => {
+        const { storage, locks } = dependencies(); setPending(await readCollectionCommand({ actorId, siteId }, storage, locks, check)); setReviewable(false); setMissing(false); await load()
+    }) }
+    useEffect(() => { let retired = false; queueMicrotask(() => { if (!retired) void refresh() }); return () => { retired = true } }, []) // One keyed actor/store lifetime.
+    async function fresh(id: string) {
+        const value = SmartCollectionSchema.parse((await request(`/${encodeURIComponent(id)}`)).data)
+        if (value.id !== id || value.store_id !== siteId) throw new Error('Collection detail scope changed.')
+        return value
+    }
+    async function open(row?: SmartCollection) { await run(async () => {
+        if (pending) throw new Error('Recover the original collection request first.')
+        const current = row ? await fresh(row.id) : null; setEditing(current); setForm(current ? toForm(current) : blank()); setPreview(null)
+    }) }
+    async function send(allowMissingDiscard = false) {
+        const { storage, locks } = dependencies()
+        await withCollectionExecution({ actorId, siteId }, locks, check, async () => {
+            const saved = await readCollectionCommand({ actorId, siteId }, storage, locks, check)
+            if (!saved) { setPending(null); return }
+            setPending(saved); setReviewable(false); setMissing(false)
+            if (saved.intent.command.collection_type !== 'smart') throw new Error('A manual collection request is retained. Recover it in Collections.')
+            const intent = saved.intent, id = intent.collection_id
+            let value: unknown
+            try { value = await request(id ? `/${encodeURIComponent(id)}` : '', intent.operation === 'create' ? 'POST' : intent.operation === 'update' ? 'PATCH' : 'DELETE', intent.command, intent.command.idempotency_key) }
+            catch (e) {
+                const outcome = collectionCommandRejection(intent, e)
+                if (outcome === 'missing' && allowMissingDiscard) {
+                    await clearCollectionCommand(saved, storage, locks, check)
+                    setPending(null); setEditing(null); setForm(null); setPreview(null)
+                    setNotice('Rejected request discarded. The collection remains deleted.'); return
+                }
+                setReviewable(outcome === 'review'); setMissing(outcome === 'missing')
+                throw e
+            }
+            confirmCollectionMetadataReceipt(intent, (value as { data?: unknown })?.data, actorId)
+            await clearCollectionCommand(saved, storage, locks, check); setPending(null); setReviewable(false); setEditing(null); setForm(null); setPreview(null)
+            setNotice(intent.operation === 'delete' ? 'Collection deleted.' : 'Collection saved.')
         })
+        await load()
     }
-
-    return (
-        <Page>
-            <PageHeader identity="products"
-                recipe="index"
-                title="Smart collections"
-                description="Collections that automatically include products matching your rules."
-                breadcrumbs={[
-                    { label: 'Products', href: `/${store}/products` },
-                    { label: 'Smart collections' },
-                ]}
-                showBreadcrumbs
-                primaryAction={{
-                    label: 'Create collection',
-                    icon: <MaterialIcon name="add" size={16} />,
-                    onClick: openCreate,
-                    disabled: loading,
-                }}
-            />
-
-            {loadError && (
-                <Banner variant="critical" title="Failed to load">
-                    {loadError}
-                </Banner>
-            )}
-
-            <Card>
-                <Section
-                    title="Collections"
-                    description="Rules evaluate against your active products when you use the Preview button."
-                >
-                    {loading ? (
-                        <Skeleton variant="table" lines={4} />
-                    ) : collections.length === 0 ? (
-                        <EmptyState scene="smart-collections"
-                            kind="collections"
-                            title="No smart collections yet"
-                            body="Smart collections automatically include products that match the conditions you define — no manual curation needed."
-                            primaryAction={
-                                <Button variant="primary" onClick={openCreate} type="button">
-                                    Create collection
-                                </Button>
-                            }
-                        />
-                    ) : (
-                        <div role="table" aria-label="Smart collections" style={{ width: '100%' }}>
-                            {/* Header */}
-                            <div
-                                role="row"
-                                style={{
-                                    display: 'grid',
-                                    gridTemplateColumns: '2fr 1fr 1fr auto',
-                                    gap: 'var(--lb-space-3)',
-                                    padding: 'var(--lb-space-2) var(--lb-space-3)',
-                                    borderBottom: '1px solid var(--lb-color-border)',
-                                    fontSize: 'var(--lb-font-size-caption)',
-                                    fontWeight: 600,
-                                    color: 'var(--lb-color-text-subdued)',
-                                    textTransform: 'uppercase' as const,
-                                    letterSpacing: '0.05em',
-                                }}
-                            >
-                                <span role="columnheader">Collection</span>
-                                <span role="columnheader">Match type</span>
-                                <span role="columnheader">Rules</span>
-                                <span role="columnheader" />
-                            </div>
-
-                            {/* Rows */}
-                            {collections.map((collection) => (
-                                <div
-                                    key={collection.id}
-                                    role="row"
-                                    style={{
-                                        display: 'grid',
-                                        gridTemplateColumns: '2fr 1fr 1fr auto',
-                                        gap: 'var(--lb-space-3)',
-                                        padding: 'var(--lb-space-3)',
-                                        borderBottom: '1px solid var(--lb-color-border)',
-                                        alignItems: 'center',
-                                    }}
-                                >
-                                    <div role="cell">
-                                        <p style={{ margin: 0, fontWeight: 500, fontSize: 'var(--lb-font-size-body)' }}>
-                                            {collection.name}
-                                        </p>
-                                        <p style={{ margin: 0, fontSize: 'var(--lb-font-size-caption)', color: 'var(--lb-color-text-subdued)' }}>
-                                            /{collection.slug}
-                                        </p>
-                                    </div>
-                                    <div role="cell">
-                                        <Badge
-                                            label={collection.match_type === 'all' ? 'All (AND)' : 'Any (OR)'}
-                                            variant={collection.match_type === 'all' ? 'info' : 'default'}
-                                        />
-                                    </div>
-                                    <div role="cell" style={{ fontSize: 'var(--lb-font-size-body)', color: 'var(--lb-color-text-subdued)' }}>
-                                        {(collection.conditions ?? []).length} rule{(collection.conditions ?? []).length !== 1 ? 's' : ''}
-                                    </div>
-                                    <div role="cell">
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={() => openEdit(collection)}
-                                            type="button"
-                                        >
-                                            <MaterialIcon name="edit" size={16} style={{ marginRight: 'var(--lb-space-1)' }} />
-                                            Edit
-                                        </Button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </Section>
-            </Card>
-
-            <CollectionModal
-                open={modalOpen}
-                onClose={() => setModalOpen(false)}
-                onSaved={handleSaved}
-                store={store}
-                editing={editing}
-            />
-        </Page>
-    )
+    async function save(remove = false) { await run(async () => {
+        if (!form || pending) return
+        const intent = CollectionMetadataCommandIntentSchema.parse({ operation: remove ? 'delete' : editing ? 'update' : 'create', collection_id: editing?.id ?? null,
+            command: { store_id: siteId, idempotency_key: crypto.randomUUID(), collection_type: 'smart', ...(editing ? { version: editing.version } : {}),
+                ...(remove ? {} : { ...form, title: form.title.trim(), slug: form.slug.trim(), description: form.description || null }) } })
+        const { storage, locks } = dependencies(); setPending(await retainCollectionCommand({ actorId, siteId }, intent, storage, locks, check)); setRemoving(false); await send()
+    }) }
+    async function review() { await run(async () => {
+        if (!reviewable || !pending) return
+        const { storage, locks } = dependencies()
+        await withCollectionExecution({ actorId, siteId }, locks, check, async () => {
+            const saved = await readCollectionCommand({ actorId, siteId }, storage, locks, check)
+            if (!saved || JSON.stringify(saved) !== JSON.stringify(pending)) throw new Error('The saved request changed. Reload collections.')
+            const current = saved.intent.collection_id ? await fresh(saved.intent.collection_id) : null
+            // A definite command rejection is required before this action can release its key.
+            await clearCollectionCommand(saved, storage, locks, check); setPending(null); setReviewable(false); setEditing(current); setPreview(null)
+            // Keep the user's existing draft. Only the observed base revision advances.
+            if (!form) {
+                const base = current ? toForm(current) : blank(), fields = saved.intent.command
+                setForm({ ...base,
+                    ...('title' in fields && fields.title !== undefined ? { title: fields.title } : {}),
+                    ...('slug' in fields && fields.slug != null ? { slug: fields.slug } : {}),
+                    ...('description' in fields && fields.description !== undefined ? { description: fields.description ?? '' } : {}),
+                    ...('conditions' in fields && fields.conditions !== undefined ? { conditions: fields.conditions } : {}),
+                    ...('match_type' in fields && fields.match_type !== undefined ? { match_type: fields.match_type } : {}),
+                    ...('is_active' in fields && fields.is_active !== undefined ? { is_active: fields.is_active } : {}),
+                })
+            }
+            setNotice('Current version loaded. Review your kept edits before starting a new save.')
+        })
+    }) }
+    async function showPreview() { await run(async () => {
+        if (!editing || pending) return
+        setPreview(null)
+        const result = SmartCollectionPreviewSchema.parse((await request(`/${editing.id}/preview`)).data)
+        if (result.store_id !== siteId || result.collection_id !== editing.id || result.collection_version !== editing.version) throw new Error('The collection changed. Reload its current version before previewing.')
+        setPreview(result)
+    }) }
+    const disabled = busy || denied || pending !== null
+    function condition(index: number, change: Partial<SmartCondition>) { setForm(old => old && ({ ...old, conditions: old.conditions.map((c, i) => i === index ? { ...c, ...change } : c) })) }
+    return <Page>
+        <PageHeader identity="products" recipe="index" title="Smart collections" description="Include active products automatically using saved rules."
+            breadcrumbs={[{ label: 'Products', href: `/${store}/products` }, { label: 'Collections', href: `/${store}/products/collections` }, { label: 'Smart collections' }]} showBreadcrumbs
+            primaryAction={{ label: 'Create collection', onClick: () => void open(), disabled: disabled || form !== null || page === null }} />
+        <div ref={noticeRegion} tabIndex={-1}>
+        {error && <Banner variant="critical" title={denied ? 'Store access changed' : 'Collection unavailable'}>{error}</Banner>}
+        {notice && <Banner variant="success">{notice}</Banner>}
+        {pending && !denied && <Banner variant="warning" title="Original collection request needs confirmation">
+            <p className="m-0">Your original details and save key are retained in this browser. Retry to confirm its outcome.</p>
+            <div className="mt-[var(--lb-space-2)] flex flex-wrap gap-[var(--lb-space-3)]">
+                <Button disabled={busy} onClick={() => void run(send)}>Retry original collection save</Button>
+                {reviewable && <Button disabled={busy} onClick={() => void review()}>Review current version and kept edits</Button>}
+                {missing && <Button disabled={busy} onClick={() => setDiscardMissing(true)}>Discard rejected collection request</Button>}
+            </div>
+        </Banner>}
+        </div>
+        {!denied && <Card><Section title="Collections" description="Saved published rules also determine the storefront collection's products.">
+            <div className="flex flex-wrap items-end gap-[var(--lb-space-2)]">
+                <Input label="Search collections" value={search} maxLength={200} disabled={disabled || form !== null} onChange={e => setSearch(e.currentTarget.value)} />
+                <Button disabled={disabled || form !== null} onClick={() => void run(() => load(1))}>Search</Button>
+                <Button disabled={busy || form !== null} onClick={() => void refresh()}>Reload collections</Button>
+            </div>
+            {page ? <><p>{page.meta.total} matching collections · Page {page.meta.page}</p>
+                {page.data.length === 0 && <p>{page.meta.total ? 'No collections on this page.' : 'No matching smart collections.'}</p>}
+                {page.data.map(row => <div key={row.id} className="flex flex-wrap items-center justify-between gap-[var(--lb-space-3)] border-b border-[var(--lb-color-border)] py-[var(--lb-space-3)]">
+                    <div><strong>{row.name}</strong><p>/{row.slug} · {row.conditions.length} rules · {row.match_type === 'all' ? 'All conditions' : 'Any condition'}</p>
+                        <Badge label={row.is_active ? 'Published' : 'Unpublished'} variant={row.is_active ? 'success' : 'default'} />
+                        <span> · {row.created_at ? new Date(row.created_at).toLocaleDateString() : 'Creation date unavailable'}</span></div>
+                    <Button disabled={disabled || form !== null} onClick={() => void open(row)}>Edit {row.name}</Button>
+                </div>)}
+                <div className="flex gap-[var(--lb-space-2)]"><Button disabled={disabled || form !== null || !page.meta.has_prev} onClick={() => void run(() => load(number - 1))}>Previous collections</Button>
+                    <Button disabled={disabled || form !== null || !page.meta.has_next} onClick={() => void run(() => load(number + 1))}>Next collections</Button></div>
+            </> : <p role="status">{busy ? 'Loading collections…' : 'Collection rows and counts are unavailable. Reload to retry.'}</p>}
+        </Section></Card>}
+        {form && !denied && <Card><Section title={editing ? 'Edit smart collection' : 'Create smart collection'}>
+            <Input label="Collection name" maxLength={200} value={form.title} disabled={disabled} onChange={e => setForm({ ...form, title: e.currentTarget.value })} />
+            <Input label="Slug" maxLength={160} value={form.slug} disabled={disabled} onChange={e => setForm({ ...form, slug: e.currentTarget.value })} helperText="Lowercase letters, numbers and hyphens." />
+            <Textarea label="Description" maxLength={2000} value={form.description} disabled={disabled} onChange={e => setForm({ ...form, description: e.currentTarget.value })} />
+            <Checkbox label="Published on storefront" checked={form.is_active} disabled={disabled} onChange={event => setForm({ ...form, is_active: event.currentTarget.checked })} />
+            <Select label="Match type" options={[{ value: 'all', label: 'All conditions' }, { value: 'any', label: 'Any condition' }]} value={form.match_type} disabled={disabled} onChange={e => setForm({ ...form, match_type: e.currentTarget.value as 'all' | 'any' })} />
+            {form.conditions.length === 0 && <p>No conditions: all active products are included.</p>}
+            {form.conditions.map((c, i) => <div key={i} className="flex flex-wrap items-end gap-[var(--lb-space-2)]">
+                <Select label={`Rule ${i + 1} field`} options={options(fields)} value={c.field} disabled={disabled} onChange={e => condition(i, { field: SmartConditionFieldSchema.parse(e.currentTarget.value) })} />
+                <Select label={`Rule ${i + 1} operator`} options={options(ops)} value={c.op} disabled={disabled} onChange={e => condition(i, { op: SmartConditionOpSchema.parse(e.currentTarget.value) })} />
+                <Input label={`Rule ${i + 1} value`} maxLength={2000} value={c.value} disabled={disabled} onChange={e => condition(i, { value: e.currentTarget.value })} />
+                <Button aria-label={`Remove rule ${i + 1}`} disabled={disabled} onClick={() => setForm({ ...form, conditions: form.conditions.filter((_, n) => n !== i) })}><Trash2 size={16} /></Button>
+            </div>)}
+            <Button disabled={disabled || form.conditions.length >= 50} onClick={() => setForm({ ...form, conditions: [...form.conditions, { field: 'title', op: 'contains', value: '' }] })}><Plus size={16} /> Add condition</Button>
+            {editing && <Button disabled={disabled} onClick={() => void showPreview()}>Preview saved rules</Button>}
+            {preview && <p role="status">{preview.count_is_exact ? `${preview.count} matching products` : `At least ${preview.count} matches in the evaluated sample; total matches are unknown`}. Evaluated {preview.evaluated_of} of {preview.catalog_count} active products. Preview uses saved rules.</p>}
+            <div className="flex flex-wrap gap-[var(--lb-space-2)]">
+                <Button disabled={disabled || !dirty} onClick={() => void save()}>Save collection</Button>
+                <Button disabled={busy || pending !== null} onClick={() => dirty ? setDiscard(true) : (setForm(null), setEditing(null), setPreview(null))}>Close editor</Button>
+                {editing && <Button disabled={disabled} onClick={() => setRemoving(true)}>Delete collection</Button>}
+            </div>
+        </Section></Card>}
+        <ConfirmDialog open={discard} title="Discard unsaved collection edits?" description="The saved collection remains unchanged." confirmLabel="Discard edits" onConfirm={() => { setDiscard(false); setForm(null); setEditing(null); setPreview(null) }} onClose={() => setDiscard(false)} />
+        <ConfirmDialog open={removing} title="Delete collection?" description="Products remain in your catalog." confirmLabel="Delete collection" onConfirm={() => void save(true)} onClose={() => setRemoving(false)} />
+        <ConfirmDialog open={discardMissing} title="Discard rejected collection request?" description="The collection was removed. We will check the original request again before discarding its kept edits." confirmLabel="Discard request" onClose={() => setDiscardMissing(false)} onConfirm={() => { setDiscardMissing(false); void run(() => send(true)) }} />
+    </Page>
 }

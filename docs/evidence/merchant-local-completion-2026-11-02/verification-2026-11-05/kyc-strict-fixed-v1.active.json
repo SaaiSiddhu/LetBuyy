@@ -1,0 +1,16 @@
+{
+  "started_at": "2026-11-06T14:32:14.184359+00:00",
+  "supervisor_pid": 16106,
+  "source": "merchant-kyc-strict-source-v29",
+  "source_sha256": "946c557e02c19d0859be168923e1129563a82cad49bfb2679e365de73af51d65",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "test/kyc_public_validation_test.dart",
+    "--reporter",
+    "expanded"
+  ],
+  "status": "RUNNING",
+  "child_pid": 16268
+}

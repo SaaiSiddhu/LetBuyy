@@ -1,0 +1,17 @@
+{
+  "root": "/private/tmp/letbuyy-merchant-build-v98-fik6wsi8",
+  "source": "merchant-creation-retirement-source-v98",
+  "configurations": {
+    "android": {
+      "path": "/private/tmp/letbuyy-merchant-build-v98-fik6wsi8/android-dart-defines.json",
+      "sha256": "412cabaadede4719a6d8c589043a37df789513b5e994aa3d28fc88181321a678",
+      "basis": "Existing task-owned synthetic loopback configuration; compilation makes no BFF request"
+    },
+    "ios": {
+      "path": "/private/tmp/letbuyy-merchant-build-v98-fik6wsi8/ios-dart-defines.json",
+      "sha256": "a958f36114ebbbd9186db5c50f0009f0fc2041df83e4efbeb8787681dcd8b850",
+      "basis": "Existing task-owned synthetic loopback configuration; compilation makes no BFF request"
+    }
+  },
+  "scope": "Compile only; no install/device/start/login or hosted/provider/release"
+}

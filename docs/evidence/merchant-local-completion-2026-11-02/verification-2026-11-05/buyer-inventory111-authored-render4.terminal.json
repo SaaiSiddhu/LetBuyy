@@ -1,0 +1,16 @@
+{
+  "command": [
+    "node",
+    "--import",
+    "tsx",
+    "--test",
+    "docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/buyer-inventory111-authored-theme-render-probe4.test.ts"
+  ],
+  "env": {
+    "TSX_TSCONFIG_PATH": "apps/commerce/web/tsconfig.json"
+  },
+  "exit_code": 1,
+  "source": "merchant-buyer-inventory-source-v111",
+  "retry_reason": "Probe3 omitted canonical section_products:2.1collection uses section.products. Provide actual current input rather than falsely passing an empty collection. Same assertions/source.",
+  "at": "2026-11-08T10:29:58.232898+00:00"
+}

@@ -1,0 +1,19 @@
+{
+  "started_at": "2026-11-07T10:06:44.554538+00:00",
+  "supervisor_pid": 3431,
+  "source": "merchant-webm-ios-source-v86",
+  "source_sha256": "72eea74898f1efecbb91bd868e286deeeefc42324ff59b6733f288262185cc8e",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "--reporter",
+    "expanded"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 3439,
+  "exit_code": 0,
+  "finished_at": "2026-11-07T10:07:31.950901+00:00",
+  "source_unchanged": true,
+  "source_readback_sha256": "72eea74898f1efecbb91bd868e286deeeefc42324ff59b6733f288262185cc8e"
+}

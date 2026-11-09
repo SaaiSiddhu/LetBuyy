@@ -1,0 +1,1256 @@
+{
+  "kind": "BOUNDED_LOCAL_PROGRESS_NOT_FEATURE_OR_RELEASE_ACCEPTANCE",
+  "updatedAt": "2026-11-04T04:10:24.223885+00:00",
+  "authorization": "LOCAL_ONLY; human approved shipment commitment through existing canonical reservation owner",
+  "fullFeatureAccepted": false,
+  "current436DeviceJourneyAccepted": true,
+  "currentCompiledArtifactAccepted": true,
+  "sourceCandidate": {
+    "database/supabase/migrations/436_canonical_transfer_reservations.sql": "f58f9802793d26cf4d6141a0f569433faa90cf7eaa0f0367ab00e34b96753ccd",
+    "database/supabase/rollback/436_canonical_transfer_reservations.rollback.sql": "bd2abc75637d283a1acd56f3f41749145708e2ddcb16f070987873c4b5785e47"
+  },
+  "database": [
+    {
+      "result": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/inventory436-lifecycle-v3.json",
+      "runId": "3d256f3acb46",
+      "pass": 4,
+      "fail": 0,
+      "skip": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "name": "merchant-transfer-ship-commit.postgres",
+          "pass": 4,
+          "fail": 0
+        }
+      ]
+    },
+    {
+      "result": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/inventory436-projections-v1.json",
+      "runId": "6081e7bb2558",
+      "pass": 18,
+      "fail": 0,
+      "skip": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "name": "merchant-transfer-cart-reservation.postgres",
+          "pass": 6,
+          "fail": 0
+        },
+        {
+          "name": "merchant-transfer-retained-cutover.postgres",
+          "pass": 4,
+          "fail": 0
+        },
+        {
+          "name": "merchant-transfer-ship-commit.postgres",
+          "pass": 8,
+          "fail": 0
+        }
+      ]
+    },
+    {
+      "result": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/inventory436-fences-regression-v1.json",
+      "runId": "bc2c2d8a050e",
+      "pass": 64,
+      "fail": 18,
+      "skip": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "name": "inventory-adjustment-audit.postgres",
+          "pass": 0,
+          "fail": 16
+        },
+        {
+          "name": "inventory-reservation-lifecycle",
+          "pass": 1,
+          "fail": 0
+        },
+        {
+          "name": "merchant-transfer-cart-reservation.postgres",
+          "pass": 6,
+          "fail": 0
+        },
+        {
+          "name": "merchant-transfer-retained-cutover.postgres",
+          "pass": 5,
+          "fail": 0
+        },
+        {
+          "name": "merchant-transfer-ship-commit.postgres",
+          "pass": 8,
+          "fail": 0
+        },
+        {
+          "name": "merchant-warehouse-command-recovery.postgres",
+          "pass": 44,
+          "fail": 2
+        }
+      ]
+    },
+    {
+      "result": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/inventory436-original-managed-v3.json",
+      "runId": "e141e4e12d44",
+      "pass": 65,
+      "fail": 2,
+      "skip": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "name": "inventory-adjustment-audit.postgres",
+          "pass": 16,
+          "fail": 0
+        },
+        {
+          "name": "merchant-warehouse-command-recovery.postgres",
+          "pass": 46,
+          "fail": 0
+        },
+        {
+          "name": "merchant-transfer-managed-admission.postgres",
+          "pass": 3,
+          "fail": 2
+        }
+      ]
+    },
+    {
+      "result": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/inventory436-managed-v4.json",
+      "runId": "fd66580386e9",
+      "pass": 5,
+      "fail": 0,
+      "skip": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "name": "merchant-transfer-managed-admission.postgres",
+          "pass": 5,
+          "fail": 0
+        }
+      ]
+    },
+    {
+      "result": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/inventory436-product-atomic-v3.json",
+      "runId": "b9ac481878e9",
+      "pass": 90,
+      "fail": 0,
+      "skip": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "scope": "Actual346 SQL-only catalog/native-lock/prepared controls; untouched current436 Gateway product edits, stock and receipt replay"
+    }
+  ],
+  "sourceAndMountedChecks": [
+    {
+      "scope": "Gateway unit lane",
+      "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/inventory436-gateway-unit-v1.log",
+      "exit": 0,
+      "pass": 2087,
+      "fail": 0,
+      "skip": 0
+    },
+    {
+      "scope": "Mounted Merchant web lifecycle/SDK unit tests",
+      "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/inventory436-web-lifetime-v1.log",
+      "exit": 0,
+      "pass": 165,
+      "fail": 0,
+      "skip": 0
+    },
+    {
+      "scope": "Focused native inventory workspace/readback/recovery",
+      "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/inventory436-native-inventory-v2.log",
+      "exit": 0,
+      "pass": 107,
+      "fail": 0,
+      "skip": 0
+    },
+    {
+      "scope": "Shared Dart reservation lifetime contracts",
+      "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/inventory436-dart-model-lifetime-v2.log",
+      "exit": 0,
+      "pass": 20,
+      "fail": 0,
+      "skip": 0
+    },
+    {
+      "scope": "Full Merchant Flutter suite; before artifact source capture",
+      "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/inventory436-flutter-full-v1.log",
+      "exit": 0,
+      "pass": 925,
+      "fail": 0,
+      "skip": 0
+    },
+    {
+      "scope": "Full shared Dart model suite",
+      "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/inventory436-models-full-v1.log",
+      "exit": 0,
+      "pass": 129,
+      "fail": 0,
+      "skip": 0
+    },
+    {
+      "scope": "Owned test-lane controls including historical356",
+      "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/inventory436-lane-v3.log",
+      "exit": 0,
+      "pass": 15,
+      "fail": 0,
+      "skip": 0
+    }
+  ],
+  "pending": [
+    "Owned positive reproduction of the active bulk-adjust direct caller; no GUC exemption",
+    "Repair observed shared error-toast contrast and inspect success feedback with composed checks",
+    "Native staff/multistore/variants, remaining stock/history/operations/buyer permutations",
+    "Continue every original119evidence-backed disposition;120/121excluded,122paused,51frozen"
+  ],
+  "failuresPreserved": [
+    {
+      "result": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/inventory436-retention-v1.json",
+      "runId": "a2d4706f8243",
+      "pass": 0,
+      "fail": 4,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    {
+      "result": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/inventory436-retention-v2.json",
+      "runId": "5d5b526c3cac",
+      "pass": 3,
+      "fail": 1,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    {
+      "result": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/inventory436-retention-v3.json",
+      "runId": "c8910bcd6e2f",
+      "pass": 3,
+      "fail": 1,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    {
+      "result": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/inventory436-retention-v4.json",
+      "runId": "69608e60fed4",
+      "pass": 3,
+      "fail": 1,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    {
+      "result": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/inventory436-expanded-negative-v1.json",
+      "runId": "a6e93e3353e9",
+      "pass": 4,
+      "fail": 4,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    {
+      "result": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/inventory436-expanded-negative-v2.json",
+      "runId": "5436d2d8e2e7",
+      "pass": 10,
+      "fail": 2,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    }
+  ],
+  "governance": {
+    "result": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/governance-category-capsule-v16.gate.json",
+    "counts": {
+      "PASS": 114,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "SKIP": 0,
+      "NOT_APPLICABLE": 1
+    },
+    "ok": true,
+    "advisories": 211,
+    "scope": "Exact current source in disposable clone; unrelated integration refs absent; no hosted/release acceptance"
+  },
+  "active": null,
+  "interruptedDeviceAttempt": {
+    "version": "v12",
+    "runnerExit": 130,
+    "uiExit": 1,
+    "reason": "Launch named the old v11UIcompanion; not an application qualification. No device acceptance.",
+    "ownerPid": 9242,
+    "ownedResourcesVerifiedEmpty": true,
+    "diagnostic": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v12-wrong-controller-attention.json"
+  },
+  "deviceAttemptV13": {
+    "status": "TERMINAL_FAILED_NOT_ACCEPTED",
+    "runId": "17aa33960971",
+    "pass": 0,
+    "fail": 1,
+    "skip": 0,
+    "reason": "Task-emulator stale v12 reverse mapping refused by --no-rebind; no authenticated v13 journey",
+    "ownedDatabaseCleanupEmpty": true,
+    "reverseCleanup": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-v12-scoped-reverse-cleanup.json"
+  },
+  "activeDeviceAttempt": null,
+  "deviceAttemptV14": {
+    "status": "TERMINAL_FAILED_NOT_ACCEPTED",
+    "runId": "0b8c4a0060cc",
+    "pass": 0,
+    "fail": 1,
+    "skip": 0,
+    "reason": "Normal sign-in UI companion failed before authentication; stale Chrome forward caused its uniqueness guard to refuse. Current v15 admits only one forward absent from the pre-run baseline.",
+    "cleanup": {
+      "at": "2026-11-03T19:16:47.065076+00:00",
+      "serial": "emulator-5580",
+      "adb_port": 15038,
+      "runner_exit": 1,
+      "controller_exit": 1,
+      "baseline": [],
+      "before": [],
+      "removed": [],
+      "refused": [],
+      "after": [],
+      "scope": "Only current-run exact reverse tuples on task emulator. Host9002 never accessed."
+    }
+  },
+  "deviceAttemptV15": {
+    "status": "TERMINAL_FAILED_NOT_ACCEPTED",
+    "runId": "efe3d1167a9f",
+    "pass": 0,
+    "fail": 1,
+    "skip": 0,
+    "reason": "Task app retained unfinished synthetic sign-in from failed prior fixture; controller expected fresh Log in, but actual normal recovery surface showed Cancel and return. No auth UI recovery was attempted.",
+    "ownedDatabaseCleanupEmpty": true,
+    "mappingCleanup": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-v15-launcher-cleanup.json"
+  },
+  "visualFinding": {
+    "status": "ACTUAL_UPDATED_ANDROID_RECOVERY_BANNER_VISUALLY_VERIFIED_V21",
+    "evidence": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v16/native-location-original-pending.png",
+    "observation": "Recovery titleSmall inherits a dark foreground on dark card; heading is not clearly readable.",
+    "sourceTrace": "WarehouseCommandRecovery uses StoreTheme titleSmall. StoreTheme.dark starts from uncolored GoogleFonts.interTextTheme and explicitly overrides only selected text slots; titleSmall remains the light default.",
+    "next": "Complete dark text baseline using existing canonical on-surface token; verify actual updated artifact. No palette or recovery behavior change required.",
+    "negativeContrast": 1.0455398678000962,
+    "negativeLog": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/reservation-ui-negative-v1.log",
+    "positiveLog": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/reservation-ui-positive-v3.log",
+    "positivePass": 13,
+    "negativeResult": "10pass/3fail; dark contrast and two reservation field boundaries reproduced",
+    "intermediateResults": [
+      "positive-v1:contrast passed; reservation field grouping still failed",
+      "positive-v2:field assertions passed but fixture handle cleanup failed; fixed with finally before binding verification"
+    ],
+    "updatedArtifactEvidence": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v21/native-location-restart-retained.png"
+  },
+  "deviceAttemptV16": {
+    "status": "TERMINAL_FAILED_NOT_ACCEPTED",
+    "runId": "02d002f35e0d",
+    "pass": 0,
+    "fail": 1,
+    "skip": 0,
+    "reason": "Held reservation GET200and one current record, but native accessibility exposed only Transfer reference; expected lifetime absent. Normal source-v4 stock story remains unaccepted.",
+    "sourceUnchangedAtTerminal": true,
+    "source": "dc2ce5cb8a81c7282882ec86bea1be3907815bf59331862520656eac47a30123",
+    "ownedDatabaseCleanupEmpty": true,
+    "mappingCleanup": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-v16-launcher-cleanup.json",
+    "observedSubstepsOnly": [
+      "normal Accounts login and automatic return",
+      "location lost-reply/restart/exact retry",
+      "supplier create",
+      "normal web metadata read/create and native readback",
+      "native strict profile save",
+      "PO partial receive3/restart/original retry confirmed",
+      "transfer quantity2 created201",
+      "reservations read200 and one reference"
+    ]
+  },
+  "deviceAttemptV17": {
+    "status": "TERMINAL_DIAGNOSTIC_ONLY_NO_FEATURE_ACCEPTANCE",
+    "runId": "9e47555b0306",
+    "pass": 1,
+    "fail": 0,
+    "skip": 0,
+    "sourceUnchangedAtTerminal": true,
+    "source": "f6b785a5a64d37611818a25b9835b80835d2787c884a4d55a576e68a0235ff0d",
+    "ownedDatabaseCleanupEmpty": true,
+    "mappingCleanup": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-v17-launcher-cleanup.json",
+    "finding": "Screenshot visibly renders product,2units/Active and Held until shipment, but actual Android tree exposes only reference. UI stock/documents/reservations/receipts unchanged."
+  },
+  "nativeReservationAccessibility": {
+    "status": "BOUNDED_NORMAL_LOGIN_ANDROID_READ_VERIFIED_V20",
+    "change": "Explicit semantic boundaries for product, quantity/status, transfer lifetime and finite expiry; existing selectable references preserved.",
+    "regression": "Existing held/committed widget cases assert independent exact semantic labels; both passed after fix.",
+    "priorInputs": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/inventory436-ui-prior-v4/manifest.json"
+  },
+  "nativeUiFollowupGates": {
+    "source": "bc7af995e6e630e289479134b02f4f7b44d5ce8d62d29fe7653da1dc5a2e289d",
+    "sourceSnapshot": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/inventory-shipment-v5.source.json",
+    "focusedPass": 13,
+    "fullFlutterPass": 925,
+    "analyzeIssues": 0,
+    "nativeGateReceipt": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/reservation-ui-native-gates-v1.json",
+    "disposableGovernance": {
+      "status": "PASS",
+      "exit": 0,
+      "counts": {
+        "PASS": 114,
+        "FAIL": 0,
+        "BLOCKED": 0,
+        "SKIP": 0,
+        "NOT_APPLICABLE": 1
+      },
+      "problems": [],
+      "result": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/governance-category-capsule-v17.gate.json",
+      "sourceUnchanged": true
+    }
+  },
+  "deviceAttemptV18": {
+    "status": "TERMINAL_FAILED_NOT_ACCEPTED",
+    "runId": "743f764a7f99",
+    "pass": 0,
+    "fail": 1,
+    "skip": 0,
+    "sourceUnchangedAtTerminal": true,
+    "ownedDatabaseCleanupEmpty": true,
+    "mappingCleanup": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-v18-launcher-cleanup.json",
+    "reason": "Synthetic email readback mismatched before authentication. Read-only inspection found two Chrome login targets both reporting visible/focused, only one filled; last-CDP-tab selection is ambiguous. Replacement private companion uses actual current native Chrome fields/buttons and exact native text readback."
+  },
+  "deviceAttemptV20": {
+    "status": "TERMINAL_BOUNDED_READ_DIAGNOSTIC_PASS_NOT_FULL_FEATURE_ACCEPTANCE",
+    "runId": "dbf32ac2c81c",
+    "pass": 1,
+    "fail": 0,
+    "skip": 0,
+    "sourceUnchangedAtTerminal": true,
+    "source": "bc7af995e6e630e289479134b02f4f7b44d5ce8d62d29fe7653da1dc5a2e289d",
+    "apk": "5868c18e4f6971433acf90ca45bbd722532c55a1df1c5429fa3df6e717ac21b7",
+    "installedHashReadback": true,
+    "normalAccountsLogin": true,
+    "actualAndroidFields": [
+      "Synthetic cotton tote",
+      "2 units \u2022 Active",
+      "Held until shipment"
+    ],
+    "snapshotAndSemanticsInspected": true,
+    "stockDocumentsReservationsReceiptsUnchanged": true,
+    "ownedDatabaseCleanupEmpty": true,
+    "mappingCleanup": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-v20-launcher-cleanup.json"
+  },
+  "currentCompiledWorkerPhoneAccepted": true,
+  "deviceAttemptV21": {
+    "status": "BOUNDED_LOCAL_OWNER_WEB_ANDROID_SHIPMENT_TIMING_RECOVERY_AND_READBACK_VERIFIED",
+    "runId": "286b2a4bc2e1",
+    "pass": 1,
+    "fail": 0,
+    "skip": 0,
+    "runnerExit": 0,
+    "uiExit": 0,
+    "sourceUnchangedAtTerminal": true,
+    "source": "bc7af995e6e630e289479134b02f4f7b44d5ce8d62d29fe7653da1dc5a2e289d",
+    "apk": "759c3fa45d8ab398afc29e927c50cf63784c411a59a56dacc03e4074ed677ebf",
+    "report": "WAREHOUSE_SHIPMENT_ANDROID_WEB_V21_QUALIFICATION.json",
+    "ownedCleanupEmpty": true
+  },
+  "currentCompiledArtifactScope": "Bounded source v13/current compiled v30 owner inventory/warehouse/setter recovery only; not full119/122 or release acceptance.",
+  "iosCompileV4": {
+    "status": "TERMINAL_FAILED_BEFORE_XCODE_BUILD_NOT_ACCEPTED",
+    "exit": 1,
+    "sourceUnchanged": true,
+    "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/ios-warehouse-compile-v4.log",
+    "reason": "Flutter requires an explicit simulator ID for watchOS companion; command omitted the previously-inventoried owned target."
+  },
+  "iosCompileV5": {
+    "status": "SOURCE_VERIFIED_LOCAL_IOS_SIMULATOR_COMPILE_ONLY",
+    "buildExit": 0,
+    "sourceUnchanged": true,
+    "source": "bc7af995e6e630e289479134b02f4f7b44d5ce8d62d29fe7653da1dc5a2e289d",
+    "manifestSha256": "ee9d30e396def7c260b0c22ec6a4cac9348c0ca332d9d1102c7e523760b5c7fc",
+    "report": "IOS_WAREHOUSE_COMPILE_V5_QUALIFICATION.json",
+    "uiAuthBackendAccepted": false
+  },
+  "managedCallerFenceNegativeV1": {
+    "status": "ONE_REPRODUCED_TENANT_BYPASS_AND_SEVEN_FIXTURE_SETUP_FAILURES",
+    "runId": "b77280295743",
+    "pass": 4,
+    "fail": 10,
+    "skip": 0,
+    "ownedCleanupEmpty": true,
+    "environment": "Official local Supabase PG17 image; postgres nonsuperuser/BYPASSRLS; app_tenant allowed helper EXECUTE; anon denied EXECUTE",
+    "proved": "app_tenant ordinary own-scope read1/foreign read0; authorized setter21; foreign-GUC raw setter committed99and changed inventory/audit world",
+    "otherCases": "Seven hit duplicate synthetic sites.store_name before attack. Unique per-case fixture tags corrected; matrix rerunning. No other bypass case accepted from this run."
+  },
+  "currentTenantCallerFenceAccepted": true,
+  "managedCallerFenceNegativeV2": {
+    "status": "EIGHT_REPRODUCED_BACKEND_ROLE_TENANT_BYPASSES",
+    "runId": "960293d4cdaf",
+    "pass": 4,
+    "fail": 10,
+    "attackCasesExecuted": 8,
+    "attackCasesBypassed": 8,
+    "skip": 0,
+    "ownedCleanupEmpty": true,
+    "roles": [
+      "app_tenant",
+      "service_role"
+    ],
+    "operations": [
+      "absolute set",
+      "delta adjust"
+    ],
+    "contexts": [
+      "foreign",
+      "unset"
+    ],
+    "authorizedPositiveStock": 21,
+    "unauthorizedSetStock": 99,
+    "unauthorizedAdjustStock": 28,
+    "failedInputs": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/inventory436-caller-negative-v2-inputs/manifest.json",
+    "scope": "Official isolated local provider image only; anonymous execution already denied; no hosted exploit check."
+  },
+  "tenantSetterRepair": {
+    "status": "MANAGED_CALLER_MATRIX_AND_CURRENT_CORE_PASSED; WEB_AND_COMPILED_PHONE_QUALIFYING",
+    "decision": "User explicitly requested both setters block wrong/missing tenant context, including local verification and continued full parity.",
+    "implementation": "Both setters call the existing canonical require_inventory_site_guc after resolving product store and before any stock read/write. No privileged caller exemption.",
+    "qualification": "Managed18passed for app_tenant/service_role/postgres: correct-context mutation/no-change positive controls and wrong/missing-context mutation/no-change denial with unchanged stock world. Core224passed; original3historical414failures preserved and independently corrected/verified as historical5+current7."
+  },
+  "managedCallerFencePositiveV1": {
+    "status": "PASS_BOUNDED_MANAGED_ROLES",
+    "runId": "03b80994d982",
+    "pass": 14,
+    "fail": 0,
+    "skip": 0,
+    "source": "918cf37c887ef7656c97ec54088a5c31787f7525ef501870ea3bd0dbb133acdd",
+    "ownedCleanupEmpty": true,
+    "scope": "app_tenant/service_role correct, foreign and missing context; unchanged-quantity positive/denial; original catalog/rollback/conservation controls"
+  },
+  "setterCoreV1": {
+    "status": "CURRENT_CORE_PASSED_OLDER_ROLLBACK_SCHEMA_MISMATCH",
+    "runId": "8ee9380f2746",
+    "pass": 224,
+    "fail": 3,
+    "skip": 0,
+    "ownedCleanupEmpty": true,
+    "managedRolePass": 18,
+    "roleMatrixIncludes": [
+      "app_tenant",
+      "service_role",
+      "postgres"
+    ],
+    "failures": [
+      "Old414emptyDOWN and two metadata-specific fault cases met the correct newer436raw-function refusal first; suite is SQL-only and must target414historical schema. Rollback guard is preserved."
+    ],
+    "passedScopes": [
+      "product atomic90",
+      "adjustment16",
+      "warehouse recovery46",
+      "transfer cart6",
+      "shipment8",
+      "retained5",
+      "reservation lifecycle1",
+      "record reads8",
+      "history7",
+      "labels4",
+      "tenant table8",
+      "pooled context5",
+      "managed18"
+    ]
+  },
+  "setterHistoryV3": {
+    "result": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/inventory-setter-history-v3.json",
+    "runId": "234e47ee38bf",
+    "pass": 12,
+    "fail": 0,
+    "skip": 0,
+    "cancelled": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "scope": "Historical414SQL-only rollback5and current436retained/cutover7; olderDOWN refuses both empty raw-definition drift and retained receipt branches without effect. Current436suites were not downgraded."
+  },
+  "setterRedteamV3": {
+    "result": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/inventory-setter-redteam-v3.json",
+    "runId": "67af31b42065",
+    "pass": 2,
+    "fail": 0,
+    "skip": 0,
+    "cancelled": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "scope": "Preserved historical RT-1..RT-9 foundation in a separate new owned cluster. Current table/pooled/managed contexts separately passed in core; this is not all current436RPC or hosted certification."
+  },
+  "activeBrowserQualification": {
+    "name": "inventory-setter-browser-v1",
+    "status": "BOUNDED_PASS",
+    "runId": "e2a189c6d57b",
+    "sourceSnapshot": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/inventory-setter-guard-v4.source.json",
+    "pass": 23,
+    "fail": 0,
+    "skip": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "scope": "Production-mode normal Accounts/Merchant owner/staff stock, product edit/status; exact conflicts, recovery and revocation. Actual Gateway Node modules/owned PG/PostgREST/local one-use verifier. Predates new order-fact observation. No compiled phone or hosted/provider claim."
+  },
+  "stockFamiliesV2": {
+    "status": "FAILED_BASELINE_PRESERVED",
+    "runId": "06cedcda9f93",
+    "pass": 72,
+    "fail": 5,
+    "skip": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "dispositions": [
+      "3real same-SKU multi-configuration checkout failures: reservation cache writes advance product revision between accepted lines. Repair now uses one existing locked pre-effect revision observation; genuine stale version/facts/options checks retained.",
+      "1old owner-only smart-preview assertion conflicts with approved single collection product-grant authority. Authorized staff positive plus live revocation/restoration now replace old false denial; outsider/store/missing/deleted controls retained.",
+      "1exact source review failed after the single explicit-owned-GUC setup change. Exact prerequisite-only diff reviewed; immutable392admission unchanged; new qualification required, no receipt relabelled."
+    ]
+  },
+  "orderFactRepair": {
+    "status": "CURRENT_OWNED_CART_AND_ROLLBACK_PASS; COMPILED_PHONE_PENDING",
+    "originalProfileRunId": "e88a83d3639a",
+    "originalDefinitionSha256": "809ba14c50b12749c2ff988061be4be9a5921606d03aa61980980aad08e96dcc",
+    "originalAcl": [
+      "postgres=X/postgres"
+    ],
+    "reviewDiff": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/inventory436-order-function-review-v1.diff",
+    "implementation": "Same canonical function and existing deterministic locks; capture product revisions after all locks/before reserve effects, compare every accepted line to that observation. Remaining field/fact/options/image/stock/cart/actor checks unchanged. Stock revisions still advance; own first line cannot invalidate second line. Exact original-definition/owner/ACL guard, paired static DOWN and full current profile checks added.",
+    "qualificationPending": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/setter-stock-repair-v3.json"
+  },
+  "compiledPhonePreparation": {
+    "status": "DIAGNOSTIC24_RUNNING; FULL25_UNLAUNCHED",
+    "diagnosticReceipt": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/android-device-receipt-warehouse-v24.json",
+    "fullReceipt": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/android-device-receipt-warehouse-v25.json",
+    "implementation": "Test-only canonical compiled Gateway and BFF under workerd; owned observer transport and exact local provider. No Node fallback when compiledWorkers is selected. Source/device/helper bytes are included in snapshot.",
+    "fullScope": "Existing normal warehouse recovery story plus real customer-hold prerequisite, native delta+2lost-reply/restart/exact replay, web read3free/save4free, native read4free/1held/5physical."
+  },
+  "stockRepairV3": {
+    "status": "BOUNDED_LOCAL_PASS",
+    "sourceSnapshot": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/inventory-setter-guard-v6.source.json",
+    "runId": "1dfe1386e562",
+    "pass": 57,
+    "fail": 0,
+    "skip": 0,
+    "cancelled": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "suites": {
+      "cart_order_facts": 21,
+      "current_collection_reads": 6,
+      "historical_nine_theme_dependency": 5,
+      "current436_retained_cutover": 7,
+      "managed_inventory_caller_fences": 18
+    }
+  },
+  "compiledPhoneDiagnosticV22": {
+    "status": "FAILED_BEFORE_APK_BUILD_OR_INSTALL",
+    "runId": "1c4551994e41",
+    "pass": 0,
+    "fail": 1,
+    "skip": 0,
+    "cleanupEmpty": true,
+    "reverseMapsEmpty": true,
+    "controllerExit": -15,
+    "cause": "New BFF helper module path lay outside the default modulesRoot; workerd refused .. escape at startup. Gateway initialized and prerequisite transfer was actual201. Failure is test-helper configuration, not phone acceptance.",
+    "repair": "Explicit repository modulesRoot and matching in-memory BFF module path, following the existing Gateway helper pattern. No runtime compatibility or application policy change.",
+    "sourceFixSnapshot": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/inventory-setter-guard-v9.source.json"
+  },
+  "freshGovernanceV19": {
+    "status": "BOUNDED_PASS_PREDATES_BFF_HELPER_MODULE_ROOT_FIX",
+    "sourceSnapshot": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/inventory-setter-guard-v8.source.json",
+    "pass": 114,
+    "fail": 0,
+    "blocked": 0,
+    "skip": 0,
+    "notApplicable": 1,
+    "prechecksExitZero": [
+      "install",
+      "shared-build",
+      "sdk-typecheck",
+      "contracts-provider",
+      "web-recovery",
+      "governance-regression"
+    ],
+    "priorFailed18": "113pass/1fail because exactly2public-test-key exceptions became obsolete after local verifier adoption. Only those two exception entries retired, no scan weakening.",
+    "gate": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/governance-category-capsule-v19.gate.json"
+  },
+  "fixtureTypecheckV4": {
+    "exit": 0,
+    "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/compiled-phone-root-typecheck-v4.log",
+    "scope": "Current root device and helper types. Prior v1missing private-config type path and v2uninitialized cleanup variable failures retained; v3passed before module-root fix."
+  },
+  "compiledWorkerDiagnosticV24": {
+    "kind": "BOUNDED_LOCAL_COMPILED_WORKER_ANDROID_DIAGNOSTIC",
+    "status": "PASS",
+    "runId": "dc2d7ab850f6",
+    "globalSourceSnapshot": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/inventory-setter-guard-v9.source.json",
+    "globalSourceSha256": "077a6cd4faa5b7401c3e0701ccbf8b5f0808a1f9429b1575e7178fa9cca38576",
+    "runtimeSourceSha256": "6e37d85995170c377e8fc7fee148f42eeb9deccfe95216d13cfe0b62314713a0",
+    "tests": {
+      "pass": 1,
+      "fail": 0,
+      "skip": 0,
+      "cancelled": 0
+    },
+    "runnerExit": 0,
+    "controllerExit": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "reverseMapsEmpty": true,
+    "apkSha256": "5d69fcb57c9c6ee24b7782f38d8f8ae6b03bfe3da748af2305a08e18f4e738be",
+    "installedReadback": true,
+    "originalApkRetained": true,
+    "compiledWorkers": {
+      "run_id": "dc2d7ab850f6",
+      "runtime": "workerd",
+      "gateway_sha256": "d2880351cd3a6dd81ee302a816ca058a65d22d901363b3e7ece1b3a3a7ab57b4",
+      "bff_sha256": "1cef74ec3baed72d32afad1e061f58ff4a84bf0c03a432dc4f1ec7588f8d9f63",
+      "entrypoints": [
+        "services/api-gateway/src/index.ts",
+        "services/mobile-bff/src/index.ts"
+      ],
+      "transport": "Owned Node HTTP and service-binding observer; no business response stubs",
+      "hosted": false
+    },
+    "acceptedScope": [
+      "Fresh normal synthetic Accounts credential form through observed Android Custom Tab, exact entered-field readback and automatic PKCE return; no session injection",
+      "Actual canonical Gateway/BFFworkerd modules and owned PG/PostgREST; Node observer is transport/fault harness only",
+      "Normal native reservation read after a canonical prerequisite created through actual compiled Gateway;2unitsActive/Held-until-shipment/readable TR reference",
+      "Independent Android accessibility fields, read-only inventory/document/reservation/receipt state conservation and source invariance",
+      "Private native reservation screenshot visually inspected"
+    ],
+    "notAccepted": [
+      "Stock mutation or setter synchronization",
+      "Complete feature or all119/122",
+      "Staff-native/variant allocation permutations",
+      "iOS UI/hosted/real-provider/release/production readiness"
+    ],
+    "evidence": [
+      "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v24.json",
+      "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v24/diagnostic-backend-verified.json",
+      "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v24/source-snapshot.json",
+      "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v24/compiled-workers.json",
+      "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v24/artifact.json",
+      "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-v24-controller-inputs.json",
+      "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-v24-launcher-cleanup.json"
+    ],
+    "updatedAt": "2026-11-04T01:17:23.302931+00:00"
+  },
+  "freshGovernanceV20": {
+    "status": "PASS",
+    "sourceSnapshot": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/inventory-setter-guard-v9.source.json",
+    "gate": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/governance-category-capsule-v20.gate.json",
+    "counts": {
+      "PASS": 114,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "SKIP": 0,
+      "NOT_APPLICABLE": 1
+    },
+    "problems": []
+  },
+  "compiledWarehouseV25Phase": {
+    "kind": "BOUNDED_PHASE_EVIDENCE; OVERALL_TEST_FAILED",
+    "runId": "3cb24bace837",
+    "overall": {
+      "pass": 0,
+      "fail": 1,
+      "skip": 0,
+      "runnerExit": 1,
+      "controllerExit": 1,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "globalSourceSnapshot": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/inventory-setter-guard-v9.source.json",
+    "apkSha256": "8941b40245edb91a0c1a847c1f67afad383ed1242da84103d03dd6a641968b8e",
+    "compiledWorkers": {
+      "run_id": "3cb24bace837",
+      "runtime": "workerd",
+      "gateway_sha256": "d2880351cd3a6dd81ee302a816ca058a65d22d901363b3e7ece1b3a3a7ab57b4",
+      "bff_sha256": "1cef74ec3baed72d32afad1e061f58ff4a84bf0c03a432dc4f1ec7588f8d9f63",
+      "entrypoints": [
+        "services/api-gateway/src/index.ts",
+        "services/mobile-bff/src/index.ts"
+      ],
+      "transport": "Owned Node HTTP and service-binding observer; no business response stubs",
+      "hosted": false
+    },
+    "completedPhase": "Compiled Gateway/BFF normal native metadata/reply-loss/restart/original retry, supplier and web metadata readback/profile acknowledgement; native PO4/receive3recovery, transfer2reserve/ship/receive1, held/committed reservation on native+web, web remaining1+1completion and native final readback. Independent stock/receipt assertions wrote stock-backend-verified.json before the setter extension.",
+    "warehouseFinal": {
+      "po": {
+        "id": "296e1ae1-7388-43a7-8fac-2abb3810502f",
+        "notes": null,
+        "total": 502,
+        "status": "received",
+        "site_id": "896dbe3f-7285-41a5-8acd-53006259a79d",
+        "currency": "INR",
+        "metadata": {},
+        "subtotal": 502,
+        "po_number": "PO-20261104-DAE1BA88",
+        "created_at": "2026-11-04T01:25:56.65531+00:00",
+        "created_by": "12ef0460-2fd5-4a0b-a023-0791ccac7880",
+        "deleted_at": null,
+        "ordered_at": "2026-11-04T01:25:56.65531+00:00",
+        "request_id": "flutter-builder-1793755556016945",
+        "updated_at": "2026-11-04T01:31:46.03071+00:00",
+        "updated_by": "12ef0460-2fd5-4a0b-a023-0791ccac7880",
+        "expected_at": null,
+        "location_id": "aa0dbfd7-aff6-4af4-b0f1-e1a71e37c5ff",
+        "received_at": "2026-11-04T01:31:46.03071+00:00",
+        "supplier_id": "415b374e-a4b0-4da6-b45f-9f3044e17aa6",
+        "cancelled_at": null,
+        "idempotency_key": "95a502c8-660a-48b8-8932-ddeafd0720b9"
+      },
+      "levels": [
+        {
+          "id": "55639227-1e99-4e1e-abf4-6a2aa4831a96",
+          "version": 3,
+          "incoming": 0,
+          "reserved": 0,
+          "store_id": "896dbe3f-7285-41a5-8acd-53006259a79d",
+          "available": 2,
+          "created_at": "2026-11-04T01:31:40.891825+00:00",
+          "deleted_at": null,
+          "product_id": "16151edb-0458-42fb-a517-faa6fecdb366",
+          "updated_at": "2026-11-04T01:31:46.611605+00:00",
+          "variant_id": null,
+          "location_id": "2dc41d5e-cfd2-4039-b4dd-a0d5879fa42c",
+          "free_quantity": 2,
+          "on_hand_quantity": 2,
+          "incoming_quantity": 0,
+          "reserved_quantity": 0,
+          "available_quantity": 2,
+          "committed_quantity": 0,
+          "unavailable_quantity": 0,
+          "safety_stock_quantity": 0
+        },
+        {
+          "id": "a26c8caf-c141-45f0-8e68-002358cb2c61",
+          "version": 6,
+          "incoming": 0,
+          "reserved": 0,
+          "store_id": "896dbe3f-7285-41a5-8acd-53006259a79d",
+          "available": 2,
+          "created_at": "2026-11-04T01:25:56.65531+00:00",
+          "deleted_at": null,
+          "product_id": "16151edb-0458-42fb-a517-faa6fecdb366",
+          "updated_at": "2026-11-04T01:31:46.03071+00:00",
+          "variant_id": null,
+          "location_id": "aa0dbfd7-aff6-4af4-b0f1-e1a71e37c5ff",
+          "free_quantity": 2,
+          "on_hand_quantity": 2,
+          "incoming_quantity": 0,
+          "reserved_quantity": 0,
+          "available_quantity": 2,
+          "committed_quantity": 2,
+          "unavailable_quantity": 0,
+          "safety_stock_quantity": 0
+        }
+      ],
+      "po_lines": [
+        {
+          "id": "02d1a197-ce02-4e5d-a3f2-4f139418b2f4",
+          "status": "received",
+          "site_id": "896dbe3f-7285-41a5-8acd-53006259a79d",
+          "metadata": {},
+          "unit_cost": 125.5,
+          "created_at": "2026-11-04T01:25:56.65531+00:00",
+          "created_by": "12ef0460-2fd5-4a0b-a023-0791ccac7880",
+          "deleted_at": null,
+          "product_id": "16151edb-0458-42fb-a517-faa6fecdb366",
+          "total_cost": 502,
+          "updated_at": "2026-11-04T01:31:46.03071+00:00",
+          "updated_by": "12ef0460-2fd5-4a0b-a023-0791ccac7880",
+          "variant_id": null,
+          "location_id": "aa0dbfd7-aff6-4af4-b0f1-e1a71e37c5ff",
+          "quantity_ordered": 4,
+          "purchase_order_id": "296e1ae1-7388-43a7-8fac-2abb3810502f",
+          "quantity_received": 4
+        }
+      ],
+      "receipts": [
+        {
+          "target": "2dc41d5e-cfd2-4039-b4dd-a0d5879fa42c",
+          "operation": "location.create",
+          "key_digest": "9f3b01351068f87b896fcbeb114a5cc80d0fc2d3b8cc351aa26bb5fa93364b0a",
+          "row_digest": "077f57b55da8e37a9da928c2a64105048d75414e165d8a61fc24fa8f74db249b"
+        },
+        {
+          "target": "c5538724-7809-44ee-b9b0-0f9f2d08df20",
+          "operation": "location.create",
+          "key_digest": "9268a67ce39d4c670f8ae685249ee34f5532e9f7d577f6d655a264820c451d48",
+          "row_digest": "7a4b4d06a2ab599ba0311360e4c87ebcfe7e6ed55dbf03c972c76e3ffc7025b6"
+        },
+        {
+          "target": "296e1ae1-7388-43a7-8fac-2abb3810502f",
+          "operation": "purchase_order.create",
+          "key_digest": "f1cb46c02f6622c5f730991eb5f1e21ac928f9ae996ef5bfba7f7db0d903853b",
+          "row_digest": "3b234d8fe2dbf170fc101f61dbd83b09afbc3b21d31c42d49894f4c22b46584d"
+        },
+        {
+          "target": "296e1ae1-7388-43a7-8fac-2abb3810502f",
+          "operation": "purchase_order.receive",
+          "key_digest": "f3e174b2880cd1d62b56e10ffcab11b2656d9f7790f4c4ab552ca71873d9961b",
+          "row_digest": "189a24a60cc7c593275313823893505519c3e4d85b32377d2c1d86c1644da1db"
+        },
+        {
+          "target": "296e1ae1-7388-43a7-8fac-2abb3810502f",
+          "operation": "purchase_order.receive",
+          "key_digest": "47df7f4b9723c1dad4c574842e3aadf9adf9d5058cc286c10f0d861a36a20bf4",
+          "row_digest": "5aabb8786d58555a1f238d78c85df062678751cc68de14f1c05c0d552a1e04c3"
+        },
+        {
+          "target": "415b374e-a4b0-4da6-b45f-9f3044e17aa6",
+          "operation": "supplier.create",
+          "key_digest": "18123c4c558a97518d9997f37c9ec7e97b309d3f4eba7a53e0bc58179dd13d45",
+          "row_digest": "82efa0a15ad3aeb4ec66e09c5899fa50f0d93f53d765f92eef57d8e1f1f7f395"
+        },
+        {
+          "target": "803ca6a4-0b93-442f-b7eb-d731cc4f4f07",
+          "operation": "supplier.create",
+          "key_digest": "d09d3b19d3edd687ba9cf6459f96907d4be7a35617f1c77bb27a761db6804f83",
+          "row_digest": "a3bdc10a53a29129fbe3a6d9c7c1effd7722eda467823633841b9d0df1103fd6"
+        },
+        {
+          "target": "587d7dee-eb0e-4735-9f65-51e989db1f14",
+          "operation": "transfer.create",
+          "key_digest": "5e03a8c6d606b262ebb366a70bf66f18a8b29deef44547a825980e9436233ef7",
+          "row_digest": "2871634506b024c5e8a793c21d220a3a5acf6fb452b4305ff7d9edfd00de9786"
+        },
+        {
+          "target": "587d7dee-eb0e-4735-9f65-51e989db1f14",
+          "operation": "transfer.receive",
+          "key_digest": "f7ac0a824ab2a78dad0315f2daa26392fe842a0274e8e40e1558ad221952549e",
+          "row_digest": "41ff2d9601e22307ce8109663d2dc0448934d16aba90ca51adc67e53a50777dc"
+        },
+        {
+          "target": "587d7dee-eb0e-4735-9f65-51e989db1f14",
+          "operation": "transfer.receive",
+          "key_digest": "bd52eb46c7b7bd783afc22bf98775caf6e177e73c2223bdccabfabe2820808c3",
+          "row_digest": "477ed1a2f3edaaf46a01e8c95df7bbf856339ab2d838d42da0920d9d49211598"
+        },
+        {
+          "target": "587d7dee-eb0e-4735-9f65-51e989db1f14",
+          "operation": "transfer.ship",
+          "key_digest": "85a733c8235304d54b1ac8df3e08fb598db66b657f2af29e5627cacaea943b89",
+          "row_digest": "ed7832cfc813e4793d3497bf79dcba3abe5645ed482f74c68580100fbc04aba4"
+        }
+      ],
+      "transfer": {
+        "id": "587d7dee-eb0e-4735-9f65-51e989db1f14",
+        "notes": null,
+        "status": "received",
+        "site_id": "896dbe3f-7285-41a5-8acd-53006259a79d",
+        "metadata": {},
+        "created_at": "2026-11-04T01:28:58.716519+00:00",
+        "created_by": "12ef0460-2fd5-4a0b-a023-0791ccac7880",
+        "deleted_at": null,
+        "request_id": "flutter-builder-1793755738141639",
+        "shipped_at": "2026-11-04T01:30:14.30367+00:00",
+        "updated_at": "2026-11-04T01:31:46.611605+00:00",
+        "updated_by": "12ef0460-2fd5-4a0b-a023-0791ccac7880",
+        "received_at": "2026-11-04T01:31:46.611605+00:00",
+        "cancelled_at": null,
+        "idempotency_key": "a715baa4-3a18-4e73-b6c7-beb6f7051235",
+        "transfer_number": "TR-20261104-2768A089",
+        "source_location_id": "aa0dbfd7-aff6-4af4-b0f1-e1a71e37c5ff",
+        "destination_location_id": "2dc41d5e-cfd2-4039-b4dd-a0d5879fa42c"
+      },
+      "reservations": [
+        {
+          "id": "7e160ff6-1b89-4e93-a581-599465996adb",
+          "status": "committed",
+          "order_id": null,
+          "quantity": 2,
+          "store_id": "896dbe3f-7285-41a5-8acd-53006259a79d",
+          "created_at": "2026-11-04T01:28:58.716519+00:00",
+          "created_by": "12ef0460-2fd5-4a0b-a023-0791ccac7880",
+          "deleted_at": null,
+          "expires_at": "infinity",
+          "product_id": "16151edb-0458-42fb-a517-faa6fecdb366",
+          "updated_at": "2026-11-04T01:30:14.30367+00:00",
+          "variant_id": null,
+          "location_id": "aa0dbfd7-aff6-4af4-b0f1-e1a71e37c5ff",
+          "released_at": null,
+          "committed_at": "2026-11-04T01:30:14.30367+00:00",
+          "release_reason": null,
+          "idempotency_key": "warehouse.transfer:3b356a97-192c-44de-956f-60f7cf616a99",
+          "commit_idempotency_key": "warehouse.ship:3b356a97-192c-44de-956f-60f7cf616a99",
+          "release_idempotency_key": null
+        }
+      ],
+      "product_stock": 2,
+      "transfer_lines": [
+        {
+          "id": "3b356a97-192c-44de-956f-60f7cf616a99",
+          "status": "received",
+          "site_id": "896dbe3f-7285-41a5-8acd-53006259a79d",
+          "metadata": {},
+          "created_at": "2026-11-04T01:28:58.716519+00:00",
+          "created_by": "12ef0460-2fd5-4a0b-a023-0791ccac7880",
+          "deleted_at": null,
+          "product_id": "16151edb-0458-42fb-a517-faa6fecdb366",
+          "updated_at": "2026-11-04T01:31:46.611605+00:00",
+          "updated_by": "12ef0460-2fd5-4a0b-a023-0791ccac7880",
+          "variant_id": null,
+          "transfer_id": "587d7dee-eb0e-4735-9f65-51e989db1f14",
+          "reservation_id": "7e160ff6-1b89-4e93-a581-599465996adb",
+          "quantity_shipped": 2,
+          "quantity_received": 2,
+          "quantity_requested": 2
+        }
+      ]
+    },
+    "failure": "New private controller required the quantity label in EditText text/content-desc. It stopped at the actual adjustment dialog before typing/submitting any stock setter. The task fixture then stopped its APK, so later read-only inspection correctly refused a no-longer-visible dialog. No UI/source defect or setter mutation is claimed from that selector failure.",
+    "fullFeatureAccepted": false,
+    "setterSyncAccepted": false,
+    "evidence": [
+      "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v25.json",
+      "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v25/stock-backend-verified.json",
+      "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v25/ui-attention.json",
+      "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v25/artifact.json",
+      "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v25/compiled-workers.json",
+      "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-v25-launcher-cleanup.json"
+    ]
+  },
+  "compiledInventorySettersV26": {
+    "kind": "BOUNDED_LOCAL_COMPILED_ANDROID_WEB_INVENTORY_ACCEPTANCE",
+    "status": "PASS",
+    "runId": "6e52c7eb23c5",
+    "baselineHead": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+    "branch": "codex/merchant-mobile-parity",
+    "globalSourceSha256": "077a6cd4faa5b7401c3e0701ccbf8b5f0808a1f9429b1575e7178fa9cca38576",
+    "sourceManifest": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/inventory-setter-guard-v9.source.json",
+    "sourceArchive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/inventory-setter-guard-v9-qualified-source",
+    "sourceEntries": 7432,
+    "sourceUnchangedThroughTerminal": true,
+    "runtimeSourceSha256": "6e37d85995170c377e8fc7fee148f42eeb9deccfe95216d13cfe0b62314713a0",
+    "tests": {
+      "pass": 1,
+      "fail": 0,
+      "skip": 0,
+      "cancelled": 0
+    },
+    "runnerExit": 0,
+    "controllerExit": 0,
+    "apk": {
+      "sha256": "39e2f49c44fdd3bfe81cc5555b77e9a1262d2b93530c395c9d662eef31ef7911",
+      "path": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v26/qualified-artifact/merchant-local-debug.apk",
+      "buildMode": "normal main/debug/android-arm64; Flutter config-only then offline Gradle",
+      "installedReadback": true,
+      "originalBytesRetained": true,
+      "releaseArtifact": false
+    },
+    "compiledWorkers": {
+      "run_id": "6e52c7eb23c5",
+      "runtime": "workerd",
+      "gateway_sha256": "d2880351cd3a6dd81ee302a816ca058a65d22d901363b3e7ece1b3a3a7ab57b4",
+      "bff_sha256": "1cef74ec3baed72d32afad1e061f58ff4a84bf0c03a432dc4f1ec7588f8d9f63",
+      "entrypoints": [
+        "services/api-gateway/src/index.ts",
+        "services/mobile-bff/src/index.ts"
+      ],
+      "transport": "Owned Node HTTP and service-binding observer; no business response stubs",
+      "hosted": false
+    },
+    "actors": [
+      "one synthetic current owner"
+    ],
+    "authentication": "Actual normal Android Accounts credential form and automatic fresh PKCE return; normal independent Merchant web sign-in; no session injection; owned local one-use challenge fixture. Real hosted/provider authentication is separate.",
+    "warehouse": {
+      "native": "Location committed reply loss/restart/exact-original retry; supplier creation; PO4units@125.50/receive3reply-loss recovery; transfer2reserve/held view/ship/committed view/receive1",
+      "web": "Read native records and status, create location/supplier for native readback, acknowledge native profile, complete remaining1PO and1transfer",
+      "nativeFinalRead": "Both web-completed documents read as Received with current readable labels",
+      "finalBeforeSetterPrerequisite": {
+        "physical": 4,
+        "free": 4,
+        "reserved": 0,
+        "incoming": 0,
+        "transit": 0,
+        "locations": 2,
+        "defaultProductCache": 2,
+        "warehouseCommandReceipts": 11
+      },
+      "originalPartialReceiptUnchanged": true,
+      "sameTransferReservationActiveToCommitted": true
+    },
+    "setters": {
+      "prerequisite": "One real canonical finite customer hold at default source; synthetic prerequisite, not buyer-authenticated checkout acceptance",
+      "nativeDelta": "+2via normal Inventory dialog; committed reply loss, process restart, exact original key/body retry, fresh display3free/1held/4physical",
+      "webAbsolute": "Normal product editor reads3free then saves4free; source becomes5physical/1held/4free",
+      "nativeWebReadback": "Normal refresh displays4free/1reserved/5onhand",
+      "effectCounts": {
+        "adjustmentReceipts": 1,
+        "productEditReceipts": 1
+      },
+      "originalHoldAndWarehouseReceiptsUnchanged": true
+    },
+    "visualInspection": [
+      "Native numeric software keyboard actually open with exact2entry",
+      "Native current web result:4Available shown,4Low,1reserved,5onhand,0incoming",
+      "Earlier run25same-source recovery toast/dark banner inspected; separate confirmed error-toast contrast finding remains open"
+    ],
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "reverseMappingBaselineAndFinal": [],
+    "governance": {
+      "gate": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/governance-category-capsule-v20.gate.json",
+      "pass": 114,
+      "fail": 0,
+      "blocked": 0,
+      "skip": 0,
+      "notApplicable": 1
+    },
+    "evidence": [
+      "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v26.json",
+      "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v26/stock-backend-verified.json",
+      "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v26/setter-backend-verified.json",
+      "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v26/artifact.json",
+      "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v26/compiled-workers.json",
+      "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v26/source-snapshot.json",
+      "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-v26-controller-inputs.json",
+      "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-v26-launcher-cleanup.json"
+    ],
+    "limitations": [
+      "Not whole-feature/full119or122acceptance",
+      "Native staff/multistore/variants, broader inventory/history/operations and other groups remain open",
+      "Error toast contrast3.7631is a confirmed unrepaired UI issue",
+      "Bulk-adjust direct caller still needs an owned positive reproduction",
+      "No iOS UI/hosted/real-provider/signed-release/production acceptance"
+    ],
+    "updatedAt": "2026-11-04T01:52:12.361995+00:00"
+  },
+  "currentBulk437Verification": {
+    "report": "INVENTORY_BATCH_437_VERIFICATION.json",
+    "database39Pass": true,
+    "flutter933Pass": true,
+    "sourceV13": "761ceddc1dde3e586d71d96750589b5a2b386f8ab6e7da767dd8c059dd5e8e27",
+    "gate": "v13/v22 PASS114/0/1 N/A",
+    "compiled": "v30 PASS; exact scoped report above"
+  },
+  "compiledInventoryCurrentV30": {
+    "report": "COMPILED_INVENTORY_RECOVERY_ANDROID_WEB_V30_QUALIFICATION.json",
+    "runId": "ce29805b307b",
+    "sourceSha256": "761ceddc1dde3e586d71d96750589b5a2b386f8ab6e7da767dd8c059dd5e8e27",
+    "apkSha256": "178d844864e646362e320d2e40d64fa0c1671f43bdc65a5a98be38d903b8d9f4",
+    "ownedCleanupEmpty": true,
+    "sourceVerifiedAndArchived": true
+  }
+}

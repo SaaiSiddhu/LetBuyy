@@ -1,0 +1,70 @@
+{
+  "at": "2026-11-05T20:35:10.182536+00:00",
+  "status": "LOCAL_SOURCE_QUALIFIED_WITH_KNOWN_STAFF_FAILURE;CURRENT_NATIVE_AND_HOSTED_ACCEPTANCE_OPEN",
+  "source_sha256": "78af178afaafa150298483820690ca5ed87b9c627fe208ea5d6148c3e7e1d636",
+  "source_inputs": 8448,
+  "head": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+  "focused": {
+    "pass": 38,
+    "fail": 0,
+    "skip": 0,
+    "includes_unchanged_golden_checks": 3
+  },
+  "full_flutter": {
+    "pass": 1513,
+    "fail": 1,
+    "skip": 0,
+    "known_protected_staff_failure_only": true
+  },
+  "app_analysis_issues": 0,
+  "ui_kit_analysis": "Fresh confirmation0issues reused only after all UI-kit bytes proved equal.",
+  "governance": {
+    "PASS": 114,
+    "FAIL": 0,
+    "BLOCKED": 0,
+    "SKIP": 0,
+    "NOT_APPLICABLE": 1
+  },
+  "android": {
+    "at": "2026-11-05T20:32:59.451977+00:00",
+    "status": "INDEPENDENT_DEBUG_APK_READBACK_PASS",
+    "source_sha256": "78af178afaafa150298483820690ca5ed87b9c627fe208ea5d6148c3e7e1d636",
+    "artifact": {
+      "path": "/private/tmp/letbuyy-utility-final-android-x4ujql_w/merchant-local-debug.apk",
+      "sha256": "bf831bf88a8d80c10f7e8e424bc9bbfa0b89cf4d738a7ffcd737dde05a23190e",
+      "bytes": 151913572
+    },
+    "actual_sha256": "bf831bf88a8d80c10f7e8e424bc9bbfa0b89cf4d738a7ffcd737dde05a23190e",
+    "compiled_arm64_engine": true,
+    "debug_kernel_present": true,
+    "normal_main": true,
+    "installed": false,
+    "runtime_verified": false,
+    "scope": "Normal debug compile/archive only. Native41 proves its own preceding warehouse artifact only; current utilities have no native acceptance.",
+    "material_icons_bytes": 1645184,
+    "material_icons_sha256": "d9865b671a09d683d13a863089d8825e0f61a37696ce5d7d448bc8023aa62453"
+  },
+  "ios": {
+    "at": "2026-11-05T20:32:59.451977+00:00",
+    "status": "INDEPENDENT_IOS_DEBUG_ARTIFACT_READBACK_PASS",
+    "source_sha256": "78af178afaafa150298483820690ca5ed87b9c627fe208ea5d6148c3e7e1d636",
+    "artifact": {
+      "path": "/private/tmp/letbuyy-utility-final-ios-56tjfj0o/Runner.app",
+      "files": 377,
+      "manifest_sha256": "43986a6e98b77b212e27100615037a86e6c169980d46b1c5391fcd58687d3d1c"
+    },
+    "all_retained_files_equal": 377,
+    "bundle_id": "com.letbuyy.store",
+    "executable_architecture": "/private/tmp/letbuyy-utility-final-ios-56tjfj0o/Runner.app/Runner: Mach-O 64-bit executable arm64",
+    "owned_simulator_remains_shutdown": true,
+    "scope": "Debug compile/archive only; no iOS launch, auth, backend, sync or release acceptance.",
+    "material_icons_sha256": "d9865b671a09d683d13a863089d8825e0f61a37696ce5d7d448bc8023aa62453"
+  },
+  "render": "utility-rendered-v3/MANIFEST.json:10actual PNGs;1diagnosticcapturetest separately",
+  "native41": "../native41-accepted-local-warehouse/MANIFEST.json;exact preceding stock artifact only",
+  "protected_source": "final-ui-source-chain-preservation.json:13changed frontend inputs,8435unchanged original inputs;no backend/domain/identity/persistence/fixture change",
+  "next": "Migrate StoreSwitcherButton through unchanged real StoreContext membership/selection/persistence;continue47unreviewed source rows and remaining runtime/integration gates.",
+  "full_feature_set_accepted": false,
+  "signed_release": false,
+  "hosted_mutations": false
+}

@@ -26,8 +26,8 @@ before(async () => {
     VALUES('${product}','${site.siteId}','${site.siteId}','Synthetic configured notebook','syn-${product}',690,'SYN-${product}',8,true,'active',${json({ personalization: facts })});
     INSERT INTO product_options(product_id,name,position,values) VALUES('${product}','Cover',0,'["Moss","Oat"]');
     INSERT INTO product_variants(id,product_id,title,price,inventory_qty,option1) VALUES('${moss}','${product}','Moss',690,4,'Moss'),('${oat}','${product}','Oat',690,4,'Oat');
-    SELECT public.set_inventory_level_available('${product}','${moss}','${site.locationId}',4,NULL);
-    SELECT public.set_inventory_level_available('${product}','${oat}','${site.locationId}',4,NULL);`);
+    WITH _fixture_inventory_scope436 AS MATERIALIZED (SELECT set_config('app.site_id','${site.siteId}',true)) SELECT public.set_inventory_level_available('${product}','${moss}','${site.locationId}',4,NULL) FROM _fixture_inventory_scope436;
+    WITH _fixture_inventory_scope436 AS MATERIALIZED (SELECT set_config('app.site_id','${site.siteId}',true)) SELECT public.set_inventory_level_available('${product}','${oat}','${site.locationId}',4,NULL) FROM _fixture_inventory_scope436;`);
   pooled = await startOwnedPooledSqlProxy(owned);
   gateway = new Gateway(gatewayEnv(owned, keys, { ...pooled.env(), CHECKOUT_SIGNING_SECRET: `owned-cart-edit-${crypto.randomUUID()}`, CHECKOUT_ORIGIN: 'https://checkout.letbuyy.com' }));
 });
@@ -153,13 +153,13 @@ test('invalid and non-NFC production text cannot replace an accepted line', asyn
   }
 });
 test('variant edit retains quantity and cannot bypass current stock under a valid current review', async () => {
-  psql(`SELECT public.set_inventory_level_available('${product}','${oat}','${site.locationId}',1,NULL);`);
+  psql(`WITH _fixture_inventory_scope436 AS MATERIALIZED (SELECT set_config('app.site_id','${site.siteId}',true)) SELECT public.set_inventory_level_available('${product}','${oat}','${site.locationId}',1,NULL) FROM _fixture_inventory_scope436;`);
   try {
     const flow = await begin(3), edit = await command(flow, 'Asha', oat), before = stored(flow), effects = business();
     const response = await send(flow, { line_edit: edit }); assert.equal(response.status, 409, response.text);
     assert.equal(response.json?.error?.code, 'INSUFFICIENT_INVENTORY', 'Must reach current stock branch, not pass through a masking stale-facts refusal');
     assert.deepEqual(stored(flow), before); assert.equal(business(), effects); assert.equal(receipts(flow), 0);
-  } finally { psql(`SELECT public.set_inventory_level_available('${product}','${oat}','${site.locationId}',4,NULL);`); }
+  } finally { psql(`WITH _fixture_inventory_scope436 AS MATERIALIZED (SELECT set_config('app.site_id','${site.siteId}',true)) SELECT public.set_inventory_level_available('${product}','${oat}','${site.locationId}',4,NULL) FROM _fixture_inventory_scope436;`); }
 });
 test('completed edit receipt remains recoverable after cart closure without reopening it', async () => {
   const flow = await begin(), edit = await command(flow); const response = await send(flow, { line_edit: edit }); assert.equal(response.status, 200, response.text);
@@ -207,7 +207,7 @@ test('configured DELETE requires the acknowledged revision and cannot replay an 
 
 test('ordinary cart creation and acknowledged whole-cart quantity changes remain compatible', async () => {
   const ordinary=crypto.randomUUID();
-  psql(`INSERT INTO products(id,site_id,store_id,name,slug,price,stock,is_active,status,country_of_origin,metadata) VALUES('${ordinary}','${site.siteId}','${site.siteId}','Synthetic ordinary pencil','syn-${ordinary}',40,8,true,'active','India','{}');SELECT public.set_inventory_level_available('${ordinary}',NULL,'${site.locationId}',8,NULL);`);
+  psql(`INSERT INTO products(id,site_id,store_id,name,slug,price,stock,is_active,status,country_of_origin,metadata) VALUES('${ordinary}','${site.siteId}','${site.siteId}','Synthetic ordinary pencil','syn-${ordinary}',40,8,true,'active','India','{}');WITH _fixture_inventory_scope436 AS MATERIALIZED (SELECT set_config('app.site_id','${site.siteId}',true)) SELECT public.set_inventory_level_available('${ordinary}',NULL,'${site.locationId}',8,NULL) FROM _fixture_inventory_scope436;`);
   const added=await gateway.request(`/v1/storefront/${site.subdomain}/cart`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({lines:[{product_id:ordinary,quantity:1}]})});
   assert.equal(added.status,201,added.text);const cart=added.json!.data as Cart;
   const changed=await gateway.request(`/v1/storefront/${site.subdomain}/cart/${cart.cart_token}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({expected_updated_at:cart.updated_at,lines:[{product_id:ordinary,quantity:2}]})});

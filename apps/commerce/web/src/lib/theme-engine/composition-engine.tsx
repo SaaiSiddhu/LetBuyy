@@ -1,7 +1,8 @@
 import { storefrontDiscoveryUrl } from '@letbuyy/commerce-core';
 import type { CatalogDemoContent } from '../demo/catalog-demo-dispatch';
 import { assertCatalogDemoScope, catalogDemoReadOnlyHtml, selectCatalogDemoProducts, CATALOG_DEMO_POLICIES } from './catalog-demo-data';
-import { productToLiquidDrop } from './product-liquid-drop';
+import { productToLiquidDrop, withoutCurrentLiquidProduct } from './product-liquid-drop';
+import { applyLiquidInventoryAvailability } from './liquid-inventory-availability';
 import { headers } from 'next/headers';
 import type { StorefrontCollectionSummary } from '@letbuyy/api-client';
 import { loadCollectionDiscovery } from './collection-discovery';
@@ -448,13 +449,14 @@ export async function buildLiquidCommerceContext({
     const projection = discoveryPage && query ? projectDiscoveryPage(discoveryPage, publicPath, query, Boolean(resolvedCollectionMeta)) : null;
     const pageState = Array.from(sectionData.values()).find(data => data.pagination)?.pagination;
     const demoSelection = catalogDemo && listing ? selectCatalogDemoProducts(catalogDemo, plan.route) : null;
-    const collection = listing || products.length > 0
+    const collectionProducts = plan.route.type === 'product' ? withoutCurrentLiquidProduct(products, product) : products;
+    const collection = listing || collectionProducts.length > 0
         ? {
             id: resolvedCollectionMeta?.id || plan.route.resourceId || plan.route.resourceSlug || 'all-products',
             handle: plan.route.resourceSlug || 'all-products',
             title: resolvedCollectionMeta?.title || (plan.route.type === 'search' ? 'Search products' : !plan.route.resourceSlug || ['all','all-products'].includes(plan.route.resourceSlug) ? 'All Products' : plan.route.resourceSlug),
             description: resolvedCollectionMeta?.description ?? null,
-            products,
+            products: collectionProducts,
             ...(projection?.collection ?? {}),
             ...(!projection && pageState ? { total: pageState.total, pagination: {
                 page: pageState.page, limit: pageState.limit,
@@ -674,7 +676,8 @@ async function renderLiquidPlan({
         }
 
         const assembled = assembleLiquidPageFromRenderResult(result.liquid, { beforeContentHtml: catalogDemo ? '' : productOriginFilterMarkup(plan.route, editorMode), afterContentHtml });
-        return catalogDemo ? { ...assembled, html: await catalogDemoReadOnlyHtml(assembled.html, catalogDemo) } : assembled;
+        return catalogDemo ? { ...assembled, html: await catalogDemoReadOnlyHtml(assembled.html, catalogDemo) }
+            : { ...assembled, html: await applyLiquidInventoryAvailability(assembled.html, commerceContext) };
     } catch (err: unknown) {
         // Defense-in-depth: renderer should not throw after C1, but guard any unexpected failure
         // (e.g. OOM in LiquidJS, JSDOM init failure). Fall back to React; the lb:canary:render

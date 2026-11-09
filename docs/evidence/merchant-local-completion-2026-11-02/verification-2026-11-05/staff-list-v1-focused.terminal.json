@@ -1,0 +1,39 @@
+{
+  "supervisor_pid": 28994,
+  "source_sha256": "a4ec5192f31f3bbe89edb3782d024b766a62b8f5c7e6b4b6ddccb06198c8b0ab",
+  "started_at": "2026-11-06T07:45:44.802566+00:00",
+  "status": "STOPPED_AT_FAILED_STEP",
+  "steps": [
+    {
+      "step": "shared-types",
+      "exit_code": 0
+    },
+    {
+      "step": "gateway-types",
+      "exit_code": 0
+    },
+    {
+      "step": "ts-sdk-types",
+      "exit_code": 0
+    },
+    {
+      "step": "ts-sdk-contract",
+      "exit_code": 0
+    },
+    {
+      "step": "dart-sdk-contract",
+      "exit_code": 0
+    },
+    {
+      "step": "mobile-staff",
+      "exit_code": 0
+    },
+    {
+      "step": "owned-db",
+      "exit_code": 130
+    }
+  ],
+  "active_step": "owned-db",
+  "child_pid": 29282,
+  "source_unchanged": true
+}

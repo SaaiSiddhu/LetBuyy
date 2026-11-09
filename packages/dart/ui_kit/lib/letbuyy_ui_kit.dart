@@ -29,3 +29,10 @@ export 'src/widgets/badge_widget.dart';
 export 'src/widgets/confirmation_dialog.dart';
 export 'src/widgets/rating_widget.dart';
 export 'src/widgets/search_bar_widget.dart';
+export 'src/widgets/operation_feedback.dart';
+export 'src/widgets/form_sheet.dart';
+export 'src/widgets/choice_field.dart';
+export 'src/widgets/editor_scaffold.dart';
+export 'src/widgets/editor_steps.dart';
+
+export 'src/widgets/stat_tile.dart';

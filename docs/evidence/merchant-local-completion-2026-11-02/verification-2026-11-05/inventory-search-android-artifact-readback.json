@@ -1,0 +1,17 @@
+{
+  "at": "2026-11-05T19:29:18.891487+00:00",
+  "status": "INDEPENDENT_DEBUG_APK_READBACK_PASS",
+  "source_sha256": "2d70c5e307ef5fd263f30d85d5c905069e5d6f80d3d78ece70425c3459b69d60",
+  "artifact": {
+    "path": "/private/tmp/letbuyy-inventory-search-android-zrx2cmv4/merchant-local-debug.apk",
+    "sha256": "590493a2c13b752149b5d8d3d53e69af14f1c217ec44fce5feb9c9e22fa1ae22",
+    "bytes": 151909704
+  },
+  "actual_sha256": "590493a2c13b752149b5d8d3d53e69af14f1c217ec44fce5feb9c9e22fa1ae22",
+  "compiled_arm64_engine": true,
+  "debug_kernel_present": true,
+  "normal_main": true,
+  "installed": false,
+  "runtime_verified": false,
+  "scope": "Normal debug compile/archive only. Native41 is a separate fresh fixture/build."
+}

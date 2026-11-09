@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import 'package:letbuyy_store/screens/inventory/records_screen.dart';
 import 'package:letbuyy_store/screens/inventory/inventory_screen.dart';
 import 'package:letbuyy_store/screens/inventory/purchase_orders_screen.dart';
@@ -8,6 +8,69 @@ import 'inventory_workspace_test.dart' as workspace;
 import 'inventory_records_scope_test.dart' as fixtures;
 
 void main() {
+  for (final committed in [false, true]) {
+    testWidgets(
+      'transfer ${committed ? 'shipment' : 'hold'} has a readable lifetime and reference',
+      (tester) async {
+        final semantics = tester.ensureSemantics();
+        try {
+          await workspace.mount(
+            tester,
+            const InventoryRecordsScreen(
+              kind: InventoryRecordKind.reservations,
+            ),
+            (r, h) {
+              final row = fixtures.reservation(
+                status: committed ? 'committed' : 'active',
+              );
+              row['expires_at'] = null;
+              row['transfer'] = <String, dynamic>{
+                'id': fixtures.parentId,
+                'reservation_id': row['id'],
+                'line_id': '11111111-1111-4111-8111-111111111111',
+                'site_id': fixtures.siteA,
+                'source_location_id': row['location_id'],
+                'product_id': fixtures.productId,
+                'variant_id': null,
+                'transfer_number': 'TR-SYN-LIFETIME',
+                'status': committed ? 'shipped' : 'reserved',
+                'quantity_requested': 2,
+                'quantity_received': 0,
+                'base_received': 0,
+              };
+              fixtures.respond(r, h, [row]);
+            },
+          );
+          expect(
+            find.text(
+              committed ? 'Committed at shipment' : 'Held until shipment',
+            ),
+            findsOneWidget,
+          );
+          expect(
+            find.text('Transfer reference: TR-SYN-LIFETIME'),
+            findsOneWidget,
+          );
+          for (final field in [
+            'Synthetic held stock',
+            '2 units • ${committed ? 'Committed' : 'Active'}',
+            committed ? 'Committed at shipment' : 'Held until shipment',
+          ]) {
+            expect(
+              tester.getSemantics(find.text(field)).label,
+              field,
+              reason:
+                  'Each reservation field must have its own readable semantics; the selectable reference cannot replace it.',
+            );
+          }
+          expect(find.textContaining('Expires'), findsNothing);
+          expect(tester.takeException(), isNull);
+        } finally {
+          semantics.dispose();
+        }
+      },
+    );
+  }
   testWidgets(
     'reservation filters use all seven server states and retire on a store switch',
     (tester) async {
@@ -42,7 +105,7 @@ void main() {
         'cancelled',
         'active',
       ]) {
-        await tester.tap(find.byType(DropdownButtonFormField<String>));
+        await tester.tap(find.byType(LetbuyyChoiceField<String>));
         await tester.pumpAndSettle();
         await tester.ensureVisible(
           find.text('${status[0].toUpperCase()}${status.substring(1)}').last,
@@ -50,6 +113,8 @@ void main() {
         await tester.tap(
           find.text('${status[0].toUpperCase()}${status.substring(1)}').last,
         );
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Apply selection'));
         await tester.pumpAndSettle();
         expect(queries.last['status'], status);
       }
@@ -63,10 +128,10 @@ void main() {
       expect(queries.last['product_id'], isNull);
       expect(
         tester
-            .widget<DropdownButtonFormField<String>>(
-              find.byType(DropdownButtonFormField<String>),
+            .widget<LetbuyyChoiceField<String>>(
+              find.byType(LetbuyyChoiceField<String>),
             )
-            .initialValue,
+            .value,
         '',
       );
       expect(tester.takeException(), isNull);
@@ -232,6 +297,7 @@ void main() {
           ]);
         }
       });
+      await tester.ensureVisible(find.byTooltip('View reservations'));
       await tester.tap(find.byTooltip('View reservations'));
       await tester.pumpAndSettle();
       expect(queries.single['product_id'], fixtures.productId);

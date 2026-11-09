@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'support/native_selection_passthrough.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -6,6 +7,42 @@ import 'package:image_picker/image_picker.dart';
 import 'package:letbuyy_store/widgets/shared/merchant_media_picker.dart';
 
 void main() {
+  testWidgets(
+    'unavailable camera offers the library for photos or video without inventing a permission fix',
+    (tester) async {
+      late BuildContext context;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Builder(
+              builder: (c) {
+                context = c;
+                return const SizedBox();
+              },
+            ),
+          ),
+        ),
+      );
+      final result = await pickMerchantMedia(
+        context,
+        source: ImageSource.camera,
+        purpose: 'public-media-image',
+        selection: NativeSelectionPassthrough(),
+        pick: () async => throw PlatformException(
+          code: 'no_available_camera',
+          message: 'Private native details',
+        ),
+      );
+      await tester.pump();
+      expect(result, isNull);
+      expect(
+        find.textContaining('Choose media from the library'),
+        findsOneWidget,
+      );
+      expect(find.textContaining('Private native details'), findsNothing);
+      expect(tester.takeException(), isNull);
+    },
+  );
   for (final source in ImageSource.values) {
     testWidgets('${source.name} denial shows recovery and returns no file', (
       tester,
@@ -26,6 +63,8 @@ void main() {
       final result = await pickMerchantMedia(
         context,
         source: source,
+        purpose: 'public-media-image',
+        selection: NativeSelectionPassthrough(),
         pick: () async => throw PlatformException(
           code: '${source.name}_access_denied',
           message: 'Private native error',
@@ -58,6 +97,8 @@ void main() {
         await pickMerchantMedia(
           context,
           source: ImageSource.gallery,
+          purpose: 'public-media-image',
+          selection: NativeSelectionPassthrough(),
           pick: () async => null,
         ),
         isNull,
@@ -68,6 +109,8 @@ void main() {
         await pickMerchantMedia(
           context,
           source: ImageSource.gallery,
+          purpose: 'public-media-image',
+          selection: NativeSelectionPassthrough(),
           pick: () async => file,
         ),
         same(file),
@@ -92,6 +135,8 @@ void main() {
       final result = pickMerchantMedia(
         context,
         source: ImageSource.camera,
+        purpose: 'public-media-image',
+        selection: NativeSelectionPassthrough(),
         pick: () => completion.future,
       );
       await tester.pumpWidget(const SizedBox());

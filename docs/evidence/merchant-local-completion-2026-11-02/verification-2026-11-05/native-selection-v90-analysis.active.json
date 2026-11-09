@@ -1,0 +1,13 @@
+{
+  "started_at": "2026-11-07T18:56:09.654124+00:00",
+  "supervisor_pid": 34472,
+  "source": "merchant-native-selection-source-v90",
+  "source_sha256": "28dcc056a731d88d5ccb7f7a2fc897a102eb23409dfe5d306c2b38c849e00616",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "analyze",
+    "--no-pub"
+  ],
+  "status": "RUNNING",
+  "child_pid": 34475
+}

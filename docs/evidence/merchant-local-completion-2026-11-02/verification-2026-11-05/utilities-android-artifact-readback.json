@@ -1,0 +1,17 @@
+{
+  "at": "2026-11-05T20:20:29.261833+00:00",
+  "status": "INDEPENDENT_DEBUG_APK_READBACK_PASS",
+  "source_sha256": "392d53d26becc93d69c656afaccb8fc7b591c8c0f542b61b3d80ce7fa475aba9",
+  "artifact": {
+    "path": "/private/tmp/letbuyy-utilities-android-3gb5ozll/merchant-local-debug.apk",
+    "sha256": "2ff7bc35aa591e8b2a525b9231b0a20f1a8776b9d8126a5a6ed3fb397700e3ac",
+    "bytes": 151912934
+  },
+  "actual_sha256": "2ff7bc35aa591e8b2a525b9231b0a20f1a8776b9d8126a5a6ed3fb397700e3ac",
+  "compiled_arm64_engine": true,
+  "debug_kernel_present": true,
+  "normal_main": true,
+  "installed": false,
+  "runtime_verified": false,
+  "scope": "Normal debug compile/archive only. Native41 proves its preceding exact artifact only; changed utilities have no native acceptance."
+}

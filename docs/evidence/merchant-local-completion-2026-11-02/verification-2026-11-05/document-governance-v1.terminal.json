@@ -1,0 +1,12 @@
+{
+  "at": "2026-11-05T19:03:13.131675+00:00",
+  "status": "TERMINAL",
+  "exit_code": 0,
+  "capsule": "/private/tmp/letbuyy-document-governance-hsv4x_7k",
+  "purpose": "Disposable validation copy only, no implementation/worktree/merge/push/release",
+  "source_sha256": "b1ab9fa3bfb563d17d6285aeaeffbc80845ef39d521c5c0cfdcf028856df8e4d",
+  "core_inputs_byte_equal": 8442,
+  "original_source_unchanged": true,
+  "original_index_unchanged": true,
+  "report": "document-governance-v1-report.json"
+}

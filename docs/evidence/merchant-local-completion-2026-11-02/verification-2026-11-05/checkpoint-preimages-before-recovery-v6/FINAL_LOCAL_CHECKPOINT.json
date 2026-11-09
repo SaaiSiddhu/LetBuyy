@@ -1,0 +1,93 @@
+{
+  "at": "2026-11-06T07:15:43.746128+00:00",
+  "status": "CURRENT_KYC_SOURCE_LOCAL_QUALIFIED;BOUNDED_PRIOR_STORESWITCHER_STAFF_NATIVE_ACCEPTED;FULL_PROGRAMME_OPEN",
+  "source_sha256": "9924957f802fbd5b77c395e3ad18b19573d7ad5fbb886a9ad39419b4ba456769",
+  "source_inputs": 8459,
+  "source_manifest": "kyc-selection-source-v2.source.json",
+  "head": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+  "report": "../MOBILE_UI_KYC_LIFETIME_LOCAL_V2.md",
+  "full_flutter": {
+    "pass": 1586,
+    "fail": 0,
+    "skip": 0,
+    "fresh": true
+  },
+  "focused_kyc": {
+    "pass": 49,
+    "fail": 0,
+    "skip": 0,
+    "overlaps_full_suite": true
+  },
+  "app_analysis_issues": 0,
+  "web": {
+    "pass": 1732,
+    "fail": 0,
+    "skip": 0,
+    "typing": "PASS",
+    "reused_after_exact_input_equality": true,
+    "proof": "kyc-selection-v2-preservation-web-reuse.json"
+  },
+  "governance": {
+    "PASS": 114,
+    "FAIL": 0,
+    "BLOCKED": 0,
+    "SKIP": 0,
+    "NOT_APPLICABLE": 1
+  },
+  "governance_advisories": 211,
+  "android": {
+    "at": "2026-11-06T07:12:48.936421+00:00",
+    "status": "INDEPENDENT_DEBUG_APK_READBACK_PASS",
+    "source_sha256": "9924957f802fbd5b77c395e3ad18b19573d7ad5fbb886a9ad39419b4ba456769",
+    "artifact": {
+      "path": "/private/tmp/letbuyy-kyc-selection-v2-android-rw62q03t/merchant-local-debug.apk",
+      "sha256": "939a0be0361a250cfed998033be3e070f632e46f52bb2f136aeeeffaa42b6d7b",
+      "bytes": 151924275
+    },
+    "actual_sha256": "939a0be0361a250cfed998033be3e070f632e46f52bb2f136aeeeffaa42b6d7b",
+    "compiled_arm64_engine": true,
+    "debug_kernel_present": true,
+    "normal_main": true,
+    "installed": false,
+    "runtime_verified": false,
+    "scope": "Normal debug compile/archive only. Native58 preserves its own prior StoreSwitcher/Staff artifact acceptance; current KYC changes have no new native acceptance.",
+    "material_icons_bytes": 1645184,
+    "material_icons_sha256": "d9865b671a09d683d13a863089d8825e0f61a37696ce5d7d448bc8023aa62453"
+  },
+  "ios": {
+    "at": "2026-11-06T07:12:48.936421+00:00",
+    "status": "INDEPENDENT_IOS_DEBUG_ARTIFACT_READBACK_PASS",
+    "source_sha256": "9924957f802fbd5b77c395e3ad18b19573d7ad5fbb886a9ad39419b4ba456769",
+    "artifact": {
+      "path": "/private/tmp/letbuyy-kyc-selection-v2-ios-r7vz0l12/Runner.app",
+      "files": 377,
+      "manifest_sha256": "2e16241eb633ef07574fff699fae8dcfa7c8ea46a43531385419bce56e2149aa"
+    },
+    "all_retained_files_equal": 377,
+    "bundle_id": "com.letbuyy.store",
+    "executable_architecture": "/private/tmp/letbuyy-kyc-selection-v2-ios-r7vz0l12/Runner.app/Runner: Mach-O 64-bit executable arm64",
+    "owned_simulator_remains_shutdown": true,
+    "scope": "Debug compile/archive only; no iOS launch, auth, backend, sync or release acceptance.",
+    "material_icons_sha256": "d9865b671a09d683d13a863089d8825e0f61a37696ce5d7d448bc8023aa62453"
+  },
+  "independent_current_readback": "kyc-selection-v2-independent-gates-readback.json",
+  "source_delta_from_native58": "Exactly4KYC frontend/test paths; all other original8455inputs equal. Backend/SQL/SDK/identity/web/UIkit and original Staff assertions unchanged.",
+  "native58": {
+    "status": "INDEPENDENT_BOUNDED_PASS",
+    "source_sha256": "99dee3d9dc5075e97deaff99f2799dea89dac496c88c163a944b39bfe9dda4f0",
+    "run_id": "92d452e8952f",
+    "apk_sha256": "697f5d8596030cfc80b9550b12f59c0a66d2401ba8bc2fa937957074f43cd3df",
+    "custody": "../native58-accepted-local-switcher-staff/MANIFEST.json",
+    "scope": "Normal53membership web/Android switcher, restart, bidirectional owner-name sync, Staff product save/web read, live downgrade403retirement/removal discovery; exact data/effect-once preservation. No current KYC native proof."
+  },
+  "emulator": "native58-emulator-closure.json;exact task emulator gracefully stopped;userdata preserved;no mappings/Docker resources remain from58",
+  "active_session": null,
+  "unreviewed_source_rows": 35,
+  "unique_surface_denominator": null,
+  "next": "Staff server-list/invitation acceptance; KYC upload-dialog uncertain-intent/list-shape/shared UI; other product field/media preservation; remaining mobile surfaces and complete applicable-feature synchronization. Keep provider/hosted/release boundaries.",
+  "full_feature_set_accepted": false,
+  "ios_runtime_accepted": false,
+  "signed_release": false,
+  "hosted_mutations": false,
+  "prior_checkpoint_preimages": "checkpoint-preimages-before-native58/"
+}

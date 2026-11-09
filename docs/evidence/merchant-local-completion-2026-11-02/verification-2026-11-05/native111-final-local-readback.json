@@ -1,0 +1,114 @@
+{
+  "at": "2026-11-07T09:28:02.271666+00:00",
+  "status": "BOUNDED_ANDROID_VIRTUAL_CAMERA_PHOTO_RECORD_PLAYBACK_WEB_SYNC_PASS",
+  "source": "merchant-camera-video-model-source-v84",
+  "source_sha256": "5f78a66e349980b7538b8c5a894967984d34baf80072677cfc2f30283dbdea1c",
+  "fixture_source_sha256": "7f100b77ff23b63944b4df231d742dd1262b3ad1dfc181cd9c43ec4e08411869",
+  "fixture_inputs_matching_source84": 4877,
+  "run_id": "9a0d2163e1a0",
+  "private_root": "/private/tmp/letbuyy-merchant-local-20261107-a2c0769e26",
+  "runner": {
+    "tests": 1,
+    "assertionsPassed": 1,
+    "assertionsFailed": 0,
+    "skipped": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    }
+  },
+  "normal_native_auth": true,
+  "actual_emulated_camera_photo_and_record": true,
+  "uploads": 2,
+  "public_objects": 2,
+  "object_hashes": {
+    "image/jpeg": "e261dea8c80305c73c8351ed8ffdc188c4c769b6137c2c6ed41930412257a723",
+    "video/mp4": "019ba3c0d54e0fdf8dc493b897c67ecc907b9ff4915b75be08b033a2b976494c"
+  },
+  "photo": {
+    "mime": "image/jpeg",
+    "size_bytes": 75270
+  },
+  "video_bytes": 522528,
+  "actual_video_decode_pause_mute_seek_background": true,
+  "native_web_caption_readback": true,
+  "installed_apk_sha256": "085f543d950e51ea0c37d988a3f51f481f866265be78aec65aa9eb441bb8cb4c",
+  "installed_equals_retained": true,
+  "phase_terminals": {
+    "Readback-terminal.json": {
+      "phase": "Readback",
+      "attempt": 1,
+      "exit": 0,
+      "accepted": true,
+      "run_id": "9a0d2163e1a0",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261107-a2c0769e26/Readback.py",
+      "control_sha256": "0144a3e92445090c93150bc7e20486e4919d9108d343aa60a0d60b0dee0927fb"
+    },
+    "Photo-terminal.json": {
+      "phase": "Photo",
+      "attempt": 1,
+      "exit": 0,
+      "accepted": true,
+      "run_id": "9a0d2163e1a0",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261107-a2c0769e26/Photo.py",
+      "control_sha256": "9b3e836beec8273c6f20456e96e283ccf74fa2227b22d885d71608d1d9798031"
+    },
+    "Video-terminal.json": {
+      "phase": "Video",
+      "attempt": 1,
+      "exit": 1,
+      "accepted": false,
+      "run_id": "9a0d2163e1a0",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261107-a2c0769e26/Video.py",
+      "control_sha256": "048ba2ebf711c85a6bca8a2349700da121c41b4b6a57139c1a2141b4ce173ae9"
+    },
+    "Preview-terminal.json": {
+      "phase": "Preview",
+      "attempt": 1,
+      "exit": 1,
+      "accepted": false,
+      "run_id": "9a0d2163e1a0",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261107-a2c0769e26/Preview.py",
+      "control_sha256": "27ed70475544d1a1a01fd7fa4ed8542fc754b79e34f6044b40e53936539461bd"
+    },
+    "Preview-attempt2-terminal.json": {
+      "phase": "Preview",
+      "attempt": 2,
+      "exit": 0,
+      "accepted": true,
+      "run_id": "9a0d2163e1a0",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261107-a2c0769e26/Preview-observed-close-continuation.py",
+      "control_sha256": "fd187f97645769d8f56aa2d03ea449cd9b5a306880fcc9b10e98ea64f5aa549b"
+    },
+    "Video-attempt2-terminal.json": {
+      "phase": "Video",
+      "attempt": 2,
+      "exit": 0,
+      "accepted": true,
+      "run_id": "9a0d2163e1a0",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261107-a2c0769e26/Video-observed-editor-continuation.py",
+      "control_sha256": "aff3897b078d76e6b8e5032512dbff0d774925ac52a5e298724d328172f0a8bd"
+    },
+    "Auth-terminal.json": {
+      "phase": "Auth",
+      "attempt": 1,
+      "exit": 0,
+      "accepted": true,
+      "run_id": "9a0d2163e1a0",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261107-a2c0769e26/Auth.py",
+      "control_sha256": "0b809d3ddcfc9327f22262fdaf7495e3164097f846a67f535d764ff6d389513b"
+    }
+  },
+  "mapping_custody": {
+    "run_id": "9a0d2163e1a0",
+    "reverse_baseline_restored": true,
+    "forward_baseline_restored": true,
+    "host9002_never_touched": true
+  },
+  "whole_features_accepted": 0,
+  "limits": "Task Android emulator virtual camera only, no host webcam or real microphone/audio acceptance. Local synthetic Accounts/Next/compiled workerd Gateway/BFF/owned PostgreSQL/R2. Driver failures retained and resumed only observed editor/close states; no duplicate capture/upload or relabelled failed attempt. Physical device/iOS capture, all codecs, providers, hosted/release/full122 remain open."
+}

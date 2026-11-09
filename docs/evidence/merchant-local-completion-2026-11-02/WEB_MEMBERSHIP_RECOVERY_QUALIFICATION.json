@@ -1,0 +1,104 @@
+{
+  "status": "BOUNDED_LOCAL_WEB_MEMBERSHIP_RETIREMENT_RECOVERY_ACCEPTED",
+  "source_snapshot": "7c09f83e4f922184a6193f869cc1d0bf279db024add1acc9cc311bf2ae8bf414",
+  "source_entries": 7411,
+  "negative_baseline": {
+    "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/membership-discovery-negative-web-v2.log",
+    "existing_pass": 9,
+    "reproduced_failures": 4,
+    "failures": [
+      "No discoverable saved selection after deleted row leaves normal list",
+      "KEY_CONFLICT409 incorrectly offers destructive stale review",
+      "LEGACY_KEY409 incorrectly offers destructive stale review",
+      "Current owner403 retains private product-selection rows"
+    ]
+  },
+  "repair": [
+    "Extract existing session journal without changing original namespace, body or keys; discover by current actor and stable site across URL rename",
+    "Normal collection-list recovery sends exact original body/key under current actor/store",
+    "Canonical missing404 enables explicit dialog and original-request recheck only; generic errors/current denial preserve",
+    "Current version conflict only enables review; fresh authorized read precedes release; key/legacy conflicts remain uncertain",
+    "Retire private views/generation on current401/403/session change; late success cannot clear retained intent",
+    "Require matching site/collection/ordered IDs and strictly greater membership revision before confirmation",
+    "Malformed matching recovery retained and fences new save; unrelated actor/site/family remain private"
+  ],
+  "current_source_checks": {
+    "focused_mounted_membership": {
+      "pass": 25,
+      "fail": 0,
+      "scope": "Real maintained page and providers; explicitly synthetic HTTP, not backend/device acceptance"
+    },
+    "full_web_phases": [
+      592,
+      818,
+      295,
+      13
+    ],
+    "fail": 0,
+    "skip": 0,
+    "typecheck_exit": 0
+  },
+  "owned_browser": {
+    "status": "PASS",
+    "runId": "bbbede5e529c",
+    "tests": 8,
+    "pass": 8,
+    "fail": 0,
+    "skip": 0,
+    "runnerExit": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "summary": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/web-membership-browser-v2.json",
+    "boundary": "Production-mode local Accounts and Merchant Next, actual Gateway modules, owned PG/PostgREST. Normal synthetic sign-in. No positive credential/API fake. No compiled Workerd/native-device claim.",
+    "checks": [
+      "Original committed membership200/wire503, normal second editor delete200, original editor reload discovers saved selection without a live row, exact original key/body returns200 and unchanged whole-row receipt hash, exactly1membership receipt/audit/outbox; products retained",
+      "Unsaved first-editor selection, normal second-editor delete200, original save canonical404, reload retains, Cancel retains, explicit dialog sends exact original key/body again404 before dismissal;0membership receipts/outbox, products retained"
+    ],
+    "failed_prior_run": {
+      "runId": "a6c2bec374de",
+      "pass": 6,
+      "fail": 2,
+      "cause": "Test-only expectation of transient Collection deleted notice. Real DELETE200and live row removal succeeded; normal list refresh unmounted notice. Changed helper to assert response200and normal table removal; all effect/receipt assertions unchanged.",
+      "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/web-membership-browser-v1.json"
+    }
+  },
+  "preserved_device_acceptance": "MEMBERSHIP_RETIREMENT_ANDROID_WEB_V15_QUALIFICATION.json archives earlier exact7410source; no current-web-APK claim",
+  "excluded": [
+    "Full122acceptance",
+    "Actual buyer HTML collection render/current compiled Workerd",
+    "Normal staff UI",
+    "iOS",
+    "Providers",
+    "Hosted",
+    "Production or release"
+  ],
+  "source_archive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/web-membership-v2-qualified-source",
+  "source_held_and_terminal_verified": true,
+  "governance": {
+    "status": "PASS",
+    "counts": {
+      "PASS": 114,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "SKIP": 0,
+      "NOT_APPLICABLE": 1
+    },
+    "exitCode": 0,
+    "advisories": 211,
+    "advisoryValidators": [
+      "branch-dispositions-validator.mjs"
+    ],
+    "scope": "Disposable clone of exact web-membership-v2source; isolated missing local branch-ref advisories are not integration/release proof",
+    "report": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/governance-category-capsule-v10.gate.json"
+  },
+  "visualReview": [
+    "web-retired-membership-confirmed.png inspected: readable original-selection confirmation, no pending recovery, confirmed current list, New collection enabled",
+    "web-missing-membership-dismissed.png inspected: readable rejected-selection dismissal with current list and enabled New collection; no recovery action"
+  ]
+}

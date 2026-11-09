@@ -1,0 +1,29 @@
+{
+  "started_at": "2026-11-06T08:28:42.444421+00:00",
+  "supervisor_pid": 41746,
+  "source_sha256": "dd0512dbc5d9f017eec2d8eaef23c3885380abfccdffe414db9df5dfc650a6cf",
+  "status": "RUNNING",
+  "steps": [
+    {
+      "step": "app-analysis",
+      "exit_code": 0
+    },
+    {
+      "step": "full-flutter",
+      "exit_code": 0
+    },
+    {
+      "step": "web-types",
+      "exit_code": 0
+    },
+    {
+      "step": "web-tests",
+      "exit_code": 0
+    }
+  ],
+  "private_root": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4",
+  "prior_scoped_passes": "merchant-recovery-v8-reused-scopes.json",
+  "active_step": "owned-db",
+  "child_pid": 42489,
+  "source_unchanged": true
+}

@@ -1,0 +1,29 @@
+{
+  "at": "2026-11-06T17:11:47.328439+00:00",
+  "source_sha256": "7b3d68cff186f04b58661b987e52954d2b63ae452e0d7befcfbda20a108d355e",
+  "run_id": "b3794ed3b0bb",
+  "status": "NATIVE_MEDIA_PHASE_COMPLETE_KYC_INPUT_LABEL_SELECTOR_NOT_ACCEPTED_FULL_RUN",
+  "media": {
+    "run_id": "b3794ed3b0bb",
+    "before_pid": 17518,
+    "after_pid": 19307,
+    "original_picker_cache_removed": [
+      "cache/c22daf52-9956-45c1-9b39-32da91d85527/1000000018.png"
+    ],
+    "recovered_without_original_file": true,
+    "metadata_saved": true,
+    "evidence": [
+      "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v71/native-media-recovered-and-edited.png"
+    ]
+  },
+  "kyc": "Actual private KYC form reached, Business PAN selected. Visible Reference label is not serialized by stock dump for empty edit field; helper stopped before typing/upload. No KYC private-upload acceptance.",
+  "next": "Native72 verifies current form title and uses existing unique ordered/focused editable-field input; follows actual auto-close behavior and scrolls to saved PAN/No scan result yet/document saved readback. No application change or weaker backend/private-storage/Staff assertions.",
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  }
+}

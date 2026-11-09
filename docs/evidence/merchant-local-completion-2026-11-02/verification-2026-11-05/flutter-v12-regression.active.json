@@ -1,0 +1,15 @@
+{
+  "started_at": "2026-11-06T11:14:38.462927+00:00",
+  "supervisor_pid": 85098,
+  "source": "merchant-recovery-source-v12",
+  "source_sha256": "712ef4312e547fae4d0abf5d50ed1600320987ef93d3b7df42fac8859863de9a",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "--reporter",
+    "expanded"
+  ],
+  "status": "RUNNING",
+  "child_pid": 85108
+}

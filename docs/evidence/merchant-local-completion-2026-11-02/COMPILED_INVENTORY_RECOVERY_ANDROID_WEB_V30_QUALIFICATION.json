@@ -1,0 +1,139 @@
+{
+  "status": "PASS: BOUNDED_LOCAL_COMPILED_ANDROID_WEB_INVENTORY_RECOVERY",
+  "at": "2026-11-04T04:10:24.223885+00:00",
+  "full119Or122Accepted": false,
+  "source": {
+    "baseline": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+    "manifest": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/inventory-bulk-ui-v13.source.json",
+    "sha256": "761ceddc1dde3e586d71d96750589b5a2b386f8ab6e7da767dd8c059dd5e8e27",
+    "entries": 7439,
+    "archive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/inventory-bulk-ui-v13-qualified-source",
+    "heldAndTerminalVerified": true,
+    "fixtureSourceSha256": "48c1c7dc5260f44fd01e4a1f3e4a147d2ff2a9b6103190ba8e5d14da677028da"
+  },
+  "run": {
+    "runId": "ce29805b307b",
+    "tests": 1,
+    "assertionsPassed": 1,
+    "assertionsFailed": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    }
+  },
+  "artifact": {
+    "run_id": "ce29805b307b",
+    "source_sha256": "48c1c7dc5260f44fd01e4a1f3e4a147d2ff2a9b6103190ba8e5d14da677028da",
+    "apk": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v30/qualified-artifact/merchant-local-debug.apk",
+    "source_build_path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/apps/merchant/mobile/build/app/outputs/flutter-apk/app-debug.apk",
+    "original_bytes_retained": true,
+    "sha256": "178d844864e646362e320d2e40d64fa0c1671f43bdc65a5a98be38d903b8d9f4",
+    "defines": {
+      "ENVIRONMENT": "local",
+      "BFF_BASE_URL": "http://127.0.0.1:54350/v1",
+      "API_BASE_URL": "http://127.0.0.1:54350/v1",
+      "IDENTITY_BASE_URL": "http://localhost:9002",
+      "ADMIN_BASE_URL": "http://localhost:54353",
+      "STOREFRONT_BASE_URL": "http://localhost:54354",
+      "LOCAL_CHALLENGE_SDK_URL": "http://127.0.0.1:49188/fixtures/turnstile/api.js",
+      "TURNSTILE_SITE_KEY": "1x00000000000000000000AA",
+      "MOBILE_PUSH_DEVICE_TOKEN": "",
+      "SENTRY_DSN": "SKIP_NEEDS_HUMAN_LOCAL_SENTRY_DSN"
+    },
+    "build_method": "flutter-config-only-then-offline-gradle-debug",
+    "installed_readback": true,
+    "scope": "Local debug artifact only; no hosted/provider/release certification."
+  },
+  "compiledWorkers": {
+    "run_id": "ce29805b307b",
+    "runtime": "workerd",
+    "gateway_sha256": "555853cc5d735552c834697e7c4624af1cfb432af330d09bcdb36ca820b5dd34",
+    "bff_sha256": "4db6627fabda2fc4ff8140faadbd7cd5e2c315b3c7b427553a8b8630456ca8a5",
+    "entrypoints": [
+      "services/api-gateway/src/index.ts",
+      "services/mobile-bff/src/index.ts"
+    ],
+    "transport": "Owned Node HTTP and service-binding observer; no business response stubs",
+    "hosted": false
+  },
+  "launcherCleanup": {
+    "at": "2026-11-04T04:05:16.365473+00:00",
+    "serial": "emulator-5580",
+    "adb_port": 15038,
+    "runner_exit": 0,
+    "controller_exit": 0,
+    "baseline": [],
+    "before": [],
+    "removed": [],
+    "refused": [],
+    "after": [],
+    "scope": "Only current-run exact reverse tuples on task emulator. Host9002 never accessed."
+  },
+  "ownedIdleAssertion": {
+    "pid": 8274,
+    "exit": 0,
+    "scope": "Only idle-sleep prevention while this exact owned runner lives; no persistent power setting change; lid remains user-controlled"
+  },
+  "runtime": "Actual compiled Workerd Gateway and BFF, real owned PostgreSQL/PostgREST, production-mode local Accounts/Merchant Next; Node transport/fault observer, no business-response stubs.",
+  "proven": [
+    "Normal synthetic native Accounts credential form, fresh PKCE exchange and automatic app return; independent ordinary web owner login",
+    "Native location creation with committed reply loss, process restart and exact original request retry; supplier creation and bidirectional metadata/profile current readback",
+    "Native PO4 units at125.50, partial receipt3 with reply loss/restart/exact retry; native transfer2 reserve, held-state readback on native/web, same reservation committed at shipment and partial destination receipt1",
+    "Web completes remaining1 PO unit and1 transfer unit; native refresh reads both Received; exact stock/receipt conservation checks pass",
+    "Synthetic finite customer hold prerequisite; native stock delta+2 under real committed reply loss/restart/original retry, followed by normal web read3 free and absolute save4 free",
+    "Native refresh reads4 free/1 held/5 physical; exactly one adjustment and one edit receipt; original hold and11 warehouse receipts preserved without a duplicate effect",
+    "Actual new feedback rendered and visually inspected; unchanged message expresses uncertain acknowledgement; composed token contrast14.6287; actual numeric keyboard and exact2 entry observed"
+  ],
+  "evidence": {
+    "metadata": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v30/backend-verified.json",
+    "warehouse": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v30/stock-backend-verified.json",
+    "setters": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v30/setter-backend-verified.json",
+    "inputManifest": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-v30-controller-inputs.json",
+    "screenshots": [
+      {
+        "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/inventory-v30-native-web-absolute-stock-read.png",
+        "sha256": "a6eb561cc0aa635666e5ea468b7797837a27e8617bdc8306fa795db071da2daf",
+        "visuallyInspected": true
+      },
+      {
+        "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/inventory-v30-native-stock-delta-keyboard.png",
+        "sha256": "fab366178aa97f91d0ff50675c398b1ee85588081f0a7d03b6787f160eb7f9ca",
+        "visuallyInspected": true
+      },
+      {
+        "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/inventory-v30-native-location-original-pending.png",
+        "sha256": "1185713c677ed505deb14caf1b3af4a43d604314760421ce9593be4686772157",
+        "visuallyInspected": true
+      }
+    ]
+  },
+  "localGates": {
+    "bulkSecurityRollbackProvider": "39PASS, exact unchanged SQL and runtime basis documented in INVENTORY_BATCH_437_VERIFICATION.json",
+    "productRegression": "90PASS in corrected product/bulk cohort831029ef7f0f",
+    "flutter": "933PASS/analyze0; exact unchanged Dart inputs",
+    "gatewayUnits": 2087,
+    "sharedContracts": 23,
+    "ownedLane": 16,
+    "gatewayBffDeviceTypes": "PASS",
+    "freshDisposableGovernance": {
+      "PASS": 114,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "SKIP": 0,
+      "NOT_APPLICABLE": 1
+    }
+  },
+  "limits": [
+    "One owner warehouse/stock story, not all feature acceptance, staff/multi-store/variant coverage or whole-app accessibility/performance",
+    "Batch API behavior is separately owned-database verified; no native bulk editor is claimed",
+    "Customer hold is a synthetic prerequisite, not buyer-authenticated checkout proof",
+    "Debug Android arm64 artifact on emulator; no signed release, iOS UI, physical-device, hosted/provider delivery or production readiness",
+    "V29 cancellation/power evidence is preserved separately and is not relabelled a passing run"
+  ]
+}

@@ -1,0 +1,94 @@
+{
+  "status": "BOUNDED_LOCAL_OWNER_RETIRED_SELECTION_RECOVERY_ACCEPTED",
+  "runId": "e425724c445d",
+  "tests": 1,
+  "pass": 1,
+  "fail": 0,
+  "skipped": 0,
+  "runnerExit": 0,
+  "normalUiControllerExit": 0,
+  "noResumerOrSessionInjection": true,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "wallSeconds": 263.5,
+  "source": {
+    "baseline": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+    "broadSha256": "58fbf51649c8f808f3e8919c20ef022265808c51258dcd04bcf7aa9263a7fdc6",
+    "broadEntries": 7410,
+    "fixtureInputSha256": "a767cc6639ba89bb0686139b349a992f5cd4f1a7ab5ed63c3775deaf6eaf1a91",
+    "archive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v15/qualified-source",
+    "heldThroughTerminalAndVerified": true,
+    "differentHashesUseDeclaredDifferentScopes": true,
+    "authorityHashes": {
+      "AGENTS.md": "b5bf6a65cf4050eec7867da0014f3dc483aeec86d223084a85d2f51c796ecbc9",
+      "GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md": "c3655482dca86907d7c801b4ef15810319f2d64cd5f8a8af67406da4d0f3500c",
+      "GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CANONICAL_SYSTEMS.md": "5099341c2a273ee0455857fbc613efd2aaa5621c5e829d531bded02e07661cb4"
+    }
+  },
+  "artifact": {
+    "path": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v15/qualified-artifact/merchant-local-debug.apk",
+    "sha256": "2dc1999d8dce52c6536d6c6738fa87e28d18966963dcaaee8175295594e62ea1",
+    "originalBytesRetained": true,
+    "installedReadback": true,
+    "buildMethod": "flutter-config-only-then-offline-gradle-debug",
+    "mode": "local Android debug only"
+  },
+  "acceptedScope": [
+    "Normal synthetic Accounts browser form, automatic Android return, actual fresh PKCE exchange and current native session/dashboard.",
+    "Normal native membership order save commits but wire503retains original intent; normal web reads committed order and deletes collection.",
+    "Native process restart and normal Collections entry discover retained selection even though the collection is absent; exact original request returns its original immutable receipt and no second effect.",
+    "A subsequent normal native manual collection create is visible in the normal web table.",
+    "Native picks a product but does not save before normal web deletes that new collection. Original save gets typed canonical no-effect404; generic recovery entry survives process restart and cancel.",
+    "Explicit dismissal repeats exact original request under current owner, confirms canonical404again, and releases only its local intent. No replacement/duplicate product or membership effect."
+  ],
+  "database": {
+    "new_deleted": true,
+    "product_count": 2,
+    "original_audits": 1,
+    "original_outbox": 1,
+    "original_deleted": true,
+    "original_receipts": 1,
+    "new_metadata_receipts": 2,
+    "new_membership_receipts": 0,
+    "original_receipt_sha256": "c9829f5ca93d4cba78a5cfd9e2ea77ca7dad9c796217fdcbc035f831328f43b3"
+  },
+  "effects": "Original membership: exactly1receipt/audit/outbox, same whole-row receipt hash after retirement/replay. New membership:0receipts. New metadata:2receipts for create/delete. Both catalog products retained.",
+  "visualReview": [
+    "native-missing-selection-explicitly-discarded.png inspected: readable resolved notice, confirmed empty live list, no pending-recovery control, New collection enabled.",
+    "Normal UI controller observed restart/cancel retention and original confirmation; screenshot files retained in private run."
+  ],
+  "currentGates": {
+    "governance": "v9exact same broad source:114pass,0fail/blocked/skip,1not-applicable;211isolated missing-ref branch advisories, not release/integration proof.",
+    "gatewayUnit": 2068,
+    "flutter": 917,
+    "focusedCollectionRecovery": 31,
+    "ownedFullDatabase": {
+      "runId": "bebe02766ed7",
+      "pass": 34,
+      "fail": 0,
+      "skipped": 0
+    },
+    "ownedRetainedAndUnified": {
+      "runId": "24c937c56d3a",
+      "pass": 13,
+      "fail": 0,
+      "skipped": 0
+    },
+    "analysis": "clean",
+    "GatewayTypecheck": "pass"
+  },
+  "limits": [
+    "Bounded owner manual-selection retirement recovery only, not all119/122features.",
+    "Normal staff UI, web-side orphaned selection discovery/dismissal, every rule/operator UI combination and actual buyer rendered collection HTML remain separate.",
+    "Phone fixture runs actual BFF/Gateway production modules with owned PG and production-mode local Next, not current compiled Workerd Gateway/BFF acceptance.",
+    "No real-provider/hosted/iOS/physical-hardware/signed-release/production certification."
+  ],
+  "privateRun": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v15",
+  "controllerSha256": "19855d98d309d04f74f2eb510ea7072de7d33934ce0de24e27610778d92b906d"
+}

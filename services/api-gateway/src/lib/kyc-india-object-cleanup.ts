@@ -28,14 +28,23 @@ async function currentReference(db: Database, job: CleanupJob): Promise<{
 /** Bounded Gateway cron path; closed outside owned tests until Mumbai IAM and retention pass. */
 export async function drainKycIndiaObjectCleanup(env: Env, limit = 20,
     removeVersions: typeof cleanupKycIndiaS3ObjectVersions = cleanupKycIndiaS3ObjectVersions): Promise<{
-        scanned: number; deleted: number; retained: number; deferred: number;
+        scanned: number; deleted: number; retained: number; deferred: number; expired: number;
+        overdue: number; held: number; holdReviewOverdue: number; holdExpired: number;
+        oldestDueAt: string | null;
     }> {
     if (env.ENVIRONMENT !== 'test' || env.KYC_INDIA_CLEANUP_ENABLED !== 'true')
-        return { scanned: 0, deleted: 0, retained: 0, deferred: 0 };
+        return { scanned: 0, deleted: 0, retained: 0, deferred: 0, expired: 0,
+            overdue: 0, held: 0, holdReviewOverdue: 0, holdExpired: 0,
+            oldestDueAt: null };
     if (!env.KYC_INDIA_BUCKET || !env.KYC_INDIA_ACCOUNT_ID
         || !env.KYC_INDIA_CLEANUP_ACCESS_KEY_ID || !env.KYC_INDIA_CLEANUP_SECRET_ACCESS_KEY)
         throw new Error('KYC India cleanup is not configured');
     const db = getSupabaseAdminFromEnv(env);
+    const { data: expired, error: expiryError } = await db.rpc('expire_kyc_india_pending_v1', {
+        p_limit: Math.min(Math.max(limit, 1), 50),
+    });
+    if (expiryError || !Number.isInteger(expired) || expired < 0 || expired > 50)
+        throw new Error('KYC India pending expiry unavailable');
     const { data, error } = await db.rpc('list_due_kyc_india_cleanup_v1', {
         p_limit: Math.min(Math.max(limit, 1), 50),
     });
@@ -68,6 +77,7 @@ export async function drainKycIndiaObjectCleanup(env: Env, limit = 20,
                 retained++;
                 continue;
             }
+            if (claim === 'held') continue;
             if (claim !== 'delete') throw new Error('KYC India cleanup claim refused');
             const reference = await currentReference(db, job);
             if (reference) throw new Error('KYC India cleanup found a current reference after claim');
@@ -96,5 +106,24 @@ export async function drainKycIndiaObjectCleanup(env: Env, limit = 20,
                 .eq('storage_provider', 'aws_s3_mumbai').in('status', ['pending', 'deleting']);
         }
     }
-    return { scanned: jobs.length, deleted, retained, deferred };
+    const { data: sla, error: slaError } = await db.rpc('kyc_india_cleanup_overdue_v1');
+    const overdue = typeof sla?.overdue_count === 'number'
+        ? sla.overdue_count : Number(sla?.overdue_count);
+    const held = typeof sla?.held_count === 'number'
+        ? sla.held_count : Number(sla?.held_count);
+    const holdReviewOverdue = typeof sla?.hold_review_overdue_count === 'number'
+        ? sla.hold_review_overdue_count : Number(sla?.hold_review_overdue_count);
+    const holdExpired = typeof sla?.hold_expired_count === 'number'
+        ? sla.hold_expired_count : Number(sla?.hold_expired_count);
+    const oldestDueAt = sla?.oldest_due_at;
+    if (slaError || !Number.isSafeInteger(overdue) || overdue < 0
+        || !Number.isSafeInteger(held) || held < 0
+        || !Number.isSafeInteger(holdReviewOverdue) || holdReviewOverdue < 0
+        || !Number.isSafeInteger(holdExpired) || holdExpired < 0
+        || (overdue > 0 && (typeof oldestDueAt !== 'string'
+            || !Number.isFinite(Date.parse(oldestDueAt)))))
+        throw new Error('KYC India deletion deadline readback unavailable');
+    return { scanned: jobs.length, deleted, retained, deferred, expired,
+        overdue, held, holdReviewOverdue, holdExpired,
+        oldestDueAt: overdue > 0 ? oldestDueAt : null };
 }

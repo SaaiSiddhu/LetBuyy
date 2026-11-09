@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Button } from '@letbuyy/ui'
 import { BrandLogo } from './BrandLogo'
 import { getAuthHeaders } from '@/lib/csrf-client'
+import { merchantNativeAndroidReturnIntent } from '@letbuyy/auth-core'
 
 export function MobileAccountReturn({ siteId }: { siteId?: string }) {
     const started = useRef(false)
@@ -17,8 +18,16 @@ export function MobileAccountReturn({ siteId }: { siteId?: string }) {
                 const response = await fetch('/api/auth/mobile/complete', { method: 'POST', headers: await getAuthHeaders(), body: JSON.stringify({ siteId }), signal: AbortSignal.timeout(20000) })
                 const data = await response.json()
                 if (!response.ok || typeof data.callback !== 'string') throw new Error('Return could not be completed. Start sign-in again from the app.')
-                setCallback(data.callback)
-                window.location.replace(data.callback)
+                // Keep the registered HTTPS/PKCE callback intact. An explicit
+                // package-bound intent also works when Android keeps same-origin
+                // browser navigation on the web. If browser policy requires a
+                // gesture, the same Return to app link remains reachable here.
+                const target = /Android/i.test(navigator.userAgent)
+                    ? merchantNativeAndroidReturnIntent(data.callback)
+                    : data.callback
+                if (!target) throw new Error('Unexpected Accounts return target')
+                setCallback(target)
+                window.location.replace(target)
             } catch {
                 setError('Return could not be completed. Start sign-in again from the LetBuyy app. Your account and saved store are preserved.')
             }

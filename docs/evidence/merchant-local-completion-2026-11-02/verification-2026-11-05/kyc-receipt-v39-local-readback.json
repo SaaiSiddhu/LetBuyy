@@ -1,0 +1,88 @@
+{
+  "at": "2026-11-06T15:50:48.703390+00:00",
+  "status": "LOCAL_SOURCE_QUALIFIED_NATIVE66_RUNNING_NOT_ACCEPTED",
+  "source": "e8cc94edd6649a1fbbeebf1f797d1d65a4959fe87851467d1c37f28399ddc0a4",
+  "entries": 8481,
+  "input_scoped_reuse": {
+    "35": {
+      "prefixes": [
+        "services/api-gateway/",
+        "services/mobile-bff/",
+        "packages/shared-types/",
+        "packages/typescript/api-client/",
+        "tests/helpers/"
+      ],
+      "byte_equal_inputs": 920,
+      "claim": "Only this input group reuses earlier gate; whole source is not asserted equal."
+    },
+    "36": {
+      "prefixes": [
+        "services/api-gateway/",
+        "packages/shared-types/",
+        "packages/typescript/api-client/",
+        "tests/contracts/"
+      ],
+      "byte_equal_inputs": 1000,
+      "claim": "Only this input group reuses earlier gate; whole source is not asserted equal."
+    },
+    "38": {
+      "prefixes": [
+        "packages/dart/",
+        "apps/merchant/mobile/lib/services/",
+        "apps/merchant/mobile/test/"
+      ],
+      "byte_equal_inputs": 581,
+      "claim": "Only this input group reuses earlier gate; whole source is not asserted equal."
+    }
+  },
+  "gates": {
+    "flutter": {
+      "passed": 1654,
+      "failed": 0,
+      "skipped": 0
+    },
+    "flutter_analysis_issues": 0,
+    "governance": {
+      "PASS": 114,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "SKIP": 0,
+      "NOT_APPLICABLE": 1
+    },
+    "gateway_unit_passed": 2087,
+    "shared_contract_passed": 23,
+    "web_kyc_sdk_contract_passed": 8,
+    "root_contract_passed": 397,
+    "owned": {
+      "runId": "5de1c5bad0e1",
+      "tests": 20,
+      "assertionsPassed": 20,
+      "assertionsFailed": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "dart_sdk": {
+      "passed": 135,
+      "existing_opt_in_skips": 6,
+      "analysis_issues": 0
+    }
+  },
+  "implementation": [
+    "Strict canonical public KYC validation in web SDK and Dart/service; cross-site, duplicate, private/unknown/coerced malformed responses fail closed.",
+    "Original canonical public-upload allocation is stored before bytes; actual stored-byte metadata can complete original unfinished receipt; no replacement object/key/receipt.",
+    "Explicit choose-original Media retry validates saved hash/size, reuses original multipart filename and original operation key.",
+    "Products menu now reaches canonical Media library through normal route."
+  ],
+  "boundaries": [
+    "Native66 is in progress; prior native65 is source16 only.",
+    "Legacy unfinished server uploads without a persisted allocation remain held.",
+    "Private test-only local R2 is not India/AWS/provider/physical-device/iOS runtime acceptance.",
+    "119applicable IDs remain open;120/121excluded,122paused,51frozen; no full122 or production acceptance."
+  ]
+}

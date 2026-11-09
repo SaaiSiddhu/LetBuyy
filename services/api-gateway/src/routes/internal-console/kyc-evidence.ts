@@ -3,7 +3,7 @@ import { z } from 'zod';
 import type { Env } from '../../index';
 import { AppError } from '../../lib/errors';
 import { getSupabaseAdmin, success } from '../../lib/supabase';
-import { requireConsolePermission } from '../../identity-foundation/console-approval-repository';
+import { consoleApprovalRpc, credentialArguments, requireConsolePermission } from '../../identity-foundation/console-approval-repository';
 import { effectiveKycDocumentStatus, type KycEvidenceStatusRow } from '../../lib/kyc-evidence-status';
 import { hasIsolatedKycPrivateBucket } from '../../lib/kyc-private-object-cleanup';
 import { signKycIndiaS3ReviewUrl } from '@letbuyy/infrastructure/storage-adapter';
@@ -19,6 +19,18 @@ const PageQuery = SiteQuery.extend({
     page: z.coerce.number().int().min(1).default(1),
     limit: z.coerce.number().int().min(1).max(20).default(20),
 });
+const HoldPath = z.object({ siteId: z.string().uuid(), receiptId: z.string().uuid() });
+const CreateHold = z.object({
+    authorityType: z.enum(['court_order', 'statutory', 'provider_contract']),
+    authorityReference: z.string().trim().min(8).max(160),
+    reason: z.string().trim().min(8).max(1000),
+    reviewAt: z.string().datetime({ offset: true }),
+    expiresAt: z.string().datetime({ offset: true }),
+    requestKey: z.string().uuid(),
+}).strict();
+const ReleaseHold = z.object({
+    reason: z.string().trim().min(8).max(1000), requestKey: z.string().uuid(),
+}).strict();
 type KycRow = KycEvidenceStatusRow & {
     id: string;
     site_id: string;
@@ -63,6 +75,88 @@ async function auditRead(c: Parameters<typeof requireConsolePermission>[0], acto
     if (error) throw new AppError('Evidence access audit is unavailable.', 503, 'KYC_AUDIT_UNAVAILABLE');
 }
 
+router.post('/sites/:siteId/receipts/:receiptId/holds', async (c) => {
+    const path = HoldPath.safeParse(c.req.param());
+    const body = CreateHold.safeParse(await c.req.json().catch(() => null));
+    if (!path.success || !body.success)
+        throw new AppError('A valid exact-receipt hold and documented authority are required.', 400, 'KYC_HOLD_INVALID');
+    const { credential, state, witness } = await requireConsolePermission(c, 'compliance:manage', true);
+    if (!state.is_super_admin) throw new AppError('A platform compliance administrator is required.', 403, 'KYC_HOLD_ADMIN_REQUIRED');
+    const result = await consoleApprovalRpc(c, 'create_kyc_india_legal_hold_v1', {
+        ...credentialArguments(credential), p_permission_hash: witness,
+        p_site_id: path.data.siteId, p_receipt_id: path.data.receiptId,
+        p_authority_type: body.data.authorityType,
+        p_authority_reference: body.data.authorityReference,
+        p_reason: body.data.reason, p_review_at: body.data.reviewAt,
+        p_expires_at: body.data.expiresAt, p_request_key: body.data.requestKey,
+    });
+    return c.json(success(result), result.replayed === true ? 200 : 201);
+});
+
+router.post('/sites/:siteId/receipts/:receiptId/holds/:holdId/release', async (c) => {
+    const path = HoldPath.extend({ holdId: z.string().uuid() }).safeParse(c.req.param());
+    const body = ReleaseHold.safeParse(await c.req.json().catch(() => null));
+    if (!path.success || !body.success)
+        throw new AppError('A valid exact hold and release reason are required.', 400, 'KYC_HOLD_INVALID');
+    const { credential, state, witness } = await requireConsolePermission(c, 'compliance:manage', true);
+    if (!state.is_super_admin) throw new AppError('A platform compliance administrator is required.', 403, 'KYC_HOLD_ADMIN_REQUIRED');
+    const result = await consoleApprovalRpc(c, 'release_kyc_india_legal_hold_v1', {
+        ...credentialArguments(credential), p_permission_hash: witness,
+        p_site_id: path.data.siteId, p_receipt_id: path.data.receiptId,
+        p_hold_id: path.data.holdId, p_reason: body.data.reason,
+        p_request_key: body.data.requestKey,
+    });
+    return c.json(success(result));
+});
+
+router.get('/sites/:siteId/receipts', async (c) => {
+    const parsed = PageQuery.safeParse({ siteId: c.req.param('siteId'), reason: c.req.query('reason'),
+        page: c.req.query('page'), limit: c.req.query('limit') });
+    if (!parsed.success) throw new AppError('A valid site, page and review reason are required.', 400, 'KYC_REVIEW_QUERY_INVALID');
+    const { state } = await requireConsolePermission(c, 'compliance:manage', true);
+    if (!state.is_super_admin) throw new AppError('A platform compliance administrator is required.', 403, 'KYC_HOLD_ADMIN_REQUIRED');
+    const { siteId, reason, page, limit } = parsed.data;
+    const { data, error, count } = await getSupabaseAdmin(c).from('kyc_private_object_cleanup_jobs')
+        .select('id,document_type,purpose,status,outcome,attempts,created_at,deletion_requested_at,intent_expires_at', { count: 'exact' })
+        .eq('site_id', siteId).eq('storage_provider', 'aws_s3_mumbai').is('deleted_at', null)
+        .order('created_at', { ascending: false }).order('id', { ascending: false })
+        .range((page - 1) * limit, page * limit - 1);
+    if (error) throw new AppError('KYC receipt review is unavailable.', 503, 'KYC_REVIEW_UNAVAILABLE');
+    const ids = (data || []).map(row => row.id);
+    const activeHolds = ids.length ? await getSupabaseAdmin(c).from('kyc_india_legal_holds')
+        .select('receipt_id').eq('site_id', siteId).is('released_at', null)
+        .is('deleted_at', null).in('receipt_id', ids) : { data: [], error: null };
+    if (activeHolds.error) throw new AppError('KYC hold state is unavailable.', 503, 'KYC_HOLD_READ_UNAVAILABLE');
+    const held = new Set((activeHolds.data || []).map(row => row.receipt_id));
+    await auditRead(c, state, { action: 'kyc.legal_hold.receipts_list', siteId, reason });
+    c.header('Cache-Control', 'private, no-store, max-age=0');
+    return c.json(success({ data: (data || []).map(row => ({
+        id: row.id, document_type: row.document_type, purpose: row.purpose,
+        status: row.status, outcome: row.outcome, created_at: row.created_at,
+        deletion_requested_at: row.deletion_requested_at, intent_expires_at: row.intent_expires_at,
+        holdable: !held.has(row.id) && row.attempts === 0 && row.status !== 'deleting'
+            && !(row.status === 'completed' && row.outcome === 'deleted'),
+    })), page, limit, total: count || 0 }));
+});
+
+router.get('/sites/:siteId/holds', async (c) => {
+    const parsed = PageQuery.safeParse({ siteId: c.req.param('siteId'), reason: c.req.query('reason'),
+        page: c.req.query('page'), limit: c.req.query('limit') });
+    if (!parsed.success) throw new AppError('A valid site, page and review reason are required.', 400, 'KYC_REVIEW_QUERY_INVALID');
+    const { state } = await requireConsolePermission(c, 'compliance:manage', true);
+    if (!state.is_super_admin) throw new AppError('A platform compliance administrator is required.', 403, 'KYC_HOLD_ADMIN_REQUIRED');
+    const { siteId, reason, page, limit } = parsed.data;
+    const { data, error, count } = await getSupabaseAdmin(c).from('kyc_india_legal_holds')
+        .select('id,receipt_id,authority_type,authority_reference,reason,review_at,expires_at,released_at,created_at', { count: 'exact' })
+        .eq('site_id', siteId).is('deleted_at', null)
+        .order('created_at', { ascending: false }).order('id', { ascending: false })
+        .range((page - 1) * limit, page * limit - 1);
+    if (error) throw new AppError('KYC legal holds are unavailable.', 503, 'KYC_HOLD_READ_UNAVAILABLE');
+    await auditRead(c, state, { action: 'kyc.legal_hold.list', siteId, reason });
+    c.header('Cache-Control', 'private, no-store, max-age=0');
+    return c.json(success({ data: data || [], page, limit, total: count || 0 }));
+});
+
 router.get('/sites/:siteId/documents', async (c) => {
     const parsed = PageQuery.safeParse({ siteId: c.req.param('siteId'), reason: c.req.query('reason'),
         page: c.req.query('page'), limit: c.req.query('limit') });
@@ -76,6 +170,7 @@ router.get('/sites/:siteId/documents', async (c) => {
         .range((page - 1) * limit, page * limit - 1);
     if (error) throw new AppError('KYC evidence is unavailable.', 503, 'KYC_REVIEW_UNAVAILABLE');
     await auditRead(c, state, { action: 'kyc.evidence.list', siteId, reason });
+    c.header('Cache-Control', 'private, no-store, max-age=0');
     return c.json(success({ data: ((data || []) as KycRow[]).map(publicReviewRow), page, limit, total: count || 0 }));
 });
 

@@ -1,0 +1,23 @@
+{
+  "source_manifest": "merchant-kyc-receipt-source-v44",
+  "source_sha256": "4d0884bd1d999e12271b2ee11c026a08977a7a509d2e00a4508ee1c3bfc21372",
+  "changes": "Explicit paired phase handoff before web store rename. Preserves all assertions of original/new native and web names; no source/permission/fault/recovery/byte/object expectation change.",
+  "inputs": [
+    {
+      "path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/merchant-switcher-staff-v74-local-android.postgres.test.ts",
+      "sha256": "9464a436a7226ea8249d10e3287f8f73f0bf007b5de44c05a0a0fd5892b8ff6a"
+    },
+    {
+      "path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/android-switcher-staff-v74.py",
+      "sha256": "517e3616f12dffc6cb01d881ef1cd79e2986920cb15da772c74cbc7f99c0c8b9"
+    },
+    {
+      "path": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/run-switcher-v74.py",
+      "sha256": "17aee1c1b6ba5ebaf0c4df27a85a63bc1e785093bdcd46dc75eea67349ae6e34"
+    },
+    {
+      "path": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/android-device-receipt-switcher-v74.json",
+      "sha256": "d41a2e8c84140f66f9703b4c3eb0349d276ea91f24c88c85755db85ceeff498d"
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "at": "2026-11-08T03:49:32.472227+00:00",
+  "status": "NATIVE_VARIANTS_WEB_SYNC_PASS;PRIVATE_UPLOAD_REAL_415_MIME_FAIL;NO_PRIVATE_OBJECT_COMMIT_PROOF",
+  "source": "merchant-variant-kyc-source-v92",
+  "private_root": "/private/tmp/letbuyy-merchant-local-20261108-c955e727ea",
+  "run_id": "e9d63e89d8a8",
+  "failure": "Actual compiled Gateway returned415 KYC_UNSUPPORTED_FILE before expected post-commit lost reply;client Filename-derived MIME is being checked against byte signature. Strict server validation retained.",
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "phase_terminals": {
+    "Kyc-terminal.json": {
+      "phase": "Kyc",
+      "attempt": 1,
+      "exit": 1,
+      "accepted": false,
+      "run_id": "e9d63e89d8a8",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261108-c955e727ea/Kyc.py",
+      "control_sha256": "f6cdf2cb8850518cfcc192b7c725ea21267d2dd6e561b4f4f5cfef77f29dacde"
+    },
+    "Kyc-attempt2-terminal.json": {
+      "phase": "Kyc",
+      "attempt": 2,
+      "exit": 1,
+      "accepted": false,
+      "run_id": "e9d63e89d8a8",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261108-c955e727ea/Kyc-observed-settings.py",
+      "control_sha256": "c632b167155edb2a095877d9c50a5bddada77b387050d4b228004bffa646b5bf"
+    },
+    "Variants-terminal.json": {
+      "phase": "Variants",
+      "attempt": 1,
+      "exit": 0,
+      "accepted": true,
+      "run_id": "e9d63e89d8a8",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261108-c955e727ea/Variants.py",
+      "control_sha256": "36adc2459b55a9c1130274d226be5f2f9710c5f31899522120e874285d100cbd"
+    },
+    "Auth-terminal.json": {
+      "phase": "Auth",
+      "attempt": 1,
+      "exit": 0,
+      "accepted": true,
+      "run_id": "e9d63e89d8a8",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261108-c955e727ea/Auth.py",
+      "control_sha256": "b2d0ec075381a602c15d0c870fd8e797ce4157771b8bc2417ae54b6956b191c9"
+    },
+    "Kyc-attempt3-terminal.json": {
+      "phase": "Kyc",
+      "attempt": 3,
+      "exit": 1,
+      "accepted": false,
+      "run_id": "e9d63e89d8a8",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261108-c955e727ea/Kyc-observed-bank-group.py",
+      "control_sha256": "4152982c348c1b0e1d79eed64ef692b8d1a11afbc1f06b07b5063003dcd411f5"
+    }
+  },
+  "next": "Fix shared SDK private multipart MIME;qualify source93;restore only the exact original synthetic actor/store in a fresh isolated fixture and normal sign-in to retry retained bytes/key. No old credentials or real account.",
+  "whole_features_accepted": 0
+}

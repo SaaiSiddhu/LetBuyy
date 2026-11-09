@@ -1,0 +1,298 @@
+{
+  "at": "2026-11-06T12:02:02.819244+00:00",
+  "status": "BOUNDED_CURRENT_LOCAL_ANDROID_WEB_STAFF_PRODUCT_ACCEPTED",
+  "run_id": "65570e9272a9",
+  "source_sha256": "dc5e2e0af9f5da7b4e2ec11a68b3c343cb5953daa83de34009a4c5e6fb228c8c",
+  "apk_sha256": "c715d877ec4998c14dce5d52a2f34341e87ecce2ef733d367437b71f10c1e31a",
+  "files": [
+    {
+      "name": "native-auth-observed.json",
+      "sha256": "97689e61c5482f2b6a7bc3ee453de9c93031e7cf3c7fa969ae12d3e7ef55d2d5",
+      "bytes": 148,
+      "origin": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v65/native-auth-observed.json"
+    },
+    {
+      "name": "native-initial-picker-observed.json",
+      "sha256": "e08d3906933686bc54726596072597917b6e8ee8219989a15f8c41c7893ba73a",
+      "bytes": 350,
+      "origin": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v65/native-initial-picker-observed.json"
+    },
+    {
+      "name": "native-staff-roster-verified.json",
+      "sha256": "72de24ec5994df48dc7ee0671334012cf00a9a2a15b252adb592c41e81178595",
+      "bytes": 212,
+      "origin": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v65/native-staff-roster-verified.json"
+    },
+    {
+      "name": "native-two-stores.json",
+      "sha256": "46739c452a0443a1bf3b39b69935acb8a203b920396c14980a1bf315c3afc901",
+      "bytes": 518,
+      "origin": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v65/native-two-stores.json"
+    },
+    {
+      "name": "web-alpha-updated.json",
+      "sha256": "9843b74fd3db2c1202211a1cda1174359781f193f1601815d1f3962c1cf6b0d6",
+      "bytes": 64,
+      "origin": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v65/web-alpha-updated.json"
+    },
+    {
+      "name": "native-process-restart-observed.json",
+      "sha256": "cfd66006e1f606545c397f83d79ce86bbb9c55ef4dc4b1b65aafb9fc9086a269",
+      "bytes": 129,
+      "origin": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v65/native-process-restart-observed.json"
+    },
+    {
+      "name": "native-process-restart-verified.json",
+      "sha256": "61232b1bff51e19b5c89813d9d0cc82b78b221ea408b851ce74cfb18852c7743",
+      "bytes": 302,
+      "origin": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v65/native-process-restart-verified.json"
+    },
+    {
+      "name": "native-beta-web-restart.json",
+      "sha256": "6144126c826a1ce29adda4fe098cbe22b63ee07021462e82886cce75e89d5c89",
+      "bytes": 545,
+      "origin": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v65/native-beta-web-restart.json"
+    },
+    {
+      "name": "web-switcher-viewport-verified.json",
+      "sha256": "5fe33bf1284171349ab386b6e1005ca99adedfa2d4e0621548173117788b5730",
+      "bytes": 559,
+      "origin": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v65/web-switcher-viewport-verified.json"
+    },
+    {
+      "name": "web-beta-switcher-selected.json",
+      "sha256": "0636a5af6baf11b02df891c740e6420927b3b0ce8bbf20adbce35b213c776cd0",
+      "bytes": 89,
+      "origin": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v65/web-beta-switcher-selected.json"
+    },
+    {
+      "name": "web-product-media-verified.json",
+      "sha256": "a0e8c9fdde358252d414463cd903effb9e7d3b8e91823ed36b31b78a4e120ab3",
+      "bytes": 370,
+      "origin": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v65/web-product-media-verified.json"
+    },
+    {
+      "name": "web-staff-downgraded.json",
+      "sha256": "04ca2fedcf70d8ae682faae9b87fedbd5d134bc14896cb40f95f6c4c49b88b1f",
+      "bytes": 26,
+      "origin": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v65/web-staff-downgraded.json"
+    },
+    {
+      "name": "native-downgrade-denied.json",
+      "sha256": "435aa8ec40e72638bf82c6ac1d845b07d3ff1ffc504a9d595fa103bd32f09ea3",
+      "bytes": 250,
+      "origin": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v65/native-downgrade-denied.json"
+    },
+    {
+      "name": "web-staff-removed.json",
+      "sha256": "04ca2fedcf70d8ae682faae9b87fedbd5d134bc14896cb40f95f6c4c49b88b1f",
+      "bytes": 26,
+      "origin": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v65/web-staff-removed.json"
+    },
+    {
+      "name": "native-revoked-store-retired.json",
+      "sha256": "38ca43268ab05747e095c2994111d8080dfde9b765b28e9c3dd1d22d0a9902fe",
+      "bytes": 279,
+      "origin": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v65/native-revoked-store-retired.json"
+    },
+    {
+      "name": "switcher-staff-backend-verified.json",
+      "sha256": "90fb100a9211cb1d07bebc18c093ab178d173cd879269dbcdfc769a929843a07",
+      "bytes": 39799,
+      "origin": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v65/switcher-staff-backend-verified.json"
+    },
+    {
+      "name": "compiled-workers.json",
+      "sha256": "dac36fab94e57063e240f31b7d547d1cceaf895ab3d0b8c1775953e2f68fe3fd",
+      "bytes": 399,
+      "origin": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v65/compiled-workers.json"
+    },
+    {
+      "name": "artifact.json",
+      "sha256": "e19c38a46761f5e639224ab17a2b6c93e669f92f36caadbee9ed3f6e33a40b09",
+      "bytes": 1226,
+      "origin": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v65/artifact.json"
+    },
+    {
+      "name": "source-snapshot.json",
+      "sha256": "039f8b7a3af2d90bf05357d4e3da5c40914a0902fd72b47b6d4d56382ad08cf1",
+      "bytes": 737900,
+      "origin": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v65/source-snapshot.json"
+    },
+    {
+      "name": "observed-calls.json",
+      "sha256": "cc0dcaf48fa984c2c51ffff2413ca672d7a024413ebe7d4a99d1900a413742eb",
+      "bytes": 37480,
+      "origin": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v65/observed-calls.json"
+    },
+    {
+      "name": "wire-ingress-observed.json",
+      "sha256": "2cca83326244205e941ead7fa5e86090bd1c224fd03c53236ec8a475f422e2b6",
+      "bytes": 35407,
+      "origin": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v65/wire-ingress-observed.json"
+    },
+    {
+      "name": "native-initial-beta-tail-choice.png",
+      "sha256": "c63307189eaea5e0cdf99966692f549c3aa37751241b30052c1959c769e582a1",
+      "bytes": 288270,
+      "origin": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v65/native-initial-beta-tail-choice.png"
+    },
+    {
+      "name": "native-alpha-selected.png",
+      "sha256": "b8df4cf9cc73bd7144a6c3be9c03842bae31827efe2f0eb9a6192cbed4f390f1",
+      "bytes": 204557,
+      "origin": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v65/native-alpha-selected.png"
+    },
+    {
+      "name": "native-beta-selected.png",
+      "sha256": "b80b4db88bfb2f569239b323359246b6ce0079d5c297487833155f77884876d8",
+      "bytes": 203825,
+      "origin": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v65/native-beta-selected.png"
+    },
+    {
+      "name": "native-alpha-saved.png",
+      "sha256": "30e2cbc155c5205608625328352bca26bff844e07364000c4742ab1de8c2c37f",
+      "bytes": 152427,
+      "origin": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v65/native-alpha-saved.png"
+    },
+    {
+      "name": "native-owner-roster53.png",
+      "sha256": "78f8c5362cad8b52be35fd39c5070af9163101d723bbb0c27232cd43a71a6960",
+      "bytes": 210092,
+      "origin": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v65/native-owner-roster53.png"
+    },
+    {
+      "name": "native-web-alpha-read.png",
+      "sha256": "af95915bbacb56c08bccde6e0697e56c1803a66d1f80a2dc95e8ec2fed479bd6",
+      "bytes": 151912,
+      "origin": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v65/native-web-alpha-read.png"
+    },
+    {
+      "name": "native-beta-restart-selection.png",
+      "sha256": "1a7edb060027cab53eb68a73d5f41baca7603acb4d11f7e6d34469d36ddfdbc0",
+      "bytes": 203916,
+      "origin": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v65/native-beta-restart-selection.png"
+    },
+    {
+      "name": "native-staff-product-saved.png",
+      "sha256": "f70db744b05f77f27576fb8229365fa0ec39731950aee67ecc9dbfd769b9f7a8",
+      "bytes": 173592,
+      "origin": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v65/native-staff-product-saved.png"
+    },
+    {
+      "name": "native-downgrade-denial.png",
+      "sha256": "c0caa74f71609fb3ef49697e2f4196c1044afc8019ff2d79f59fa6f70f4585cc",
+      "bytes": 67669,
+      "origin": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v65/native-downgrade-denial.png"
+    },
+    {
+      "name": "web-beta-choice-normal-visible.png",
+      "sha256": "5ee8bc9fa25c250e6f4065ea8a084b8d787b941b305769037c9acfd0d253651e",
+      "bytes": 231736,
+      "origin": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v65/web-beta-choice-normal-visible.png"
+    },
+    {
+      "name": "web-beta-choice-alternate-visible.png",
+      "sha256": "0156180294ea5634dccc7fd2bfe622f4437713f176bad8a5ea816cb41e2fd38e",
+      "bytes": 236021,
+      "origin": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v65/web-beta-choice-alternate-visible.png"
+    },
+    {
+      "name": "native-revoked-beta-absent.png",
+      "sha256": "0f6c066f30e68bbbf6238a7ddb57a3dbfd81dfe7660eed0498d7bee6115a5384",
+      "bytes": 312109,
+      "origin": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v65/native-revoked-beta-absent.png"
+    },
+    {
+      "name": "web-alpha-read-native-and-save.png",
+      "sha256": "1b24d993bca12eb38974296c5684adbe651b225836a0d3e6ad5110a7db35ca9c",
+      "bytes": 134793,
+      "origin": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v65/web-alpha-read-native-and-save.png"
+    },
+    {
+      "name": "web-staff-product-mobile-read.png",
+      "sha256": "39ada3d87ab38f80a1b3902668e49ee6770e274d518452fa0fc7bd391e7e9200",
+      "bytes": 91117,
+      "origin": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v65/web-staff-product-mobile-read.png"
+    },
+    {
+      "name": "native65-independent-readback.json",
+      "sha256": "75aab728c997812f9e4894a8d17fb549bb4990aa1b8930594ec5f13df02b601a",
+      "bytes": 5631,
+      "origin": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/native65-independent-readback.json"
+    },
+    {
+      "name": "native65-uninstrumented-kernel-readback.json",
+      "sha256": "d222eb03037cf4c0a7c66296fb144b2b0fd0ae63de058757f40c173d4e475814",
+      "bytes": 394,
+      "origin": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/native65-uninstrumented-kernel-readback.json"
+    },
+    {
+      "name": "native65-prepared-final.json",
+      "sha256": "ba2c6ece999552ce2a6c2974e357be0a6f0d048a3685782dd1472fcc873c7d9e",
+      "bytes": 1661,
+      "origin": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/native65-prepared-final.json"
+    },
+    {
+      "name": "recovery-v16-pipeline.terminal.json",
+      "sha256": "99670ecfe76b710c2b10c1b10c8dea9f378b2508b77b934d66d54f9ac1aef314",
+      "bytes": 336,
+      "origin": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/recovery-v16-pipeline.terminal.json"
+    },
+    {
+      "name": "native65-current-recovery-kernel-readback.json",
+      "sha256": "f53a86c62049189c1c7d72a20bf5ab425c4412fb4caa2bf14f126a372c6d364c",
+      "bytes": 659,
+      "origin": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/native65-current-recovery-kernel-readback.json"
+    },
+    {
+      "name": "switcher-v65-launcher-cleanup.json",
+      "sha256": "fd666d53ff11da5ae1c29b1081a2cead8f179fcc689f93916ebdf0d8b41b9039",
+      "bytes": 319,
+      "origin": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/switcher-v65-launcher-cleanup.json"
+    },
+    {
+      "name": "switcher-v65-forward-baseline.json",
+      "sha256": "eb432d5691ed55f27568c37ee1ae2d45ac8b74747656e957d46831b349d9378d",
+      "bytes": 58,
+      "origin": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/switcher-v65-forward-baseline.json"
+    },
+    {
+      "name": "runner-summary.json",
+      "sha256": "d12f9e7a67b4bb065925ff326a06c7193c42982a3284cb537dd88892f1df8bbb",
+      "bytes": 397,
+      "origin": "Safe allowlist from owned runner report; original raw report stays private"
+    }
+  ],
+  "artifact_custody": {
+    "source_sha256": "dc5e2e0af9f5da7b4e2ec11a68b3c343cb5953daa83de34009a4c5e6fb228c8c",
+    "run_id": "65570e9272a9",
+    "android": {
+      "path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/artifacts/local-operational-proof/merchant-mobile/native65-65570e9272a9/merchant-local-debug.apk",
+      "sha256": "c715d877ec4998c14dce5d52a2f34341e87ecce2ef733d367437b71f10c1e31a",
+      "bytes": 120853528,
+      "normal_debug_only": true
+    },
+    "scope": "Exact current qualified Android bytes only. No signed release/provider/hosted/iOS runtime acceptance. Previous iOS source11bundle remains under native64 custody; no current-source iOS compile claimed."
+  },
+  "excluded": [
+    "raw readiness credentials",
+    "environment/JWK/session/cookie material",
+    "raw logs",
+    "compiled Worker bytes and all-private-run-directory copies"
+  ],
+  "visual_review": [
+    "Current web product/media screenshot: decoded fixture thumbnail visible; full product name remains visually clipped, separate open presentation finding.",
+    "Current native downgrade-denial screenshot: obsolete editor retired, explicit Close available.",
+    "Current real-font KYC recovery renders light-confirmation/dark-review inspected at320/2.4; no native KYC/provider upload acceptance."
+  ],
+  "credential_retirement": true,
+  "limits": [
+    "Synthetic local Android/web/compiledWorkerd/Postgres only",
+    "Earlier61observed90secondloadingwait remains unreproduced reliability finding; not claimed repaired",
+    "No native invitation consent/delivery/all role combinations",
+    "KYC durable recovery and video lifetime are local source/UI tests; actual native interrupted KYC upload and full Media Library CRUD/readback remain open",
+    "No current-source iOS compile/runtime, physical-device/provider/hosted/signed-release/full122 certification"
+  ],
+  "full_feature_set_accepted": false
+}

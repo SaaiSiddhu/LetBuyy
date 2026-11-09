@@ -1,0 +1,15 @@
+{
+  "at": "2026-11-08T08:54:59.532948+00:00",
+  "status": "TERMINAL",
+  "exit_code": 0,
+  "capsule": "/private/tmp/letbuyy-merchant-catalog-availability-v106-governance-ew3e3wzc",
+  "purpose": "Disposable validation copy only, no implementation/worktree/merge/push/release",
+  "source_sha256": "c872c19cb9e02fa7581afaa64b6dbf0ef4e50dd44ccbfdc5fb1950fa784ded6f",
+  "core_inputs_byte_equal": 8529,
+  "original_source_unchanged": true,
+  "original_index_unchanged": true,
+  "original_index_entries_unchanged": true,
+  "index_sha256_before": "597f072920ae073249e7fff303b4328f41e7aac6888c6be66a36392a2a8ed27b",
+  "index_sha256_after": "597f072920ae073249e7fff303b4328f41e7aac6888c6be66a36392a2a8ed27b",
+  "report": "merchant-catalog-availability-v106-governance-report.json"
+}

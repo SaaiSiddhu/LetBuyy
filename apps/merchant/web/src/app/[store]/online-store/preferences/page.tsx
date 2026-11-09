@@ -2,13 +2,15 @@
 
 import { StorefrontVisibility } from '@/components/theme-library/StorefrontVisibility'
 import { useReadRequest } from '@/lib/api/use-read-request'
+import { useMerchantSecurityContext } from '@/components/security/MerchantSecurityContext'
 
 import { getStorefrontRootDomain } from '@/lib/public-urls'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { Button, Input,
     Badge,
     Banner,
+    ConfirmDialog,
     BarChart3,
     Card,
     Image as ImageIcon,
@@ -77,14 +79,23 @@ function formsEqual(a: PreferencesFormState, b: PreferencesFormState) {
 
 function formFromSettings(settings: Record<string, unknown>): PreferencesFormState {
     return {
-        seoTitle: String(settings.seo_title || settings.store_name || settings.name || ''),
-        seoDescription: String(settings.seo_description || ''),
+        seoTitle: String((Object.hasOwn(settings, 'meta_title') ? settings.meta_title : settings.seo_title) ?? ''),
+        seoDescription: String((Object.hasOwn(settings, 'meta_description') ? settings.meta_description : settings.seo_description) ?? ''),
     }
 }
 
 export default function PreferencesPage() {
     const { store } = useParams<{ store: string }>()
+    const { actorId, siteId } = useMerchantSecurityContext(store)
+    return <PreferencesWorkspace key={JSON.stringify([actorId, siteId, store])} store={store} actorId={actorId} />
+}
+function PreferencesWorkspace({ store, actorId }: { store: string; actorId: string }) {
     const { notify } = useToast()
+    const active = useRef(true)
+    useLayoutEffect(() => { active.current = true; return () => { active.current = false } }, [])
+    const [siteId, setSiteId] = useState<string | null>(null)
+    const [saveNeedsReload, setSaveNeedsReload] = useState(false)
+    const [reloadDialogOpen, setReloadDialogOpen] = useState(false)
     const [loading, setLoading] = useState(true)
     const [saving, setSaving] = useState(false)
     const [loadError, setLoadError] = useState<string | null>(null)
@@ -96,6 +107,8 @@ export default function PreferencesPage() {
     const loadPreferences = useCallback(async () => {
         const request = beginRead()
         setLoading(true)
+        setVersion(null)
+        setSiteId(null)
         setLoadError(null)
 
         try {
@@ -110,8 +123,12 @@ export default function PreferencesPage() {
             }
 
             const settings = (payload?.data || {}) as Record<string, unknown>
-            if (typeof settings.version !== 'number') throw new Error('Store revision was not returned')
-            setVersion(settings.version)
+            if (typeof settings.id !== 'string' || !Number.isSafeInteger(settings.version) || (settings.version as number) <= 0) {
+                throw new Error('Current store revision was not returned. Reload preferences before editing.')
+            }
+            setVersion(settings.version as number)
+            setSiteId(settings.id)
+            setSaveNeedsReload(false)
             const nextForm = formFromSettings(settings)
             setForm(nextForm)
             setInitialForm(nextForm)
@@ -155,17 +172,13 @@ export default function PreferencesPage() {
     }, [initialForm])
 
     const handleSave = useCallback(async () => {
-        if (saving || !hasUnsavedChanges) return
-        if (version === null) {
-            notify({ title: 'Reload required', description: 'Store revision is unavailable. Reload preferences before saving.', variant: 'critical' })
-            return
-        }
+        if (!active.current || saving || saveNeedsReload || version === null || siteId === null || !hasUnsavedChanges) return
         setSaving(true)
 
         try {
             const response = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
                 method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'X-LetBuyy-Merchant-Context': actorId, 'X-Idempotency-Key': crypto.randomUUID() },
                 body: JSON.stringify({
                     version,
                     seo_title: form.seoTitle,
@@ -174,13 +187,14 @@ export default function PreferencesPage() {
             })
             const payload = await response.json().catch(() => null)
 
+            if (!active.current) return
             if (!response.ok) {
                 throw new Error(getErrorMessage(payload, 'Unable to save storefront preferences'))
             }
-
-            if (typeof payload?.data?.version !== 'number') throw new Error('Save completed but revision readback is unavailable. Reload to confirm settings.')
+            if (payload?.data?.id !== siteId || payload?.data?.version !== version + 1) {
+                throw new Error('The save acknowledgement could not be confirmed. Reload current preferences.')
+            }
             setVersion(payload.data.version)
-
             setInitialForm(form)
             notify({
                 title: 'Preferences saved',
@@ -188,6 +202,8 @@ export default function PreferencesPage() {
                 variant: 'success',
             })
         } catch (error) {
+            if (!active.current) return
+            setSaveNeedsReload(true)
             const message = error instanceof Error ? error.message : 'Unable to save storefront preferences'
             notify({
                 title: 'Could not save preferences',
@@ -195,9 +211,14 @@ export default function PreferencesPage() {
                 variant: 'critical',
             })
         } finally {
-            setSaving(false)
+            if (active.current) setSaving(false)
         }
-    }, [form, hasUnsavedChanges, notify, saving, store, version])
+    }, [actorId, form, hasUnsavedChanges, notify, saving, saveNeedsReload, siteId, store, version])
+
+    const confirmReload = () => {
+        if (hasUnsavedChanges || saveNeedsReload) setReloadDialogOpen(true)
+        else void loadPreferences()
+    }
 
     if (loading) {
         return (
@@ -229,19 +250,20 @@ export default function PreferencesPage() {
                 primaryAction={{
                     label: saving ? 'Saving...' : 'Save changes',
                     onClick: () => void handleSave(),
-                    disabled: saving || !hasUnsavedChanges,
+                    disabled: saving || saveNeedsReload || version === null || !hasUnsavedChanges,
                     icon: <Save className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
                 }}
                 secondaryActions={[
                     {
                         label: 'Refresh',
-                        onClick: () => void loadPreferences(),
+                        onClick: confirmReload,
                         disabled: saving,
                         icon: <RefreshCw className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
                     },
                 ]}
             />
 
+            {saveNeedsReload && <Banner variant="warning" title="Reload current preferences before another change">Your edits remain until you explicitly refresh the current revision.</Banner>}
             {loadError && (
                 <Banner
                     variant="critical"
@@ -274,8 +296,8 @@ export default function PreferencesPage() {
                                 onChange={(event) => updateForm('seoDescription', event.target.value)}
                                 placeholder="Describe your store for search engines."
                                 rows={4}
-                                maxLength={320}
-                                helperText={`${seoDescriptionCount} of 320 characters used`}
+                                maxLength={160}
+                                helperText={`${seoDescriptionCount} of 160 characters used`}
                             />
                         </div>
 
@@ -341,8 +363,10 @@ export default function PreferencesPage() {
                 </Section>
             </Card>
 
+            <ConfirmDialog open={reloadDialogOpen} title="Reload current preferences?" description="Discard unsaved edits and load the current store revision." confirmLabel="Reload preferences" onClose={() => setReloadDialogOpen(false)} onConfirm={() => { setReloadDialogOpen(false); void loadPreferences() }} />
             <SaveBar
                 state={saveState}
+                saveDisabled={version === null || saveNeedsReload}
                 onSave={() => void handleSave()}
                 onDiscard={discardChanges}
                 saveLabel="Save preferences"

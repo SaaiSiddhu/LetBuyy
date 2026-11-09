@@ -143,7 +143,8 @@ function serializeDocument(row: KycDocumentRow) {
         has_private_upload: Boolean(row.metadata?.private_object_key),
         evidence_scan_status: evidenceScanStatus,
         provider_unavailable: row.metadata?.provider_unavailable === true,
-        requires_resubmission: row.metadata?.profile_change_requires_resubmission === true,
+        requires_resubmission: row.metadata?.profile_change_requires_resubmission === true
+            || row.metadata?.retention_requires_resubmission === true,
         submitted_at: row.submitted_at || null,
         verified_at: hasLiveProviderEvidence(row) ? row.verified_at || null : null,
         rejected_at: row.rejected_at || null,
@@ -172,6 +173,8 @@ function nextAction(status: string, rows: KycDocumentRow[], mode: MerchantKycPro
     if (rows.some((row) => row.metadata?.private_object_key && row.metadata.malware_scan_status === 'rejected'))
         return 'A document failed its security scan. Replace that file to continue verification.';
     if (rows.length === 0) return 'Upload business PAN, bank proof, and address proof privately.';
+    if (rows.some((row) => row.metadata?.retention_requires_resubmission === true))
+        return 'A verification attempt expired after 30 days. Upload a fresh document to continue.';
     const byType = new Map(rows.map((row) => [row.document_type, row]));
     if (requiredDocuments(isGstRegistered).some((item) => item.required && !byType.get(item.document_type)?.metadata?.private_object_key))
         return mode === 'sandbox'
@@ -191,7 +194,7 @@ function nextAction(status: string, rows: KycDocumentRow[], mode: MerchantKycPro
 }
 
 function buildOverview(siteId: string, rows: KycDocumentRow[], mode: MerchantKycProviderMode,
-    isGstRegistered: boolean, privateUploadAvailable: boolean) {
+    isGstRegistered: boolean, privateUploadAvailable: boolean, indiaUploadAvailable = false) {
     const byType = new Map(rows.map((row) => [row.document_type, row]));
     const derived = deriveKycOverallStatus(rows, isGstRegistered);
     const status = mode === 'sandbox' && derived === 'verified' ? 'in_progress' : derived;
@@ -206,7 +209,7 @@ function buildOverview(siteId: string, rows: KycDocumentRow[], mode: MerchantKyc
                 ? serializeDocument(byType.get(item.document_type)!).status : null,
         })),
         documents: rows.map(serializeDocument),
-        next_action: !privateUploadAvailable && status !== 'verified'
+        next_action: !privateUploadAvailable && !indiaUploadAvailable && status !== 'verified'
             ? 'Private document upload is unavailable. Your saved status remains visible; retry later.'
             : nextAction(status, rows, mode, isGstRegistered),
     };
@@ -292,7 +295,8 @@ router.get('/', validate('query', StoreQuerySchema), async (c) => {
     const rows = await loadDocuments(db, tenant.siteId);
     const isGstRegistered = await loadGstRegistration(db, tenant.siteId);
     return c.json(success({ ...buildOverview(tenant.siteId, rows, providerMode(c.env), isGstRegistered,
-        privateUploadAvailable(c.env)), india_direct_upload_available: indiaDirectUploadAvailable(c.env) }));
+        privateUploadAvailable(c.env), indiaDirectUploadAvailable(c.env)),
+        india_direct_upload_available: indiaDirectUploadAvailable(c.env) }));
 });
 
 router.post('/documents', validate('json', SubmitKycDocumentSchema), async (c) => {
@@ -488,6 +492,7 @@ router.post('/documents/:id/refresh', validate('query', StoreQuerySchema), async
     // document. The merchant can refresh the truthful current status while the
     // trusted scanner is pending or has rejected the file, without a paid lookup.
     if (document.metadata?.profile_change_requires_resubmission === true
+        || document.metadata?.retention_requires_resubmission === true
         || providerMode(c.env) === 'live'
         && (typeof document.metadata?.private_object_key !== 'string'
             || document.metadata.malware_scan_status !== 'clean')) {
@@ -495,7 +500,7 @@ router.post('/documents/:id/refresh', validate('query', StoreQuerySchema), async
         return c.json(success({
             document: serializeDocument(document),
             overview: buildOverview(tenant.siteId, rows, providerMode(c.env), isGstRegistered,
-                privateUploadAvailable(c.env)),
+                privateUploadAvailable(c.env), indiaDirectUploadAvailable(c.env)),
         }));
     }
     // Claim before any provider call. The upload key changes on resubmission,
@@ -523,7 +528,7 @@ router.post('/documents/:id/refresh', validate('query', StoreQuerySchema), async
         return success({
             document: serializeDocument(current),
             overview: buildOverview(tenant.siteId, rows, providerMode(c.env), isGstRegistered,
-                privateUploadAvailable(c.env)),
+                privateUploadAvailable(c.env), indiaDirectUploadAvailable(c.env)),
         });
     };
     // A receipt only suppresses the repeated provider call; the merchant always

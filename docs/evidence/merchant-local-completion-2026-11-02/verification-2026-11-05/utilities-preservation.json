@@ -1,0 +1,20 @@
+{
+  "source_sha256": "392d53d26becc93d69c656afaccb8fc7b591c8c0f542b61b3d80ce7fa475aba9",
+  "baseline_sha256": "1029fe659065f6110351560cecd8ece3f7656665f2b499ec6e9019a9b216eb65",
+  "changed": [
+    "apps/merchant/mobile/lib/screens/settings/help_screen.dart",
+    "apps/merchant/mobile/lib/widgets/shared/capability_gate.dart",
+    "apps/merchant/mobile/test/capability_presentation_test.dart",
+    "apps/merchant/mobile/test/help_presentation_test.dart"
+  ],
+  "all_other_inputs_unchanged": 8443,
+  "ui_kit_bytes_unchanged_since_fresh_confirmation_analysis": true,
+  "original_help_uri_literals_equal": true,
+  "native_launch_modes_positive_test": true,
+  "capability_policy_exact": "capability-preservation.json",
+  "focused_pass": 29,
+  "focused_fail": 0,
+  "focused_skip": 0,
+  "help_negative": "help-negative-v1:1PASS/10FAIL;round-trip-only v2:0PASS/1FAIL;native transport always mocked",
+  "native_runtime_hosted_provider": "pending"
+}

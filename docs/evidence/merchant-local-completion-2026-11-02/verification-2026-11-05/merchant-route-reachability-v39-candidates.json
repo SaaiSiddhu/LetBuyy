@@ -1,0 +1,78 @@
+{
+  "at": "2026-11-06T15:58:17.906394+00:00",
+  "source_sha256": "e8cc94edd6649a1fbbeebf1f797d1d65a4959fe87851467d1c37f28399ddc0a4",
+  "method": "Read-only literal/constant reference inventory outside routes.dart. Dynamic/alias entry and canonical capability policy must be traced before declaring a bug or exposing a route.",
+  "candidates": [
+    {
+      "name": "splash",
+      "path": "/splash",
+      "state": "SOURCE_CANDIDATE_UNACCEPTED"
+    },
+    {
+      "name": "onboarding",
+      "path": "/onboarding",
+      "state": "SOURCE_CANDIDATE_UNACCEPTED"
+    },
+    {
+      "name": "upgrade",
+      "path": "/upgrade",
+      "state": "SOURCE_CANDIDATE_UNACCEPTED"
+    },
+    {
+      "name": "livePreview",
+      "path": "/live-preview",
+      "state": "SOURCE_CANDIDATE_UNACCEPTED"
+    },
+    {
+      "name": "reviews",
+      "path": "/reviews",
+      "state": "SOURCE_CANDIDATE_UNACCEPTED"
+    },
+    {
+      "name": "leads",
+      "path": "/leads",
+      "state": "SOURCE_CANDIDATE_UNACCEPTED"
+    },
+    {
+      "name": "emailCampaigns",
+      "path": "/email-campaigns",
+      "state": "SOURCE_CANDIDATE_UNACCEPTED"
+    },
+    {
+      "name": "apps",
+      "path": "/apps",
+      "state": "SOURCE_CANDIDATE_UNACCEPTED"
+    },
+    {
+      "name": "customData",
+      "path": "/custom-data",
+      "state": "SOURCE_CANDIDATE_UNACCEPTED"
+    },
+    {
+      "name": "coupons",
+      "path": "/coupons",
+      "state": "SOURCE_CANDIDATE_UNACCEPTED"
+    },
+    {
+      "name": "giftCards",
+      "path": "/gift-cards",
+      "state": "SOURCE_CANDIDATE_UNACCEPTED"
+    },
+    {
+      "name": "pages",
+      "path": "/pages",
+      "state": "SOURCE_CANDIDATE_UNACCEPTED"
+    },
+    {
+      "name": "navigation",
+      "path": "/navigation",
+      "state": "SOURCE_CANDIDATE_UNACCEPTED"
+    }
+  ],
+  "gates_preserved": [
+    "App marketplace/embedded execution constitutionally forbidden.",
+    "Gift cards deferred by current V1CapabilityPolicy.",
+    "Theme51 frozen; programme122 paused;120/121 excluded."
+  ],
+  "implemented_native_media_entry": "Products menu to existing AppRoutes.media; currently under native66 verification."
+}

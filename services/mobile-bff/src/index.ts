@@ -29,6 +29,8 @@ const OPERATIONS_READ_PATHS = new Set([
   '/v1/commerce-analytics/transfer-metrics',
   '/v1/commerce-analytics/operations-summary',
 ]);
+const SMART_COLLECTION_ITEM_PATH = /^\/v1\/smart-collections\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const SMART_COLLECTION_PREVIEW_PATH = /^\/v1\/smart-collections\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/preview$/i;
 const ALLOWED_PREFIXES = [
   '/v1/auth',
   '/v1/mobile',
@@ -234,6 +236,9 @@ function isAllowedPath(pathname: string, method: string): boolean {
     || pathname === '/v1/loyalty/program'
     || pathname === '/v1/security/step-up/challenges'
     || (method === 'GET' && OPERATIONS_READ_PATHS.has(pathname))
+    || (pathname === '/v1/smart-collections' && ['GET', 'POST'].includes(method))
+    || (SMART_COLLECTION_ITEM_PATH.test(pathname) && ['GET', 'PATCH', 'DELETE'].includes(method))
+    || (method === 'GET' && SMART_COLLECTION_PREVIEW_PATH.test(pathname))
     || ALLOWED_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
 }
 

@@ -1,0 +1,1 @@
+{"at": "2026-11-06T06:58:21.980737+00:00", "pid": 95589, "supervisor_pid": 95587, "scope": "Only owned KYC test child, source unchanged", "reason": "Positive fixture did not finish; initial real SDK await must be driven outside widget fake async before any negative app claim."}

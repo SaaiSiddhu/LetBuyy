@@ -1,0 +1,18 @@
+{
+  "supervisor_pid": 48233,
+  "source_sha256": "6c1e2a2d3db86532dbccb72dfcdbe94f19e074d91078452d8818533d39b99951",
+  "started_at": "2026-11-06T05:19:59.770991+00:00",
+  "steps": [
+    {
+      "step": "app-analysis",
+      "exit_code": 0
+    },
+    {
+      "step": "full-flutter",
+      "exit_code": 1
+    }
+  ],
+  "status": "STOPPED_AT_FAILED_STEP",
+  "ui_kit_analysis": "Reused fresh confirmation zero-issue UI-kit result; every UI-kit input byte remains equal.",
+  "active_step": "full-flutter"
+}

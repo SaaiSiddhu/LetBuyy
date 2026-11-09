@@ -1,0 +1,39 @@
+{
+  "at": "2026-11-08T06:17:13.698299+00:00",
+  "status": "SOURCE95_BOUNDED_OPTIONS_ANDROID_IOS_WEB_AND_PRIVATE_KYC_ACTION_GEOMETRY_PASS_FULL122_OPEN",
+  "source": {
+    "manifest": "merchant-options-accessibility-source-v95.source.json",
+    "sha256": "6a9dffa117db5c1be62f26f57d8f031910f3e599fc966a1eb0cfc87392519a18",
+    "inputs": 8519,
+    "head": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+    "branch": "codex/merchant-mobile-parity",
+    "frozen": false
+  },
+  "qualification": "../OPTIONS_ACCESSIBILITY_LOCAL_V95_QUALIFICATION.md",
+  "gates": {
+    "flutter_pass": 1772,
+    "flutter_fail": 0,
+    "analysis_issues": 0,
+    "owned_product_api_postgres_pass": 92,
+    "actual_governance_pass": 114,
+    "governance_not_applicable": 1
+  },
+  "android_report": "native129-final-local-readback.json",
+  "ios_report": "native130-final-local-readback.json",
+  "ios_geometry_report": "native131-final-local-readback.json",
+  "pixel_geometry": "native131-pixel-accessibility-readback.json",
+  "custody": "source95-final-custody.json",
+  "source_frozen": false,
+  "all_owned_runs_terminal": true,
+  "whole_features_accepted": 0,
+  "next": [
+    "Complete native new-product/new-variant creation and removal; check entering price after option creation and removing the last draft row, preserving canonical stock/history and optional-price intent.",
+    "Complete current-role/revocation/store-switch/conflict and actual buyer Liquid/cart variant outcomes.",
+    "Broaden private KYC native format/role/store/provider boundaries; unknown object acknowledgement remains held.",
+    "Continue remaining feature-by-feature Accounts/stores/catalog/inventory/themes/domains/buyer/orders/shipping/tax/money/growth/settings journeys. Preserve51frozen,120/121outsideMerchant,122paused."
+  ],
+  "limits": [
+    "Recovered full-page KYC action geometry accepted only for the demonstrated simulator journey; original shared resizing-modal geometry is not certified.",
+    "Full feature22, other122 criteria, provider/hosted/physical/signed-release acceptance remain open."
+  ]
+}

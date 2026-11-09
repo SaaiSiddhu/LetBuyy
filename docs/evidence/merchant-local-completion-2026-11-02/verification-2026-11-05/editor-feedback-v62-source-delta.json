@@ -1,0 +1,10 @@
+{
+  "source59": "999e0d6b6ca0b1064b4b0b4f3dcacaaabd050a44105d5c1a9ecb2be51de44184",
+  "source62": "8e2b9f6b03ff9ea79a70dd6cd0c17f2af00bd10eafac03df6119d8ba08c4b5a4",
+  "changed": [
+    "apps/merchant/mobile/test/editor_feedback_placement_test.dart",
+    "packages/dart/ui_kit/lib/src/widgets/editor_scaffold.dart"
+  ],
+  "all_other_inputs_byte_equal": true,
+  "reuse": "Source59 TypeScript/root/Identity/shared web UI/backend/SQL checks remain byte-equal; new full Flutter/analysis and isolated governance pending. No trace in final source."
+}

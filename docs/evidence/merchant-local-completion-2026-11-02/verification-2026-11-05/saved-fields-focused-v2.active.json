@@ -1,0 +1,18 @@
+{
+  "started_at": "2026-11-05T19:56:06.790351+00:00",
+  "supervisor_pid": 58237,
+  "source": "saved-fields-source-v2",
+  "source_sha256": "d549561596eac7a2fde7283e08f87806b2020c9fb826d2eace2cc427a44ed11c",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "--timeout",
+    "45s",
+    "test/shipping_rate_preservation_test.dart",
+    "test/navigation_item_preservation_test.dart",
+    "test/shipping_settings_scope_test.dart"
+  ],
+  "status": "RUNNING",
+  "child_pid": 58239
+}

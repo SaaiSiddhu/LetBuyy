@@ -1,0 +1,212 @@
+{
+  "status": "BOUNDED_LOCAL_RECOVERY_IMPLEMENTED_DATABASE_WEB_AND_ACTUAL_ANDROID_VERIFIED",
+  "finding": "A collection removed on the other surface leaves a new rejected metadata save marked uncertain forever, preventing later local saves.",
+  "negativeControls": [
+    {
+      "environment": "Flutter synthetic transport",
+      "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/collection-missing-negative-mobile-v1.log",
+      "exit": 1,
+      "behavior": "Expected missing; actual pending. Existing6tests passed."
+    },
+    {
+      "environment": "Actual mounted Smart component with synthetic HTTP",
+      "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/collection-missing-negative-web-v1.log",
+      "exit": 1,
+      "behavior": "Recovery button absent after canonical missing target. Existing6tests passed."
+    }
+  ],
+  "repair": [
+    "Gateway maps the canonical post-authority/post-receipt missing target to COLLECTION_NOT_FOUND404; proxy404 remains ambiguous.",
+    "Native retains actor/store-bound original key/body and a missing outcome across restart. Explicit discard replays original command under current authority.",
+    "Manual and Smart web workspaces share rejection classification and require confirmation then exact original replay inside existing journal lock.",
+    "A successful exact original receipt is confirmed; generic404,503,403, context change and mismatched receipt retain intent. No implicit replacement collection is created."
+  ],
+  "focusedResults": [
+    {
+      "command": "flutter test --no-pub test/collection_metadata_recovery_test.dart",
+      "pass": 11,
+      "fail": 0,
+      "exit": 0,
+      "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/collection-missing-mobile-v2.log"
+    },
+    {
+      "command": "node --import tsx --test src/components/products/smart-collection-preview.test.tsx",
+      "pass": 16,
+      "fail": 0,
+      "exit": 0,
+      "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/collection-missing-web-v3.log"
+    },
+    {
+      "command": "pnpm --filter @letbuyy/api-gateway typecheck",
+      "exit": 0
+    },
+    {
+      "command": "pnpm --filter @letbuyy/merchant-web typecheck",
+      "exit": 0
+    },
+    {
+      "command": "flutter analyze --no-pub",
+      "exit": 0,
+      "issues": 0
+    }
+  ],
+  "database": {
+    "runId": "102c6be0eb3e",
+    "tests": 11,
+    "pass": 11,
+    "fail": 0,
+    "exit": 0,
+    "report": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/collection-missing-db-v1.json",
+    "scope": "Actual mounted Gateway/owned PostgreSQL: both kinds definite missing rejection, original committed update receipts replay after deletion, live revocation refusal and no extra effect."
+  },
+  "retainedTestHarnessFailures": [
+    "web-v2: missing JSDOM MutationObserver/visual globals prevented real ConfirmDialog portals. Complete existing UI-test globals restored; no UI mock substituted.",
+    "web typecheck-v1: test fixture union needed canonical schema parsing after kind substitution. Fixed in test only."
+  ],
+  "limits": [
+    "New runtime/schema source differs from v12; current artifact acceptance is pending.",
+    "Normal staff browser/native invitation/sign-in remains separate.",
+    "No hosted, provider, production, push, merge or release action."
+  ],
+  "additionalFinding": "Actual active products-granted staff were rejected by owner-only collection route and metadata SQL gates.",
+  "staffRepair": "Collection metadata/list routes use the existing product permission guard in enforce mode. SQL repeats the canonical current product grant under account/site/employee locks before any read/write/receipt replay. General owner scope and original manual membership writer remain unchanged. No new identity/permission store or table grant.",
+  "staffProof": {
+    "runId": "a1f9625646f5",
+    "tests": 12,
+    "passed": 12,
+    "failed": 0,
+    "skipped": 0,
+    "exit": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "scope": "Actual Gateway and SQL with synthetic assertions: manager reads/edits both kinds; viewer retains read and loses mutation/original-receipt replay; removal blocks private details/lists. Enforced even under nonproduction diagnostic dryrun. Not normal staff UI sign-in."
+  },
+  "currentSchemaProof": {
+    "runId": "928d21944b1b",
+    "passedSuites": [
+      {
+        "name": "unified-collection-authority",
+        "passed": 10
+      },
+      {
+        "name": "collection-list-read",
+        "passed": 1
+      },
+      {
+        "name": "unified-collection-retained-data",
+        "passed": 1
+      }
+    ],
+    "wholeRunPassed": false,
+    "wholeRunFailure": "Separate staff test used audit.site_id instead of actual audit.store_id; fixed and fully requalified in a1f9625646f5. Passing suites use unchanged current runtime/schema bytes."
+  },
+  "sourceChecks": {
+    "GatewayUnit": {
+      "pass": 2068,
+      "fail": 0,
+      "exit": 0,
+      "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/collection-staff-gateway-units-v2.log"
+    },
+    "MerchantFlutter": {
+      "pass": 910,
+      "fail": 0,
+      "exit": 0,
+      "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/collection-missing-mobile-full-v1.log"
+    },
+    "MerchantWebFull": {
+      "phasesPassed": [
+        576,
+        818,
+        295,
+        13
+      ],
+      "failed": 0,
+      "skipped": 0,
+      "exit": 0,
+      "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/collection-missing-web-full-v1.log"
+    }
+  },
+  "retainedFailures": [
+    {
+      "runId": "39bf88c79c5a",
+      "meaning": "Behavioral negative: legitimate manager received owner-only403 before collection metadata."
+    },
+    {
+      "runId": "9abd4cba9730",
+      "meaning": "Test fixture reused a one-use identity assertion; durable replay rejection correctly returned401. New transports now obtain fresh assertions for the same subject. Original domain-specific SQL rejection label was also restored without weakening the existing negative test."
+    },
+    {
+      "runId": "928d21944b1b",
+      "meaning": "Staff test audit ownership field typo; actual schema store_id now used."
+    },
+    {
+      "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/collection-staff-gateway-units-v1.log",
+      "meaning": "Old structural assertion named owner-only scope. Retargeted to explicit product permission scope and force-enforce check; behavioral denial controls preserved."
+    }
+  ],
+  "source_sha256": "906127d473cbfdb68de7d53cde29a9f823774b2fdbcb79b6e178aa18a33f1db8",
+  "sourceEntries": 7409,
+  "governance": {
+    "source_sha256": "906127d473cbfdb68de7d53cde29a9f823774b2fdbcb79b6e178aa18a33f1db8",
+    "counts": {
+      "PASS": 114,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "SKIP": 0,
+      "NOT_APPLICABLE": 1
+    },
+    "ok": true,
+    "exitCode": 0,
+    "problems": [],
+    "advisoryCount": 211,
+    "preliminaryChecks": [
+      {
+        "check": "install",
+        "exit": 0,
+        "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/governance-category-capsule-v8.install.log"
+      },
+      {
+        "check": "shared-build",
+        "exit": 0,
+        "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/governance-category-capsule-v8.shared-build.log"
+      },
+      {
+        "check": "sdk-typecheck",
+        "exit": 0,
+        "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/governance-category-capsule-v8.sdk-typecheck.log"
+      },
+      {
+        "check": "contracts-provider",
+        "exit": 0,
+        "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/governance-category-capsule-v8.contracts-provider.log"
+      },
+      {
+        "check": "web-recovery",
+        "exit": 0,
+        "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/governance-category-capsule-v8.web-recovery.log"
+      },
+      {
+        "check": "governance-regression",
+        "exit": 0,
+        "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/governance-category-capsule-v8.governance-regression.log"
+      }
+    ],
+    "clone": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/governance-category-capsule-v8",
+    "limits": "Isolated branch-disposition missing-ref advisories are not branch integration/release proof."
+  },
+  "currentDeviceRun": {
+    "name": "native-catalog-v14",
+    "runId": "9d62888d1daa",
+    "status": "PASSED",
+    "runnerExit": 0,
+    "uiExit": 0,
+    "source_sha256": "c32833a275d63a97c39d21d3f889065f0e1f4ae4b3a85676cc1c61b8d6ee2229",
+    "qualification": "UNIFIED_COLLECTION_ANDROID_WEB_V14_QUALIFICATION.json"
+  }
+}

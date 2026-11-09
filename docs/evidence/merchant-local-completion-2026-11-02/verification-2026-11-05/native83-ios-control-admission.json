@@ -1,0 +1,14 @@
+{
+  "source": "merchant-product-media-ios-source-v59",
+  "source_sha256": "999e0d6b6ca0b1064b4b0b4f3dcacaaabd050a44105d5c1a9ecb2be51de44184",
+  "inputs": {
+    "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/merchant-product-media-v83-local-ios.postgres.test.ts": "37ce806f0ae35e8ab4172cfe49c0f716754b6891b67dda6e34eca549e1cc1e48",
+    "/private/tmp/letbuyy-ios-ui-20261107-12f2cca887/MerchantUITests.swift": "e7ff6ffe9ab1aa3c3048c0ce100ea8532f04577fefdae931f2d1025ffa279336",
+    "/private/tmp/letbuyy-ios-ui-20261107-12f2cca887/create_project.rb": "cc86d29d749cb0bdf52da681077a3ea430368529fc26e5104d3b6c41163d7fda",
+    "/private/tmp/letbuyy-ios-ui-20261107-12f2cca887/run_fixture.py": "651939796e6cc7d7593cdfec4e3df86e5fa60d2e45f2e05154773b6fdd0c5525",
+    "/private/tmp/letbuyy-ios-ui-20261107-12f2cca887/run_auth_ui.py": "57ef06fbe4d8e7a1aae31f3133aa9dbad7d007dab4ee2c9a9b743730f2be55bf",
+    "/private/tmp/letbuyy-ios-ui-20261107-12f2cca887/device-receipt.json": "ff1b6578b4b3c443e3aa1337abc7aff08e06507e47aa1ac60da6edffb778609d",
+    "/private/tmp/letbuyy-ios-ui-20261107-12f2cca887/PHOTO_ADMISSION.json": "43831b5dd8e3fd4effb535b6c36b842a073c1c310c0c0151f187bb8b282b5b36"
+  },
+  "scope": "Corrected actual keyboard-dismissal controller and locally qualified session-cookie policy. Normal native/web login only; no session injection or full acceptance yet."
+}

@@ -104,3 +104,41 @@ export function validateUploadMime(file: { type: string }): ValidateMimeResult {
         error: `MIME type '${mime}' is not allowed. Allowed types: ${ALLOWED_MIME_LABEL}`,
     };
 }
+
+// Public upload limits are shared by receipt hashing and the storage route.
+const STANDARD_UPLOAD_LIMIT_BYTES = 10 * 1024 * 1024;
+const VIDEO_UPLOAD_LIMIT_BYTES = 100 * 1024 * 1024;
+const MODEL_UPLOAD_LIMIT_BYTES = 50 * 1024 * 1024;
+
+export function safeFileExtension(fileName: string): string {
+    const ext = fileName.split('.').pop()?.toLowerCase().replace(/[^a-z0-9]/g, '') || 'bin';
+    return ext.slice(0, 12) || 'bin';
+}
+
+export function mediaKindForUpload(file: Pick<File, 'name' | 'type'>): 'video' | 'model' | 'standard' {
+    const type = file.type.toLowerCase();
+    const ext = safeFileExtension(file.name);
+    if (type.startsWith('video/') || ['mp4', 'mov', 'm4v', 'webm'].includes(ext)) return 'video';
+    if (type.startsWith('model/') || ['glb', 'gltf', 'usdz'].includes(ext)) return 'model';
+    return 'standard';
+}
+
+export function uploadLimitForKind(kind: 'video' | 'model' | 'standard'): number {
+    if (kind === 'video') return VIDEO_UPLOAD_LIMIT_BYTES;
+    if (kind === 'model') return MODEL_UPLOAD_LIMIT_BYTES;
+    return STANDARD_UPLOAD_LIMIT_BYTES;
+}
+
+export function uploadLimitLabel(bytes: number): string {
+    return `${Math.floor(bytes / (1024 * 1024))}MB`;
+}
+
+
+export function safeUploadFolder(value: string): string {
+    return value
+        .trim()
+        .replace(/[^a-zA-Z0-9/_-]/g, '-')
+        .replace(/\/+/g, '/')
+        .replace(/^\/+|\/+$/g, '')
+        .slice(0, 96) || 'uploads';
+}

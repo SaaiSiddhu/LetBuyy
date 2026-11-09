@@ -1,0 +1,19 @@
+{
+  "at": "2026-11-06T06:54:36.623342+00:00",
+  "run_id": "92d452e8952f",
+  "inspected": [
+    "native-alpha-saved.png",
+    "native-downgrade-denial.png",
+    "web-staff-product-mobile-read.png",
+    "web-beta-choice-normal-visible.png",
+    "native-revoked-beta-absent.png"
+  ],
+  "observations": [
+    "Native saved owner name visible; no save-in-progress claim.",
+    "Native denied editor shows Store access changed and explicit Close.",
+    "Web selected Beta catalog contains the acknowledged product; accessible full name assertion passed. Product name is visibly truncated at1280 and the tiny synthetic image shows a failed thumbnail; this is not media render acceptance.",
+    "Web scrolled selector keeps Beta and account/appearance/footer actions inside viewport. Both appearances/focus/restore additionally verified by actual runtime assertions.",
+    "Native post-removal sheet shows refreshed owned Alpha selection and reachable Refresh above long choices; real BFF complete52membership read excludes Beta."
+  ],
+  "scope": "Bounded current story only; full catalog/media/Settings/Staff invitations/iOS/hosted/provider/release acceptance remains open."
+}

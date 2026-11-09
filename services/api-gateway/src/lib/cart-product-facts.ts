@@ -18,7 +18,7 @@ export async function loadCartFactSources(env: Env, siteId: string, requestId: s
             coalesce((SELECT jsonb_agg(jsonb_build_object('id',v.id,'product_id',v.product_id,'metadata',v.metadata,
               'options',jsonb_strip_nulls(jsonb_build_object(coalesce(n.names[1],'Option 1'),v.option1,
                 coalesce(n.names[2],'Option 2'),v.option2,coalesce(n.names[3],'Option 3'),v.option3))) ORDER BY v.id)
-              FROM public.product_variants v WHERE v.product_id=p.id),'[]'::jsonb) AS variants,
+              FROM public.product_variants v WHERE v.product_id=p.id AND v.deleted_at IS NULL),'[]'::jsonb) AS variants,
             coalesce((SELECT jsonb_agg(jsonb_build_object('variant_id',level.variant_id,'available',greatest(coalesce(level.available,0)-coalesce(level.reserved,0),0)))
               FROM (SELECT DISTINCT ON (il.variant_id) il.* FROM public.inventory_levels il
                 JOIN public.inventory_locations loc ON loc.id=il.location_id

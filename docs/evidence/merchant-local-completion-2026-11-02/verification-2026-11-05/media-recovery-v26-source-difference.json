@@ -1,0 +1,23 @@
+{
+  "basis": "source16 qualified source to current media cohort",
+  "changed_paths": [
+    "apps/merchant/mobile/lib/main.dart",
+    "apps/merchant/mobile/lib/screens/content/media_library_screen.dart",
+    "apps/merchant/mobile/lib/services/media_service.dart",
+    "apps/merchant/mobile/test/media_interrupted_upload_recovery_test.dart",
+    "apps/merchant/mobile/test/media_library_recovery_test.dart",
+    "apps/merchant/mobile/test/media_workflow_context_test.dart",
+    "apps/merchant/mobile/test/mobile_services_test.dart",
+    "packages/dart/api_client/lib/src/api_client.dart",
+    "packages/dart/api_client/test/public_upload_content_type_test.dart",
+    "packages/shared-types/src/index.ts",
+    "scripts/governance/test-suite-catalog.mjs",
+    "services/api-gateway/src/__tests__/owned-db/merchant-media-recovery.postgres.test.ts",
+    "services/api-gateway/src/lib/upload-mime.ts",
+    "services/api-gateway/src/middleware/idempotency.ts",
+    "services/api-gateway/src/routes/upload.ts",
+    "tests/owned-db/merchant-media-workerd.postgres.test.ts"
+  ],
+  "count": 16,
+  "head_unchanged": "ab32485092cae0ac19145abf7b5a101fa3ea338e"
+}

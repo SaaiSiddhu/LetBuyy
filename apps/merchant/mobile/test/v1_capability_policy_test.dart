@@ -5,6 +5,7 @@ import 'package:letbuyy_store/config/v1_capability_policy.dart';
 import 'package:letbuyy_store/screens/apps/apps_screen.dart';
 import 'package:letbuyy_store/screens/subscription/connect_razorpay_screen.dart';
 import 'package:letbuyy_store/widgets/shared/capability_gate.dart';
+import 'package:letbuyy_store/widgets/shared/native_media_recovery_frame.dart';
 
 /// Scenario 19 ("deep links cannot bypass capability gates") and scenario 20
 /// ("excluded V1 features are not reachable") from the launch-readiness
@@ -15,7 +16,9 @@ void main() {
   Widget pageFor(String path) {
     final route =
         AppRoutes.generateRoute(RouteSettings(name: path)) as MaterialPageRoute;
-    return route.builder(_FakeContext());
+    final frame = route.builder(_FakeContext());
+    expect(frame, isA<NativeMediaRecoveryFrame>());
+    return (frame as NativeMediaRecoveryFrame).child;
   }
 
   group('V1 capability policy', () {

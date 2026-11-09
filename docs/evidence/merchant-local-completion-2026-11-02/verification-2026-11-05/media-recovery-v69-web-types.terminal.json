@@ -1,0 +1,18 @@
+{
+  "started_at": "2026-11-07T04:02:22.846110+00:00",
+  "supervisor_pid": 56360,
+  "source": "merchant-media-recovery-source-v69",
+  "source_sha256": "786d8c759eb7ba5829792e863ecb0b3e66d4d0ed8ea9ae20e90320f20d94fc23",
+  "command": [
+    "pnpm",
+    "--dir",
+    "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/apps/merchant/web",
+    "typecheck"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 56385,
+  "exit_code": 0,
+  "finished_at": "2026-11-07T04:02:31.065912+00:00",
+  "source_unchanged": true,
+  "source_readback_sha256": "786d8c759eb7ba5829792e863ecb0b3e66d4d0ed8ea9ae20e90320f20d94fc23"
+}

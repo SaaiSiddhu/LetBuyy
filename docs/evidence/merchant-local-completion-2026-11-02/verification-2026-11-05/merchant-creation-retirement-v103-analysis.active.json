@@ -1,0 +1,13 @@
+{
+  "started_at": "2026-11-08T08:10:00.249631+00:00",
+  "supervisor_pid": 51810,
+  "source": "merchant-creation-retirement-source-v103",
+  "source_sha256": "23ed7b54ec793bf87949a3b90dd175918ca6b709f152ceb3cc14a108eb145147",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "analyze",
+    "--no-pub"
+  ],
+  "status": "RUNNING",
+  "child_pid": 51903
+}

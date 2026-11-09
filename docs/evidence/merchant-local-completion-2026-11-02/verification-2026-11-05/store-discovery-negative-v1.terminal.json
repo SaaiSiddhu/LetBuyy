@@ -1,0 +1,20 @@
+{
+  "started_at": "2026-11-06T04:15:15.789194+00:00",
+  "supervisor_pid": 35324,
+  "source": "store-discovery-negative-source-v1",
+  "source_sha256": "a7f8983e12438c0d95d045cb8b5204d92e3cdc45d35114c8c355da3adb19714d",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "--timeout",
+    "30s",
+    "test/store_discovery_transport_test.dart"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 35573,
+  "exit_code": 1,
+  "finished_at": "2026-11-06T04:15:18.151873+00:00",
+  "source_unchanged": true,
+  "source_readback_sha256": "a7f8983e12438c0d95d045cb8b5204d92e3cdc45d35114c8c355da3adb19714d"
+}

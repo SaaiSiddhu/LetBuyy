@@ -1,0 +1,28 @@
+{
+  "source_sha256": "78af178afaafa150298483820690ca5ed87b9c627fe208ea5d6148c3e7e1d636",
+  "baseline_sha256": "1029fe659065f6110351560cecd8ece3f7656665f2b499ec6e9019a9b216eb65",
+  "changed": [
+    "apps/merchant/mobile/lib/screens/settings/help_screen.dart",
+    "apps/merchant/mobile/lib/theme/store_theme.dart",
+    "apps/merchant/mobile/lib/widgets/shared/capability_gate.dart",
+    "apps/merchant/mobile/test/capability_presentation_test.dart",
+    "apps/merchant/mobile/test/filled_button_readability_test.dart",
+    "apps/merchant/mobile/test/help_presentation_test.dart"
+  ],
+  "all_other_inputs_unchanged": 8442,
+  "theme_insertion_only": true,
+  "existing_theme_palette_typography_other_families_policy_exact": true,
+  "ui_kit_bytes_unchanged_since_confirmation_analysis": true,
+  "focused": {
+    "pass": 38,
+    "fail": 0,
+    "skip": 0,
+    "existing_golden_baselines_unchanged": 3
+  },
+  "new_unique_since_confirmation": 28,
+  "paint_negative": "4FAIL at actual filled label corners before missing theme family completed",
+  "support_surface_negative": "2FAIL:actual surface contrast1.0 before existing semantic-pair inversion",
+  "protected_backend_domain_identity_persistence_semantics_changes": [],
+  "presentation_source_changed": true,
+  "qualification": "FINAL_LOCAL_CHECKPOINT.json"
+}

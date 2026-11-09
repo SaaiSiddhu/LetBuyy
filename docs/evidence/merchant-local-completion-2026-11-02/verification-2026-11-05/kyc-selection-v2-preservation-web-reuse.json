@@ -1,0 +1,19 @@
+{
+  "at": "2026-11-06T07:07:41.499253+00:00",
+  "source_sha256": "9924957f802fbd5b77c395e3ad18b19573d7ad5fbb886a9ad39419b4ba456769",
+  "accepted_native58_source_sha256": "99dee3d9dc5075e97deaff99f2799dea89dac496c88c163a944b39bfe9dda4f0",
+  "source_inputs": 8459,
+  "changed_paths": [
+    "apps/merchant/mobile/lib/screens/kyc/kyc_screen.dart",
+    "apps/merchant/mobile/test/kyc_containment_test.dart",
+    "apps/merchant/mobile/test/kyc_provider_lifetime_test.dart",
+    "apps/merchant/mobile/test/kyc_selection_frame_test.dart"
+  ],
+  "all_other_inputs_equal": 8455,
+  "canonical_backend_sql_identity_sdk_web_uikit_unchanged": true,
+  "original_staff_assertion_unchanged": true,
+  "original_kyc_assertions_unchanged_fixture_only_addition": "Synthetic StoreContext now exposes its actual selected store ID; removal of exactly3inserted lines restores original bytes.",
+  "web_gates_reused": "web-viewport-v1-qualification.terminal.json;1732PASS/0FAIL/SKIP;TypeScript PASS;all web/shared/backend inputs byte equal",
+  "native58_scope": "Original exact99ddsource/installed APK, normal53membership web/mobile story and receipt preservation; no current KYC native proof",
+  "new_kyc_focus": "49PASS/0FAIL/0SKIP; initial negative1positive/1failure and provider negative4failures retained"
+}

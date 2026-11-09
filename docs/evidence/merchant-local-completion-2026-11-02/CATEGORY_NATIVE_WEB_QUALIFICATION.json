@@ -1,0 +1,43 @@
+{
+  "runId": "61eb4d86980d",
+  "sourceSha256": "e3c5a589c5bbb8d17212e29d9a60a2812723517a4cdea24c4339ccffb0e600f8",
+  "apkSha256": "e598e975016089bfa53c759764f6387b568b00d880dc2a884260654e97b839aa",
+  "observed": [
+    "normal native local password login",
+    "Products menu to actual Categories workspace",
+    "native category rename",
+    "committed reply loss visible",
+    "encrypted original command restored after native restart",
+    "original-key retry",
+    "normal web owner read native category and saved description",
+    "normal native editor read web description"
+  ],
+  "database": {
+    "categoryReceipts": 2,
+    "categoryAudits": 2,
+    "categoryOutbox": 2,
+    "canonicalProductEditReceipts": 2,
+    "revisions": [
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        3
+      ]
+    ]
+  },
+  "cleanup": {
+    "containers": [],
+    "networks": [],
+    "volumes": []
+  },
+  "limits": [
+    "bounded category metadata journey only",
+    "buyer category navigation/visibility projection is not yet accepted",
+    "governance gate still needs three repairs",
+    "other original122 features remain separately open",
+    "not hosted/provider/iOS or release qualification"
+  ]
+}

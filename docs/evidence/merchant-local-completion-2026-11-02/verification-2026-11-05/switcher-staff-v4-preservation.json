@@ -1,0 +1,17 @@
+{
+  "at": "2026-11-06T03:22:05.139975+00:00",
+  "baseline": "78af178afaafa150298483820690ca5ed87b9c627fe208ea5d6148c3e7e1d636",
+  "current": "e7377adba2eef6dcac508a93f8dc79bad2f6d40e7a0502d5ae6b9bb094a08cd5",
+  "inputs": 8450,
+  "unchanged_baseline_inputs": 8445,
+  "changed": [
+    "apps/merchant/mobile/lib/app/store_context.dart",
+    "apps/merchant/mobile/lib/services/staff_service.dart",
+    "apps/merchant/mobile/lib/widgets/store/store_switcher_button.dart",
+    "apps/merchant/mobile/test/staff_environment_isolation_test.dart",
+    "apps/merchant/mobile/test/store_switcher_presentation_test.dart"
+  ],
+  "unchanged_original_staff_scope_regression": true,
+  "backend_sdk_sql_appconfig_settings_unchanged": true,
+  "scope": "Three app implementations, two new test files only; original Staff assertion unchanged. No backend, SDK, SQL, identity policy, canonical persistence helper, Settings route or web source edits."
+}

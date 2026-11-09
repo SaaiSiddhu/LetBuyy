@@ -1,0 +1,57 @@
+{
+  "ownerDecision": "Approved source/local reconciliation on2026-11-03",
+  "primary": "5614ffa7efcd93759c7bba63d1ea899d21253270",
+  "preserved": {
+    "414": "atomic_warehouse_commands",
+    "415": "gift_card_issue_replay_integrity",
+    "416": "durable_product_imports"
+  },
+  "admittedMigrations": [
+    417,
+    418,
+    419,
+    420,
+    421,
+    422,
+    423,
+    424,
+    425,
+    426,
+    427,
+    428,
+    429,
+    430,
+    431,
+    432
+  ],
+  "categoryRenames": [
+    {
+      "from": "database/supabase/migrations/417_product_category_commands.sql",
+      "to": "database/supabase/migrations/433_product_category_commands.sql",
+      "before": "fb609773625b122f7d85a1ea9c585678675b242164944439c0b324c2973fac92",
+      "after": "153b75ccb771e071a4e8d9a7601ad778a8b3afd37fbd262a88cdae04eed76d00"
+    },
+    {
+      "from": "database/supabase/rollback/417_product_category_commands.rollback.sql",
+      "to": "database/supabase/rollback/433_product_category_commands.rollback.sql",
+      "before": "1c02f3255a383adc87cc225743559784dd1ea0aed3e4bdfe1def8b46c7004ff5",
+      "after": "07c8432d317b78be2d5c9d6b929dd3e2b64bd5171e7ab01109683fbd539719c9"
+    }
+  ],
+  "executableReferencesChanged": [
+    "services/api-gateway/src/tenant/tenant-tables.registry.ts",
+    "services/api-gateway/src/__tests__/tenant-isolation.test.ts",
+    "services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-rollback.postgres.test.ts",
+    "services/api-gateway/src/__tests__/owned-db/product-atomic-edits.postgres.test.ts",
+    "services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-recovery.postgres.test.ts",
+    "services/api-gateway/src/__tests__/owned-db/merchant-category-commands.postgres.test.ts",
+    "services/api-gateway/src/__tests__/owned-db/inventory-adjustment-audit.postgres.test.ts",
+    "services/api-gateway/src/__tests__/owned-db/gift-card-money-path.test.ts",
+    "services/api-gateway/src/__tests__/owned-db/product-category-backfill.postgres.test.ts",
+    "tests/executable/rollback-signature-precondition-postgres.test.mjs",
+    "tests/governance/definer-function-api-roles.test.mjs"
+  ],
+  "historicalEvidenceUnchanged": true,
+  "hostedOperations": 0,
+  "status": "SOURCE_RECONCILED_LOCAL_QUALIFICATION_PENDING"
+}

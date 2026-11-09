@@ -4,6 +4,7 @@
 // Cross-runtime integration: normal Identity -> Merchant Next -> Gateway -> owned PG.
 // No positive credential injection, fake collection API, or provider transaction.
 import assert from 'node:assert/strict';
+import {createLocalTurnstileProvider,LOCAL_TURNSTILE_SECRET} from '../fixtures/local-turnstile-provider';
 import test, {after, before} from 'node:test';
 import {createServer, type Server} from 'node:http';
 import {exportJWK} from 'jose';
@@ -15,6 +16,7 @@ import {requireOwnedDatabase, startOwnedPooledSqlProxy, startOwnedClientRuntime,
     type OwnedClientProcess, type OwnedPooledSqlProxy} from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
 import {newSyntheticTenant, seedSyntheticTenant} from '../../services/api-gateway/src/__tests__/owned-db/synthetic-tenant';
 
+let challenge:Awaited<ReturnType<typeof createLocalTurnstileProvider>>|undefined;
 const owned=requireOwnedDatabase(),site=newSyntheticTenant('sc-preview');
 const ownerId=crypto.randomUUID();
 const email=(id:string)=>`syn-sc-browser-${id}@example.invalid`;
@@ -46,7 +48,7 @@ async function signIn(context:BrowserContext,id:string,password:string){
 }
 before(async()=>{
     // The actual Gateway may reach only this fixture's loopback services.
-    // Identity's existing official challenge-test transport is a separate child.
+    // Identity verifies one-use challenges only through this run's owned local provider.
     globalThis.fetch=(async(input,init)=>{
         const url=new URL(typeof input==='string'?input:input instanceof URL?input.href:input.url);
         if(!['127.0.0.1','localhost','[::1]'].includes(url.hostname)&&!url.hostname.endsWith('.localhost')){
@@ -74,10 +76,11 @@ before(async()=>{
     await new Promise<void>(r=>bridge!.listen(0,'127.0.0.1',r));
     const apiOrigin=`http://127.0.0.1:${(bridge.address() as {port:number}).port}`;
     const shared={INTERNAL_API_SECRET:INTERNAL_SECRET,NEXT_PUBLIC_ACCOUNTS_URL:identityOrigin,NEXT_PUBLIC_ADMIN_URL:merchantOrigin};
-    identity=startOwnedClientRuntime(owned,'identity-next',{port:identityPort,env:{...shared,LETBUYY_API_URL:apiOrigin+'/v1',LETBUYY_IDENTITY_ISSUER:identityOrigin,
+    challenge=await createLocalTurnstileProvider(owned);
+    identity=startOwnedClientRuntime(owned,'identity-next',{port:identityPort,providerFixture:challenge.profile,env:{...shared,LETBUYY_API_URL:apiOrigin+'/v1',LETBUYY_IDENTITY_ISSUER:identityOrigin,
         LETBUYY_IDENTITY_PRIVATE_JWK:JSON.stringify({...await exportJWK(keys.privateKey),alg:'ES256',kid:keys.kid}),
         ACCOUNTS_COOKIE_SECRET:crypto.randomUUID()+crypto.randomUUID(),COOKIE_DOMAIN:'',
-        NEXT_PUBLIC_TURNSTILE_SITE_KEY:'1x00000000000000000000AA',TURNSTILE_SECRET_KEY:'1x0000000000000000000000000000000AA',
+        NEXT_PUBLIC_TURNSTILE_SITE_KEY:'1x00000000000000000000AA',TURNSTILE_SECRET_KEY:LOCAL_TURNSTILE_SECRET,
         LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false',NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false',RESEND_API_KEY:'',LETBUYY_EMAIL_API_KEY:''}});
     merchant=startOwnedClientRuntime(owned,'merchant-next',{port:merchantPort,env:{...shared,LETBUYY_API_BASE_URL:apiOrigin+'/v1'}});
     await Promise.all([ready(identityOrigin+'/login',identity),ready(merchantOrigin,merchant)]);
@@ -89,7 +92,7 @@ before(async()=>{
         return forward();
     });
     browser=await chromium.launch({headless:true});owner=await browser.newContext();
-    owner.setDefaultTimeout(30000);owner.setDefaultNavigationTimeout(90000);
+    await challenge.attachBrowser(owner,[identityOrigin,merchantOrigin]);owner.setDefaultTimeout(30000);owner.setDefaultNavigationTimeout(90000);
     await signIn(owner,ownerId,password);
     checkpoints.push('one_normal_identity_owner_sign_in');
 },{timeout:660000});
@@ -100,11 +103,11 @@ after(async()=>{
         fixtureKind:'local Next development runtimes + actual Gateway/PostgREST/owned PostgreSQL',
         previewCalls:calls.filter(c=>c.path.startsWith('/v1/smart-collections')),
         failedProductReads,gatewayExternalRequestsRefused:refusedGatewayExternalRequests,
-        challengeMode:'Existing official Turnstile test-key transport; production anti-bot unverified',
+        challengeMode:'Owned local one-use challenge provider; production anti-bot unverified',localChallengeCounts:challenge?.counts,
         runtimeSupervisors:[{kind:'merchant-next',pid:merchant?.pid},{kind:'identity-next',pid:identity?.pid}],
         providerTransactions:0,hostedVerified:false,privateScreenshots:false}));
     failProductReads=false;
-    await browser?.close();await stopOwnedClientRuntime(merchant);await stopOwnedClientRuntime(identity);
+    await browser?.close();await stopOwnedClientRuntime(merchant);await stopOwnedClientRuntime(identity);await challenge?.close();
     await gateway?.settle();restTap?.restore();await closePooledSqlClients();await proxy?.stop();
     if(bridge){bridge.closeAllConnections();await new Promise<void>(r=>bridge!.close(()=>r()));}
     globalThis.fetch=originalFetch;

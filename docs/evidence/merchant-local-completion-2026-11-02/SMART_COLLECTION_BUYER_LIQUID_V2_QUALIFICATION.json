@@ -1,0 +1,99 @@
+{
+  "status": "BOUNDED_LOCAL_COMPILED_WORKER_LIQUID_BUYER_COLLECTION_ACCEPTED",
+  "runId": "e6863a399102",
+  "tests": 1,
+  "pass": 1,
+  "fail": 0,
+  "skip": 0,
+  "runnerExit": 0,
+  "wallSeconds": 294,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "source": {
+    "source_sha256": "2b44490a3cffbe8a95bf81dbc1ff6fdb93c0982fd57faedbb06caa491f636645",
+    "files": 7411,
+    "archive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/smart-buyer-render-v2-qualified-source",
+    "authorities": {
+      "AGENTS.md": "b5bf6a65cf4050eec7867da0014f3dc483aeec86d223084a85d2f51c796ecbc9",
+      "GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md": "c3655482dca86907d7c801b4ef15810319f2d64cd5f8a8af67406da4d0f3500c",
+      "GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CANONICAL_SYSTEMS.md": "5099341c2a273ee0455857fbc613efd2aaa5621c5e829d531bded02e07661cb4"
+    },
+    "heldThroughTerminalAndVerified": true
+  },
+  "runtimeBoundary": "Actual API index bundled and executed in local Workerd/Miniflare with R2 and owned pooled PostgreSQL wire, actual PostgREST; production-mode local Accounts/Merchant/Commerce Next over exact owned TLS storefront hosts. No app/session/API success injection.",
+  "normalAccounts": "Fresh unseeded account/store/product; captured local email OTP delivery and normal signup/verification/password/onboarding.14-day persisted trial. Core compatibility import uses labelled synthetic enterprise entitlement, not real subscription proof.",
+  "smart": {
+    "nativeWorkerd": true,
+    "normalMerchantCreateUpdateUnpublish": true,
+    "normalBuyerLiquid": true,
+    "widths": [
+      1280,
+      390
+    ],
+    "positiveMatches": 1,
+    "afterRuleChange": 0,
+    "publicUnpublishedApiStatus": 404,
+    "hiddenDocumentStatus": 404,
+    "hiddenNoindex": true,
+    "canonicalUuidUrl": true,
+    "legacySmartRows": 0,
+    "metadataReceipts": 3,
+    "productsPreserved": true,
+    "smartScreenshot": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-native-smart-collection-e6863a399102.png"
+  },
+  "acceptedChecks": [
+    "One approved collections authority; normal Smart creation writes0legacy smart_collections rows",
+    "Normal published contains rule gives1actual buyer product in Liquid on1280and390px; no horizontal overflow, canonical UUIDlink",
+    "Normal rule edit excludes every product: buyer grid0cards and public API products0/total0; no all-catalog fallback",
+    "Normal unpublish: current public API404, buyer document404and noindex; collection index excludes hidden collection;3metadata receipts for3logical commands",
+    "Existing normal Manualcreation/membership/privatepreview/public index26collections pages24+2/exact previous/detail; current guarded path compiled in actual Worker"
+  ],
+  "broaderJourney": {
+    "normalSignup": true,
+    "persistedTrialDays": 14,
+    "productVariants": 2,
+    "exactPngReadback": [
+      320,
+      320
+    ],
+    "publishedLiquid": true,
+    "corePresets": 10,
+    "normalSearchIndexScheduler": true,
+    "canonicalBuyerProfileAddress": true,
+    "staleAccountWriteDenied": true,
+    "unrelatedOrderDenied": true,
+    "codOrders": 3,
+    "firstCodTotalMinor": 26900,
+    "privatePreviewAndVisitorPasswordControls": true,
+    "scope": "Labelled local fixtures, not provider/field/hosted evidence."
+  },
+  "performanceEvidenceLimit": "Existing performance assertions completed within the passing compound journey. Runner truncated the large OWNED_CORE_READ_PROFILE JSONline at64KiB; complete per-sample metrics are not recoverable from that line and no complete metrics artifact or field-performance certification is claimed.",
+  "visualReview": [
+    "Actual390pxSmart buyer screenshot inspected: exact published title/product/card/variant-action, single header/footer, readable, no horizontal overflow; existing preset appearance preserved."
+  ],
+  "sourceChecks": {
+    "webMembershipSourceRegression": "Same runtime recovery inputs as archived webv2:25focused, fullweb592/818/295/13/types. Only UIhelper wording changed later.",
+    "governance": "v10passes114/0fail/blocked/skip/1N/A. Exact source delta below remains explicit.",
+    "deltaFromWebV2Gate": [
+      "apps/merchant/web/src/app/[store]/products/smart-collections/page.tsx",
+      "tests/owned-db/native-core-storefront-browser.postgres.test.ts"
+    ],
+    "backendAndMobile": "No API/SQL/native implementation changes since pinned2068Gateway/917Flutter/current DB and v15APKproofs; these remain separately scoped."
+  },
+  "excluded": [
+    "Full122featureacceptance",
+    "AllSmartoperators on actual UI",
+    "Normal staff invite/sign-in/revocation UI",
+    "Current native APK on compiled Workerd BFF/API",
+    "iOS",
+    "Real provider delivery/sandbox transaction",
+    "Hosted staging/production",
+    "Signed release/rollback/certification"
+  ]
+}

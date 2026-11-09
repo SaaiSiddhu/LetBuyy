@@ -1,0 +1,111 @@
+{
+  "at": "2026-11-07",
+  "status": "SOURCE62_LOCAL_QUALIFIED_NATIVE88_BOUNDED_IOS_WEB_PASS",
+  "source": {
+    "manifest": "merchant-editor-feedback-source-v62.source.json",
+    "sha256": "8e2b9f6b03ff9ea79a70dd6cd0c17f2af00bd10eafac03df6119d8ba08c4b5a4",
+    "inputs": 8487,
+    "head": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+    "branch": "codex/merchant-mobile-parity",
+    "frozen": false
+  },
+  "current_gates": {
+    "source56_flutter": {
+      "pass": 1660,
+      "fail": 0,
+      "skip": 0,
+      "analysis_issues": 0,
+      "reuse": "All actual Dart/mobile source inputs unchanged in57/58"
+    },
+    "source58_pipeline": "PASS: product-media-ios-v58-pipeline.terminal.json",
+    "source57_pipeline": "product-media-ios-v57-pipeline.terminal.json",
+    "source58_root_contracts": 409,
+    "source58_identity_tests": {
+      "app": 72,
+      "repository": 6
+    },
+    "source58_shared_ui_tests": 76,
+    "notice": "Counts overlap earlier proof; no sum or full-feature acceptance implied.",
+    "source59_pipeline": "PASS: product-media-ios-v59-pipeline.terminal.json",
+    "source59_identity_tests": {
+      "app": 73,
+      "repository": 6
+    },
+    "source62_pipeline": "PASS: editor-feedback-v62-pipeline.terminal.json",
+    "source62_flutter": {
+      "pass": 1662,
+      "fail": 0,
+      "skip": 0,
+      "analysis_issues": 0
+    },
+    "source62_governance": {
+      "pass": 114,
+      "not_applicable": 1,
+      "source_and_index_unchanged": true
+    }
+  },
+  "native_current": {
+    "source": "source62",
+    "platform": "ios-simulator",
+    "state": "BOUNDED_LOCAL_IOS_WEB_PASS_SINGLE_SAVE_TAP_WITH_VISIBLE_FEEDBACK",
+    "run_id": "736d90079837",
+    "report": "native88-final-local-readback.json",
+    "artifact_manifest_sha256": "f5b7ea372005e5456a21df3e2a3a854cd87152d6a97860309fbfc9ff7b9e0caa",
+    "whole_feature_or_full_ios_acceptance": false
+  },
+  "last_accepted_native": {
+    "platform": "ios-simulator",
+    "cohort": 88,
+    "run": "736d90079837",
+    "source_sha256": "8e2b9f6b03ff9ea79a70dd6cd0c17f2af00bd10eafac03df6119d8ba08c4b5a4",
+    "artifact_manifest_sha256": "f5b7ea372005e5456a21df3e2a3a854cd87152d6a97860309fbfc9ff7b9e0caa",
+    "installed_bytes_independently_equal": true,
+    "readback": "native88-final-local-readback.json",
+    "session": null
+  },
+  "critical_fixes": "Strict canonical KYC public TS/Dart parse; unfinished public upload original receipt/allocation recovery; same-file reselection and current-owner/scope fencing; atomic RLS/GUC Media create/registry/outbox/receipt and update/delete receipts; strict Media inbound schemas; metadata dialog controller lifetime; scoped web deletion;54onlyMedia_showMessage uses existing paired shared feedback. Product image actions reuse canonical recoverable Media selection and shared Dart models; local guarded Accounts/CSRF/session/CSP transport; shared editor footer owns feedback/keyboard geometry so queued notifications do not cover Save.",
+  "resource_rules": "Exact task QEMU79160/AVDLetBuyy_Merchant_Parity_20261106_c6cefc/root/private/tmp/letbuyy-merchant-emulator-de849422c5; isolatedADB15038/emulator-5580. Reverify ownership before control. No global cleanup. Mac host9002 belongs another task; never probe/bind/stop. Native-generatedNextmarkers require exact owned validation before exclusion; full54snapshot equality after teardown.",
+  "programme": {
+    "applicable_open": 119,
+    "excluded": [
+      120,
+      121
+    ],
+    "paused": [
+      122
+    ],
+    "frozen": [
+      51
+    ],
+    "nonadditive_surface_inventory": 211,
+    "source_unreviewed_rows": 35,
+    "app_library_files": 193,
+    "unique_surface_denominator": null,
+    "full_feature_set_accepted": false
+  },
+  "next": [
+    "Original-key web upload/registration recovery and durable native/web Media metadata/deletion recovery.",
+    "Broader product media: camera permission/cancel, video/3D, variants/options, reorder coverage and actual buyer Liquid render.",
+    "Current-role/store-switch/revocation cases and remaining feature-by-feature web/mobile/buyer journeys across every applicable entry.",
+    "Reconcile the remaining source/surface inventory; whole122 acceptance remains open.",
+    "Private KYC interruption/provider acceptance and historical startup90second root cause remain separate; local test-R2 normal intake is narrower proof."
+  ],
+  "limits": "Local synthetic simulator/compiled Worker/Postgres/PostgREST/test R2 proof only. No whole-feature/full122/provider/physical/release certification.",
+  "report": "media-feedback-v54-local-readback.json",
+  "active_session": null,
+  "resource_state": "Native88 owned services/DB/container/network/volume teardown complete with no cleanup failure; exact task iOS simulator Shutdown with userdata/Photos retained. Other simulators unmodified. Earlier Android tuple requires fresh ownership verification.",
+  "diagnostic_trace_removed": "native86-trace-removal-readback.json",
+  "historical_last_accepted_android": {
+    "status": "PASS_BOUNDED_LOCAL",
+    "cohort": 78,
+    "run": "26e80c9a199c",
+    "source_sha256": "70794e68bd47bf97c4331ab71f5a3f968231b63153cb23f0f6889ebdda31e445",
+    "apk_sha256": "69e61f0f9d620450d71e1862fa984600f70ed7978693df8bb75c53e2c1560d1d",
+    "installed_bytes_independently_equal": true,
+    "session": null,
+    "independent_readback": "native78-independent-readback.json",
+    "visual_readback": "native78-visual-pixel-readback.json",
+    "custody": "native78-cold-custody-readback.json"
+  },
+  "source_final_custody": "source62-final-custody.json"
+}

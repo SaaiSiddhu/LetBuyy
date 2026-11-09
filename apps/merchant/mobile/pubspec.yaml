@@ -54,6 +54,8 @@ dependencies:
   crypto: ^3.0.7
   video_player: ^2.9.2
   webview_flutter: ^4.8.0
+  # Already supplied by webview_flutter; use its locked inline-video API explicitly.
+  webview_flutter_wkwebview: 3.23.6
   
   # Local Storage
   shared_preferences: ^2.3.4

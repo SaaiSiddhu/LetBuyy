@@ -1,0 +1,17 @@
+{
+  "at": "2026-11-05T19:02:59.558371+00:00",
+  "status": "LAUNCHING_SOURCE_FROZEN",
+  "root": "/private/tmp/letbuyy-merchant-local-20261106-25feac2c",
+  "launcher": "/private/tmp/letbuyy-merchant-local-20261106-25feac2c/run-warehouse-v40.py",
+  "inputs": {
+    "android-device-receipt-warehouse-v40.json": "7321e2796c64833e2eff6c7b0b096018d43fe161a19a4cb766e01ed1785ab71a",
+    "android-warehouse-auto-v40.py": "0b32a1fd0b9b4d8a9dcc713f9cf135cacc1572cddf432d17def8f1ab28d87f92",
+    "run-warehouse-v40.py": "f47f4a12e22fa33a7b731b0170d4fdb02b47425310423608c0010baa2037e629"
+  },
+  "source_sha256": "b1ab9fa3bfb563d17d6285aeaeffbc80845ef39d521c5c0cfdcf028856df8e4d",
+  "source_inputs": 8442,
+  "source_manifest": "document-source-v1.source.json",
+  "scope": "Same original native39 controller/assertions, only run version advanced; existing task AVD/data preserved. Fresh normal synthetic login and current APK required. No weakened saved-document or stock assertions.",
+  "protected_fixture_sha256": "12917f372dee1ecf6610c8888af1caa9a5a80b545388ba0b58570c6b9c6f8510",
+  "launched_at": "2026-11-05T19:05:13.982385+00:00"
+}

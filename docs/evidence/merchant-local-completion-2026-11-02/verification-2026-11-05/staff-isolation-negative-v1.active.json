@@ -1,0 +1,16 @@
+{
+  "started_at": "2026-11-06T02:26:17.216113+00:00",
+  "supervisor_pid": 45141,
+  "source": "staff-isolation-negative-v1",
+  "source_sha256": "15ae12cab93b02ad527bf1a80113f290812e3e41d1b0fab0efdaaa35477c4b41",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "--timeout",
+    "45s",
+    "test/staff_environment_isolation_test.dart"
+  ],
+  "status": "RUNNING",
+  "child_pid": 45143
+}

@@ -1,0 +1,61 @@
+{
+  "at": "2026-11-05T00:19:57.590802+00:00",
+  "status": "Local/source results terminal; Android26 active. This is not production or full-programme acceptance.",
+  "source_sha256": "4b2f91c5e74ff028a025bdee21c7216151011e6472d61b7d91913dc6335d1cbb",
+  "head": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+  "snapshot_input_entries": 7482,
+  "snapshot_note": "Four retained golden-failure PNGs are included as diagnostic input custody, never code authority or a release artifact. Their preimages remain private in N.",
+  "flutter": {
+    "pass": 1210,
+    "fail": 1,
+    "skip": 0,
+    "failure": "Unchanged protected Staff existing-hosted-invitation namespace assertion.",
+    "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-customer-list-v35-full-flutter.log"
+  },
+  "analysis": {
+    "merchant_app": "0issues",
+    "shared_ui_kit": "0issues"
+  },
+  "preservation": {
+    "parsed_checks": 489,
+    "all_passed": true,
+    "protected_baseline_files": 5195,
+    "classified_client_read_exceptions": 4,
+    "prior_three_exceptions_byte_identical": true,
+    "all_other_protected_files_unchanged": true
+  },
+  "governance": {
+    "counts": {
+      "PASS": 114,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "SKIP": 0,
+      "NOT_APPLICABLE": 1
+    },
+    "exit_code": 0,
+    "actual_post_gate_clone_core_byte_equality": 7482,
+    "readback": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/customer-list-v2-governance35-readback.json"
+  },
+  "golden_review": {
+    "before_retained": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/customer-list-before-golden.png",
+    "current": "apps/merchant/mobile/test/goldens/customers_crm_list.png",
+    "current_sha256": "3eae7ae0809be35f13353594fa331665af0911bd6bb7faa5111bb83a4faf5761",
+    "review": "Independently viewed after record-first composition and canonical chip pair correction. Canonical StoreTheme light used instead of an unrelated default ThemeData. Material icon glyphs in widget-golden harness are not native-device icon acceptance. Golden tolerance/other golden unchanged.",
+    "actual_contrast": "Actual RenderParagraph foreground and Ink background pairs tested>=4.5 for enabled selected/unselected chips in both themes; text scaling preserved."
+  },
+  "negative_evidence": [
+    "Return duplicate/stale required error0PASS/2FAIL before widget repair.",
+    "Customer list held optional/narrow/missing0PASS/4FAIL before migration.",
+    "Customer read lifetime/identity0PASS/7FAIL before classified client repair.",
+    "Segment page-local search0PASS/1FAIL before page-identity correction.",
+    "Light chip lacked a resolved explicit foreground; final paired render test passes in both themes.",
+    "Prior full source1 had1199PASS/3FAIL, including fixed-pane fixture, old golden and protected Staff. Failures/preimages retained."
+  ],
+  "pending": [
+    "Android26 terminal and actual source/APK/owned cleanup/read-only command readback; independent images and actual keyboard review.",
+    "Fresh iOS compile/runtime bounds.",
+    "Customer Detail and9forms/confirmations;119feature programme,114unreviewed UI candidates; final unique denominator null.",
+    "Hosted/provider/production/release acceptance remains distinct."
+  ],
+  "no_change": "No backend/API/BFF server/schema/RLS/auth/financial/persistence policy/provider/storage/infrastructure/deployment change."
+}

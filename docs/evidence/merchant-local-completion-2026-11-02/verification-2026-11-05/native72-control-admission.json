@@ -1,0 +1,23 @@
+{
+  "source_manifest": "merchant-kyc-receipt-source-v43",
+  "source_sha256": "7b3d68cff186f04b58661b987e52954d2b63ae452e0d7befcfbda20a108d355e",
+  "changes": "Observed actual KYC form title; same unique focused field input. Source KYC auto-closes after strict accepted upload; require actual saved private PAN and pending-scan readback, not an outgoing transient dialog message. All private/public bucket, source, recovery, permission, web and conservation checks retained.",
+  "inputs": [
+    {
+      "path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/merchant-switcher-staff-v72-local-android.postgres.test.ts",
+      "sha256": "547ccfb577872ec645ef787e57c72a4436f9800a580b03b471e957e5a8db2584"
+    },
+    {
+      "path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/android-switcher-staff-v72.py",
+      "sha256": "6f20d50ba29817dc9c2866d81b39cda0afab74b414075f0c092fff0dd1ba5440"
+    },
+    {
+      "path": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/run-switcher-v72.py",
+      "sha256": "1708c054c72182bda69899077d2ec976228c2f4fecc1594d0788beb401e6fb3d"
+    },
+    {
+      "path": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/android-device-receipt-switcher-v72.json",
+      "sha256": "50c5d190f7eda314d35145883c672a5fe196e3b23faac5b042e5d4e9b241692f"
+    }
+  ]
+}

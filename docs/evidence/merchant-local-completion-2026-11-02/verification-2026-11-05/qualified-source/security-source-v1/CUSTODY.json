@@ -1,0 +1,49 @@
+{
+  "role": "Exact qualified changed-file custody only; canonical worktree remains source authority. Not imported or deployed. Combined with untouched entry files/preimages and pinned source manifests, retains current-turn source deltas.",
+  "files": [
+    {
+      "path": "apps/merchant/mobile/lib/screens/discounts/coupon_form_screen.dart",
+      "sha256": "a00aff781c5536744c363338fad6f1d325134e1f29824eefde7f7c7e1f460c5a"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/screens/discounts/coupon_validation_sheet.dart",
+      "sha256": "ecf5d476089006daa1a96f37f649f698e4c715e6f6d7580f2b8e0e05baddc5f1"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/screens/discounts/coupons_screen.dart",
+      "sha256": "b37a2270a98ac6d12291a66bec0e1ebf6669229687fef9cddffcc019889e1738"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/screens/security/two_factor_screen.dart",
+      "sha256": "10a21647d89c3c9a85954c0ef4463f5462e7c44eb07149ca86ee126c6084236d"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/services/coupon_service.dart",
+      "sha256": "a569a4d4bb802d49cb3affbc0e109cf90cb94c12a8f57cca525da708a45c873b"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/widgets/shared/warehouse_list_scaffold.dart",
+      "sha256": "01b9775ae9548b21df07029e5cea51afb78e691d4b58d9e982e128041ce7d9d7"
+    },
+    {
+      "path": "apps/merchant/mobile/test/coupon_lifetime_test.dart",
+      "sha256": "549cef87a45a2940a7e329210ee4dac44d6b7cdca1f6e971683ea6b5753f6428"
+    },
+    {
+      "path": "apps/merchant/mobile/test/coupon_presentation_test.dart",
+      "sha256": "e678b3b687560270168d85c8eafab8f4f947b75bfaa3164fca15fd77d6ff2585"
+    },
+    {
+      "path": "apps/merchant/mobile/test/mobile_services_test.dart",
+      "sha256": "38729422361975e2ae22418a564974aad9c17cd24fd6522f3a91e3188394b6cc"
+    },
+    {
+      "path": "apps/merchant/mobile/test/security_presentation_test.dart",
+      "sha256": "ac7ec9fcf45090daebb02973c8e7984f7338ad85c8ae02b4f168d1df3ab5a25b"
+    },
+    {
+      "path": "apps/merchant/mobile/test/two_factor_screen_test.dart",
+      "sha256": "7bf672bb77e469651b8cc6ca582ca133cd811155f876500354afaf888a79fe6b"
+    }
+  ]
+}

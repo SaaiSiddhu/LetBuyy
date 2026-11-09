@@ -1,0 +1,13 @@
+{
+  "status": "FAILED_UNACCEPTED",
+  "runId": "f2cd878d7b96",
+  "passed": 3,
+  "failed": 3,
+  "skipped": 0,
+  "cleanupEmpty": true,
+  "source_sha256": "c6ab54a0951cf92158459881d01b40d5b00d9aa534335fed529b4aeed19d4e32",
+  "sourceEntries": 7403,
+  "sourceHeldAndTerminalVerified": true,
+  "archive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/unified-collection-browser-v1-qualified-source",
+  "finding": "First new test asserted lost-reply count as soon as pending recovery painted, before its HTTP attempt settled. No collection write was recorded. Test closed page with retained original intent; subsequent smart controls were correctly disabled. Wait for retry control enabled before asserting a settled request. No collection acceptance claimed."
+}

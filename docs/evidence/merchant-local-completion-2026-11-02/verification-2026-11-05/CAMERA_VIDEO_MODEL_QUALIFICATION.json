@@ -1,0 +1,213 @@
+{
+  "kind": "evidence-not-authority",
+  "source": {
+    "name": "merchant-camera-video-model-source-v84",
+    "sha256": "5f78a66e349980b7538b8c5a894967984d34baf80072677cfc2f30283dbdea1c",
+    "entries": 8502
+  },
+  "changed_inputs_since_73": [
+    "apps/merchant/mobile/lib/screens/content/media_library_screen.dart",
+    "apps/merchant/mobile/lib/services/media_service.dart",
+    "apps/merchant/mobile/lib/widgets/shared/image_source_sheet.dart",
+    "apps/merchant/mobile/lib/widgets/shared/merchant_media_picker.dart",
+    "apps/merchant/mobile/test/media_interrupted_upload_recovery_test.dart",
+    "apps/merchant/mobile/test/media_library_recovery_test.dart",
+    "apps/merchant/mobile/test/media_model_upload_menu_test.dart",
+    "apps/merchant/mobile/test/media_public_upload_admission_test.dart",
+    "apps/merchant/mobile/test/media_video_controls_test.dart",
+    "apps/merchant/mobile/test/merchant_media_picker_test.dart",
+    "packages/dart/models/lib/src/media_contracts.dart",
+    "scripts/governance/test-suite-catalog.mjs",
+    "services/api-gateway/src/routes/public-assets.ts",
+    "tests/governance/gateway-db-lane.test.mjs",
+    "tests/owned-db/merchant-public-media-range-workerd.postgres.test.ts"
+  ],
+  "count": 15,
+  "local_gates": {
+    "camera-video-model-v84-flutter-all": {
+      "started_at": "2026-11-07T06:43:59.042040+00:00",
+      "supervisor_pid": 73016,
+      "source": "merchant-camera-video-model-source-v84",
+      "source_sha256": "5f78a66e349980b7538b8c5a894967984d34baf80072677cfc2f30283dbdea1c",
+      "command": [
+        "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+        "test",
+        "--no-pub",
+        "--reporter",
+        "expanded"
+      ],
+      "status": "TERMINAL",
+      "child_pid": 73130,
+      "exit_code": 0,
+      "finished_at": "2026-11-07T06:44:44.839037+00:00",
+      "source_unchanged": true,
+      "source_readback_sha256": "5f78a66e349980b7538b8c5a894967984d34baf80072677cfc2f30283dbdea1c"
+    },
+    "camera-video-model-v84-analysis": {
+      "started_at": "2026-11-07T06:43:59.007157+00:00",
+      "supervisor_pid": 73003,
+      "source": "merchant-camera-video-model-source-v84",
+      "source_sha256": "5f78a66e349980b7538b8c5a894967984d34baf80072677cfc2f30283dbdea1c",
+      "command": [
+        "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+        "analyze",
+        "--no-pub"
+      ],
+      "status": "TERMINAL",
+      "child_pid": 73108,
+      "exit_code": 0,
+      "finished_at": "2026-11-07T06:44:08.306203+00:00",
+      "source_unchanged": true,
+      "source_readback_sha256": "5f78a66e349980b7538b8c5a894967984d34baf80072677cfc2f30283dbdea1c"
+    },
+    "camera-video-model-v84-gateway-types": {
+      "started_at": "2026-11-07T06:43:54.193024+00:00",
+      "supervisor_pid": 72846,
+      "source": "merchant-camera-video-model-source-v84",
+      "source_sha256": "5f78a66e349980b7538b8c5a894967984d34baf80072677cfc2f30283dbdea1c",
+      "command": [
+        "pnpm",
+        "--dir",
+        "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/services/api-gateway",
+        "typecheck"
+      ],
+      "status": "TERMINAL",
+      "child_pid": 72849,
+      "exit_code": 0,
+      "finished_at": "2026-11-07T06:44:16.773902+00:00",
+      "source_unchanged": true,
+      "source_readback_sha256": "5f78a66e349980b7538b8c5a894967984d34baf80072677cfc2f30283dbdea1c"
+    },
+    "camera-video-model-v84-root-contracts": {
+      "started_at": "2026-11-07T06:43:56.714463+00:00",
+      "supervisor_pid": 72897,
+      "source": "merchant-camera-video-model-source-v84",
+      "source_sha256": "5f78a66e349980b7538b8c5a894967984d34baf80072677cfc2f30283dbdea1c",
+      "command": [
+        "pnpm",
+        "--dir",
+        "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy",
+        "test:contracts"
+      ],
+      "status": "TERMINAL",
+      "child_pid": 72899,
+      "exit_code": 0,
+      "finished_at": "2026-11-07T06:43:59.687719+00:00",
+      "source_unchanged": true,
+      "source_readback_sha256": "5f78a66e349980b7538b8c5a894967984d34baf80072677cfc2f30283dbdea1c"
+    },
+    "merchant-camera-video-model-v84-governance-v2": {
+      "at": "2026-11-07T06:46:49.836552+00:00",
+      "status": "TERMINAL",
+      "exit_code": 0,
+      "capsule": "/private/tmp/letbuyy-merchant-camera-video-model-v84-governance-0zgfd727",
+      "purpose": "Disposable validation copy only, no implementation/worktree/merge/push/release",
+      "source_sha256": "5f78a66e349980b7538b8c5a894967984d34baf80072677cfc2f30283dbdea1c",
+      "core_inputs_byte_equal": 8502,
+      "original_source_unchanged": true,
+      "original_index_unchanged": true,
+      "original_index_entries_unchanged": true,
+      "index_sha256_before": "70093e9e3001a3b3e8769c109c01384e08169200420511ee064a0771b5c91a50",
+      "index_sha256_after": "70093e9e3001a3b3e8769c109c01384e08169200420511ee064a0771b5c91a50",
+      "report": "merchant-camera-video-model-v84-governance-v2-report.json"
+    },
+    "camera-video-model-v84-owned-media-db-v2": {
+      "started_at": "2026-11-07T06:46:29.664132+00:00",
+      "supervisor_pid": 74779,
+      "source": "merchant-camera-video-model-source-v84",
+      "source_sha256": "5f78a66e349980b7538b8c5a894967984d34baf80072677cfc2f30283dbdea1c",
+      "command": [
+        "python3",
+        "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/run_owned_media_source84.py"
+      ],
+      "status": "TERMINAL",
+      "child_pid": 74781,
+      "exit_code": 0,
+      "finished_at": "2026-11-07T06:47:07.373762+00:00",
+      "source_unchanged": true,
+      "source_readback_sha256": "5f78a66e349980b7538b8c5a894967984d34baf80072677cfc2f30283dbdea1c"
+    }
+  },
+  "native_runtime": {
+    "103": "FAIL after normal auth; category UI driver reachability",
+    "104": "FAIL after normal auth; captures proved keyboard toolbar wrongly selected as scroll",
+    "106": "FAIL overall; product/photo and five-field metadata phases passed; final driver queried before rendered editor",
+    "107": "FAIL overall; native/product/media phases passed; fixture mistakenly edited Product type instead of Category",
+    "108": "PASS f03b0f1cf8fb; current normal auth/photo/category/media/web receipt recovery;401installed files equal",
+    "105": "PASS c55db46206e7; actual Safari/Files GLTF/GLB/MP4 imports,one original GLTF upload after interruption/restart recovery,3R2hashes,actual AVPlayer206/decode/seek/mute/background pause,model caption sync; failed control attempts retained, cumulative phases;owned cleanup empty",
+    "109": "PASS1092fb014df9;current-source Android normal auth/category/photo/product save,5metadata fields and encrypted process-restart original receipt recovery,web upload/edit/delete and return readback;installed artifact/control custody/cleanup verified",
+    "110": "PASS6058badcda4b;current-source Android real Files GLTF/GLB/MP4,original model receipt restart recovery,3rows/objects/bytehashes,no list video-byte fetch,native video decode/progress/pause/mute/seek/background,no-auto-resume,virtual-camera cancel and native/web caption;failed driver attempts retained;installed APKhash/mappings/temporary camera permission/cleanup verified"
+  },
+  "whole_features_accepted": 0,
+  "boundaries": "119 whole applicable features open;120/121excluded;122paused;51frozen; local synthetic tests only",
+  "current_gates": {
+    "flutter": {
+      "pass": 1719,
+      "fail": 0,
+      "skip": 0
+    },
+    "analysis_issues": 0,
+    "gateway_types_exit": 0,
+    "root_contract_pass": 400,
+    "governance": {
+      "PASS": 114,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "SKIP": 0,
+      "NOT_APPLICABLE": 1
+    },
+    "owned_media": {
+      "run_id": "c657e9fb37b7",
+      "pass": 12,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "owned_public_ranges": {
+      "run_id": "e05e4a284cff",
+      "pass": 13,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "web73_unchanged_inputs_retained_phases": [
+      660,
+      818,
+      295,
+      13
+    ],
+    "counts_note": "Counts are independent/overlapping scopes;parent/subtests are included;never sum."
+  },
+  "current_android_compile": {
+    "path": "/private/tmp/letbuyy-ios-ui-20261107-a7454jq9/android-v84/app-debug.apk",
+    "sha256": "f1242e86e29fb14e11f86e4c6d57cfd7a40ee1c08fda6d92d7abf12db13f871f",
+    "bytes": 222987147,
+    "normal_debug_build": true,
+    "arm64_flutter_engine": true,
+    "debug_kernel": true,
+    "material_icons_sha256": "d9865b671a09d683d13a863089d8825e0f61a37696ce5d7d448bc8023aa62453",
+    "installed": false,
+    "runtime_verified": false,
+    "source_sha256": "5f78a66e349980b7538b8c5a894967984d34baf80072677cfc2f30283dbdea1c",
+    "scope": "Current Android compile/archive only;Android101 is historical source72 runtime."
+  },
+  "custody": "source84-final-custody.json",
+  "status": "BOUNDED_CURRENT_BOTH_PLATFORM_COHORT_PASS;FULL_FEATURES_OPEN",
+  "android_installed_runtime": {
+    "core": "1092fb014df9",
+    "media": "6058badcda4b",
+    "latest_apk_sha256": "8891ce4feb5b11e05be8858ac940ce7e6f708755f10fd2c0895b191f3dddc0c8"
+  }
+}

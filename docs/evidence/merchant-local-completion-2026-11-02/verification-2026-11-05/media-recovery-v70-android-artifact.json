@@ -1,0 +1,10 @@
+{
+  "source": "merchant-media-recovery-source-v70",
+  "source_sha256": "227c67d04d52c7d0cad74e5709db40e4dd93ca7917d7317a1d29a7fe680ac508",
+  "apk_sha256": "a7baa383dc8774243cf91d229389e68bb6d5d6d7b96733e26529660ed2d9fe0f",
+  "bytes": 222975779,
+  "retained": "/private/tmp/letbuyy-ios-ui-20261107-ol4jw8ha/qualified-android-app-debug.apk",
+  "build": "media-recovery-v70-android-build.terminal.json",
+  "runtime": "Fresh Android build only; no current-source Android UI acceptance. Historical native78 Android acceptance remains separate.",
+  "warning": "Nonfatal SDK XML reader3/version4 toolchain warning retained in build log."
+}

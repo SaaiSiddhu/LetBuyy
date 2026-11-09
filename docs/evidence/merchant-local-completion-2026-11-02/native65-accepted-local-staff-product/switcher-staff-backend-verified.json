@@ -1,0 +1,1460 @@
+{
+  "run_id": "65570e9272a9",
+  "final_database_state": {
+    "staff": {
+      "role": "viewer",
+      "active": false,
+      "status": "removed"
+    },
+    "alpha_name": "Synthetic Alpha web",
+    "beta_product": {
+      "id": "878e6aa3-9004-45c1-94bc-3bb8efc5a837",
+      "name": "Synthetic Beta mobile product",
+      "price": 100,
+      "stock": 3,
+      "images": [
+        "http://127.0.0.1:54352/__owned__/product.png"
+      ],
+      "version": 3,
+      "category": null,
+      "metadata": {
+        "retained": "Synthetic unmanaged metadata",
+        "specifications": {
+          "Null": null,
+          "Empty": "",
+          "Boolean": true,
+          "Numeric": 42
+        }
+      },
+      "description": null
+    },
+    "staff_audits": {
+      "INSERT": 1,
+      "UPDATE": 2,
+      "employee.created": 1,
+      "employee.removed": 1,
+      "employee.updated": 1
+    },
+    "product_audits": 1,
+    "product_outbox": 1,
+    "product_receipts": 1,
+    "alpha_roster_count": 53,
+    "alpha_roster_byte_equal": true,
+    "alpha_roster_before_sha256": "a4bbe61a10266979ef0d11dd08c9863c223f7b7ace77ce2c0936cb674530e6ae",
+    "alpha_roster_after_sha256": "a4bbe61a10266979ef0d11dd08c9863c223f7b7ace77ce2c0936cb674530e6ae",
+    "inventory_before": [
+      {
+        "id": "7e7ad39a-d708-4c84-adcd-c172e4d0f9b3",
+        "on_hand": 3,
+        "reserved": 0,
+        "available": 3,
+        "committed": 0
+      }
+    ],
+    "inventory_after": [
+      {
+        "id": "7e7ad39a-d708-4c84-adcd-c172e4d0f9b3",
+        "on_hand": 3,
+        "reserved": 0,
+        "available": 3,
+        "committed": 0
+      }
+    ]
+  },
+  "source_sha256": "c6aea48a0405cbb448450b29794b90fb45439d5c1b00df1289ea1cf07bd7e506",
+  "fixture_sha256": "f82cfea5d313a19ae24752d3a09188429247d22f15288355185266ae96572c52",
+  "apk_sha256": "c715d877ec4998c14dce5d52a2f34341e87ecce2ef733d367437b71f10c1e31a",
+  "calls": [
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 401,
+      "wire_status": 401
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/rate-limit/check",
+      "method": "POST",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/mobile/requests",
+      "method": "POST",
+      "status": 201,
+      "wire_status": 201
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/mobile/bind",
+      "method": "POST",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 401,
+      "wire_status": 401
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 401,
+      "wire_status": 401
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/rate-limit/check",
+      "method": "POST",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/users/by-email",
+      "method": "POST",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/rate-limit/check",
+      "method": "POST",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/users/authenticate",
+      "method": "POST",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/devices/get-or-create",
+      "method": "POST",
+      "status": 201,
+      "wire_status": 201
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/sessions/create",
+      "method": "POST",
+      "status": 201,
+      "wire_status": 201
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/mobile/approve",
+      "method": "POST",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/emails/send",
+      "method": "POST",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/mobile/complete",
+      "method": "POST",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/rate-limit/check",
+      "method": "POST",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/mobile/exchange",
+      "method": "POST",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/mobile/exchange",
+      "method": "POST",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/stores",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "data_count": 50,
+      "beta_product_present": false,
+      "store_page": 1,
+      "store_total": 53,
+      "beta_store_present": false
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/stores",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "data_count": 3,
+      "beta_product_present": false,
+      "store_page": 2,
+      "store_total": 53,
+      "beta_store_present": true
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/payments/subscription",
+      "method": "GET",
+      "status": 403,
+      "wire_status": 403,
+      "requested_store": "f0b1999f-6285-476b-b8d7-508f7c4e2e36",
+      "scope_hint": "f0b1999f-6285-476b-b8d7-508f7c4e2e36"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/payouts/summary",
+      "method": "GET",
+      "status": 403,
+      "wire_status": 403,
+      "requested_store": "f0b1999f-6285-476b-b8d7-508f7c4e2e36"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/analytics/traffic-sources",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "requested_store": "f0b1999f-6285-476b-b8d7-508f7c4e2e36"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/analytics/orders",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "requested_store": "f0b1999f-6285-476b-b8d7-508f7c4e2e36"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/analytics/top-products",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "data_count": 0,
+      "requested_store": "f0b1999f-6285-476b-b8d7-508f7c4e2e36",
+      "beta_product_present": false
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/analytics/revenue",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "requested_store": "f0b1999f-6285-476b-b8d7-508f7c4e2e36"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/analytics/dashboard",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "requested_store": "f0b1999f-6285-476b-b8d7-508f7c4e2e36"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/stores/f0b1999f-6285-476b-b8d7-508f7c4e2e36/payment-config",
+      "method": "GET",
+      "status": 404,
+      "wire_status": 404,
+      "scope_hint": "f0b1999f-6285-476b-b8d7-508f7c4e2e36"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/payments/subscription",
+      "method": "GET",
+      "status": 403,
+      "wire_status": 403,
+      "requested_store": "f0b1999f-6285-476b-b8d7-508f7c4e2e36",
+      "scope_hint": "f0b1999f-6285-476b-b8d7-508f7c4e2e36"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/stores/76d4103b-18e1-42d7-975a-cf86cfaccf1f/payment-config",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "scope_hint": "76d4103b-18e1-42d7-975a-cf86cfaccf1f"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/payments/subscription",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "requested_store": "76d4103b-18e1-42d7-975a-cf86cfaccf1f",
+      "scope_hint": "76d4103b-18e1-42d7-975a-cf86cfaccf1f"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/payments/subscription",
+      "method": "GET",
+      "status": 403,
+      "wire_status": 403,
+      "requested_store": "f0b1999f-6285-476b-b8d7-508f7c4e2e36",
+      "scope_hint": "f0b1999f-6285-476b-b8d7-508f7c4e2e36"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/stores/f0b1999f-6285-476b-b8d7-508f7c4e2e36/payment-config",
+      "method": "GET",
+      "status": 404,
+      "wire_status": 404,
+      "scope_hint": "f0b1999f-6285-476b-b8d7-508f7c4e2e36"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/stores/76d4103b-18e1-42d7-975a-cf86cfaccf1f/payment-config",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "scope_hint": "76d4103b-18e1-42d7-975a-cf86cfaccf1f"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/payments/subscription",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "requested_store": "76d4103b-18e1-42d7-975a-cf86cfaccf1f",
+      "scope_hint": "76d4103b-18e1-42d7-975a-cf86cfaccf1f"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/stores/76d4103b-18e1-42d7-975a-cf86cfaccf1f",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "scope_hint": "76d4103b-18e1-42d7-975a-cf86cfaccf1f"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/stores/76d4103b-18e1-42d7-975a-cf86cfaccf1f",
+      "method": "PATCH",
+      "status": 200,
+      "wire_status": 200,
+      "scope_hint": "76d4103b-18e1-42d7-975a-cf86cfaccf1f"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/stores/76d4103b-18e1-42d7-975a-cf86cfaccf1f",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "scope_hint": "76d4103b-18e1-42d7-975a-cf86cfaccf1f"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/employees",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "data_count": 50,
+      "requested_store": "76d4103b-18e1-42d7-975a-cf86cfaccf1f",
+      "scope_hint": "76d4103b-18e1-42d7-975a-cf86cfaccf1f",
+      "beta_product_present": false,
+      "staff_page": 1,
+      "staff_total": 53
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/employees",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "data_count": 3,
+      "requested_store": "76d4103b-18e1-42d7-975a-cf86cfaccf1f",
+      "scope_hint": "76d4103b-18e1-42d7-975a-cf86cfaccf1f",
+      "beta_product_present": false,
+      "staff_page": 2,
+      "staff_total": 53
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/stores/76d4103b-18e1-42d7-975a-cf86cfaccf1f",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "scope_hint": "76d4103b-18e1-42d7-975a-cf86cfaccf1f"
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/rate-limit/check",
+      "method": "POST",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/users/by-email",
+      "method": "POST",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/rate-limit/check",
+      "method": "POST",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/users/authenticate",
+      "method": "POST",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/devices/get-or-create",
+      "method": "POST",
+      "status": 201,
+      "wire_status": 201
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/sessions/create",
+      "method": "POST",
+      "status": 201,
+      "wire_status": 201
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/emails/send",
+      "method": "POST",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "data_count": 2,
+      "beta_product_present": false,
+      "store_page": 1,
+      "store_total": 53,
+      "beta_store_present": false
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "data_count": 50,
+      "beta_product_present": false,
+      "store_page": 1,
+      "store_total": 53,
+      "beta_store_present": false
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-catalog-7d6adf1e",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "data_count": 50,
+      "beta_product_present": false,
+      "store_page": 1,
+      "store_total": 53,
+      "beta_store_present": false
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/76d4103b-18e1-42d7-975a-cf86cfaccf1f/payment-config",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "data_count": 3,
+      "beta_product_present": false,
+      "store_page": 2,
+      "store_total": 53,
+      "beta_store_present": true
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/shipping-tax/shipping/zones",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "data_count": 0,
+      "requested_store": "76d4103b-18e1-42d7-975a-cf86cfaccf1f",
+      "scope_hint": "76d4103b-18e1-42d7-975a-cf86cfaccf1f",
+      "beta_product_present": false
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/products",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "data_count": 2,
+      "requested_store": "76d4103b-18e1-42d7-975a-cf86cfaccf1f",
+      "beta_product_present": false
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/orders",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "data_count": 0,
+      "requested_store": "76d4103b-18e1-42d7-975a-cf86cfaccf1f",
+      "beta_product_present": false
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/analytics/orders",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "requested_store": "76d4103b-18e1-42d7-975a-cf86cfaccf1f"
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/analytics/dashboard",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "requested_store": "76d4103b-18e1-42d7-975a-cf86cfaccf1f"
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-catalog-7d6adf1e",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "data_count": 50,
+      "beta_product_present": false,
+      "store_page": 1,
+      "store_total": 53,
+      "beta_store_present": false
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "data_count": 3,
+      "beta_product_present": false,
+      "store_page": 2,
+      "store_total": 53,
+      "beta_store_present": true
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-catalog-7d6adf1e",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/76d4103b-18e1-42d7-975a-cf86cfaccf1f",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-catalog-7d6adf1e",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/76d4103b-18e1-42d7-975a-cf86cfaccf1f/localization",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-catalog-7d6adf1e",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/76d4103b-18e1-42d7-975a-cf86cfaccf1f",
+      "method": "PATCH",
+      "status": 200,
+      "wire_status": 200,
+      "scope_hint": "76d4103b-18e1-42d7-975a-cf86cfaccf1f"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/stores",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "data_count": 50,
+      "beta_product_present": false,
+      "store_page": 1,
+      "store_total": 53,
+      "beta_store_present": false
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/stores",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "data_count": 3,
+      "beta_product_present": false,
+      "store_page": 2,
+      "store_total": 53,
+      "beta_store_present": true
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/stores/76d4103b-18e1-42d7-975a-cf86cfaccf1f/payment-config",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "scope_hint": "76d4103b-18e1-42d7-975a-cf86cfaccf1f"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/payments/subscription",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "requested_store": "76d4103b-18e1-42d7-975a-cf86cfaccf1f",
+      "scope_hint": "76d4103b-18e1-42d7-975a-cf86cfaccf1f"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/stores/76d4103b-18e1-42d7-975a-cf86cfaccf1f",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "scope_hint": "76d4103b-18e1-42d7-975a-cf86cfaccf1f"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/payments/subscription",
+      "method": "GET",
+      "status": 403,
+      "wire_status": 403,
+      "requested_store": "f0b1999f-6285-476b-b8d7-508f7c4e2e36",
+      "scope_hint": "f0b1999f-6285-476b-b8d7-508f7c4e2e36"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/stores/f0b1999f-6285-476b-b8d7-508f7c4e2e36/payment-config",
+      "method": "GET",
+      "status": 404,
+      "wire_status": 404,
+      "scope_hint": "f0b1999f-6285-476b-b8d7-508f7c4e2e36"
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/stores",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "data_count": 50,
+      "beta_product_present": false,
+      "store_page": 1,
+      "store_total": 53,
+      "beta_store_present": false
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/stores",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "data_count": 3,
+      "beta_product_present": false,
+      "store_page": 2,
+      "store_total": 53,
+      "beta_store_present": true
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/payments/subscription",
+      "method": "GET",
+      "status": 403,
+      "wire_status": 403,
+      "requested_store": "f0b1999f-6285-476b-b8d7-508f7c4e2e36",
+      "scope_hint": "f0b1999f-6285-476b-b8d7-508f7c4e2e36"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/payouts/summary",
+      "method": "GET",
+      "status": 403,
+      "wire_status": 403,
+      "requested_store": "f0b1999f-6285-476b-b8d7-508f7c4e2e36"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/analytics/traffic-sources",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "requested_store": "f0b1999f-6285-476b-b8d7-508f7c4e2e36"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/analytics/top-products",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "data_count": 0,
+      "requested_store": "f0b1999f-6285-476b-b8d7-508f7c4e2e36",
+      "beta_product_present": false
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/analytics/revenue",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "requested_store": "f0b1999f-6285-476b-b8d7-508f7c4e2e36"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/analytics/orders",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "requested_store": "f0b1999f-6285-476b-b8d7-508f7c4e2e36"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/analytics/dashboard",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "requested_store": "f0b1999f-6285-476b-b8d7-508f7c4e2e36"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/payments/subscription",
+      "method": "GET",
+      "status": 403,
+      "wire_status": 403,
+      "requested_store": "f0b1999f-6285-476b-b8d7-508f7c4e2e36",
+      "scope_hint": "f0b1999f-6285-476b-b8d7-508f7c4e2e36"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/stores/f0b1999f-6285-476b-b8d7-508f7c4e2e36/payment-config",
+      "method": "GET",
+      "status": 404,
+      "wire_status": 404,
+      "scope_hint": "f0b1999f-6285-476b-b8d7-508f7c4e2e36"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/products",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "data_count": 1,
+      "requested_store": "f0b1999f-6285-476b-b8d7-508f7c4e2e36",
+      "scope_hint": "f0b1999f-6285-476b-b8d7-508f7c4e2e36",
+      "beta_product_present": true
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/products/878e6aa3-9004-45c1-94bc-3bb8efc5a837",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "scope_hint": "f0b1999f-6285-476b-b8d7-508f7c4e2e36"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/products/878e6aa3-9004-45c1-94bc-3bb8efc5a837",
+      "method": "PATCH",
+      "status": 200,
+      "wire_status": 200,
+      "scope_hint": "f0b1999f-6285-476b-b8d7-508f7c4e2e36"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/products",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "data_count": 1,
+      "requested_store": "f0b1999f-6285-476b-b8d7-508f7c4e2e36",
+      "scope_hint": "f0b1999f-6285-476b-b8d7-508f7c4e2e36",
+      "beta_product_present": true
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/products/878e6aa3-9004-45c1-94bc-3bb8efc5a837",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "scope_hint": "f0b1999f-6285-476b-b8d7-508f7c4e2e36"
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-catalog-7d6adf1e",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "data_count": 50,
+      "beta_product_present": false,
+      "store_page": 1,
+      "store_total": 53,
+      "beta_store_present": false
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/76d4103b-18e1-42d7-975a-cf86cfaccf1f/payment-config",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/products",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "data_count": 2,
+      "requested_store": "76d4103b-18e1-42d7-975a-cf86cfaccf1f",
+      "beta_product_present": false
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/shipping-tax/shipping/zones",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "data_count": 0,
+      "requested_store": "76d4103b-18e1-42d7-975a-cf86cfaccf1f",
+      "scope_hint": "76d4103b-18e1-42d7-975a-cf86cfaccf1f",
+      "beta_product_present": false
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/orders",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "data_count": 0,
+      "requested_store": "76d4103b-18e1-42d7-975a-cf86cfaccf1f",
+      "beta_product_present": false
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/analytics/orders",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "requested_store": "76d4103b-18e1-42d7-975a-cf86cfaccf1f"
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/analytics/dashboard",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "requested_store": "76d4103b-18e1-42d7-975a-cf86cfaccf1f"
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "data_count": 3,
+      "beta_product_present": false,
+      "store_page": 2,
+      "store_total": 53,
+      "beta_store_present": true
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-catalog-7d6adf1e",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/founding/me",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "requested_store": "76d4103b-18e1-42d7-975a-cf86cfaccf1f"
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-switcher-beta-48fff40f",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "data_count": 50,
+      "beta_product_present": false,
+      "store_page": 1,
+      "store_total": 53,
+      "beta_store_present": false
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/shipping-tax/shipping/zones",
+      "method": "GET",
+      "status": 403,
+      "wire_status": 403,
+      "requested_store": "f0b1999f-6285-476b-b8d7-508f7c4e2e36",
+      "scope_hint": "f0b1999f-6285-476b-b8d7-508f7c4e2e36"
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/f0b1999f-6285-476b-b8d7-508f7c4e2e36/payment-config",
+      "method": "GET",
+      "status": 404,
+      "wire_status": 404
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/orders",
+      "method": "GET",
+      "status": 403,
+      "wire_status": 403,
+      "requested_store": "f0b1999f-6285-476b-b8d7-508f7c4e2e36"
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/products",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "data_count": 1,
+      "requested_store": "f0b1999f-6285-476b-b8d7-508f7c4e2e36",
+      "beta_product_present": true
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/analytics/orders",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "requested_store": "f0b1999f-6285-476b-b8d7-508f7c4e2e36"
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/analytics/dashboard",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "requested_store": "f0b1999f-6285-476b-b8d7-508f7c4e2e36"
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "data_count": 3,
+      "beta_product_present": false,
+      "store_page": 2,
+      "store_total": 53,
+      "beta_store_present": true
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-switcher-beta-48fff40f",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "data_count": 50,
+      "beta_product_present": false,
+      "store_page": 1,
+      "store_total": 53,
+      "beta_store_present": false
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "data_count": 3,
+      "beta_product_present": false,
+      "store_page": 2,
+      "store_total": 53,
+      "beta_store_present": true
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-switcher-beta-48fff40f",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/products",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "data_count": 1,
+      "requested_store": "f0b1999f-6285-476b-b8d7-508f7c4e2e36",
+      "beta_product_present": true
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/rate-limit/check",
+      "method": "POST",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/users/by-email",
+      "method": "POST",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/rate-limit/check",
+      "method": "POST",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/users/authenticate",
+      "method": "POST",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/devices/get-or-create",
+      "method": "POST",
+      "status": 201,
+      "wire_status": 201
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/sessions/create",
+      "method": "POST",
+      "status": 201,
+      "wire_status": 201
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/emails/send",
+      "method": "POST",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "data_count": 1,
+      "beta_product_present": false,
+      "store_page": 1,
+      "store_total": 1,
+      "beta_store_present": true
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-switcher-beta-48fff40f",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "data_count": 1,
+      "beta_product_present": false,
+      "store_page": 1,
+      "store_total": 1,
+      "beta_store_present": true
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/products",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "data_count": 1,
+      "requested_store": "f0b1999f-6285-476b-b8d7-508f7c4e2e36",
+      "beta_product_present": true
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/f0b1999f-6285-476b-b8d7-508f7c4e2e36/payment-config",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/shipping-tax/shipping/zones",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "data_count": 0,
+      "requested_store": "f0b1999f-6285-476b-b8d7-508f7c4e2e36",
+      "scope_hint": "f0b1999f-6285-476b-b8d7-508f7c4e2e36",
+      "beta_product_present": false
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/orders",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "data_count": 0,
+      "requested_store": "f0b1999f-6285-476b-b8d7-508f7c4e2e36",
+      "beta_product_present": false
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/analytics/orders",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "requested_store": "f0b1999f-6285-476b-b8d7-508f7c4e2e36"
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/analytics/dashboard",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "requested_store": "f0b1999f-6285-476b-b8d7-508f7c4e2e36"
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/auth/custom/session",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-switcher-beta-48fff40f",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "data_count": 1,
+      "beta_product_present": false,
+      "store_page": 1,
+      "store_total": 1,
+      "beta_store_present": true
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-switcher-beta-48fff40f",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/employees",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "data_count": 1,
+      "requested_store": "f0b1999f-6285-476b-b8d7-508f7c4e2e36",
+      "beta_product_present": false,
+      "staff_page": 1,
+      "staff_total": 1
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/employees/limits",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "requested_store": "f0b1999f-6285-476b-b8d7-508f7c4e2e36"
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-switcher-beta-48fff40f",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/employees/9fba187f-422f-41b8-a065-9837c7132556",
+      "method": "PATCH",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-switcher-beta-48fff40f",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/employees",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "data_count": 1,
+      "requested_store": "f0b1999f-6285-476b-b8d7-508f7c4e2e36",
+      "beta_product_present": false,
+      "staff_page": 1,
+      "staff_total": 1
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/employees/limits",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "requested_store": "f0b1999f-6285-476b-b8d7-508f7c4e2e36"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/products/878e6aa3-9004-45c1-94bc-3bb8efc5a837",
+      "method": "PATCH",
+      "status": 403,
+      "wire_status": 403,
+      "scope_hint": "f0b1999f-6285-476b-b8d7-508f7c4e2e36"
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-switcher-beta-48fff40f",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/employees/9fba187f-422f-41b8-a065-9837c7132556",
+      "method": "DELETE",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-switcher-beta-48fff40f",
+      "method": "GET",
+      "status": 404,
+      "wire_status": 404
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/handle/syn-native-catalog-7d6adf1e",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/stores/76d4103b-18e1-42d7-975a-cf86cfaccf1f",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/stores",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "data_count": 50,
+      "beta_product_present": false,
+      "store_page": 1,
+      "store_total": 52,
+      "beta_store_present": false
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/stores",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "data_count": 2,
+      "beta_product_present": false,
+      "store_page": 2,
+      "store_total": 52,
+      "beta_store_present": false
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/stores/76d4103b-18e1-42d7-975a-cf86cfaccf1f/payment-config",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "scope_hint": "76d4103b-18e1-42d7-975a-cf86cfaccf1f"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/payments/subscription",
+      "method": "GET",
+      "status": 200,
+      "wire_status": 200,
+      "requested_store": "76d4103b-18e1-42d7-975a-cf86cfaccf1f",
+      "scope_hint": "76d4103b-18e1-42d7-975a-cf86cfaccf1f"
+    }
+  ],
+  "scope": "Normal local Android/web Accounts login; 53real memberships across2pages, real owned/staff choice and original saved Beta beyond page50, current native and web header switchers, Beta preference restart, bidirectional owner Alpha saved name, supported native Staff Beta product edit/web UI read, live downgrade rejection and removal discovery. Owner-only settings policy unchanged. Native owner53staff roster composed from two actual pages; unchanged null category and typed/empty/null product metadata; web image actually decoded from exact owned origin. Invitation delivery/consent is separately tested by the sealed local browser, not this device lane. No iOS runtime, real provider, hosted/release/full122 acceptance."
+}

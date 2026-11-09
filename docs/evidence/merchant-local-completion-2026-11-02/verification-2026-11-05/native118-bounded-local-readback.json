@@ -1,0 +1,194 @@
+{
+  "at": "2026-11-07T18:48:18.826702+00:00",
+  "status": "BOUNDED_CAMERA_PROCESS_DEATH_DATA_RECOVERY_AND_FORMATS_WEB_SYNC_PASS;ROOT_BANNER_ACCESSIBILITY_FAIL",
+  "source": "merchant-native-selection-source-v89",
+  "source_sha256": "d76ed098ae86a3a02653e84ceac36218b763163b8b5961ecd8c51a379e22203d",
+  "private_root": "/private/tmp/letbuyy-merchant-local-20261107-aeffeda30c",
+  "run_id": "d0a99d1f7a58",
+  "runner": {
+    "tests": 1,
+    "assertionsPassed": 1,
+    "assertionsFailed": 0,
+    "skipped": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    }
+  },
+  "actual_process_deaths": {
+    "photo": {
+      "killed": {
+        "run_id": "d0a99d1f7a58",
+        "old_pid": 11493,
+        "old_process_absent_before_camera_result": true,
+        "external_camera_remained_foreground": true
+      },
+      "recovered": {
+        "run_id": "d0a99d1f7a58",
+        "accepted": true,
+        "old_pid": 11493,
+        "new_pid": 12157,
+        "old_process_absent_before_camera_result": true,
+        "review_visible_before_use": true,
+        "no_new_picker_or_session_injection": true,
+        "banner_accessibility": "FAILED;scoped recovery continued through actual accessible Media route;requires source repair"
+      },
+      "no_write_before_use": {
+        "run_id": "d0a99d1f7a58",
+        "accepted": true,
+        "uploads_before_explicit_use": 0,
+        "media_rows_before_explicit_use": 0
+      }
+    },
+    "video": {
+      "killed": {
+        "run_id": "d0a99d1f7a58",
+        "old_pid": 12157,
+        "old_process_absent_before_camera_result": true,
+        "external_camera_remained_foreground": true
+      },
+      "recovered": {
+        "run_id": "d0a99d1f7a58",
+        "accepted": true,
+        "old_pid": 12157,
+        "new_pid": 13314,
+        "old_process_absent_before_camera_result": true,
+        "review_visible_before_use": true,
+        "no_new_picker_or_session_injection": true,
+        "banner_accessibility": "FAILED;scoped recovery continued through actual accessible Media route;requires source repair"
+      },
+      "no_write_before_use": {
+        "run_id": "d0a99d1f7a58",
+        "accepted": true,
+        "uploads_before_explicit_use": 1,
+        "media_rows_before_explicit_use": 1
+      }
+    }
+  },
+  "uploads": 4,
+  "media_rows": 4,
+  "objects": 4,
+  "hashes": {
+    "image/jpeg": "94b0b6a1f0a001ea70bed828b58efc820d8dedec1d48955e706a18b3c4c5226d",
+    "video/mp4": "7ffb82d0997b404f5eb3799fb2958e86112adbd39d10c20af814267a80e97506",
+    "video/quicktime": "41df40017e22408682731f8eb5686d16b1cdc52d9a9ee0623d98b2dbed62e3c3",
+    "video/webm": "87d37fd5c013df089147c9f05f2bf8962e55906cc3ff8c4ec79017551d18954a"
+  },
+  "actual_recording_and_MOV_WebM_controls": true,
+  "native_web_caption_readback": true,
+  "artifact": {
+    "run_id": "d0a99d1f7a58",
+    "source_sha256": "621b2c5f07bdea9b29e5b7f48a6ef688d9bc2ab670ed6c8dbc8e5be8e4732569",
+    "apk_sha256": "8263366c5d751f6a2ce245ed8ed090f42a98f1d545ff48e9e3e543da5d596eb7",
+    "installed_equals_retained": true,
+    "defines": {
+      "ENVIRONMENT": "local",
+      "BFF_BASE_URL": "http://127.0.0.1:54350/v1",
+      "API_BASE_URL": "http://127.0.0.1:54350/v1",
+      "IDENTITY_BASE_URL": "http://localhost:9002",
+      "ADMIN_BASE_URL": "http://localhost:54353",
+      "STOREFRONT_BASE_URL": "http://localhost:54354",
+      "LOCAL_CHALLENGE_SDK_URL": "http://127.0.0.1:53943/fixtures/turnstile/api.js",
+      "TURNSTILE_SITE_KEY": "1x00000000000000000000AA",
+      "MOBILE_PUSH_DEVICE_TOKEN": "",
+      "SENTRY_DSN": "SKIP_NEEDS_HUMAN_LOCAL_SENTRY_DSN"
+    },
+    "scope": "Current local debug Android artifact only."
+  },
+  "phase_terminals": {
+    "Readback-terminal.json": {
+      "phase": "Readback",
+      "attempt": 1,
+      "exit": 0,
+      "accepted": true,
+      "run_id": "d0a99d1f7a58",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261107-aeffeda30c/Readback.py",
+      "control_sha256": "2302d591273985459c5b79abd72b678eabf7e9584eac186b2eab749226f0250f"
+    },
+    "Photo-terminal.json": {
+      "phase": "Photo",
+      "attempt": 1,
+      "exit": 1,
+      "accepted": false,
+      "run_id": "d0a99d1f7a58",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261107-aeffeda30c/Photo.py",
+      "control_sha256": "cb741ea9c29f1bbf2941f2d7d1ef84e689cede16413f83f76650a39445aceb47"
+    },
+    "Video-terminal.json": {
+      "phase": "Video",
+      "attempt": 1,
+      "exit": 1,
+      "accepted": false,
+      "run_id": "d0a99d1f7a58",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261107-aeffeda30c/Video.py",
+      "control_sha256": "d4449b86245bdc4b467247b16455d88cac1034650dc3b682bb23e668327dfe93"
+    },
+    "Preview-terminal.json": {
+      "phase": "Preview",
+      "attempt": 1,
+      "exit": 0,
+      "accepted": true,
+      "run_id": "d0a99d1f7a58",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261107-aeffeda30c/Preview.py",
+      "control_sha256": "f1829b176188e0f0b67eda47576311a78b4a95e23659ecf794926109c19d7577"
+    },
+    "Video-attempt2-terminal.json": {
+      "phase": "Video",
+      "attempt": 2,
+      "exit": 0,
+      "accepted": true,
+      "run_id": "d0a99d1f7a58",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261107-aeffeda30c/Video-observed-recovered-route.py",
+      "control_sha256": "492eddb3797fffeac6bc81d99609700de61b7a7518f7168a0bb23b3bb6ed400b"
+    },
+    "CameraPreview-terminal.json": {
+      "phase": "CameraPreview",
+      "attempt": 1,
+      "exit": 0,
+      "accepted": true,
+      "run_id": "d0a99d1f7a58",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261107-aeffeda30c/CameraPreview.py",
+      "control_sha256": "27ed70475544d1a1a01fd7fa4ed8542fc754b79e34f6044b40e53936539461bd"
+    },
+    "Photo-attempt2-terminal.json": {
+      "phase": "Photo",
+      "attempt": 2,
+      "exit": 0,
+      "accepted": true,
+      "run_id": "d0a99d1f7a58",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261107-aeffeda30c/Photo-observed-recovered-route.py",
+      "control_sha256": "fa688322f49500f0785a1f9e2bb0c22bb2421a528b25bdb4cd5ef9d8c2ded994"
+    },
+    "Auth-terminal.json": {
+      "phase": "Auth",
+      "attempt": 1,
+      "exit": 0,
+      "accepted": true,
+      "run_id": "d0a99d1f7a58",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261107-aeffeda30c/Auth.py",
+      "control_sha256": "b047097b53f1b74e6804e6539df01df34d335ee81ae9b7d3874078710a5791c0"
+    },
+    "Import-terminal.json": {
+      "phase": "Import",
+      "attempt": 1,
+      "exit": 0,
+      "accepted": true,
+      "run_id": "d0a99d1f7a58",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261107-aeffeda30c/Import.py",
+      "control_sha256": "ef1f3cfd71c69393e320f3951abfca85a0f38ff7ca696045a5872cdb2394ca99"
+    }
+  },
+  "banner_accessibility": {
+    "accepted": false,
+    "observation": "Visually present after each real process restart,but absent from Android accessibility tree outside Navigator. Native scripts retained both original failures and continued only through accessible Media routes,without repeating camera/kill/upload.",
+    "screenshot": "/private/tmp/letbuyy-merchant-local-20261107-aeffeda30c/observed-restarted-photo.png",
+    "hierarchy": "/private/tmp/letbuyy-merchant-local-20261107-aeffeda30c/observed-restarted-photo.xml",
+    "independent_regression": "native_notice_semantics_source89_test.dart;0PASS/1FAIL at missing SemanticsNode while visible text exists"
+  },
+  "whole_features_accepted": 0,
+  "limits": "This scoped data/control pass does not accept source89device UX. Move recovery notice inside current route and rerun. Androidvirtualcamera/nohostaudio;no physical/iOS/provider/hosted/release/full122 acceptance."
+}

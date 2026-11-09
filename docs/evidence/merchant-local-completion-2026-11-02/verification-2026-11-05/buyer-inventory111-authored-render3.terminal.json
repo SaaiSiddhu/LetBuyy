@@ -1,0 +1,16 @@
+{
+  "command": [
+    "node",
+    "--import",
+    "tsx",
+    "--test",
+    "docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/buyer-inventory111-authored-theme-render-probe3.test.ts"
+  ],
+  "env": {
+    "TSX_TSCONFIG_PATH": "apps/commerce/web/tsconfig.json"
+  },
+  "exit_code": 1,
+  "source": "merchant-buyer-inventory-source-v111",
+  "retry_reason": "Evidence fixture avoids an undeclared root dependency; assertions inspect actual rendered HTML purchase controls without modifying production package dependencies, aliases or export maps. Existing runtime adapter uses its declared public server DOM export.",
+  "at": "2026-11-08T10:28:55.806811+00:00"
+}

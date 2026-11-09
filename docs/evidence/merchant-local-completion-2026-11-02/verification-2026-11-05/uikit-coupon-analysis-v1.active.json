@@ -1,0 +1,13 @@
+{
+  "started_at": "2026-11-05T17:34:30.243323+00:00",
+  "supervisor_pid": 10015,
+  "source": "coupon-source-v1",
+  "source_sha256": "80e4c4f1f08a4b6e06a3b46e1abc76a36e4b164f9b4ae0584fd4a9894e3c1a0f",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "analyze",
+    "--no-pub"
+  ],
+  "status": "RUNNING",
+  "child_pid": 10017
+}

@@ -1,0 +1,12 @@
+{
+  "at": "2026-11-05T20:19:09.395159+00:00",
+  "status": "TERMINAL",
+  "exit_code": 0,
+  "capsule": "/private/tmp/letbuyy-utilities-governance-0jej_l_n",
+  "purpose": "Disposable validation copy only, no implementation/worktree/merge/push/release",
+  "source_sha256": "392d53d26becc93d69c656afaccb8fc7b591c8c0f542b61b3d80ce7fa475aba9",
+  "core_inputs_byte_equal": 8447,
+  "original_source_unchanged": true,
+  "original_index_unchanged": true,
+  "report": "utilities-governance-v1-report.json"
+}

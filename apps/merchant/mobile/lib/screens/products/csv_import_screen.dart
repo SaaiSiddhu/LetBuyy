@@ -3,6 +3,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:letbuyy_models/letbuyy_models.dart' hide JsonMap;
+import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import 'package:provider/provider.dart';
 import '../../app/store_context.dart';
 import '../../services/api_client.dart';
@@ -44,14 +45,20 @@ class _CsvImportScreenState extends State<CsvImportScreen> {
     if (!_bound) {
       _bound = true;
       _scope = context.read<StoreContext>().requestContextKey;
+      _source.addListener(_draftChanged);
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (_current) _refresh();
       });
     }
   }
 
+  void _draftChanged() {
+    if (_current) setState(() {});
+  }
+
   @override
   void dispose() {
+    _source.removeListener(_draftChanged);
     _source.dispose();
     super.dispose();
   }
@@ -99,6 +106,7 @@ class _CsvImportScreenState extends State<CsvImportScreen> {
       widget.storeId,
       page: _historyPage,
     );
+    if (!_current) return;
     final pending = await service.pendingCsvImport(widget.storeId);
     if (!_current) return;
     setState(() {
@@ -124,19 +132,23 @@ class _CsvImportScreenState extends State<CsvImportScreen> {
               : 'New imports are currently unavailable. Existing jobs can still be viewed.';
         });
     }
+    if (!_current) return;
     final selected = _job;
     if (selected != null) await _readJob(selected.id);
   });
   Future<void> _readJob(String id, {bool reveal = false}) async {
+    if (!_current) return;
+    final page = _rowPage, filter = _filter;
     final service = context.read<ProductService>();
     final job = await service.fetchCsvImport(widget.storeId, id);
+    if (!_current || _rowPage != page || _filter != filter) return;
     final rows = await service.fetchCsvRows(
       widget.storeId,
       id,
-      page: _rowPage,
-      status: _filter,
+      page: page,
+      status: filter,
     );
-    if (_current)
+    if (_current && _rowPage == page && _filter == filter)
       setState(() {
         _job = job;
         _rows = rows;
@@ -147,7 +159,9 @@ class _CsvImportScreenState extends State<CsvImportScreen> {
         if (_current && _job?.id == id && anchor != null)
           Scrollable.ensureVisible(
             anchor,
-            duration: const Duration(milliseconds: 200),
+            duration: MediaQuery.disableAnimationsOf(context)
+                ? Duration.zero
+                : const Duration(milliseconds: 200),
             alignment: 0.1,
           );
       });
@@ -196,6 +210,7 @@ class _CsvImportScreenState extends State<CsvImportScreen> {
         _file = null;
       });
       await _readJob(job.id, reveal: true);
+      if (!_current) return;
       final history = await service.fetchCsvImports(widget.storeId);
       if (_current)
         setState(() {
@@ -231,24 +246,15 @@ class _CsvImportScreenState extends State<CsvImportScreen> {
     final job = _job;
     if (job == null || !_current || _busy) return;
     if (stop) {
-      final approved = await showDialog<bool>(
+      final approved = await showLetbuyyConfirmation(
         context: context,
-        builder: (c) => AlertDialog(
-          title: const Text('Stop remaining import rows?'),
-          content: const Text(
+        title: 'Stop remaining import rows?',
+        message:
             'Products already committed remain. Stopped rows will not be imported by this job.',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(c, false),
-              child: const Text('Keep importing'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.pop(c, true),
-              child: const Text('Stop remaining rows'),
-            ),
-          ],
-        ),
+        cancelLabel: 'Keep importing',
+        confirmLabel: 'Stop remaining rows',
+        destructive: true,
+        guard: _guardConfirmation,
       );
       if (approved != true || !_current) return;
     }
@@ -264,24 +270,15 @@ class _CsvImportScreenState extends State<CsvImportScreen> {
 
   Future<void> _stopRegistration() async {
     if (!_current || _busy || !_pending) return;
-    final approved = await showDialog<bool>(
+    final approved = await showLetbuyyConfirmation(
       context: context,
-      builder: (c) => AlertDialog(
-        title: const Text('Stop the original request?'),
-        content: const Text(
+      title: 'Stop the original request?',
+      message:
           'This also stops a late registration. Products already committed remain; review them before importing another file.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(c, false),
-            child: const Text('Keep request'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(c, true),
-            child: const Text('Stop original request'),
-          ),
-        ],
-      ),
+      cancelLabel: 'Keep request',
+      confirmLabel: 'Stop original request',
+      destructive: true,
+      guard: _guardConfirmation,
     );
     if (approved != true || !_current) return;
     await _run(() async {
@@ -303,6 +300,7 @@ class _CsvImportScreenState extends State<CsvImportScreen> {
         _filter = 'all';
       });
       await _readJob(job.id, reveal: true);
+      if (!_current) return;
       final history = await context.read<ProductService>().fetchCsvImports(
         widget.storeId,
       );
@@ -314,6 +312,26 @@ class _CsvImportScreenState extends State<CsvImportScreen> {
     });
   }
 
+  Widget _guardConfirmation(
+    BuildContext dialog,
+    Widget confirmation,
+  ) => Consumer<StoreContext>(
+    builder: (_, stores, __) => _current
+        ? confirmation
+        : AlertDialog(
+            title: const Text('Store access changed'),
+            content: const Text(
+              'Close this confirmation and reopen imports from the current store.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialog, false),
+                child: const Text('Close'),
+              ),
+            ],
+          ),
+  );
+
   @override
   Widget build(BuildContext context) {
     final stores = context.watch<StoreContext>();
@@ -322,7 +340,7 @@ class _CsvImportScreenState extends State<CsvImportScreen> {
       _retired = true;
     if (_retired)
       return Scaffold(
-        appBar: AppBar(title: const Text('CSV imports')),
+        appBar: CustomAppBar.responsive(context: context, title: 'CSV imports'),
         body: const Center(
           child: Padding(
             padding: EdgeInsets.all(24),
@@ -333,23 +351,48 @@ class _CsvImportScreenState extends State<CsvImportScreen> {
         ),
       );
     final job = _job, rows = _rows, history = _history;
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('CSV imports'),
-        actions: [
-          IconButton(
-            onPressed: _busy ? null : _refresh,
-            tooltip: 'Refresh imports',
-            icon: const Icon(Icons.refresh),
-          ),
-        ],
-      ),
+    return LetbuyyEditorScaffold(
+      title: 'CSV imports',
+      hasChanges: _source.text.isNotEmpty,
+      currentHasChanges: () => _source.text.isNotEmpty,
+      discardTitle: 'Leave CSV draft?',
+      discardLabel: 'Leave imports',
+      discardMessage:
+          'The pasted CSV draft will be cleared on closing. Registered jobs continue independently. Keep the original file and recover an uncertain registration before submitting another request.',
+      confirmationGuard: _guardConfirmation,
+      headerActions: [
+        IconButton(
+          onPressed: _busy ? null : _refresh,
+          tooltip: 'Refresh imports',
+          icon: const Icon(Icons.refresh),
+        ),
+      ],
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (_busy) const LinearProgressIndicator(),
+            if (_busy || (_history == null && _error == null))
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: Row(
+                  children: [
+                    const LoadingIndicator(),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        _history == null
+                            ? 'Loading imports…'
+                            : 'Updating imports…',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            const Text(
+              'Registered imports continue when you leave this screen. Closing is not a stop request.',
+            ),
+            const SizedBox(height: 16),
             if (_error != null)
               Semantics(
                 liveRegion: true,
@@ -359,9 +402,9 @@ class _CsvImportScreenState extends State<CsvImportScreen> {
                 ),
               ),
             if (_supportError != null) Text(_supportError!),
-            const Text(
+            Text(
               'Create products from CSV',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+              style: Theme.of(context).textTheme.titleLarge,
             ),
             const Text(
               'Up to 500 rows and one MiB per request. Large quoted files may need to be split. Creates active products; existing products are not updated. Required: name. Optional: price (rupees), description, category, stock, tags and images. Separate tags and image URLs with semicolons. Unsupported columns are refused.',
@@ -407,17 +450,19 @@ class _CsvImportScreenState extends State<CsvImportScreen> {
                 ),
               ],
             ),
-            if (_file != null) Text(_file!),
-            TextField(
+            const SizedBox(height: LetbuyySpacingTokens.space16),
+            if (_file != null) ...[
+              Text(_file!),
+              const SizedBox(height: LetbuyySpacingTokens.space12),
+            ],
+            CustomTextField(
               controller: _source,
               enabled: !_busy,
               minLines: 3,
               maxLines: 7,
               maxLength: productImportMaxBytes,
-              decoration: const InputDecoration(
-                labelText: 'CSV contents',
-                helperText: 'Choose a UTF-8 file or paste its exact contents.',
-              ),
+              label: 'CSV contents',
+              helperText: 'Choose a UTF-8 file or paste its exact contents.',
             ),
             FilledButton(
               onPressed: _busy || !_supported ? null : _submit,
@@ -458,60 +503,81 @@ class _CsvImportScreenState extends State<CsvImportScreen> {
                     ),
                 ],
               ),
-              DropdownButton<String>(
+              LetbuyyChoiceField<String>(
+                label: 'Row status',
                 value: _filter,
-                items: ['all', 'queued', 'completed', 'failed', 'stopped']
-                    .map((v) => DropdownMenuItem(value: v, child: Text(v)))
-                    .toList(),
+                choices: const [
+                  LetbuyyChoice(value: 'all', label: 'All'),
+                  LetbuyyChoice(value: 'queued', label: 'Queued'),
+                  LetbuyyChoice(value: 'completed', label: 'Completed'),
+                  LetbuyyChoice(value: 'failed', label: 'Failed'),
+                  LetbuyyChoice(value: 'stopped', label: 'Stopped'),
+                ],
                 onChanged: _busy
                     ? null
-                    : (v) {
-                        if (v != null) {
-                          setState(() {
-                            _filter = v;
-                            _rowPage = 1;
-                            _rows = null;
-                          });
-                          _run(() => _readJob(job.id));
-                        }
+                    : (value) {
+                        if (!_current || _busy || _job?.id != job.id) return;
+                        setState(() {
+                          _filter = value;
+                          _rowPage = 1;
+                          _rows = null;
+                        });
+                        _run(() => _readJob(job.id));
                       },
               ),
               if (rows != null) ...[
                 for (final row in rows.items)
-                  ListTile(
-                    title: Text('Row ${row.ordinal}: ${row.status}'),
-                    trailing: row.productId == null
-                        ? null
-                        : TextButton(
-                            onPressed: _busy
-                                ? null
-                                : () => _run(() async {
-                                    final product = await context
-                                        .read<ProductService>()
-                                        .fetchProductForEdit(
-                                          row.productId!,
-                                          widget.storeId,
-                                        );
-                                    if (!_current) return;
-                                    await Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) =>
-                                            ProductFormScreen(product: product),
-                                      ),
-                                    );
-                                  }),
-                            child: const Text('View product'),
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(
+                            'Row ${row.ordinal}: ${row.status}',
+                            style: Theme.of(context).textTheme.titleMedium,
                           ),
-                    subtitle: Text(
-                      row.productId != null
-                          ? 'Product committed'
-                          : row.errorCode != null
-                          ? productImportMessage(row.errorCode!)
-                          : 'Awaiting processing',
+                          Text(
+                            row.productId != null
+                                ? 'Product committed'
+                                : row.errorCode != null
+                                ? productImportMessage(row.errorCode!)
+                                : 'Awaiting processing',
+                          ),
+                          if (row.productId != null)
+                            Align(
+                              alignment: AlignmentDirectional.centerStart,
+                              child: TextButton(
+                                onPressed: _busy
+                                    ? null
+                                    : () => _run(() async {
+                                        final product = await context
+                                            .read<ProductService>()
+                                            .fetchProductForEdit(
+                                              row.productId!,
+                                              widget.storeId,
+                                            );
+                                        if (!_current) return;
+                                        await Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) => ProductFormScreen(
+                                              product: product,
+                                            ),
+                                          ),
+                                        );
+                                      }),
+                                child: const Text('View product'),
+                              ),
+                            ),
+                        ],
+                      ),
                     ),
                   ),
-                Row(
+                Wrap(
+                  spacing: 12,
+                  runSpacing: 8,
+                  crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
                     TextButton(
                       onPressed: _busy || _rowPage <= 1
@@ -543,9 +609,9 @@ class _CsvImportScreenState extends State<CsvImportScreen> {
               ],
             ],
             const Divider(),
-            const Text(
+            Text(
               'Import history',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+              style: Theme.of(context).textTheme.titleLarge,
             ),
             if (history != null) ...[
               if (history.total == 0)
@@ -571,7 +637,10 @@ class _CsvImportScreenState extends State<CsvImportScreen> {
                           _run(() => _readJob(item.id, reveal: true));
                         },
                 ),
-              Row(
+              Wrap(
+                spacing: 12,
+                runSpacing: 8,
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   TextButton(
                     onPressed: _busy || _historyPage <= 1

@@ -1,0 +1,5 @@
+{
+  "scope": "Preparation only; no device/build/backend launch",
+  "reason": "iOS fixture intentionally lacks the Android category-seeding loop; corrected insertion to their shared employee-provision anchor",
+  "retained": "prepare_catalog_availability_native138_139.py and native138-preparation-before-ios-anchor.postgres.test.ts"
+}

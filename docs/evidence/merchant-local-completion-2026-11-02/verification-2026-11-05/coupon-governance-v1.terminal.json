@@ -1,0 +1,12 @@
+{
+  "at": "2026-11-05T17:37:49.942017+00:00",
+  "status": "TERMINAL",
+  "exit_code": 0,
+  "capsule": "/private/tmp/letbuyy-coupon-governance-apa6gdqt",
+  "purpose": "Disposable validation copy only, no implementation/worktree/merge/push/release",
+  "source_sha256": "80e4c4f1f08a4b6e06a3b46e1abc76a36e4b164f9b4ae0584fd4a9894e3c1a0f",
+  "core_inputs_byte_equal": 8443,
+  "original_source_unchanged": true,
+  "original_index_unchanged": true,
+  "report": "coupon-governance-v1-report.json"
+}

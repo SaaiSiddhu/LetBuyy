@@ -1,0 +1,129 @@
+{
+  "scope": "Complete local behavioral, owned database, signed-in browser, and contract gate after migration 432 and Console legal-hold UI",
+  "date": "2026-11-03",
+  "verdict": "LOCAL_GATE_PASS_PRODUCTION_NO_GO",
+  "headCommit": "4e6df6546de288288a1b2a6c0b52c9ba8dd6657e",
+  "workingTreeNote": "The tested tree contains staged and unstaged Wave 6 changes and unrelated theme work. HEAD alone does not identify the tested source; the critical source files are hashed below.",
+  "command": "LETBUYY_EXECUTABLE_PG_JOBS=1 node scripts/governance/test-behavioral.mjs --with-contracts --report /private/tmp/letbuyy-wave6-after-432-console-full-r6.json",
+  "result": {
+    "exitCode": 0,
+    "healthy": true,
+    "tests": 5767,
+    "passed": 5752,
+    "failed": 0,
+    "cancelled": 0,
+    "skipped": 15,
+    "groups": [
+      {
+        "label": "pure + live",
+        "suites": 209,
+        "tests": 3167,
+        "pass": 3152,
+        "fail": 0,
+        "skipped": 15
+      },
+      {
+        "label": "postgres (owned clusters)",
+        "suites": 63,
+        "tests": 320,
+        "pass": 320,
+        "fail": 0,
+        "skipped": 0
+      },
+      {
+        "label": "gateway database (owned)",
+        "suites": 223,
+        "tests": 1909,
+        "pass": 1909,
+        "fail": 0,
+        "skipped": 0
+      },
+      {
+        "label": "contracts",
+        "suites": null,
+        "tests": 371,
+        "pass": 371,
+        "fail": 0,
+        "skipped": 0
+      }
+    ]
+  },
+  "ownedRunner": {
+    "runId": "da9867688fbf",
+    "suites": 286,
+    "testsPassed": 2229,
+    "testsFailed": 0,
+    "cleanupFailures": 0,
+    "exactLabelDockerCheck": {
+      "containers": 0,
+      "networks": 0,
+      "volumes": 0
+    }
+  },
+  "previousAttempts": [
+    {
+      "label": "r4",
+      "result": "RED",
+      "testsPassed": 5751,
+      "testsFailed": 1,
+      "skipped": 15,
+      "cause": "Generated tenant-table registry omitted kyc_india_legal_holds; the registry was regenerated and focused suite passed 8/8 in owned run 2b30155e754b."
+    },
+    {
+      "label": "r5",
+      "result": "INTERRUPTED_AFTER_RED",
+      "cause": "Storefront collection cursor suite returned a transient fail-closed 503 for the site lookup; the same suite passed 4/4 in isolated owned run 1963417a35c1. Root cause of the transient 503 is not proven."
+    }
+  ],
+  "additionalChecks": {
+    "gatewayTypecheck": "passed",
+    "consoleTypecheck": "passed",
+    "gitDiffCheck": "passed"
+  },
+  "artifactSha256": {
+    "behavioralReport": "14dd392abc49b4095b80b9a2398c2c8a1fc973a77998a52c34bafeda0b26d463",
+    "behavioralLog": "5fa7c2b05189bac3a45af851b6755f8eb192a4ab1b4ffc14c8f119ff1c9957a9"
+  },
+  "sourceSha256": {
+    "database/supabase/migrations/429_kyc_india_pending_retention.sql": "d7596f061a584da6c6e8976d1bba4eb1febb480f2340d585f15e15b0d529fa19",
+    "database/supabase/migrations/430_kyc_store_closure_cleanup.sql": "3a9190fc763d8225f252a12fe86aea95b41c5f1cf743fb7fa5c680a1c2dd42a2",
+    "database/supabase/migrations/431_kyc_india_deletion_deadline.sql": "1a7ec6a6cc31332a69831639aba5158d3d49e3011869fa1ec6d3b29df4bd8766",
+    "database/supabase/migrations/432_kyc_india_exact_legal_hold.sql": "afa592a8575375629d83574396ede9d46aec9b062c6b262e7320d5bb49a3c6cb",
+    "database/supabase/rollback/432_kyc_india_exact_legal_hold.rollback.sql": "f56b85a9d6f406e1c36a6e1a8468d3c0b6a0e50526b5dc3f7192c579687cbf5a",
+    "services/api-gateway/src/tenant/tenant-tables.registry.ts": "58921497cee0831d8eb2543cb8a5b2713234cf0ac97f3065508b97a65b3e4f87",
+    "services/api-gateway/src/routes/internal-console/kyc-evidence.ts": "dc83541a45ebac3282a33f5a7eae60f15d85a6e4d30c622a7b2049d030a38ee5",
+    "services/api-gateway/src/__tests__/owned-db/kyc-india-hold-console.postgres.test.ts": "e7b68e3640ce323ef83c8bf071c54aaabc736d4e32059926e347f64ed525dbb4",
+    "services/api-gateway/src/__tests__/owned-db/kyc-private-upload.postgres.test.ts": "a9fe286126c7b1fb6742bbd2634aa6cf822070fa18d4104e6a25f8f6814f3455",
+    "apps/internal/console/src/app/(dashboard)/merchants/[id]/kyc/KycLegalHoldWorkbench.tsx": "fa6c34fe4726aa011da94c59b8b107dd2ea047e0362de17a43285d4b56ad8faf",
+    "apps/internal/console/src/app/(dashboard)/merchants/[id]/kyc/page.tsx": "095d047050c005d2b70188030d8c009cfa42fe2e3a70655a2658acf9fddf30e6",
+    "apps/internal/console/src/app/api/kyc-holds/action/route.ts": "3236dcd41fd8b610e891f0a08f1c6ce5a49e06bae29325d51667eddd8f3d947c",
+    "apps/internal/console/src/app/api/kyc-holds/action/route.test.ts": "6e64d31fac2b61529ac7d393db015ef24dafb97a4a049ee99bc7c0b2998cbc30",
+    "tests/owned-db/console-kyc-legal-hold-browser.postgres.test.ts": "71ec2902763e0d3fc18cafed29cbce009e14c20dddc4efb54d1a3ab0d65cdf50",
+    "scripts/governance/test-suite-catalog.mjs": "363201a9aa9762e9f6588ff0e1ae2e6ff053fd5ae58feb00ea223a7c64a6c6cc",
+    "tests/governance/gateway-db-lane.test.mjs": "79672e441150e7f876d371a85fe64d899506a44376c31693048e5bf544700bb7"
+  },
+  "limits": [
+    "The 15 skipped checks require human or live-provider inputs. Local green does not establish production readiness.",
+    "No owner-controlled AWS Mumbai account or Cashfree SecureID sandbox account was confirmed ready; no real India KYC upload, GuardDuty scan or provider decision was executed.",
+    "Provider-confirmed evidence transfer and final-decision raw-document deletion, delivered deletion/hold alerts, and redacted-record expiry remain open.",
+    "The authorized FUCOMES Razorpay own-account test charge, signed callback, statement and reconciliation remain unexecuted.",
+    "Hosted deployment, actual custom-domain DNS/TLS, physical mobile and assistive-technology acceptance, and finance/security/legal human gates remain open."
+  ],
+  "skippedChecks": [
+    "[pure + live] [HUMAN-REQUIRED] HR-KMS-LIVE live KMS envelope keys must be provisioned before live field encryption assertions",
+    "[pure + live] [HUMAN-REQUIRED] HR-TURNSTILE-LIVE Cloudflare Turnstile site keys and secrets must be provisioned before live app-login challenge assertions",
+    "[pure + live] [HUMAN-REQUIRED] HR-PA-SPLIT-LIVE live PA split credentials must be provisioned before live settlement payout assertions",
+    "[pure + live] [HUMAN-REQUIRED] HR-MERCHANT-PSP-LIVE merchant PSP keys must be connected before live payment session assertions",
+    "[pure + live] [HUMAN-REQUIRED] HR-GST-IRP-LIVE GST IRP/e-way credentials and legal/provider policy must be approved before live e-invoice assertions",
+    "[pure + live] [HUMAN-REQUIRED] HR-CARRIER-LIVE carrier accounts and Shiprocket/Delhivery/Pickrr credentials must be approved before live label/rate assertions",
+    "[pure + live] [HUMAN-REQUIRED] HR-DNS-CHECKOUT checkout.letbuyy.com DNS/custom hostname/certificate cutover must be approved before live hosted-checkout assertions",
+    "[pure + live] [HUMAN-REQUIRED] HR-WHATSAPP-LIVE WABA/BSP credentials and approved HSM templates must be provisioned before live COD-confirm assertions",
+    "[pure + live] [HUMAN-REQUIRED] HR-DLT-TRAI-LIVE DLT/TRAI sender IDs, templates, and live notification provider credentials must be provisioned before live SMS/WhatsApp notification assertions",
+    "[pure + live] [HUMAN-REQUIRED] HR-ESP-LIVE ESP API credentials, sender domains, and SPF/DKIM/DMARC verification must be provisioned before live email delivery assertions",
+    "[pure + live] [HUMAN-REQUIRED] HR-AUTOPAY-LIVE UPI AutoPay/NPCI live mandate credentials and approval must be provisioned before live subscription billing assertions",
+    "[pure + live] [HUMAN-REQUIRED] HR-LEGAL-DPDP-PA RBI PA-model, DPDP consent/DSR, and GST handling require legal sign-off before production certification",
+    "[pure + live] [HUMAN-REQUIRED] HR-WAREHOUSE-LIVE external warehouse credentials and data contracts require approval before live warehouse analytics assertions",
+    "[pure + live] [HUMAN-REQUIRED] HR-AI-MODEL-LIVE AI model/provider, data policy, and credentials require approval before live model-call assertions",
+    "[pure + live] [HUMAN-REQUIRED] HR-PROD-MIGRATE-DEPLOY staging/prod migration apply and deployment require human approval"
+  ]
+}

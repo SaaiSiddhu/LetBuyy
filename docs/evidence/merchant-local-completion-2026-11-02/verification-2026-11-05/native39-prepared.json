@@ -1,0 +1,18 @@
+{
+  "at": "2026-11-05T18:37:56.555446+00:00",
+  "status": "LAUNCHING_SOURCE_FROZEN",
+  "root": "/private/tmp/letbuyy-merchant-local-20261106-25feac2c",
+  "launcher": "/private/tmp/letbuyy-merchant-local-20261106-25feac2c/run-warehouse-v39.py",
+  "inputs": {
+    "run-warehouse-v39.py": "63b47961eca2e751393de08e766d671df4b8989337c593498bcaf53157fb73c0",
+    "android-device-receipt-warehouse-v39.json": "1026bbaae06db8b4a60ab2e80cd51e7c1d3cd10396c4379591be015e10463138",
+    "android-warehouse-auto-v39.py": "052e16e028e38440ab3bd279aab1bfba0aaa3cf7362d702cb39e417ff5cee322"
+  },
+  "source_sha256": "a2a5672ed7707f9b10a0aa6fd49fadb27227410002e60a56af97c23f3c6d9cb3",
+  "source_inputs": 8442,
+  "source_manifest": "supporting-source-v2.source.json",
+  "scope": "Existing unchanged normal native/web warehouse fixture and assertions. Reviewed statically reconstructed controllers; only owned paths/version advanced. MJS sign-in companion obsolete since observed ADB Chrome form entry replaced it. No old outcome restored.",
+  "preparation_diagnostic": "First preparation stopped at overbroad helper assertion excluding every .mjs, including canonical executable suite runner. Corrected to exclude only obsolete accounts UI helper; nothing launched by failed preparation.",
+  "protected_fixture_sha256": "12917f372dee1ecf6610c8888af1caa9a5a80b545388ba0b58570c6b9c6f8510",
+  "launched_at": "2026-11-05T18:38:56.011969+00:00"
+}

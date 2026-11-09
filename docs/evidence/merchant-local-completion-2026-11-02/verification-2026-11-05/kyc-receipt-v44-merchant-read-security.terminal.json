@@ -1,0 +1,16 @@
+{
+  "stage": "merchant-read-security",
+  "exit_code": 0,
+  "source_unchanged": true,
+  "source_sha256": "4d0884bd1d999e12271b2ee11c026a08977a7a509d2e00a4508ee1c3bfc21372",
+  "command": [
+    "node",
+    "--import",
+    "tsx",
+    "--test",
+    "tests/owned-store-resolution.test.mjs",
+    "tests/private-intake-readback.test.ts",
+    "tests/settings-read-contract.test.ts"
+  ],
+  "cwd": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/apps/merchant/web"
+}

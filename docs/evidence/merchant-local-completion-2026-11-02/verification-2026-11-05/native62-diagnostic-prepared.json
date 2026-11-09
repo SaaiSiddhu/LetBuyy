@@ -1,0 +1,26 @@
+{
+  "at": "2026-11-06T09:38:58.373510+00:00",
+  "source_manifest": "bootstrap-diagnostic-source-v1.source.json",
+  "source_sha256": "a674722f9c9627d5c79058e79a5e7acc6919bb85200852c4ac83a75075f47077",
+  "root": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4",
+  "inputs": [
+    {
+      "path": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/run-switcher-v62.py",
+      "sha256": "74baf04f7a951add66a208f22b2955dea2ea01290306577be633f4a59a4b987e"
+    },
+    {
+      "path": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/android-device-receipt-switcher-v62.json",
+      "sha256": "e5375e84df1ceb92b084fda8ef5fd7baae16b9b99570c33d4eed1e16d8f39735"
+    },
+    {
+      "path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/android-switcher-staff-v62.py",
+      "sha256": "6ba743f4aeabb3fb4350fb37e3a162f99615c30f5df99107d11f456a04aff671"
+    },
+    {
+      "path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/merchant-switcher-staff-v62-local-android.postgres.test.ts",
+      "sha256": "b0c17677007632177adb4e8d3febe5fdb0daa2e121fdf4da314ef3fa735496c1"
+    }
+  ],
+  "scope": "Temporary assert-only stages in4mobile files. Exact source85preimages preserved. No auth/data/permission behavior change. All native61 checks retained;restore exact source before repair/qualification. No diagnostic result is accepted current production candidate.",
+  "status": "DIAGNOSTIC_ONLY_NOT_ACCEPTED"
+}

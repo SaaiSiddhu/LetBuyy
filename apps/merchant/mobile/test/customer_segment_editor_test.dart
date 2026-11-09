@@ -3,6 +3,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
+import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
+import 'package:letbuyy_store/theme/store_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:letbuyy_models/letbuyy_models.dart'
     show CustomerSegmentContract;
@@ -33,6 +35,8 @@ Future<StoreContext> pumpEditor(
   WidgetTester tester,
   void Function(RequestOptions, RequestInterceptorHandler) handle, {
   bool editing = false,
+  bool dark = false,
+  double textScale = 1,
 }) async {
   SharedPreferences.setMockInitialValues({});
   late StoreContext stores;
@@ -46,19 +50,27 @@ Future<StoreContext> pumpEditor(
         ChangeNotifierProvider(create: (_) => CustomerService(api: api)),
       ],
       child: MaterialApp(
+        theme: dark ? StoreTheme.dark() : StoreTheme.light(),
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.linear(textScale)),
+          child: child!,
+        ),
         home: Scaffold(
           body: Builder(
             builder: (context) => TextButton(
-              onPressed: () => showModalBottomSheet<CustomerSegmentContract>(
-                context: context,
-                isScrollControlled: true,
-                builder: (_) => CustomerSegmentSheet(
-                  storeId: 'a',
-                  segment: editing
-                      ? CustomerSegmentContract.fromJson(segment())
-                      : null,
-                ),
-              ),
+              onPressed: () =>
+                  Navigator.of(context).push<CustomerSegmentContract>(
+                    MaterialPageRoute<CustomerSegmentContract>(
+                      builder: (_) => CustomerSegmentSheet(
+                        storeId: 'a',
+                        segment: editing
+                            ? CustomerSegmentContract.fromJson(segment())
+                            : null,
+                      ),
+                    ),
+                  ),
               child: const Text('Open editor'),
             ),
           ),
@@ -81,6 +93,51 @@ Future<void> tapSave(
 }
 
 void main() {
+  setUpAll(initializeLetbuyyTypography);
+  for (final dark in [false, true]) {
+    for (final scale in [1.0, 2.4]) {
+      testWidgets(
+        'segment floating labels clear the preceding field at scale$scale dark$dark',
+        (tester) async {
+          await pumpEditor(
+            tester,
+            (r, h) => fixture.respond(r, h, {}),
+            dark: dark,
+            textScale: scale,
+          );
+          final nameInput = find.descendant(
+            of: find.byKey(const ValueKey('segment-Segment name')),
+            matching: find.byType(EditableText),
+          );
+          final outline = InputDecorator.containerOf(
+            tester.element(nameInput),
+          )!;
+          final border = Rect.fromPoints(
+            outline.localToGlobal(Offset.zero),
+            outline.localToGlobal(outline.size.bottomRight(Offset.zero)),
+          );
+          final label = tester.renderObject<RenderBox>(
+            find.descendant(
+              of: find.byKey(const ValueKey('segment-Description')),
+              matching: find.text('Description'),
+            ),
+          );
+          final paintedLabel = Rect.fromPoints(
+            label.localToGlobal(Offset.zero),
+            label.localToGlobal(label.size.bottomRight(Offset.zero)),
+          );
+          expect(
+            paintedLabel.top,
+            greaterThan(border.bottom),
+            reason:
+                'The next persistent label must not touch or overlap the preceding field outline.',
+          );
+          expect(tester.takeException(), isNull);
+        },
+      );
+    }
+  }
+
   testWidgets(
     'editing preserves all canonical rules and confirms the server readback',
     (tester) async {
@@ -168,7 +225,7 @@ void main() {
         '150.75',
       );
       await tapSave(tester);
-      final field = tester.widget<TextFormField>(
+      final field = tester.widget<CustomTextField>(
         find.byKey(const ValueKey('segment-Segment name')),
       );
       expect(field.enabled, isFalse);
@@ -278,4 +335,154 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('37 customers'), findsNothing);
   });
+  testWidgets(
+    'dirty header and system Back retain rules until explicit discard',
+    (tester) async {
+      final calls = <RequestOptions>[];
+      await pumpEditor(tester, (r, h) {
+        calls.add(r);
+        fixture.respond(r, h, {});
+      });
+      final field = find.byKey(const ValueKey('segment-Segment name'));
+      await tester.enterText(field, 'Unsubmitted segment');
+      await tester.pump();
+      await tester.tap(find.byTooltip('Back'));
+      await tester.pumpAndSettle();
+      expect(find.text('Discard changes?'), findsOneWidget);
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      expect(
+        tester.widget<CustomTextField>(field).controller!.text,
+        'Unsubmitted segment',
+      );
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Discard changes'));
+      await tester.pumpAndSettle();
+      expect(find.text('Open editor'), findsOneWidget);
+      expect(calls, isEmpty);
+    },
+  );
+
+  testWidgets(
+    'pending Save blocks Back and close; uncertain exit explains refresh without a second command',
+    (tester) async {
+      final entered = Completer<void>(), release = Completer<void>();
+      final writes = <RequestOptions>[];
+      await pumpEditor(tester, (r, h) async {
+        writes.add(r);
+        entered.complete();
+        await release.future;
+        fixture.respond(r, h, {}, status: 503);
+      });
+      await tester.enterText(
+        find.byKey(const ValueKey('segment-Segment name')),
+        'Uncertain segment',
+      );
+      await tester.tap(find.text('Save segment'));
+      for (var n = 0; n < 20 && !entered.isCompleted; n++) {
+        await tester.pump(const Duration(milliseconds: 50));
+      }
+      expect(entered.isCompleted, isTrue);
+      expect(
+        tester
+            .widget<IconButton>(
+              find.byWidgetPredicate(
+                (w) => w is IconButton && w.tooltip == 'Back',
+              ),
+            )
+            .onPressed,
+        isNull,
+      );
+      expect(
+        tester
+            .widget<TextButton>(find.widgetWithText(TextButton, 'Close'))
+            .onPressed,
+        isNull,
+      );
+      await tester.binding.handlePopRoute();
+      await tester.pump();
+      expect(find.text('Discard changes?'), findsNothing);
+      expect(find.text('Confirming…'), findsOneWidget);
+      release.complete();
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Close'));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('may already have completed'), findsOneWidget);
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      expect(find.text('Retry save'), findsOneWidget);
+      expect(writes.length, 1);
+    },
+  );
+
+  for (final dark in [false, true]) {
+    testWidgets(
+      'full-page segment reflows at large text and narrow keyboard height in ${dark ? 'dark' : 'light'}',
+      (tester) async {
+        tester.view.physicalSize = const Size(360, 640);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        addTearDown(tester.view.resetViewInsets);
+        await pumpEditor(
+          tester,
+          (r, h) => fixture.respond(r, h, {}),
+          textScale: 2.4,
+          dark: dark,
+        );
+        expect(find.byType(LetbuyyEditorScaffold), findsOneWidget);
+        expect(find.byType(BottomSheet), findsNothing);
+        await tester.enterText(
+          find.byKey(const ValueKey('segment-Segment name')),
+          'A long customer segment draft',
+        );
+        tester.view.viewInsets = const FakeViewPadding(bottom: 220);
+        await tester.pumpAndSettle();
+        expect(
+          tester
+              .getRect(find.widgetWithText(FilledButton, 'Save segment'))
+              .bottom,
+          lessThanOrEqualTo(420),
+        );
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+
+  testWidgets(
+    'bounded status sheet applies only the chosen draft and Cancel preserves existing rules',
+    (tester) async {
+      final writes = <RequestOptions>[];
+      await pumpEditor(tester, (r, h) {
+        writes.add(r);
+        fixture.respond(r, h, {});
+      }, editing: true);
+      final status = find.widgetWithText(OutlinedButton, 'Customer status');
+      await tester.ensureVisible(status);
+      await tester.tap(status);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Active'));
+      await tester.pump();
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      expect(
+        find.descendant(of: status, matching: find.text('Disabled')),
+        findsOneWidget,
+      );
+      await tester.tap(status);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Invited'));
+      await tester.pump();
+      await tester.tap(find.text('Apply selection'));
+      await tester.pumpAndSettle();
+      expect(
+        find.descendant(of: status, matching: find.text('Invited')),
+        findsOneWidget,
+      );
+      expect(writes, isEmpty);
+      expect(tester.widget<OutlinedButton>(status).focusNode!.hasFocus, isTrue);
+      expect(tester.takeException(), isNull);
+    },
+  );
 }

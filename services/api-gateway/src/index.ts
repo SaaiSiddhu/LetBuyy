@@ -1011,7 +1011,18 @@ async function runScheduledDispatch(controller: ScheduledController, env: Env): 
     if (env.KYC_INDIA_CLEANUP_ENABLED === 'true') {
         try {
             const cleanup = await drainKycIndiaObjectCleanup(env);
-            if (cleanup.scanned > 0) console.info(JSON.stringify({
+            if (cleanup.overdue > 0) console.error(JSON.stringify({
+                level: 'error', service: 'letbuyy-api', route: 'scheduled.kyc_india_cleanup',
+                method: 'CRON', status_code: 500, code: 'KYC_DELETION_SLA_BREACH',
+                overdue_count: cleanup.overdue, oldest_due_at: cleanup.oldestDueAt,
+            }));
+            if (cleanup.holdReviewOverdue > 0 || cleanup.holdExpired > 0) console.error(JSON.stringify({
+                level: 'error', service: 'letbuyy-api', route: 'scheduled.kyc_india_cleanup',
+                method: 'CRON', status_code: 500, code: 'KYC_LEGAL_HOLD_REVIEW_REQUIRED',
+                review_overdue_count: cleanup.holdReviewOverdue,
+                expired_count: cleanup.holdExpired,
+            }));
+            if (cleanup.scanned > 0 || cleanup.held > 0) console.info(JSON.stringify({
                 level: 'info', service: 'letbuyy-api', route: 'scheduled.kyc_india_cleanup',
                 method: 'CRON', status_code: cleanup.deferred > 0 ? 207 : 200,
                 ...cleanup,

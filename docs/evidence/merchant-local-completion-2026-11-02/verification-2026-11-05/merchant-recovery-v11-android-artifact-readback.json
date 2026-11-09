@@ -1,0 +1,19 @@
+{
+  "at": "2026-11-06T08:54:33.553446+00:00",
+  "status": "INDEPENDENT_DEBUG_APK_READBACK_PASS",
+  "source_sha256": "85c6e28b0e4fa33b40a35cf8f09c4a3c354226802236c8fec04989fd0835abe4",
+  "artifact": {
+    "path": "/private/tmp/letbuyy-merchant-recovery-v11-android-j3m1jdlx/merchant-local-debug.apk",
+    "sha256": "b3f214713da48efa3ee710373f222a7ef8c9700422d767dbad85ff22261bac7e",
+    "bytes": 151928275
+  },
+  "actual_sha256": "b3f214713da48efa3ee710373f222a7ef8c9700422d767dbad85ff22261bac7e",
+  "compiled_arm64_engine": true,
+  "debug_kernel_present": true,
+  "normal_main": true,
+  "installed": false,
+  "runtime_verified": false,
+  "scope": "Normal debug compile/archive only. Native58 preserves its own prior StoreSwitcher/Staff artifact acceptance; current KYC changes have no new native acceptance.",
+  "material_icons_bytes": 1645184,
+  "material_icons_sha256": "d9865b671a09d683d13a863089d8825e0f61a37696ce5d7d448bc8023aa62453"
+}

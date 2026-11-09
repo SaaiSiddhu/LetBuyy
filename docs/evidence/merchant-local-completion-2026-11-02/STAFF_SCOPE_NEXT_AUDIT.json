@@ -1,0 +1,54 @@
+{
+  "status": "CANONICAL_STAFF_LIST_AND_CURRENT_NATIVE64_BOUNDED_PASS;NATIVE_INVITATION_AND_ALLROLE_COVERAGE_OPEN",
+  "at": "2026-11-04T03:56:10.625581+00:00",
+  "sourceFrozenFor": "None;allcurrentownedpostconditionscollected",
+  "featureIds": [
+    7,
+    8,
+    13,
+    118,
+    119
+  ],
+  "observedSource": [
+    "Owner-only Gateway list/shared schema andbothSDKs compose or paginate exact populations;schema/count/tail failures unavailable,neverempty/partialsuccess.",
+    "Staff service/view/namespace and mutation original-key owners retained;protectednamespaceassertion passes.",
+    "Native64actualowner53roster/2realpages andwhole-rowhash equality pass;actualmanagerproductcommand,liveviewer403retirement andremovaldiscovery pass.",
+    "Sealed normalbrowser invitation/consent/downgrade/removal passes on exact relevant unchanged inputs;native invitation/allroles/provider delivery remain separate."
+  ],
+  "next": [
+    "Nativeinvitationconsent/delivery andallroles/permissions combinations withcurrentowners",
+    "Validate completepublicDTO/acknowledgement projections without weakening originalcontext/namespace assertions",
+    "Retain earlier61startupwait reliabilityfinding;no production/fullfeatureacceptance inferred"
+  ],
+  "externalScope": "No hosted changes, live invitations/email, production data or credentials.",
+  "draftNotExecuted": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/staff_scope_boundary_test.dart.draft",
+  "existingSharedAuthorities": {
+    "view": "widgets/shared/merchant_store_view.dart",
+    "context": "ApiRequestOptions.expectedContextVersion and ApiClient.captureRequestContext; existing pre-dispatch/post-response checks",
+    "namespace": "AppConfig.persistenceNamespace",
+    "dto": "@letbuyy/shared-types EmployeeSchema; no Dart Employee model was found in the current canonical models package"
+  },
+  "additionalSourceCandidates": [
+    "Current complete list readers reject missing/malformed metadata, foreign/duplicate rows and tail denial; StaffMemberContract projection review still open."
+  ],
+  "updated_at": "2026-11-06T10:25:05.558956+00:00",
+  "currentEvidence": "MERCHANT_STAFF_KYC_PRODUCT_LOCAL_V2.md",
+  "priorNotYetClaimed": [
+    "No runtime leak or unauthorized backend mutation has been demonstrated by this audit",
+    "No new actor/schema/backend owner selected",
+    "No code changes during the current device source freeze"
+  ],
+  "currentDisposition": {
+    "cache_and_queued_context_and_roster": "Reproduced and fixed at client/widget scope; populated positives and exact original-retry checks passed",
+    "local_hosted_namespace": "RESOLVED on current v6 by existing canonical AppConfig persistence policy;original assertion unchanged;hosted and other issuer data preserved;production/staging deployed keys byte-compatible",
+    "server_list": "Current11ownedStaffread controls pass,including52owned-site pagination;complete50ownedDBPASS/0SKIP/emptycleanup;canonical TS/Dart pagination/malformed/tail-denial tests pass.",
+    "native": "Native64independent boundedPASS,current85source/APKfdf3...,53memberships,53nativeownerstaff2pages,actualold/newprocessrestart/Beta,bidirectionalnames,productdata+image+stock/receiptconservation,downgrade403/removal/global52. Earlier61waitfindingnotcalledfixed.",
+    "invitation": "Sealed normalbrowser ownerinvite/wrongaccount/verifiedsyntheticconsent/downgrade/removal PASS on unchangedbackend/webinputs;realemail/provider and nativeconsent notcertified."
+  },
+  "initialAuditObservationsHistorical": [
+    "StaffScreen._load retains _storeId using ??=, reads asynchronously without request generation and does not subscribe to the selected-store lifetime",
+    "StaffScreen keeps private roster/actions and opens invitation/role/remove surfaces without the existing MerchantStoreView guard",
+    "StaffService has an unscoped mutable roster and queues durable keys by operation/store/body, with no explicit actor provider",
+    "StaffService environment namespace handles staging only, while canonical AppConfig.persistenceNamespace already isolates local issuers from hosted credentials and commands"
+  ]
+}

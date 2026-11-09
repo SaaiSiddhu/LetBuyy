@@ -154,14 +154,7 @@ async function enforceMerchantMfaIfEnrolled(
     rawCode: unknown,
     rawRecoveryCode?: unknown,
 ) {
-    const { data, error } = await db
-        .from('merchant_2fa_factors')
-        .select('id, secret_ciphertext')
-        .eq('custom_user_id', userId)
-        .eq('factor_type', 'totp')
-        .eq('status', 'active')
-        .is('deleted_at', null)
-        .limit(1);
+    const { data, error } = await readActiveMerchantMfaFactor(db, userId);
 
     if (error) {
         if (shouldReturnEmptyForMissingLocalSchema(c.env, error)) return null;
@@ -213,6 +206,21 @@ async function enforceMerchantMfaIfEnrolled(
     }
 
     return null;
+}
+
+function readActiveMerchantMfaFactor(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    userId: string,
+) {
+    return db
+        .from('merchant_2fa_factors')
+        .select('id, secret_ciphertext')
+        .eq('custom_user_id', userId)
+        .eq('factor_type', 'totp')
+        .eq('status', 'active')
+        .is('deleted_at', null)
+        .limit(1);
+
 }
 
 function randomHex(byteCount: number): string {
@@ -461,6 +469,11 @@ auth.post('/custom/users/by-email', async (c) => {
         [MERCHANT_PASSWORD_HASH_COLUMN]?: string | null;
 };
 
+    // Only the signed Accounts caller can read this admission flag. Never expose
+    // factor material, and never turn an unavailable factor read into "no MFA".
+    const { data: factors, error: factorError } = await readActiveMerchantMfaFactor(db, user.id);
+    if (factorError || !Array.isArray(factors)) return c.json(dbErrorBody(), 503);
+
     return c.json({
         data: {
             id: user.id,
@@ -469,6 +482,7 @@ auth.post('/custom/users/by-email', async (c) => {
             full_name: user.full_name,
             avatar_url: user.avatar_url,
             has_password: Boolean(user[MERCHANT_PASSWORD_HASH_COLUMN]),
+            mfa_required: factors.length > 0,
         },
     });
 });

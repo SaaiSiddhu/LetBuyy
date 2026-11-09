@@ -1,0 +1,20 @@
+{
+  "started_at": "2026-11-06T04:26:44.156851+00:00",
+  "supervisor_pid": 40221,
+  "source": "discovery-retirement-negative-source-v1",
+  "source_sha256": "6cf6f033232ad2abb29f3fcf4be080f95612f9670d011418cac3135cae534716",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "--timeout",
+    "30s",
+    "test/store_discovery_transport_test.dart"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 40255,
+  "exit_code": 1,
+  "finished_at": "2026-11-06T04:26:46.353200+00:00",
+  "source_unchanged": true,
+  "source_readback_sha256": "6cf6f033232ad2abb29f3fcf4be080f95612f9670d011418cac3135cae534716"
+}

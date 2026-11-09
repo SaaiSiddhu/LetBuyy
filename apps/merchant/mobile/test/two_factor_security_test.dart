@@ -6,6 +6,7 @@ import 'package:letbuyy_store/services/api_client.dart';
 import 'package:letbuyy_store/services/two_factor_service.dart';
 
 import 'support/loyalty_fixture.dart' show MemoryStorage, siteA;
+import 'support/membership_page.dart';
 
 class FactorTransport extends ApiClient {
   FactorTransport({required Object? Function() context})
@@ -31,6 +32,7 @@ class FactorTransport extends ApiClient {
     limit: 50,
     total: 1,
     hasMore: false,
+    meta: membershipPageMeta(1),
   );
   @override
   Future<JsonMap> requestJson(String path, {ApiRequestOptions? options}) async {

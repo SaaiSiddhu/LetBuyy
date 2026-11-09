@@ -1,0 +1,15 @@
+{
+  "at": "2026-11-05T20:20:29.261833+00:00",
+  "status": "INDEPENDENT_IOS_DEBUG_ARTIFACT_READBACK_PASS",
+  "source_sha256": "392d53d26becc93d69c656afaccb8fc7b591c8c0f542b61b3d80ce7fa475aba9",
+  "artifact": {
+    "path": "/private/tmp/letbuyy-utilities-ios-gh08qzmy/Runner.app",
+    "files": 377,
+    "manifest_sha256": "aa13a726d2b7a9072c7a24fa9d5419f9f5e53cd367cd67d0a53f07b973239165"
+  },
+  "all_retained_files_equal": 377,
+  "bundle_id": "com.letbuyy.store",
+  "executable_architecture": "/private/tmp/letbuyy-utilities-ios-gh08qzmy/Runner.app/Runner: Mach-O 64-bit executable arm64",
+  "owned_simulator_remains_shutdown": true,
+  "scope": "Debug compile/archive only; no iOS launch, auth, backend, sync or release acceptance."
+}

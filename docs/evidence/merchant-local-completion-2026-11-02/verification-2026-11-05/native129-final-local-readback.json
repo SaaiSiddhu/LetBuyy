@@ -1,0 +1,136 @@
+{
+  "at": "2026-11-08T05:54:35.019588+00:00",
+  "status": "SOURCE95_BOUNDED_ANDROID_VARIANTS_OPTIONS_PRIVATE_KYC_AND_WEB_SYNC_PASS",
+  "source_manifest": "merchant-options-accessibility-source-v95.source.json",
+  "core_sha256": "6a9dffa117db5c1be62f26f57d8f031910f3e599fc966a1eb0cfc87392519a18",
+  "core_inputs": 8519,
+  "runtime_inputs_equal_core": 4894,
+  "retained_diagnostic_images_equal_manifest_custody": 8,
+  "root": "/private/tmp/letbuyy-merchant-local-20261108-f7a3c2efea",
+  "chain": {
+    "backend_exit": 0,
+    "ui_exit": 0,
+    "at": "2026-11-08T05:53:36.152576+00:00"
+  },
+  "run_id": "a3beeda494a0",
+  "apk_sha256": "5abfaf520a43089ff9142c4aa5e0f71dbf84dbc40f50277422c883cec05894c1",
+  "installed_equals_retained": true,
+  "phases": {
+    "Auth-terminal.json": {
+      "phase": "Auth",
+      "attempt": 1,
+      "exit": 0,
+      "accepted": true,
+      "run_id": "a3beeda494a0",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261108-f7a3c2efea/Auth.py",
+      "control_sha256": "e2f941b588ce60cdfeae0b43ae48196b7e6d05a2c00169dceda5168f9422b07c"
+    },
+    "Kyc-terminal.json": {
+      "phase": "Kyc",
+      "attempt": 1,
+      "exit": 0,
+      "accepted": true,
+      "run_id": "a3beeda494a0",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261108-f7a3c2efea/Kyc.py",
+      "control_sha256": "13a3e0e0a4b76f9f17829255d820178e43908a279cfc64cf9b931ed0b4cb7c80"
+    },
+    "Variants-attempt2-terminal.json": {
+      "phase": "Variants",
+      "attempt": 2,
+      "exit": 0,
+      "accepted": true,
+      "run_id": "a3beeda494a0",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261108-f7a3c2efea/Variants-observed-readback-only.py",
+      "control_sha256": "5db3eede49675913693fb7c1a85fc89480827c0486bab00b042d4ff4d4f9d3ba"
+    },
+    "Variants-terminal.json": {
+      "phase": "Variants",
+      "attempt": 1,
+      "exit": 1,
+      "accepted": false,
+      "run_id": "a3beeda494a0",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261108-f7a3c2efea/Variants.py",
+      "control_sha256": "ca279cc2ea12a302405f61e7770dd5ff219f8389cfd87f38f0fb49abff06e800"
+    }
+  },
+  "retained_driver_failures": [
+    "Variants original readback used false Python Element leaf truthiness; retained failure, actual screenshot/hierarchy, exact readback-only continuation. No commerce save repeated."
+  ],
+  "readback": {
+    "run_id": "a3beeda494a0",
+    "variants": [
+      {
+        "id": "4a7c24bf-95c9-4b02-a5e0-c8503f1168e1",
+        "sku": "M-BLUE",
+        "price": 140,
+        "stock": 0,
+        "title": "Emerald / M / Single",
+        "option1": "Emerald",
+        "option2": "M"
+      },
+      {
+        "id": "c9064eb7-4a64-4f7c-b3d8-eddf2d7b147a",
+        "sku": "L-BLUE",
+        "price": 110,
+        "stock": 0,
+        "title": "Blue / L / Single",
+        "option1": "Blue",
+        "option2": "L"
+      }
+    ],
+    "documents": [
+      {
+        "id": "4c68391a-0c4c-4485-9771-74ec16f53962",
+        "scan": "pending",
+        "status": "submitted",
+        "private": true,
+        "reference": "1234",
+        "document_type": "bank_proof"
+      }
+    ],
+    "private_object_sha256": "b8ec3cfc25009404006e7cd46de32c3d324d8b8dacd47e40e1c4d39405134aa0",
+    "private_objects": 1,
+    "public_objects": 0,
+    "private_upload_requests": 2,
+    "original_key_equal": true,
+    "ui": {
+      "run_id": "a3beeda494a0",
+      "accepted": true
+    },
+    "whole_features_accepted": 0,
+    "scope": "Actual native variant edit/invalid no-write/zero stock/stable IDs,web variant price readback;private fixture lost reply,restart,original type/reference/key/bytes replay,one private object/document and web status. No provider or full122 acceptance."
+  },
+  "option_roundtrip": {
+    "native_saved": {
+      "run_id": "a3beeda494a0",
+      "accepted": true
+    },
+    "web_updated": {
+      "run_id": "a3beeda494a0",
+      "accepted": true
+    },
+    "native_readback": {
+      "run_id": "a3beeda494a0",
+      "accepted": true,
+      "canonical_axis": "Material",
+      "prior_write_and_web_rename_preserved": true,
+      "readback_only": true
+    }
+  },
+  "owned_cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "mapping_custody": {
+    "run_id": "a3beeda494a0",
+    "reverse_baseline_restored": true,
+    "forward_baseline_restored": true,
+    "host9002_never_touched": true
+  },
+  "whole_features_accepted": 0,
+  "limits": "Synthetic local only. Full feature22, buyer/provider/hosted/physical and full122 remain open."
+}

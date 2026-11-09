@@ -1,0 +1,27 @@
+{
+  "kind": "bounded-local-android-web-membership-acceptance",
+  "runId": "f28af9052b3e",
+  "sourceSha256": "d1d963ecc8b9cce2f051865374d15b6df00d03a0842f2d65e308d913db096d0c",
+  "apkSha256": "09ee7ce21b62ba48d797befcb1e9c1c62e52989a3682d526aa79d156eb139029",
+  "scope": "One synthetic owner/site; normal native and web login; ordered manual membership; lost committed reply and original-key recovery; web to native return read",
+  "observedEffects": {
+    "version": 9,
+    "receipts": 2,
+    "audits": 2,
+    "outbox": 2
+  },
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "limitations": [
+    "manual collection metadata CRUD remains open",
+    "additional actor/store permutations and native imports remain separate",
+    "no hosted, real provider, physical-device, iOS or release certification"
+  ],
+  "privateEvidence": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v3"
+}

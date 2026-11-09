@@ -2,6 +2,7 @@ import { cookies } from 'next/headers'
 import { SignJWT, jwtVerify } from 'jose'
 import { resolveLetbuyyPlatformCookieNames } from '@letbuyy/auth-core'
 import { isProductionIdentityRuntime } from '@/lib/dev-auth-bypass'
+import { getAccountsUrl, isConfiguredLocalAccountsOrigin } from '@/lib/config/urls'
 
 /**
  * Resolve the JWT signing key for the encrypted accounts cookie. SECURITY: never fall
@@ -62,17 +63,21 @@ export const COOKIE_NAMES = resolveLetbuyyPlatformCookieNames(process.env.NEXT_P
  * secret store owns that value in production; leaving it unset makes cookies
  * host-only, which is safer than a stale code-level domain fallback.
  */
-const COOKIE_DOMAIN = process.env.COOKIE_DOMAIN?.trim() || undefined
-
 // Cookie options shared across all auth cookies
 // In local dev (HTTP) Secure must be false — browsers silently drop Secure
 // cookies on non-HTTPS origins, breaking cross-port redirects.
-const BASE_OPTIONS = {
-    httpOnly: true,
-    secure: isProductionIdentityRuntime(process.env),
-    path: '/',
-    ...(COOKIE_DOMAIN ? { domain: COOKIE_DOMAIN } : {}),
-} as const
+export function accountsCookieBaseOptions() {
+    let secure = true
+    try { secure = !isConfiguredLocalAccountsOrigin(new URL(getAccountsUrl()).origin) }
+    catch { /* Invalid configuration must retain Secure. */ }
+    const domain = process.env.COOKIE_DOMAIN?.trim() || undefined
+    return {
+        httpOnly: true,
+        secure,
+        path: '/',
+        ...(secure && domain ? { domain } : {}),
+    } as const
+}
 
 /**
  * Account entry stored in the encrypted accounts cookie.
@@ -89,7 +94,7 @@ export interface AccountEntry {
 export async function setSessionCookie(token: string): Promise<void> {
     const cookieStore = await cookies()
     cookieStore.set(COOKIE_NAMES.session, token, {
-        ...BASE_OPTIONS,
+        ...accountsCookieBaseOptions(),
         sameSite: 'lax',
         maxAge: 30 * 24 * 60 * 60, // 30 days
     })
@@ -103,7 +108,7 @@ export async function getSessionCookie(): Promise<string | undefined> {
 export async function clearSessionCookie(): Promise<void> {
     const cookieStore = await cookies()
     cookieStore.set(COOKIE_NAMES.session, '', {
-        ...BASE_OPTIONS,
+        ...accountsCookieBaseOptions(),
         sameSite: 'lax',
         maxAge: 0,
     })
@@ -112,7 +117,7 @@ export async function clearSessionCookie(): Promise<void> {
 export async function clearAccountsCookie(): Promise<void> {
     const cookieStore = await cookies()
     cookieStore.set(COOKIE_NAMES.accounts, '', {
-        ...BASE_OPTIONS,
+        ...accountsCookieBaseOptions(),
         sameSite: 'lax',
         maxAge: 0,
     })
@@ -123,7 +128,7 @@ export async function clearAccountsCookie(): Promise<void> {
 export async function setPasswordSetIntentCookie(intentId: string): Promise<void> {
     const cookieStore = await cookies()
     cookieStore.set(COOKIE_NAMES.passwordSetIntent, intentId, {
-        ...BASE_OPTIONS,
+        ...accountsCookieBaseOptions(),
         sameSite: 'strict',
         maxAge: PASSWORD_SET_INTENT_TTL_SECONDS,
     })
@@ -137,7 +142,7 @@ export async function getPasswordSetIntentCookie(): Promise<string | undefined> 
 export async function clearPasswordSetIntentCookie(): Promise<void> {
     const cookieStore = await cookies()
     cookieStore.set(COOKIE_NAMES.passwordSetIntent, '', {
-        ...BASE_OPTIONS,
+        ...accountsCookieBaseOptions(),
         sameSite: 'strict',
         maxAge: 0,
     })
@@ -148,7 +153,7 @@ export async function clearPasswordSetIntentCookie(): Promise<void> {
 export async function setCsrfCookie(token: string): Promise<void> {
     const cookieStore = await cookies()
     cookieStore.set(COOKIE_NAMES.csrf, token, {
-        ...BASE_OPTIONS,
+        ...accountsCookieBaseOptions(),
         httpOnly: false, // Must be readable client-side for CSRF headers
         sameSite: 'strict',
         maxAge: 60 * 60, // 1 hour
@@ -165,7 +170,7 @@ export async function getCsrfCookie(): Promise<string | undefined> {
 export async function setDeviceCookie(deviceId: string): Promise<void> {
     const cookieStore = await cookies()
     cookieStore.set(COOKIE_NAMES.device, deviceId, {
-        ...BASE_OPTIONS,
+        ...accountsCookieBaseOptions(),
         sameSite: 'lax',
         maxAge: 90 * 24 * 60 * 60, // 90 days
     })
@@ -245,7 +250,7 @@ export async function getAccounts(): Promise<AccountEntry[]> {
 
     const reissued = await encryptAccounts(accounts)
     cookieStore.set(COOKIE_NAMES.accounts, reissued, {
-        ...BASE_OPTIONS,
+        ...accountsCookieBaseOptions(),
         sameSite: 'lax',
         maxAge: ACCOUNTS_COOKIE_TTL_SECONDS,
     })
@@ -269,7 +274,7 @@ export async function addAccount(account: AccountEntry): Promise<void> {
     const token = await encryptAccounts(updated)
     const cookieStore = await cookies()
     cookieStore.set(COOKIE_NAMES.accounts, token, {
-        ...BASE_OPTIONS,
+        ...accountsCookieBaseOptions(),
         sameSite: 'lax',
         maxAge: ACCOUNTS_COOKIE_TTL_SECONDS,
     })
@@ -284,7 +289,7 @@ export async function removeAccount(email: string): Promise<void> {
     const token = await encryptAccounts(filtered)
     const cookieStore = await cookies()
     cookieStore.set(COOKIE_NAMES.accounts, token, {
-        ...BASE_OPTIONS,
+        ...accountsCookieBaseOptions(),
         sameSite: 'lax',
         maxAge: ACCOUNTS_COOKIE_TTL_SECONDS,
     })

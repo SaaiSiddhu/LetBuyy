@@ -2,174 +2,176 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-
-import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' as mobile_tokens;
+import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 
 Future<String?> showBarcodeScannerSheet(
   BuildContext context, {
   String title = 'Scan barcode',
-}) {
-  return showModalBottomSheet<String>(
-    context: context,
-    isScrollControlled: true,
-    useSafeArea: true,
-    builder: (_) => _BarcodeScannerSheet(title: title),
-  );
-}
+}) => showLetbuyyFormSheet<String>(
+  context: context,
+  builder: (_) => _BarcodeScannerSheet(title: title),
+);
 
 class _BarcodeScannerSheet extends StatefulWidget {
   const _BarcodeScannerSheet({required this.title});
-
   final String title;
-
   @override
   State<_BarcodeScannerSheet> createState() => _BarcodeScannerSheetState();
 }
 
 class _BarcodeScannerSheetState extends State<_BarcodeScannerSheet> {
   final MobileScannerController _controller = MobileScannerController();
-  bool _handled = false;
-  bool _manualOpen = false;
+  final _manualController = TextEditingController();
+  bool _handled = false, _manualOpen = false, _resumeAfterManual = false;
+  bool get _current => mounted && isLetbuyySurfaceCurrent(context);
 
   @override
   void dispose() {
+    _manualController.dispose();
     unawaited(_controller.dispose());
     super.dispose();
   }
 
   void _onDetect(BarcodeCapture capture) {
-    if (_handled || _manualOpen) return;
+    if (!_current || _handled || _manualOpen) return;
     for (final barcode in capture.barcodes) {
       final value = barcode.rawValue?.trim();
       if (value == null || value.isEmpty) continue;
       _handled = true;
-      Navigator.of(context).pop(value);
+      completeLetbuyySurface(context, value);
       return;
     }
   }
 
   Future<void> _enterManually() async {
-    if (_handled || _manualOpen) return;
+    if (!_current || _handled || _manualOpen) return;
     _manualOpen = true;
-    final wasRunning = _controller.value.isRunning;
+    _manualController.clear();
+    _resumeAfterManual = _controller.value.isRunning;
     try {
       await _controller.stop();
     } catch (_) {
-      /* Manual entry also works without camera access. */
+      // Manual entry also works without camera access.
     }
     if (!mounted) return;
-    final controller = TextEditingController();
-    final code = await showDialog<String>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Enter barcode'),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          decoration: const InputDecoration(labelText: 'Barcode'),
-          textInputAction: TextInputAction.done,
-          onSubmitted: (value) => Navigator.of(context).pop(value.trim()),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(context).pop(controller.text.trim()),
-            child: const Text('Use code'),
-          ),
-        ],
-      ),
-    );
-    controller.dispose();
-    if (!mounted) return;
-    _manualOpen = false;
-    if (code == null || code.isEmpty) {
-      if (wasRunning && _controller.value.hasCameraPermission) {
-        unawaited(_controller.start().catchError((Object _) {}));
-      }
+    setState(() {});
+  }
+
+  void _cancelManual() {
+    if (!_current || !_manualOpen || _handled) return;
+    FocusScope.of(context).unfocus();
+    _manualController.clear();
+    setState(() => _manualOpen = false);
+    if (_resumeAfterManual && _controller.value.hasCameraPermission) {
+      unawaited(_controller.start().catchError((Object _) {}));
+    }
+  }
+
+  void _useManual(String value) {
+    if (!_current || !_manualOpen || _handled) return;
+    final code = value.trim();
+    if (code.isEmpty) {
+      _cancelManual();
       return;
     }
     _handled = true;
-    Navigator.of(context).pop(code);
+    completeLetbuyySurface(context, code);
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final height = MediaQuery.sizeOf(context).height * 0.72;
-    return SizedBox(
-      height: height.clamp(420.0, 680.0),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 8, 8),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    widget.title,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                ),
-                IconButton(
-                  tooltip: 'Enter barcode manually',
-                  onPressed: _enterManually,
-                  icon: const Icon(Icons.keyboard_alt_outlined),
-                ),
-                IconButton(
-                  tooltip: 'Close scanner',
-                  onPressed: () => Navigator.of(context).pop(),
-                  icon: const Icon(Icons.close_rounded),
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                MobileScanner(
-                  controller: _controller,
-                  onDetect: _onDetect,
-                  errorBuilder: (_, _) => const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(24),
-                      child: Text(
-                        'Camera unavailable. Enter the barcode manually, or allow camera access in Settings.',
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ),
-                ),
-                Center(
-                  child: Container(
-                    width: 240,
-                    height: 160,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(18),
-                      border: Border.all(
-                        color: mobile_tokens.LetbuyyColorTokens.white,
-                        width: 3,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Text(
-              'Align the product barcode inside the frame.',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-          ),
-        ],
+  Widget _camera() => LetbuyyFormSheet(
+    title: widget.title,
+    closeLabel: 'Close scanner',
+    onClose: () {
+      if (_current && !_manualOpen && !_handled)
+        completeLetbuyySurface(context);
+    },
+    actions: [
+      Tooltip(
+        message: 'Enter barcode manually',
+        child: TextButton.icon(
+          onPressed: _enterManually,
+          icon: const Icon(Icons.keyboard_alt_outlined),
+          label: const Text('Enter barcode manually'),
+        ),
       ),
-    );
-  }
+    ],
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        AspectRatio(
+          aspectRatio: 3 / 2,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              MobileScanner(
+                controller: _controller,
+                onDetect: _onDetect,
+                errorBuilder: (_, _) => const Center(
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.all(16),
+                    child: Text(
+                      'Camera unavailable. Enter the barcode manually, or allow camera access in Settings.',
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+              ),
+              IgnorePointer(
+                child: Center(
+                  child: FractionallySizedBox(
+                    widthFactor: .75,
+                    heightFactor: .6,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(18),
+                        border: Border.all(color: Colors.white, width: 3),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+        const Text(
+          'Align the product barcode inside the frame.',
+          textAlign: TextAlign.center,
+        ),
+      ],
+    ),
+  );
+
+  Widget _manual() => LetbuyyFormSheet(
+    title: 'Enter barcode',
+    description: 'Enter the product barcode. Camera scanning is paused.',
+    canDismiss: false,
+    onDismissAttempt: _cancelManual,
+    onClose: _cancelManual,
+    actions: [
+      TextButton(onPressed: _cancelManual, child: const Text('Cancel')),
+      FilledButton(
+        onPressed: () => _useManual(_manualController.text),
+        child: const Text('Use code'),
+      ),
+    ],
+    child: CustomTextField(
+      controller: _manualController,
+      label: 'Barcode',
+      autofocus: _current,
+      textInputAction: TextInputAction.done,
+      onSubmitted: _useManual,
+    ),
+  );
+
+  @override
+  Widget build(BuildContext context) => Stack(
+    alignment: Alignment.topCenter,
+    children: [
+      // Retain the actual camera widget/controller while entering text. Replacing
+      // it would auto-start it again even after a denied/previously stopped camera.
+      Offstage(offstage: _manualOpen, child: _camera()),
+      if (_manualOpen) _manual(),
+    ],
+  );
 }

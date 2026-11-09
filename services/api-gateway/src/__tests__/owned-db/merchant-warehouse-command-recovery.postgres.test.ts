@@ -76,6 +76,20 @@ test('the guarded warehouse owner replaces raw Data API execution of every stock
 
 
 const quote=(value:string)=>"'"+value.replace(/'/g,"''")+"'";
+// The436 binding now refuses persisted foreign transfer lines. Keep that real
+// constraint intact, then test the reader's independent validation by injecting
+// one malformed response on the documented Gateway->PostgREST fault seam.
+function malformedWarehouseRead(table:string,id:string,change:(row:Record<string,unknown>)=>Record<string,unknown>){
+ let injected=false;
+ const tap=tapRest(owned.restUrl,async(call,forward)=>{
+  const response=await forward();if(call.resource!==table||call.method!=='GET'||!response.ok)return response;
+  const values:unknown=await response.json();
+  const map=(value:unknown)=>{if(value&&typeof value==='object'&&!Array.isArray(value)&&(value as Record<string,unknown>).id===id){injected=true;return change(value as Record<string,unknown>);}return value;};
+  const result=Array.isArray(values)?values.map(map):map(values);
+  return new Response(JSON.stringify(result),{status:response.status,headers:response.headers});
+ });
+ return{restore:()=>tap.restore(),assertInjected:()=>assert(injected,'The named real PostgREST read fault must reach its target')};
+}
 function stock(site:string) {return JSON.parse(owned.psql(
  "SELECT coalesce(jsonb_agg(to_jsonb(t) ORDER BY location_id,id),'[]')::text FROM inventory_levels t WHERE store_id="+quote(site)+";")) as Array<Record<string,unknown>>;}
 test('concurrent same-key creates return one durable response and changed intent cannot add incoming stock',async t=>{
@@ -320,8 +334,12 @@ test('the real SDK reads canonical partial PO and transfer counters from committ
  assert.equal((await api.inventory.purchaseOrders.list({store_id:f.site.siteId})).data[0].lines.length,1,'soft-deleted lines do not enter receive forms');
  const b=await fixture(t),supplier=randomUUID();owned.psql("INSERT INTO suppliers(id,site_id,name)VALUES("+quote(supplier)+","+quote(b.site.siteId)+",'SYN_PRIVATE_FOREIGN_SUPPLIER');UPDATE purchase_orders SET supplier_id="+quote(supplier)+" WHERE id="+quote(po)+";");
  await assert.rejects(()=>api.inventory.purchaseOrders.list({store_id:f.site.siteId}),e=>e instanceof LetbuyyApiError&&e.code==='WAREHOUSE_DOCUMENTS_UNVERIFIED');
- owned.psql("UPDATE purchase_orders SET supplier_id=NULL WHERE id="+quote(po)+";UPDATE inventory_transfer_lines SET site_id="+quote(b.site.siteId)+" WHERE id="+quote(transferLine)+";");
- await assert.rejects(()=>api.inventory.transfers.list({store_id:f.site.siteId}),e=>e instanceof LetbuyyApiError&&e.code==='WAREHOUSE_DOCUMENTS_UNVERIFIED');
+ owned.psql("UPDATE purchase_orders SET supplier_id=NULL WHERE id="+quote(po)+";");
+ const beforeForeign=stock(f.site.siteId);
+ assert.match(owned.psqlExpectError("UPDATE inventory_transfer_lines SET site_id="+quote(b.site.siteId)+" WHERE id="+quote(transferLine)+";"),/INVENTORY_TRANSFER_BINDING_INVALID/);
+ assert.deepEqual(stock(f.site.siteId),beforeForeign);
+ const malformed=malformedWarehouseRead('inventory_transfers',id,row=>({...row,lines:(row.lines as Array<Record<string,unknown>>).map(value=>value.id===transferLine?{...value,site_id:b.site.siteId}:value)}));
+ try{await assert.rejects(()=>api.inventory.transfers.list({store_id:f.site.siteId}),e=>e instanceof LetbuyyApiError&&e.code==='WAREHOUSE_DOCUMENTS_UNVERIFIED');malformed.assertInjected();}finally{malformed.restore();}
 });
 
 test('the actual typed SDK composes all five warehouse effects, exact replay and changed-intent refusal',async t=>{
@@ -484,10 +502,21 @@ for(const transfer of [false,true])test((transfer?'transfer':'PO')+' fresh SDK d
  assert.equal(denied.status,403);assert.equal(denied.json?.data,undefined);
  for(const path of ['/v1/inventory/'+route+'/invalid?store_id='+f.site.siteId,'/v1/inventory/'+route+'/'+target])
   assert.equal((await f.gateway.request(path,{headers:await signedIdentityHeaders(f.actor,'syn-wms-'+f.actor+'@example.invalid',f.site.siteId)})).status,400);
- owned.psql("UPDATE "+(transfer?'inventory_transfer_lines':'purchase_order_lines')+" SET site_id="+quote(ownOther.siteId)+" WHERE id="+quote(line)+";");
- await assert.rejects(get,e=>e instanceof LetbuyyApiError&&e.code==='WAREHOUSE_DOCUMENTS_UNVERIFIED');
- owned.psql("UPDATE "+(transfer?'inventory_transfers':'purchase_orders')+" SET deleted_at=now() WHERE id="+quote(target)+";");
- await assert.rejects(get,e=>e instanceof LetbuyyApiError&&e.status===404);
+ if(transfer){
+  assert.match(owned.psqlExpectError("UPDATE inventory_transfer_lines SET site_id="+quote(ownOther.siteId)+" WHERE id="+quote(line)+";"),/INVENTORY_TRANSFER_BINDING_INVALID/);
+  const malformed=malformedWarehouseRead('inventory_transfers',target,row=>({...row,lines:(row.lines as Array<Record<string,unknown>>).map(value=>value.id===line?{...value,site_id:ownOther.siteId}:value)}));
+  try{await assert.rejects(get,e=>e instanceof LetbuyyApiError&&e.code==='WAREHOUSE_DOCUMENTS_UNVERIFIED');malformed.assertInjected();}finally{malformed.restore();}
+  assert.match(owned.psqlExpectError("UPDATE inventory_transfers SET deleted_at=now() WHERE id="+quote(target)+";"),/INVENTORY_TRANSFER_BINDING_INVALID/);
+  assert.equal((await get()).lines[0].quantity_received,2,'Refused corruption preserves the current complete detail');
+  // An actual pre-cutover tombstone has no new live reservation to detach.
+  const historical=randomUUID();owned.psql("INSERT INTO inventory_transfers(id,site_id,transfer_number,source_location_id,destination_location_id,status,deleted_at,idempotency_key)VALUES("+quote(historical)+","+quote(f.site.siteId)+","+quote('SYN-RETAINED-'+historical)+","+quote(f.site.locationId)+","+quote(f.destination)+",'received',now(),"+quote('syn-retained-'+historical)+");");
+  await assert.rejects(()=>api.inventory.transfers.get(historical,{store_id:f.site.siteId}),e=>e instanceof LetbuyyApiError&&e.status===404);
+ }else{
+  owned.psql("UPDATE purchase_order_lines SET site_id="+quote(ownOther.siteId)+" WHERE id="+quote(line)+";");
+  await assert.rejects(get,e=>e instanceof LetbuyyApiError&&e.code==='WAREHOUSE_DOCUMENTS_UNVERIFIED');
+  owned.psql("UPDATE purchase_orders SET deleted_at=now() WHERE id="+quote(target)+";");
+  await assert.rejects(get,e=>e instanceof LetbuyyApiError&&e.status===404);
+ }
 });
 
 for(const supplier of [false,true])test((supplier?'supplier':'location')+' choices are exact bounded owner reads beyond 1000, with literal search and revoked access',async t=>{

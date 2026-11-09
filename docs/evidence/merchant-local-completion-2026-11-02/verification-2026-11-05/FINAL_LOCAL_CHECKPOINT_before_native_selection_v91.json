@@ -1,0 +1,69 @@
+{
+  "at": "2026-11-07T11:25:40.831970+00:00",
+  "status": "CURRENT_SOURCE87_BOUNDED_ANDROID_CAMERA_MOV_WEBM_AND_IOS_MOV_WEBKIT_WEBM_WEB_SYNC_PASS;FULL122_OPEN",
+  "source": {
+    "manifest": "merchant-webm-abort-source-v87.source.json",
+    "sha256": "e831c0f58dd6a6447cb6a60190e962096732a19577e7162bb5be075540b70c18",
+    "inputs": 8506,
+    "head": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+    "branch": "codex/merchant-mobile-parity",
+    "frozen": false
+  },
+  "current_gates": {
+    "flutter": "1731PASS/0FAIL/0SKIP",
+    "analysis": "0issues",
+    "actual_embedded_webm_javascript": "5PASS/0FAIL;3interruption cases failed before fix",
+    "actual_isolated_governance": "114PASS/1NA;original source/index unchanged during gate",
+    "retained_unchanged_backend": "Source84 Media12,Range13,rootcontracts400,Gatewaytypes0;not fresh87 standalone reruns;native116/117 do execute current compiled Workers/real SQL/R2",
+    "counts": "Independent overlapping suites;never sum."
+  },
+  "current_android": {
+    "run_id": "ce6c4e0d693b",
+    "report": "native116-final-local-readback.json",
+    "apk_sha256": "f6e0622cb66d214d92aba75498833c06ca0e6d022e09f0cb24a90cf6fd59925c",
+    "installed_equals_retained": true,
+    "uploads": 4,
+    "objects": 4,
+    "device": "native116-device-final-readback.json"
+  },
+  "current_ios": {
+    "run_id": "c4e529bee7d4",
+    "report": "native117-final-local-readback.json",
+    "installed_files_equal_retained": 401,
+    "uploads": 2,
+    "objects": 2,
+    "device": "native117-runtime-readback.json"
+  },
+  "failed_ios_reproduction": "native113-failed-local-readback.json",
+  "retained_prior_source84_product_category_and_models": [
+    "native108-final-local-readback.json",
+    "native109-final-local-readback.json",
+    "native105-final-local-readback.json",
+    "native110-final-local-readback.json"
+  ],
+  "custody": "source87-final-custody.json",
+  "ports": "source87-owned-ports-final.json",
+  "whole_features_accepted": 0,
+  "whole_applicable_features_open": 119,
+  "excluded": [
+    120,
+    121
+  ],
+  "paused": [
+    122
+  ],
+  "frozen": [
+    51
+  ],
+  "next": [
+    "Implement actor/store/purpose-bound recovery for Android process death inside camera/native picker before upload intent exists. Never auto-import an unknown/private KYC selection into public Media.",
+    "Continue product variants/options,reordering,media and actual buyer Liquid outcomes plus remaining feature-specific web/mobile/buyer journeys.",
+    "Complete current-role/revocation/store-switch,Accounts,store,themes,domains,orders,tax,money,growth and settings matrices.",
+    "Keep private KYC/provider/physical-device/hosted/signed-release acceptance distinct. Full122 remains open;51frozen,120/121excluded,122paused."
+  ],
+  "limits": "Local synthetic Accounts/Next/native emulator-simulator/compiled Gateway+BFF/owned PostgreSQL/R2 only. Silent generated H264 MOV/VP8 WebM clips;not all codecs/OS versions. Physical/provider/inbox/buyer-Liquid/hosted/signed-release/production and full122 acceptance not certified.",
+  "retained_prior_source86_camera_formats": {
+    "android": "native114-final-local-readback.json",
+    "ios": "native115-final-local-readback.json"
+  }
+}

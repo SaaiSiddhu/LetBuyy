@@ -5,7 +5,7 @@
  *
  * Renders as a modal overlay (role="dialog", aria-modal) showing a thumbnail
  * grid of existing site media fetched from the same-origin proxy:
- *   GET /api/stores/{storeName}/themes/media-library
+ *   GET /api/stores/{storeName}/media
  *
  * Upload affordance posts to:
  *   POST /api/stores/{storeName}/upload  (same endpoint as ImageInput)
@@ -55,6 +55,9 @@
 import { CircleAlert, CirclePlay, CloudOff, Images, LoaderCircle, Search, Upload, X } from 'lucide-react'
 import { useCallback, useEffect, useId, useRef, useState } from 'react'
 import { Button, Input } from '@letbuyy/ui'
+import { MediaAssetSchema, type MediaAsset } from '@letbuyy/shared-types'
+import { MediaRecoveryNotice, useMediaUploadTarget } from '@/components/media/MediaRecoveryProvider'
+import { useMerchantSecurityContext } from '@/components/security/MerchantSecurityContext'
 import styles from './controls.module.css'
 
 // ── Constants ────────────────────────────────────────────────────────────────
@@ -71,17 +74,7 @@ const MAX_VIDEO_BYTES = 100 * 1024 * 1024
 
 export type MediaType = 'image' | 'video' | 'all'
 
-export interface MediaItem {
-    id: string
-    filename: string
-    url: string
-    thumbnail_url?: string
-    mime_type: string
-    size_bytes: number
-    alt_text?: string
-    media_type: string
-    created_at: string
-}
+export type MediaItem = MediaAsset
 
 interface MediaLibraryProps {
     /** The authenticated merchant's store slug — must be the same store the editor is open for. */
@@ -154,18 +147,14 @@ function validateUploadFile(
     return { ok: true }
 }
 
-function extractUploadedUrl(payload: unknown): string | null {
-    if (!payload || typeof payload !== 'object') return null
-    const data = (payload as { data?: unknown }).data
-    if (!data || typeof data !== 'object') return null
-    const url = (data as { url?: unknown }).url
-    return typeof url === 'string' && url.length > 0 ? url : null
-}
+
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export function MediaLibrary({ storeName, mediaType, onSelect, onClose }: MediaLibraryProps) {
     const dialogId = useId()
+    const mediaUpload = useMediaUploadTarget(storeName, `${storeName}:${mediaType}:${dialogId}`)
+    const { actorId, siteId } = useMerchantSecurityContext(storeName)
     const titleId = `${dialogId}-title`
     const gridId = `${dialogId}-grid`
     const fileInputRef = useRef<HTMLInputElement>(null)
@@ -182,6 +171,7 @@ export function MediaLibrary({ storeName, mediaType, onSelect, onClose }: MediaL
     const [isNotConnected, setIsNotConnected] = useState(false)
 
     const [search, setSearch] = useState('')
+    const [page, setPage] = useState(1), [hasNext, setHasNext] = useState(false)
     const [activeIndex, setActiveIndex] = useState(-1)
     /** Dynamic column count derived from the rendered grid via ResizeObserver. */
     const [gridCols, setGridCols] = useState(2)
@@ -204,11 +194,12 @@ export function MediaLibrary({ storeName, mediaType, onSelect, onClose }: MediaL
                 const params = new URLSearchParams({
                     type: mediaType,
                     limit: '60',
+                    page: String(page),
                 })
-                if (search.trim()) params.set('q', search.trim().slice(0, 200))
+                if (search.trim()) params.set('search', search.trim().slice(0, 200))
 
                 const res = await fetch(
-                    `/api/stores/${encodeURIComponent(storeName)}/themes/media-library?${params.toString()}`, { cache: 'no-store', signal }
+                    `/api/stores/${encodeURIComponent(storeName)}/media?${params.toString()}`, { cache: 'no-store', signal, headers: { 'X-LetBuyy-Merchant-Context': actorId } }
                 )
 
                 if (cancelled) return
@@ -235,7 +226,8 @@ export function MediaLibrary({ storeName, mediaType, onSelect, onClose }: MediaL
                     return
                 }
 
-                setItems(Array.isArray(json.data) ? (json.data as MediaItem[]) : [])
+                setItems(MediaAssetSchema.array().parse(json.data))
+                setHasNext(json.meta?.has_next === true)
                 setLoadState('loaded')
                 setActiveIndex(-1)
             } catch {
@@ -251,7 +243,7 @@ export function MediaLibrary({ storeName, mediaType, onSelect, onClose }: MediaL
             controller.abort()
             clearTimeout(timer)
         }
-    }, [storeName, mediaType, search])
+    }, [storeName, mediaType, search, page, actorId, siteId, mediaUpload.revision])
 
     // ── Focus trap: keep focus inside the dialog ──────────────────────────
     useEffect(() => {
@@ -385,7 +377,7 @@ export function MediaLibrary({ storeName, mediaType, onSelect, onClose }: MediaL
         async (e: React.ChangeEvent<HTMLInputElement>) => {
             const file = e.target.files?.[0]
             e.target.value = ''
-            if (!file) return
+            if (!file || mediaUpload.blocked) return
 
             // Client-side MIME + size pre-flight
             const validation = validateUploadFile(file, mediaType)
@@ -394,59 +386,25 @@ export function MediaLibrary({ storeName, mediaType, onSelect, onClose }: MediaL
                 return
             }
 
+            const current = mediaUpload.capture()
             setIsUploading(true)
             setUploadProgress(10)
             setUploadError(null)
 
             try {
-                const formData = new FormData()
-                formData.append('file', file)
-
-                // Indeterminate progress: bump to 40% while waiting for server
-                setUploadProgress(40)
-
-                const response = await fetch(
-                    `/api/stores/${encodeURIComponent(storeName)}/upload`,
-                    { method: 'POST', body: formData }
-                )
-                const payload = await response.json().catch(() => null)
-                const url = extractUploadedUrl(payload)
-
-                setUploadProgress(80)
-
-                if (!response.ok || !url) {
-                    const msg =
-                        payload && typeof payload === 'object' &&
-                        typeof (payload as { error?: unknown }).error === 'string'
-                            ? (payload as { error: string }).error
-                            : 'Upload failed'
-                    throw new Error(msg)
-                }
-
+                const newItem = await mediaUpload.upload(file)
                 setUploadProgress(100)
-
-                // Prepend the newly uploaded item to the list so it's immediately visible
-                const newItem: MediaItem = {
-                    id: crypto.randomUUID(),
-                    filename: file.name,
-                    url,
-                    thumbnail_url: url,
-                    mime_type: file.type,
-                    size_bytes: file.size,
-                    alt_text: '',
-                    media_type: file.type.startsWith('video/') ? 'video' : 'image',
-                    created_at: new Date().toISOString(),
-                }
                 setItems((prev) => [newItem, ...prev])
                 setLoadState('loaded')
             } catch (err) {
+                if (!current()) return
                 setUploadError(err instanceof Error ? err.message : 'Upload failed')
             } finally {
-                setIsUploading(false)
-                setUploadProgress(0)
+                if (current()) setIsUploading(false)
+                if (current()) setUploadProgress(0)
             }
         },
-        [storeName, mediaType]
+        [storeName, mediaType, mediaUpload.upload, mediaUpload.blocked, mediaUpload.capture]
     )
 
     // ── Accept string for file input ──────────────────────────────────────
@@ -476,6 +434,12 @@ export function MediaLibrary({ storeName, mediaType, onSelect, onClose }: MediaL
                 aria-labelledby={titleId}
                 className={styles.mediaLibraryDialog}
             >
+                <MediaRecoveryNotice store={storeName} />
+                <div className="flex items-center gap-[var(--lb-space-3)]">
+                    <Button variant="secondary" disabled={loadState === 'loading' || page === 1} onClick={() => setPage(value => value - 1)}>Previous media page</Button>
+                    <span>Page {page}</span>
+                    <Button variant="secondary" disabled={loadState === 'loading' || !hasNext} onClick={() => setPage(value => value + 1)}>Next media page</Button>
+                </div>
                 {/* Header */}
                 <div className={styles.mediaLibraryHeader}>
                     <h2 id={titleId} className={styles.mediaLibraryTitle}>
@@ -501,7 +465,7 @@ export function MediaLibrary({ storeName, mediaType, onSelect, onClose }: MediaL
                         className={styles.mediaSearchInput}
                         placeholder="Search media…"
                         value={search}
-                        onChange={(e) => setSearch(e.target.value)}
+                        onChange={(e) => { setSearch(e.target.value); setPage(1) }}
                         aria-label="Search media by filename"
                     />
                 </div>
@@ -524,7 +488,7 @@ export function MediaLibrary({ storeName, mediaType, onSelect, onClose }: MediaL
                             ref={fileInputRef}
                             type="file"
                             accept={acceptAttr}
-                            disabled={isUploading}
+                            disabled={isUploading || mediaUpload.blocked}
                             onChange={handleFileChange}
                             className={styles.hiddenFileInput}
                             aria-label="Upload new media file"

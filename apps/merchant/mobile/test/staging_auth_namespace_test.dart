@@ -5,9 +5,47 @@ import 'package:http/testing.dart';
 import 'package:letbuyy_store/services/api_client.dart';
 import 'package:letbuyy_store/services/store_auth_service.dart';
 import 'package:letbuyy_store/services/security_command_store.dart';
+import 'package:letbuyy_store/config/app_config.dart';
 import 'support/loyalty_fixture.dart' show MemoryStorage;
 
 void main() {
+  test(
+    'a local issuer cannot restore or clear hosted session credentials',
+    () async {
+      final storage = MemoryStorage();
+      storage.data.addAll({
+        'lb_session': 'p' * 32,
+        'lb_session_staging': 's' * 32,
+      });
+      var requests = 0;
+      final api = ApiClient(baseUrl: 'http://localhost:9011/v1');
+      final client = MockClient((_) async {
+        requests++;
+        return http.Response('{}', 500);
+      });
+      final service = StoreAuthService(
+        api: api,
+        identityBaseUrl: 'http://localhost:9002',
+        storageNamespace: AppConfig.persistenceNamespace(
+          environmentName: 'local',
+          identityUrl: 'http://localhost:9002',
+        ),
+        secureStorage: storage,
+        httpClient: client,
+      );
+      await service.restoreSession();
+      await service.signOut();
+      expect(requests, 0);
+      expect(service.currentUser, isNull);
+      expect(storage.data, {
+        'lb_session': 'p' * 32,
+        'lb_session_staging': 's' * 32,
+      });
+      service.dispose();
+      api.close();
+      client.close();
+    },
+  );
   test(
     'staging never restores a production session from shared secure storage',
     () async {

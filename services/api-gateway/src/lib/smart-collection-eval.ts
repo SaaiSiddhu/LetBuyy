@@ -7,30 +7,8 @@
 //   combine: match_type 'all' (AND) | 'any' (OR)
 // ============================================================
 
-export type SmartConditionField =
-    | 'title'
-    | 'product_type'
-    | 'vendor'
-    | 'tag'
-    | 'price'
-    | 'inventory_quantity';
-
-export type SmartConditionOp =
-    | 'equals'
-    | 'not_equals'
-    | 'contains'
-    | 'starts_with'
-    | 'ends_with'
-    | 'gt'
-    | 'lt';
-
-export interface SmartCondition {
-    field: SmartConditionField;
-    op: SmartConditionOp;
-    value: string; // always stored as string; numeric fields parsed at eval time
-}
-
-export type SmartMatchType = 'all' | 'any';
+import type { SmartCondition, SmartMatchType } from '@letbuyy/shared-types';
+export type { SmartConditionField, SmartConditionOp, SmartCondition, SmartMatchType } from '@letbuyy/shared-types';
 
 /**
  * Minimal product shape needed by the evaluator.

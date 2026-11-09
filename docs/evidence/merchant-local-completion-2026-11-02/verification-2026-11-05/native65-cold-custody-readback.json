@@ -1,0 +1,11 @@
+{
+  "status": "SAFE_ALLOWLIST_AND_EXACT_IGNORED_BINARY_CUSTODY_PASS",
+  "source_sha256": "dc5e2e0af9f5da7b4e2ec11a68b3c343cb5953daa83de34009a4c5e6fb228c8c",
+  "run_id": "65570e9272a9",
+  "cold_files": 43,
+  "manifest": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/native65-accepted-local-staff-product/MANIFEST.json",
+  "artifact_manifest": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/artifacts/local-operational-proof/merchant-mobile/native65-65570e9272a9/artifact-manifest.json",
+  "source_unchanged": true,
+  "android_original_bytes_equal": true,
+  "full_feature_set_accepted": false
+}

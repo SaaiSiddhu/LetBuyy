@@ -425,7 +425,7 @@ void main() {
         storeIdProvider: () => store,
         commands: SecurityCommandStore(storage: storage),
       );
-      Future<InventoryLevel> submit(InventoryService s, {int delta = 1}) =>
+      Future<void> submit(InventoryService s, {int delta = 1}) =>
           s.submitAdjustment(
             storeId: a,
             productId: level()['product_id'],
@@ -465,7 +465,12 @@ void main() {
       store = a;
       epoch++;
       lose = false;
-      expect((await restarted.retryPendingAdjustment(a)).available, 8);
+      await restarted.retryPendingAdjustment(a);
+      expect(
+        restarted.levels,
+        isEmpty,
+        reason: 'A historical acknowledgement is never current stock',
+      );
       expect(calls.last.headers['X-Idempotency-Key'], key);
       expect(calls.last.data, calls.first.data);
       expect(await restarted.pendingAdjustment(a), isNull);
@@ -648,6 +653,42 @@ void main() {
     },
   );
   test(
+    'a historical raw stock acknowledgement is retired before current free-stock readback',
+    () async {
+      final api = client((r, h) {
+        if (r.method == 'POST') {
+          // A durable receipt can predate the latest stock change and uses raw
+          // database quantities. It must never become a normalized live row.
+          respond(r, h, {...level(available: 20), 'reserved': 4});
+        } else {
+          respond(r, h, [
+            {
+              ...level(available: 13),
+              'reserved': 4,
+              'on_hand': 17,
+              'sellable': 13,
+            },
+          ]);
+        }
+      });
+      final service = InventoryService(api: api);
+      final initial = (await service.fetchLevels(a)).single;
+      await service.adjustStock(
+        storeId: a,
+        level: initial,
+        delta: 1,
+        reason: 'correction',
+        idempotencyKey: 'synthetic-original-receipt-key',
+      );
+      expect(service.levels, isEmpty);
+      final current = (await service.fetchLevels(a)).single;
+      expect(current.available, 13);
+      expect(current.reserved, 4);
+      expect(current.onHand, 17);
+      expect(current.sellable, 13);
+    },
+  );
+  test(
     'an older mutation receipt cannot replace a later inventory read',
     () async {
       final started = Completer<void>(), release = Completer<void>();
@@ -674,7 +715,7 @@ void main() {
       await started.future;
       await service.fetchLevels(a);
       release.complete();
-      expect((await save).available, 8);
+      await save;
       expect(service.levels.single.available, 10);
       final command = calls.singleWhere((r) => r.method == 'POST');
       expect(command.headers['X-Store-ID'], a);

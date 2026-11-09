@@ -1,0 +1,19 @@
+{
+  "at": "2026-11-05T20:32:59.451977+00:00",
+  "status": "INDEPENDENT_DEBUG_APK_READBACK_PASS",
+  "source_sha256": "78af178afaafa150298483820690ca5ed87b9c627fe208ea5d6148c3e7e1d636",
+  "artifact": {
+    "path": "/private/tmp/letbuyy-utility-final-android-x4ujql_w/merchant-local-debug.apk",
+    "sha256": "bf831bf88a8d80c10f7e8e424bc9bbfa0b89cf4d738a7ffcd737dde05a23190e",
+    "bytes": 151913572
+  },
+  "actual_sha256": "bf831bf88a8d80c10f7e8e424bc9bbfa0b89cf4d738a7ffcd737dde05a23190e",
+  "compiled_arm64_engine": true,
+  "debug_kernel_present": true,
+  "normal_main": true,
+  "installed": false,
+  "runtime_verified": false,
+  "scope": "Normal debug compile/archive only. Native41 proves its own preceding warehouse artifact only; current utilities have no native acceptance.",
+  "material_icons_bytes": 1645184,
+  "material_icons_sha256": "d9865b671a09d683d13a863089d8825e0f61a37696ce5d7d448bc8023aa62453"
+}

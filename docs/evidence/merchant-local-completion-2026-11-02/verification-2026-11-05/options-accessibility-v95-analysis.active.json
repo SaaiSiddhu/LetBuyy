@@ -1,0 +1,13 @@
+{
+  "started_at": "2026-11-08T05:37:26.916233+00:00",
+  "supervisor_pid": 53014,
+  "source": "merchant-options-accessibility-source-v95",
+  "source_sha256": "6a9dffa117db5c1be62f26f57d8f031910f3e599fc966a1eb0cfc87392519a18",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "analyze",
+    "--no-pub"
+  ],
+  "status": "RUNNING",
+  "child_pid": 53017
+}

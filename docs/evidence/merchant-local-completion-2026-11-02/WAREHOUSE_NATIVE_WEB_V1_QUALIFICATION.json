@@ -1,0 +1,295 @@
+{
+  "run_id": "08c37b03d217",
+  "status": "LOCALLY ACCEPTED for demonstrated owner metadata-create/recovery roundtrip only",
+  "passed": 1,
+  "failed": 0,
+  "skipped": 0,
+  "cancelled": 0,
+  "source_sha256": "e7681d067b1530d9d851550fc4f6cd22ee6547f334dfac4e61ab2aac10783234",
+  "apk_sha256": "80cd10940f528686bf8ff5fc6c7a6a2e95bfaefaeb54880b29732b8baa172057",
+  "source_archive": {
+    "source_sha256": "e7681d067b1530d9d851550fc4f6cd22ee6547f334dfac4e61ab2aac10783234",
+    "apk_sha256": "80cd10940f528686bf8ff5fc6c7a6a2e95bfaefaeb54880b29732b8baa172057",
+    "files": 4591,
+    "archive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v1/qualified-source",
+    "scope": "Exact local observed source; no production records or authentication material exported."
+  },
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "scope": "Normal local Android location/supplier create, location lost-reply and restart original-key recovery, normal web read/create and native readback; strict native store-profile positive save and web read. No metadata update/delete, stock receiving/transfer, staff UI, hosted/provider/iOS or whole-feature certification.",
+  "observations": [
+    "Normal local synthetic Android sign-in through actual Identity/BFF/Gateway",
+    "Products menu -> Inventory -> Locations; positive populated default-location read",
+    "Native location create exhausted all three committed replies and retained unresolved original intent",
+    "Actual task app process restart restored session; Locations showed same pending request and blocked new creation",
+    "Fresh record presence did not falsely clear the original pending command",
+    "Retry original confirmed the same actor/site/key/normalized command without another effect",
+    "Native supplier create acknowledged and current contact/email record rendered",
+    "Normal owner web sign-in read both native-created records",
+    "Normal web dialogs created location and supplier with address/pincode metadata",
+    "Native refreshed and actually showed both web-created and native-created records",
+    "Strict native profile acknowledgement accepted a valid current save; final normal web General read showed exact native name",
+    "Database has exactly four applied metadata receipts and one native location receipt across all retries/restart",
+    "All terminal source/hash/effect/readback assertions and owned cleanup passed"
+  ],
+  "transport": [
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/locations",
+      "method": "POST",
+      "status": 201,
+      "wire_status": 503,
+      "key_digest": "c8b75996f6694801f00da6295cc151448a98bc56e7cbaba4ce6547d618ab7ce1",
+      "body_digest": "722ca9133ae3311e25e5f060413eebeb74ddc504b88fd43f3e5c5802ea871a84"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/locations",
+      "method": "POST",
+      "status": 201,
+      "wire_status": 503,
+      "key_digest": "c8b75996f6694801f00da6295cc151448a98bc56e7cbaba4ce6547d618ab7ce1",
+      "body_digest": "722ca9133ae3311e25e5f060413eebeb74ddc504b88fd43f3e5c5802ea871a84"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/locations",
+      "method": "POST",
+      "status": 201,
+      "wire_status": 503,
+      "key_digest": "c8b75996f6694801f00da6295cc151448a98bc56e7cbaba4ce6547d618ab7ce1",
+      "body_digest": "722ca9133ae3311e25e5f060413eebeb74ddc504b88fd43f3e5c5802ea871a84"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/locations",
+      "method": "POST",
+      "status": 201,
+      "wire_status": 201,
+      "key_digest": "c8b75996f6694801f00da6295cc151448a98bc56e7cbaba4ce6547d618ab7ce1",
+      "body_digest": "722ca9133ae3311e25e5f060413eebeb74ddc504b88fd43f3e5c5802ea871a84"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/inventory/suppliers",
+      "method": "POST",
+      "status": 201,
+      "wire_status": 201,
+      "key_digest": "85b0b5a6d9eec49f41cab544aa952ab0af940fe8567b365d2b438217236904ce",
+      "body_digest": "9da60c58bca66495c1a64e30b5f16b21a3b993b88dd4901ba0cf9c3aef9d8094"
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/inventory/locations",
+      "method": "POST",
+      "status": 201,
+      "wire_status": 201,
+      "key_digest": "93e6eb1c8bef4371d790a9c3e564a8e82c8158ca3be4ccc177cb5f7f59e28edc",
+      "body_digest": "8afc8d7288743c2320a028efbb9aa5918761f06a46525ff1f8c74972a3396bdf"
+    },
+    {
+      "source": "actual-identity",
+      "path": "/v1/inventory/suppliers",
+      "method": "POST",
+      "status": 201,
+      "wire_status": 201,
+      "key_digest": "52fc1dceeb9aa643b8893270bbd0ea522c53534b487697f21cca596697482ff9",
+      "body_digest": "7fbe02462b28774b3671670920c93eea396604e7914bfbcfe9849c6d7a7a135c"
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/stores/4ca2d8d3-74c6-4cdb-a303-eb764acd880f",
+      "method": "PATCH",
+      "status": 200,
+      "wire_status": 200
+    }
+  ],
+  "persisted_synthetic": {
+    "locations": [
+      {
+        "id": "84fcdf17-13e5-4bf6-a2cd-d57dbaaf16a3",
+        "name": "Synthetic native recovery location",
+        "address": {
+          "city": "Chennai",
+          "state": "Tamil Nadu",
+          "address": "Synthetic native road",
+          "country": "IN",
+          "pincode": "600001"
+        }
+      },
+      {
+        "id": "5fa24795-c4d7-407f-a404-ff7e79e10339",
+        "name": "Synthetic web recovery location",
+        "address": {
+          "city": "Chennai",
+          "state": "Tamil Nadu",
+          "address": "Synthetic web road",
+          "country": "IN",
+          "pincode": "600001"
+        }
+      }
+    ],
+    "suppliers": [
+      {
+        "id": "de5acfa2-c53c-4168-8511-a0662f1fbe96",
+        "name": "Synthetic native recovery supplier",
+        "address": {
+          "line1": "Synthetic native road"
+        },
+        "email": "synthetic-native-supplier@example.invalid"
+      },
+      {
+        "id": "444b9d1c-f15b-4c08-b2bb-3f84198c1fb1",
+        "name": "Synthetic web recovery supplier",
+        "address": {
+          "city": "Chennai",
+          "line1": "Synthetic web road",
+          "state": "Tamil Nadu",
+          "pincode": "600001"
+        },
+        "email": "synthetic-web-supplier@example.invalid"
+      }
+    ],
+    "receipts": [
+      {
+        "operation": "location.create",
+        "target_id": "5fa24795-c4d7-407f-a404-ff7e79e10339",
+        "key_digest": "93e6eb1c8bef4371d790a9c3e564a8e82c8158ca3be4ccc177cb5f7f59e28edc",
+        "command": {
+          "city": "Chennai",
+          "name": "Synthetic web recovery location",
+          "state": "Tamil Nadu",
+          "address": "Synthetic web road",
+          "country": "IN",
+          "pincode": "600001",
+          "is_default": false
+        },
+        "outcome": "applied"
+      },
+      {
+        "operation": "location.create",
+        "target_id": "84fcdf17-13e5-4bf6-a2cd-d57dbaaf16a3",
+        "key_digest": "c8b75996f6694801f00da6295cc151448a98bc56e7cbaba4ce6547d618ab7ce1",
+        "command": {
+          "city": "Chennai",
+          "name": "Synthetic native recovery location",
+          "state": "Tamil Nadu",
+          "address": "Synthetic native road",
+          "country": "IN",
+          "pincode": "600001",
+          "is_default": false
+        },
+        "outcome": "applied"
+      },
+      {
+        "operation": "supplier.create",
+        "target_id": "444b9d1c-f15b-4c08-b2bb-3f84198c1fb1",
+        "key_digest": "52fc1dceeb9aa643b8893270bbd0ea522c53534b487697f21cca596697482ff9",
+        "command": {
+          "name": "Synthetic web recovery supplier",
+          "email": "synthetic-web-supplier@example.invalid",
+          "phone": null,
+          "address": {
+            "city": "Chennai",
+            "line1": "Synthetic web road",
+            "state": "Tamil Nadu",
+            "pincode": "600001"
+          },
+          "contact_name": null
+        },
+        "outcome": "applied"
+      },
+      {
+        "operation": "supplier.create",
+        "target_id": "de5acfa2-c53c-4168-8511-a0662f1fbe96",
+        "key_digest": "85b0b5a6d9eec49f41cab544aa952ab0af940fe8567b365d2b438217236904ce",
+        "command": {
+          "name": "Synthetic native recovery supplier",
+          "email": "synthetic-native-supplier@example.invalid",
+          "phone": null,
+          "address": {
+            "line1": "Synthetic native road"
+          },
+          "contact_name": "Synthetic native contact"
+        },
+        "outcome": "applied"
+      }
+    ],
+    "site_version": 3
+  },
+  "mobile_regression": {
+    "full": "flutter-full-v19.log:865pass",
+    "analysis": "flutter-analysis-v14.log:clean",
+    "focused": "store-ack-revision-repair-v1.log:21pass; overlapping full suite"
+  },
+  "evidence": [
+    {
+      "path": "warehouse-runtime-v1/native-location-original-confirmed.png",
+      "sha256": "8b6e111e9c8d85b6100ed89da632fc90072721de80d9c15866eea63f302cce67"
+    },
+    {
+      "path": "warehouse-runtime-v1/native-location-pending-after-restart.png",
+      "sha256": "99e19c95f5f858cd040c4b649aa7b5671dd990e9885e9d28aa5df50f1ac8acbf"
+    },
+    {
+      "path": "warehouse-runtime-v1/native-location-reply-lost.png",
+      "sha256": "78eb9ddfc67a7816dcb1b211cef31a2aa1d15cc3e81a7b34d7bbb66d6a31f908"
+    },
+    {
+      "path": "warehouse-runtime-v1/native-profile-save-confirmed.png",
+      "sha256": "17e3f0c7f9fe38a098820602f11952ff845bb6b7f147bb80acbaccbdaae50aa4"
+    },
+    {
+      "path": "warehouse-runtime-v1/native-read-web-location.png",
+      "sha256": "a9f151e10bcc05ad256660b2d81263a72b3e65632bc35f955d763a55c8d4e78f"
+    },
+    {
+      "path": "warehouse-runtime-v1/native-read-web-supplier.png",
+      "sha256": "ffe110e24225b95218357eaa2d5eaae27854978f0bf03339b8bcb9798e680899"
+    },
+    {
+      "path": "warehouse-runtime-v1/native-supplier-created.png",
+      "sha256": "f45cac0c15b0ba7cce5eb1de5d9f3d05474c9536f8f6122877f1fd66018d6374"
+    },
+    {
+      "path": "warehouse-runtime-v1/web-location-readback.png",
+      "sha256": "dc616e5bec000028a927fb6a5a92dbfe9527bfff750c68dae169db5029ddfbdb"
+    },
+    {
+      "path": "warehouse-runtime-v1/web-read-native-profile.png",
+      "sha256": "e00069e80423eb26adae61fd40bcc97017d49a91554d2f629480ad28d42a7fbf"
+    },
+    {
+      "path": "warehouse-runtime-v1/web-supplier-readback.png",
+      "sha256": "a95e4cf14628ab05aa39ea52930f3d39b24c5aa1caa45ac8e0deda500842eff4"
+    }
+  ],
+  "limits": [
+    "No metadata update/delete or complete inventory feature acceptance",
+    "No native owner/staff switch/revocation journey in this artifact; bounded database51 controls remain separate",
+    "PO/transfer/receiving effects have owned database proof, not this device journey",
+    "No durable store-profile business receipt/restart proof",
+    "No buyer storefront, hosted/provider/iOS/release or full122 acceptance",
+    "Migration reconciliation still awaits human decision"
+  ],
+  "feature_ids": [
+    32,
+    34
+  ],
+  "mapping_note": "Original32 locations and34 suppliers;33 transfers has no device acceptance from this metadata journey.",
+  "binary_archive": {
+    "run_id": "08c37b03d217",
+    "path": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v1/qualified-artifact/merchant-local-debug.apk",
+    "sha256": "80cd10940f528686bf8ff5fc6c7a6a2e95bfaefaeb54880b29732b8baa172057",
+    "bytes": 149261246,
+    "build_mode": "Flutter Android arm64 debug; local-only runtime definitions",
+    "installed_hash_verified_at_run": true,
+    "original_bytes_retained": true
+  }
+}

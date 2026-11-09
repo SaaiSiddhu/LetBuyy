@@ -123,6 +123,10 @@ rejects('login MFA cannot skip durable proof consumption', auth,
   s => replace(s, "await db.rpc('consume_merchant_login_factor',", "await db.rpc('unbound_factor_consumer',"), /durably consume/);
 rejects('a later MFA definition cannot accept replayed counters', 'database/supabase/migrations/999_unsafe_session_guard.sql',
   () => "CREATE OR REPLACE FUNCTION public.consume_merchant_login_factor(p_user_id uuid,p_factor_id uuid,p_secret_hash text,p_counter bigint,p_recovery_hash text) RETURNS boolean LANGUAGE sql AS $$ SELECT true; $$;", /MFA consumption must bind/);
+rejects('the extracted merchant factor lookup cannot read another actor',auth,
+  s=>replace(s,".eq('custom_user_id', userId)",".eq('custom_user_id', '00000000-0000-4000-8000-000000000000')"),/scope the active nondeleted TOTP factor/);
+rejects('Accounts admission cannot turn malformed factor reads into a missing factor',auth,
+  s=>replace(s,'if (factorError || !Array.isArray(factors))','if (factorError)'),/fail closed on unavailable or malformed factor reads/);
 for (const file of [auth, 'services/api-gateway/src/routes/two-factor.ts']) {
   rejects('TOTP encryption rejects fallback in ' + file, file,
     s => replace(s, 'const secret = env.TOTP_ENCRYPTION_KEY;', 'const secret = env.TOTP_ENCRYPTION_KEY || env.AUTH_SECRET;'), /TOTP encryption must prohibit/);

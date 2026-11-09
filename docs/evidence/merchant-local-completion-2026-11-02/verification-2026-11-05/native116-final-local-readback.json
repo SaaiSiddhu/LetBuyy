@@ -1,0 +1,168 @@
+{
+  "at": "2026-11-07T11:17:56.226084+00:00",
+  "status": "BOUNDED_CURRENT_ANDROID_CAMERA_MOV_WEBM_PLAYBACK_WEB_SYNC_PASS",
+  "source": "merchant-webm-abort-source-v87",
+  "source_sha256": "e831c0f58dd6a6447cb6a60190e962096732a19577e7162bb5be075540b70c18",
+  "fixture_source_sha256": "aaba52088bddd51cfadc673aecef0bd38bb30bb4843f4f3bacf898b0442f8b7f",
+  "fixture_inputs_matching_source87": 4881,
+  "fixture_additional_generated_diagnostics": [
+    {
+      "path": "apps/merchant/mobile/test/failures/customers_crm_list_isolatedDiff.png",
+      "sha256": "3b785cdb73bd04f7245b3315a1f1b76730d39226ed7a4b2720ec02c3161e452f"
+    },
+    {
+      "path": "apps/merchant/mobile/test/failures/customers_crm_list_maskedDiff.png",
+      "sha256": "63755d5998afa5ab072186853dbe4c66bfe21d76a98898787687a81a04478ae5"
+    },
+    {
+      "path": "apps/merchant/mobile/test/failures/customers_crm_list_masterImage.png",
+      "sha256": "3eae7ae0809be35f13353594fa331665af0911bd6bb7faa5111bb83a4faf5761"
+    },
+    {
+      "path": "apps/merchant/mobile/test/failures/customers_crm_list_testImage.png",
+      "sha256": "68a67b31840f5a3781372b571211d237d742869eddc16d085c5dde795994f643"
+    },
+    {
+      "path": "apps/merchant/mobile/test/failures/store_health_center_isolatedDiff.png",
+      "sha256": "37bef3afc585711d8d5c11e0280dd05275f7b05a7eb6db98bfd88582eaa0ceeb"
+    },
+    {
+      "path": "apps/merchant/mobile/test/failures/store_health_center_maskedDiff.png",
+      "sha256": "fe0ac90e2d5bbfef16a80b0ab963b9d6b56b7c70a41a0c4037165c47669058bc"
+    },
+    {
+      "path": "apps/merchant/mobile/test/failures/store_health_center_masterImage.png",
+      "sha256": "112b814447a0eae4da01c73572c3745d1360dddfbed37afb4e847ab907a00f83"
+    },
+    {
+      "path": "apps/merchant/mobile/test/failures/store_health_center_testImage.png",
+      "sha256": "001a7b264743b4a14c806856a937b8c4c2e1415948e572e81c861cfbea27bbf0"
+    }
+  ],
+  "run_id": "ce6c4e0d693b",
+  "private_root": "/private/tmp/letbuyy-merchant-local-20261107-f817208fce",
+  "runner": {
+    "tests": 1,
+    "assertionsPassed": 1,
+    "assertionsFailed": 0,
+    "skipped": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    }
+  },
+  "normal_auth": {
+    "run_id": "ce6c4e0d693b",
+    "normal_auth": true,
+    "no_session_injection": true
+  },
+  "actual_emulated_camera_photo_recording": true,
+  "uploads": 4,
+  "media_rows": 4,
+  "objects": 4,
+  "hashes": {
+    "image/jpeg": "86cd1fc5c6647df590fac847edf2a14d8932451597c330153449ec1ae13f0a84",
+    "video/mp4": "16ae1ae5dfbd6e3083f86e22dfdcf33491330b8056024ca3613bcc09ae80484d",
+    "video/quicktime": "41df40017e22408682731f8eb5686d16b1cdc52d9a9ee0623d98b2dbed62e3c3",
+    "video/webm": "87d37fd5c013df089147c9f05f2bf8962e55906cc3ff8c4ec79017551d18954a"
+  },
+  "actual_camera_and_formats_decode_progress_pause_mute_seek_background": true,
+  "no_passive_video_fetch": true,
+  "web_camera_and_WebM_caption_native_readback": true,
+  "installed_apk_sha256": "f6e0622cb66d214d92aba75498833c06ca0e6d022e09f0cb24a90cf6fd59925c",
+  "installed_equals_retained": true,
+  "phase_terminals": {
+    "Readback-terminal.json": {
+      "phase": "Readback",
+      "attempt": 1,
+      "exit": 0,
+      "accepted": true,
+      "run_id": "ce6c4e0d693b",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261107-f817208fce/Readback.py",
+      "control_sha256": "c38edb4142b7874da8b40ce1db08e85d4928406d0bc4ef1747235fb41f4f7431"
+    },
+    "Photo-terminal.json": {
+      "phase": "Photo",
+      "attempt": 1,
+      "exit": 0,
+      "accepted": true,
+      "run_id": "ce6c4e0d693b",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261107-f817208fce/Photo.py",
+      "control_sha256": "06c9c7b60b2f17d6a4c407e693f2284aaae24be444596094d137600539528061"
+    },
+    "Video-terminal.json": {
+      "phase": "Video",
+      "attempt": 1,
+      "exit": 0,
+      "accepted": true,
+      "run_id": "ce6c4e0d693b",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261107-f817208fce/Video.py",
+      "control_sha256": "8bcc9758d13626c0f57444722c18652d72034cf0fb9d3e14f0f7995964cd290d"
+    },
+    "CameraPreview-attempt2-terminal.json": {
+      "phase": "CameraPreview",
+      "attempt": 2,
+      "exit": 0,
+      "accepted": true,
+      "run_id": "ce6c4e0d693b",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261107-f817208fce/CameraPreview-observed-progress-background.py",
+      "control_sha256": "fced55111dac188a76298fd2f3fe3be19e9558057a34b0d8efd7516d6e04988c"
+    },
+    "Preview-terminal.json": {
+      "phase": "Preview",
+      "attempt": 1,
+      "exit": 0,
+      "accepted": true,
+      "run_id": "ce6c4e0d693b",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261107-f817208fce/Preview.py",
+      "control_sha256": "edab297b33446bf7f99a70828bae4acee35133544f49336cceeec77e058d5bea"
+    },
+    "CameraPreview-terminal.json": {
+      "phase": "CameraPreview",
+      "attempt": 1,
+      "exit": 1,
+      "accepted": false,
+      "run_id": "ce6c4e0d693b",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261107-f817208fce/CameraPreview.py",
+      "control_sha256": "27ed70475544d1a1a01fd7fa4ed8542fc754b79e34f6044b40e53936539461bd"
+    },
+    "Auth-terminal.json": {
+      "phase": "Auth",
+      "attempt": 1,
+      "exit": 0,
+      "accepted": true,
+      "run_id": "ce6c4e0d693b",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261107-f817208fce/Auth.py",
+      "control_sha256": "ce3a195a22b1bb8713bd4d6f2726c4702ce25a88e196905ba82b6db667a86f76"
+    },
+    "Import-terminal.json": {
+      "phase": "Import",
+      "attempt": 1,
+      "exit": 0,
+      "accepted": true,
+      "run_id": "ce6c4e0d693b",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261107-f817208fce/Import.py",
+      "control_sha256": "d4b233ea1025662478e42255316c0b9857b25b546e622f074134092c2eaac216"
+    }
+  },
+  "mapping_custody": {
+    "run_id": "ce6c4e0d693b",
+    "reverse_baseline_restored": true,
+    "forward_baseline_restored": true,
+    "host9002_never_touched": true
+  },
+  "recording_progress": {
+    "run_id": "ce6c4e0d693b",
+    "accepted": true,
+    "actual_emulated_camera_decode_progress_seek_mute_pause_background": true,
+    "observed_progress_frame_sha256": "4602e7f4088aa43f356e72030f1d041bad30e586de9ab7890c5297ef56fbd315",
+    "progress_observation": "Actual frame viewed at00:01/00:01. Prior mute/seek passed. Failure retained: the short looping clip reset before delayed hierarchy assertion. This continuation proves only remaining background pause."
+  },
+  "failed_attempts_retained": "Original camera progress assertion failed after actual rendered00:01/00:01frame because the short looping clip wrapped before hierarchy read. That failure remains. New immutable continuation verified remaining background pause from observed paused0state; no upload or successful-write reset.",
+  "whole_features_accepted": 0,
+  "limits": "Android15/API35 task emulator, virtual camera/no hostaudio. Generated silent H264 MOV and VP8WebM. No physical/othercodecs/provider/buyer/hosted/release/full122 acceptance; pre-upload picker process-death recovery open."
+}

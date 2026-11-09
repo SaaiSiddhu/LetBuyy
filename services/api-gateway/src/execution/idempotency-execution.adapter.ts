@@ -14,6 +14,8 @@ type JsonValue = null | boolean | number | string | JsonValue[] | { [key: string
 type IdempotencyRecord = {
     id: string;
     request_hash: string;
+    response_hash?: string | null;
+    resource_type?: string | null;
     response_body?: JsonValue | null;
     status: 'processing' | 'completed' | 'failed';
     status_code?: number | null;
@@ -21,7 +23,7 @@ type IdempotencyRecord = {
 };
 
 export type IdempotencyClaim =
-    | { kind: 'claimed'; id: string; siteId: string; requestHash: string }
+    | { kind: 'claimed'; id: string; siteId: string; requestHash: string; recoveryBody?: JsonValue | null }
     | { kind: 'replay'; responseBody: JsonValue; statusCode: number };
 
 async function sha256Hex(value: string): Promise<string> {
@@ -76,6 +78,40 @@ export class IdempotencyExecutionAdapter {
             : null;
     }
 
+    /** Scoped existing-state lookup, without allocating or reclaiming an effect. */
+    async readForRecovery(params: { siteId: string; key: string; scope: string; requestBody: unknown }): Promise<IdempotencyRecord | null> {
+        const key = IdempotencyExecutionAdapter.normalizeKey(params.key);
+        const hash = await sha256Hex(canonicalizeExecutionPayload(params.requestBody));
+        const { data, error } = await this.db.from('idempotency_keys')
+            .select('id,request_hash,status,response_body,status_code,response_hash,resource_type')
+            .eq('site_id', params.siteId).eq('scope', params.scope).eq('key', key).is('deleted_at', null).maybeSingle();
+        if (error) throw new AppError('The original request receipt is unavailable', 503, 'COMMAND_RECEIPT_UNAVAILABLE');
+        if (!data) return null;
+        const record = data as IdempotencyRecord;
+        if (record.request_hash !== hash) throw new ConflictError('Idempotency key was already used with a different request body');
+        return record;
+    }
+
+    /** Complete only the existing verified recovery allocation. Concurrent failed
+     * handlers cannot regress this acknowledgement via fail(status=processing). */
+    async completeRecovered(params: { id: string; siteId: string; requestHash: string; resourceType: string; responseBody: JsonValue; statusCode: number }): Promise<void> {
+        const response = redactReplayableSecrets(params.responseBody);
+        const responseHash = await sha256Hex(canonicalizeExecutionPayload(response));
+        const { data, error } = await this.db.from('idempotency_keys')
+            .update({ status: 'completed', response_body: response, response_hash: responseHash,
+                status_code: params.statusCode, locked_until: null })
+            .eq('id', params.id).eq('site_id', params.siteId).eq('request_hash', params.requestHash)
+            .eq('resource_type', params.resourceType).in('status', ['processing', 'failed'])
+            .is('deleted_at', null).select('id').maybeSingle();
+        if (error) throw new AppError('The recovered acknowledgement could not be saved', 503, 'COMMAND_RECEIPT_UNAVAILABLE');
+        if (data) return;
+        const { data: current, error: readError } = await this.db.from('idempotency_keys')
+            .select('status,response_hash').eq('id', params.id).eq('site_id', params.siteId)
+            .eq('request_hash', params.requestHash).is('deleted_at', null).maybeSingle();
+        if (readError || !current || current.status !== 'completed' || current.response_hash !== responseHash)
+            throw new ConflictError('The original receipt changed. Reload the saved request.');
+    }
+
     async begin(params: {
         siteId: string;
         key: string;
@@ -84,6 +120,8 @@ export class IdempotencyExecutionAdapter {
         requestId?: string | null;
         lockSeconds?: number;
         expiresInSeconds?: number;
+        initialResponseBody?: JsonValue;
+        initialResourceType?: string;
     }): Promise<IdempotencyClaim> {
         this.currentSiteId = params.siteId;
         const key = IdempotencyExecutionAdapter.normalizeKey(params.key);
@@ -103,15 +141,20 @@ export class IdempotencyExecutionAdapter {
                 locked_until: lockedUntil,
                 expires_at: expiresAt,
                 request_id: params.requestId || null,
+                ...(params.initialResponseBody === undefined ? {} : {
+                    response_body: redactReplayableSecrets(params.initialResponseBody),
+                    resource_type: params.initialResourceType || null,
+                }),
             })
             .select('id, request_hash, status, response_body, status_code, locked_until')
             .single();
 
         if (!error && data) {
-            return { kind: 'claimed', id: (data as IdempotencyRecord).id, siteId: params.siteId, requestHash };
+            return { kind: 'claimed', id: (data as IdempotencyRecord).id, siteId: params.siteId, requestHash, ...(params.initialResponseBody === undefined ? {} : { recoveryBody: (data as IdempotencyRecord).response_body }) };
         }
 
         if (error && isMissingSchemaError(error)) {
+            if (params.initialResponseBody !== undefined) throw new AppError('Durable upload receipts are unavailable', 503, 'COMMAND_RECEIPT_UNAVAILABLE');
             return { kind: 'claimed', id: 'dev-idempotency-id', siteId: params.siteId, requestHash };
         }
 
@@ -157,18 +200,23 @@ export class IdempotencyExecutionAdapter {
                 locked_until: lockedUntil,
                 request_id: params.requestId || null,
             })
-            .eq('id', record.id);
+            .eq('id', record.id).eq('status', record.status).eq('request_hash', requestHash);
+        // A claimant that observed an expired lease must not regress a receipt
+        // completed (or reclaimed) while it waited for the row lock.
+        const unchangedLease = record.locked_until
+            ? reclaimQuery.eq('locked_until', record.locked_until)
+            : reclaimQuery.is('locked_until', null);
         const { data: reclaimed, error: reclaimError } = await (this.currentSiteId
-            ? reclaimQuery.eq('site_id', this.currentSiteId)
-            : reclaimQuery)
+            ? unchangedLease.eq('site_id', this.currentSiteId)
+            : unchangedLease)
             .select('id')
             .single();
 
         if (reclaimError || !reclaimed) {
-            throw new Error(`Idempotency reclaim failed: ${reclaimError?.message || 'missing record'}`);
+            throw new ConflictError('The original request changed while its receipt was being recovered. Retry the same request.');
         }
 
-        return { kind: 'claimed', id: record.id, siteId: params.siteId, requestHash };
+        return { kind: 'claimed', id: record.id, siteId: params.siteId, requestHash, ...(params.initialResponseBody === undefined ? {} : { recoveryBody: record.response_body }) };
     }
 
     async complete(params: {
@@ -177,6 +225,7 @@ export class IdempotencyExecutionAdapter {
         statusCode: number;
         resourceType?: string;
         resourceId?: string;
+        requireDurable?: boolean;
     }) {
         if (params.id === 'dev-idempotency-id') return;
         const persistedResponseBody = redactReplayableSecrets(params.responseBody);
@@ -193,7 +242,13 @@ export class IdempotencyExecutionAdapter {
                 locked_until: null,
             })
             .eq('id', params.id);
-        const { error } = await (this.currentSiteId ? query.eq('site_id', this.currentSiteId) : query);
+        const scoped = this.currentSiteId ? query.eq('site_id', this.currentSiteId) : query;
+        if (params.requireDurable) {
+            const { data, error } = await scoped.select('id').maybeSingle();
+            if (error || !data) throw new AppError('The original acknowledgement could not be saved', 503, 'COMMAND_RECEIPT_UNAVAILABLE');
+            return;
+        }
+        const { error } = await scoped;
 
         if (error) {
             if (isMissingSchemaError(error)) return;

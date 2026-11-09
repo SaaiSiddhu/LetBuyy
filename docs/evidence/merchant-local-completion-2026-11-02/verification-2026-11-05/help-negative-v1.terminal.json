@@ -1,0 +1,20 @@
+{
+  "started_at": "2026-11-05T20:12:42.903336+00:00",
+  "supervisor_pid": 84818,
+  "source": "help-negative-v1",
+  "source_sha256": "936a543113cdc895160d6b519b64e4424ca28662365f7f57b11e8f28c73ca86c",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "--timeout",
+    "45s",
+    "test/help_presentation_test.dart"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 84820,
+  "exit_code": 1,
+  "finished_at": "2026-11-05T20:12:46.207769+00:00",
+  "source_unchanged": true,
+  "source_readback_sha256": "936a543113cdc895160d6b519b64e4424ca28662365f7f57b11e8f28c73ca86c"
+}

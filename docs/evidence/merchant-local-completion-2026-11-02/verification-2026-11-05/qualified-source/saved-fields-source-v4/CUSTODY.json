@@ -1,0 +1,10 @@
+{
+  "source_sha256": "823d816f06cb8b21ecedb637f9ea6dc6cdf390c6caeae5fbb7676cf4231dc37a",
+  "files": {
+    "apps/merchant/mobile/lib/screens/content/navigation_screen.dart": "7d98c5768d79f3fb8bfc4d91eaae6a186ecfcedab638ba0d3cdcba488213b65d",
+    "apps/merchant/mobile/lib/screens/settings/shipping_screen.dart": "dcc30c11935da53676221a24e5879e46cecb26cc35521f537e01c6c4020a5765",
+    "apps/merchant/mobile/test/navigation_item_preservation_test.dart": "4c63bd889d973abeec78205ca95e690863828c0dc9d9927fd5d17b2537b4d13c",
+    "apps/merchant/mobile/test/shipping_rate_preservation_test.dart": "9fe5ae9f8b8f7ee9eabd080ad49bf742066c29f702e5e577e4a84bc01ddf25ab"
+  },
+  "role": "Exact4changed inputs from accepted native41;whole manifest separate;37focusedPASS,broad qualification running. No native/runtime acceptance for these changed surfaces."
+}

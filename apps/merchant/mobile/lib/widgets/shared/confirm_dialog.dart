@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 
-/// Confirmation dialog for destructive actions
+/// Public compatibility adapter; the shared UI kit owns confirmation presentation.
 class ConfirmDialog extends StatelessWidget {
   final String title;
   final String message;
@@ -31,102 +31,27 @@ class ConfirmDialog extends StatelessWidget {
     IconData? icon,
     Color? confirmColor,
     bool isDestructive = false,
-  }) async {
-    final result = await showDialog<bool>(
-      context: context,
-      builder: (context) => ConfirmDialog(
-        title: title,
-        message: message,
-        confirmLabel: confirmLabel,
-        cancelLabel: cancelLabel,
-        icon: icon,
-        confirmColor: confirmColor,
-        isDestructive: isDestructive,
-      ),
-    );
-    return result ?? false;
-  }
+  }) => showLetbuyyConfirmation(
+    context: context,
+    title: title,
+    message: message,
+    confirmLabel: confirmLabel,
+    cancelLabel: cancelLabel,
+    icon: icon,
+    confirmColor: confirmColor,
+    destructive: isDestructive,
+  );
 
   @override
-  Widget build(BuildContext context) {
-    final effectiveConfirmColor = confirmColor ?? 
-        (isDestructive ? Colors.red : AppColors.primary);
-
-    return AlertDialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
-      title: Column(
-        children: [
-          if (icon != null) ...[
-            Container(
-              width: 56,
-              height: 56,
-              decoration: BoxDecoration(
-                color: effectiveConfirmColor.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                icon,
-                color: effectiveConfirmColor,
-                size: 28,
-              ),
-            ),
-            const SizedBox(height: 16),
-          ],
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 18,
-            ),
-          ),
-        ],
-      ),
-      content: Text(
-        message,
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          color: Colors.grey[600],
-          fontSize: 14,
-        ),
-      ),
-      actionsAlignment: MainAxisAlignment.center,
-      actionsPadding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-      actions: [
-        Row(
-          children: [
-            Expanded(
-              child: OutlinedButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: Text(cancelLabel),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: ElevatedButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: effectiveConfirmColor,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: Text(confirmLabel),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
+  Widget build(BuildContext context) => LetbuyyConfirmation(
+    title: title,
+    message: message,
+    confirmLabel: confirmLabel,
+    cancelLabel: cancelLabel,
+    icon: icon,
+    confirmColor: confirmColor,
+    destructive: isDestructive,
+    onCancel: () => completeLetbuyySurface(context, false),
+    onConfirm: () => completeLetbuyySurface(context, true),
+  );
 }

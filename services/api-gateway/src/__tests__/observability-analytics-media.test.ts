@@ -42,6 +42,7 @@ test('Task 016 analytics reads are in-monolith and backed by in-DB rollups', () 
 
 test('Task 016 media module plans R2 upload intents and publishes media.processed through the outbox', () => {
     const mediaRoute = source('routes/media.ts');
+    const mediaCommand = source('execution/media-command.adapter.ts');
     const storageAdapter = repositorySource('packages/infrastructure/storage-adapter/index.ts');
     const eventCore = repositorySource('packages/event-core/src/index.ts');
     const queueProjectionPlans = repositorySource('packages/event-core/src/queue-projection-plans.ts');
@@ -50,8 +51,15 @@ test('Task 016 media module plans R2 upload intents and publishes media.processe
     assert.match(mediaRoute, /router\.post\('\/signed-upload'/);
     assert.match(mediaRoute, /planSignedR2UploadIntent/);
     assert.match(mediaRoute, /\.from\('media_assets'\)/);
-    assert.match(mediaRoute, /media\.processed/);
-    assert.match(mediaRoute, /EventExecutionAdapter/);
+    assert.match(mediaRoute, /await commitMediaCommand/);
+    assert.match(mediaCommand, /return await withTenantTx/);
+    assert.match(mediaCommand, /parseDomainEventPayload\('media\.processed'/);
+    assert.match(mediaCommand, /INSERT INTO public\.outbox_events/);
+    assert.match(mediaCommand, /UPDATE public\.idempotency_keys SET status='completed',resource_type='media'/);
+    assert(mediaCommand.indexOf('INSERT INTO public.media(') < mediaCommand.indexOf('INSERT INTO public.media_assets('));
+    assert(mediaCommand.indexOf('INSERT INTO public.media_assets(') < mediaCommand.indexOf('INSERT INTO public.outbox_events('));
+    assert(mediaCommand.indexOf('INSERT INTO public.outbox_events(') < mediaCommand.indexOf("UPDATE public.idempotency_keys SET status='completed'"));
+    assert.doesNotMatch(mediaCommand, /media-service|new EventExecutionAdapter/);
     assert.doesNotMatch(mediaRoute, /media-service/);
 
     // Phase D2: the signing machinery is deleted, not merely unused -- nothing

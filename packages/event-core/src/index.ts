@@ -78,6 +78,8 @@ export const DOMAIN_EVENT_TYPES = [
   'product.created',
   'product.updated',
   'collection.membership.updated',
+  'collection.metadata.updated',
+  'category.metadata.updated',
   'product.deleted',
   'cart.created',
   'cart.email_captured',
@@ -187,6 +189,7 @@ export interface DomainEventContract {
     | 'store'
     | 'product'
     | 'collection'
+    | 'product_category'
     | 'cart'
     | 'checkout'
     | 'order'
@@ -236,6 +239,9 @@ const CollectionMembershipPayloadSchema = z.object({
   collection_id: UuidSchema,
   membership_version: z.number().int().positive(),
 }).strict();
+const CollectionMetadataPayloadSchema = z.object({ site_id: UuidSchema, collection_id: UuidSchema, version: z.number().int().positive(), operation: z.enum(['create', 'update', 'delete']) }).strict();
+const ProductCategoryPayloadSchema = z.object({site_id:UuidSchema,category_id:UuidSchema,
+  version:z.number().int().positive(),operation:z.enum(['create','update','delete'])}).strict();
 
 const OrderPayloadSchema = z.object({
   site_id: UuidSchema,
@@ -486,6 +492,8 @@ export const DOMAIN_EVENT_CONTRACTS: Record<DomainEventType, DomainEventContract
     payloadSchema: ProductPayloadSchema,
   },
   'collection.membership.updated': activeGatewayContract('collection.membership.updated', 'collection', CollectionMembershipPayloadSchema, ['analytics', 'webhook-service']),
+  'collection.metadata.updated': activeGatewayContract('collection.metadata.updated', 'collection', CollectionMetadataPayloadSchema, ['analytics', 'webhook-service']),
+  'category.metadata.updated': activeGatewayContract('category.metadata.updated', 'product_category', ProductCategoryPayloadSchema, ['analytics', 'webhook-service']),
   'product.deleted': {
     eventType: 'product.deleted',
     schemaVersion: 1,

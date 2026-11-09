@@ -1,0 +1,127 @@
+{
+  "at": "2026-11-06T06:53:39.826853+00:00",
+  "status": "BOUNDED_LOCAL_53_MEMBERSHIP_NATIVE_WEB_STAFF_PASS",
+  "run_id": "92d452e8952f",
+  "source_sha256": "99dee3d9dc5075e97deaff99f2799dea89dac496c88c163a944b39bfe9dda4f0",
+  "source_inputs": 8457,
+  "native_dependency_sha256": "e41e16f263bcef7c77ba46353965943f9e9d15f0e688d00c7db0380e0b50a6bf",
+  "native_dependency_entries": 4849,
+  "apk_sha256": "697f5d8596030cfc80b9550b12f59c0a66d2401ba8bc2fa937957074f43cd3df",
+  "apk": "/private/tmp/letbuyy-merchant-local-20261106-25feac2c/native-warehouse-v58/qualified-artifact/merchant-local-debug.apk",
+  "installed_bytes_independently_equal": true,
+  "compiled_workers": {
+    "run_id": "92d452e8952f",
+    "runtime": "workerd",
+    "gateway_sha256": "555853cc5d735552c834697e7c4624af1cfb432af330d09bcdb36ca820b5dd34",
+    "bff_sha256": "4db6627fabda2fc4ff8140faadbd7cd5e2c315b3c7b427553a8b8630456ca8a5",
+    "entrypoints": [
+      "services/api-gateway/src/index.ts",
+      "services/mobile-bff/src/index.ts"
+    ],
+    "transport": "Owned Node HTTP and service-binding observer; no business response stubs",
+    "hosted": false
+  },
+  "runner_pass": 1,
+  "runner_fail": 0,
+  "runner_skip": 0,
+  "source_and_controller_inputs_unchanged": true,
+  "synthetic_login_inputs_retired": true,
+  "remaining": {
+    "containers": [],
+    "networks": [],
+    "volumes": []
+  },
+  "next_markers_remaining": [],
+  "forward_baseline_restored": true,
+  "reverse_baseline_restored": true,
+  "web_viewport": {
+    "run_id": "92d452e8952f",
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "bounds": {
+      "x": 988,
+      "y": 47.41368103027344,
+      "width": 276,
+      "height": 648.0000152587891
+    },
+    "geometry": {
+      "clientHeight": 646,
+      "scrollHeight": 2998
+    },
+    "normal_choice_visible": true,
+    "alternate_appearance_choice_visible": true,
+    "focus_reachable": true,
+    "appearance_restored": true,
+    "evidence": [
+      "/private/tmp/letbuyy-merchant-local-20261106-25feac2c/native-warehouse-v58/web-beta-choice-normal-visible.png",
+      "/private/tmp/letbuyy-merchant-local-20261106-25feac2c/native-warehouse-v58/web-beta-choice-alternate-visible.png"
+    ]
+  },
+  "database_state": {
+    "staff": {
+      "role": "viewer",
+      "active": false,
+      "status": "removed"
+    },
+    "alpha_name": "Synthetic Alpha web",
+    "beta_product": {
+      "id": "987ce632-3ebc-4bb2-80f0-94722b766f01",
+      "name": "Synthetic Beta mobile product",
+      "price": 100,
+      "stock": 3,
+      "images": [
+        "http://127.0.0.1:54352/__owned__/product.png"
+      ],
+      "version": 3,
+      "description": null
+    },
+    "staff_audits": {
+      "INSERT": 1,
+      "UPDATE": 2,
+      "employee.created": 1,
+      "employee.removed": 1,
+      "employee.updated": 1
+    },
+    "product_audits": 1,
+    "product_outbox": 1,
+    "product_receipts": 1,
+    "inventory_before": [
+      {
+        "id": "8916c6b5-0fc0-4958-bc26-2c658db064ad",
+        "on_hand": 3,
+        "reserved": 0,
+        "available": 3,
+        "committed": 0
+      }
+    ],
+    "inventory_after": [
+      {
+        "id": "8916c6b5-0fc0-4958-bc26-2c658db064ad",
+        "on_hand": 3,
+        "reserved": 0,
+        "available": 3,
+        "committed": 0
+      }
+    ]
+  },
+  "normal_web_header_staff_selection": true,
+  "native_membership_page_reads": 8,
+  "screenshots": {
+    "native-initial-beta-tail-choice.png": "74f220ac69299c392c03f2e89ad88a3b4b25a4bdd74dd476c7f669ff28ad3980",
+    "native-alpha-selected.png": "c483664bf511dfd7bd2c4c4cf0353d9cf4fac29fa35b54b3b8ac487250fca728",
+    "native-beta-selected.png": "e1e32220c3dc6cc5cd98af466a0fc35a6be0fe4e6ff1cd05fe1cb94191ee65e9",
+    "native-alpha-saved.png": "1fccd222dc1da03aed4b15f5aac8536cbfa8b0502b94ff1e7345229e00c4b980",
+    "native-web-alpha-read.png": "9a4743e2e7338a9c22f87f73e4e0ee2400d06f3d9087dfb54f63e75c0aba3cb1",
+    "native-beta-restart-selection.png": "c718e800164cd077583cdd64801900ea9ca178988dc2d73e35e1ad9e6582db60",
+    "native-staff-product-saved.png": "288ad59bbed355f59a4ddbdea93337970d8ffcd8bd8e39f2dbc0c065501f85e9",
+    "native-downgrade-denial.png": "bb22199e2968b7b283d68f43f97456583a4da0e905a835f48295e92d9f0a9e22",
+    "web-beta-choice-normal-visible.png": "2dbbbc7af6428ab49836c6a80cdc32baccb8eac9f95683130227987df77960ad",
+    "web-beta-choice-alternate-visible.png": "f744ff53dc88a38246147502c082ec380554e2bfc1a94b12f4b00bec749b2e0c",
+    "native-revoked-beta-absent.png": "34f22a2fdd2dc58ac9a13cdce789045768951b5b27a8a1ec2bae4eec45754c6b",
+    "web-alpha-read-native-and-save.png": "3c5a539d32f24bf39bda950edafb1b86e968839a5d0c9ba5fbb9b8fb3f1dffa4",
+    "web-staff-product-mobile-read.png": "7be8515e2196bce85428454f7c43dda7bf4cf8d7d125892ef9b6d263cc78ff21"
+  },
+  "limits": "Synthetic local Android/web/compiled-Worker/Postgres journey only. No native invitation delivery/consent, all roles or combinations, iOS runtime, real challenge/provider, hosted, physical performance, signed release or full122 acceptance."
+}

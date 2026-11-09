@@ -1,0 +1,56 @@
+{
+  "status": "ORIGINAL_NAMESPACE_FAILURE_RESOLVED_LOCAL;SERVER_LIST_AND_NATIVE_INVITATION_ACCEPTANCE_OPEN",
+  "at": "2026-11-04T03:56:10.625581+00:00",
+  "sourceFrozenFor": "None; native58 current source accepted with independent custody",
+  "featureIds": [
+    7,
+    8,
+    13,
+    118,
+    119
+  ],
+  "observedSource": [
+    "Current StaffScreen uses MerchantStoreView guards, operation generation, selected-store observation, truthful loaded-record count and guarded invitation/role/remove surfaces.",
+    "StaffService captures the existing SDK context before queuing commands; roster/read generation and mutation presentation are scoped.",
+    "Original namespace failure is resolved via canonical AppConfig persistence namespace; production/staging key representations are unchanged.",
+    "Gateway employees list still lacks pagination and sanitization, including schema-unavailable empty-success fallback; source candidate only in this cohort."
+  ],
+  "next": [
+    "Reproduce a populated own-store positive followed by store/account invalidation, late reads and stale invitation/role/remove surfaces using actual widgets and existing client context seams",
+    "Trace ApiClient captured-context guards, current owner/actor receipt binding and invitation acceptance separately before selecting any service repair",
+    "Preserve encrypted original unresolved v1 intents; do not assign an actor or generate a replacement command for an ambiguous old key",
+    "Reuse the existing MerchantStoreView and canonical persistence/command owners; no alternate identity or permanent parallel receipt system"
+  ],
+  "externalScope": "No hosted changes, live invitations/email, production data or credentials.",
+  "draftNotExecuted": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/staff_scope_boundary_test.dart.draft",
+  "existingSharedAuthorities": {
+    "view": "widgets/shared/merchant_store_view.dart",
+    "context": "ApiRequestOptions.expectedContextVersion and ApiClient.captureRequestContext; existing pre-dispatch/post-response checks",
+    "namespace": "AppConfig.persistenceNamespace",
+    "dto": "@letbuyy/shared-types EmployeeSchema; no Dart Employee model was found in the current canonical models package"
+  },
+  "additionalSourceCandidates": [
+    "Gateway GET /employees has no page bounds and returns raw DB error text; the missing-store-column branch returns success with an empty list",
+    "Dart EmployeesApi.list and StaffScreen discard list metadata and display local role counts",
+    "StaffMemberContract is an existing loose app-local projection; trace canonical EmployeeSchema before changing acknowledgement parsing"
+  ],
+  "updated_at": "2026-11-06T06:46:50.690572+00:00",
+  "currentEvidence": "STORE_SWITCHER_STAFF_NATIVE_WEB_LOCAL_V4.md",
+  "priorNotYetClaimed": [
+    "No runtime leak or unauthorized backend mutation has been demonstrated by this audit",
+    "No new actor/schema/backend owner selected",
+    "No code changes during the current device source freeze"
+  ],
+  "currentDisposition": {
+    "cache_and_queued_context_and_roster": "Reproduced and fixed at client/widget scope; populated positives and exact original-retry checks passed",
+    "local_hosted_namespace": "RESOLVED on current v6 by existing canonical AppConfig persistence policy;original assertion unchanged;hosted and other issuer data preserved;production/staging deployed keys byte-compatible",
+    "server_list": "Current source read confirms unpaginated list/raw DB error/schema-unavailable empty fallback remain open;no backend source edit in this cohort",
+    "native": "Native58 independent bounded PASS:53memberships, restart, bidirectional owner name, native manager product edit/web read, live downgrade403retirement and removal/global52membership discovery. Native invitation consent/delivery remains open."
+  },
+  "initialAuditObservationsHistorical": [
+    "StaffScreen._load retains _storeId using ??=, reads asynchronously without request generation and does not subscribe to the selected-store lifetime",
+    "StaffScreen keeps private roster/actions and opens invitation/role/remove surfaces without the existing MerchantStoreView guard",
+    "StaffService has an unscoped mutable roster and queues durable keys by operation/store/body, with no explicit actor provider",
+    "StaffService environment namespace handles staging only, while canonical AppConfig.persistenceNamespace already isolates local issuers from hosted credentials and commands"
+  ]
+}

@@ -1,0 +1,245 @@
+{
+  "at": "2026-11-06T17:54:51.999928+00:00",
+  "status": "BOUNDED_LOCAL_NATIVE_UPLOAD_RECOVERY_PRIVATE_KYC_WEB_SYNC_53_MEMBERSHIP_STAFF_PASS",
+  "run_id": "54ecf4a294b8",
+  "source_sha256": "4d0884bd1d999e12271b2ee11c026a08977a7a509d2e00a4508ee1c3bfc21372",
+  "source_inputs": 8482,
+  "native_dependency_sha256": "21acfa7a6607880ee655a33c34528d1503ac74e6d5725c44c466b540f0fac329",
+  "native_dependency_entries": 4869,
+  "apk_sha256": "7ba46ca33e36e35274bf847ae28c57f2425e5bb1b0c6ccfcb3613fb7b793c1c1",
+  "apk": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v74/qualified-artifact/merchant-local-debug.apk",
+  "installed_bytes_independently_equal": true,
+  "compiled_workers": {
+    "run_id": "54ecf4a294b8",
+    "runtime": "workerd",
+    "gateway_sha256": "baeeb20f503de0904ec2b20ab6e626ae9c3be5df015ae49516c0fe9b4ca45c5a",
+    "bff_sha256": "9fa81bbcaf1836a4393484cb49e7641c45df09c93ef71a8bf2d7e1b09e1d68ba",
+    "entrypoints": [
+      "services/api-gateway/src/index.ts",
+      "services/mobile-bff/src/index.ts"
+    ],
+    "transport": "Owned Node HTTP and service-binding observer; no business response stubs",
+    "hosted": false
+  },
+  "runner_pass": 1,
+  "runner_fail": 0,
+  "runner_skip": 0,
+  "source_and_controller_inputs_unchanged": true,
+  "synthetic_login_inputs_retired": true,
+  "remaining": {
+    "containers": [],
+    "networks": [],
+    "volumes": []
+  },
+  "next_markers_remaining": [],
+  "forward_baseline_restored": true,
+  "reverse_baseline_restored": true,
+  "web_viewport": {
+    "run_id": "54ecf4a294b8",
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "bounds": {
+      "x": 988,
+      "y": 47.365318298339844,
+      "width": 276,
+      "height": 647.9999771118164
+    },
+    "geometry": {
+      "clientHeight": 646,
+      "scrollHeight": 2998
+    },
+    "normal_choice_visible": true,
+    "alternate_appearance_choice_visible": true,
+    "focus_reachable": true,
+    "appearance_restored": true,
+    "evidence": [
+      "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v74/web-beta-choice-normal-visible.png",
+      "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v74/web-beta-choice-alternate-visible.png"
+    ]
+  },
+  "database_state": {
+    "staff": {
+      "role": "viewer",
+      "active": false,
+      "status": "removed"
+    },
+    "alpha_name": "Synthetic Alpha web",
+    "beta_product": {
+      "id": "be0eeee2-2ba3-44f1-8ae2-3e0933176176",
+      "name": "Synthetic Beta mobile product",
+      "price": 100,
+      "stock": 3,
+      "images": [
+        "http://127.0.0.1:54352/__owned__/product.png"
+      ],
+      "version": 3,
+      "category": null,
+      "metadata": {
+        "retained": "Synthetic unmanaged metadata",
+        "specifications": {
+          "Null": null,
+          "Empty": "",
+          "Boolean": true,
+          "Numeric": 42
+        }
+      },
+      "description": null
+    },
+    "staff_audits": {
+      "INSERT": 1,
+      "UPDATE": 2,
+      "employee.created": 1,
+      "employee.removed": 1,
+      "employee.updated": 1
+    },
+    "product_audits": 1,
+    "product_outbox": 1,
+    "product_receipts": 1,
+    "alpha_roster_count": 53,
+    "alpha_roster_byte_equal": true,
+    "alpha_roster_before_sha256": "fb46665b2e809c7c9c479daa5a6c6e729e6dc51fc7dbba88b9a9125bda77a982",
+    "alpha_roster_after_sha256": "fb46665b2e809c7c9c479daa5a6c6e729e6dc51fc7dbba88b9a9125bda77a982",
+    "inventory_before": [
+      {
+        "id": "60a01b0d-45c8-410e-81d8-5dcde907826d",
+        "on_hand": 3,
+        "reserved": 0,
+        "available": 3,
+        "committed": 0
+      }
+    ],
+    "inventory_after": [
+      {
+        "id": "60a01b0d-45c8-410e-81d8-5dcde907826d",
+        "on_hand": 3,
+        "reserved": 0,
+        "available": 3,
+        "committed": 0
+      }
+    ]
+  },
+  "normal_web_header_staff_selection": true,
+  "native_membership_page_reads": 10,
+  "screenshots": {
+    "native-initial-beta-tail-choice.png": "5e3728a1098594746a899573389a602c4274a4b58184242ffb157f36bf908d33",
+    "native-alpha-selected.png": "7693c6279d1c827d2b5ee2ef1739fc2067c77a823447116165bbf1572b0df75c",
+    "native-beta-selected.png": "999878a079b1e696ce2c979963c42ae933b6072b7ac8c09c09b9950029f253f2",
+    "native-alpha-saved.png": "16a089b581815e74f480239f54ba9f9d377ffbf153bab6722e3c2ed8ec577691",
+    "native-owner-roster53.png": "ea583e6829fcb6e7e9402cbfabfeee37d0d3beff0790fa1ff1e865aaa2275ba4",
+    "native-web-alpha-read.png": "1f04f74a8ec59a2d9b3fde9dd6b03ed0bdd7bfdd270f4c7d4229220fc8efcfba",
+    "native-beta-restart-selection.png": "49f2530a62171d3977b91884287675ff4e9d4ebd4bb33a2fc7f0162c1473c776",
+    "native-staff-product-saved.png": "94d0e66246c71a711ea0dbd864ee9e6eaadb7c190d31e85e02b239f7fed770a8",
+    "native-downgrade-denial.png": "bca1dab53163866160689bc8d59d46674b99629b7894cb3deb3ccb1d9834f2af",
+    "web-beta-choice-normal-visible.png": "57355d36abda25bf14d4b9661add9602144eede5543f35df41477546b2b18ecc",
+    "web-beta-choice-alternate-visible.png": "c9ac5cd9f839a710bca91e66d94a25203955718115479279841887ef3e3cc4a4",
+    "native-revoked-beta-absent.png": "12caffef508f6f45c129a2554f52b96767aacc443a159428222e5a5d4f9ec77b",
+    "web-alpha-read-native-and-save.png": "d42b62978a7377aa782d57a3a4a50ce9049f1b8758859df2d2a4a2e2117feda6",
+    "web-staff-product-mobile-read.png": "6c25aadf836af4a8222cfe52cb1fc9435f79c7eb753e5cc305cbaecc6c0aaa76",
+    "native-media-interrupted.png": "90ad54f723e3e646e24d98d6842de9438e871a666342a1563f94874c51dd5bf0",
+    "native-media-recovered-and-edited.png": "5a65e3d6390e3d4330eb364a888fe93f4360d4a20f80fcb2f4fbc3444d221d2a",
+    "native-kyc-document-uploaded.png": "86c0e6b1112d1ecafe8927ba32078c2e420d6c2492e7f985bfe38ec0e12e474e",
+    "native-web-gallery-deletion-read.png": "ac0fe7fbe2b405ee7ac18bc39ab6b270fea0ff2df212a1765fdd15a079984a7d",
+    "native-media-editor-open.png": "a828ad69f104ac62054e77fbbb807b717a0fed4d42a0208967758da8b269a7e3",
+    "web-native-kyc-readback.png": "7d7b97953cd32bdb858a14ff3facd7c82b9874d16006f81edac8f72939f6d4dd",
+    "web-native-upload-readback.png": "32c5452cd080685d5615b3fbcdca944667c942cbe2652abfcfd87ba8b1ad4880"
+  },
+  "native_upload": {
+    "run_id": "54ecf4a294b8",
+    "receipt_same_id_key_hash": true,
+    "one_original_byte_post": true,
+    "one_public_object": true,
+    "one_library_row": true,
+    "public_sha256": "5bdf25a6aaf02df243934f1ce42d40803c06efc171109c5d7fbc46741a20fd7a",
+    "private_objects": 1,
+    "private_public_read_denied": true,
+    "kyc_projection": {
+      "site_id": "164ab411-2e91-4b08-8c8e-f0c7c43791ea",
+      "overall_status": "in_progress",
+      "provider_mode": "sandbox",
+      "private_upload_available": true,
+      "india_direct_upload_available": false,
+      "required_documents": [
+        {
+          "document_type": "business_pan",
+          "title": "Business PAN",
+          "required": true,
+          "status": "submitted"
+        },
+        {
+          "document_type": "bank_proof",
+          "title": "Bank proof",
+          "required": true,
+          "status": null
+        },
+        {
+          "document_type": "address_proof",
+          "title": "Business address proof",
+          "required": true,
+          "status": null
+        },
+        {
+          "document_type": "gst_certificate",
+          "title": "GST certificate",
+          "required": false,
+          "status": null
+        },
+        {
+          "document_type": "identity_proof",
+          "title": "Identity proof",
+          "required": false,
+          "status": null
+        }
+      ],
+      "documents": [
+        {
+          "id": "73836eda-b4e0-41f7-8b8e-e9860189bf83",
+          "created_at": "2026-11-06T17:47:49.35252+00:00",
+          "updated_at": "2026-11-06T17:47:49.35252+00:00",
+          "deleted_at": null,
+          "site_id": "164ab411-2e91-4b08-8c8e-f0c7c43791ea",
+          "document_type": "business_pan",
+          "status": "submitted",
+          "provider": "letbuyy_sandbox_kyc",
+          "provider_mode": "sandbox",
+          "provider_reference": null,
+          "has_private_upload": true,
+          "evidence_scan_status": "pending",
+          "provider_unavailable": false,
+          "requires_resubmission": false,
+          "document_number_last4": "1234",
+          "rejection_reason": null,
+          "submitted_at": "2026-11-06T17:47:49.352+00:00",
+          "verified_at": null,
+          "rejected_at": null
+        }
+      ],
+      "next_action": "Upload the remaining required documents privately. Sandbox uploads are not provider reviewed and cannot enable live payouts."
+    },
+    "scope": "Actual Android picker + compiled Worker + owned PG + separate ephemeral private/public R2; test-only private upload, no India/AWS/provider readiness."
+  },
+  "no_file_recovery": {
+    "run_id": "54ecf4a294b8",
+    "before_pid": 27076,
+    "after_pid": 28934,
+    "original_picker_cache_removed": [
+      "cache/155de3c8-5eca-40d0-84f5-1072f5a4eff4/1000000018.png"
+    ],
+    "recovered_without_original_file": true,
+    "metadata_saved": true,
+    "evidence": [
+      "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v74/native-media-recovered-and-edited.png"
+    ]
+  },
+  "web_kyc": {
+    "run_id": "54ecf4a294b8",
+    "canonical_api_projection_equal": true,
+    "native_document_visible": true,
+    "last4_visible": true,
+    "private_upload_received": true,
+    "scan_pending_not_provider_verified": true
+  },
+  "normal_web_media_delete_native_refresh": true,
+  "limits": "Synthetic local Android/web/compiled-Worker/Postgres journey only. Test-only local private R2, not India/AWS/provider/KYC approval. No native invitation delivery/consent, all roles/combinations, iOS runtime, real challenge/provider, hosted, physical performance, signed release or full122 acceptance."
+}

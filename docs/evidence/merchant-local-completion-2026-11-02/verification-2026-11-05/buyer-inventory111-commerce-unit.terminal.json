@@ -1,0 +1,18 @@
+{
+  "command": [
+    "node",
+    "--import",
+    "tsx",
+    "--test",
+    "apps/commerce/web/src/lib/product-model-availability.test.ts",
+    "apps/commerce/web/src/lib/theme-engine/product-liquid-drop.test.ts",
+    "apps/commerce/web/src/lib/theme-engine/liquid-inventory-availability.test.ts",
+    "apps/commerce/web/src/lib/theme-engine/liquid-add-to-cart-acceptance.test.ts",
+    "apps/commerce/web/src/lib/theme-engine/variant-options-carrier.test.ts",
+    "apps/commerce/web/src/lib/theme-engine/variant-facts-controller.test.ts"
+  ],
+  "tsconfig": "apps/commerce/web/tsconfig.json",
+  "source": "merchant-buyer-inventory-source-v111",
+  "exit_code": 0,
+  "ended_at": "2026-11-08T10:23:12.183236+00:00"
+}

@@ -2,8 +2,9 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { JSDOM } from 'jsdom';
 import { createLetbuyyCoreLiquidThemeBundleFixture, DEFAULT_THEME_SETTINGS, LiquidRenderer } from '@letbuyy/theme-engine';
-import { productToLiquidDrop } from './product-liquid-drop';
+import { productToLiquidDrop, withoutCurrentLiquidProduct } from './product-liquid-drop';
 import { readProductNicheFacts, type ProductModel } from '@letbuyy/commerce-core';
+import { applyLiquidInventoryAvailability } from './liquid-inventory-availability';
 
 const facts = {
   toys: { ageBands: ['6-8'], contents: [{ label: 'Tiles', quantity: 12 }], contentsComplete: true },
@@ -30,13 +31,13 @@ function model(): ProductModel {
 }
 
 const card = `<article><p class="age">{{ item.toys_card.ageLabel }}</p><p class="contents">{{ item.toys_card.contentsLabel }}</p><p class="video">{{ item.electronics_video_summary }}</p><p class="food">{{ item.food.netQuantityValue }}</p><p class="furniture">{{ item.furniture_display.assembled }}</p><p class="gifts">{{ item.gifts.itemCount }}</p><p class="beauty">{{ item.beauty.shadeCount }} / {{ item.beauty.netQuantityLabel }}</p><p class="sports">{{ item.sports_display.length }}</p><p class="books">{{ item.books_display.authors }} / {{ item.books_display.multiple_editions }}</p><p class="personalization">{{ item.personalization.methodSummary }}</p></article>`;
-async function render(key: 'product' | 'collection', drop: Record<string, unknown>) {
+async function render(key: 'product' | 'collection', drop: Record<string, unknown>, originalSection = false) {
   const bundle = createLetbuyyCoreLiquidThemeBundleFixture();
   const type = key === 'collection' ? 'collection-product-list' : 'product-detail';
   bundle.templates[key] = { sections: { probe: { type, settings: {}, blocks: {}, block_order: [], disabled: false } }, order: ['probe'] };
-  bundle.sections[type].source = key === 'collection' ? `{% for item in collection.products %}${card}{% endfor %}`
+  if (!originalSection) bundle.sections[type].source = key === 'collection' ? `{% for item in collection.products %}${card}{% endfor %}`
     : `<lb-add-to-cart data-lb-personalization-facts="{{ product.personalization_json }}"></lb-add-to-cart>{% for variant in product.variants %}<article data-variant-id="{{ variant.id }}"><p class="pack">{{ variant.food.netQuantityValue }} {{ variant.food.netQuantityUnit }} / {{ variant.food.unitPriceMinor }}</p><p class="package">{{ variant.furniture_display.package }}</p><p class="length">{{ variant.sports_display.length }}</p><p class="edition">{{ variant.books_display.dimensions }}</p></article>{% endfor %}`;
-  bundle.sections[type].source += `{% schema %}${JSON.stringify(bundle.sections[type].schema)}{% endschema %}`;
+  if (!originalSection) bundle.sections[type].source += `{% schema %}${JSON.stringify(bundle.sections[type].schema)}{% endschema %}`;
   const result = await new LiquidRenderer().render({
     context: { storeId: '11111111-1111-4111-8111-111111111111', subdomain: 'projection-test', path: '/', previewMode: true, locale: 'en-IN' },
     storeTemplate: { themeId: 'letbuyy-core', themeSettings: DEFAULT_THEME_SETTINGS, sections: [] },
@@ -46,8 +47,21 @@ async function render(key: 'product' | 'collection', drop: Record<string, unknow
   });
   assert.equal(result.status, 'rendered', JSON.stringify(result.warnings));
   assert.deepEqual(result.warnings, []);
-  return new JSDOM(result.liquid!.contentForLayout).window.document;
+  return new JSDOM(await applyLiquidInventoryAvailability(result.liquid!.contentForLayout,
+    { product: drop, collection: { products: [drop] } })).window.document;
 }
+
+test('PDP recommendations exclude current identities and preserve confirmed neighbors, order and unknown stock', () => {
+  const current = productToLiquidDrop(model())!;
+  const neighbor = { ...current, id: '55555555-5555-4555-8555-555555555555', stock: null, inventory_known: false };
+  const other = { ...current, id: '66666666-6666-4666-8666-666666666666', stock: 0, available: false };
+  const products = [current, neighbor, { ...current }, other], before = structuredClone(products);
+  assert.deepEqual(withoutCurrentLiquidProduct(products, current), [neighbor, other]);
+  assert.equal(withoutCurrentLiquidProduct(products, current)[0], neighbor);
+  assert.deepEqual(withoutCurrentLiquidProduct([current], current), []);
+  assert.deepEqual(withoutCurrentLiquidProduct(products, null), products);
+  assert.deepEqual(products, before);
+});
 
 test('actual application mapper preserves all nine derived namespaces through collection depth4', async () => {
   const document = await render('collection', productToLiquidDrop(model())!);
@@ -85,4 +99,19 @@ test('anonymous Liquid variant projection cannot copy arbitrary metadata, suppli
   assert.equal((publicVariant.food as Record<string, unknown>).netQuantityValue, 250);
   assert.equal(publicVariant.metadata, undefined);
   assert.doesNotMatch(JSON.stringify(drop), /PRIVATE_SKU|PRIVATE_COST|VARIANT_SECRET|private_cost/);
+});
+
+for (const key of ['product', 'collection'] as const) test(`canonical ${key} section renders known stock and unknown inventory distinctly before JavaScript`, async () => {
+  for (const stock of [7, 0, null]) {
+    const product = model(); product.stock = stock;
+    const document = await render(key, productToLiquidDrop(product)!, true);
+    const purchase = document.querySelector<HTMLButtonElement>('[data-lb-add-to-cart]');
+    assert.ok(purchase);
+    assert.equal(purchase.disabled, stock === null || stock === 0);
+    assert.equal(purchase.textContent, stock === null ? 'Stock unavailable' : stock === 0 ? 'Sold out' : key === 'product' ? 'Add to cart' : 'Quick add');
+    if (stock === null) {
+      assert.ok(document.querySelector('[data-inventory-known="false"]'));
+      assert.doesNotMatch(document.body.textContent!, /Sold out|Only 0 left/);
+    }
+  }
 });

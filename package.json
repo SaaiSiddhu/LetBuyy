@@ -2,6 +2,7 @@
   "name": "letbuyy-store",
   "private": true,
   "scripts": {
+    "test:merchant-media-worker:browser": "node --import tsx --test tests/browser/merchant-media-checksum-csp.test.ts",
     "lcis": "tsx packages/lcis-cli/src/cli.ts",
     "lcis:mcp": "tsx packages/lcis-mcp/src/server.ts",
     "lcis:api": "tsx services/lcis-api/src/server.ts",

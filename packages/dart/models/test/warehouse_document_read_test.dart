@@ -53,6 +53,137 @@ Map<String, dynamic> document(bool transfer) {
 
 void main() {
   for (final transfer in [false, true]) {
+    Map<String, dynamic> enriched() {
+      final row = document(transfer),
+          child = (row['lines'] as List).first as Map<String, dynamic>;
+      child['product'] = <String, dynamic>{
+        'id': product,
+        'store_id': site,
+        'name': 'Synthetic readable product',
+        'sku': 'SYN-P',
+        'deleted_at': null,
+      };
+      child['variant_id'] = other;
+      child['variant'] = <String, dynamic>{
+        'id': other,
+        'product_id': product,
+        'title': 'Synthetic large',
+        'sku': 'SYN-L',
+      };
+      row[transfer ? 'source_location' : 'location'] = <String, dynamic>{
+        'id': location,
+        'store_id': site,
+        'name': 'Synthetic origin',
+        'deleted_at': null,
+      };
+      if (transfer)
+        row['destination_location'] = <String, dynamic>{
+          'id': other,
+          'store_id': site,
+          'name': 'Synthetic destination',
+          'deleted_at': null,
+        };
+      return row;
+    }
+
+    Object parse(Map<String, dynamic> row) => transfer
+        ? InventoryTransferContract.fromVerifiedJson(row)
+        : PurchaseOrderContract.fromVerifiedJson(row);
+    test(
+      '${transfer ? 'transfer' : 'PO'} readable current labels and historical absence',
+      () {
+        final row = parse(enriched());
+        if (row is PurchaseOrderContract) {
+          expect(row.locationLabel, 'Synthetic origin');
+          expect(
+            row.lines.single.displayName,
+            'Synthetic readable product / Synthetic large / SYN-L',
+          );
+        } else {
+          final tr = row as InventoryTransferContract;
+          expect(tr.sourceLocationLabel, 'Synthetic origin');
+          expect(tr.destinationLocationLabel, 'Synthetic destination');
+          expect(
+            tr.lines.single.displayName,
+            'Synthetic readable product / Synthetic large / SYN-L',
+          );
+        }
+        final historical = enriched(),
+            child = (historical['lines'] as List).first as Map<String, dynamic>;
+        child['product'] = null;
+        child['variant'] = null;
+        historical[transfer ? 'source_location' : 'location'] = null;
+        final missing = parse(historical);
+        if (missing is PurchaseOrderContract) {
+          expect(missing.locationLabel, 'Location unavailable');
+          expect(
+            missing.lines.single.displayName,
+            contains('Product unavailable'),
+          );
+        } else
+          expect(
+            (missing as InventoryTransferContract).sourceLocationLabel,
+            'Location unavailable',
+          );
+        final deleted = enriched();
+        (deleted['lines'] as List).first['product']['deleted_at'] =
+            '2026-11-03T00:00:00Z';
+        final gone = parse(deleted);
+        expect(
+          gone is PurchaseOrderContract
+              ? gone.lines.single.displayName
+              : (gone as InventoryTransferContract).lines.single.displayName,
+          contains('(deleted)'),
+        );
+      },
+    );
+    for (final fault in [
+      'product-id',
+      'product-site',
+      'product-name',
+      'product-sku',
+      'product-date',
+      'variant-id',
+      'variant-parent',
+      'variant-title',
+      'variant-sku',
+      'location-id',
+      'location-site',
+      'location-name',
+      'location-date',
+      'destination-site',
+    ]) {
+      if (!transfer && fault == 'destination-site') continue;
+      test(
+        '${transfer ? 'transfer' : 'PO'} strict readable relation rejects $fault',
+        () {
+          final row = enriched(),
+              child = (row['lines'] as List).first as Map<String, dynamic>,
+              p = child['product'] as Map,
+              v = child['variant'] as Map,
+              l = row[transfer ? 'source_location' : 'location'] as Map;
+          if (fault == 'product-id') p['id'] = other;
+          if (fault == 'product-site') p['store_id'] = other;
+          if (fault == 'product-name') p['name'] = 42;
+          if (fault == 'product-sku') p['sku'] = 42;
+          if (fault == 'product-date') p['deleted_at'] = 'unknown';
+          if (fault == 'variant-id') v['id'] = product;
+          if (fault == 'variant-parent') v['product_id'] = other;
+          if (fault == 'variant-title') v['title'] = 42;
+          if (fault == 'variant-sku') v['sku'] = 42;
+          if (fault == 'location-id') l['id'] = other;
+          if (fault == 'location-site') l['store_id'] = other;
+          if (fault == 'location-name') l['name'] = 42;
+          if (fault == 'location-date') l['deleted_at'] = 'unknown';
+          if (fault == 'destination-site')
+            (row['destination_location'] as Map)['store_id'] = other;
+          expect(() => parse(row), throwsFormatException);
+        },
+      );
+    }
+  }
+
+  for (final transfer in [false, true]) {
     Object parse(Map<String, dynamic> row) => transfer
         ? InventoryTransferContract.fromVerifiedJson(row)
         : PurchaseOrderContract.fromVerifiedJson(row);
@@ -62,13 +193,15 @@ void main() {
         final row = parse(document(transfer));
         if (row is PurchaseOrderContract) {
           expect(row.lines.single.receivedQuantity, 2);
-          expect(row.lines.single.unitCost, 0.29);expect(row.poNumber,'PO-SYN');
+          expect(row.lines.single.unitCost, 0.29);
+          expect(row.poNumber, 'PO-SYN');
         } else {
           expect(
             (row as InventoryTransferContract).lines.single.shippedQuantity,
             3,
           );
-          expect(row.lines.single.receivedQuantity, 2);expect(row.transferNumber,'TR-SYN');
+          expect(row.lines.single.receivedQuantity, 2);
+          expect(row.transferNumber, 'TR-SYN');
         }
       },
     );

@@ -59,7 +59,7 @@ android {
         multiDexEnabled = true
         manifestPlaceholders["accountsCallbackHost"] = providers.gradleProperty("LETBUYY_ACCOUNTS_CALLBACK_HOST")
             .orElse("accounts.letbuyy.com").get().also {
-                require(it in listOf("accounts.letbuyy.com", "accounts.staging.letbuyy.com")) { "Accounts callback host must be a registered estate" }
+                require(it in listOf("accounts.letbuyy.com", "accounts-staging.letbuyy.com")) { "Accounts callback host must be a registered estate" }
             }
     }
 

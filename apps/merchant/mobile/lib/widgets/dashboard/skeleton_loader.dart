@@ -1,61 +1,87 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
+import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import '../../theme/app_theme_colors.dart';
 
 /// Skeleton Loader for Dashboard
-/// Premium shimmer loading states
+/// Static placeholders with one visible, reduced-motion aware pending owner.
 class SkeletonLoader extends StatelessWidget {
   const SkeletonLoader({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppThemeColors.of(context);
-    return SingleChildScrollView(
-      physics: const NeverScrollableScrollPhysics(),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 16),
-            // Header skeleton
-            _SkeletonBox(width: 180, height: 24),
-            const SizedBox(height: 24),
-            // Hero card skeleton
-            _SkeletonBox(width: double.infinity, height: 180, borderRadius: 28),
-            const SizedBox(height: 24),
-            // Stats grid skeleton
-            Row(
-              children: [
-                Expanded(child: _SkeletonBox(height: 120, borderRadius: 24)),
-                const SizedBox(width: 12),
-                Expanded(child: _SkeletonBox(height: 120, borderRadius: 24)),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(child: _SkeletonBox(height: 120, borderRadius: 24)),
-                const SizedBox(width: 12),
-                Expanded(child: _SkeletonBox(height: 120, borderRadius: 24)),
-              ],
-            ),
-            const SizedBox(height: 24),
-            // Chart skeleton
-            _SkeletonBox(width: double.infinity, height: 200, borderRadius: 24),
-            const SizedBox(height: 24),
-            // Quick actions skeleton
-            _SkeletonBox(width: 120, height: 20),
-            const SizedBox(height: 12),
-            _SkeletonBox(width: double.infinity, height: 280, borderRadius: 20),
-          ],
+    return Semantics(
+      label: 'Loading dashboard',
+      liveRegion: true,
+      excludeSemantics: true,
+      child: SingleChildScrollView(
+        physics: const NeverScrollableScrollPhysics(),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  const ExcludeSemantics(child: LoadingIndicator()),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'Loading dashboard',
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              // Hero card skeleton
+              _SkeletonBox(
+                width: double.infinity,
+                height: 180,
+                borderRadius: 28,
+              ),
+              const SizedBox(height: 24),
+              // Stats grid skeleton
+              Row(
+                children: [
+                  Expanded(child: _SkeletonBox(height: 120, borderRadius: 24)),
+                  const SizedBox(width: 12),
+                  Expanded(child: _SkeletonBox(height: 120, borderRadius: 24)),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(child: _SkeletonBox(height: 120, borderRadius: 24)),
+                  const SizedBox(width: 12),
+                  Expanded(child: _SkeletonBox(height: 120, borderRadius: 24)),
+                ],
+              ),
+              const SizedBox(height: 24),
+              // Chart skeleton
+              _SkeletonBox(
+                width: double.infinity,
+                height: 200,
+                borderRadius: 24,
+              ),
+              const SizedBox(height: 24),
+              // Quick actions skeleton
+              _SkeletonBox(width: 120, height: 20),
+              const SizedBox(height: 12),
+              _SkeletonBox(
+                width: double.infinity,
+                height: 280,
+                borderRadius: 20,
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-/// Individual skeleton box with shimmer effect
+/// Individual static skeleton placeholder
 class _SkeletonBox extends StatelessWidget {
   final double? width;
   final double height;
@@ -77,11 +103,6 @@ class _SkeletonBox extends StatelessWidget {
         color: colors.elevation1,
         borderRadius: BorderRadius.circular(borderRadius),
       ),
-    ).animate(
-      onPlay: (controller) => controller.repeat(),
-    ).shimmer(
-      duration: 1500.ms,
-      color: colors.elevation2.withValues(alpha: 0.3),
     );
   }
 }
@@ -110,11 +131,6 @@ class SkeletonCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(borderRadius),
         border: Border.all(color: colors.borderSubtle),
       ),
-    ).animate(
-      onPlay: (controller) => controller.repeat(),
-    ).shimmer(
-      duration: 1500.ms,
-      color: colors.elevation2.withValues(alpha: 0.5),
     );
   }
 }
@@ -173,11 +189,6 @@ class SkeletonStatCard extends StatelessWidget {
           ),
         ],
       ),
-    ).animate(
-      onPlay: (controller) => controller.repeat(),
-    ).shimmer(
-      duration: 1500.ms,
-      color: colors.elevation3.withValues(alpha: 0.3),
     );
   }
 }

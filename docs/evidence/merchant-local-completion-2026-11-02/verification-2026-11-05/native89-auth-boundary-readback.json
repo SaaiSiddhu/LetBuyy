@@ -1,0 +1,8 @@
+{
+  "run_id": "ce604b3c837d",
+  "source": "merchant-media-recovery-source-v66",
+  "normal_auth_marker_observed": true,
+  "product_save_marker_observed": false,
+  "aggregate_helper_accepted": false,
+  "boundary": "The failed aggregate helper labels normal_auth false because product save also failed. Actual normal synthetic Accounts/dashboard marker and screenshot exist; product edit/media acceptance remains failed."
+}

@@ -1,4 +1,4 @@
-// Labelled local fixtures: synthetic accounts and public Turnstile test keys only.
+// Owned loopback Turnstile simulation: no external SDK or Siteverify requests.
 // No seeded user, session, verified email, password or store. Resend HTTP is captured;
 // this is provider-fixture acceptance, not real inbox delivery or hosted cookie proof.
 import {tmpdir} from 'node:os';
@@ -9,6 +9,7 @@ import {exportJWK} from 'jose';
 import {chromium,expect,type Page} from '@playwright/test';
 import {Gateway,gatewayEnv,newIdentityKeys,INTERNAL_SECRET} from '../../services/api-gateway/src/__tests__/owned-db/gateway-harness';
 import {requireOwnedDatabase,startOwnedClientRuntime,stopOwnedClientRuntime,type OwnedClientProcess} from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
+import {createLocalTurnstileProvider}from '../fixtures/local-turnstile-provider';
 const owned=requireOwnedDatabase();
 async function freePort() {
     const s = createServer(); await new Promise<void>(r => s.listen(0,'127.0.0.1',r));
@@ -28,13 +29,14 @@ test('public signup creates its account and first store through production apps'
  const subdomain='syn-signup-'+crypto.randomUUID().slice(0,8);
  assert.equal(owned.psql(`SELECT count(*) FROM users_custom WHERE email='${email}';`),'0');
  const identityPort=await freePort(),merchantPort=await freePort(),identityOrigin=`http://localhost:${identityPort}`,merchantOrigin=`http://localhost:${merchantPort}`;
+ const provider=await createLocalTurnstileProvider(owned);
  const keys=await newIdentityKeys(),gateway=new Gateway(gatewayEnv(owned,keys,{ENVIRONMENT:'test',LETBUYY_IDENTITY_ISSUER:identityOrigin,NEXT_PUBLIC_ADMIN_URL:merchantOrigin,NEXT_PUBLIC_STORE_ROOT_DOMAIN:'localhost',RESEND_API_KEY:'synthetic-owned-resend-capture'}));
- const mail:{to:string[];subject:string;html:string;text:string}[]=[],originalFetch=globalThis.fetch;let failFirstMail=true;
+ const mail:{to:string[];subject:string;html:string;text:string}[]=[],originalFetch=globalThis.fetch;let failFirstMail=true,failResetMail=false;
  globalThis.fetch=(async(input:RequestInfo|URL,init?:RequestInit)=>{
   const url=new URL(typeof input==='string'?input:input instanceof URL?input.toString():input.url);
   if(url.origin!=='https://api.resend.com')return originalFetch(input,init);
   assert.equal(url.pathname,'/emails');assert.equal(init?.method,'POST');
-  mail.push(JSON.parse(String(init?.body)));if(failFirstMail){failFirstMail=false;return new Response(JSON.stringify({name:'application_error',message:'Synthetic email transport unavailable'}),{status:503,headers:{'Content-Type':'application/json'}});}return new Response(JSON.stringify({id:'synthetic-mail-'+crypto.randomUUID()}),{status:200,headers:{'Content-Type':'application/json'}});
+  mail.push(JSON.parse(String(init?.body)));if(failFirstMail||(failResetMail&&mail[mail.length-1].subject==='Reset your LetBuyy password')){failFirstMail=false;failResetMail=false;return new Response(JSON.stringify({name:'application_error',message:'Synthetic email transport unavailable'}),{status:503,headers:{'Content-Type':'application/json'}});}return new Response(JSON.stringify({id:'synthetic-mail-'+crypto.randomUUID()}),{status:200,headers:{'Content-Type':'application/json'}});
  }) as typeof fetch;
  let bridge:Server|undefined,identity:OwnedClientProcess|undefined,merchant:OwnedClientProcess|undefined;
  let browser:Awaited<ReturnType<typeof chromium.launch>>|undefined,page:Page|undefined;
@@ -49,13 +51,13 @@ test('public signup creates its account and first store through production apps'
   });
   await new Promise<void>(r=>bridge!.listen(0,'127.0.0.1',r));const apiOrigin=`http://127.0.0.1:${(bridge.address() as {port:number}).port}`;
   const shared={INTERNAL_API_SECRET:INTERNAL_SECRET,NEXT_PUBLIC_ACCOUNTS_URL:identityOrigin,NEXT_PUBLIC_ADMIN_URL:merchantOrigin};
-  identity=startOwnedClientRuntime(owned,'identity-next-production',{port:identityPort,env:{...shared,LETBUYY_API_URL:apiOrigin+'/v1',LETBUYY_IDENTITY_ISSUER:identityOrigin,
+  identity=startOwnedClientRuntime(owned,'identity-next-production',{port:identityPort,providerFixture:provider.profile,env:{...shared,LETBUYY_API_URL:apiOrigin+'/v1',LETBUYY_IDENTITY_ISSUER:identityOrigin,
    LETBUYY_IDENTITY_PRIVATE_JWK:JSON.stringify({...await exportJWK(keys.privateKey),alg:'ES256',kid:keys.kid}),ACCOUNTS_COOKIE_SECRET:crypto.randomUUID()+crypto.randomUUID(),COOKIE_DOMAIN:'',
    NEXT_PUBLIC_TURNSTILE_SITE_KEY:'1x00000000000000000000AA',TURNSTILE_SECRET_KEY:'1x0000000000000000000000000000000AA',LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false',NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false',RESEND_API_KEY:'',LETBUYY_EMAIL_API_KEY:''}});
   merchant=startOwnedClientRuntime(owned,'merchant-next-production',{port:merchantPort,env:{...shared,LETBUYY_API_BASE_URL:apiOrigin+'/v1'}});
   for(const app of [identity,merchant])app.stderr.on('data',d=>errors.push(d.toString().slice(0,600)));
   await Promise.all([ready(identityOrigin+'/login',identity),ready(merchantOrigin,merchant)]);
-  browser=await chromium.launch({headless:true});const context=await browser.newContext();page=await context.newPage();page.setDefaultTimeout(30_000);page.setDefaultNavigationTimeout(60_000);  const signup=await page.goto(identityOrigin+'/signup');assert.equal(signup?.status(),200);
+  browser=await chromium.launch({headless:true,args:['--disable-background-networking','--disable-component-update']});const context=await browser.newContext();await provider.attachBrowser(context,[identityOrigin,merchantOrigin]);page=await context.newPage();page.setDefaultTimeout(30_000);page.setDefaultNavigationTimeout(60_000);  const signup=await page.goto(identityOrigin+'/signup');assert.equal(signup?.status(),200);
   const signupCopy=await page.locator('body').innerText();
   await expect(page.locator('input[name="cf-turnstile-response"]')).toHaveValue(/.+/,{timeout:30_000});
   await page.getByLabel('Email',{exact:true}).fill(email);
@@ -99,6 +101,70 @@ test('public signup creates its account and first store through production apps'
   const screenshot=`${tmpdir()}/letbuyy-public-signup-${owned.runId}.png`;await page.screenshot({path:screenshot,fullPage:true});
   console.info('OWNED_PUBLIC_SIGNUP '+JSON.stringify({providerFixtureOnly:true,seededAccount:false,normalSignup:true,wrongOtpDenied:true,normalPasswordAndOnboarding:true,emailFailureThenRetry:true,unboundPasswordDenied:true,otpReplayDenied:true,passwordReplayDenied:true,mailCount:mail.length,store,screenshot}));
   assert.doesNotMatch(signupCopy,/₹20|14 days free/,'signup must not advertise an unsupported trial/price combination');
+
+  // Reset is exercised through its normal forms and the captured canonical mail,
+  // with no seeded token, password hash or injected session.
+  const resetPassword='Synthetic-Recovered-Password-57!';
+  const owner=owned.psql(`SELECT id FROM users_custom WHERE email='${email}';`);
+  async function requestReset(expected:number){
+   await page!.goto(identityOrigin+'/forgot-password');
+   await page!.getByLabel('Email',{exact:true}).fill(email);
+   await expect(page!.locator('input[name="cf-turnstile-response"]')).toHaveValue(/.+/);
+   const [reply]=await Promise.all([page!.waitForResponse(r=>new URL(r.url()).pathname==='/api/auth/send-reset'&&r.request().method()==='POST'),page!.getByRole('button',{name:'Send reset link',exact:true}).click()]);
+   assert.equal(reply.status(),expected);
+  }
+  failResetMail=true;await requestReset(502);
+  await requestReset(200);
+  function capturedResetLink(){
+   const message=[...mail].reverse().find(m=>m.subject==='Reset your LetBuyy password');assert.ok(message);
+   const href=message.text.match(/Reset your LetBuyy merchant password: (\S+)/)?.[1];assert.ok(href);
+   const link=new URL(href);assert.equal(link.origin,identityOrigin);assert.equal(link.pathname,'/reset-password');
+   assert.match(link.searchParams.get('token')||'',/^[a-f0-9]{64}$/);return link;
+  }
+  const resetLink=capturedResetLink();
+  await page.goto(resetLink.href);
+  await page.getByLabel('New password',{exact:true}).fill(resetPassword);
+  await page.getByLabel('Confirm password',{exact:true}).fill(resetPassword);
+  const [reset]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname==='/api/auth/reset-password'&&r.request().method()==='POST'),page.getByRole('button',{name:'Reset password',exact:true}).click()]);
+  assert.equal(reset.status(),200);await page.waitForURL(u=>u.origin===identityOrigin&&u.pathname==='/login');
+  assert.equal(owned.psql(`SELECT count(*) FROM sessions WHERE user_id='${owner}' AND revoked_at IS NULL;`),'0','reset must revoke every prior Merchant session');
+  assert.equal(await authPost('/api/auth/reset-password',{token:resetLink.searchParams.get('token')!,password:resetPassword}),400,'reset link is single-use');
+  const auditCount=owned.psql(`SELECT count(*) FROM audit_logs WHERE actor_id='${owner}' AND action='auth.password_reset.completed';`);assert.equal(auditCount,'1');
+  await requestReset(200);const expiredLink=capturedResetLink();
+  // Expiry is an explicit local clock prerequisite; the public redemption path stays real.
+  owned.psql(`UPDATE verification_tokens SET expires_at=now()-interval '1 second' WHERE token='${expiredLink.searchParams.get('token')}';`);
+  await page.goto(expiredLink.href);await page.getByLabel('New password',{exact:true}).fill('Synthetic-Unapplied-Password-91!');await page.getByLabel('Confirm password',{exact:true}).fill('Synthetic-Unapplied-Password-91!');
+  const [expired]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname==='/api/auth/reset-password'&&r.request().method()==='POST'),page.getByRole('button',{name:'Reset password',exact:true}).click()]);assert.equal(expired.status(),400);
+  assert.equal(owned.psql(`SELECT count(*) FROM audit_logs WHERE actor_id='${owner}' AND action='auth.password_reset.completed';`),auditCount);
+  const loginContext=await browser.newContext();await provider.attachBrowser(loginContext,[identityOrigin,merchantOrigin]);
+  try{
+   const loginPage=await loginContext.newPage();await loginPage.goto(identityOrigin+'/login');
+   await expect(loginPage.locator('input[name="cf-turnstile-response"]')).toHaveValue(/.+/);
+   await loginPage.getByLabel('Email',{exact:true}).fill(email);await loginPage.getByRole('button',{name:'Continue with email',exact:true}).click();
+   await loginPage.getByLabel('Password',{exact:true}).fill(password);
+   const [oldDenied]=await Promise.all([loginPage.waitForResponse(r=>new URL(r.url()).pathname==='/api/auth/login'&&r.request().method()==='POST'),loginPage.getByRole('button',{name:'Log in',exact:true}).click()]);assert.equal(oldDenied.status(),401);
+   await expect(loginPage.locator('input[name="cf-turnstile-response"]')).toHaveValue(/.+/);
+   await loginPage.getByLabel('Password',{exact:true}).fill(resetPassword);
+   const [newAccepted]=await Promise.all([loginPage.waitForResponse(r=>new URL(r.url()).pathname==='/api/auth/login'&&r.request().method()==='POST'),loginPage.getByRole('button',{name:'Log in',exact:true}).click()]);assert.equal(newAccepted.status(),200);
+   await loginPage.waitForURL(u=>u.origin===merchantOrigin&&u.pathname===`/${subdomain}/dashboard`);
+  }finally{await loginContext.close();}
+  // The enabled magic-link flow remains usable for accounts without an enrolled factor.
+  const magicContext=await browser.newContext();await provider.attachBrowser(magicContext,[identityOrigin,merchantOrigin]);
+  try{
+   const magicPage=await magicContext.newPage();await magicPage.goto(identityOrigin+'/login');
+   const csrf=(await magicContext.cookies(identityOrigin)).find(c=>c.name==='letbuyy_csrf');assert.ok(csrf);
+   const sent=await magicContext.request.post(identityOrigin+'/api/auth/send-magic',{headers:{Origin:identityOrigin,'X-CSRF-Token':decodeURIComponent(csrf.value)},data:{email,turnstileToken:provider.issue()}});assert.equal(sent.status(),200);
+   const message=[...mail].reverse().find(m=>m.subject==='Your secure LetBuyy sign-in link');assert.ok(message);
+   const href=message.text.match(/Sign in to LetBuyy: (\S+)/)?.[1];assert.ok(href);assert.equal(new URL(href).origin,identityOrigin);
+   await magicPage.goto(href);await magicPage.waitForURL(u=>u.origin===merchantOrigin&&u.pathname===`/${subdomain}/dashboard`);
+   const count=owned.psql(`SELECT count(*) FROM sessions WHERE user_id='${owner}';`);
+   await magicPage.goto(href);assert.equal(new URL(magicPage.url()).pathname,'/lookup');
+   assert.equal(owned.psql(`SELECT count(*) FROM sessions WHERE user_id='${owner}';`),count,'magic-link replay cannot create another session');
+  }finally{await magicContext.close();}
+  console.info('OWNED_MERCHANT_RECOVERY '+JSON.stringify({capturedProviderOnly:true,normalReset:true,mailFailureThenRetry:true,resetReplayDenied:true,expiredResetDenied:true,oldPasswordDenied:true,normalRecoveredLogin:true,normalMagicWithoutMfa:true,magicReplayDenied:true}));
+
+  assert.ok(provider.counts.verified>=2,'actual server verification must consume local provider challenges');
+  assert.equal(provider.counts.browserExternalRefused,0,'the normal local journey must not attempt undeclared external requests');
  }catch(error){console.info('OWNED_PUBLIC_SIGNUP_FAILURE '+JSON.stringify({path:page?new URL(page.url()).pathname:null,calls:calls.slice(-15).map(({path,status})=>({path,status})),errors:errors.slice(-3).map(s=>s.replace(/https?:\/\/[^\s"<>]+/g,'[redacted-url]'))}));throw error;
- }finally{await browser?.close();await stopOwnedClientRuntime(merchant);await stopOwnedClientRuntime(identity);await gateway.settle();globalThis.fetch=originalFetch;if(bridge){bridge.closeAllConnections();await new Promise<void>(r=>bridge!.close(()=>r()));}}
+ }finally{await browser?.close();await stopOwnedClientRuntime(merchant);await stopOwnedClientRuntime(identity);await gateway.settle();globalThis.fetch=originalFetch;if(bridge){bridge.closeAllConnections();await new Promise<void>(r=>bridge!.close(()=>r()));}await provider.close();}
 });

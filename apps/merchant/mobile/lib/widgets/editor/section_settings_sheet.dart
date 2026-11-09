@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' as mobile_tokens;
 import '../../theme/app_theme_colors.dart';
@@ -636,7 +638,11 @@ class _SectionSettingsSheetState extends State<SectionSettingsSheet> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => _BannerEditSheet(data: currentData),
+      builder: (context) => _BannerEditSheet(
+        data: currentData,
+        recoveryPurpose:
+            'theme-slide:${widget.section.id}:${index ?? banners.length}:${sha256.convert(utf8.encode(jsonEncode(currentData))).toString().substring(0, 24)}',
+      ),
     );
 
     if (result != null) {
@@ -1176,8 +1182,9 @@ class _SectionSettingsSheetState extends State<SectionSettingsSheet> {
 
 class _BannerEditSheet extends StatefulWidget {
   final Map<String, dynamic> data;
+  final String recoveryPurpose;
 
-  const _BannerEditSheet({required this.data});
+  const _BannerEditSheet({required this.data, required this.recoveryPurpose});
 
   @override
   State<_BannerEditSheet> createState() => _BannerEditSheetState();
@@ -1234,6 +1241,7 @@ class _BannerEditSheetState extends State<_BannerEditSheet> {
               padding: const EdgeInsets.all(20),
               children: [
                 ImagePickerWidget(
+                  recoveryPurpose: widget.recoveryPurpose,
                   initialUrl: _data['imageUrl'],
                   onChanged: (url) => setState(() => _data['imageUrl'] = url),
                 ),

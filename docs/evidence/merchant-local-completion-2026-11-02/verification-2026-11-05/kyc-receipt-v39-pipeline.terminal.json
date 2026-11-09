@@ -1,0 +1,38 @@
+{
+  "status": "PASS",
+  "source_sha256": "e8cc94edd6649a1fbbeebf1f797d1d65a4959fe87851467d1c37f28399ddc0a4",
+  "results": [
+    {
+      "stage": "flutter-full",
+      "exit_code": 0,
+      "source_unchanged": true,
+      "source_sha256": "e8cc94edd6649a1fbbeebf1f797d1d65a4959fe87851467d1c37f28399ddc0a4",
+      "command": [
+        "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+        "test",
+        "--no-pub",
+        "--reporter",
+        "expanded"
+      ],
+      "cwd": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/apps/merchant/mobile"
+    },
+    {
+      "stage": "flutter-analysis",
+      "exit_code": 0,
+      "source_unchanged": true,
+      "source_sha256": "e8cc94edd6649a1fbbeebf1f797d1d65a4959fe87851467d1c37f28399ddc0a4",
+      "command": [
+        "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+        "analyze",
+        "--no-pub"
+      ],
+      "cwd": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/apps/merchant/mobile"
+    },
+    {
+      "stage": "isolated-governance",
+      "exit_code": 0,
+      "source_unchanged": true
+    }
+  ],
+  "finished_at": "2026-11-06T15:47:41.722135+00:00"
+}

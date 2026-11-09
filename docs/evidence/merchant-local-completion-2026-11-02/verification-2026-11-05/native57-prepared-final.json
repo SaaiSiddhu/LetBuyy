@@ -1,0 +1,26 @@
+{
+  "at": "2026-11-06T06:37:42.622553+00:00",
+  "root": "/private/tmp/letbuyy-merchant-local-20261106-25feac2c",
+  "source_manifest": "web-viewport-source-v1.source.json",
+  "source_sha256": "99dee3d9dc5075e97deaff99f2799dea89dac496c88c163a944b39bfe9dda4f0",
+  "inputs": [
+    {
+      "path": "/private/tmp/letbuyy-merchant-local-20261106-25feac2c/run-switcher-v57.py",
+      "sha256": "2e31ce8cac01ebc3b2a93c08f28dd3a1848c322a4ff92cd115dc60a5f6e047a6"
+    },
+    {
+      "path": "/private/tmp/letbuyy-merchant-local-20261106-25feac2c/android-device-receipt-switcher-v57.json",
+      "sha256": "3d95f2f530a29b30fb1dc72352405dcffdc0f59f1a1a473fbb4cd2e8d99a47b3"
+    },
+    {
+      "path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/android-switcher-staff-v57.py",
+      "sha256": "eb9dd1affcb0d6eda2c07c0f1205428cf9ddcc2739b2f7c2497a188240f7d901"
+    },
+    {
+      "path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/merchant-switcher-staff-v57-local-android.postgres.test.ts",
+      "sha256": "2154f1b0674399f30cbc5975a0741091c7669eea8e937018fd58bbace9f1b6c9"
+    }
+  ],
+  "protected_fixture_sha256": "12917f372dee1ecf6610c8888af1caa9a5a80b545388ba0b58570c6b9c6f8510",
+  "scope": "Same source and entire business/security story;only web saved-product readback locator now uses the exact actual visible product link observed in56strict-mode diagnostic. Viewport/appearance,canonical stock/null/media/effect-once and live role/removal assertions retained."
+}

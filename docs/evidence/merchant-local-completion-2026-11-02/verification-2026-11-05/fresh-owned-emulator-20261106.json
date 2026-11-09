@@ -1,0 +1,30 @@
+{
+  "owner": "merchant-mobile-parity",
+  "root": "/private/tmp/letbuyy-merchant-emulator-de849422c5",
+  "name": "LetBuyy_Merchant_Parity_20261106_c6cefc",
+  "avd_home": "/private/tmp/letbuyy-merchant-emulator-de849422c5/avds",
+  "create_exit_code": 0,
+  "created_at": "2026-11-05T18:36:04.663259+00:00",
+  "emulator_pid": 68600,
+  "sdk_root": "/Volumes/Developer Tools/SDKs/android-sdk",
+  "serial": "emulator-5580",
+  "adb_port": 15038,
+  "command": [
+    "/Volumes/Developer Tools/SDKs/android-sdk/emulator/emulator",
+    "-avd",
+    "LetBuyy_Merchant_Parity_20261106_c6cefc",
+    "-port",
+    "5580",
+    "-memory",
+    "3072",
+    "-gpu",
+    "auto",
+    "-no-window",
+    "-no-audio",
+    "-no-boot-anim",
+    "-no-snapshot-load",
+    "-no-snapshot-save"
+  ],
+  "status": "BOOT_REQUESTED_NOT_READY",
+  "scope": "Fresh task AVD only; no app installed, credentials entered or other AVD touched."
+}

@@ -1,0 +1,42 @@
+{
+  "run_id": "6c47ef2fe2e4",
+  "scope": "Actual normal Accounts/Merchant/ownedGateway/database diagnostic;no device/provider/full journey acceptance",
+  "expected_src": "http://127.0.0.1:63957/__owned__/product.png",
+  "actual": {
+    "src": "http://127.0.0.1:63957/__owned__/product.png",
+    "currentSrc": "http://127.0.0.1:63957/__owned__/product.png",
+    "complete": true,
+    "width": 0,
+    "height": 0,
+    "error": "EncodingError"
+  },
+  "events": [
+    {
+      "kind": "image-console",
+      "message": "Loading the image '[owned-image]' violates the following Content Security Policy directive: \"img-src 'self' data: blob: https: http://localhost:63954 http://localhost:63955\". The action has been blocked."
+    },
+    {
+      "kind": "image-failure",
+      "error": "csp"
+    },
+    {
+      "kind": "image-console",
+      "message": "Loading the image '[owned-image]' violates the following Content Security Policy directive: \"img-src 'self' data: blob: https: http://localhost:63954 http://localhost:63955\". The action has been blocked."
+    },
+    {
+      "kind": "image-failure",
+      "error": "csp"
+    }
+  ],
+  "image_reads": 1,
+  "direct_bytes_equal": true,
+  "img_src_csp": " img-src 'self' data: blob: https: http://localhost:63954 http://localhost:63955",
+  "provider_counts": {
+    "issued": 1,
+    "verified": 1,
+    "refused": 0,
+    "browserExternalRefused": 0,
+    "nativeSdkServed": 0,
+    "nativeIssued": 0
+  }
+}

@@ -1,0 +1,1 @@
+{"run_id":"54ecf4a294b8","exact_owned_image_origin":"http://127.0.0.1:54352","image_csp":" img-src 'self' data: blob: https: http://localhost:9002 http://localhost:54353 http://127.0.0.1:54352","public_api_origin_configured":true,"security_source_unchanged":true,"width":4,"height":4,"decoded":true,"local_browser_fence_preserved":true,"external_origin_admitted":false}

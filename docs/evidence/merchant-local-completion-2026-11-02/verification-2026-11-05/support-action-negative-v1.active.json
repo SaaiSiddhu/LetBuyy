@@ -1,0 +1,18 @@
+{
+  "started_at": "2026-11-05T20:27:49.054941+00:00",
+  "supervisor_pid": 98881,
+  "source": "support-action-negative-v1",
+  "source_sha256": "1cf88b652075cad212fe20f7c1747342be653066111920da56b8395bbdad2877",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "--timeout",
+    "45s",
+    "--plain-name",
+    "distinct from",
+    "test/help_presentation_test.dart"
+  ],
+  "status": "RUNNING",
+  "child_pid": 98883
+}

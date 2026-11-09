@@ -1,0 +1,8 @@
+{
+  "status": "SCOPED_DOCKER_READ_RETURNED",
+  "code": 0,
+  "owned_rows": [],
+  "error": "",
+  "at": "2026-11-06T07:56:20.935055+00:00",
+  "scope": "Read-only fixture labels for terminated owned runner29282; no reset/prune or deletion"
+}

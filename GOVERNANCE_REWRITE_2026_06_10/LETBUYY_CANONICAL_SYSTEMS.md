@@ -227,6 +227,11 @@ These are the operative rules that make this registry enforceable. They are norm
 - **Migration Path.** Close the anon leak (Wave 0); build light CRM segments (P1).
 - **Deletion Plan.** DOC 04: `store_customers` `USING(true)` PUBLIC policy = DEAD-now S0 (Wave 0, the PII leak).
 
+#### Collections — Winner: existing `public.collections` for manual membership and smart rules.
+- **Human owner decision (3 November 2026).** The owner approved the concrete source/local proposal in `docs/evidence/merchant-local-completion-2026-11-02/SMART_COLLECTION_AUTHORITY_DECISION.md`. Web, mobile and buyer-facing collections must use one collection authority. This decision changes no runtime, issuer, fee or hosted deployment authority.
+- **Migration Path.** Expand the existing collection owner with the necessary typed rule, match, slug and revision contracts; preserve manual membership; backfill retained `smart_collections` identities and exact rule meaning; verify per-row and derived membership parity before contracting. Existing smart transports may temporarily delegate to that single owner. Current source remains transitional until those gates pass; this entry does not certify a completed cutover.
+- **Deletion Plan.** `smart_collections` is a temporary migration source, with no permanent second writer or independent rule authority. Retire it only after lossless reconciliation, current permission, concurrency, recovery, public/web/native, rollback and deletion gates pass. Ambiguous IDs/slugs or unsupported retained rules require explicit reconciliation rather than silent data loss. No old table or API is dropped merely because this decision exists.
+
 ### 3.5 Theme cluster — Theme Runtime · Theme Engine · Theme Editor
 
 #### Theme Runtime (renderer) — Winner: the Liquid / portable-theme (OS-2.0-shaped) renderer. **(The directive's explicit test of the decision rule.)**

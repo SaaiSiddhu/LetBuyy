@@ -1,0 +1,94 @@
+{
+  "at": "2026-11-05T18:33:56.075097+00:00",
+  "status": "SUPPORTING_SOURCE2_LOCAL_QUALIFIED_WITH_KNOWN_PROTECTED_STAFF_FAILURE_ANDROID_IOS_COMPILE_ONLY",
+  "source": {
+    "sha256": "a2a5672ed7707f9b10a0aa6fd49fadb27227410002e60a56af97c23f3c6d9cb3",
+    "entries": 8442,
+    "snapshot_version": 2
+  },
+  "source_manifest": "verification-2026-11-05/supporting-source-v2.source.json",
+  "implemented": [
+    "Store Health canonical read page: store/actor generation fence, returned-store identity check, actual zero versus unknown scores, no invented timestamp, explicit saved-read refresh/error states, full wrapping copy and current-route actions. Existing reader/scoring authority unchanged.",
+    "Saved-sign-in ErrorScreen canonical responsive recovery page, same original VoidCallbacks/default named login arguments, stale/covered/duplicate callback guard. Does not claim ownership of asynchronous auth work.",
+    "Image-source selector uses canonical short sheet, explicit Close and owner-route lifetime checks; same camera/gallery/null result and unchanged caller plugin/upload behavior.",
+    "Health golden now uses bundled Inter/Material fonts and actual app theme. Original Ahem golden archived; actual rendered image inspected. Comparator unchanged; Customer golden unchanged."
+  ],
+  "diagnostics": {
+    "negative1": "1PASS/7realFAIL before fixes;403clearing already passed. Mismatched/missing/stale data, covered/duplicate callbacks and short-sheet overflow reproduced.",
+    "focused": "56PASS (33new +21existing +2goldens)",
+    "full": "1466PASS/1unchanged protected Staff namespace FAIL/0SKIP",
+    "golden": "Initial intentional layout/font diffs retained; final actual Inter/Material image inspected before baseline update."
+  },
+  "qualification": {
+    "app_analysis_issues": 0,
+    "ui_kit_analysis_issues": 0,
+    "parsed_preservation_checks": 10,
+    "governance": {
+      "pass": 114,
+      "fail": 0,
+      "blocked": 0,
+      "skip": 0,
+      "not_applicable": 1,
+      "core_inputs_byte_equal": 8442,
+      "original_source_and_index_unchanged": true,
+      "limit": "Disposable copy lacks local main/staging/develop refs; deploy branch-pair acceptance not proved."
+    },
+    "boundary": "Only3existing app presentation files,2new tests, existing golden fixture and Health image differ from Security1. All other canonical inputs unchanged; no new service/policy exception.",
+    "snapshot_role_correction": "Version2 excludes generated test/failures PNGs from source authority, retains8diagnostics as custody, keeps actual test/goldens as inputs. App bytes identical to Supporting1; only1test lint corrected."
+  },
+  "android": {
+    "at": "2026-11-05T18:31:55.354144+00:00",
+    "status": "INDEPENDENT_DEBUG_APK_READBACK_PASS",
+    "source_sha256": "a2a5672ed7707f9b10a0aa6fd49fadb27227410002e60a56af97c23f3c6d9cb3",
+    "artifact": {
+      "path": "/private/tmp/letbuyy-supporting-android-qv6wvvwr/merchant-local-debug.apk",
+      "sha256": "554a55d8f4a08232c034ff55d282959ce679510f2a26647d138291b0966463fc",
+      "bytes": 151912371
+    },
+    "actual_sha256": "554a55d8f4a08232c034ff55d282959ce679510f2a26647d138291b0966463fc",
+    "compiled_arm64_engine": true,
+    "debug_kernel_present": true,
+    "normal_main": true,
+    "installed": false,
+    "runtime_verified": false,
+    "limits": "Compile and retained archive integrity only; no native, API, sync, hosted or release acceptance."
+  },
+  "ios": {
+    "at": "2026-11-05T18:31:55.354144+00:00",
+    "status": "INDEPENDENT_IOS_DEBUG_ARTIFACT_READBACK_PASS",
+    "source_sha256": "a2a5672ed7707f9b10a0aa6fd49fadb27227410002e60a56af97c23f3c6d9cb3",
+    "artifact": {
+      "path": "/private/tmp/letbuyy-supporting-ios-use_ckjo/Runner.app",
+      "files": 377,
+      "manifest_sha256": "ab3ec696b72d990898001769319566051cfe7fc095350ec8970cc8d496acb3cd"
+    },
+    "all_retained_files_equal": 377,
+    "bundle_id": "com.letbuyy.store",
+    "executable_architecture": "/private/tmp/letbuyy-supporting-ios-use_ckjo/Runner.app/Runner: Mach-O 64-bit executable arm64",
+    "owned_simulator_remains_shutdown": true,
+    "scope": "Compile and retained artifact integrity only; no install, native, API, sync, physical, hosted, signed-release or production acceptance."
+  },
+  "programme": {
+    "applicable_features": 119,
+    "full_acceptance": "OPEN",
+    "excluded": [
+      120,
+      121
+    ],
+    "paused": [
+      122
+    ],
+    "frozen": [
+      51
+    ],
+    "unique_surface_denominator": null,
+    "ledger_rows_nonadditive": 204,
+    "unreviewed_source_rows": 68
+  },
+  "next": [
+    "Recover/inspect lost native controls and fresh task-owned emulator prerequisites before a new current-source run. Prior native38 outcome remains unknown.",
+    "Continue supporting utilities/AI and unread app surfaces with preserved contracts.",
+    "Actual Android/iOS interaction, accessibility, physical/performance, real integration/provider/hosted/release and eligible legacy cleanup remain distinct open gates."
+  ],
+  "limits": "No install, launch, authentication, API/database readback, web-mobile synchronization, provider, physical, hosted or production-ready acceptance from these checks. No push, merge, deploy or protected backend change."
+}

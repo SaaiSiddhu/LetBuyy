@@ -1,0 +1,35 @@
+{
+  "status": "FAILED_LATE_FIXTURE_LIFETIME",
+  "runId": "de373bd13329",
+  "source_sha256": "dfcb07ede0312d6b5c522c071dcd02fe81cd64f2b543d40cd83c30d7e436b1e0",
+  "sourceEntries": 7387,
+  "sourceArchive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-core-v4-qualified-source",
+  "sourceHeldAndTerminalVerified": true,
+  "fullStoryPassed": false,
+  "firstFailure": "New HTML SEO check reused the earlier buyer page after its context had deliberately closed. No product/checkout authority assertion was weakened; next run uses the already planned fresh visitor context.",
+  "reached": [
+    "normal unseeded signup, actual captured OTP, password and saved14-day trial",
+    "normal first product/media/variant and manual collection",
+    "Core Liquid install/editor/publication, actual storefront/public reads and ten theme presets",
+    "actual local COD variant order, canonical total26900paise and shipping2000paise; unpaid order emitted no order.paid",
+    "second-purchase cart isolation",
+    "normal buyer registration/profile/address/default/delete, cross-tab actor refusal and order privacy",
+    "Merchant order readback and real Merchant SEO save/General readback"
+  ],
+  "notReached": [
+    "actual published HTML SEO assertions",
+    "later visitor password/rotation/maintenance and final story checks"
+  ],
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "limits": [
+    "Intermediate successes do not make this giant suite passed.",
+    "Owned Workerd/R2/PostgreSQL/compiled browser only; no real delivery/provider/signed mobile release or hosted state."
+  ]
+}

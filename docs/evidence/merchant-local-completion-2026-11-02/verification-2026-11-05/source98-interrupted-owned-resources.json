@@ -1,0 +1,24 @@
+[
+  {
+    "kind": "network",
+    "id": "66cd301da5f9",
+    "labels": {
+      "com.letbuyy.executable-fixture": "1",
+      "com.letbuyy.executable-fixture.owner-pid": "38264",
+      "com.letbuyy.executable-fixture.role": "network",
+      "com.letbuyy.executable-fixture.run-id": "22cd1c05c73e"
+    },
+    "unattached": true
+  },
+  {
+    "kind": "volume",
+    "id": "letbuyy-exec-22cd1c05c73e-1-data",
+    "labels": {
+      "com.letbuyy.executable-fixture": "1",
+      "com.letbuyy.executable-fixture.owner-pid": "38264",
+      "com.letbuyy.executable-fixture.role": "volume",
+      "com.letbuyy.executable-fixture.run-id": "22cd1c05c73e"
+    },
+    "unattached": true
+  }
+]

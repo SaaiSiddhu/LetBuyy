@@ -1,0 +1,27 @@
+{
+  "at": "2026-11-06T11:48:29.205408+00:00",
+  "root": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4",
+  "source_manifest": "merchant-recovery-source-v16.source.json",
+  "source_sha256": "dc5e2e0af9f5da7b4e2ec11a68b3c343cb5953daa83de34009a4c5e6fb228c8c",
+  "inputs": [
+    {
+      "path": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/run-switcher-v65.py",
+      "sha256": "827b6234d50e9bf23866d412ecd1d6ccea99a7fc9f96debcb17a89f25ed61138"
+    },
+    {
+      "path": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/android-device-receipt-switcher-v65.json",
+      "sha256": "aeb8bacaefec00a4e343eaac63b89de7d532c32ce77bbe8a57159c8951e58784"
+    },
+    {
+      "path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/android-switcher-staff-v65.py",
+      "sha256": "1dd00d2b055fa6fcc543cada5615c65ceb8cabfc5f0d7648a03b0a97904903de"
+    },
+    {
+      "path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/merchant-switcher-staff-v65-local-android.postgres.test.ts",
+      "sha256": "f82cfea5d313a19ae24752d3a09188429247d22f15288355185266ae96572c52"
+    }
+  ],
+  "protected_fixture_sha256": "12917f372dee1ecf6610c8888af1caa9a5a80b545388ba0b58570c6b9c6f8510",
+  "scope": "Current source; native58 full business/security assertions retained. Extend native owner53staff roster with DB/hash equality, null/typed/empty metadata conservation and actual web owned-image decode. No external origins or real invites.",
+  "status": "READY_NOT_LAUNCHED"
+}

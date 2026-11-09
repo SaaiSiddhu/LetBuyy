@@ -322,7 +322,12 @@ class _ShippingScreenState extends State<_ShippingWorkspace> {
                 children: [
                   DropdownButtonFormField<String>(
                     value: zoneId,
-                    decoration: const InputDecoration(labelText: 'Zone'),
+                    decoration: InputDecoration(
+                      labelText: 'Zone',
+                      helperText: rate == null
+                          ? null
+                          : 'Zone is fixed for a saved rate.',
+                    ),
                     items: _zones
                         .map(
                           (zone) => DropdownMenuItem(
@@ -331,9 +336,11 @@ class _ShippingScreenState extends State<_ShippingWorkspace> {
                           ),
                         )
                         .toList(growable: false),
-                    onChanged: (value) {
-                      setDialogState(() => zoneId = value ?? zoneId);
-                    },
+                    onChanged: rate == null
+                        ? (value) {
+                            setDialogState(() => zoneId = value ?? zoneId);
+                          }
+                        : null,
                   ),
                   const SizedBox(height: 12),
                   TextField(
@@ -463,6 +470,8 @@ class _ShippingScreenState extends State<_ShippingWorkspace> {
                       name: name,
                       type: type,
                       price: price,
+                      minWeightGrams: rate?.minWeightGrams,
+                      maxWeightGrams: rate?.maxWeightGrams,
                       minOrderAmount: _optionalDouble(minOrderController.text),
                       maxOrderAmount: _optionalDouble(maxOrderController.text),
                       estimatedDaysMin: _optionalInt(etaMinController.text),

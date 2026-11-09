@@ -1,0 +1,467 @@
+{
+  "at": "2026-11-04T10:26:30.018929+00:00",
+  "status": "IMPLEMENTED_FIXTURE_VERIFIED_NATIVE_PENDING",
+  "source": {
+    "manifest": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-shell-v12.source.json",
+    "sha256": "93b08cadbd7ec7b420616ac583b67825e69db5b512d413bae3ee0571273426ab",
+    "entries": 7448
+  },
+  "changes": [
+    "Existing ui_kit CustomBottomNav now sole maintained destination row; five existing labels/indices preserved, horizontal reflow and selected-item reveal",
+    "First-selection mounting retains visited tab state; inactive and covered-route tickers disabled; existing store frame resets retained surfaces",
+    "Accessible independent search/AI actions; actual Scaffold bottom extent replaces floating88px reservation and blur palette/controllers",
+    "One shared LoadingOverlay/LoadingIndicator; app public wrapper kept as a thin facade pending native integration",
+    "Canonical root search sheet with exact query APIs retained; actor change retires draft, results and scheduled query",
+    "Settings known/unknown/unlimited usage kept distinct without fabricated0/10percent fill; unavailable COD not labelled Disabled"
+  ],
+  "checks": {
+    "v1_focused": {
+      "passed": 249,
+      "failed": 3,
+      "reasons": [
+        "Two genuine scale2.4 navigation overflows: measured label width omitted4px item margin, causing wrap",
+        "Settings first-read fixture expected a prewarmed tab; corrected observable read wait"
+      ]
+    },
+    "v2_geometry": {
+      "status": "diagnostic compile failure",
+      "reason": "Nullable diagnostic render-object method access; corrected only test diagnostic"
+    },
+    "v2b_geometry": {
+      "status": "rendered diagnostic completed, navigation overflows retained",
+      "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-shell-v2b.geometry.log"
+    },
+    "v3_focused": {
+      "passed": 252,
+      "failed": 0,
+      "analysis_issues": 0
+    },
+    "v4_focused": {
+      "status": "test load failures2;25completed passes",
+      "reason": "New shared-sheet test missing import; preserved compiler output, not app acceptance"
+    },
+    "v5_focused": {
+      "passed": 253,
+      "failed": 1,
+      "reason": "Actual root search exposed continuing covered-dashboard ticker activity; root now follows current route status"
+    },
+    "v6_search": {
+      "passed": 0,
+      "failed": 1,
+      "reason": "Opening now settled; returning restores existing Home animations, so return fixture uses finite frames and explicit active ticker/destination assertions"
+    },
+    "v7_focused": {
+      "passed": 254,
+      "failed": 0
+    },
+    "v7_full": {
+      "passed": 978,
+      "failed": 1,
+      "skipped": 0,
+      "remaining": "DEP-STAFF-01 protected local/hosted invitation storage namespace"
+    },
+    "v7_analysis": {
+      "app_issues": 0,
+      "ui_kit_issues": 0
+    },
+    "domain_preservation": {
+      "basis": "Parsed AST body equality to retained qualified source; formatting excluded. Presentation/route wrappers intentionally differ.",
+      "checks": [
+        {
+          "owner": "warehouse._submit",
+          "unchanged": true
+        },
+        {
+          "owner": "warehouse._arrival",
+          "unchanged": true
+        },
+        {
+          "owner": "warehouse._locationChoice",
+          "unchanged": true
+        },
+        {
+          "owner": "warehouse._supplierChoice",
+          "unchanged": true
+        },
+        {
+          "owner": "warehouse._productChoice",
+          "unchanged": true
+        },
+        {
+          "owner": "warehouse.dispose",
+          "unchanged": true
+        },
+        {
+          "owner": "warehouse._lineCard",
+          "unchanged": true
+        },
+        {
+          "owner": "StaffMemberContract",
+          "unchanged": true
+        },
+        {
+          "owner": "StaffInviteInput",
+          "unchanged": true
+        },
+        {
+          "owner": "StaffInvitationResult",
+          "unchanged": true
+        },
+        {
+          "owner": "staffInvitationProof",
+          "unchanged": true
+        },
+        {
+          "owner": "_stringValue",
+          "unchanged": true
+        },
+        {
+          "owner": "_boolValue",
+          "unchanged": true
+        },
+        {
+          "owner": "staff._pendingKey",
+          "unchanged": true
+        },
+        {
+          "owner": "staff._invitationKey",
+          "unchanged": true
+        },
+        {
+          "owner": "staff.restorePendingInvitation",
+          "unchanged": true
+        },
+        {
+          "owner": "locations_screen.dart metadata input/validation/return",
+          "unchanged": true
+        },
+        {
+          "owner": "suppliers_screen.dart metadata input/validation/return",
+          "unchanged": true
+        },
+        {
+          "owner": "category._submit input/validation/return",
+          "unchanged": true
+        },
+        {
+          "owner": "segment._day",
+          "unchanged": true
+        },
+        {
+          "owner": "segment._date",
+          "unchanged": true
+        },
+        {
+          "owner": "segment._rules",
+          "unchanged": true
+        },
+        {
+          "owner": "segment._tagValues",
+          "unchanged": true
+        },
+        {
+          "owner": "segment._save",
+          "unchanged": true
+        },
+        {
+          "owner": "segment._previewRules",
+          "unchanged": true
+        },
+        {
+          "owner": "segment._edited",
+          "unchanged": true
+        },
+        {
+          "owner": "segment.initState",
+          "unchanged": true
+        },
+        {
+          "owner": "segment.dispose",
+          "unchanged": true
+        },
+        {
+          "owner": "settings._loadStore",
+          "unchanged": true
+        },
+        {
+          "owner": "settings._updatePaymentMethod",
+          "unchanged": true
+        },
+        {
+          "owner": "settings._logout",
+          "unchanged": true
+        },
+        {
+          "owner": "search._search",
+          "unchanged": true
+        },
+        {
+          "owner": "search._changed",
+          "unchanged": true
+        },
+        {
+          "owner": "search._open",
+          "unchanged": true
+        },
+        {
+          "owner": "search.dispose",
+          "unchanged": true
+        }
+      ]
+    },
+    "native_v4": {
+      "status": "INTERRUPTED_OWNED_LAUNCHER_COMPANION_BINDING_ERROR",
+      "runnerExit": 130,
+      "controllerExit": 1,
+      "scope": "No new UI acceptance; old v3 companion was launched and tried to read its retired ready file",
+      "evidenceCustody": "Only a new mis-scoped ui-attention.json was added to previously qualified native-category-v3. Prior v3 runner, snapshots, APK, successful receipts and screenshots remain unchanged. Preserve the added diagnostic separately as v4 launcher evidence; it does not retroactively fail v3.",
+      "cleanup": {
+        "at": "2026-11-04T10:28:18.092621+00:00",
+        "serial": "emulator-5580",
+        "adb_port": 15038,
+        "runner_exit": 130,
+        "controller_exit": 1,
+        "baseline": [],
+        "before": [],
+        "removed": [],
+        "refused": [],
+        "after": [],
+        "scope": "Only current-run exact reverse tuples on task emulator. Host9002 never accessed."
+      },
+      "ownedResourceReadback": {
+        "at": "2026-11-04T11:01:07.483558+00:00",
+        "exactOwnerPid": 12768,
+        "fixtureLabelRequired": true,
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        },
+        "readOnly": true
+      }
+    },
+    "native_v5": {
+      "runId": "b33001352be1",
+      "assertionsPassed": 0,
+      "assertionsFailed": 1,
+      "cancelled": 0,
+      "skipped": 0,
+      "wallSeconds": 252.7,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "reason": "Native probe could not match combined empty search field label. Canonical search title/Close/description observed; actual field/keyboard/segment/category effects not accepted by this attempt.",
+      "launcherCleanup": {
+        "at": "2026-11-04T11:05:26.995581+00:00",
+        "serial": "emulator-5580",
+        "adb_port": 15038,
+        "runner_exit": 1,
+        "controller_exit": 1,
+        "baseline": [],
+        "before": [],
+        "removed": [],
+        "refused": [],
+        "after": [],
+        "scope": "Only current-run exact reverse tuples on task emulator. Host9002 never accessed."
+      },
+      "sourceHeldAndTerminalVerified": true
+    },
+    "v8_normal_width_negative": {
+      "passed": 4,
+      "failed": 2,
+      "basis": "Exact native normal-width clipping reproduced in composed shared nav"
+    },
+    "v9_focused": {
+      "passed": 254,
+      "failed": 2,
+      "reason": "Reduced margins still exceeded360dp; preserved failure, further measured geometry correction"
+    },
+    "v10_focused": {
+      "passed": 256,
+      "failed": 0
+    },
+    "v10_analysis": {
+      "app_issues": 0,
+      "ui_kit_issues": 0
+    },
+    "v10_full": {
+      "passed": 980,
+      "failed": 1,
+      "skipped": 0,
+      "remaining": "Protected DEP-STAFF-01 persistence namespace"
+    },
+    "ios_compile_v3": "MOBILE_UI_IOS_COMPILE_V3.json",
+    "native_v6": {
+      "runId": "5111187123c7",
+      "assertionsPassed": 0,
+      "assertionsFailed": 1,
+      "cancelled": 0,
+      "skipped": 0,
+      "wallSeconds": 164.6,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "reason": "Probe required a text-field hint in a stock XML format that does not serialize it; no field implementation change. Flutter label independently verified; native speech pending.",
+      "sourceHeldAndTerminalVerified": true,
+      "launcherCleanup": {
+        "at": "2026-11-04T11:17:27.822851+00:00",
+        "serial": "emulator-5580",
+        "adb_port": 15038,
+        "runner_exit": 1,
+        "controller_exit": 1,
+        "baseline": [],
+        "before": [],
+        "removed": [],
+        "refused": [],
+        "after": [],
+        "scope": "Only current-run exact reverse tuples on task emulator. Host9002 never accessed."
+      }
+    },
+    "search_semantics": "MOBILE_UI_SEARCH_SEMANTICS_OBSERVATION.json",
+    "v12_full": {
+      "passed": 981,
+      "failed": 1,
+      "skipped": 0,
+      "remaining": "DEP-STAFF-01 protected namespace dependency"
+    },
+    "v12_analysis": {
+      "app_issues": 0,
+      "ui_kit_issues": 0,
+      "ui_kit_basis": "Current implementation bytes identical to analyzed v10; only one app test changed"
+    },
+    "v12_semantics": {
+      "passed": 7,
+      "failed": 0,
+      "report": "MOBILE_UI_SEARCH_SEMANTICS_OBSERVATION.json"
+    },
+    "governance_v24": {
+      "counts": {
+        "PASS": 114,
+        "FAIL": 0,
+        "BLOCKED": 0,
+        "SKIP": 0,
+        "NOT_APPLICABLE": 1
+      },
+      "exit": 0,
+      "all7448CodeInputsMatched": true,
+      "source": "93b08cadbd7ec7b420616ac583b67825e69db5b512d413bae3ee0571273426ab",
+      "prerequisites": [
+        {
+          "check": "install",
+          "exit": 0,
+          "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/governance-category-capsule-v24.install.log"
+        },
+        {
+          "check": "shared-build",
+          "exit": 0,
+          "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/governance-category-capsule-v24.shared-build.log"
+        },
+        {
+          "check": "sdk-typecheck",
+          "exit": 0,
+          "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/governance-category-capsule-v24.sdk-typecheck.log"
+        },
+        {
+          "check": "contracts-provider",
+          "exit": 0,
+          "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/governance-category-capsule-v24.contracts-provider.log"
+        },
+        {
+          "check": "web-recovery",
+          "exit": 0,
+          "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/governance-category-capsule-v24.web-recovery.log"
+        },
+        {
+          "check": "governance-regression",
+          "exit": 0,
+          "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/governance-category-capsule-v24.governance-regression.log"
+        }
+      ],
+      "scope": "Disposable test clone only; active source untouched"
+    },
+    "ios_compile_v3_correlation": {
+      "implementationBytesUnchanged": true,
+      "onlyDifferentSourceInput": [
+        "apps/merchant/mobile/test/ui_shell_foundations_test.dart"
+      ],
+      "noNewIosBuildRequiredForTestOnlyChange": true
+    },
+    "native_v7": {
+      "runId": "5c8bdb36198b",
+      "assertionsPassed": 1,
+      "assertionsFailed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "wallSeconds": 392.2,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "report": "COMPILED_MOBILE_UI_SHELL_ANDROID_WEB_V7_QUALIFICATION.json"
+    }
+  },
+  "protected": "5195 hashes checked; only prior classified Staff presentation lifetime diff. No backend/domain/persistence changes in this cohort.",
+  "native": "Terminal bounded native functional pass, current source archived; new segment spacing and source-reviewed search no-match findings open",
+  "remaining": [
+    "Actual current native shell/search/segment keyboards/theme/draft verification and category recovery/readback",
+    "Current isolated governance gate",
+    "Full UI denominator reconciliation and remaining app cohorts",
+    "AI operator current presentation/source reviewed: no store/actor lifetime guard across _run awaits, old unscrollable form; migration pending without changing command semantics or persistence",
+    "iOS UI, full segment effects/web sync, physical performance and eligible whole-app cleanup pending",
+    "Dashboard chart tooltip multiplies an unscaled spot by1000; trace existing service units and correct only presentation after current frozen run. Preserve domain calculations."
+  ],
+  "findings": [
+    {
+      "id": "UI-SHELL-04",
+      "state": "closed-at-bounded-normal360dp-composition",
+      "evidence": [
+        {
+          "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-shell-v5-native-root-navigation-dark.png",
+          "sha256": "aabc5d9561b1287ba62493064ee59bdfd3f90e2c65f8b1028840f31296d3a097",
+          "visuallyInspected": true
+        },
+        {
+          "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-shell-v5-native-root-navigation-light.png",
+          "sha256": "5e843b3eda25a05e754d9009139c60aeb065a1bc3f78618ac3365332a5cc7acd",
+          "visuallyInspected": true
+        }
+      ],
+      "finding": "At normal device text size, horizontal navigation viewport clips the Home label after selecting More. Preserve large-text scrolling, but normal360dp must fit all5destinations.",
+      "replacementEvidence": [
+        {
+          "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-shell-v6-native-root-navigation-dark.png",
+          "sha256": "c37315902c90e476cbad61e3c04af80c7b8aa937b861941eff4a6f008db796cd",
+          "visuallyInspected": true
+        },
+        {
+          "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-shell-v6-native-root-navigation-light.png",
+          "sha256": "fb0f13f2016d5e11f29e4ffa80f40e0c28d55a62963c77a33c3e076c351d333d",
+          "visuallyInspected": true
+        }
+      ],
+      "basis": "All five labels fully visible in both inspected native themes; normal-width and scale2.4 shared layout regressions pass. Broader app/platform acceptance separate."
+    },
+    {
+      "id": "UI-SEGMENT-01",
+      "finding": "Native adjacent segment text fields have no vertical separation; persistent labels touch the preceding border. Add composition spacing without changing field validators/rules/units."
+    },
+    {
+      "id": "UI-SEARCH-02",
+      "finding": "Source review: no-match may be rendered during the debounce before a response. Add a positive-response presentation gate; request timing/parameters remain unchanged."
+    }
+  ]
+}

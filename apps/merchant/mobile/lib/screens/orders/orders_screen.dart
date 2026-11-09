@@ -1,111 +1,245 @@
-import '../../services/api_client.dart';
-import '../../widgets/shared/merchant_export_share.dart';
-// ============================================================
-// ORDERS SCREEN v2
-// Enhanced order management with toolbar, filters, and bulk actions
-// ============================================================
-
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' as mobile_tokens;
 import 'package:flutter/services.dart';
-import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
+import 'package:intl/intl.dart';
+import 'package:letbuyy_core/letbuyy_core.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
+import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
-import '../../app/store_context.dart';
 import '../../app/routes.dart';
+import '../../app/store_context.dart';
+import '../../services/api_client.dart';
 import '../../services/order_service.dart';
 import '../../services/product_service.dart';
 import '../../theme/app_theme_colors.dart';
 import '../../widgets/shared/accessible_tap_region.dart';
-import 'package:intl/intl.dart';
+import '../../widgets/shared/merchant_export_share.dart';
+import '../../widgets/shared/merchant_store_view.dart';
 
 class OrdersScreen extends StatefulWidget {
-  const OrdersScreen({super.key});
-
+  const OrdersScreen({
+    super.key,
+    this.onPageActionsChanged,
+    this.isSurfaceActive,
+  });
+  final void Function(Object owner, bool visible)? onPageActionsChanged;
+  final bool Function()? isSurfaceActive;
   @override
   State<OrdersScreen> createState() => _OrdersScreenState();
 }
 
 class _OrdersScreenState extends State<OrdersScreen> {
-  // Services
-  late final OrderService _orderService;
-  String? _storeId;
-
-  // Data State
-  List<OrderContract> _orders = [];
-  bool _isLoading = true;
-
-  // Search & Filter State
-  String _searchQuery = '';
-  String _statusFilter =
-      'all'; // all, pending, confirmed, shipped, delivered, cancelled
-  String _sortBy = 'newest'; // newest, oldest, amount_high, amount_low
-  String _dateFilter = 'all'; // all, today, week, month
-
-  // Selection State
-  bool _isSelectionMode = false;
-  Set<String> _selectedOrderIds = {};
-
-  // Controllers
-  final TextEditingController _searchController = TextEditingController();
-  final ScrollController _scrollController = ScrollController();
-
-  late AppThemeColors colors;
-
+  bool _loading = true;
+  String? _error;
   @override
   void initState() {
     super.initState();
+    _prepare();
+  }
+
+  Future<void> _prepare() async {
+    final stores = context.read<StoreContext>();
+    final epoch = stores.requestContextVersion;
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    try {
+      await stores.ensureSelectedStore();
+    } catch (_) {
+      if (mounted && stores.requestContextVersion == epoch) {
+        setState(
+          () => _error =
+              'Store access could not be confirmed. Retry loading orders.',
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final stores = context.watch<StoreContext>(), id = stores.selectedStoreId;
+    if (_loading || _error != null || id == null) {
+      return Scaffold(
+        appBar: CustomAppBar.responsive(context: context, title: 'Orders'),
+        body: SafeArea(
+          child: ListView(
+            padding: const EdgeInsets.all(24),
+            children: [
+              if (_loading) const LoadingIndicator(),
+              Text(
+                _loading
+                    ? 'Loading store access…'
+                    : _error ??
+                          'Choose a store from the dashboard to view orders.',
+              ),
+              if (_error != null)
+                TextButton(onPressed: _prepare, child: const Text('Retry')),
+            ],
+          ),
+        ),
+      );
+    }
+    return _OrdersWorkspace(
+      key: ValueKey(stores.requestContextKey),
+      storeId: id,
+      onPageActionsChanged: widget.onPageActionsChanged,
+      isSurfaceActive: widget.isSurfaceActive,
+    );
+  }
+}
+
+class _OrdersWorkspace extends StatefulWidget {
+  const _OrdersWorkspace({
+    super.key,
+    required this.storeId,
+    this.onPageActionsChanged,
+    this.isSurfaceActive,
+  });
+  final String storeId;
+  final void Function(Object owner, bool visible)? onPageActionsChanged;
+  final bool Function()? isSurfaceActive;
+  @override
+  State<_OrdersWorkspace> createState() => _OrdersWorkspaceState();
+}
+
+class _OrdersWorkspaceState extends State<_OrdersWorkspace> {
+  late final MerchantStoreView _view;
+  late final OrderService _orderService;
+  List<OrderContract> _orders = [];
+  bool _isLoading = true, _busy = false, _fresh = false, _loaded = false;
+  bool _denied = false, _needsReadback = false, _publishedActions = false;
+  String? _error, _notice, _progress;
+  Map<String, dynamic>? _exportJob;
+  int _page = 1;
+  String? _cursor, _nextCursor;
+  final _previousCursors = <String?>[];
+  bool _reading = false;
+  String _searchQuery = '',
+      _statusFilter = 'all',
+      _sortBy = 'newest',
+      _dateFilter = 'all';
+  bool _isSelectionMode = false;
+  Set<String> _selectedOrderIds = {};
+  final _searchController = TextEditingController();
+  final _scrollController = ScrollController();
+  AppThemeColors get colors => AppThemeColors.of(context);
+  bool get _current => mounted && merchantStoreViewCurrent(context, _view);
+  bool get _active =>
+      _current &&
+      (widget.isSurfaceActive?.call() ?? true) &&
+      (ModalRoute.of(context)?.isCurrent ?? true);
+  bool get _ready =>
+      _active && !_isLoading && !_busy && !_denied && !_needsReadback && _fresh;
+  @override
+  void initState() {
+    super.initState();
+    _view = (
+      key: context.read<StoreContext>().requestContextKey,
+      storeId: widget.storeId,
+    );
     _orderService = context.read<OrderService>();
-    _loadOrders();
+    // The store-keyed workspace can mount while an existing provider rebuilds.
+    // Its visible shell owns initial pending UI; notify that provider afterward.
+    Future<void>.microtask(() {
+      if (_current) _loadOrders();
+    });
+  }
+
+  void _publishActions() {
+    final visible = _isSelectionMode || _busy || _exportJob != null;
+    if (_publishedActions == visible) return;
+    _publishedActions = visible;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) widget.onPageActionsChanged?.call(this, visible);
+    });
   }
 
   @override
   void dispose() {
+    final notify = widget.onPageActionsChanged;
+    if (_publishedActions)
+      WidgetsBinding.instance.addPostFrameCallback(
+        (_) => notify?.call(this, false),
+      );
     _searchController.dispose();
     _scrollController.dispose();
     super.dispose();
   }
 
   Future<void> _loadOrders() async {
-    setState(() => _isLoading = true);
+    if (!_current || _busy || _reading) return;
+    _reading = true;
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
     try {
-      // Lazily resolve store context.
-      if (_storeId == null) {
-        final store = await context.read<StoreContext>().ensureSelectedStore();
-        _storeId = store?.id;
-      }
-
-      if (_storeId == null) {
-        if (mounted) {
-          setState(() {
-            _orders = [];
-            _isLoading = false;
-          });
+      final orders = await _orderService.fetchOrders(
+        widget.storeId,
+        page: _page,
+        cursor: _cursor,
+      );
+      if (!_current) return;
+      setState(() {
+        _orders = orders;
+        _loaded = true;
+        _fresh = _orderService.hasFreshOrders;
+        _nextCursor = _orderService.ordersNextCursor;
+        if (_fresh) {
+          _needsReadback = false;
+          _denied = false;
         }
-        return;
-      }
-
-      final orders = await _orderService.fetchOrders(_storeId!);
-      if (mounted) {
-        setState(() {
-          _orders = orders;
-          _isLoading = false;
-        });
-      }
+        _selectedOrderIds.removeWhere((id) => !orders.any((o) => o.id == id));
+      });
     } catch (e) {
-      debugPrint('Error loading orders: $e');
-      if (mounted) setState(() => _isLoading = false);
+      if (!_current) return;
+      setState(() {
+        _fresh = false;
+        _denied =
+            e is ApiException &&
+            (const [401, 403, 404].contains(e.statusCode) ||
+                e.code == 'SESSION_CONTEXT_CHANGED');
+        if (_denied || e is FormatException) {
+          _orders = [];
+          _selectedOrderIds.clear();
+        }
+        _error = _denied
+            ? 'Order access could not be confirmed. Reopen orders from the intended store.'
+            : 'Orders could not be refreshed. Saved results, if shown, are unconfirmed.';
+      });
+    } finally {
+      _reading = false;
+      if (_current) setState(() => _isLoading = false);
     }
   }
 
-  // ============================================
-  // COMPUTED PROPERTIES
-  // ============================================
+  void _changePage(bool next) {
+    if (!_active || _busy || _isLoading || _denied || !_fresh) return;
+    if (next && (_nextCursor == null || _nextCursor!.isEmpty)) return;
+    if (!next && _previousCursors.isEmpty) return;
+    setState(() {
+      if (next) {
+        _previousCursors.add(_cursor);
+        _cursor = _nextCursor;
+        _page++;
+      } else {
+        _cursor = _previousCursors.removeLast();
+        _page--;
+      }
+      _orders = [];
+      _fresh = false;
+      _loaded = false;
+      _nextCursor = null;
+      _selectedOrderIds.clear();
+    });
+    _loadOrders();
+  }
 
   List<OrderContract> get _filteredOrders {
     var orders = List<OrderContract>.from(_orders);
@@ -183,11 +317,8 @@ class _OrdersScreenState extends State<OrdersScreen> {
   int _countStatus(String status) =>
       _orders.where((o) => _orderStatus(o) == status).length;
 
-  // ============================================
-  // ACTIONS
-  // ============================================
-
   void _toggleSelectionMode() {
+    if (!_ready) return;
     HapticFeedback.mediumImpact();
     setState(() {
       _isSelectionMode = !_isSelectionMode;
@@ -196,402 +327,298 @@ class _OrdersScreenState extends State<OrdersScreen> {
   }
 
   void _toggleOrderSelection(String orderId) {
+    if (!_ready) return;
     HapticFeedback.selectionClick();
     setState(() {
-      if (_selectedOrderIds.contains(orderId)) {
-        _selectedOrderIds.remove(orderId);
-      } else {
-        _selectedOrderIds.add(orderId);
-      }
+      if (!_selectedOrderIds.add(orderId)) _selectedOrderIds.remove(orderId);
     });
   }
 
   void _selectAll() {
-    setState(() {
-      _selectedOrderIds = _filteredOrders.map((o) => o.id).toSet();
-    });
+    if (!_ready) return;
+    setState(
+      () => _selectedOrderIds = _filteredOrders.map((o) => o.id).toSet(),
+    );
   }
 
-  void _clearSelection() {
-    setState(() => _selectedOrderIds.clear());
+  Future<void> _mutation(Future<void> Function() command) async {
+    if (!_ready) return;
+    setState(() {
+      _busy = true;
+      _progress = 'Submitting order change…';
+      _error = null;
+      _notice = null;
+    });
+    try {
+      await command();
+    } catch (_) {
+      if (_current)
+        setState(() {
+          _needsReadback = true;
+          _error =
+              'The outcome could not be confirmed. Refresh orders before making another change. Closing this screen does not cancel a submitted request.';
+        });
+    } finally {
+      if (_current)
+        setState(() {
+          _busy = false;
+          _progress = null;
+        });
+    }
+    if (_current) await _loadOrders();
   }
 
   Future<void> _bulkUpdateStatus(String newStatus) async {
-    if (_selectedOrderIds.isEmpty) return;
-
-    final confirm = await _showConfirmDialog(
-      title: 'Update ${_selectedOrderIds.length} Orders?',
-      message: 'Mark all selected orders as ${_statusLabel(newStatus)}?',
-      confirmText: 'Update',
-      confirmColor: _statusColor(newStatus),
+    if (!_ready || _selectedOrderIds.isEmpty) return;
+    final selected = Set<String>.of(_selectedOrderIds);
+    final confirm = await showLetbuyyConfirmation(
+      context: context,
+      title: 'Update ${selected.length} orders?',
+      message:
+          'Mark these selected orders as ${_statusLabel(newStatus)}? Each order is authorized by the server. A failed request can leave a partial result; refresh to review it.',
+      confirmLabel: 'Update orders',
+      guard: (_, child) => guardMerchantStoreView(_view, child),
     );
-
-    if (confirm != true) return;
-
-    try {
-      for (final orderId in _selectedOrderIds) {
+    if (!confirm || !_ready) return;
+    await _mutation(() async {
+      for (final orderId in selected) {
+        if (!_current) return;
         await _orderService.updateOrderStatus(orderId, status: newStatus);
       }
-
-      HapticFeedback.mediumImpact();
-      _showSnackBar(
-        '${_selectedOrderIds.length} orders updated to ${_statusLabel(newStatus)}',
-      );
-      _clearSelection();
-      _toggleSelectionMode();
-      _loadOrders();
-    } catch (e) {
-      _showSnackBar('Error: $e', isError: true);
-    }
+      if (_current)
+        setState(() {
+          _selectedOrderIds.clear();
+          _isSelectionMode = false;
+          _notice = 'Order changes acknowledged. Refreshing saved status…';
+        });
+    });
   }
 
-  void _handleStatusChange(OrderContract order, String newStatus) async {
-    try {
+  Future<void> _handleStatusChange(
+    OrderContract order,
+    String newStatus,
+  ) async {
+    if (!_ready) return;
+    Map<String, String>? result;
+    String? reason;
+    if (newStatus == 'shipped') {
+      result = await _showTrackingDialog();
+      if (result == null || !_ready) return;
+    } else if (newStatus == 'cancelled') {
+      reason = await _showCancelReasonDialog(order);
+      if (reason == null || !_ready) return;
+    }
+    await _mutation(() async {
       if (newStatus == 'shipped') {
-        final result = await _showTrackingDialog();
-        if (result != null) {
-          await _orderService.fulfillOrder(
-            order.id,
-            trackingNumber: result['number'],
-            carrier: result['carrier'],
-          );
-        } else {
-          return;
-        }
+        await _orderService.fulfillOrder(
+          order.id,
+          trackingNumber: result!['number'],
+          carrier: result['carrier'],
+        );
       } else if (newStatus == 'cancelled') {
-        final reason = await _showCancelReasonDialog(order);
-        if (reason == null) return;
-        await _orderService.cancelOrder(order.id, reason: reason);
+        await _orderService.cancelOrder(order.id, reason: reason!);
       } else {
         await _orderService.updateOrderStatus(order.id, status: newStatus);
       }
-      if (mounted) {
-        _showSnackBar(
-          'Order ${order.orderNumber} → ${_statusLabel(newStatus)}',
+      if (_current)
+        setState(
+          () => _notice = 'Order change acknowledged. Refreshing saved status…',
         );
-        _loadOrders();
-      }
-    } catch (e) {
-      if (mounted) {
-        _showSnackBar('Error: $e', isError: true);
-      }
+    });
+  }
+
+  Future<void> _exportOrders() async {
+    if (!_ready) return;
+    if (_exportJob != null) {
+      await _checkExport();
+      return;
+    }
+    final storeId = widget.storeId;
+    final status = _statusFilter == 'all' ? null : _statusFilter;
+    final format = await showLetbuyyFormSheet<String>(
+      context: context,
+      builder: (sheet) => guardMerchantStoreView(
+        _view,
+        LetbuyyFormSheet(
+          title: 'Export orders',
+          description:
+              'CSV includes the server-authorized orders${status == null ? '' : ' with status ${_statusLabel(status)}'}. Loaded-page search, date and sort controls do not affect this export.',
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(sheet),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(sheet, 'csv'),
+              child: const Text('Start CSV export'),
+            ),
+          ],
+          child: const Text(
+            'A queued job is not a completed download. Keep its status here and recheck the same job.',
+          ),
+        ),
+        sheet: true,
+      ),
+    );
+    if (format != 'csv' || !_ready) return;
+    setState(() {
+      _busy = true;
+      _progress = 'Starting CSV export…';
+      _error = null;
+    });
+    try {
+      final result = await _orderService.exportOrders(storeId, status: status);
+      if (!_current) return;
+      final job = result['job'] is Map ? result['job'] as Map : const {};
+      if (job['id'] == null || job['id'].toString().isEmpty)
+        throw const FormatException('Export job identity unavailable.');
+      setState(() => _exportJob = Map<String, dynamic>.from(job));
+      await _pollExport();
+    } catch (_) {
+      if (_current)
+        setState(
+          () => _error =
+              'Export acknowledgement is unavailable. A new job has not been automatically started.',
+        );
+    } finally {
+      if (_current)
+        setState(() {
+          _busy = false;
+          _progress = null;
+        });
     }
   }
 
-  void _exportOrders() async {
-    final storeId = _storeId;
-    if (storeId == null) {
-      _showSnackBar('Select a store before exporting orders.', isError: true);
-      return;
+  Future<void> _pollExport() async {
+    var latest = Map<String, dynamic>.from(_exportJob!);
+    for (var attempt = 0; attempt < 5; attempt += 1) {
+      if (latest['status'] == 'completed' || latest['status'] == 'failed')
+        break;
+      await Future<void>.delayed(const Duration(milliseconds: 350));
+      if (!_current) return;
+      final jobId = latest['id']?.toString();
+      if (jobId == null || jobId.isEmpty) break;
+      final detail = await _orderService.fetchExportJob(jobId);
+      if (!_current) return;
+      latest = detail['job'] is Map
+          ? Map<String, dynamic>.from(detail['job'] as Map)
+          : detail;
+      setState(() => _exportJob = latest);
     }
+    if (!_current) return;
+    setState(() => _exportJob = latest);
+  }
 
-    final format = await showModalBottomSheet<String>(
-      context: context,
-      backgroundColor: colors.card,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Export Orders',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: colors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 16),
-            _buildExportOption(
-              icon: Icons.table_chart_rounded,
-              title: 'Export as CSV',
-              subtitle: 'Spreadsheet format from your orders',
-              onTap: () => Navigator.pop(context, 'csv'),
-            ),
-            const SizedBox(height: 16),
-          ],
-        ),
-      ),
-    );
-
-    if (format == 'csv') {
-      try {
-        final result = await _orderService.exportOrders(
-          storeId,
-          status: _statusFilter == 'all' ? null : _statusFilter,
+  Future<void> _checkExport() async {
+    if (!_active || _busy || _isLoading || _denied || _exportJob == null)
+      return;
+    setState(() {
+      _busy = true;
+      _progress = 'Checking the existing export job…';
+      _error = null;
+    });
+    try {
+      final jobId = _exportJob!['id']?.toString();
+      if (jobId == null || jobId.isEmpty)
+        throw const FormatException('Export job identity unavailable.');
+      final detail = await _orderService.fetchExportJob(jobId);
+      if (!_current) return;
+      setState(
+        () => _exportJob = detail['job'] is Map
+            ? Map<String, dynamic>.from(detail['job'] as Map)
+            : detail,
+      );
+    } catch (_) {
+      if (_current)
+        setState(
+          () => _error =
+              'This export job could not be checked. Recheck the same job when access is available.',
         );
-        final job = result['job'] is Map ? result['job'] as Map : const {};
-        var latest = Map<String, dynamic>.from(job);
-        for (var attempt = 0; attempt < 5; attempt += 1) {
-          if (latest['status'] == 'completed' || latest['status'] == 'failed') {
-            break;
-          }
-          await Future<void>.delayed(const Duration(milliseconds: 350));
-          final jobId = latest['id']?.toString();
-          if (jobId == null || jobId.isEmpty) break;
-          final detail = await _orderService.fetchExportJob(jobId);
-          latest = detail['job'] is Map
-              ? Map<String, dynamic>.from(detail['job'] as Map)
-              : detail;
-        }
+    } finally {
+      if (_current)
+        setState(() {
+          _busy = false;
+          _progress = null;
+        });
+    }
+  }
 
-        final status = latest['status']?.toString() ?? 'queued';
-        final downloadUrl = latest['download_url']?.toString();
-        if (status == 'completed' &&
-            downloadUrl != null &&
-            downloadUrl.isNotEmpty) {
-          await shareMerchantExport(api: context.read<ApiClient>(), job: latest);
-          _showSnackBar('Order CSV export ready to share.');
-        } else {
-          _showSnackBar('Order CSV export $status. Try again shortly.');
-        }
-      } catch (_) {
-        _showSnackBar('Could not start order export.', isError: true);
-      }
+  Future<void> _shareExport() async {
+    if (!_active || _busy || _denied || _exportJob?['status'] != 'completed')
+      return;
+    final job = Map<String, dynamic>.from(_exportJob!);
+    final api = context.read<ApiClient>();
+    setState(() {
+      _busy = true;
+      _progress = 'Preparing the saved CSV…';
+    });
+    try {
+      await shareMerchantExport(api: api, job: job, isCurrent: () => _active);
+    } catch (_) {
+      if (_current)
+        setState(
+          () => _error =
+              'The completed export could not be shared. Recheck this job.',
+        );
+    } finally {
+      if (_current)
+        setState(() {
+          _busy = false;
+          _progress = null;
+        });
     }
   }
 
   Future<void> _createDraftOrder() async {
-    if (_storeId == null) {
-      _showSnackBar('Select a store before creating a draft.', isError: true);
-      return;
-    }
-
+    if (!_ready) return;
+    setState(() {
+      _busy = true;
+      _progress = 'Loading products for a draft…';
+      _error = null;
+    });
     List<Map<String, dynamic>> products;
     try {
       products = await context.read<ProductService>().fetchProducts(
-        _storeId!,
+        widget.storeId,
         limit: 50,
       );
     } catch (_) {
-      if (mounted) {
-        _showSnackBar(
-          'Unable to load products for draft order.',
-          isError: true,
-        );
-      }
+      if (_current)
+        setState(() => _error = 'Products could not be loaded for a draft.');
       return;
+    } finally {
+      if (_current)
+        setState(() {
+          _busy = false;
+          _progress = null;
+        });
     }
-
-    if (!mounted) return;
+    if (!_ready) return;
     if (products.isEmpty) {
-      _showSnackBar(
-        'Add a product before creating a draft order.',
-        isError: true,
-      );
+      setState(() => _error = 'Add a product before creating a draft order.');
       return;
     }
-
-    final nameController = TextEditingController();
-    final emailController = TextEditingController();
-    final phoneController = TextEditingController();
-    final notesController = TextEditingController();
-    String selectedProductId = products.first['id'].toString();
-    int quantity = 1;
-    bool convertNow = false;
-
-    final submitted = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => StatefulBuilder(
-        builder: (dialogContext, setDialogState) => AlertDialog(
-          backgroundColor: colors.card,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          title: Text(
-            'New draft order',
-            style: TextStyle(color: colors.textPrimary),
-          ),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: nameController,
-                  style: TextStyle(color: colors.textPrimary),
-                  decoration: InputDecoration(
-                    labelText: 'Customer name',
-                    labelStyle: TextStyle(color: colors.textSecondary),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  style: TextStyle(color: colors.textPrimary),
-                  decoration: InputDecoration(
-                    labelText: 'Customer email',
-                    labelStyle: TextStyle(color: colors.textSecondary),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: phoneController,
-                  keyboardType: TextInputType.phone,
-                  style: TextStyle(color: colors.textPrimary),
-                  decoration: InputDecoration(
-                    labelText: 'Phone',
-                    labelStyle: TextStyle(color: colors.textSecondary),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                DropdownButtonFormField<String>(
-                  value: selectedProductId,
-                  dropdownColor: colors.card,
-                  decoration: InputDecoration(
-                    labelText: 'Product',
-                    labelStyle: TextStyle(color: colors.textSecondary),
-                  ),
-                  style: TextStyle(color: colors.textPrimary),
-                  items: products
-                      .map(
-                        (product) => DropdownMenuItem<String>(
-                          value: product['id'].toString(),
-                          child: Text(_productLabel(product)),
-                        ),
-                      )
-                      .toList(growable: false),
-                  onChanged: (value) {
-                    if (value == null) return;
-                    setDialogState(() => selectedProductId = value);
-                  },
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        'Quantity',
-                        style: TextStyle(color: colors.textSecondary),
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: quantity <= 1
-                          ? null
-                          : () => setDialogState(() => quantity -= 1),
-                      icon: const Icon(Icons.remove_circle_outline_rounded),
-                    ),
-                    Text(
-                      '$quantity',
-                      style: TextStyle(
-                        color: colors.textPrimary,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: quantity >= 999
-                          ? null
-                          : () => setDialogState(() => quantity += 1),
-                      icon: const Icon(Icons.add_circle_outline_rounded),
-                    ),
-                  ],
-                ),
-                TextField(
-                  controller: notesController,
-                  maxLines: 2,
-                  style: TextStyle(color: colors.textPrimary),
-                  decoration: InputDecoration(
-                    labelText: 'Notes',
-                    labelStyle: TextStyle(color: colors.textSecondary),
-                  ),
-                ),
-                SwitchListTile.adaptive(
-                  contentPadding: EdgeInsets.zero,
-                  value: convertNow,
-                  activeColor: AppColors.lavender,
-                  title: Text(
-                    'Create order now',
-                    style: TextStyle(color: colors.textPrimary),
-                  ),
-                  onChanged: (value) =>
-                      setDialogState(() => convertNow = value),
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext, false),
-              child: Text(
-                'Cancel',
-                style: TextStyle(color: colors.textSecondary),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                final name = nameController.text.trim();
-                final email = emailController.text.trim();
-                if (name.isEmpty || email.isEmpty || !email.contains('@')) {
-                  return;
-                }
-                Navigator.pop(dialogContext, true);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.lavender,
-              ),
-              child: const Text('Save draft'),
-            ),
-          ],
+    final saved = await Navigator.of(context).push<_DraftOrderOutcome>(
+      MaterialPageRoute(
+        builder: (_) => guardMerchantStoreView(
+          _view,
+          _DraftOrderEditor(view: _view, products: products),
+          fullPage: true,
         ),
       ),
     );
-
-    if (submitted != true) {
-      nameController.dispose();
-      emailController.dispose();
-      phoneController.dispose();
-      notesController.dispose();
-      return;
-    }
-
-    try {
-      final draft = await _orderService.createDraftOrder(
-        storeId: _storeId!,
-        customerName: nameController.text,
-        customerEmail: emailController.text,
-        customerPhone: phoneController.text,
-        notes: notesController.text,
-        items: [
-          {'product_id': selectedProductId, 'quantity': quantity},
-        ],
+    if (_current && saved != null) {
+      setState(
+        () => _notice = saved.converted
+            ? 'Order conversion acknowledged. Refreshing saved orders…'
+            : 'Draft saved${saved.draftId == null ? '' : ' · ${saved.draftId}'}. Creating an order was not requested.',
       );
-
-      if (convertNow) {
-        final draftId = draft['id']?.toString();
-        if (draftId == null || draftId.isEmpty) {
-          throw StateError('Draft response did not include an id.');
-        }
-        await _orderService.convertDraftOrder(draftId);
-        if (mounted) {
-          _showSnackBar('Draft converted to order');
-          _loadOrders();
-        }
-      } else if (mounted) {
-        _showSnackBar('Draft order saved');
-      }
-    } catch (_) {
-      if (mounted) {
-        _showSnackBar('Unable to save draft order.', isError: true);
-      }
-    } finally {
-      nameController.dispose();
-      emailController.dispose();
-      phoneController.dispose();
-      notesController.dispose();
+      await _loadOrders();
     }
-  }
-
-  String _productLabel(Map<String, dynamic> product) {
-    final name = (product['name'] ?? product['title'] ?? 'Product').toString();
-    final sku = product['sku']?.toString();
-    return sku == null || sku.isEmpty ? name : '$name ($sku)';
   }
 
   Future<void> _printPackingSlip() async {
+    if (!_ready) return;
     OrderContract? order;
     if (_selectedOrderIds.isNotEmpty) {
       for (final candidate in _orders) {
@@ -603,1117 +630,84 @@ class _OrdersScreenState extends State<OrdersScreen> {
     } else if (_orders.isNotEmpty) {
       order = _orders.first;
     }
-
     if (order == null) {
-      _showSnackBar('Select an order to print.', isError: true);
+      setState(() => _error = 'Select an order to print.');
       return;
     }
-
+    setState(() {
+      _busy = true;
+      _progress = 'Loading the saved packing slip…';
+    });
     try {
       final slip = await _orderService.fetchPackingSlip(order.id);
-      if (!mounted) return;
+      if (!_current) return;
+      setState(() {
+        _busy = false;
+        _progress = null;
+      });
       await _showPackingSlipDialog(slip);
     } catch (_) {
-      if (mounted) _showSnackBar('Unable to load packing slip.', isError: true);
+      if (_current)
+        setState(() => _error = 'Packing slip could not be loaded.');
+    } finally {
+      if (_current)
+        setState(() {
+          _busy = false;
+          _progress = null;
+        });
     }
   }
 
-  Future<void> _showPackingSlipDialog(Map<String, dynamic> slip) {
+  Future<void> _showPackingSlipDialog(Map<String, dynamic> slip) async {
     final title = (slip['order_number'] ?? 'Order').toString();
     final text = (slip['text'] ?? '').toString();
     final pdfBase64 = (slip['pdf_base64'] ?? '').toString();
     final filename = (slip['filename'] ?? 'packing-slip.pdf').toString();
-    return showDialog<void>(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: colors.card,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(
-          'Packing slip $title',
-          style: TextStyle(color: colors.textPrimary),
-        ),
-        content: SingleChildScrollView(
-          child: SelectableText(
-            text.isEmpty ? 'Packing slip unavailable.' : text,
-            style: TextStyle(color: colors.textPrimary),
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute(
+        builder: (_) => guardMerchantStoreView(
+          _view,
+          _PackingSlipPage(
+            view: _view,
+            title: title,
+            text: text,
+            pdfBase64: pdfBase64,
+            filename: filename,
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('Close', style: TextStyle(color: colors.textSecondary)),
-          ),
-          TextButton.icon(
-            onPressed: text.isEmpty
-                ? null
-                : () async {
-                    await Clipboard.setData(ClipboardData(text: text));
-                    if (context.mounted) Navigator.pop(context);
-                    if (mounted) _showSnackBar('Packing slip copied');
-                  },
-            icon: const Icon(Icons.copy_rounded, size: 18),
-            label: const Text('Copy'),
-          ),
-          TextButton.icon(
-            onPressed: pdfBase64.isEmpty
-                ? null
-                : () async {
-                    await _sharePackingSlipPdf(pdfBase64, filename);
-                    if (context.mounted) Navigator.pop(context);
-                  },
-            icon: const Icon(Icons.ios_share_rounded, size: 18),
-            label: const Text('Share PDF'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _sharePackingSlipPdf(String pdfBase64, String filename) async {
-    final bytes = base64Decode(pdfBase64);
-    final tempDir = await getTemporaryDirectory();
-    final safeName = filename.endsWith('.pdf') ? filename : '$filename.pdf';
-    final file = File('${tempDir.path}/$safeName');
-    await file.writeAsBytes(bytes, flush: true);
-    await Share.shareXFiles([
-      XFile(file.path, mimeType: 'application/pdf'),
-    ], subject: safeName);
-  }
-
-  Widget _buildExportOption({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required VoidCallback onTap,
-  }) {
-    return AccessibleTapRegion(
-      label: title,
-      hint: subtitle,
-      onTap: onTap,
-      excludeChildSemantics: true,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: colors.surfaceVariant,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: colors.divider),
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: AppColors.lavender.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(icon, color: AppColors.lavender, size: 22),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: TextStyle(
-                        color: colors.textPrimary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    Text(
-                      subtitle,
-                      style: TextStyle(
-                        color: colors.textSecondary,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Icon(Icons.chevron_right, color: colors.textTertiary),
-            ],
-          ),
+          fullPage: true,
         ),
       ),
     );
   }
 
-  Future<Map<String, String>?> _showTrackingDialog() async {
-    final numberController = TextEditingController();
-    final carrierController = TextEditingController();
-
-    return showDialog<Map<String, String>>(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: colors.card,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(
-          'Add Tracking Info',
-          style: TextStyle(color: colors.textPrimary),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: carrierController,
-              style: TextStyle(color: colors.textPrimary),
-              decoration: InputDecoration(
-                labelText: 'Carrier (e.g., Delhivery)',
-                labelStyle: TextStyle(color: colors.textSecondary),
-                hintText: 'Enter shipping carrier',
-                hintStyle: TextStyle(color: colors.textTertiary),
-              ),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: numberController,
-              style: TextStyle(color: colors.textPrimary),
-              decoration: InputDecoration(
-                labelText: 'Tracking Number',
-                labelStyle: TextStyle(color: colors.textSecondary),
-                hintText: 'Enter tracking number',
-                hintStyle: TextStyle(color: colors.textTertiary),
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              'Cancel',
-              style: TextStyle(color: colors.textSecondary),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context, {
-                'number': numberController.text,
-                'carrier': carrierController.text,
-              });
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.lavender,
-            ),
-            child: const Text('Ship Order'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<bool?> _showConfirmDialog({
-    required String title,
-    required String message,
-    required String confirmText,
-    Color confirmColor = Colors.redAccent,
-  }) {
-    return showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: colors.card,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(title, style: TextStyle(color: colors.textPrimary)),
-        content: Text(message, style: TextStyle(color: colors.textSecondary)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(
-              'Cancel',
-              style: TextStyle(color: colors.textSecondary),
-            ),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(confirmText, style: TextStyle(color: confirmColor)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<String?> _showCancelReasonDialog(OrderContract order) {
-    final reasonController = TextEditingController();
-    final orderNumber = _orderNumber(order);
-    return showDialog<String>(
-      context: context,
-      builder: (context) {
-        var reason = '';
-        return StatefulBuilder(
-          builder: (context, setDialogState) => AlertDialog(
-            backgroundColor: colors.card,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            title: Text(
-              'Cancel $orderNumber?',
-              style: TextStyle(color: colors.textPrimary),
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Add a cancellation reason for the order timeline.',
-                  style: TextStyle(color: colors.textSecondary),
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: reasonController,
-                  autofocus: true,
-                  maxLines: 3,
-                  maxLength: 500,
-                  onChanged: (value) =>
-                      setDialogState(() => reason = value.trim()),
-                  decoration: InputDecoration(
-                    labelText: 'Cancellation reason',
-                    hintText: 'Customer requested cancellation',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text(
-                  'Keep order',
-                  style: TextStyle(color: colors.textSecondary),
-                ),
-              ),
-              TextButton(
-                onPressed: reason.isEmpty
-                    ? null
-                    : () => Navigator.pop(context, reason),
-                child: Text(
-                  'Cancel order',
-                  style: TextStyle(color: colors.error),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  void _showSnackBar(String message, {bool isError = false}) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: isError ? colors.error : Colors.green,
-        behavior: SnackBarBehavior.floating,
-        margin: const EdgeInsets.all(16),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      ),
-    );
-  }
-
-  // ============================================
-  // BUILD
-  // ============================================
-
-  @override
-  Widget build(BuildContext context) {
-    colors = AppThemeColors.of(context);
-
-    if (_storeId == null && _isLoading == false) {
-      return Scaffold(
-        backgroundColor: colors.bgStart,
-        body: Center(
-          child: Text(
-            'Please login to view orders',
-            style: TextStyle(color: colors.textSecondary),
-          ),
+  Future<Map<String, String>?> _showTrackingDialog() =>
+      showLetbuyyFormSheet<Map<String, String>>(
+        context: context,
+        builder: (_) =>
+            guardMerchantStoreView(_view, const _TrackingSheet(), sheet: true),
+      );
+  Future<String?> _showCancelReasonDialog(OrderContract order) =>
+      showLetbuyyFormSheet<String>(
+        context: context,
+        builder: (_) => guardMerchantStoreView(
+          _view,
+          _CancellationSheet(number: _orderNumber(order)),
+          sheet: true,
         ),
       );
+  void _openOrder(OrderContract order) {
+    if (!_active || _busy || _denied) return;
+    if (_isSelectionMode) {
+      _toggleOrderSelection(order.id);
+      return;
     }
-
-    return Scaffold(
-      backgroundColor: colors.bgStart,
-      body: Container(
-        decoration: colors.backgroundGradient,
-        child: SafeArea(
-          bottom: false,
-          child: Column(
-            children: [
-              _buildHeader(),
-              _buildActionToolbar(),
-              _buildStatsRow(),
-              _buildFilterSortBar(),
-              Expanded(
-                child: _isLoading ? _buildLoading() : _buildOrdersList(),
-              ),
-              if (_isSelectionMode && _selectedOrderIds.isNotEmpty)
-                _buildBulkActionsBar(),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLoading() {
-    return const Center(
-      child: CircularProgressIndicator(color: AppColors.lavender),
-    );
-  }
-
-  // ============================================
-  // HEADER
-  // ============================================
-
-  Widget _buildHeader() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 8, 12, 0),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Orders',
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: colors.textPrimary,
-                  ),
-                ),
-                Text(
-                  'Manage your store orders',
-                  style: TextStyle(fontSize: 12, color: colors.textSecondary),
-                ),
-              ],
-            ),
-          ),
-          IconButton(
-            icon: Icon(
-              Icons.assignment_return_outlined,
-              color: colors.textSecondary,
-            ),
-            onPressed: () => Navigator.pushNamed(context, AppRoutes.returns),
-            tooltip: 'Returns',
-          ),
-          IconButton(
-            icon: Icon(Icons.refresh_rounded, color: colors.textSecondary),
-            onPressed: _loadOrders,
-            tooltip: 'Refresh',
-          ),
-          PopupMenuButton<String>(
-            icon: Icon(Icons.more_vert, color: colors.textSecondary),
-            color: colors.card,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            itemBuilder: (context) => [
-              PopupMenuItem(
-                value: 'settings',
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.settings_rounded,
-                      size: 20,
-                      color: colors.textSecondary,
-                    ),
-                    const SizedBox(width: 12),
-                    Text(
-                      'Settings',
-                      style: TextStyle(color: colors.textPrimary),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-            onSelected: (value) {},
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ============================================
-  // ACTION TOOLBAR
-  // ============================================
-
-  Widget _buildActionToolbar() {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-      decoration: BoxDecoration(
-        color: colors.surfaceVariant,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: colors.divider),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          _buildToolbarButton(
-            icon: Icons.upload_rounded,
-            label: 'Export',
-            onTap: _exportOrders,
-          ),
-          _buildToolbarDivider(),
-          _buildToolbarButton(
-            icon: Icons.note_add_rounded,
-            label: 'Draft',
-            onTap: _createDraftOrder,
-          ),
-          _buildToolbarDivider(),
-          _buildToolbarButton(
-            icon: Icons.print_rounded,
-            label: 'Print',
-            onTap: _printPackingSlip,
-          ),
-          _buildToolbarDivider(),
-          _buildToolbarButton(
-            icon: _isSelectionMode
-                ? Icons.close_rounded
-                : Icons.checklist_rounded,
-            label: _isSelectionMode ? 'Cancel' : 'Select',
-            onTap: _toggleSelectionMode,
-            isActive: _isSelectionMode,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildToolbarButton({
-    required IconData icon,
-    required String label,
-    required VoidCallback onTap,
-    bool isPrimary = false,
-    bool isActive = false,
-  }) {
-    final color = isPrimary
-        ? AppColors.lavender
-        : isActive
-        ? AppColors.lavender
-        : colors.textSecondary;
-    return AccessibleTapRegion(
-      label: label,
-      hint: isActive ? '$label active' : null,
-      onTap: onTap,
-      excludeChildSemantics: true,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(10),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, color: color, size: 22),
-              const SizedBox(height: 4),
-              Text(
-                label,
-                style: TextStyle(
-                  color: color,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildToolbarDivider() {
-    return Container(height: 30, width: 1, color: colors.divider);
-  }
-
-  // ============================================
-  // STATS ROW
-  // ============================================
-
-  Widget _buildStatsRow() {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          children: [
-            _buildStatChip('Total', '${_orders.length}', AppColors.lavender),
-            const SizedBox(width: 8),
-            _buildStatChip(
-              'Pending',
-              '$_pendingCount',
-              const Color(0xFFF59E0B),
-            ),
-            const SizedBox(width: 8),
-            _buildStatChip(
-              'Confirmed',
-              '$_confirmedCount',
-              const Color(0xFF3B82F6),
-            ),
-            const SizedBox(width: 8),
-            _buildStatChip(
-              'Shipped',
-              '$_shippedCount',
-              mobile_tokens.LetbuyyColorTokens.brandPrimary,
-            ),
-            const SizedBox(width: 8),
-            _buildStatChip(
-              'Delivered',
-              '$_deliveredCount',
-              const Color(0xFF10B981),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildStatChip(String label, String value, Color color) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withValues(alpha: 0.3)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 6,
-            height: 6,
-            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-          ),
-          const SizedBox(width: 6),
-          Text(
-            '$value $label',
-            style: TextStyle(
-              color: color,
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ============================================
-  // FILTER & SORT BAR
-  // ============================================
-
-  Widget _buildFilterSortBar() {
-    return Column(
-      children: [
-        // Status filter chips
-        Container(
-          height: 52,
-          margin: const EdgeInsets.only(top: 12),
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            children: [
-              _buildFilterChip('All', 'all'),
-              _buildFilterChip('Pending', 'pending'),
-              _buildFilterChip('Confirmed', 'confirmed'),
-              _buildFilterChip('Shipped', 'shipped'),
-              _buildFilterChip('Delivered', 'delivered'),
-              _buildFilterChip('Cancelled', 'cancelled'),
-            ],
-          ),
-        ),
-        // Sort + Date + Search row
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
-          child: Row(
-            children: [
-              // Sort dropdown
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: colors.surfaceVariant,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: colors.divider),
-                ),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    value: _sortBy,
-                    isDense: true,
-                    dropdownColor: colors.card,
-                    style: TextStyle(color: colors.textPrimary, fontSize: 12),
-                    icon: Icon(
-                      Icons.keyboard_arrow_down,
-                      color: colors.textSecondary,
-                      size: 18,
-                    ),
-                    items: const [
-                      DropdownMenuItem(value: 'newest', child: Text('Newest')),
-                      DropdownMenuItem(value: 'oldest', child: Text('Oldest')),
-                      DropdownMenuItem(
-                        value: 'amount_high',
-                        child: Text('Amount ↓'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'amount_low',
-                        child: Text('Amount ↑'),
-                      ),
-                    ],
-                    onChanged: (value) {
-                      if (value != null) setState(() => _sortBy = value);
-                    },
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              // Date dropdown
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: colors.surfaceVariant,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: colors.divider),
-                ),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    value: _dateFilter,
-                    isDense: true,
-                    dropdownColor: colors.card,
-                    style: TextStyle(color: colors.textPrimary, fontSize: 12),
-                    icon: Icon(
-                      Icons.keyboard_arrow_down,
-                      color: colors.textSecondary,
-                      size: 18,
-                    ),
-                    items: const [
-                      DropdownMenuItem(value: 'all', child: Text('All Time')),
-                      DropdownMenuItem(value: 'today', child: Text('Today')),
-                      DropdownMenuItem(value: 'week', child: Text('This Week')),
-                      DropdownMenuItem(
-                        value: 'month',
-                        child: Text('This Month'),
-                      ),
-                    ],
-                    onChanged: (value) {
-                      if (value != null) setState(() => _dateFilter = value);
-                    },
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              // Search field
-              Expanded(
-                child: Container(
-                  height: 36,
-                  decoration: BoxDecoration(
-                    color: colors.surfaceVariant,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: colors.divider),
-                  ),
-                  child: TextField(
-                    controller: _searchController,
-                    onChanged: (v) => setState(() => _searchQuery = v),
-                    style: TextStyle(color: colors.textPrimary, fontSize: 13),
-                    decoration: InputDecoration(
-                      hintText: 'Search...',
-                      hintStyle: TextStyle(
-                        color: colors.textTertiary,
-                        fontSize: 13,
-                      ),
-                      prefixIcon: Icon(
-                        Icons.search,
-                        color: colors.textTertiary,
-                        size: 18,
-                      ),
-                      suffixIcon: _searchQuery.isNotEmpty
-                          ? IconButton(
-                              icon: Icon(
-                                Icons.close,
-                                color: colors.textTertiary,
-                                size: 16,
-                              ),
-                              onPressed: () {
-                                _searchController.clear();
-                                setState(() => _searchQuery = '');
-                              },
-                            )
-                          : null,
-                      border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(vertical: 8),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildFilterChip(String label, String value) {
-    final isActive = _statusFilter == value;
-    void applyFilter() {
-      HapticFeedback.selectionClick();
-      setState(() => _statusFilter = value);
-    }
-
-    return AccessibleTapRegion(
-      key: ValueKey('order-filter-$value'),
-      label: '$label orders filter',
-      hint: isActive ? 'Current filter' : 'Show $label orders',
-      onTap: applyFilter,
-      selected: isActive,
-      excludeChildSemantics: true,
-      child: InkWell(
-        excludeFromSemantics: true,
-        onTap: applyFilter,
-        borderRadius: BorderRadius.circular(20),
-        child: Container(
-          margin: const EdgeInsets.only(right: 8),
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-          decoration: BoxDecoration(
-            color: isActive ? AppColors.lavender : colors.surfaceVariant,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: isActive ? AppColors.lavender : colors.divider,
-            ),
-          ),
-          child: Text(
-            label,
-            style: TextStyle(
-              color: isActive ? Colors.white : colors.textSecondary,
-              fontSize: 12,
-              fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  // ============================================
-  // ORDERS LIST
-  // ============================================
-
-  Widget _buildOrdersList() {
-    if (_orders.isEmpty) {
-      return _buildEmptyState();
-    }
-
-    if (_filteredOrders.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.search_off, size: 64, color: colors.textTertiary),
-            const SizedBox(height: 16),
-            Text(
-              'No orders match your filters',
-              style: TextStyle(color: colors.textSecondary),
-            ),
-            const SizedBox(height: 8),
-            TextButton(
-              onPressed: () => setState(() {
-                _statusFilter = 'all';
-                _dateFilter = 'all';
-                _searchQuery = '';
-                _searchController.clear();
-              }),
-              child: Text(
-                'Clear Filters',
-                style: TextStyle(color: AppColors.lavender),
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
-    return RefreshIndicator(
-      onRefresh: _loadOrders,
-      child: ListView.builder(
-        controller: _scrollController,
-        padding: EdgeInsets.fromLTRB(16, 0, 16, _isSelectionMode ? 100 : 24),
-        itemCount: _filteredOrders.length,
-        itemBuilder: (context, index) {
-          final order = _filteredOrders[index];
-          return _buildOrderCard(order);
-        },
-      ),
-    );
-  }
-
-  Widget _buildOrderCard(OrderContract order) {
-    final status = _orderStatus(order);
-    final statusColor = _statusColor(status);
-    final isSelected = _selectedOrderIds.contains(order.id);
-
-    void handleTap() {
-      if (_isSelectionMode) {
-        _toggleOrderSelection(order.id);
-      } else {
-        Navigator.pushNamed(
-          context,
-          AppRoutes.orderDetail,
-          arguments: {'orderId': order.id, 'order': order},
-        ).then((_) => _loadOrders());
-      }
-    }
-
-    return Semantics(
-      key: ValueKey('order-card-${order.id}'),
-      container: true,
-      explicitChildNodes: true,
-      label: [
-        'Order ${_orderNumber(order)}',
-        _statusLabel(status),
-        'Customer ${_orderCustomerName(order)}',
-        'Total INR ${_orderTotal(order).toStringAsFixed(0)}',
-        '${_orderItemCount(order)} items',
-      ].join(', '),
-      hint: _isSelectionMode
-          ? isSelected
-                ? 'Tap to deselect order'
-                : 'Tap to select order'
-          : 'Opens order details',
-      selected: _isSelectionMode ? isSelected : null,
-      button: true,
-      enabled: true,
-      onTap: handleTap,
-      child: InkWell(
-        excludeFromSemantics: true,
-        onTap: handleTap,
-        onLongPress: () {
-          if (!_isSelectionMode) {
-            _toggleSelectionMode();
-            _toggleOrderSelection(order.id);
-          }
-        },
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          margin: const EdgeInsets.only(bottom: 12),
-          decoration: BoxDecoration(
-            color: colors.card,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(
-              color: isSelected ? AppColors.lavender : colors.cardBorder,
-              width: isSelected ? 2 : 1,
-            ),
-            boxShadow: isSelected
-                ? [
-                    BoxShadow(
-                      color: AppColors.lavender.withValues(alpha: 0.2),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ]
-                : null,
-          ),
-          child: Column(
-            children: [
-              // Header row
-              Padding(
-                padding: const EdgeInsets.all(14),
-                child: Row(
-                  children: [
-                    // Selection checkbox
-                    if (_isSelectionMode) ...[
-                      AccessibleTapRegion(
-                        key: ValueKey('order-select-${order.id}'),
-                        label: isSelected
-                            ? 'Deselect order ${_orderNumber(order)}'
-                            : 'Select order ${_orderNumber(order)}',
-                        hint: isSelected ? 'Selected' : 'Not selected',
-                        selected: isSelected,
-                        onTap: () => _toggleOrderSelection(order.id),
-                        excludeChildSemantics: true,
-                        child: InkWell(
-                          excludeFromSemantics: true,
-                          onTap: () => _toggleOrderSelection(order.id),
-                          borderRadius: BorderRadius.circular(6),
-                          child: Container(
-                            width: 24,
-                            height: 24,
-                            margin: const EdgeInsets.only(right: 12),
-                            decoration: BoxDecoration(
-                              color: isSelected
-                                  ? AppColors.lavender
-                                  : Colors.transparent,
-                              borderRadius: BorderRadius.circular(6),
-                              border: Border.all(
-                                color: isSelected
-                                    ? AppColors.lavender
-                                    : colors.divider,
-                                width: 2,
-                              ),
-                            ),
-                            child: isSelected
-                                ? const Icon(
-                                    Icons.check,
-                                    color: Colors.white,
-                                    size: 14,
-                                  )
-                                : null,
-                          ),
-                        ),
-                      ),
-                    ],
-                    // Order info
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                _orderNumber(order),
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                  color: colors.textPrimary,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 6,
-                                  vertical: 3,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: statusColor.withValues(alpha: 0.15),
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                child: Text(
-                                  _statusLabel(status),
-                                  style: TextStyle(
-                                    color: statusColor,
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            _formatOrderDate(order),
-                            style: TextStyle(
-                              color: colors.textSecondary,
-                              fontSize: 11,
-                            ),
-                          ),
-                          if (_hasRiskSignal(order)) ...[
-                            const SizedBox(height: 6),
-                            _buildRiskBadge(order),
-                          ],
-                        ],
-                      ),
-                    ),
-                    // Total
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          '₹${_orderTotal(order).toStringAsFixed(0)}',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                            color: AppColors.lavender,
-                          ),
-                        ),
-                        Text(
-                          '${_orderItemCount(order)} items',
-                          style: TextStyle(
-                            color: colors.textSecondary,
-                            fontSize: 10,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-
-              // Customer + Actions row
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 10,
-                ),
-                decoration: BoxDecoration(
-                  color: colors.surfaceVariant.withValues(alpha: 0.5),
-                  borderRadius: const BorderRadius.vertical(
-                    bottom: Radius.circular(13),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.person_outline,
-                      size: 16,
-                      color: colors.textSecondary,
-                    ),
-                    const SizedBox(width: 6),
-                    Expanded(
-                      child: Text(
-                        '${_orderCustomerName(order)} • ${_orderCustomerPhone(order)}',
-                        style: TextStyle(
-                          color: colors.textSecondary,
-                          fontSize: 12,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    // Quick action
-                    if (!_isSelectionMode &&
-                        status != 'delivered' &&
-                        status != 'cancelled')
-                      PopupMenuButton<String>(
-                        icon: Icon(
-                          Icons.more_horiz,
-                          color: colors.textSecondary,
-                          size: 20,
-                        ),
-                        padding: EdgeInsets.zero,
-                        itemBuilder: (context) => _getStatusOptions(status)
-                            .map(
-                              (option) => PopupMenuItem(
-                                value: option,
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      _getStatusIcon(option),
-                                      size: 18,
-                                      color: _statusColor(option),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Text(_statusLabel(option)),
-                                  ],
-                                ),
-                              ),
-                            )
-                            .toList(),
-                        onSelected: (option) =>
-                            _handleStatusChange(order, option),
-                      ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+    Navigator.pushNamed(
+      context,
+      AppRoutes.orderDetail,
+      arguments: {'orderId': order.id, 'order': order},
+    ).then((_) {
+      if (_current) _loadOrders();
+    });
   }
 
   List<String> _getStatusOptions(String currentStatus) {
@@ -1749,36 +743,6 @@ class _OrdersScreenState extends State<OrdersScreen> {
   String _orderStatus(OrderContract order) {
     final status = order.status.trim().toLowerCase();
     return status.isEmpty ? 'unknown' : status;
-  }
-
-  Widget _buildRiskBadge(OrderContract order) {
-    final color = _riskColor(order);
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
-        decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.12),
-          borderRadius: BorderRadius.circular(6),
-          border: Border.all(color: color.withValues(alpha: 0.24)),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.shield_outlined, color: color, size: 12),
-            const SizedBox(width: 4),
-            Text(
-              '${_riskLabel(order)} risk',
-              style: TextStyle(
-                color: color,
-                fontSize: 10,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
   bool _hasRiskSignal(OrderContract order) {
@@ -1877,56 +841,401 @@ class _OrdersScreenState extends State<OrdersScreen> {
     }
   }
 
-  Color _statusColor(String status) {
-    switch (status) {
-      case 'pending':
-        return const Color(0xFFF59E0B);
-      case 'confirmed':
-        return const Color(0xFF3B82F6);
-      case 'shipped':
-        return mobile_tokens.LetbuyyColorTokens.brandPrimary;
-      case 'delivered':
-        return const Color(0xFF22C55E);
-      case 'cancelled':
-        return const Color(0xFFEF4444);
-      default:
-        return colors.textTertiary;
-    }
+  Color _statusColor(String status) => switch (status) {
+    'pending' => colors.warning,
+    'confirmed' => colors.accentBlue,
+    'shipped' => Theme.of(context).colorScheme.primary,
+    'delivered' => colors.success,
+    'cancelled' => colors.error,
+    _ => colors.textSecondary,
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    _publishActions();
+    final scheme = Theme.of(context).colorScheme;
+    final filtered = _filteredOrders;
+    final storeName =
+        context.watch<StoreContext>().selectedStore?.name ?? widget.storeId;
+    return Scaffold(
+      appBar: CustomAppBar.responsive(
+        context: context,
+        title: 'Orders',
+        actions: [
+          IconButton(
+            tooltip: 'Returns',
+            onPressed: _active && !_busy
+                ? () => Navigator.pushNamed(context, AppRoutes.returns)
+                : null,
+            icon: const Icon(Icons.assignment_return_outlined),
+          ),
+          IconButton(
+            tooltip: 'Refresh orders',
+            onPressed: _active && !_busy && !_isLoading ? _loadOrders : null,
+            icon: const Icon(Icons.refresh),
+          ),
+        ],
+      ),
+      body: SafeArea(
+        top: false,
+        child: Column(
+          children: [
+            if (_isLoading || _busy)
+              Padding(
+                padding: const EdgeInsets.all(12),
+                child: Semantics(
+                  liveRegion: true,
+                  child: Row(
+                    children: [
+                      const LoadingIndicator(),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          _isLoading
+                              ? (_loaded
+                                    ? 'Refreshing orders…'
+                                    : 'Loading orders…')
+                              : _progress ?? 'Working…',
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            Expanded(
+              child: RefreshIndicator(
+                onRefresh: _loadOrders,
+                child: CustomScrollView(
+                  controller: _scrollController,
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  slivers: [
+                    SliverPadding(
+                      padding: const EdgeInsets.all(16),
+                      sliver: SliverToBoxAdapter(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Text(
+                              storeName,
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Loaded page $_page · ${_orders.length} orders. Search, status, date, sort and counts below apply only to this page. Each server page contains up to 20 orders.',
+                            ),
+                            if (_nextCursor != null)
+                              const Text(
+                                'More server orders are available using Next page.',
+                              ),
+                            Wrap(
+                              spacing: 12,
+                              runSpacing: 8,
+                              children: [
+                                OutlinedButton(
+                                  onPressed:
+                                      !_busy &&
+                                          !_isLoading &&
+                                          !_denied &&
+                                          _fresh &&
+                                          _previousCursors.isNotEmpty
+                                      ? () => _changePage(false)
+                                      : null,
+                                  child: const Text('Previous page'),
+                                ),
+                                OutlinedButton(
+                                  onPressed:
+                                      !_busy &&
+                                          !_isLoading &&
+                                          !_denied &&
+                                          _fresh &&
+                                          _nextCursor != null
+                                      ? () => _changePage(true)
+                                      : null,
+                                  child: const Text('Next page'),
+                                ),
+                              ],
+                            ),
+                            if (_loaded && !_fresh)
+                              const _OrderNotice(
+                                'Saved results · Not confirmed by the latest read. Refresh successfully before changing an order.',
+                              ),
+                            if (_error != null)
+                              _OrderNotice(_error!, error: true),
+                            if (_notice != null) _OrderNotice(_notice!),
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: [
+                                OutlinedButton.icon(
+                                  onPressed: _ready ? _exportOrders : null,
+                                  icon: const Icon(
+                                    Icons.file_download_outlined,
+                                  ),
+                                  label: const Text('Export'),
+                                ),
+                                FilledButton.icon(
+                                  onPressed: _ready ? _createDraftOrder : null,
+                                  icon: const Icon(Icons.note_add_outlined),
+                                  label: const Text('Draft'),
+                                ),
+                                OutlinedButton.icon(
+                                  onPressed: _ready ? _printPackingSlip : null,
+                                  icon: const Icon(Icons.print_outlined),
+                                  label: const Text('Print'),
+                                ),
+                                OutlinedButton.icon(
+                                  onPressed: _ready
+                                      ? _toggleSelectionMode
+                                      : null,
+                                  icon: Icon(
+                                    _isSelectionMode
+                                        ? Icons.close
+                                        : Icons.checklist,
+                                  ),
+                                  label: Text(
+                                    _isSelectionMode
+                                        ? 'Cancel selection'
+                                        : 'Select',
+                                  ),
+                                ),
+                              ],
+                            ),
+                            if (_exportJob != null) _exportStatus(),
+                            const SizedBox(height: 16),
+                            CustomTextField(
+                              controller: _searchController,
+                              label: 'Search loaded page',
+                              prefixIcon: Icons.search,
+                              enabled: !_busy && !_denied,
+                              onChanged: (value) {
+                                if (_current)
+                                  setState(() => _searchQuery = value);
+                              },
+                              suffixIcon: IconButton(
+                                tooltip: 'Clear search',
+                                onPressed: _searchQuery.isEmpty || _busy
+                                    ? null
+                                    : () {
+                                        _searchController.clear();
+                                        setState(() => _searchQuery = '');
+                                      },
+                                icon: const Icon(Icons.close),
+                              ),
+                            ),
+                            Wrap(
+                              spacing: 12,
+                              runSpacing: 4,
+                              children: [
+                                LetbuyyChoiceField<String>(
+                                  compact: true,
+                                  label: 'Page status',
+                                  value: _statusFilter,
+                                  choices: const [
+                                    LetbuyyChoice(value: 'all', label: 'All'),
+                                    LetbuyyChoice(
+                                      value: 'pending',
+                                      label: 'Pending',
+                                    ),
+                                    LetbuyyChoice(
+                                      value: 'confirmed',
+                                      label: 'Confirmed',
+                                    ),
+                                    LetbuyyChoice(
+                                      value: 'shipped',
+                                      label: 'Shipped',
+                                    ),
+                                    LetbuyyChoice(
+                                      value: 'delivered',
+                                      label: 'Delivered',
+                                    ),
+                                    LetbuyyChoice(
+                                      value: 'cancelled',
+                                      label: 'Cancelled',
+                                    ),
+                                  ],
+                                  onChanged: !_busy && !_denied
+                                      ? (value) => setState(
+                                          () => _statusFilter = value,
+                                        )
+                                      : null,
+                                ),
+                                LetbuyyChoiceField<String>(
+                                  compact: true,
+                                  label: 'Page date',
+                                  value: _dateFilter,
+                                  choices: const [
+                                    LetbuyyChoice(
+                                      value: 'all',
+                                      label: 'All dates',
+                                    ),
+                                    LetbuyyChoice(
+                                      value: 'today',
+                                      label: 'Today',
+                                    ),
+                                    LetbuyyChoice(
+                                      value: 'week',
+                                      label: 'Last 7 days',
+                                    ),
+                                    LetbuyyChoice(
+                                      value: 'month',
+                                      label: 'Last 30 days',
+                                    ),
+                                  ],
+                                  onChanged: !_busy && !_denied
+                                      ? (value) =>
+                                            setState(() => _dateFilter = value)
+                                      : null,
+                                ),
+                                LetbuyyChoiceField<String>(
+                                  compact: true,
+                                  label: 'Page sort',
+                                  value: _sortBy,
+                                  choices: const [
+                                    LetbuyyChoice(
+                                      value: 'newest',
+                                      label: 'Newest',
+                                    ),
+                                    LetbuyyChoice(
+                                      value: 'oldest',
+                                      label: 'Oldest',
+                                    ),
+                                    LetbuyyChoice(
+                                      value: 'amount_high',
+                                      label: 'Amount: high to low',
+                                    ),
+                                    LetbuyyChoice(
+                                      value: 'amount_low',
+                                      label: 'Amount: low to high',
+                                    ),
+                                  ],
+                                  onChanged: !_busy && !_denied
+                                      ? (value) =>
+                                            setState(() => _sortBy = value)
+                                      : null,
+                                ),
+                              ],
+                            ),
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: [
+                                Chip(label: Text('Pending $_pendingCount')),
+                                Chip(label: Text('Confirmed $_confirmedCount')),
+                                Chip(label: Text('Shipped $_shippedCount')),
+                                Chip(label: Text('Delivered $_deliveredCount')),
+                                if (_orders.isNotEmpty &&
+                                    _orders.every(
+                                      (o) => o.total > 0 && o.total.isFinite,
+                                    ))
+                                  Chip(
+                                    label: Text(
+                                      'Page delivered total ${PriceFormatter.formatPrice(_totalRevenue)}',
+                                    ),
+                                  ),
+                              ],
+                            ),
+                            Text(
+                              '${filtered.length} of ${_orders.length} loaded orders shown',
+                              style: Theme.of(context).textTheme.labelLarge,
+                            ),
+                            if (_selectedOrderIds.isNotEmpty)
+                              Text(
+                                '${_selectedOrderIds.length} selected across the loaded page. Hidden selected orders remain selected on this page; changing pages clears selection.',
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    if (!_isLoading && filtered.isEmpty)
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: Column(
+                            children: [
+                              Icon(
+                                _denied
+                                    ? Icons.lock_outline
+                                    : Icons.receipt_long_outlined,
+                                size: 40,
+                                color: scheme.onSurfaceVariant,
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                _denied
+                                    ? 'Order access unavailable'
+                                    : _orders.isEmpty
+                                    ? (_error != null
+                                          ? 'Orders unavailable'
+                                          : 'No orders on this loaded page')
+                                    : 'No matches on this loaded page',
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                              TextButton(
+                                onPressed: _busy ? null : _loadOrders,
+                                child: const Text('Refresh orders'),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    SliverPadding(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
+                      sliver: SliverList.builder(
+                        itemCount: filtered.length,
+                        itemBuilder: (_, index) =>
+                            _buildOrderCard(filtered[index]),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            if (_isSelectionMode) _selectionActions(),
+          ],
+        ),
+      ),
+    );
   }
 
-  Widget _buildEmptyState() {
-    return Center(
+  Widget _exportStatus() {
+    final status = _exportJob!['status']?.toString() ?? 'queued';
+    return Card(
+      semanticContainer: false,
       child: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: const EdgeInsets.all(12),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: AppColors.lavender.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.inbox_outlined,
-                size: 56,
-                color: AppColors.lavender,
-              ),
-            ),
-            const SizedBox(height: 20),
             Text(
-              'No Orders Yet',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: colors.textPrimary,
-              ),
+              'CSV export · $status',
+              style: Theme.of(context).textTheme.titleSmall,
             ),
-            const SizedBox(height: 8),
             Text(
-              'Orders will appear here once customers place them',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: colors.textSecondary, fontSize: 14),
+              'Job ${_exportJob!['id']}. Closing orders does not cancel this job. This status is retained only while this page remains open.',
+            ),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                TextButton(
+                  onPressed: !_busy && !_isLoading && !_denied
+                      ? _checkExport
+                      : null,
+                  child: const Text('Recheck same job'),
+                ),
+                if (status == 'completed')
+                  FilledButton(
+                    onPressed: !_busy && !_denied ? _shareExport : null,
+                    child: const Text('Share CSV'),
+                  ),
+                if (const ['completed', 'failed'].contains(status))
+                  TextButton(
+                    onPressed: _busy
+                        ? null
+                        : () => setState(() => _exportJob = null),
+                    child: const Text('Dismiss job status'),
+                  ),
+              ],
             ),
           ],
         ),
@@ -1934,119 +1243,668 @@ class _OrdersScreenState extends State<OrdersScreen> {
     );
   }
 
-  // ============================================
-  // BULK ACTIONS BAR
-  // ============================================
-
-  Widget _buildBulkActionsBar() {
-    return Container(
-      padding: EdgeInsets.only(
-        left: 20,
-        right: 20,
-        top: 16,
-        bottom: MediaQuery.of(context).padding.bottom + 16,
-      ),
-      decoration: BoxDecoration(
-        color: colors.card,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.2),
-            blurRadius: 16,
-            offset: const Offset(0, -4),
+  Widget _selectionActions() => Container(
+    color: Theme.of(context).colorScheme.surfaceContainer,
+    padding: const EdgeInsets.all(12),
+    child: OverflowBar(
+      spacing: 8,
+      overflowSpacing: 8,
+      alignment: MainAxisAlignment.end,
+      children: [
+        AccessibleTapRegion(
+          key: const ValueKey('orders-select-all-visible'),
+          label: '${_selectedOrderIds.length} orders selected',
+          hint: 'Select all visible orders',
+          onTap: _ready ? _selectAll : null,
+          excludeChildSemantics: true,
+          child: TextButton(
+            onPressed: _ready ? _selectAll : null,
+            child: Text(
+              '${_selectedOrderIds.length} selected · Select visible',
+            ),
           ),
-        ],
-      ),
-      child: Row(
-        children: [
-          // Selection info
-          AccessibleTapRegion(
-            key: const ValueKey('orders-select-all-visible'),
-            label: '${_selectedOrderIds.length} orders selected',
-            hint: 'Select all visible orders',
-            onTap: _selectAll,
-            excludeChildSemantics: true,
-            child: InkWell(
-              excludeFromSemantics: true,
-              onTap: _selectAll,
-              borderRadius: BorderRadius.circular(8),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: AppColors.lavender.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  '${_selectedOrderIds.length} selected',
-                  style: TextStyle(
-                    color: AppColors.lavender,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 13,
+        ),
+        OutlinedButton(
+          onPressed: _ready && _selectedOrderIds.isNotEmpty
+              ? () => _bulkUpdateStatus('confirmed')
+              : null,
+          child: const Text('Confirm'),
+        ),
+        FilledButton(
+          onPressed: _ready && _selectedOrderIds.isNotEmpty
+              ? () => _bulkUpdateStatus('shipped')
+              : null,
+          child: const Text('Ship'),
+        ),
+      ],
+    ),
+  );
+  Widget _buildOrderCard(OrderContract order) {
+    final status = _orderStatus(order),
+        selected = _selectedOrderIds.contains(order.id);
+    final total = _displayOrderTotal(order),
+        itemCount = _displayOrderItemCount(order);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Card(
+        semanticContainer: false,
+        color: selected
+            ? Theme.of(context).colorScheme.secondaryContainer
+            : null,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            AccessibleTapRegion(
+              key: ValueKey('order-card-${order.id}'),
+              label:
+                  'Order ${_orderNumber(order)}, ${_statusLabel(status)}, Customer ${_orderCustomerName(order)}, Total $total, $itemCount',
+              hint: _isSelectionMode
+                  ? (selected ? 'Tap to deselect order' : 'Tap to select order')
+                  : 'Opens order details',
+              selected: _isSelectionMode ? selected : null,
+              onTap: _active && !_busy && !_denied
+                  ? () => _openOrder(order)
+                  : null,
+              excludeChildSemantics: true,
+              child: InkWell(
+                excludeFromSemantics: true,
+                onTap: _active && !_busy && !_denied
+                    ? () => _openOrder(order)
+                    : null,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        _orderNumber(order),
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 12,
+                        runSpacing: 8,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          Text(
+                            _statusLabel(status),
+                            style: Theme.of(context).textTheme.labelLarge
+                                ?.copyWith(color: _statusColor(status)),
+                          ),
+                          Text(
+                            total,
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          Text(itemCount),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(_formatOrderDate(order)),
+                      Text(_orderCustomerName(order)),
+                      Text(_orderCustomerPhone(order)),
+                      if (_hasRiskSignal(order))
+                        Text(
+                          '${_riskLabel(order)} risk',
+                          style: TextStyle(color: _riskColor(order)),
+                        ),
+                    ],
                   ),
                 ),
               ),
             ),
-          ),
-          const Spacer(),
-          // Action buttons
-          _buildBulkButton(
-            Icons.check_circle_outline,
-            'Confirm',
-            () => _bulkUpdateStatus('confirmed'),
-            color: const Color(0xFF3B82F6),
-          ),
-          const SizedBox(width: 8),
-          _buildBulkButton(
-            Icons.local_shipping_outlined,
-            'Ship',
-            () => _bulkUpdateStatus('shipped'),
-            color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBulkButton(
-    IconData icon,
-    String label,
-    VoidCallback onTap, {
-    Color? color,
-  }) {
-    final buttonColor = color ?? colors.textSecondary;
-    return AccessibleTapRegion(
-      label: label,
-      onTap: onTap,
-      excludeChildSemantics: true,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(8),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          decoration: BoxDecoration(
-            color: buttonColor.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, size: 18, color: buttonColor),
-              const SizedBox(width: 4),
-              Text(
-                label,
-                style: TextStyle(
-                  color: buttonColor,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
+            if (_isSelectionMode)
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: CheckboxListTile(
+                  key: ValueKey('order-select-${order.id}'),
+                  value: selected,
+                  title: Text('Select order ${_orderNumber(order)}'),
+                  controlAffinity: ListTileControlAffinity.leading,
+                  onChanged: _ready
+                      ? (_) => _toggleOrderSelection(order.id)
+                      : null,
                 ),
               ),
-            ],
-          ),
+            if (!_isSelectionMode && _getStatusOptions(status).isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                child: Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    for (final option in _getStatusOptions(status))
+                      TextButton.icon(
+                        onPressed: _ready
+                            ? () => _handleStatusChange(order, option)
+                            : null,
+                        icon: Icon(_getStatusIcon(option)),
+                        label: Text(_statusLabel(option)),
+                      ),
+                  ],
+                ),
+              ),
+          ],
         ),
       ),
     );
   }
+
+  String _displayOrderItemCount(OrderContract order) {
+    final rawCount = order['item_count'];
+    if (rawCount != null) {
+      final count = rawCount is num
+          ? rawCount
+          : num.tryParse(rawCount.toString());
+      if (count == null ||
+          !count.isFinite ||
+          count < 0 ||
+          count != count.toInt()) {
+        return 'Item count unavailable';
+      }
+      return '${count.toInt()} items';
+    }
+    final raw = order['line_items'];
+    if (raw is! List) return 'Item count unavailable';
+    for (final line in raw) {
+      if (line is! Map) return 'Item count unavailable';
+      final rawQuantity = line['quantity'];
+      final quantity = rawQuantity is num
+          ? rawQuantity
+          : rawQuantity is String
+          ? num.tryParse(rawQuantity)
+          : null;
+      if (quantity == null ||
+          !quantity.isFinite ||
+          quantity <= 0 ||
+          quantity != quantity.truncateToDouble()) {
+        return 'Item count unavailable';
+      }
+    }
+    return '${_orderItemCount(order)} items';
+  }
+
+  String _displayOrderTotal(OrderContract order) {
+    // Inspect the original response so absent/null is not the DTO's numeric zero.
+    // This never changes _orderTotal, sorting, server totals or a command payload.
+    final raw = order['total'];
+    final value = raw is num
+        ? raw.toDouble()
+        : raw is String
+        ? double.tryParse(raw)
+        : null;
+    if (value == null || !value.isFinite || order.currency != 'INR')
+      return 'Total unavailable';
+    return PriceFormatter.formatPrice(value);
+  }
+}
+
+class _OrderNotice extends StatelessWidget {
+  const _OrderNotice(this.message, {this.error = false});
+  final String message;
+  final bool error;
+  @override
+  Widget build(BuildContext context) => Semantics(
+    liveRegion: true,
+    child: Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Text(
+        message,
+        style: TextStyle(
+          color: error
+              ? Theme.of(context).colorScheme.error
+              : Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
+      ),
+    ),
+  );
+}
+
+class _TrackingSheet extends StatefulWidget {
+  const _TrackingSheet();
+  @override
+  State<_TrackingSheet> createState() => _TrackingSheetState();
+}
+
+class _TrackingSheetState extends State<_TrackingSheet> {
+  final numberController = TextEditingController(),
+      carrierController = TextEditingController();
+  @override
+  void dispose() {
+    numberController.dispose();
+    carrierController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => LetbuyyFormSheet(
+    title: 'Add tracking information',
+    description:
+        'Shipping is confirmed by the existing order command. Carrier and tracking values are passed unchanged.',
+    actions: [
+      TextButton(
+        onPressed: () => Navigator.pop(context),
+        child: const Text('Cancel'),
+      ),
+      FilledButton(
+        onPressed: () => Navigator.pop(context, {
+          'number': numberController.text,
+          'carrier': carrierController.text,
+        }),
+        child: const Text('Ship order'),
+      ),
+    ],
+    child: Column(
+      children: [
+        CustomTextField(
+          controller: carrierController,
+          label: 'Carrier (e.g., Delhivery)',
+          textInputAction: TextInputAction.next,
+        ),
+        const SizedBox(height: 12),
+        CustomTextField(
+          controller: numberController,
+          label: 'Tracking number',
+          textInputAction: TextInputAction.done,
+        ),
+      ],
+    ),
+  );
+}
+
+class _CancellationSheet extends StatefulWidget {
+  const _CancellationSheet({required this.number});
+  final String number;
+  @override
+  State<_CancellationSheet> createState() => _CancellationSheetState();
+}
+
+class _CancellationSheetState extends State<_CancellationSheet> {
+  final reasonController = TextEditingController();
+  String reason = '';
+  @override
+  void dispose() {
+    reasonController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => LetbuyyFormSheet(
+    title: 'Cancel ${widget.number}?',
+    description: 'Add a cancellation reason for the order timeline.',
+    actions: [
+      TextButton(
+        onPressed: () => Navigator.pop(context),
+        child: const Text('Keep order'),
+      ),
+      FilledButton(
+        style: FilledButton.styleFrom(
+          backgroundColor: Theme.of(context).colorScheme.error,
+          foregroundColor: Theme.of(context).colorScheme.onError,
+        ),
+        onPressed: reason.isEmpty ? null : () => Navigator.pop(context, reason),
+        child: const Text('Cancel order'),
+      ),
+    ],
+    child: CustomTextField(
+      controller: reasonController,
+      label: 'Cancellation reason',
+      autofocus: true,
+      maxLines: 3,
+      maxLength: 500,
+      onChanged: (value) => setState(() => reason = value.trim()),
+    ),
+  );
+}
+
+typedef _DraftOrderOutcome = ({bool converted, String? draftId});
+
+class _DraftOrderEditor extends StatefulWidget {
+  const _DraftOrderEditor({required this.view, required this.products});
+  final MerchantStoreView view;
+  final List<Map<String, dynamic>> products;
+  @override
+  State<_DraftOrderEditor> createState() => _DraftOrderEditorState();
+}
+
+class _DraftOrderEditorState extends State<_DraftOrderEditor> {
+  final _scroll = ScrollController();
+  final nameController = TextEditingController(),
+      emailController = TextEditingController(),
+      phoneController = TextEditingController(),
+      notesController = TextEditingController();
+  late String selectedProductId = widget.products.first['id'].toString();
+  int quantity = 1;
+  bool convertNow = false,
+      _busy = false,
+      _uncertain = false,
+      _submitted = false;
+  String? _error, _draftId;
+  bool get _current =>
+      mounted && merchantStoreViewCurrent(context, widget.view);
+  bool get _dirty =>
+      nameController.text.isNotEmpty ||
+      emailController.text.isNotEmpty ||
+      phoneController.text.isNotEmpty ||
+      notesController.text.isNotEmpty ||
+      quantity != 1 ||
+      convertNow ||
+      selectedProductId != widget.products.first['id'].toString();
+  @override
+  void initState() {
+    super.initState();
+    for (final c in [
+      nameController,
+      emailController,
+      phoneController,
+      notesController,
+    ]) {
+      c.addListener(_changed);
+    }
+  }
+
+  void _changed() {
+    if (mounted) setState(() {});
+  }
+
+  @override
+  void dispose() {
+    _scroll.dispose();
+    for (final c in [
+      nameController,
+      emailController,
+      phoneController,
+      notesController,
+    ]) {
+      c.removeListener(_changed);
+      c.dispose();
+    }
+    super.dispose();
+  }
+
+  String _productLabel(Map<String, dynamic> product) {
+    final name = (product['name'] ?? product['title'] ?? 'Product').toString();
+    final sku = product['sku']?.toString();
+    return sku == null || sku.isEmpty ? name : '$name ($sku)';
+  }
+
+  Future<void> _save() async {
+    if (!_current || _busy || _uncertain) return;
+    final name = nameController.text.trim(),
+        email = emailController.text.trim();
+    setState(() => _submitted = true);
+    if (name.isEmpty || email.isEmpty || !email.contains('@')) {
+      _showResult();
+      return;
+    }
+    final service = context.read<OrderService>();
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
+    try {
+      final draft = await service.createDraftOrder(
+        storeId: widget.view.storeId,
+        customerName: nameController.text,
+        customerEmail: emailController.text,
+        customerPhone: phoneController.text,
+        notes: notesController.text,
+        items: [
+          {'product_id': selectedProductId, 'quantity': quantity},
+        ],
+      );
+      if (!_current) return;
+      _draftId = draft['id']?.toString();
+      if (convertNow) {
+        final draftId = draft['id']?.toString();
+        if (draftId == null || draftId.isEmpty)
+          throw StateError('Draft response did not include an id.');
+        await service.convertDraftOrder(draftId);
+        if (!_current) return;
+      }
+      if (_current) {
+        Navigator.pop(context, (converted: convertNow, draftId: _draftId));
+      }
+    } catch (_) {
+      if (_current)
+        setState(() {
+          _uncertain = true;
+          _error = _draftId == null
+              ? 'The draft outcome could not be confirmed. Your input is kept here. Review drafts on Merchant web before starting another request.'
+              : 'Draft $_draftId was acknowledged; order conversion could not be confirmed. Review this draft on Merchant web. This editor will not repeat the request.';
+        });
+    } finally {
+      if (_current) setState(() => _busy = false);
+    }
+    if (_current && _error != null) _showResult();
+  }
+
+  void _showResult() {
+    FocusScope.of(context).unfocus();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_current && _scroll.hasClients) _scroll.jumpTo(0);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) => LetbuyyEditorScaffold(
+    title: 'New draft order',
+    hasChanges: _dirty,
+    currentHasChanges: () => _dirty,
+    isBusy: _busy,
+    currentIsBusy: () => _busy,
+    confirmationGuard: (_, child) => guardMerchantStoreView(widget.view, child),
+    progressLabel: _busy
+        ? 'Saving draft${convertNow ? ' and creating order' : ''}…'
+        : null,
+    body: ListView(
+      controller: _scroll,
+      padding: const EdgeInsets.all(16),
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+      children: [
+        const Text(
+          'Choose from the first 50 products returned by the store. Availability and totals are determined by the server when the draft is saved.',
+        ),
+        if (_error != null) _OrderNotice(_error!, error: true),
+        const SizedBox(height: 16),
+        CustomTextField(
+          controller: nameController,
+          label: 'Customer name',
+          enabled: !_busy && !_uncertain,
+          textInputAction: TextInputAction.next,
+          autofillHints: const [AutofillHints.name],
+          errorText: _submitted && nameController.text.trim().isEmpty
+              ? 'Enter a customer name.'
+              : null,
+        ),
+        const SizedBox(height: 16),
+        CustomTextField(
+          controller: emailController,
+          label: 'Customer email',
+          enabled: !_busy && !_uncertain,
+          keyboardType: TextInputType.emailAddress,
+          textInputAction: TextInputAction.next,
+          autofillHints: const [AutofillHints.email],
+          errorText:
+              _submitted &&
+                  (emailController.text.trim().isEmpty ||
+                      !emailController.text.trim().contains('@'))
+              ? 'Enter an email containing @.'
+              : null,
+        ),
+        const SizedBox(height: 16),
+        CustomTextField(
+          controller: phoneController,
+          label: 'Phone',
+          enabled: !_busy && !_uncertain,
+          keyboardType: TextInputType.phone,
+          textInputAction: TextInputAction.next,
+          autofillHints: const [AutofillHints.telephoneNumber],
+        ),
+        LetbuyyChoiceField<String>(
+          label: 'Product',
+          value: selectedProductId,
+          choices: [
+            for (final product in widget.products)
+              LetbuyyChoice(
+                value: product['id'].toString(),
+                label: _productLabel(product),
+              ),
+          ],
+          onChanged: !_busy && !_uncertain
+              ? (v) => setState(() => selectedProductId = v)
+              : null,
+        ),
+        Wrap(
+          spacing: 8,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            Text('Quantity: $quantity'),
+            IconButton(
+              tooltip: 'Decrease quantity',
+              onPressed: !_busy && !_uncertain && quantity > 1
+                  ? () => setState(() => quantity -= 1)
+                  : null,
+              icon: const Icon(Icons.remove_circle_outline),
+            ),
+            IconButton(
+              tooltip: 'Increase quantity',
+              onPressed: !_busy && !_uncertain && quantity < 999
+                  ? () => setState(() => quantity += 1)
+                  : null,
+              icon: const Icon(Icons.add_circle_outline),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        CustomTextField(
+          controller: notesController,
+          label: 'Notes',
+          enabled: !_busy && !_uncertain,
+          maxLines: 2,
+        ),
+        SwitchListTile.adaptive(
+          contentPadding: EdgeInsets.zero,
+          title: const Text('Create order now'),
+          subtitle: const Text(
+            'Save the draft, then request conversion using the existing order workflow.',
+          ),
+          value: convertNow,
+          onChanged: !_busy && !_uncertain
+              ? (v) => setState(() => convertNow = v)
+              : null,
+        ),
+      ],
+    ),
+    actions: OverflowBar(
+      spacing: 12,
+      overflowSpacing: 12,
+      alignment: MainAxisAlignment.end,
+      children: [
+        TextButton(
+          onPressed: _busy ? null : () => Navigator.maybePop(context),
+          child: const Text('Close'),
+        ),
+        FilledButton(
+          onPressed: _busy || _uncertain ? null : _save,
+          child: const Text('Save draft'),
+        ),
+      ],
+    ),
+  );
+}
+
+class _PackingSlipPage extends StatefulWidget {
+  const _PackingSlipPage({
+    required this.view,
+    required this.title,
+    required this.text,
+    required this.pdfBase64,
+    required this.filename,
+  });
+  final MerchantStoreView view;
+  final String title, text, pdfBase64, filename;
+  @override
+  State<_PackingSlipPage> createState() => _PackingSlipPageState();
+}
+
+class _PackingSlipPageState extends State<_PackingSlipPage> {
+  bool _busy = false;
+  String? _notice;
+  bool get _current =>
+      mounted && merchantStoreViewCurrent(context, widget.view);
+  Future<void> _copy() async {
+    if (!_current || _busy) return;
+    setState(() => _busy = true);
+    try {
+      await Clipboard.setData(ClipboardData(text: widget.text));
+      if (_current) setState(() => _notice = 'Packing slip copied.');
+    } catch (_) {
+      if (_current)
+        setState(() => _notice = 'Packing slip could not be copied.');
+    } finally {
+      if (_current) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _sharePackingSlipPdf(String pdfBase64, String filename) async {
+    if (!_current || _busy) return;
+    setState(() => _busy = true);
+    try {
+      final bytes = base64Decode(pdfBase64);
+      final tempDir = await getTemporaryDirectory();
+      if (!_current) return;
+      final safeName = filename.endsWith('.pdf') ? filename : '$filename.pdf';
+      final file = File('${tempDir.path}/$safeName');
+      await file.writeAsBytes(bytes, flush: true);
+      if (!_current) return;
+      await Share.shareXFiles([
+        XFile(file.path, mimeType: 'application/pdf'),
+      ], subject: safeName);
+    } catch (_) {
+      if (_current)
+        setState(() => _notice = 'Packing slip PDF could not be shared.');
+    } finally {
+      if (_current) setState(() => _busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => LetbuyyEditorScaffold(
+    title: 'Packing slip ${widget.title}',
+    hasChanges: false,
+    isBusy: _busy,
+    currentIsBusy: () => _busy,
+    progressLabel: _busy ? 'Preparing packing slip…' : null,
+    body: ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        if (_notice != null) _OrderNotice(_notice!),
+        SelectableText(
+          widget.text.isEmpty ? 'Packing slip unavailable.' : widget.text,
+        ),
+      ],
+    ),
+    actions: OverflowBar(
+      spacing: 12,
+      overflowSpacing: 12,
+      children: [
+        TextButton(
+          onPressed: _busy ? null : () => Navigator.pop(context),
+          child: const Text('Close'),
+        ),
+        OutlinedButton.icon(
+          onPressed: _busy || widget.text.isEmpty ? null : _copy,
+          icon: const Icon(Icons.copy),
+          label: const Text('Copy'),
+        ),
+        FilledButton.icon(
+          onPressed: _busy || widget.pdfBase64.isEmpty
+              ? null
+              : () => _sharePackingSlipPdf(widget.pdfBase64, widget.filename),
+          icon: const Icon(Icons.ios_share),
+          label: const Text('Share PDF'),
+        ),
+      ],
+    ),
+  );
 }

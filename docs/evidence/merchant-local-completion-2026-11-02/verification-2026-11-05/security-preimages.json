@@ -1,0 +1,22 @@
+[
+  {
+    "path": "apps/merchant/mobile/lib/screens/security/two_factor_screen.dart",
+    "sha256": "3aa5bde5db484bd9baf17932098dd0dbea2637e438952eebefd554f9ae95bf3f"
+  },
+  {
+    "path": "apps/merchant/mobile/lib/services/two_factor_service.dart",
+    "sha256": "8729ac2795dcc5961a908550c573f62cb7d9f2dfd7bebe19fa4fa3f931dfa4ed"
+  },
+  {
+    "path": "apps/merchant/mobile/lib/services/security_command_store.dart",
+    "sha256": "3a69112c36da482eb81651b6622bb55def43aa0eb40870b99d4b972be3a292ea"
+  },
+  {
+    "path": "apps/merchant/mobile/lib/widgets/shared/capability_gate.dart",
+    "sha256": "daad65eaedf48f3f9e2df7fbc9678e4edde5a957fb94d1524b8347a0eed1f07f"
+  },
+  {
+    "path": "apps/merchant/mobile/lib/app/routes.dart",
+    "sha256": "960468e34f9a3cfb37151955a53ef80d2dffa42b29e5d13ebd9ff491366df27c"
+  }
+]

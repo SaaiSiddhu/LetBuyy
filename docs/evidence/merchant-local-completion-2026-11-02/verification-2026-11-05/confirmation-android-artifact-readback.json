@@ -1,0 +1,17 @@
+{
+  "at": "2026-11-05T20:08:58.491378+00:00",
+  "status": "INDEPENDENT_DEBUG_APK_READBACK_PASS",
+  "source_sha256": "1029fe659065f6110351560cecd8ece3f7656665f2b499ec6e9019a9b216eb65",
+  "artifact": {
+    "path": "/private/tmp/letbuyy-confirmation-android-gw4gkmxq/merchant-local-debug.apk",
+    "sha256": "9eb36d5b51c2c08985983334838b539351906e4cac1fc80d8fc3d6e66c56fdab",
+    "bytes": 151922634
+  },
+  "actual_sha256": "9eb36d5b51c2c08985983334838b539351906e4cac1fc80d8fc3d6e66c56fdab",
+  "compiled_arm64_engine": true,
+  "debug_kernel_present": true,
+  "normal_main": true,
+  "installed": false,
+  "runtime_verified": false,
+  "scope": "Normal debug compile/archive only. Native41 proves its preceding exact artifact only; changed confirmation has no native acceptance."
+}

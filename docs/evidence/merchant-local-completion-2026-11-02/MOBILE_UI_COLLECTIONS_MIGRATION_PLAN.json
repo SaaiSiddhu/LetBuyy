@@ -1,0 +1,80 @@
+{
+  "at": "2026-11-04T16:38:24.670309+00:00",
+  "status": "SOURCE_REVIEWED_PLANNED_NO_CODE_EDITS_DURING_CATALOG_V40_NATIVE",
+  "scope": "Frontendonly;oneagent;sameworktree;nochanges to metadata/membership services,sharedDTOs/validators,SQL,storedrequestpolicy,auth,providers or deployments",
+  "held_source": "mobile-ui-catalog-v40/98b6bd6a9f48efdab7b349fb4683f60c35d237735b0017e3128b9ab0954661e4/7461",
+  "read_owners": {
+    "CollectionsScreen": 1113,
+    "CollectionMembershipScreen": 619,
+    "collection_metadata.dart": 440,
+    "collection_contracts.dart": 319,
+    "MerchantOptionPicker": "existingcanonicalsheet/read/close owner fully read; source remainsunchanged"
+  },
+  "existing_command_authority": [
+    "SameCollectionMetadataService create/update/delete/currentversion/idempotency/receipt and original retry/review/missing-targetdiscard",
+    "SameProductService orderedmembership expectedversion/originalkey/retry/rebase/rejecteddiscard and explicitunavailableIDs",
+    "Shared6rulefields/7operators/50rulelimit;500membershipIDs and same pagedproductselector; no local ruleevaluation",
+    "Savedrules preview remains exact-or-capped response with evaluated/catalog population and savedversion; draft rules are not claimed previewed"
+  ],
+  "sequence": [
+    {
+      "owner": "CollectionsScreen list/currentquery",
+      "composition": "Responsivecanonicalappbar/currentstore/querycaption, native typechoice andsearch,flowingrecordcards/actions andWrap pagination",
+      "work": [
+        "Readiness/loading/denied/error/recovery remaintruthful;currentappliedkind/query/page mustmatchdisplayedrows/counts",
+        "Retire later reads after context/query changes;prevent staleRefresh from bypassing current busyguard",
+        "Canonical guarded delete/discard confirmations; original command/read arguments preserved"
+      ]
+    },
+    {
+      "owner": "_CollectionForm complexeditor",
+      "composition": "Canonicalfull-page editor, native persistentfields, pinnedSave,dirty/busyBack; rulefield/operator choices usecanonical short sheets",
+      "preserve_exact": [
+        "_fields",
+        "_encoded",
+        "_save validation/typedreturn",
+        "current original _loadPreview arguments and exact/countcapped meaning",
+        "keptdraft nullability/version/review fields"
+      ],
+      "work": [
+        "Same original manual/smart values and6field/7operator catalogues,original50limit andrule order",
+        "Native keyboard/action/reflow; currentpreview labelledsavedrules; no silentlyevaluateddraft",
+        "Review existingnullablepublished representation before changing any mapping; preserve domainsemantics or record explicitdependency"
+      ]
+    },
+    {
+      "owner": "CollectionMembershipScreen",
+      "composition": "Singlelazyreorderable scrollowner with nativeheader/recovery,fullnames,accessibleMove/Removecontrols andflowingpinnedactions;existingproductselector",
+      "preserve_exact": [
+        "_save",
+        "_editRejected",
+        "_reloadReviewed",
+        "_readLatest",
+        "_move",
+        "original expectedversion/key/productIDs order,emptylistconfirmation and unavailableassignments"
+      ],
+      "work": [
+        "Current read fences between snapshot/pendinglookups and afterreturningfrommetadata/listworkspace",
+        "Retire staleinput/feedback; preserve500IDs,actualorder,dragandMovecontrols and kept originalrequest",
+        "Currentorderedreview is durable full-page reading or canonicalboundedhost,notarbitrary centeredfixedwidthform"
+      ]
+    }
+  ],
+  "verification": [
+    "Reproduce real320dp scale2.4both-theme overflow/keyboard/recovery cases before fixes",
+    "Retain original effects/key/version/IDlist/concurrency assertions in existingcollection recovery fixtures;newpresentation tests use actualcontrols",
+    "Extend parsed AST preservation and protectedbaseline checks; new fullqualification/governance/native/iOS artifact required after code changes",
+    "Separate native/web collection effects from catalogv40categoryacceptance; no claimthat one accepts another"
+  ],
+  "whole_app": "Remainingcohortsandunique surface denominator notcomplete;119featureprogramme remainsopen",
+  "prerequisite_followup": {
+    "owner": "uiKitCustomTextField +CSVcaller",
+    "basis": "ActualAndroidv15CSVkeyboardimage and installedFlutter3.44input_decorator.dart:helperText usesellipsis evenhelperMaxLinesnull",
+    "work": [
+      "Reproduce longhelper/error renderedlinevisibility using native fieldwidgets; usecanonical wrappinghelper/errorwidgets withoutchangingvalidators/fieldlimits/precisions",
+      "Add canonicalspacingbefore CSVcontents below fileactions; retain originalCSVsource/maxLength/parser/servicecontract",
+      "InitialProductslistimage has partial cards/FABsoverprice: nativeclippedsemanticsrect is insufficient toacceptentirecard. Recheck reachablewholecardvisualgeometry beforedecidingany appchange"
+    ],
+    "status": "findingrecorded;no sourceeditduringv40native"
+  }
+}

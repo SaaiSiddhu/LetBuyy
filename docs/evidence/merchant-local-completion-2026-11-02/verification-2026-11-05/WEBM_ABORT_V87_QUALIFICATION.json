@@ -1,0 +1,30 @@
+{
+  "at": "2026-11-07T11:06:54.805677+00:00",
+  "source_sha256": "e831c0f58dd6a6447cb6a60190e962096732a19577e7162bb5be075540b70c18",
+  "inputs": 8506,
+  "implementation": "Deliberate pause/background/retirement AbortError no longer becomes a false playback load failure; real unsupported-codec errors remain sanitized failure.",
+  "negative_proof": "merchant-webm-document-prefixed-20261107.log:2PASS/3FAIL",
+  "gates": {
+    "flutter": "1731PASS/0FAIL/0SKIP",
+    "analysis": "0issues",
+    "actual_embedded_webm_javascript": "5PASS/0FAIL;3interruption cases failed before fix",
+    "actual_isolated_governance": "114PASS/1NA;original source/index unchanged during gate",
+    "retained_unchanged_backend": "Source84 Media12,Range13,rootcontracts400,Gatewaytypes0;not fresh87 standalone reruns;native116/117 do execute current compiled Workers/real SQL/R2",
+    "counts": "Independent overlapping suites;never sum."
+  },
+  "runtime": {
+    "android116": {
+      "report": "native116-final-local-readback.json",
+      "run_id": "ce6c4e0d693b",
+      "status": "BOUNDED_CURRENT_ANDROID_CAMERA_MOV_WEBM_PLAYBACK_WEB_SYNC_PASS"
+    },
+    "ios117": {
+      "report": "native117-final-local-readback.json",
+      "run_id": "c4e529bee7d4",
+      "status": "BOUNDED_CURRENT_IOS_MOV_AVPLAYER_WEBM_WEBKIT_FILES_PLAYBACK_WEB_SYNC_PASS"
+    }
+  },
+  "scope": "Local synthetic only; source86 native proof retained; full122 and provider/physical/release acceptance open.",
+  "source_frozen": false,
+  "custody": "source87-final-custody.json"
+}

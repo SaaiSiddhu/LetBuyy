@@ -1,0 +1,22 @@
+{
+  "at": "2026-11-08T09:38:41.122802+00:00",
+  "source": "c872c19cb9e02fa7581afaa64b6dbf0ef4e50dd44ccbfdc5fb1950fa784ded6f",
+  "core_inputs": 8529,
+  "qualified_report": "../CATALOG_AVAILABILITY_LOCAL_V106_QUALIFICATION.json",
+  "scope": "Bounded source/local functionality only; no full122 or release",
+  "Flutter": 1789,
+  "analysis": 0,
+  "governance": "114PASS/1NA",
+  "availability_owned": 10,
+  "web_list": 10,
+  "native138": "PASS2bccaec188c9",
+  "native139": "FUNCTIONAL PASS921ee95f027a, geometry/default-tap failures retained",
+  "source_unchanged": true,
+  "all_owned_runners_terminal": true,
+  "native_cleanup_empty": true,
+  "Android": "retainedAVDbooted/appstopped/mapsrestored",
+  "iOS": "Shutdownrestored/Photospreserved",
+  "next": "Public buyer availability and migration boundary suite; no core freeze after current complete runs",
+  "whole_features_accepted": 0,
+  "host9002": "Nevercontacted"
+}

@@ -1,0 +1,22 @@
+{
+  "build_script_sha256": "65dc589392819541f0775f0e521030cccd7d97f3954a2f6ac70e96fcc74e1d50",
+  "status": "RUNNING",
+  "source_sha256": "9924957f802fbd5b77c395e3ad18b19573d7ad5fbb886a9ad39419b4ba456769",
+  "source_inputs": 8459,
+  "supervisor_pid": 13224,
+  "owned_root": "/private/tmp/letbuyy-kyc-selection-v2-ios-r7vz0l12",
+  "platform": "ios",
+  "started_at": "2026-11-06T07:11:45.918234+00:00",
+  "defines": {
+    "ENVIRONMENT": "local",
+    "ACCOUNTS_ENVIRONMENT": "development",
+    "BFF_BASE_URL": "http://127.0.0.1:54350/v1",
+    "API_BASE_URL": "http://127.0.0.1:54350/v1",
+    "IDENTITY_BASE_URL": "http://127.0.0.1:54351",
+    "ADMIN_BASE_URL": "http://127.0.0.1:54353",
+    "STOREFRONT_BASE_URL": "http://127.0.0.1:54354"
+  },
+  "steps": [],
+  "scope": "Normal main.dart debug compile/artifact only. No install, launch, sign-in, provider, web-mobile sync, device, hosted or release acceptance.",
+  "active_child_pid": 13227
+}

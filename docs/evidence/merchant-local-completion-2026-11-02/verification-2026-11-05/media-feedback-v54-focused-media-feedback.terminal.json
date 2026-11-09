@@ -1,0 +1,18 @@
+{
+  "stage": "focused-media-feedback",
+  "exit_code": 0,
+  "source_unchanged": true,
+  "source_sha256": "70794e68bd47bf97c4331ab71f5a3f968231b63153cb23f0f6889ebdda31e445",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "--reporter",
+    "expanded",
+    "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/apps/merchant/mobile/test/media_interrupted_upload_recovery_test.dart",
+    "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/apps/merchant/mobile/test/media_library_recovery_test.dart",
+    "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/apps/merchant/mobile/test/media_metadata_lifecycle_test.dart",
+    "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/apps/merchant/mobile/test/media_workflow_context_test.dart",
+    "test/inventory_feedback_test.dart"
+  ]
+}

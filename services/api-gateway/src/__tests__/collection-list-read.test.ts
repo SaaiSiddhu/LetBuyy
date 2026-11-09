@@ -10,7 +10,7 @@ import ts from 'typescript';
 const base=fileURLToPath(new URL('../../../../',import.meta.url));
 const site='a0000000-0000-4000-8000-000000000001',actor='b0000000-0000-4000-8000-000000000001',foreign='c0000000-0000-4000-8000-000000000001';
 const ids=Array.from({length:4},(_,i)=>`d0000000-0000-4000-8000-00000000000${i+1}`);
-const parent=(id:string)=>({id,store_id:site,title:'Owned collection',description:null,image_url:null,is_active:true,created_at:'2026-10-24T00:00:00Z',membership_version:1});
+const parent=(id:string)=>({id,store_id:site,title:'Owned collection',description:null,image_url:null,is_active:true,created_at:'2026-10-24T00:00:00Z',membership_version:1,metadata_version:1});
 type Options={fault?:string;counts?:unknown[];parents?:unknown[];total?:number;noPool?:boolean;denyOwner?:boolean};
 function fixture(o:Options={}) {
  const file=resolve(base,'services/api-gateway/src/execution/collection-membership.adapter.ts');
@@ -34,7 +34,7 @@ function fixture(o:Options={}) {
      if(o.fault==='context')siteGuc=foreign;
      return o.counts??ids.map((id,i)=>({id,product_count:[0,2,1,1][i]}));
    }
-   if(q.includes('collection-list:confirm'))return ids.map(id=>({id,membership_version:o.fault==='revision'?2:1}));
+   if(q.includes('collection-list:confirm'))return ids.map(id=>({id,membership_version:o.fault==='revision'?2:1,metadata_version:o.fault==='metadata-revision'?2:1}));
    return[];
  }};
  const helper={bindOwnedTenantActor:async()=>{},withTenantTx:async(_env:unknown,_tenant:unknown,fn:(tx:unknown)=>Promise<unknown>)=>{if(o.noPool)throw Error('PRIVATE_DB_TOKEN');try{const result=await fn(tx);committed=true;return result;}catch(e){aborted=true;throw e;}finally{role='pool_base';}},TenantTransactionUnavailableError:class extends Error{}};
@@ -45,12 +45,12 @@ function fixture(o:Options={}) {
 }
 test('closed operation returns confirmed0/2/1/1 and restores tenant role before any result',async()=>{const f=fixture();const result=await f.run();assert.deepEqual(result.data.map(r=>r.product_count),[0,2,1,1]);assert.equal(f.calls.filter(c=>c.q==='SET LOCAL ROLE service_role').length,1);assert(f.calls.filter(c=>c.role==='service_role').every(c=>c.q.includes('collection-list:context')||c.q.includes('collection-list:fixed-count')||c.q==='SET LOCAL ROLE app_tenant'));assert(f.state().committed);assert(!f.logs.join('').includes(site));});
 test('full assignment count above100 is not product-picker truncation',async()=>{const f=fixture({counts:ids.map(id=>({id,product_count:151}))});assert((await f.run()).data.every(row=>row.product_count===151));});
-test('parent page and count statement are fixed, parameterized and use only positive parent IDs',async()=>{const f=fixture();await f.run();const p=f.calls.find(c=>c.q.includes('collection-list:parents'))!;assert.equal(p.role,'app_tenant');assert(p.q.includes('FOR SHARE'));assert(p.q.includes('created_at DESC,c.id DESC'));const c=f.calls.find(c=>c.q.includes('collection-list:fixed-count'))!;assert.equal(c.role,'service_role');assert.deepEqual(c.p,[site,ids]);assert(!c.q.includes(site));assert(!c.q.includes('JOIN public.products'));});
+test('parent page and count statement are fixed, parameterized and use only positive parent IDs',async()=>{const f=fixture();await f.run();const p=f.calls.find(c=>c.q.includes('collection-list:parents'))!;assert.equal(p.role,'app_tenant');assert(!p.q.includes('FOR SHARE'));assert(p.q.includes("c.collection_type='manual'"));assert(p.q.includes('c.version AS metadata_version'));assert(f.calls.find(c=>c.q.includes('collection-list:owner'))!.q.includes('FOR SHARE'));assert(p.q.includes('created_at DESC,c.id DESC'));const c=f.calls.find(c=>c.q.includes('collection-list:fixed-count'))!;assert.equal(c.role,'service_role');assert.deepEqual(c.p,[site,ids]);assert(!c.q.includes(site));assert(!c.q.includes('JOIN public.products'));});
 test('known owned empty store is successful empty without elevation',async()=>{const f=fixture({parents:[],total:0});assert.deepEqual((await f.run()).data,[]);assert(!f.calls.some(c=>c.q==='SET LOCAL ROLE service_role'));});
 test('past-end page keeps exact total rather than fabricating empty count',async()=>{const f=fixture({parents:[],total:4});const r=await f.run({page:5,limit:2});assert.equal(r.meta.total,4);assert.equal(r.meta.page,5);assert(!f.calls.some(c=>c.q==='SET LOCAL ROLE service_role'));});
 test('ownership refusal happens before count capability',async()=>{const f=fixture({denyOwner:true});await assert.rejects(f.run,{statusCode:403});assert(!f.calls.some(c=>c.q==='SET LOCAL ROLE service_role'));assert(f.state().aborted);});
 test('foreign parent cannot enter the derived witness',async()=>{const f=fixture({parents:ids.map(id=>({...parent(id),store_id:foreign}))});await assert.rejects(f.run,{statusCode:503});assert(!f.calls.some(c=>c.q==='SET LOCAL ROLE service_role'));});
-for(const fault of ['switch','query','restore','rollback','context','profile','revision'])test('actual operation aborts/restores or rolls back on '+fault,async()=>{const f=fixture({fault});await assert.rejects(f.run,{statusCode:503});assert(f.state().aborted);assert(!f.state().committed);assert(!f.logs.join('').includes('PRIVATE_DB_TOKEN'));assert(f.calls.some(c=>c.q.startsWith('ROLLBACK TO')));});
+for(const fault of ['switch','query','restore','rollback','context','profile','revision','metadata-revision'])test('actual operation aborts/restores or rolls back on '+fault,async()=>{const f=fixture({fault});await assert.rejects(f.run,{statusCode:503});assert(f.state().aborted);assert(!f.state().committed);assert(!f.logs.join('').includes('PRIVATE_DB_TOKEN'));assert(f.calls.some(c=>c.q.startsWith('ROLLBACK TO')));});
 for(const [name,counts] of [['missing',[]],['duplicate',ids.map(()=>({id:ids[0],product_count:1}))],['foreign',ids.map(()=>({id:foreign,product_count:1}))],['negative',ids.map(id=>({id,product_count:-1}))],['string',ids.map(id=>({id,product_count:'2'}))]] as const)test('malformed '+name+' count is unavailable rather than0',async()=>{const f=fixture({counts:[...counts]});await assert.rejects(f.run,{statusCode:503});assert(f.state().aborted);});
 test('missing pool fails closed without accessing REST',async()=>{const f=fixture({noPool:true});await assert.rejects(f.run,{statusCode:503});assert.equal(f.calls.length,0);});
 test('invalid pagination is refused before transaction',async()=>{const f=fixture();await assert.rejects(()=>f.run({page:0,limit:101}));assert.equal(f.calls.length,0);});

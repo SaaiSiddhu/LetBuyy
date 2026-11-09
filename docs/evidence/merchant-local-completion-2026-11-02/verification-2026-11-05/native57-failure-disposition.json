@@ -1,0 +1,49 @@
+{
+  "at": "2026-11-06T06:46:50.690319+00:00",
+  "status": "FAILED_NOT_ACCEPTED",
+  "run_id": "b4820d15fcb2",
+  "source_sha256": "99dee3d9dc5075e97deaff99f2799dea89dac496c88c163a944b39bfe9dda4f0",
+  "runner_pass": 0,
+  "runner_fail": 1,
+  "runner_skip": 0,
+  "classification": "TEST_LOCATOR_FAILURE",
+  "observed_before_stop": [
+    "normal native/web Accounts login",
+    "53real memberships across2pages",
+    "native Settings Staff optional-panel denial remains navigable",
+    "owner name saved/read mobile to web and web to mobile",
+    "Beta membership beyond50 restored after app restart",
+    "Staff product renamed with real API acknowledgement and unchanged null description/media/price/stock/inventory assertions",
+    "web selector viewport/scroll/focus/both appearances restored",
+    "normal web header Beta selection"
+  ],
+  "failure": "exact accessible link name omitted product descriptor; role-containing-exact-span locator prepared",
+  "unaccepted": [
+    "live owner Staff downgrade",
+    "native editor403retirement",
+    "owner Staff removal and remaining Alpha discovery",
+    "complete story effect-once final readback"
+  ],
+  "cleanup": {
+    "at": "2026-11-06T06:44:19.783399+00:00",
+    "serial": "emulator-5580",
+    "adb_port": 15038,
+    "runner_exit": 1,
+    "controller_exit": -15,
+    "baseline": [],
+    "before": [],
+    "removed": [],
+    "refused": [],
+    "after": [],
+    "scope": "Only current-run exact reverse tuples on task emulator. Host9002 never accessed."
+  },
+  "owned_database_cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "private_report": "/private/tmp/letbuyy-merchant-local-20261106-25feac2c/native-switcher-v57.json"
+}

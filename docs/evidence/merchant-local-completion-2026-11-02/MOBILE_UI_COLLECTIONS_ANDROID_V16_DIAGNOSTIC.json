@@ -1,0 +1,39 @@
+{
+  "at": "2026-11-04T17:39:07.309297+00:00",
+  "status": "DIAGNOSTIC_FAILED_NO_COMPOUND_ACCEPTANCE",
+  "run_id": "80282ae5b7de",
+  "source": "mobile-ui-collections-v11/4bca3d04017756e2af1f0fb1e34377f2a6adcc649584a61d9283671e3f86a2b6",
+  "tests": 1,
+  "passed": 0,
+  "failed": 1,
+  "skipped": 0,
+  "cancelled": 0,
+  "suite_seconds": 268.7,
+  "wall_seconds": 270.8,
+  "observed_before_failure": [
+    "Normal native Accounts sign-in and automatic app return",
+    "Native membership reorder, committed reply loss and original-key retry",
+    "Normal web read and save followed by native refreshed ordered readback"
+  ],
+  "failure": "Current UI controller selected an EditText coordinate but opened the Rule1operator sheet; focus assertion stopped before entering that field. No application defect inferred.",
+  "cleanup": {
+    "rest": true,
+    "database": true
+  },
+  "reverse_maps": {
+    "at": "2026-11-04T17:36:49.235851+00:00",
+    "serial": "emulator-5580",
+    "adb_port": 15038,
+    "runner_exit": 1,
+    "controller_exit": 1,
+    "baseline": [],
+    "before": [],
+    "removed": [],
+    "refused": [],
+    "after": [],
+    "scope": "Only current-run exact reverse tuples on task emulator. Host9002 never accessed."
+  },
+  "read_only_keyboard_observer": "45-second observer saw no Merchant keyboard; no image or keyboard-layout acceptance.",
+  "post_cleanup_image": "native-focus-diagnostic.png was captured after cleanup and shows Chrome about:blank; it is not evidence of Merchant field geometry.",
+  "next": "Inspect current native field geometry in a fresh bounded controller with pre-input witness, stable bounds and explicit semantic/viewport checks; app source remains unchanged."
+}

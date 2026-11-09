@@ -1,0 +1,77 @@
+{
+  "at": "2026-11-04T19:11:37.451337+00:00",
+  "status": "ORDERS13_LOCAL_SOURCE_QUALIFIED_NATIVE20_FAILED_BACKEND_GATE_IOS7_COMPILE_ONLY",
+  "source": {
+    "head": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+    "sha256": "41c0d88908a63fc74d260b26144059acc3925e89509364db05ddf0e985e451e7",
+    "entries": 7465,
+    "manifest": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-orders-v13.source.json",
+    "archive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-orders-v13-qualified-source"
+  },
+  "implemented": [
+    "Store-keyed Orders workspace; mounted-first current-view guards; visible shell load/refresh/operation states; current denial retires private rows, current same-query offline presentation labelled saved and commands disabled.",
+    "Server cursor paging uses unchanged20row contract, history for Previous, retires prior-page data/selection; search/status/date/sort/counts explicitly loaded-page only; original local predicates/sort math preserved.",
+    "Natural cards wrap full identity and exact INR amount display; raw absent total remains unavailable, raw zero displays0.00 without using protected nonpositive-total fallback as a confirmed amount. Native checkbox and keyboard-action semantics.",
+    "Canonical short tracking/cancellation/export sheets, applied choice sheets for three query controls, full-page complex draft editor and durable packing-slip page. Actual native input/IME/share APIs remain unchanged.",
+    "Draft input/validation/product IDs/quantity1\u2013999/defaults/create/convert payloads preserved; native controllers disposed with route. Lost acknowledgement keeps read-only draft and blocks a fresh automatic submission; existing durable recovery is not invented.",
+    "Queued export retains original job in page memory and rechecks it; same five350ms bounded polls, original status filter/download/share mapping, no implied completion or automatic new job. Scope/lifetime guards before private share.",
+    "Existing root page-action owner generalized for Orders and Products without changing five tabs; Orders selection/busy/export controls suppress competing root FABs. Dead no-op Orders Settings item removed; canonical More tab remains."
+  ],
+  "local": {
+    "focused_v8": {
+      "pass": 22,
+      "fail": 0,
+      "scope": "11UI +11read presentation cases; synthetic transport using real services/SDK/cache; not SQL."
+    },
+    "full_v13": {
+      "pass": 1093,
+      "fail": 1,
+      "skip": 0,
+      "failure": "Existing protected Staff hosted/local invitation namespace assertion; unmodified and outside frontend scope."
+    },
+    "app_analysis_issues": 0,
+    "ui_kit_analysis_issues": 0,
+    "parsed_preservation_checks": 313,
+    "protected_readback": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-protected-readback-v10.json",
+    "governance": {
+      "capsule": "governance-category-capsule-v30",
+      "passed": 114,
+      "failed": 0,
+      "blocked": 0,
+      "skipped": 0,
+      "not_applicable": 1,
+      "actual_clone_inputs_matched": 7465
+    }
+  },
+  "diagnostics": {
+    "v1": "Dart cache-list inference compilation error; explicit existing JsonMap list type corrected. No test acceptance.",
+    "v4": "Provider notification during keyed workspace build reproduced; initial read deferred to microtask while shell pending UI remains visible.",
+    "v5_v6": "New tests reached cases with original provider issue corrected; remaining lazy offscreen finders/required pumps/export fake-time polling were fixture assumptions. Error/validation result reveal also improved in real draft editor.",
+    "v7": "A helper-edit generator failed before writing; the next run repeated the unchanged two test-helper failures. Not application evidence.",
+    "v9": "260PASS/1old root-read fixture frame failure.",
+    "v11": "1092PASS/2FAIL: protected Staff + root animation-settle timeout; root useful-data wait fixed, isolatedv12PASS."
+  },
+  "android": {
+    "status": "FAILED_LOCAL_DRAFT_BACKEND_GATE_WITH_BOUNDED_NATIVE_UI_OBSERVATIONS",
+    "report": "COMPILED_MOBILE_UI_ORDERS_ANDROID_V20_DIAGNOSTIC.json",
+    "run_id": "a4e102bf98f2",
+    "compound_pass": 0,
+    "compound_fail": 1,
+    "backend_dependency": "ORDERS_DRAFT_BACKEND_DEPENDENCY.md",
+    "independent_readonly_witness": "Beforezero;no convertedorderacceptance;terminalexit2onownedrunnerretirement;finalcommitstateunknown"
+  },
+  "ios": {
+    "status": "SOURCE_VERIFIED_LOCAL_IOS_SIMULATOR_COMPILE_ONLY",
+    "report": "MOBILE_UI_ORDERS_IOS_V7_COMPILE_QUALIFICATION.json",
+    "manifest_sha256": "715a7869cf229c51685359074f72a0e8af09a4d0d8b1415dd759057da56442ff",
+    "runtime": "Notbootedorlaunched"
+  },
+  "open": [
+    "Orders detail and Returns remain unchanged/unmigrated; fetchOrder stale-cache/freshness UI admission is still open.",
+    "Orders unknown create/convert/status acknowledgement cannot be automatically replayed without existing supported durable recovery; retain dependent acceptance.",
+    "Orders web\u2194mobile mutation verification, native amount/keyboard inspection, accessibility speech, physical device, iOS runtime, provider/payment/release gates pending.",
+    "Unique screen denominator remains unreconciled;119applicable feature programme open;120/121excluded;122paused;51frozen.",
+    "Selection caption still says refresh clears hidden selections, while refresh only retires disappeared IDs. Correct this copy with next source change after fixed-source qualification; behavior stays unchanged.",
+    "After native20terminal, strengthen the legacy root-tab test to assert a rendered order and no pending shell, beyond its global service-row assertion. The earlier animation-settle timeout alone does not establish its cause."
+  ]
+}

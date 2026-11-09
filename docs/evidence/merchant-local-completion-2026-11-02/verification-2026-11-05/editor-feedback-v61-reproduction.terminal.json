@@ -1,0 +1,19 @@
+{
+  "started_at": "2026-11-06T23:42:00.125456+00:00",
+  "supervisor_pid": 1071,
+  "source": "merchant-editor-feedback-baseline-v61",
+  "source_sha256": "f1164aba9f8ecae4da4cca94f4f037ecae4bc538b5947e9ab16b55d1c8ed1e92",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "test/editor_feedback_placement_test.dart",
+    "--reporter",
+    "expanded"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 1075,
+  "exit_code": 1,
+  "finished_at": "2026-11-06T23:42:08.273780+00:00",
+  "source_unchanged": true,
+  "source_readback_sha256": "f1164aba9f8ecae4da4cca94f4f037ecae4bc538b5947e9ab16b55d1c8ed1e92"
+}

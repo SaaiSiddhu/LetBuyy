@@ -1,0 +1,101 @@
+{
+  "at": "2026-11-06T17:36:23.874368+00:00",
+  "status": "LOCAL_SOURCE44_QUALIFIED_NATIVE73_RUNNING_NOT_ACCEPTED",
+  "source": "4d0884bd1d999e12271b2ee11c026a08977a7a509d2e00a4508ee1c3bfc21372",
+  "entries": 8482,
+  "input_scoped_reuse": {
+    "35": {
+      "prefixes": [
+        "services/api-gateway/",
+        "services/mobile-bff/",
+        "packages/shared-types/",
+        "packages/typescript/api-client/",
+        "tests/helpers/"
+      ],
+      "byte_equal_inputs": 920
+    },
+    "36": {
+      "prefixes": [
+        "tests/contracts/",
+        "packages/typescript/api-client/",
+        "packages/shared-types/"
+      ],
+      "byte_equal_inputs": 133
+    },
+    "38": {
+      "prefixes": [
+        "packages/dart/",
+        "apps/merchant/mobile/lib/services/",
+        "apps/merchant/mobile/test/kyc_"
+      ],
+      "byte_equal_inputs": 439
+    }
+  },
+  "gates": {
+    "flutter": {
+      "passed": 1656,
+      "failed": 0,
+      "skipped": 0
+    },
+    "flutter_analysis_issues": 0,
+    "governance": {
+      "PASS": 114,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "SKIP": 0,
+      "NOT_APPLICABLE": 1
+    },
+    "gateway_unit_passed": 2087,
+    "shared_contract_passed": 23,
+    "web_kyc_sdk_contract_passed": 8,
+    "root_contract_passed": 408,
+    "owned": {
+      "runId": "5de1c5bad0e1",
+      "tests": 20,
+      "assertionsPassed": 20,
+      "assertionsFailed": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "dart_sdk": {
+      "passed": 135,
+      "existing_opt_in_skips": 6,
+      "analysis_issues": 0
+    },
+    "media_focused": 26,
+    "merchant_read_security_passed": 15,
+    "merchant_typecheck_exit": 0
+  },
+  "implementation": [
+    "Strict canonical public KYC validation in web SDK and Dart/service; cross-site, duplicate, private/unknown/coerced malformed responses fail closed.",
+    "Original canonical public-upload allocation is stored before bytes; actual stored-byte metadata can complete original unfinished receipt; no replacement object/key/receipt.",
+    "Explicit choose-original Media retry validates saved hash/size, reuses original multipart filename and original operation key.",
+    "Products menu now reaches canonical Media library through normal route.",
+    "Native69 metadata disposal assertion reproduced against exact old39 file independently on Cancel and held-response Save; dialog State now owns controllers through closing transition, with all fields/actions/context guards retained.",
+    "Actual native72/browser Gallery delete failed400 IDEMPOTENCY_SITE_REQUIRED. Web DELETE now constructs canonical SDK with authorized resolved store; no backend guard relaxation."
+  ],
+  "boundaries": [
+    "Native73 is not yet accepted. Native72 partial real KYC/media evidence is separate from last full native65/source16 cohort.",
+    "Legacy unfinished server uploads without a persisted allocation remain held.",
+    "Private test-only local R2 is not India/AWS/provider/physical-device/iOS runtime acceptance.",
+    "119applicable IDs remain open;120/121excluded,122paused,51frozen; no full122 or production acceptance."
+  ],
+  "native": "Native73 is running source44; actual native72 public recovery/metadata/private KYC and web KYC/Gallery image read passed, then failed the real Gallery delete scope gap. Source44 fixes that gap; complete native73 verification still pending.",
+  "source43_to44": {
+    "only_changed_core_file": "apps/merchant/web/src/app/api/stores/[store]/media/[mediaId]/route.ts",
+    "meaning": "Bind web Gallery deletion to authorized resolved store via existing canonical client factory. All mobile/Dart and backend inputs unchanged."
+  },
+  "native_current": {
+    "status": "PASS_BOUNDED_LOCAL",
+    "run": "54ecf4a294b8",
+    "readback": "native74-independent-readback.json",
+    "custody": "native74-cold-custody-readback.json",
+    "apk_sha256": "7ba46ca33e36e35274bf847ae28c57f2425e5bb1b0c6ccfcb3613fb7b793c1c1"
+  }
+}

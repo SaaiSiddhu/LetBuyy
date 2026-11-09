@@ -1,0 +1,17 @@
+{
+  "stage": "kyc-visual",
+  "exit_code": 0,
+  "source_unchanged": true,
+  "source_sha256": "24650e42a918adc8d2a6fada709de8753049c99bc1b2fcc5ad555e4069564a2e",
+  "command": [
+    "env",
+    "LETBUYY_KYC_RECOVERY_VISUAL_DIR=/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/kyc-recovery-rendered-v38",
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/kyc_recovery_visual_v5_test.dart",
+    "--reporter",
+    "expanded"
+  ],
+  "cwd": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/apps/merchant/mobile"
+}

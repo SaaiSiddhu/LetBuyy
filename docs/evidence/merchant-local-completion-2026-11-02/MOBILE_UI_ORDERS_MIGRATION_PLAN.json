@@ -1,0 +1,67 @@
+{
+  "at": "2026-11-04T17:43:56.348653+00:00",
+  "status": "SOURCE_REVIEWED_PLAN_ONLY_WHILE_COLLECTIONS_V11_FROZEN",
+  "scope": "Frontend only, one agent in current dirty worktree. Read-only during native v18; no Orders/Returns source edits yet. Protected services, totals, refund approval, persistence and APIs remain unchanged.",
+  "reviewed_implementations": {
+    "OrdersScreen": {
+      "path": "apps/merchant/mobile/lib/screens/orders/orders_screen.dart",
+      "lines": 2052,
+      "review": "Entire source read, including local filters/calculations, draft order, export, tracking/cancel, packing-slip native share and bulk handlers."
+    },
+    "OrderDetailScreen": {
+      "path": "apps/merchant/mobile/lib/screens/orders/order_detail_screen.dart",
+      "lines": 1800,
+      "review": "Entire source read, including cached read, current request context, totals/timeline/risk, all line/refund/shipping forms and their typed returns."
+    },
+    "ReturnsScreen": {
+      "path": "apps/merchant/mobile/lib/screens/orders/returns_screen.dart",
+      "lines": 543,
+      "review": "Entire source read, including list, create, status transitions and protected refund approval."
+    },
+    "ReturnService": "Entire230line service read; existing scoped returns and refund completion intent/receipt checks unchanged.",
+    "OrderService": "Entire559line service read, including retained refund commands, exact acknowledgement checks, shipping label payloads, native cache writes and badge calculations; unchanged.",
+    "canonical_contracts": "Shared Dart LineItemContract/OrderContract fullfields/getters, OrdersApi/ReturnsApi/ShippingLabelsApi, route builders/deep link aliases and retained root shell read.",
+    "server_contracts": "Canonical checkout-core schemas401\u2013565 and1090\u20131125 plus active draft/create/convert, fulfill/refund routes and return response projection read. No backend source edit."
+  },
+  "confirmed_frontend_findings": [
+    "Orders currently retains one selected store ID without observing store epoch changes; late list/route/modal callbacks need captured current-view lifetime fences.",
+    "Orders list uses six local status values, four date ranges and four sort values against only the fetched page. Labels currently imply global totals and filtering. Preserve the original local predicates and calculations; label the loaded-page population honestly. Do not invent global search/counts or change API contracts.",
+    "Orders action/filter/header rows, fixed search height, rounded-to-whole-rupee amounts and narrow card rows need natural geometry and precise canonical formatting. Stress tests must establish actual failures before correction.",
+    "The Orders Settings menu is a no-op and needs an explicit supported disposition. Its route/owner has not yet been confirmed.",
+    "New draft order is a complex centered dialog; order detail refund/line-items/shipping tasks are also centered app forms and retain controllers beyond route exit. Use full-page editors for complex tasks and canonical short sheets for focused tracking/cancel/provider-reference choices.",
+    "Export status currently invites another attempt after a known queued job. Keep its existing five polls and same-ID recovery; use honest accepted/pending state and UI-local known-job readback through the existing API, without new persistence policy.",
+    "OrderService list failure may return its previous rows, and detail may return cache on error without an explicit freshness flag. This is a protected service contract; the frontend must not call cache a fresh confirmation. Current-store/record admission and unavailable recovery are presentation work; service freshness/persistence changes remain a separate dependency.",
+    "Order total helper falls back to line sums for non-positive totals; Return raw amount/status getters default to zero/requested. Preserve domain implementations. Inspect canonical response presence and use an honest unavailable/review state where the response does not establish the claimed value; do not silently redesign financial rules.",
+    "OrderDetail shipping form hardcodes a sandbox badge while the service can use configured providers. Mode must be represented from existing authority or marked unavailable; no provider configuration change.",
+    "Existing TwoFactorService capture/check, approval context and retained refund key/intent must stay exact through container changes. No real payment/refund/label/invitation side effects are authorized by this frontend task.",
+    "The shared rule-card semantics finding should be checked in other multi-control form cards before claiming native accessibility: a default Card may merge the editable node with the entire card. Do not apply a blind mechanical change to all record cards.",
+    "Active order list schema supports more query dimensions than OrderService exposes. New global filtering/search or trustworthy cache freshness would require the protected owner to expose the correct contract; label existing page-local behavior honestly and record that dependency.",
+    "Return normalization can omit an amount when there is no refund; the current Dart getter maps absence to zero. The frontend must inspect the existing raw response presence and distinguish unavailable from a real zero."
+  ],
+  "sequence": [
+    {
+      "owner": "Orders list and shell",
+      "work": "Map StoreMain retained tab, detail arguments and return context; shared responsive appbar, one scroll owner, natural cards, page-local labelled query choices, truthful initial/refresh/failure states and pinned selection controls. Preserve query predicates and all supported action values."
+    },
+    {
+      "owner": "Orders task containers",
+      "work": "Shared full-page draft editor with original fields, product IDs/quantity1\u2013999/defaults/convert behavior, explicit validation and dirty recovery. Packing-slip reading moves to durable page; copy/native file bytes/payload unchanged. Tracking/cancel/export use short canonical sheets with current-owner guards."
+    },
+    {
+      "owner": "Order detail and Returns",
+      "work": "After full protected contract trace, migrate durable detail and complex refund/line/shipping editors; short refund reference/cancel sheets; preserve all version/key/approval/receipt meaning. Add current-view fences and actionable unconfirmed readback without redefining settlement."
+    }
+  ],
+  "verification": [
+    "Add actual composed 320dp/large-text/both-theme failures, exact money formatting, native focus/keyboard/IME, query population labels and selected-action/root overlap cases.",
+    "Exercise scope changes before frame, while reading, while modal is open, after route return and after command response; no private retired view or later dispatch.",
+    "Parsed AST equality for original calculations, validation, typed form returns and service request arguments; protected source hash readback.",
+    "Existing order/return/refund security and recovery tests stay active. Full suite, analyses and governance after coherent implementation.",
+    "Build exact Android/iOS artifacts; normal local web/mobile readback through unchanged authorized harness only. Physical/provider/hosted/full119 acceptance remain distinct."
+  ],
+  "not_yet_reviewed": [
+    "Detailed provider-result and order execution ownership still needs tracing for any affected label/financial claim; keep source protected.",
+    "Meaningful existing monetary/security assertion coverage and UI negative cases before implementation."
+  ],
+  "updated_at": "2026-11-04T17:57:21.615127+00:00"
+}

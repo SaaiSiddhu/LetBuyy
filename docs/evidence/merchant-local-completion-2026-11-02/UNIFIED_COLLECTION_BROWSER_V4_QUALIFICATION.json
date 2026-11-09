@@ -1,0 +1,317 @@
+{
+  "status": "BOUNDED_LOCAL_COMPILED_BROWSER_VERIFIED",
+  "runId": "933431604aa3",
+  "source_sha256": "796e7926441fbbd6b62035744b5e70ac42911f4781878d34d23ef126d84e33a0",
+  "sourceEntries": 7404,
+  "sourceHeldAndTerminalVerified": true,
+  "sourceArchive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/unified-collection-browser-v4-qualified-source",
+  "passed": 6,
+  "failed": 0,
+  "skipped": 0,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "summary": {
+    "runId": "933431604aa3",
+    "checkpoints": [
+      "one_normal_identity_owner_sign_in",
+      "normal_web_rename_restart_original_key_recovery_one_receipt_audit_outbox_two_canonical_product_edits",
+      "normal_web_create_confirmed_readback_then_empty_soft_delete",
+      "normal_session_bff_stale_actor_origin_and_store_denials_zero_effects",
+      "normal_manual_collection_create_reply_loss_reload_exact_key_body_one_effect",
+      "normal_smart_create_publish_saved_preview_public_two_products_stale_tab_explicit_review_kept_draft",
+      "normal_collection_bff_stale_actor_foreign_origin_and_store_denials_zero_effects"
+    ],
+    "normalSignIns": 1,
+    "positiveCredentialInjection": false,
+    "positiveAPIFake": false,
+    "fixtureKind": "compiled production-mode local Next runtimes + actual Gateway/PostgREST/owned PostgreSQL",
+    "categoryCalls": [
+      {
+        "path": "/v1/categories",
+        "method": "GET",
+        "status": 200,
+        "wireStatus": 200,
+        "key": null,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/v1/categories/b7678a21-de0a-4e4e-a71b-08cba4f4dfb2",
+        "method": "GET",
+        "status": 200,
+        "wireStatus": 200,
+        "key": null,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/v1/categories/b7678a21-de0a-4e4e-a71b-08cba4f4dfb2",
+        "method": "PATCH",
+        "status": 200,
+        "wireStatus": 503,
+        "key": "198e64e1-d452-4ed4-a84e-20422a162899",
+        "bodySha256": "d194f64fc3143da0ad57e9f8fa9dce332ba64f8945adaac8f108ac0c2b7be8e4"
+      },
+      {
+        "path": "/v1/categories",
+        "method": "GET",
+        "status": 200,
+        "wireStatus": 200,
+        "key": null,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/v1/categories/b7678a21-de0a-4e4e-a71b-08cba4f4dfb2",
+        "method": "PATCH",
+        "status": 200,
+        "wireStatus": 200,
+        "key": "198e64e1-d452-4ed4-a84e-20422a162899",
+        "bodySha256": "d194f64fc3143da0ad57e9f8fa9dce332ba64f8945adaac8f108ac0c2b7be8e4"
+      },
+      {
+        "path": "/v1/categories",
+        "method": "GET",
+        "status": 200,
+        "wireStatus": 200,
+        "key": null,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/v1/categories",
+        "method": "GET",
+        "status": 200,
+        "wireStatus": 200,
+        "key": null,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/v1/categories",
+        "method": "POST",
+        "status": 201,
+        "wireStatus": 201,
+        "key": "244200a3-b3c8-4433-a96b-49eca97cd7e1",
+        "bodySha256": "f509eb94510a480e85601acdbe05275be00bbe6a0f86f62fa4e1b0f59c60ddb6"
+      },
+      {
+        "path": "/v1/categories",
+        "method": "GET",
+        "status": 200,
+        "wireStatus": 200,
+        "key": null,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/v1/categories/d873e6db-81c5-45b7-b3af-40716bf0715a",
+        "method": "DELETE",
+        "status": 200,
+        "wireStatus": 200,
+        "key": "128e5c3f-a9ad-4713-b27a-31bcc54ef7a6",
+        "bodySha256": "4a1c6fdfae45a23e8e2907e852c4855ca845c49182a91f876bd8f8691581c0c7"
+      },
+      {
+        "path": "/v1/categories",
+        "method": "GET",
+        "status": 200,
+        "wireStatus": 200,
+        "key": null,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/v1/categories",
+        "method": "GET",
+        "status": 200,
+        "wireStatus": 200,
+        "key": null,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "collectionCalls": [
+      {
+        "path": "/v1/products/collections",
+        "method": "GET",
+        "status": 200,
+        "wireStatus": 200,
+        "key": null,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/v1/products/collections",
+        "method": "POST",
+        "status": 201,
+        "wireStatus": 503,
+        "key": "49a98e56-a343-47ea-9713-a156a4743882",
+        "bodySha256": "d84170df86ac6227bc456b49a7604391edd12fafe0144a20a949164a714bcfdc"
+      },
+      {
+        "path": "/v1/products/collections",
+        "method": "GET",
+        "status": 200,
+        "wireStatus": 200,
+        "key": null,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/v1/products/collections",
+        "method": "POST",
+        "status": 201,
+        "wireStatus": 201,
+        "key": "49a98e56-a343-47ea-9713-a156a4743882",
+        "bodySha256": "d84170df86ac6227bc456b49a7604391edd12fafe0144a20a949164a714bcfdc"
+      },
+      {
+        "path": "/v1/products/collections",
+        "method": "GET",
+        "status": 200,
+        "wireStatus": 200,
+        "key": null,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/v1/smart-collections",
+        "method": "GET",
+        "status": 200,
+        "wireStatus": 200,
+        "key": null,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/v1/smart-collections",
+        "method": "POST",
+        "status": 201,
+        "wireStatus": 201,
+        "key": "05bdbcaa-a2dd-4756-bb34-dcbe3e2fc209",
+        "bodySha256": "c12b2e6539f1c97f2f1583b1243506b7da522050fe2130dde6165bd551ea3832"
+      },
+      {
+        "path": "/v1/smart-collections",
+        "method": "GET",
+        "status": 200,
+        "wireStatus": 200,
+        "key": null,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/v1/smart-collections/3710b251-9392-485a-b6e3-843bb8b21260",
+        "method": "GET",
+        "status": 200,
+        "wireStatus": 200,
+        "key": null,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/v1/smart-collections/3710b251-9392-485a-b6e3-843bb8b21260/preview",
+        "method": "GET",
+        "status": 200,
+        "wireStatus": 200,
+        "key": null,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/v1/smart-collections",
+        "method": "GET",
+        "status": 200,
+        "wireStatus": 200,
+        "key": null,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/v1/smart-collections/3710b251-9392-485a-b6e3-843bb8b21260",
+        "method": "GET",
+        "status": 200,
+        "wireStatus": 200,
+        "key": null,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/v1/smart-collections/3710b251-9392-485a-b6e3-843bb8b21260",
+        "method": "PATCH",
+        "status": 200,
+        "wireStatus": 200,
+        "key": "d4a4ef9c-a06d-4599-929d-33f30822a2dc",
+        "bodySha256": "b97d877c6d3f66a9a08dba7023ab57742536f2da71dc6661db29b4be23c082ec"
+      },
+      {
+        "path": "/v1/smart-collections",
+        "method": "GET",
+        "status": 200,
+        "wireStatus": 200,
+        "key": null,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/v1/smart-collections/3710b251-9392-485a-b6e3-843bb8b21260",
+        "method": "PATCH",
+        "status": 409,
+        "wireStatus": 409,
+        "key": "5c9702e8-d7a9-4988-b47f-63e18643e17f",
+        "bodySha256": "17277ffe8339cb967a00e6743c6d593c8e221adf5070f4acc647f48605d4f7f2"
+      },
+      {
+        "path": "/v1/smart-collections/3710b251-9392-485a-b6e3-843bb8b21260",
+        "method": "GET",
+        "status": 200,
+        "wireStatus": 200,
+        "key": null,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/v1/smart-collections/3710b251-9392-485a-b6e3-843bb8b21260",
+        "method": "PATCH",
+        "status": 200,
+        "wireStatus": 200,
+        "key": "6a93f106-7985-4524-a7cd-29e69a6da0e6",
+        "bodySha256": "e567833646995a0ae167e2027f67f728a8ce9eaa8ee6f3f46d45b339b62fb6c3"
+      },
+      {
+        "path": "/v1/smart-collections",
+        "method": "GET",
+        "status": 200,
+        "wireStatus": 200,
+        "key": null,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/v1/smart-collections",
+        "method": "GET",
+        "status": 200,
+        "wireStatus": 200,
+        "key": null,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "lostCollectionReplies": 1,
+    "failedProductReads": 0,
+    "gatewayExternalRequestsRefused": 0,
+    "challengeMode": "Owned local one-use challenge provider; production anti-bot unverified",
+    "localChallengeCounts": {
+      "issued": 1,
+      "verified": 1,
+      "refused": 0,
+      "browserExternalRefused": 0,
+      "nativeSdkServed": 0,
+      "nativeIssued": 0
+    },
+    "runtimeSupervisors": [
+      {
+        "kind": "merchant-next-production",
+        "pid": 33618
+      },
+      {
+        "kind": "identity-next-production",
+        "pid": 33617
+      }
+    ],
+    "providerTransactions": 0,
+    "hostedVerified": false,
+    "syntheticScreenshots": [
+      "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-collections-browser-933431604aa3/manual-original-recovery.png",
+      "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-collections-browser-933431604aa3/smart-published-rules-preview.png",
+      "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-collections-browser-933431604aa3/smart-stale-draft-recovery.png"
+    ]
+  },
+  "scope": "Current Unicode/no-op/recovery-focus application source; normal owner compiled web journey and public collection API, not Android, rendered buyer Liquid or hosted acceptance."
+}

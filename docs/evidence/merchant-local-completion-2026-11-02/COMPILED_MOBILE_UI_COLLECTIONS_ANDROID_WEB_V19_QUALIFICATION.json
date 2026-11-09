@@ -1,0 +1,214 @@
+{
+  "at": "2026-11-04T18:10:58.665498+00:00",
+  "status": "BOUNDED_COMPILED_ANDROID_WEB_COLLECTIONS_PASS",
+  "source": {
+    "head": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+    "broad_sha256": "20222002acc891eae10780d569c6db5b7984ddead7655101ce5f96bcd5602b42",
+    "broad_entries": 7463,
+    "broad_manifest": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-collections-v22.source.json",
+    "native_sha256": "55e92ad7385c1d7ff4af3ab3a8d309ec0969b59e7b3c5630851b808b1f9d8c62",
+    "native_entries": 4783,
+    "all_native_inputs_match_broad_source": true,
+    "unchanged_through_run": true
+  },
+  "run": {
+    "id": "5f04666b2835",
+    "tests": 1,
+    "passed": 1,
+    "failed": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "wall_seconds": 686.5,
+    "suite_seconds": 684.8,
+    "meaning": "One compound bounded acceptance journey; not a feature or screen count."
+  },
+  "artifact": {
+    "apk": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v19/qualified-artifact/merchant-local-debug.apk",
+    "sha256": "739927203cceaa4e0d75b25233784af8f5c20804f689e6f375de936d10d72bb5",
+    "build_method": "flutter-config-only-then-offline-gradle-debug",
+    "installed_readback": true
+  },
+  "environment": "Normal main/debug Android APK on task emulator5580/server15038, normal Accounts PKCE system-browser return, actual existing Hono Gateway/BFF handlers with owned PostgreSQL/PostgREST and production-mode local Merchant/Accounts. These collection flows do not compile Workerd; no hosted/provider claim.",
+  "journeys": {
+    "membership": {
+      "normal_authentication": true,
+      "native_reorder_lost_reply_original_key_retry": true,
+      "normal_web_read_native_order_and_save": true,
+      "fresh_native_web_order_readback": true,
+      "version_chain": [
+        3,
+        6,
+        9
+      ],
+      "receipts": 2,
+      "audits": 2,
+      "outbox": 2,
+      "effect_identity": "Unchanged backend suite verifies original key/body digests and linked expected/result versions; version increments are server-owned, not assumed +1."
+    },
+    "smart": {
+      "native_publication_lost_reply_restart_retry": true,
+      "native_saved_preview_one_match": true,
+      "normal_web_rule_update_and_native_fresh_read": true,
+      "native_saved_preview_two_matches": true,
+      "exact_public_api_matches": true,
+      "state_before_later_delete": {
+        "version": 2,
+        "conditions": [
+          {
+            "op": "contains",
+            "field": "title",
+            "value": "Synthetic"
+          }
+        ],
+        "is_active": true,
+        "receipts": 2,
+        "audits": 2,
+        "outbox": 2
+      },
+      "native_delete_verified_by_web_and_public_api_absence": true
+    },
+    "manual_metadata": {
+      "native_create_and_normal_web_details_read": true,
+      "web_edit_native_conflict_and_kept_draft": true,
+      "explicit_current_review_save_and_web_read": true,
+      "web_delete_native_definite_rejection": true,
+      "cancel_and_process_restart_keep_original_request": true,
+      "original_recheck_then_explicit_discard": true,
+      "subsequent_native_new_create_and_web_read": true,
+      "final_state": {
+        "smart": {
+          "deleted": true,
+          "version": 3
+        },
+        "manual": {
+          "deleted": true,
+          "version": 4,
+          "description": "Synthetic kept mobile description"
+        },
+        "products": [
+          "845d7669-b170-462e-8c71-bbffb17594d4",
+          "f0e48d55-6dfc-4f4f-935e-7dda2659ecea"
+        ],
+        "manual_audits": 4,
+        "manual_outbox": 4,
+        "smart_receipts": 3,
+        "manual_receipts": 4
+      }
+    }
+  },
+  "ui_observations": {
+    "actual_rule_value_keyboard_and_pinned_actions_independently_viewed": true,
+    "rule_editable_bounds": [
+      95,
+      1581,
+      985,
+      1781
+    ],
+    "prior_failed_v18_bounds": [
+      42,
+      904,
+      1038,
+      1959
+    ],
+    "correction": "Rule card exposes independent children; actual native edit target is now its field, with exact typed value and real keyboard.",
+    "membership_names_and_move_remove_controls_viewed": true,
+    "saved_preview_scope_and_value_viewed": true,
+    "kept_description_and_restart_recovery_viewed": true,
+    "screenshots": [
+      {
+        "file": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-collections-v19-native-collection-input-0-keyboard.png",
+        "sha256": "c256b0ecfb9a964efdfc5cf766378b7c8928dc869242ddecb78bc9369d7f9174",
+        "independently_viewed": false
+      },
+      {
+        "file": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-collections-v19-native-collection-input-2-before.png",
+        "sha256": "d509180e0af5f05ef8cbbe461156040cac37a570580330788e338c5dc7642100",
+        "independently_viewed": false
+      },
+      {
+        "file": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-collections-v19-native-collection-input-2-keyboard.png",
+        "sha256": "a188b49213e237eafdabe7688fb25a4e2b49e6705b7278b059db08e6ac338876",
+        "independently_viewed": true
+      },
+      {
+        "file": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-collections-v19-native-collection-input-6-keyboard.png",
+        "sha256": "df64db632916be24d3dcd25143e3a1c2f98aabba76adc9acac67030ed1966271",
+        "independently_viewed": false
+      },
+      {
+        "file": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-collections-v19-native-membership-reply-loss.png",
+        "sha256": "4de4f635cf5af2d523cab018400d1086edd520f84f44fb5acdb6961254f58308",
+        "independently_viewed": false
+      },
+      {
+        "file": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-collections-v19-native-membership-web-readback.png",
+        "sha256": "322c9e6ed9cf928bb908a375fbd43787c6af07781e2b686984ea3cb24847b74a",
+        "independently_viewed": true
+      },
+      {
+        "file": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-collections-v19-native-smart-restart-retained.png",
+        "sha256": "f66e9bd27ddd656b07778977c4d6ad82125ca62e73a1f925aaed5335f746e85f",
+        "independently_viewed": false
+      },
+      {
+        "file": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-collections-v19-native-smart-web-rule-readback.png",
+        "sha256": "6070fb16082b4309319ce4a91bd762fcfb9dee85378beefd22b6780e3fcb606c",
+        "independently_viewed": false
+      },
+      {
+        "file": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-collections-v19-native-smart-preview-two.png",
+        "sha256": "17ba41c22ea458cfe8338c89e8c647c4fa7caafa65e8944840039d102035ab9e",
+        "independently_viewed": true
+      },
+      {
+        "file": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-collections-v19-native-manual-conflict-retained.png",
+        "sha256": "79f0f687885c35f9217fec3d5130ebb61a53052a236f2c4dd5a9915d1209959f",
+        "independently_viewed": false
+      },
+      {
+        "file": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-collections-v19-native-manual-conflict-reviewed.png",
+        "sha256": "5cfdee5a6ecb3290033e414f1c6f19d5b7ed0887b315deb611c39c4a4aeeff2c",
+        "independently_viewed": true
+      },
+      {
+        "file": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-collections-v19-native-deleted-target-restart-retained.png",
+        "sha256": "580c246bc5a5b9e6760ab7cd96d1b28a818c8d3c5d535060ccee886f2f10cd3b",
+        "independently_viewed": true
+      },
+      {
+        "file": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-collections-v19-native-deleted-target-discarded.png",
+        "sha256": "e02b9f59156057817a136f1d8e1e659003624776233c9d309dba704758808eae",
+        "independently_viewed": false
+      },
+      {
+        "file": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-collections-v19-web-manual-native-reviewed-details.png",
+        "sha256": "1a8ff6df8201daa17f2c2c26e7b9b6e424b34786097bf7dbdcad7f052ef1648d",
+        "independently_viewed": false
+      },
+      {
+        "file": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-collections-v19-web-smart-rule-saved.png",
+        "sha256": "913f4e8f09366d164f52ea37e097d353ed1327e8448b77cf07f96163cab71468",
+        "independently_viewed": false
+      }
+    ],
+    "visual_review_limit": "Only marked images were independently inspected so far. Native field/input assertions and captured images do not establish spoken TalkBack or every state/viewport."
+  },
+  "cleanup": {
+    "labelled_resources": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    },
+    "reverse_restored": true,
+    "existing_chrome_forward_preserved": true,
+    "idle_sleep_prevention": "Task runner-bound caffeinate only; retired after runner; no persistent power change."
+  },
+  "preserved_authority": "No new backend/API/BFF/SQL/RLS/grant/auth policy/domain calculation/persistence/provider/outbox/infra or deployment changes. Only the previously qualified Staff presentation/cache exception differs from the initial protected baseline.",
+  "limits": [
+    "Owner-local synthetic collection cases only; no native staff collection role journey.",
+    "One title/contains rule and exact public API projection; six fields/seven operators are mapped in widget tests, not all database rule combinations accepted here.",
+    "No rendered buyer collection page, iOS runtime, physical performance or spoken TalkBack/VoiceOver proof.",
+    "No complete app, reconciled unique screen denominator, whole119-feature parity, provider/hosted/production or release certification.",
+    "Prior v16/v18 failed diagnostics and v17 interruption remain retained."
+  ]
+}

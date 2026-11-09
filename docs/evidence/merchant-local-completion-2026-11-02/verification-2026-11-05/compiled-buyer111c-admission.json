@@ -1,0 +1,21 @@
+{
+  "source_manifest": "merchant-buyer-inventory-source-v111.source.json",
+  "source_sha256": "f572b869ac94a24fc7a2f5f9a4c14907fd614995be3f9df7057097fcc6648460",
+  "fixture": "merchant-inventory-core-buyer-v111c.postgres.test.ts",
+  "fixture_sha256": "c979953d28b69c872edb8765717f64fc18a8359b5e381b1dbac9157a7df14cc1",
+  "predecessor": "merchant-creation-core-buyer-v103b.postgres.test.ts",
+  "changes": [
+    "Optional no-JavaScript browser context",
+    "Real public variant quantity7/base0 + Liquid Offer InStock and selectable SKU",
+    "Normal API zero product \u2192 no-JS Soldout/OutOfStock",
+    "Explicit owned missing-level product base99 \u2192 null quantity/no-JS unknown/Offer availability omitted",
+    "Hydrated unknown control stale enable cannot write cart; unknown collection copy and disabled state"
+  ],
+  "scope": "Local owned compiled Accounts/Merchant/Commerce only. Real canonical Gateway/SQL/REST; synthetic provider/email/challenge only. No hosted/provider/production action. Never contact/bind/stop host9002. Global source snapshot only before/after all owned Next markers are removed.",
+  "retry_reason": "Prior94c72d753d9c passed actual positive availability/order/repeat journey, then503 creation under retained synthetic Enterprise upload entitlement. Track and remove only that fixture row after all theme work; assert canonical persisted Launch trial and products quota restored before normal zero create. No production entitlement fallback or app change.",
+  "failed_receipt": "compiled-buyer111.json",
+  "failed_receipts": [
+    "compiled-buyer111.json",
+    "compiled-buyer111b.json"
+  ]
+}

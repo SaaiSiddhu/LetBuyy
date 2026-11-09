@@ -1,0 +1,19 @@
+{
+  "source_sha256": "999e0d6b6ca0b1064b4b0b4f3dcacaaabd050a44105d5c1a9ecb2be51de44184",
+  "inputs": 8486,
+  "from_source58": "55323aae8a88a5f30bef11b75ee2602051cd263b95cda5b75f31369973a4b7c3",
+  "strong_signing_key_function_byte_equal": true,
+  "production_classifier_byte_equal": true,
+  "cookie_handlers_equal_after_base_options_reference_normalization": true,
+  "cookie_base_callers": 10,
+  "source56_inputs_equal": {
+    "mobile": true,
+    "dart": true,
+    "gateway": true,
+    "bff": true,
+    "sql": true
+  },
+  "flutter_reuse": "1660pass/0fail/0skip and analysis0 on source56; actual mobile/Dart inputs equal59. No inferred current Android/iOS acceptance.",
+  "qualification": "product-media-ios-v59-pipeline.terminal.json",
+  "active_native": "native83 normal UI remains in progress; no full acceptance"
+}

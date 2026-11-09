@@ -45,7 +45,9 @@
 	<key>FlutterDeepLinkingEnabled</key>
 	<false/>
 	<key>NSCameraUsageDescription</key>
-	<string>LetBuyy uses the camera to capture product, logo, and verification images.</string>
+	<string>LetBuyy uses the camera to capture product and storefront photos or videos, logos, and verification images.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>LetBuyy uses the microphone when you record product and storefront videos.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>LetBuyy uses your photo library to upload product, logo, and storefront media.</string>
 	<key>UIApplicationSceneManifest</key>

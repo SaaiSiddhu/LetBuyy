@@ -1,0 +1,16 @@
+{
+  "started_at": "2026-11-06T07:54:42.053820+00:00",
+  "supervisor_pid": 31705,
+  "source": "kyc-upload-negative-v1",
+  "source_sha256": "a90dbd93aa5cafc7a57c54af589c1cbd794491d68d42ad95ae142f90795ae3bd",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "test/kyc_upload_surface_test.dart",
+    "--reporter",
+    "expanded"
+  ],
+  "status": "RUNNING",
+  "child_pid": 31708
+}

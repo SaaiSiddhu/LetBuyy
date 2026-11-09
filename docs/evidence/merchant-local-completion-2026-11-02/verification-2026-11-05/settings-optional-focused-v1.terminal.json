@@ -1,0 +1,22 @@
+{
+  "started_at": "2026-11-06T04:06:55.570966+00:00",
+  "supervisor_pid": 28412,
+  "source": "settings-optional-source-v1",
+  "source_sha256": "b78f7bde4626d73d3a51515066dd0bcedff983595082be4a268164ea6ae68b33",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "--timeout",
+    "30s",
+    "test/settings_optional_reads_test.dart",
+    "test/store_switcher_presentation_test.dart",
+    "test/store_session_boundary_test.dart"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 28446,
+  "exit_code": 0,
+  "finished_at": "2026-11-06T04:06:59.962526+00:00",
+  "source_unchanged": true,
+  "source_readback_sha256": "b78f7bde4626d73d3a51515066dd0bcedff983595082be4a268164ea6ae68b33"
+}

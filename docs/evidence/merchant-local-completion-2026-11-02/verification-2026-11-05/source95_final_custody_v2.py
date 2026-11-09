@@ -1,0 +1,17 @@
+from pathlib import Path
+import subprocess,json,hashlib,datetime
+from qualify import ROOT,E,snapshot,write
+source=json.loads((E/'merchant-options-accessibility-source-v95.source.json').read_text());now=snapshot();assert now['files']==source['files']
+roots=[Path('/private/tmp/letbuyy-merchant-local-20261108-f7a3c2efea'),Path('/private/tmp/letbuyy-ios-ui-20261108-41bbfcc398'),Path('/private/tmp/letbuyy-ios-ui-20261108-9ae2f99d13')]
+for root in roots:
+ chain=json.loads((root/'CHAIN_TERMINAL.json').read_text());assert chain['backend_exit']==0 and chain['ui_exit']==0
+ run=json.loads((root/'runner.json').read_text());assert run['failedSuites']==0 and not run['cleanup']['failures'] and all(not v for v in run['cleanup']['remaining'].values())
+ports={p:subprocess.run(['lsof','-nP',f'-iTCP:{p}','-sTCP:LISTEN','-Fp'],capture_output=True).returncode for p in [54350,54351,54352,54353]};assert all(v==1 for v in ports.values())
+udid='B907B390-5B08-490F-BC6A-8900667B2D94';devices=json.loads(subprocess.check_output(['xcrun','simctl','list','devices','available','--json']));device=next(x for g in devices['devices'].values()for x in g if x['udid']==udid);assert device['state']=='Shutdown'and device['name']=='LetBuyy Merchant Local 20261103 br1jhgh8'
+adb=['/Volumes/Developer Tools/SDKs/android-sdk/platform-tools/adb','-P','15038','-s','emulator-5580'];qemu=subprocess.check_output(['ps','-p','79160','-o','command='],text=True);assert '-avd LetBuyy_Merchant_Parity_20261106_c6cefc'in qemu and '-no-audio'in qemu
+reverse=subprocess.check_output(adb+['reverse','--list'],text=True).strip();forward=subprocess.check_output(adb+['forward','--list'],text=True).strip();assert reverse==''and forward==''
+app=subprocess.run(adb+['shell','pidof','com.letbuyy.store'],capture_output=True);assert app.returncode==1
+index=Path(subprocess.check_output(['git','rev-parse','--git-path','index'],cwd=ROOT,text=True).strip());index=index if index.is_absolute()else ROOT/index;entries=hashlib.sha256(subprocess.check_output(['git','--no-optional-locks','ls-files','--stage','-z'],cwd=ROOT)).hexdigest();assert entries=='67a04f878906e4a92b9a852969da907cd465dc8b3df2be0083d6d42262986c9d'
+sdk=subprocess.run(['git','-C','/Volumes/Developer Tools/SDKs/flutter','diff','--exit-code','--','packages/flutter/lib/src/rendering/object.dart','packages/flutter/lib/src/widgets/framework.dart'],capture_output=True);assert sdk.returncode==0
+package_config=json.loads((ROOT/'.dart_tool/package_config.json').read_text());assert not any('letbuyy-flutter-geometry-'in p['rootUri']for p in package_config['packages'])
+report={'at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'core_source_unchanged':True,'source_sha256':now['sha256'],'core_inputs':now['entries'],'staged_entries_sha256':entries,'raw_index_sha256':hashlib.sha256(index.read_bytes()).hexdigest(),'original_sdk_source_unchanged':True,'temporary_sdk_overlay_inactive':True,'owned_runs_terminal':[str(r)for r in roots],'owned_cleanup_empty':True,'ports54350_to54353_free':True,'host9002':'Never contacted, probed, bound or stopped. Android emulator-only reverse9002->54351 was restored.','ios':{'udid':udid,'initial_and_final':'Shutdown','existing_files_photos_preserved':True},'android':{'exact_avd_qemu_preserved':True,'app_stopped':True,'reverse_mappings':reverse,'forward_mappings':forward,'existing_files_photos_preserved':True},'no_hosted_merge_push_release':True};write(E/'source95-final-custody.json',report);print(json.dumps(report))

@@ -1,0 +1,17 @@
+{
+  "source": "merchant-kyc-receipt-source-v33",
+  "source_sha256": "80f3843174c6e5fbe0f26d8526d1c9e45065c745b103179f0296a7f2a7f4a9bb",
+  "runId": "6c7d578368b8",
+  "tests": 13,
+  "assertionsPassed": 13,
+  "assertionsFailed": 0,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "limits": "New initial allocation saved in canonical receipt before R2; older unfinished records without allocation remain held. Native/browser/current full gates not yet run."
+}

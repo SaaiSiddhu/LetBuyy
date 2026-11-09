@@ -1,0 +1,8 @@
+{
+  "source_provenance": "buyer-inventory440-owned-provenance.json",
+  "original_definition_sha256": "4316c23eb2f4b7966c7249c8ffdf4563de955b46a0b9b00a423d0e0440a2bdce",
+  "quantity_dependency_sha256": "bb02ce1837b15a4a8faf6bc6d2a37970eab7a0f3b7dabe17fc065c6de9922110",
+  "forward_sha256": "a2f8485a9ff62508e465a1eafd6f0b433ae6b05dde96023690ea0cabf315ac06",
+  "down_sha256": "c6917c59f2b9520ac09ddea200de32f43509724917fbf175c5c295b71f814cff",
+  "scope": "Source/local only; same canonical browse reader, page-only inventory projection; exclude retired SKU candidates/base witness. No catalog/data write except scoped privilege journal; same function OID/grants preserved.440 must unwind before439."
+}

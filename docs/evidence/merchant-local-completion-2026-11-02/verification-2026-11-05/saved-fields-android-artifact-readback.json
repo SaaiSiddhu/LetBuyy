@@ -1,0 +1,17 @@
+{
+  "at": "2026-11-05T20:01:48.013602+00:00",
+  "status": "INDEPENDENT_DEBUG_APK_READBACK_PASS",
+  "source_sha256": "823d816f06cb8b21ecedb637f9ea6dc6cdf390c6caeae5fbb7676cf4231dc37a",
+  "artifact": {
+    "path": "/private/tmp/letbuyy-saved-fields-android-7fuke_hn/merchant-local-debug.apk",
+    "sha256": "7d94a60b19a1fe818ffc10a3de7f57a202d6c1ba6493fae9b443c1d9480b0afa",
+    "bytes": 151910853
+  },
+  "actual_sha256": "7d94a60b19a1fe818ffc10a3de7f57a202d6c1ba6493fae9b443c1d9480b0afa",
+  "compiled_arm64_engine": true,
+  "debug_kernel_present": true,
+  "normal_main": true,
+  "installed": false,
+  "runtime_verified": false,
+  "scope": "Normal debug compile/archive only. Native41 proves the preceding exact artifact only; these changed surfaces have no native acceptance."
+}

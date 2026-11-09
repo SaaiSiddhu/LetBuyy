@@ -1,0 +1,13 @@
+{
+  "command": [
+    "pnpm",
+    "--filter",
+    "@letbuyy/customer-web",
+    "exec",
+    "tsc",
+    "--noEmit"
+  ],
+  "source": "merchant-buyer-inventory-source-v112",
+  "exit_code": 0,
+  "at": "2026-11-08T10:59:03.104805+00:00"
+}

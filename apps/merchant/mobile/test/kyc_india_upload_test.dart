@@ -1,7 +1,9 @@
+import 'support/kyc_public_fixture.dart';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:letbuyy_store/services/api_client.dart';
 import 'package:letbuyy_store/services/kyc_service.dart';
 
@@ -10,6 +12,8 @@ const receipt = '2c73a536-4dc4-4df1-92d4-89d0c8b51d99';
 
 Map<String, dynamic> overview() => {
   'site_id': site,
+  'overall_status': 'in_progress',
+  'provider_mode': 'sandbox',
   'private_upload_available': false,
   'india_direct_upload_available': true,
   'documents': <Object>[],
@@ -17,6 +21,7 @@ Map<String, dynamic> overview() => {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  setUp(() => FlutterSecureStorage.setMockInitialValues({}));
 
   test(
     'mobile India photo uses same receipt key across intent, direct POST and completion',
@@ -64,6 +69,8 @@ void main() {
       var posts = 0;
       final service = KycService(
         api: api,
+        actorIdProvider: () => 'synthetic-actor',
+        storeIdProvider: () => site,
         postIndiaObject: (url, fields, bytes, filename) async {
           posts++;
           expect(url.host, 'privatekyc.s3.ap-south-1.amazonaws.com');
@@ -165,6 +172,8 @@ void main() {
       var posts = 0;
       final service = KycService(
         api: api,
+        actorIdProvider: () => 'synthetic-actor',
+        storeIdProvider: () => site,
         postIndiaObject: (_, _, _, _) async {
           posts++;
           return 'version';
@@ -248,6 +257,8 @@ void main() {
       );
       final service = KycService(
         api: api,
+        actorIdProvider: () => 'synthetic-actor',
+        storeIdProvider: () => site,
         postIndiaObject: (_, _, _, _) async {
           epoch++;
           return 'synthetic-version+1';
@@ -325,6 +336,8 @@ void main() {
       var posts = 0;
       final service = KycService(
         api: api,
+        actorIdProvider: () => 'synthetic-actor',
+        storeIdProvider: () => site,
         postIndiaObject: (_, _, _, _) async {
           posts++;
           return 'unexpected-version';
@@ -361,7 +374,7 @@ void main() {
   );
 
   test(
-    'mobile retries a rejected Mumbai POST with a fresh ticket and keeps old status until completion',
+    'unconfirmed Mumbai POST holds original request and keeps old status',
     () async {
       const firstReceipt = '7b1714db-932e-4e19-985d-710266796aba';
       var intents = 0, posts = 0;
@@ -369,11 +382,7 @@ void main() {
       Map<String, dynamic> currentOverview(String last4) => {
         ...overview(),
         'documents': [
-          {
-            'document_type': 'bank_proof',
-            'document_number_last4': last4,
-            'status': 'submitted',
-          },
+          {...publicKycDocument(site), 'document_number_last4': last4},
         ],
       };
       final dio = Dio();
@@ -423,6 +432,8 @@ void main() {
       );
       final service = KycService(
         api: api,
+        actorIdProvider: () => 'synthetic-actor',
+        storeIdProvider: () => site,
         postIndiaObject: (_, fields, bytes, _) async {
           posts++;
           expect(
@@ -484,25 +495,24 @@ void main() {
       );
       expect(service.isLoading, false);
 
-      final result = await attempt();
-      expect(result['evidence_scan_status'], 'pending');
-      expect(service.documents.single['document_number_last4'], '2222');
-      expect(intents, 2);
-      expect(posts, 2);
-      final intentCalls = calls
-          .where((item) => item.uri.path.endsWith('/upload-intent'))
-          .toList();
-      final completion = calls.singleWhere(
-        (item) => item.uri.path.endsWith('/upload-complete'),
+      await expectLater(
+        attempt(),
+        throwsA(
+          isA<ApiException>().having(
+            (e) => e.code,
+            'code',
+            'KYC_UPLOAD_NEEDS_REVIEW',
+          ),
+        ),
       );
-      Object? idempotency(RequestOptions request) => request.headers.entries
-          .where((entry) => entry.key.toLowerCase() == 'x-idempotency-key')
-          .map((entry) => entry.value)
-          .firstOrNull;
-      expect(idempotency(intentCalls[0]), isNot(idempotency(intentCalls[1])));
-      expect(idempotency(completion), idempotency(intentCalls[1]));
-      expect((completion.data as Map)['receipt_id'], receipt);
-      expect((completion.data as Map)['version_id'], 'synthetic-version-2');
+      expect(service.documents.single['document_number_last4'], '1111');
+      expect(intents, 1);
+      expect(posts, 1);
+      expect(
+        calls.where((item) => item.uri.path.endsWith('/upload-complete')),
+        isEmpty,
+      );
+      expect(service.uploadRecoveryMessage, contains('needs review'));
       expect(calls.where((item) => item.uri.path.endsWith('/upload')), isEmpty);
     },
   );

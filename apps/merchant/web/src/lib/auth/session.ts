@@ -1,5 +1,7 @@
 import { cache } from 'react'
 import { createMerchantApiClient } from '@/lib/api/client'
+import { LetbuyyApiError } from '@letbuyy/api-client'
+import type { StoreSummary } from '@letbuyy/shared-types'
 
 import { apiErrorStatus, retryMerchantRead } from '@/lib/api/read-retry'
 export { isQueryCostRateLimited } from '@/lib/api/read-retry'
@@ -96,9 +98,40 @@ export const getUserStores = cache(async (
     status: string
 }>> => {
     try {
-        const payload = await retryMerchantRead(() => createMerchantApiClient().stores.list({ limit: 50 }))
+        const stores = await retryMerchantRead(async () => {
+            const client = createMerchantApiClient()
+            const rows: StoreSummary[] = []
+            const ids = new Set<string>()
+            let observedTotal: number | undefined
+            const unavailable = () => new LetbuyyApiError({
+                status: 503,
+                code: 'STORE_LIST_UNVERIFIED',
+                message: 'The store list changed or could not be confirmed. Refresh stores.',
+            })
+            for (let page = 1; ; page++) {
+                // Membership discovery is actor-wide; later store commands keep
+                // their normal scope. Never expose a first page as all choices.
+                const payload = await client.stores.list({ page, limit: 50 }, { storeId: '' })
+                const total = payload.total
+                if (!Array.isArray(payload.data) ||
+                    !Number.isSafeInteger(total) || total < 0 ||
+                    payload.page !== page || payload.limit !== 50 ||
+                    payload.has_more !== (page * 50 < total) ||
+                    (observedTotal !== undefined && total !== observedTotal) ||
+                    payload.data.length !== Math.max(0, Math.min(50, total - (page - 1) * 50))) {
+                    throw unavailable()
+                }
+                observedTotal = total
+                for (const store of payload.data) {
+                    if (typeof store.id !== 'string' || !store.id || ids.has(store.id)) throw unavailable()
+                    ids.add(store.id)
+                    rows.push(store)
+                }
+                if (!payload.has_more) return rows
+            }
+        })
 
-        return payload.data.map((store) => ({
+        return stores.map((store) => ({
             id: store.id,
             name: store.name,
             store_name: store.store_name || store.name,

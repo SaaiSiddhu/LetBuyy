@@ -1,0 +1,73 @@
+{
+  "basis": "Parsed AST body equality against current-turn preserved preimages. Constructor/read/cache admission and presentation bodies deliberately changed; commands, payload parsers and original validators preserved. Added starts_at binding is the only new payload entry.",
+  "checks": [
+    {
+      "owner": "CouponService.createCoupon complete body",
+      "unchanged": true
+    },
+    {
+      "owner": "CouponService.updateCoupon complete body",
+      "unchanged": true
+    },
+    {
+      "owner": "CouponService.toggleCoupon complete body",
+      "unchanged": true
+    },
+    {
+      "owner": "CouponService.deleteCoupon complete body",
+      "unchanged": true
+    },
+    {
+      "owner": "CouponService.validateCoupon complete body",
+      "unchanged": true
+    },
+    {
+      "owner": "CouponForm._numberOrNull",
+      "unchanged": true
+    },
+    {
+      "owner": "CouponForm._intOrNull",
+      "unchanged": true
+    },
+    {
+      "owner": "CouponForm._textOrNull",
+      "unchanged": true
+    },
+    {
+      "owner": "CouponForm original discount validator",
+      "unchanged": true
+    },
+    {
+      "owner": "CouponForm original code validator",
+      "unchanged": true
+    },
+    {
+      "owner": "CouponForm all original payload entries in original order",
+      "unchanged": true
+    },
+    {
+      "owner": "CouponForm original create omission versus patch null-clear",
+      "unchanged": true
+    },
+    {
+      "owner": "CouponList._money",
+      "unchanged": true
+    },
+    {
+      "owner": "CouponList._limitLabel",
+      "unchanged": true
+    },
+    {
+      "owner": "CouponList._intValue",
+      "unchanged": true
+    },
+    {
+      "owner": "CouponList._doubleValue",
+      "unchanged": true
+    },
+    {
+      "owner": "CouponList._nonEmpty",
+      "unchanged": true
+    }
+  ]
+}

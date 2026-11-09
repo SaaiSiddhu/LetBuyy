@@ -1,0 +1,19 @@
+{
+  "started_at": "2026-11-07T06:37:24.213522+00:00",
+  "supervisor_pid": 71229,
+  "source": "merchant-camera-video-model-source-v81",
+  "source_sha256": "5b8e0195e33aa978957abdf557a3dfd49b9ddcd9b2febd28111856d6a12727d4",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "--reporter",
+    "expanded"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 71231,
+  "exit_code": 0,
+  "finished_at": "2026-11-07T06:38:08.671709+00:00",
+  "source_unchanged": true,
+  "source_readback_sha256": "5b8e0195e33aa978957abdf557a3dfd49b9ddcd9b2febd28111856d6a12727d4"
+}

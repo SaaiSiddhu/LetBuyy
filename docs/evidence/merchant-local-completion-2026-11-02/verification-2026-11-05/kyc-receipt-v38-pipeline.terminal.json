@@ -1,0 +1,125 @@
+{
+  "status": "PASS",
+  "source_sha256": "24650e42a918adc8d2a6fada709de8753049c99bc1b2fcc5ad555e4069564a2e",
+  "results": [
+    {
+      "stage": "gateway-db-lane",
+      "exit_code": 0,
+      "source_unchanged": true,
+      "source_sha256": "24650e42a918adc8d2a6fada709de8753049c99bc1b2fcc5ad555e4069564a2e",
+      "command": [
+        "node",
+        "--test",
+        "tests/governance/gateway-db-lane.test.mjs"
+      ],
+      "cwd": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy"
+    },
+    {
+      "stage": "dart-client-tests",
+      "exit_code": 0,
+      "source_unchanged": true,
+      "source_sha256": "24650e42a918adc8d2a6fada709de8753049c99bc1b2fcc5ad555e4069564a2e",
+      "command": [
+        "/Users/saai_mithra/Library/Developer/flutter/bin/dart",
+        "test",
+        "--reporter",
+        "expanded"
+      ],
+      "cwd": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/packages/dart/api_client"
+    },
+    {
+      "stage": "dart-client-analysis",
+      "exit_code": 0,
+      "source_unchanged": true,
+      "source_sha256": "24650e42a918adc8d2a6fada709de8753049c99bc1b2fcc5ad555e4069564a2e",
+      "command": [
+        "/Users/saai_mithra/Library/Developer/flutter/bin/dart",
+        "analyze"
+      ],
+      "cwd": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/packages/dart/api_client"
+    },
+    {
+      "stage": "flutter-full",
+      "exit_code": 0,
+      "source_unchanged": true,
+      "source_sha256": "24650e42a918adc8d2a6fada709de8753049c99bc1b2fcc5ad555e4069564a2e",
+      "command": [
+        "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+        "test",
+        "--no-pub",
+        "--reporter",
+        "expanded"
+      ],
+      "cwd": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/apps/merchant/mobile"
+    },
+    {
+      "stage": "real-workerd-kyc-projection",
+      "exit_code": 0,
+      "source_unchanged": true,
+      "source_sha256": "24650e42a918adc8d2a6fada709de8753049c99bc1b2fcc5ad555e4069564a2e",
+      "command": [
+        "env",
+        "LETBUYY_KYC_PUBLIC_FIXTURE_OUT=/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/kyc-workerd-public-v35.json",
+        "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+        "test",
+        "--no-pub",
+        "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/kyc_actual_workerd_projection_v35_test.dart",
+        "--reporter",
+        "expanded"
+      ],
+      "cwd": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/apps/merchant/mobile"
+    },
+    {
+      "stage": "flutter-analysis",
+      "exit_code": 0,
+      "source_unchanged": true,
+      "source_sha256": "24650e42a918adc8d2a6fada709de8753049c99bc1b2fcc5ad555e4069564a2e",
+      "command": [
+        "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+        "analyze",
+        "--no-pub"
+      ],
+      "cwd": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/apps/merchant/mobile"
+    },
+    {
+      "stage": "kyc-visual",
+      "exit_code": 0,
+      "source_unchanged": true,
+      "source_sha256": "24650e42a918adc8d2a6fada709de8753049c99bc1b2fcc5ad555e4069564a2e",
+      "command": [
+        "env",
+        "LETBUYY_KYC_RECOVERY_VISUAL_DIR=/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/kyc-recovery-rendered-v38",
+        "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+        "test",
+        "--no-pub",
+        "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/kyc_recovery_visual_v5_test.dart",
+        "--reporter",
+        "expanded"
+      ],
+      "cwd": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/apps/merchant/mobile"
+    },
+    {
+      "stage": "media-visual",
+      "exit_code": 0,
+      "source_unchanged": true,
+      "source_sha256": "24650e42a918adc8d2a6fada709de8753049c99bc1b2fcc5ad555e4069564a2e",
+      "command": [
+        "env",
+        "LETBUYY_MEDIA_RECOVERY_VISUAL_DIR=/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/media-recovery-rendered-v38",
+        "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+        "test",
+        "--no-pub",
+        "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/media_recovery_visual_v22_test.dart",
+        "--reporter",
+        "expanded"
+      ],
+      "cwd": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/apps/merchant/mobile"
+    },
+    {
+      "stage": "isolated-governance",
+      "exit_code": 0,
+      "source_unchanged": true
+    }
+  ],
+  "finished_at": "2026-11-06T15:39:07.719856+00:00"
+}

@@ -169,8 +169,9 @@ router.get('/operations-summary', validate('query', CommerceMetricStoreQuerySche
         countRows('purchase_orders', 'site_id', ['draft', 'ordered', 'partially_received']),
         countRows('inventory_transfers', 'site_id'),
         countRows('inventory_transfers', 'site_id', ['shipped', 'partially_received']),
-        db.from('inventory_levels').select('id, products!inner(store_id)', { count: 'exact', head: true })
-            .eq('store_id', storeId).in('products.store_id', [storeId]).lte('available', 10),
+        db.from('inventory_levels').select('id, products!inner(store_id,deleted_at)', { count: 'exact', head: true })
+            .eq('store_id', storeId).in('products.store_id', [storeId])
+            .is('deleted_at', null).is('products.deleted_at', null).lte('free_quantity', 10),
         countRows('products', 'store_id'),
     ]);
     // A successful HEAD without an observed exact count is unavailable, not zero.

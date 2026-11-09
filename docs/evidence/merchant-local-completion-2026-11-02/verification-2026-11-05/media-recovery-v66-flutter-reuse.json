@@ -1,0 +1,14 @@
+{
+  "source": "11a91c9f3c34021244bd17149f4f131001303877deebe50ea1a78ac920974516",
+  "from_source": "71a58a03fe225a7572de49d63a58a5d047a214491cad4be7ee40df2d1b6771a6",
+  "changed_inputs": [
+    "apps/merchant/web/src/app/api/stores/[store]/media/route.ts",
+    "apps/merchant/web/src/components/products/inventory-adjustment.test.tsx",
+    "apps/merchant/web/src/components/products/product-status.test.tsx",
+    "apps/merchant/web/src/components/theme-editor/controls/MediaLibrary.tsx",
+    "apps/merchant/web/tests/media-command-recovery.test.ts",
+    "packages/shared-types/src/index.ts"
+  ],
+  "reuse": "source65 full Flutter 1673 pass, no mobile or Dart input changed; source64 analysis will be refreshed on current source66",
+  "boundary": "This reuse grants no new native/device/browser acceptance."
+}

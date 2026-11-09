@@ -1,0 +1,34 @@
+{
+  "status": "SOURCE_VERIFIED_LOCAL_IOS_SIMULATOR_COMPILE_ONLY",
+  "at": "2026-11-04T16:48:45.566522+00:00",
+  "sourceSnapshot": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/ios-mobile-ui-v5.source.json",
+  "sourceSha256": "98b6bd6a9f48efdab7b349fb4683f60c35d237735b0017e3128b9ab0954661e4",
+  "sourceUnchanged": true,
+  "buildExit": 0,
+  "mode": "Debug iOS simulator; --no-pub --no-codesign; normal main entry; local-only synthetic defines; simulator not booted or launched",
+  "app": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/ios-mobile-ui-v5-artifact/Runner.app",
+  "bundleId": "com.letbuyy.store",
+  "platform": "iphonesimulator",
+  "version": "1.0.0",
+  "build": "1",
+  "architecture": "Non-fat file: /private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/ios-mobile-ui-v5-artifact/Runner.app/Runner is architecture: arm64",
+  "signingFacts": [
+    "Identifier=Runner",
+    "Signature=adhoc",
+    "TeamIdentifier=not set"
+  ],
+  "ownedSimulatorReadOnlyInventory": {
+    "udid": "B907B390-5B08-490F-BC6A-8900667B2D94",
+    "name": "LetBuyy Merchant Local 20261103 br1jhgh8",
+    "state": "Shutdown"
+  },
+  "manifestSha256": "030723f5e74bdffa1f10c52dae1182acb6aa37a5fa93f295626beea1369341d5",
+  "limitations": [
+    "Compile/artifact integrity only; no iOS UI, authentication, backend or provider acceptance.",
+    "No physical-device, App Store, release-signing, deployment or production certification.",
+    "Selecting the owned simulator target does not establish app execution or a user journey."
+  ],
+  "bundle_file_count": 377,
+  "complete_private_bundle_manifest": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/ios-mobile-ui-v5-artifact.json",
+  "same_catalog_v40_source": true
+}

@@ -1,0 +1,104 @@
+{
+  "at": "2026-11-05T18:01:20.685765+00:00",
+  "status": "SECURITY_SOURCE1_LOCAL_QUALIFIED_WITH_KNOWN_PROTECTED_STAFF_FAILURE_ANDROID_IOS_COMPILE_ONLY",
+  "source": {
+    "sha256": "8ffd6e530d90589bd68607a9a910c50414f3389cca26213ceded0c483884aae6",
+    "entries": 8444,
+    "manifest": "verification-2026-11-05/security-source-v1.source.json"
+  },
+  "implemented": [
+    "Payout and refund inline approvals show the matching action title. Named manage-security routes remain HostedAccountScreen; retained local management bodies not activated.",
+    "Foreground/current-owner gate blocks captured covered/disposed command callbacks before dispatch; read settlement may complete for the same actor/store without leaving a permanent spinner.",
+    "Original proof-delivery checks remain intact. Covered approval result never reaches the consumer; busy state retires into explicit review and existing status readback before further commands, with no automatic replay or operation-key reset.",
+    "Canonical responsive header, native field, feedback and route-safe Close. Original6digit/recovery input formats and controller lifetime preserved. Close during pending request still closes only the consumer and does not imply server cancellation.",
+    "Composed320dp/scale2.4/keyboard testing found and fixed overflowing long progress copy. Progress bar stays above the scroller; full pending explanation flows in the body."
+  ],
+  "diagnostics": {
+    "negative1": "Test compilation prerequisite only: missing dart:async import for Completer; fixed before app changes.",
+    "negative2": "0PASS/4real label/covered-dispatch/covered-read/covered-result failures before app changes.",
+    "focused3": "24PASS",
+    "focused4": "27PASS/2lazy-field test selector failures; explicit scroll added.",
+    "focused5": "27PASS/2real large-text/keyboard RenderFlex overflows63px in both themes, caused by long fixed progress copy; repaired.",
+    "focused6": "29PASS/0FAIL"
+  },
+  "qualification": {
+    "full_flutter": {
+      "pass": 1433,
+      "fail": 1,
+      "skip": 0,
+      "known_failure": "Unchanged protected Staff hosted invitation namespace isolation test; not weakened or repaired under frontend scope"
+    },
+    "app_analysis_issues": 0,
+    "ui_kit_analysis_issues": 0,
+    "security_parsed_preservation_checks": 14,
+    "security_service_command_store_sdk_route_policy_bytes_unchanged": true,
+    "coupons_retained_checks": 17,
+    "governance": {
+      "pass": 114,
+      "fail": 0,
+      "blocked": 0,
+      "skip": 0,
+      "not_applicable": 1,
+      "all_core_inputs_equal": 8444,
+      "original_index_unchanged": true,
+      "advisory": "Disposable clone lacks local main/staging/develop refs, so deploy branch-pair drift is not certified. No release/merge verdict."
+    },
+    "boundary": "Only security screen + existing test fixture changed since Coupon1, with1new test. Across this turn7existing files changed and4new files; all8433other entry files unchanged. Same canonical APIs/models/auth/tenancy/backend/database/policy bytes preserved."
+  },
+  "android": {
+    "at": "2026-11-05T17:58:57.085348+00:00",
+    "status": "INDEPENDENT_DEBUG_APK_READBACK_PASS",
+    "source_sha256": "8ffd6e530d90589bd68607a9a910c50414f3389cca26213ceded0c483884aae6",
+    "artifact": {
+      "path": "/private/tmp/letbuyy-security-android-n_tb5q4u/merchant-local-debug.apk",
+      "sha256": "a74ccf977bd79604192d700ccb67b34be0d9e58cdc3d9f05e1774ee44754391c",
+      "bytes": 151909412
+    },
+    "actual_sha256": "a74ccf977bd79604192d700ccb67b34be0d9e58cdc3d9f05e1774ee44754391c",
+    "compiled_arm64_engine": true,
+    "debug_kernel_present": true,
+    "normal_main": true,
+    "installed": false,
+    "runtime_verified": false,
+    "limits": "Current security/Coupon source compile/archive integrity only; no auth/backend/sync/physical/performance/hosted/production acceptance."
+  },
+  "ios": {
+    "at": "2026-11-05T18:00:12.156710+00:00",
+    "status": "INDEPENDENT_IOS_DEBUG_ARTIFACT_READBACK_PASS",
+    "source_sha256": "8ffd6e530d90589bd68607a9a910c50414f3389cca26213ceded0c483884aae6",
+    "artifact": {
+      "path": "/private/tmp/letbuyy-security-ios-uhooww8m/Runner.app",
+      "files": 377,
+      "manifest_sha256": "33a0337ae325639c54b1d38e8204101eda8279e239b32da52189b0c0b2c9fe58"
+    },
+    "all_retained_files_equal": 377,
+    "bundle_id": "com.letbuyy.store",
+    "executable_architecture": "/private/tmp/letbuyy-security-ios-uhooww8m/Runner.app/Runner: Mach-O 64-bit executable arm64",
+    "owned_simulator_remains_shutdown": true,
+    "scope": "Current security/Coupon source compile/artifact only; no simulator launch/auth/API/sync/provider/physical/performance/signed-release acceptance."
+  },
+  "programme": {
+    "applicable_features": 119,
+    "excluded": [
+      120,
+      121
+    ],
+    "paused": [
+      122
+    ],
+    "frozen": [
+      51
+    ],
+    "full_acceptance": "OPEN",
+    "unique_surface_denominator": null,
+    "ledger_rows_nonadditive": 204,
+    "unreviewed_source_rows": 68,
+    "app_lib_dart_files": 193
+  },
+  "next": [
+    "Fresh owned native/web verification remains required. Prior native38 terminal and temp assets are unavailable; do not infer its result.",
+    "Continue supporting/utility scopes and AI, then remaining content/settings/commerce/financial UI owners; see source ledger and discovery records.",
+    "Account for unread/unexercised surfaces, actual platform keyboard/accessibility/camera/performance, physical/provider/sandbox/hosted/release evidence and eligible cleanup separately."
+  ],
+  "limits": "Current source and debug artifacts locally qualified with one known full-suite failure; no native UI, real API/database synchronization, real security-account mutation, provider, physical-device, performance, hosted activation or production-ready acceptance. No push, merge, deployment, source deletion or policy activation."
+}

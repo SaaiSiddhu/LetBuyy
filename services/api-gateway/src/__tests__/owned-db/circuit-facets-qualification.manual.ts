@@ -105,7 +105,7 @@ test('Circuit facets: one admitted owned qualification, eight ordered stages', a
     owned.psql(`INSERT INTO product_options(product_id,name,position,values) VALUES(${q(ids.variant)},'Color',0,'["Graphite","Silver"]');`);
     for (const [color,price,stock] of [['Graphite',1900,3],['Silver',700,0]] as const) {
       const id=randomUUID();variants[color]=id;
-      owned.psql(`INSERT INTO product_variants(id,product_id,title,price,inventory_qty,option1,metadata) VALUES(${q(id)},${q(ids.variant)},${q(color)},${price},${stock},${q(color)},'{}');SELECT public.set_inventory_level_available(${q(ids.variant)},${q(id)},${q(a.locationId)},${stock},NULL);`);
+      owned.psql(`INSERT INTO product_variants(id,product_id,title,price,inventory_qty,option1,metadata) VALUES(${q(id)},${q(ids.variant)},${q(color)},${price},${stock},${q(color)},'{}');WITH _fixture_inventory_scope436 AS MATERIALIZED (SELECT set_config('app.site_id','${a.siteId}',true)) SELECT public.set_inventory_level_available(${q(ids.variant)},${q(id)},${q(a.locationId)},${stock},NULL) FROM _fixture_inventory_scope436;`);
     }
     ids.aCollection=randomUUID();ids.bCollection=randomUUID();
     owned.psql(`INSERT INTO collections(id,store_id,title,is_active) VALUES(${q(ids.aCollection)},${q(a.siteId)},'Owned A collection',true),(${q(ids.bCollection)},${q(b.siteId)},'Owned B collection',true);INSERT INTO collection_products(collection_id,product_id,position) VALUES(${q(ids.aCollection)},${q(ids.hub)},0),(${q(ids.bCollection)},${q(ids.foreign)},0);`);

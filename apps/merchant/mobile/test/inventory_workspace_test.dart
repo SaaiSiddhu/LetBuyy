@@ -1,3 +1,4 @@
+import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' show LetbuyyEditorScaffold;
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -158,9 +159,13 @@ Future<StoreContext> mount(
   MemoryStorage? storage,
   String actor = w.warehouseActor,
   bool protocolAvailable = true,
+  Size windowSize = const Size(390, 844),
+  ThemeData? theme,
+  double textScale = 1,
+  StoreService Function(ApiClient)? storeFactory,
 }) async {
   SharedPreferences.setMockInitialValues({});
-  tester.view.physicalSize = const Size(390, 844);
+  tester.view.physicalSize = windowSize;
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.resetPhysicalSize);
   addTearDown(tester.view.resetDevicePixelRatio);
@@ -194,7 +199,9 @@ Future<StoreContext> mount(
     ),
   );
   addTearDown(api.close);
-  stores = StoreContext(storeService: _FixedStores(api));
+  stores = StoreContext(
+    storeService: storeFactory?.call(api) ?? _FixedStores(api),
+  );
   final inventory = InventoryService(
     api: api,
     actorIdProvider: () => actor,
@@ -209,6 +216,13 @@ Future<StoreContext> mount(
         ChangeNotifierProvider(create: (_) => ProductService(api: api)),
       ],
       child: MaterialApp(
+        theme: theme,
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.linear(textScale)),
+          child: child!,
+        ),
         home: screen,
         onGenerateRoute: AppRoutes.generateRoute,
       ),
@@ -223,6 +237,92 @@ Future<StoreContext> mount(
 }
 
 void main() {
+  for (final transfer in [false, true])
+    testWidgets(
+      '${transfer ? 'transfer' : 'PO'} renders scoped product and warehouse names',
+      (tester) async {
+        await mount(
+          tester,
+          transfer
+              ? const InventoryTransfersScreen()
+              : const PurchaseOrdersScreen(),
+          (r, h) {
+            final row = warehouseRecord(r.path, siteA),
+                child = (row['lines'] as List).first as Map<String, dynamic>;
+            child['product'] = {
+              'id': child['product_id'],
+              'store_id': siteA,
+              'name': 'Synthetic cotton tote',
+              'sku': 'SYN-TOTE',
+              'deleted_at': null,
+            };
+            row[transfer ? 'source_location' : 'location'] = {
+              'id': row[transfer ? 'source_location_id' : 'location_id'],
+              'store_id': siteA,
+              'name': 'Synthetic origin',
+              'deleted_at': null,
+            };
+            if (transfer)
+              row['destination_location'] = {
+                'id': row['destination_location_id'],
+                'store_id': siteA,
+                'name': 'Synthetic destination',
+                'deleted_at': null,
+              };
+            respond(r, h, [row]);
+          },
+        );
+        expect(find.textContaining('Synthetic cotton tote'), findsOneWidget);
+        expect(find.textContaining('Synthetic origin'), findsOneWidget);
+        if (transfer)
+          expect(find.textContaining('Synthetic destination'), findsOneWidget);
+        expect(find.textContaining(w.warehouseLocation), findsNothing);
+        expect(tester.takeException(), isNull);
+      },
+    );
+
+  for (final transfer in [false, true]) {
+    testWidgets(
+      '${transfer ? 'transfer' : 'purchase order'} quantity accessibility focus stays inside its input',
+      (tester) async {
+        final semantics = tester.ensureSemantics();
+        try {
+          await mount(
+            tester,
+            transfer
+                ? const InventoryTransfersScreen()
+                : const PurchaseOrdersScreen(),
+            (r, h) {
+              respond(r, h, [
+                warehouseRecord(
+                  r.path,
+                  r.queryParameters['store_id'].toString(),
+                ),
+              ]);
+            },
+          );
+          await tester.tap(
+            find.text(transfer ? 'New transfer' : 'New PO').first,
+          );
+          await tester.pumpAndSettle();
+          final field = find.byKey(const ValueKey('warehouse-quantity-0'));
+          await tester.ensureVisible(field);
+          await tester.pumpAndSettle();
+          // A lone editable node must not absorb the complete product card: its
+          // reported center previously hit the adjacent scanner button on Android.
+          final editable = tester.getSemantics(field);
+          expect(
+            editable.rect.height,
+            lessThanOrEqualTo(tester.getSize(field).height + 1),
+          );
+          expect(tester.takeException(), isNull);
+        } finally {
+          semantics.dispose();
+        }
+      },
+    );
+  }
+
   for (final screen in [
     const PurchaseOrdersScreen(),
     const InventoryTransfersScreen(),
@@ -454,6 +554,7 @@ void main() {
           respond(r, h, [record(siteA)]);
         }
       });
+      await tester.ensureVisible(find.byTooltip('View stock history'));
       await tester.tap(find.byTooltip('View stock history'));
       await tester.pumpAndSettle();
       expect(find.byType(InventoryHistoryScreen), findsOneWidget);
@@ -648,7 +749,13 @@ void main() {
         await tester.pumpAndSettle();
         expect(detailReads, 1);
         expect(find.text('Review stock receipt'), findsOneWidget);
-        expect(find.textContaining('SYN-2'), findsOneWidget);
+        expect(
+          find.descendant(
+            of: find.byType(LetbuyyEditorScaffold),
+            matching: find.textContaining('SYN-2'),
+          ),
+          findsOneWidget,
+        );
         expect(
           find.textContaining('Variant aaaaaaaa-aaaa-4aaa-8aaa-000000000001'),
           findsOneWidget,
@@ -924,7 +1031,11 @@ void main() {
         if (surface.form != null) {
           expect(find.text(surface.save!), findsNothing);
           expect(find.text('Store access changed'), findsOneWidget);
-          await tester.tap(find.text('Close'));
+          await tester.tap(
+            surface.name == 'suppliers'
+                ? find.byTooltip('Close')
+                : find.text('Close'),
+          );
           await tester.pumpAndSettle();
         }
         expect(find.textContaining('Private B'), findsWidgets);
@@ -985,6 +1096,7 @@ void main() {
         warehouseRecord(r.path, r.queryParameters['store_id'].toString()),
       ]);
     });
+    await tester.ensureVisible(find.text('Adjust'));
     await tester.tap(find.text('Adjust'));
     await tester.pumpAndSettle();
     await tester.enterText(
@@ -1026,6 +1138,7 @@ void main() {
           respond(r, h, [value]);
         }
       });
+      await tester.ensureVisible(find.text('Adjust'));
       await tester.tap(find.text('Adjust'));
       await tester.pumpAndSettle();
       await tester.enterText(
@@ -1060,7 +1173,7 @@ void main() {
     },
   );
   testWidgets(
-    'an older refresh cannot repaint a newer same-store inventory page',
+    'an older refresh cannot repaint a newer same-store low-stock query',
     (tester) async {
       RequestOptions? delayed;
       RequestInterceptorHandler? delayedHandler;
@@ -1081,7 +1194,7 @@ void main() {
       }
       expect(delayed, isNotNull);
       hold = false;
-      await tester.tap(find.byTooltip('Refresh inventory'));
+      await tester.tap(find.widgetWithText(FilterChip, 'Low'));
       await tester.pumpAndSettle();
       respond(delayed!, delayedHandler!, [
         record(siteA, name: 'Retired private stock'),

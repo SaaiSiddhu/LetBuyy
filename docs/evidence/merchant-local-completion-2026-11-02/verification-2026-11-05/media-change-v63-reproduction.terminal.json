@@ -1,0 +1,20 @@
+{
+  "started_at": "2026-11-07T02:03:42.242478+00:00",
+  "supervisor_pid": 94074,
+  "source": "merchant-media-change-baseline-v63",
+  "source_sha256": "112e8a27bc9ad7ab510aa605b36767aa89969aa37fcef4a7b16a85453725ecba",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "test/media_change_recovery_test.dart",
+    "--reporter",
+    "expanded"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 94076,
+  "exit_code": 1,
+  "finished_at": "2026-11-07T02:03:44.887822+00:00",
+  "source_unchanged": true,
+  "source_readback_sha256": "112e8a27bc9ad7ab510aa605b36767aa89969aa37fcef4a7b16a85453725ecba"
+}

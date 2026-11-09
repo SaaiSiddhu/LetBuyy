@@ -66,12 +66,20 @@ export async function GET(request: NextRequest) {
                     avatar_url: string | null
                     email_verified: boolean
                     has_password: boolean
+                    mfa_required?: boolean
                 } | null
             } | null
             const user = userPayload?.data || null
 
-            if (!user) {
+            if (!user || !result.user_id || user.id !== result.user_id) {
                 return NextResponse.redirect(new URL('/lookup?error=user_not_found', request.url))
+            }
+
+            // Email possession does not satisfy an enrolled Merchant factor.
+            // Missing admission data also fails closed (e.g. an older Gateway).
+            // The canonical password flow already owns MFA prompting/validation.
+            if (user.mfa_required !== false) {
+                return NextResponse.redirect(new URL('/login?reason=mfa_required', request.url))
             }
 
             // Ensure email is verified

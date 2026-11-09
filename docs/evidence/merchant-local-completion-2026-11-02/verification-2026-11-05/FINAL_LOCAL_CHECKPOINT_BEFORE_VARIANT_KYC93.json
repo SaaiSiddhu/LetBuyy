@@ -1,0 +1,49 @@
+{
+  "at": "2026-11-07T19:29:19.770063+00:00",
+  "status": "BOUNDED_CURRENT_ANDROID_PROCESS_DEATH_CAMERA_RECOVERY_AND_IOS_INTERRUPTED_FILES_RECOVERY_MOV_WEBM_WEB_SYNC_PASS;FULL122_OPEN",
+  "source": {
+    "manifest": "merchant-native-selection-source-v91.source.json",
+    "sha256": "5b655a37c2bcc1b2f6e79cea831340addb0329c8b4b60b4a1f4aff33bafdec6c",
+    "inputs": 8513,
+    "head": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+    "branch": "codex/merchant-mobile-parity",
+    "frozen": false
+  },
+  "qualification": {
+    "flutter": {
+      "pass": 1750,
+      "fail": 0,
+      "skip": 0
+    },
+    "analysis_issues": 0,
+    "actual_webm_javascript": {
+      "pass": 5,
+      "fail": 0
+    },
+    "actual_governance": {
+      "pass": 114,
+      "fail": 0,
+      "not_applicable": 1,
+      "source_and_index_preserved": true
+    }
+  },
+  "android_report": "native120-final-local-readback.json",
+  "ios_report": "native123-final-local-readback.json",
+  "custody": "source91-final-custody.json",
+  "source_frozen": false,
+  "all_owned_runs_terminal": true,
+  "whole_features_accepted": 0,
+  "next": [
+    "Complete product variants/options,publication,reordering and actual buyer Liquid outcomes with both native editors and web readback.",
+    "Continue private KYC interrupted native upload/document recovery and current-role/revocation/store-switch matrices;coordinator/unit proof does not certify private native/provider outcomes.",
+    "Complete each remaining Accounts,stores,themes,domains,orders,shipping/tax,money,customers/growth/settings criterion with explicit per-feature evidence.",
+    "Gallery web video decoding is unaccepted;current Gallery metadata actions and upload/edit/delete recovery are separate prior bounded proofs.",
+    "Keep source/local,provider,hosted,physical device and signed-release evidence distinct;51frozen,120/121outsideMerchant,122paused."
+  ],
+  "limits": [
+    "Android15/API35 exacttask emulatedcamera,photo/record actual processdeaths;no hostcamera/audio or physical device",
+    "iOS26.5exacttask simulator Files interruption/discard/reselection;no physical camera/microphone",
+    "Public Media JPEG/MP4/MOVH264/WebMVP8 only;not every codec/OS or private KYC device/provider acceptance",
+    "Full122feature,end-to-end allroles,hosted and production release acceptance remains open"
+  ]
+}

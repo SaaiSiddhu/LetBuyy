@@ -1,0 +1,34 @@
+{
+  "at": "2026-11-06T23:09:46.299707+00:00",
+  "run_id": "0ced5e38a164",
+  "source_sha256": "999e0d6b6ca0b1064b4b0b4f3dcacaaabd050a44105d5c1a9ecb2be51de44184",
+  "source_unchanged_after_teardown": true,
+  "auth": {
+    "run_id": "0ced5e38a164",
+    "exit": 0,
+    "normal_credential_fields": true,
+    "automatic_native_return": true,
+    "native_products_tab": true,
+    "no_session_injection": true,
+    "finished_at": "2026-11-06T22:49:35.475205+00:00"
+  },
+  "product_save": {
+    "exit": 0,
+    "native_product_saved": true,
+    "run_id": "0ced5e38a164"
+  },
+  "whole_lane": {
+    "exit": 1,
+    "runner_pid": 89218,
+    "finished_at": "2026-11-06T23:07:44.382983+00:00"
+  },
+  "remaining_gate": "Harness used media_assets.url instead of canonical media.url and media_assets.public_url. Failed assertion preserved; bidirectional proof not accepted.",
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  }
+}

@@ -6,9 +6,18 @@ import {readFileSync} from 'node:fs';
 import test, {after, afterEach, before} from 'node:test';
 import {closePooledSqlClients} from '@letbuyy/infrastructure/pooled-sql-adapter';
 import {Gateway, gatewayEnv, newIdentityKeys, signedIdentityHeaders, tapRest, restJson, type RestTap} from './gateway-harness';
-import {requireOwnedDatabase, startOwnedPooledSqlProxy, type OwnedPooledSqlProxy} from './owned-db-support';
+import {requireOwnedDatabase, requireOwnedHistoricalSqlDatabase, startOwnedPooledSqlProxy, type OwnedPooledSqlProxy} from './owned-db-support';
 import {newSyntheticTenant, seedSyntheticTenant} from './synthetic-tenant';
-const owned = requireOwnedDatabase(), {psql} = owned;
+const owned = requireOwnedDatabase();
+type SqlDatabase = ReturnType<typeof requireOwnedHistoricalSqlDatabase>;
+let sqlDatabase: SqlDatabase = owned, historical361: SqlDatabase | undefined;
+const psql = (query: string) => sqlDatabase.psql(query);
+async function withHistorical361<T>(work: () => Promise<T>): Promise<T> {
+    assert.equal(sqlDatabase,owned,'One explicit historical SQL lifetime; never a runtime fixture.');
+    historical361 ??= requireOwnedHistoricalSqlDatabase(361);
+    sqlDatabase=historical361;
+    try { return await work(); } finally { sqlDatabase=owned; }
+}
 const q = (s: string) => "'" + s.replaceAll("'", "''") + "'";
 const sqlJson = (s: string) => JSON.parse(psql(s));
 let gateway: Gateway, proxy: OwnedPooledSqlProxy | undefined, observer: RestTap | undefined;
@@ -132,7 +141,7 @@ function largeOwnedScript(sql:string) {
     // Hundreds of snapshot subqueries otherwise trigger LLVM compilation for
     // synthetic empty tables. Keep every byte/field and disable only JIT for
     // this administrative test connection.
-    return owned.scriptLarge('SET jit=off;'+sql);
+    return sqlDatabase.scriptLarge('SET jit=off;'+sql);
 }
 
 const userRelations361 = "SELECT c.oid FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE(n.nspname !~ '^pg_'AND n.nspname<>'information_schema')OR c.oid IN(SELECT p.reltoastrelid FROM pg_class p JOIN pg_namespace pn ON pn.oid=p.relnamespace WHERE pn.nspname !~ '^pg_'AND pn.nspname<>'information_schema')OR c.oid IN(SELECT i.indexrelid FROM pg_index i WHERE i.indrelid IN(SELECT p.reltoastrelid FROM pg_class p JOIN pg_namespace pn ON pn.oid=p.relnamespace WHERE pn.nspname !~ '^pg_'AND pn.nspname<>'information_schema'))";
@@ -197,7 +206,10 @@ function canonicalSql361(w:World,body:ReturnType<typeof command>,actor=w.owner,s
     return 'SELECT jsonb_build_object(\'current_role\',current_setting(\'role\'),\'current_user\',current_user,\'data\',public.apply_collection_membership_v1('+[q(site),q(id),q(actor),String(body.expected_version),q(body.idempotency_key),q(JSON.stringify(body.product_ids))+'::jsonb'].join(',')+'))::text';
 }
 
-test('361 empty-only retirement first proves source/schema/ACL/dependency/role refusals and restores only its footprint',async()=>{
+test('361 empty-only retirement first proves source/schema/ACL/dependency/role refusals and restores only its footprint',async()=>withHistorical361(async()=>{
+    // Later expand/drop DDL retains physical attribute slots. Exercise361's
+    // exact original physical/schema fences in its own owned historical DB;
+    // keep the full current Gateway database untouched for all API journeys.
     // This case deliberately runs before world() can append intrinsic history.
     assert.equal(psql("SELECT count(*)FROM collection_membership_receipts;"),'0');
     assert.equal(psql("SELECT count(*)FROM audit_activity_events WHERE action IN('collection.membership.revision','collection.membership.updated');"),'0');
@@ -257,7 +269,7 @@ test('361 empty-only retirement first proves source/schema/ACL/dependency/role r
     const retiredOrdinal=psql("SELECT attnum FROM pg_attribute WHERE attrelid='collections'::regclass AND attname='membership_version'AND NOT attisdropped;");
     // A successful retirement is the actual complete SQL file, with no removed
     // guard or borrowed final-runtime schema baseline.
-    owned.script(rollback361);
+    sqlDatabase.script(rollback361);
     assert.equal(psql("SELECT to_regclass('collection_membership_receipts')IS NULL;"),'t');
     assert.equal(psql("SELECT count(*)FROM pg_proc WHERE pronamespace='public'::regnamespace AND proname IN('guard_collection_membership_receipt_v1','guard_collection_membership_junction_v1','bump_collection_membership_junction_v1','prepare_collection_membership_revision_v1','record_collection_membership_revision_v1','protect_collection_membership_audit_v1','assert_collection_membership_owner_v1','collection_membership_snapshot_v1','apply_collection_membership_v1');"),'0');
     assert.equal(psql("SELECT count(*)FROM migration_privilege_journal WHERE migration='361';"),'0');
@@ -269,23 +281,23 @@ test('361 empty-only retirement first proves source/schema/ACL/dependency/role r
     const restoredNames=psql("SELECT coalesce(jsonb_agg(jsonb_build_array(pg_get_userbyid(x.grantee),pg_get_userbyid(x.grantor),x.privilege_type,x.is_grantable)ORDER BY pg_get_userbyid(x.grantee),x.privilege_type),'[]'::jsonb)::text FROM pg_class c CROSS JOIN LATERAL aclexplode(coalesce(c.relacl,acldefault('r',c.relowner)))x WHERE c.oid='collection_products'::regclass;");
     assert.equal(restoredNames,expectedPriorAcl,'Retirement restores exactly the known journaled prior ACL, without widening');
     assert.equal(largeOwnedScript(outside.sql),outside.raw,'Every outside persistent application row/catalog/ACL/dependency/role remains exact; only own recorded column slot excluded');
-    owned.script(forward361); // Resume the exact finite original journey.
+    sqlDatabase.script(forward361); // Restore the exact finite original membership owner.
     assert.equal(psql("SELECT count(*)FROM pg_attribute WHERE attrelid='collections'::regclass AND attname='membership_version'AND NOT attisdropped;"),'1');
-});
+}));
 
-test('361 real prepared transactions and a real concurrent writer refuse retirement without silent skips',async()=>{
+test('361 real prepared transactions and a real concurrent writer refuse retirement without silent skips',async()=>withHistorical361(async()=>{
     assert.ok(Number(psql('SHOW max_prepared_transactions;'))>=2,'Coordinator must explicitly enable >=2 prepared slots for this owned fixture; zero is an unmet branch, never a skip');
     const gids=['syn_cm361_'+owned.runId+'_a','syn_cm361_'+owned.runId+'_b'];let prepared:string[]=[];
     try{
-        for(const [index,gid]of gids.entries()){owned.script('BEGIN;SELECT pg_advisory_xact_lock('+String(361001+index)+');PREPARE TRANSACTION '+q(gid)+';');prepared.push(gid);}
+        for(const [index,gid]of gids.entries()){sqlDatabase.script('BEGIN;SELECT pg_advisory_xact_lock('+String(361001+index)+');PREPARE TRANSACTION '+q(gid)+';');prepared.push(gid);}
         assert.equal(Number(psql('SELECT count(*)FROM pg_prepared_xacts WHERE database=current_database()AND gid IN('+gids.map(q).join(',')+');')),2);
-        const before=rawState361();assert.equal(owned.exec(rollback361),null,'The actual whole retirement file refuses real prepared state');assertWholeState361(rawState361(),before);
-    }finally{for(const gid of prepared)owned.script('ROLLBACK PREPARED '+q(gid)+';');}
+        const before=rawState361();assert.equal(sqlDatabase.exec(rollback361),null,'The actual whole retirement file refuses real prepared state');assertWholeState361(rawState361(),before);
+    }finally{for(const gid of prepared)sqlDatabase.script('ROLLBACK PREPARED '+q(gid)+';');}
     // A fixed four-second sleep expired during the real whole-catalog snapshot
     // on CI. Hold this exact owned backend until the refusal is checked, then
     // cancel only its observed PID in finally (connection exit rolls it back).
     const name='syn_cm361_writer_'+owned.runId;
-    const writer=owned.psqlAsync('BEGIN;SET LOCAL application_name='+q(name)+';LOCK TABLE collections IN ROW EXCLUSIVE MODE;SELECT txid_current();SELECT pg_sleep(600);COMMIT;')
+    const writer=sqlDatabase.psqlAsync('BEGIN;SET LOCAL application_name='+q(name)+';LOCK TABLE collections IN ROW EXCLUSIVE MODE;SELECT txid_current();SELECT pg_sleep(600);COMMIT;')
         .then(()=>({error:null as Error|null}),error=>({error:error as Error}));
     let witnessed=false,writerPid=0;
     try{
@@ -293,7 +305,7 @@ test('361 real prepared transactions and a real concurrent writer refuse retirem
         assert.ok(witnessed,'An observed real writer barrier is mandatory');const before=rawState361();
         const held=()=>psql('SELECT count(*)FROM pg_stat_activity WHERE pid='+writerPid+' AND datname=current_database()AND application_name='+q(name)+"AND backend_xid IS NOT NULL AND wait_event='PgSleep';");
         assert.equal(held(),'1','the writer must remain active after catalog collection');
-        assert.equal(owned.exec(rollback361),null);
+        assert.equal(sqlDatabase.exec(rollback361),null);
         assert.equal(held(),'1','the real writer remains held through retirement refusal');
         assertWholeState361(rawState361(),before);
     }finally{
@@ -304,7 +316,7 @@ test('361 real prepared transactions and a real concurrent writer refuse retirem
         assert.match(outcome.error?.message||'',/canceling statement due to user request/,'only explicit cancellation ends the held writer');
     }
     console.info('OWNED361_QUIESCENCE '+JSON.stringify({preparedTransactions:2,writerBarrier:witnessed,syntheticPositiveSubstitution:false}));
-});
+}));
 
 test('361 retains zero-receipt direct-write history, tombstones and later receipts; refusal preserves replay and resume',async()=>{
     const w=world('cm-sql-history');assert.deepEqual(effects(w),{audit:0,outbox:0,receipts:0});
@@ -313,15 +325,15 @@ test('361 retains zero-receipt direct-write history, tombstones and later receip
     const current=readData(await request(w,'GET'),w);assert.deepEqual(current.product_ids,initial.product_ids);assert.ok(current.membership_version>initial.membership_version);
     assert.equal(psql('SELECT count(*)FROM collection_membership_receipts WHERE collection_id='+q(w.collection)+';'),'0');
     const history=Number(psql("SELECT count(*)FROM audit_activity_events WHERE action='collection.membership.revision'AND resource_id="+q(w.collection)+';'));assert.ok(history>0);
-    const before=rawState361();assert.equal(owned.exec(rollback361),null);assertWholeState361(rawState361(),before);
+    const before=rawState361();assert.equal(sqlDatabase.exec(rollback361),null);assertWholeState361(rawState361(),before);
     const body=command(current.membership_version,[w.products[2]]),first=readData(await request(w,'PUT',{body}),w),retained=rawState361();
-    assert.equal(owned.exec(rollback361),null);assertWholeState361(rawState361(),retained);assert.deepEqual(readData(await request(w,'PUT',{body}),w),first);assertHttpReplayState361(rawState361(),retained);
+    assert.equal(sqlDatabase.exec(rollback361),null);assertWholeState361(rawState361(),retained);assert.deepEqual(readData(await request(w,'PUT',{body}),w),first);assertHttpReplayState361(rawState361(),retained);
     const resumed=readData(await request(w,'PUT',{body:command(first.membership_version,[w.products[3]])}),w);assert.deepEqual(resumed.product_ids,[w.products[3]]);
     const tombstone=crypto.randomUUID();psql('INSERT INTO collections(id,store_id,title)VALUES('+[q(tombstone),q(w.a.siteId),q('Synthetic tombstone')].join(',')+');DELETE FROM collections WHERE id='+q(tombstone)+';');
     assert.equal(psql('SELECT count(*)FROM collections WHERE id='+q(tombstone)+';'),'0');
     assert.equal(psql("SELECT count(*)FROM audit_activity_events WHERE action='collection.membership.revision'AND resource_id="+q(tombstone)+';'),'2','Insert and hard-delete tombstone history persists after its parent is gone');
-    const tombstoneState=rawState361();assert.equal(owned.exec(rollback361),null);assertWholeState361(rawState361(),tombstoneState);
-    assert.match(owned.psqlExpectError('INSERT INTO collections(id,store_id,title)VALUES('+[q(tombstone),q(w.a.siteId),q('Synthetic forbidden ID reuse')].join(',')+');'),/COLLECTION_MEMBERSHIP_/);assertWholeState361(rawState361(),tombstoneState);
+    const tombstoneState=rawState361();assert.equal(sqlDatabase.exec(rollback361),null);assertWholeState361(rawState361(),tombstoneState);
+    assert.match(sqlDatabase.psqlExpectError('INSERT INTO collections(id,store_id,title)VALUES('+[q(tombstone),q(w.a.siteId),q('Synthetic forbidden ID reuse')].join(',')+');'),/COLLECTION_MEMBERSHIP_/);assertWholeState361(rawState361(),tombstoneState);
     const immutableControls:[string,RegExp][]=[
         ["UPDATE audit_activity_events SET metadata='{}'WHERE action='collection.membership.revision'AND resource_id="+q(w.collection),/COLLECTION_MEMBERSHIP_AUDIT_RETAINED/],
         ["DELETE FROM audit_activity_events WHERE action='collection.membership.revision'AND resource_id="+q(w.collection),/COLLECTION_MEMBERSHIP_AUDIT_RETAINED/],
@@ -329,7 +341,7 @@ test('361 retains zero-receipt direct-write history, tombstones and later receip
         ['DELETE FROM collection_membership_receipts WHERE idempotency_key='+q(body.idempotency_key),/^ERROR:\s+collection membership receipts are immutable/m],
     ];
     for(const [sql,reason] of immutableControls){
-        assert.match(owned.psqlExpectError(sql),reason);assertWholeState361(rawState361(),tombstoneState);
+        assert.match(sqlDatabase.psqlExpectError(sql),reason);assertWholeState361(rawState361(),tombstoneState);
     }
     assert.deepEqual(readData(await request(w,'PUT',{body}),w),first);assert.deepEqual(readData(await request(w,'GET'),w),resumed);
 });
@@ -478,7 +490,7 @@ test('361 ordinary raw roles are denied while the same app_tenant role can execu
         'SELECT public.assert_collection_membership_owner_v1('+q(w.a.siteId)+','+q(w.owner)+')',
     ];
     for(const role of ['app_tenant','anon','authenticated','service_role'])for(const sql of forbidden){
-        const before=rawState361(),error=owned.psqlExpectError(roleScript361(w,sql,{role}));assert.match(error,/permission denied|COLLECTION_MEMBERSHIP_/i,role+':'+sql);assertWholeState361(rawState361(),before);
+        const before=rawState361(),error=sqlDatabase.psqlExpectError(roleScript361(w,sql,{role}));assert.match(error,/permission denied|COLLECTION_MEMBERSHIP_/i,role+':'+sql);assertWholeState361(rawState361(),before);
     }
     const success=largeOwnedScript(roleScript361(w,canonicalSql361(w,body),{commit:true}));
     const response=JSON.parse(success.split('\n').find(x=>x.startsWith('{'))!);
@@ -495,9 +507,9 @@ test('361 ordinary raw roles are denied while the same app_tenant role can execu
         ['foreign product fails whole command',canonicalSql361(w,command(response.data.membership_version,[w.foreign])),{}],
         ['same key different payload refuses',canonicalSql361(w,{...body,product_ids:[w.products[3]]}),{}],
     ];
-    for(const [label,sql,options]of invalid){const state=rawState361();assert.match(owned.psqlExpectError(roleScript361(w,sql,options)),/COLLECTION_MEMBERSHIP_/i,label);assertWholeState361(rawState361(),state,label);}
+    for(const [label,sql,options]of invalid){const state=rawState361();assert.match(sqlDatabase.psqlExpectError(roleScript361(w,sql,options)),/COLLECTION_MEMBERSHIP_/i,label);assertWholeState361(rawState361(),state,label);}
     psql('UPDATE sites SET custom_user_id='+q(w.other)+' WHERE id='+q(w.a.siteId)+';');
-    try{const state=rawState361();assert.match(owned.psqlExpectError(roleScript361(w,canonicalSql361(w,body))),/COLLECTION_MEMBERSHIP_FORBIDDEN/);assertWholeState361(rawState361(),state);}
+    try{const state=rawState361();assert.match(sqlDatabase.psqlExpectError(roleScript361(w,canonicalSql361(w,body))),/COLLECTION_MEMBERSHIP_FORBIDDEN/);assertWholeState361(rawState361(),state);}
     finally{psql('UPDATE sites SET custom_user_id='+q(w.owner)+' WHERE id='+q(w.a.siteId)+';');}
     const again=largeOwnedScript(roleScript361(w,canonicalSql361(w,body)));assert.equal(again,success);assert.deepEqual(effects(w),{audit:1,outbox:1,receipts:1});
     const fresh=readData(await request(w,'GET'),w);assert.equal((await request(w,'PUT',{body:command(fresh.membership_version,[w.products[3]])})).status,200);

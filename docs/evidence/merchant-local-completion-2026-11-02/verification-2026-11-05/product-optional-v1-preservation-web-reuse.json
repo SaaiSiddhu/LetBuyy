@@ -1,0 +1,26 @@
+{
+  "at": "2026-11-06T06:01:15.903041+00:00",
+  "source": "3bdf36a7aeeda56b390310bb931a9584b784666459ce072fcb7d7113ed97c48d",
+  "prior_web_source": "6b04cb93b05b5cc2a745b8720d44a02e866283be64efc7c831019a3a24491eda",
+  "all_prior_inputs_except_two_mobile_paths_byte_equal": true,
+  "changed": [
+    "apps/merchant/mobile/lib/screens/products/product_form_screen.dart",
+    "apps/merchant/mobile/test/product_optional_edit_test.dart"
+  ],
+  "reused_web_tests": {
+    "report": "web-mobile-switcher-v2-web-tests-v1.terminal.json",
+    "pass": 1732,
+    "fail": 0,
+    "skip": 0,
+    "batches": [
+      606,
+      818,
+      295,
+      13
+    ]
+  },
+  "reused_web_types": "web-mobile-switcher-v2-web-types-v1.terminal.json",
+  "selector_renders": "switcher-visual-v4.terminal.json",
+  "backend_staff": "staff-current-db-v1.json",
+  "scope": "Product private form and one new regression file only. Existing web/identity/backend/SQL/SDK/UI-kit/money/selector implementation inputs unchanged. Repeated test counts are not added."
+}

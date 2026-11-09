@@ -1112,7 +1112,8 @@ router.post('/:id/publish', async (c) => {
     return c.json(success(data));
 });
 
-// DELETE /stores/:id — Soft delete with deleted_at timestamp
+// DELETE /stores/:id — close the owned store. The database revokes current
+// private KYC references and queues their deletion in this same transaction.
 router.delete('/:id', async (c) => {
     const auth = c.get('auth');
     const storeId = c.req.param('id');
@@ -1123,20 +1124,25 @@ router.delete('/:id', async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
 
-    const { error } = await db
+    const { data, error } = await db
         .from('sites')
         .update({
             status: 'suspended',
+            published: false,
             deleted_at: new Date().toISOString(),
         })
         .eq('id', storeId)
-        .or(ownedByCustomUserFilter(customUser.id));
+        .or(ownedByCustomUserFilter(customUser.id))
+        .is('deleted_at', null)
+        .select('id')
+        .maybeSingle();
 
     if (error) {
-        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
+        return c.json({ error: { code: 'STORE_CLOSE_UNAVAILABLE', message: 'Store closure is unavailable. Please retry later.' } }, 503);
     }
+    if (!data) return c.json({ error: { code: 'NOT_FOUND', message: 'Store not found or not owned by you' } }, 404);
 
-    return c.json({ data: { deleted: true } });
+    return c.json({ data: { deleted: true, closed: true } });
 });
 
 export default router;

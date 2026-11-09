@@ -1,10 +1,11 @@
+import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
+import '../../widgets/shared/warehouse_list_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:letbuyy_core/letbuyy_core.dart' show DateFormatter;
 import '../../app/store_context.dart';
 import '../../services/api_client.dart' show ApiException;
 import '../../services/inventory_service.dart';
-import '../../theme/app_theme_colors.dart';
 import '../../widgets/shared/merchant_store_view.dart';
 
 enum InventoryRecordKind { history, reservations, receipts }
@@ -28,7 +29,8 @@ class InventoryRecordsScreen extends StatefulWidget {
 
 class _InventoryRecordsScreenState extends State<InventoryRecordsScreen> {
   List<Object> _rows = [];
-  Object? _key;
+  Object? _key, _loadedQuery;
+  Object get _query => (_key, _site, _page, _product, _po, _transfer, _status);
   String? _site, _product, _productName, _po, _transfer, _error;
   String _status = '';
   int _generation = 0, _page = 1;
@@ -57,15 +59,22 @@ class _InventoryRecordsScreenState extends State<InventoryRecordsScreen> {
     _load();
   }
 
-  Future<void> _load() async {
+  Future<void> _load({bool retain = false}) async {
     if (!mounted) return;
+    final keep =
+        retain &&
+        _loadedQuery == _query &&
+        merchantStoreViewCurrent(context, _view);
     final generation = ++_generation, stores = context.read<StoreContext>();
     setState(() {
       _loading = true;
       _error = null;
-      _rows = [];
-      _total = null;
-      _more = false;
+      if (!keep) {
+        _rows = [];
+        _total = null;
+        _more = false;
+        _loadedQuery = null;
+      }
     });
     try {
       await stores.ensureSelectedStore();
@@ -75,6 +84,7 @@ class _InventoryRecordsScreenState extends State<InventoryRecordsScreen> {
       final view = _view;
       if (view == null)
         throw const FormatException('Select a store to continue.');
+      final query = _query;
       final service = context.read<InventoryService>();
       final List<Object> rows;
       final int? total;
@@ -107,10 +117,13 @@ class _InventoryRecordsScreenState extends State<InventoryRecordsScreen> {
           total = service.receiptTotal;
           more = service.receiptsHasMore;
       }
-      if (!merchantStoreViewCurrent(context, view) || generation != _generation)
+      if (!mounted ||
+          !merchantStoreViewCurrent(context, view) ||
+          generation != _generation)
         return;
       setState(() {
         _rows = rows;
+        _loadedQuery = query;
         _total = total;
         _more = more;
         _loading = false;
@@ -121,9 +134,13 @@ class _InventoryRecordsScreenState extends State<InventoryRecordsScreen> {
           _key != stores.requestContextKey)
         return;
       setState(() {
-        _rows = [];
-        _total = null;
-        _more = false;
+        if (!keep ||
+            error is ApiException && [401, 403].contains(error.statusCode)) {
+          _rows = [];
+          _total = null;
+          _more = false;
+          _loadedQuery = null;
+        }
         _loading = false;
         _error =
             error is ApiException && error.code.endsWith('_SCOPE_UNSUPPORTED')
@@ -147,11 +164,11 @@ class _InventoryRecordsScreenState extends State<InventoryRecordsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppThemeColors.of(context),
-        stores = context.watch<StoreContext>();
+    final stores = context.watch<StoreContext>();
     if (_key != stores.requestContextKey) {
       _key = stores.requestContextKey;
       ++_generation;
+      _loadedQuery = null;
       _site = null;
       _rows = [];
       _total = null;
@@ -168,174 +185,254 @@ class _InventoryRecordsScreenState extends State<InventoryRecordsScreen> {
         if (mounted) _load();
       });
     }
-    return Scaffold(
-      backgroundColor: colors.bgStart,
-      appBar: AppBar(
-        title: Text(_title),
-        actions: [
-          IconButton(
-            tooltip: 'Refresh ${_title.toLowerCase()}',
-            onPressed: _load,
-            icon: const Icon(Icons.refresh),
-          ),
-        ],
-      ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            if (_product != null)
-              Padding(
-                padding: const EdgeInsets.all(12),
-                child: InputChip(
-                  deleteButtonTooltipMessage: 'Show all products',
-                  label: Text(
-                    '${_productName ?? 'Selected product'} • all variants',
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  onDeleted: () {
-                    setState(() {
-                      _product = null;
-                      _productName = null;
-                      _page = 1;
-                    });
-                    _load();
-                  },
-                ),
-              ),
-            if (_po != null || _transfer != null)
-              Padding(
-                padding: const EdgeInsets.all(12),
-                child: InputChip(
-                  deleteButtonTooltipMessage: 'Show all receipts',
-                  label: Text(
-                    _po != null
-                        ? 'Purchase order receipts'
-                        : 'Transfer receipts',
-                  ),
-                  onDeleted: () {
-                    setState(() {
-                      _po = null;
-                      _transfer = null;
-                      _page = 1;
-                    });
-                    _load();
-                  },
-                ),
-              ),
-            if (widget.kind == InventoryRecordKind.reservations)
-              Padding(
-                padding: const EdgeInsets.all(12),
-                child: DropdownButtonFormField<String>(
-                  value: _status,
-                  decoration: const InputDecoration(
-                    labelText: 'Reservation status',
-                  ),
-                  items: [
-                    const DropdownMenuItem(
-                      value: '',
-                      child: Text('All statuses'),
-                    ),
-                    for (final status in inventoryReservationStatuses)
-                      DropdownMenuItem(
-                        value: status,
-                        child: Text(_capitalize(status)),
-                      ),
-                  ],
-                  onChanged: _loading
-                      ? null
-                      : (value) {
-                          setState(() {
-                            _status = value ?? '';
-                            _page = 1;
-                          });
-                          _load();
-                        },
-                ),
-              ),
-            if (!_loading && _error == null && _total != null)
-              Padding(
-                padding: const EdgeInsets.all(12),
-                child: Text('$_total matching $_countLabel'),
-              ),
-            Expanded(
-              child: _loading
-                  ? const Center(child: CircularProgressIndicator())
-                  : _error != null
-                  ? Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(24),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(_error!, textAlign: TextAlign.center),
-                            TextButton(
-                              onPressed: _load,
-                              child: Text(
-                                widget.kind == InventoryRecordKind.history
-                                    ? 'Retry history'
-                                    : 'Retry records',
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    )
-                  : _rows.isEmpty
-                  ? Center(child: Text('No $_countLabel on this page.'))
-                  : RefreshIndicator(
-                      onRefresh: _load,
-                      child: ListView.builder(
-                        padding: const EdgeInsets.all(12),
-                        itemCount: _rows.length,
-                        itemBuilder: (context, index) => _record(_rows[index]),
-                      ),
-                    ),
-            ),
-            if (_page > 1 || _more)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+    final view = _view, generation = _generation;
+    bool current() =>
+        mounted &&
+        generation == _generation &&
+        merchantStoreViewCurrent(context, view) &&
+        isLetbuyySurfaceCurrent(context);
+    final readKey = stores.requestContextKey;
+    bool currentRead() =>
+        mounted &&
+        generation == _generation &&
+        context.read<StoreContext>().requestContextKey == readKey &&
+        isLetbuyySurfaceCurrent(context);
+    return WarehouseListScaffold(
+      scrollIdentity: _query,
+      title: _title,
+      description:
+          'Recorded inventory activity for the selected store. Filters and page counts describe the current query.',
+      refreshLabel: 'Refresh ${_title.toLowerCase()}',
+      loading: _loading,
+      onRefresh: _loading
+          ? null
+          : () async {
+              if (currentRead() && !_loading) await _load(retain: true);
+            },
+      header: [
+        if (_product != null)
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Row(
                 children: [
-                  TextButton(
-                    onPressed: !_loading && _page > 1
-                        ? () => _changePage(-1)
-                        : null,
-                    child: const Text('Previous'),
+                  Expanded(
+                    child: Text(
+                      '${_productName ?? 'Selected product'} • all variants',
+                    ),
                   ),
-                  Text('Page $_page'),
-                  TextButton(
-                    onPressed: !_loading && _more ? () => _changePage(1) : null,
-                    child: const Text('Next'),
+                  IconButton(
+                    tooltip: 'Show all products',
+                    icon: const Icon(Icons.close),
+                    onPressed: _loading
+                        ? null
+                        : () {
+                            if (!current()) return;
+                            setState(() {
+                              _product = null;
+                              _productName = null;
+                              _page = 1;
+                            });
+                            _load();
+                          },
                   ),
                 ],
               ),
-          ],
-        ),
-      ),
+            ),
+          ),
+        if (_po != null || _transfer != null)
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      _po != null
+                          ? 'Purchase order receipts'
+                          : 'Transfer receipts',
+                    ),
+                  ),
+                  IconButton(
+                    tooltip: 'Show all receipts',
+                    icon: const Icon(Icons.close),
+                    onPressed: _loading
+                        ? null
+                        : () {
+                            if (!current()) return;
+                            setState(() {
+                              _po = null;
+                              _transfer = null;
+                              _page = 1;
+                            });
+                            _load();
+                          },
+                  ),
+                ],
+              ),
+            ),
+          ),
+        if (widget.kind == InventoryRecordKind.reservations)
+          LetbuyyChoiceField<String>(
+            label: 'Reservation status',
+            value: _status,
+            choices: [
+              const LetbuyyChoice(value: '', label: 'All statuses'),
+              for (final status in inventoryReservationStatuses)
+                LetbuyyChoice(value: status, label: _capitalize(status)),
+            ],
+            onChanged: _loading
+                ? null
+                : (value) {
+                    if (!current()) return;
+                    setState(() {
+                      _status = value;
+                      _page = 1;
+                    });
+                    _load();
+                  },
+          ),
+        if (_total != null) Text('$_total matching $_countLabel'),
+        if (_loading && _loadedQuery != null)
+          const Text(
+            'Refreshing the same page. Previously loaded records are shown below.',
+          ),
+        if (_error != null && _loadedQuery != null)
+          Text(
+            'Refresh unavailable. Previously loaded records are shown below. $_error',
+          ),
+        if (_page > 1 || _more)
+          Wrap(
+            alignment: WrapAlignment.center,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              TextButton(
+                onPressed: !_loading && _page > 1
+                    ? () {
+                        if (current()) _changePage(-1);
+                      }
+                    : null,
+                child: const Text('Previous'),
+              ),
+              Text('Page $_page'),
+              TextButton(
+                onPressed: !_loading && _more
+                    ? () {
+                        if (current()) _changePage(1);
+                      }
+                    : null,
+                child: const Text('Next'),
+              ),
+            ],
+          ),
+      ],
+      slivers: [
+        if (_loading && _loadedQuery == null)
+          const SliverFillRemaining(
+            hasScrollBody: false,
+            child: Center(child: CircularProgressIndicator()),
+          )
+        else if (_error != null && _loadedQuery == null)
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(_error!, textAlign: TextAlign.center),
+                  TextButton(
+                    onPressed: () {
+                      if (currentRead()) _load();
+                    },
+                    child: Text(
+                      widget.kind == InventoryRecordKind.history
+                          ? 'Retry history'
+                          : 'Retry records',
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          )
+        else if (_rows.isEmpty)
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: Center(child: Text('No $_countLabel on this page.')),
+          )
+        else
+          SliverPadding(
+            padding: const EdgeInsets.all(12),
+            sliver: SliverList.builder(
+              itemCount: _rows.length,
+              itemBuilder: (context, index) => _record(_rows[index]),
+            ),
+          ),
+      ],
     );
   }
 
   Widget _record(Object row) => switch (row) {
     InventoryHistoryEntry() => _history(row),
-    InventoryReservationRecord() => Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              row.productName,
-              style: const TextStyle(fontWeight: FontWeight.w700),
-            ),
-            Text('${row.quantity} reserved • ${_capitalize(row.status)}'),
-            Text('Expires ${_at(row.expiresAt)}'),
-            if (row.orderId.isNotEmpty)
-              SelectableText('Order reference: ${row.orderId}'),
-          ],
+    InventoryReservationRecord() => Semantics(
+      container: true,
+      explicitChildNodes: true,
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Semantics(
+                container: true,
+                child: Text(
+                  row.productName,
+                  style: const TextStyle(fontWeight: FontWeight.w700),
+                ),
+              ),
+              Semantics(
+                container: true,
+                child: Text(
+                  '${row.quantity} units • ${_capitalize(row.status)}',
+                ),
+              ),
+              if (row.transfer != null) ...[
+                Semantics(
+                  container: true,
+                  child: Text(
+                    ['active', 'hold'].contains(row.status)
+                        ? 'Held until shipment'
+                        : 'Committed at shipment',
+                  ),
+                ),
+                SelectableText(
+                  'Transfer reference: ${row.transfer!.number}',
+                  key: PageStorageKey((
+                    _key,
+                    _site,
+                    row.id,
+                    'transfer-reference',
+                  )),
+                ),
+              ] else
+                Semantics(
+                  container: true,
+                  child: Text('Expires ${_at(row.expiresAt!)}'),
+                ),
+              if (row.orderId.isNotEmpty)
+                SelectableText(
+                  'Order reference: ${row.orderId}',
+                  key: PageStorageKey((_key, _site, row.id, 'order-reference')),
+                ),
+            ],
+          ),
         ),
       ),
     ),
     InventoryReceiptRecord() => Card(
       child: ExpansionTile(
+        key: PageStorageKey((_key, _site, widget.kind, row.id)),
         title: Text(
           row.receiptType == 'purchase_order'
               ? 'Purchase order receipt'
@@ -350,8 +447,17 @@ class _InventoryRecordsScreenState extends State<InventoryRecordsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SelectableText('Reference: ${row.parentId}'),
                 SelectableText(
+                  'Reference: ${row.parentId}',
+                  key: PageStorageKey((
+                    _key,
+                    _site,
+                    row.id,
+                    'receipt-reference',
+                  )),
+                ),
+                SelectableText(
+                  key: PageStorageKey((_key, _site, row.id, 'receipt-note')),
                   row.notes.isEmpty ? 'No note recorded.' : row.notes,
                 ),
               ],
@@ -375,25 +481,28 @@ class _InventoryRecordsScreenState extends State<InventoryRecordsScreen> {
         : '${row.quantityChange}';
     return Card(
       child: ExpansionTile(
-        title: Text(
-          row.productName,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
+        key: PageStorageKey((_key, _site, widget.kind, row.id)),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(row.productName),
+            Semantics(
+              label: 'Quantity change $delta',
+              child: Text(
+                delta,
+                style: const TextStyle(fontWeight: FontWeight.w700),
+              ),
+            ),
+          ],
         ),
         subtitle: Text('${_reason(row.reason)} • ${_at(row.createdAt)}'),
-        trailing: Semantics(
-          label: 'Quantity change $delta',
-          child: Text(
-            delta,
-            style: const TextStyle(fontWeight: FontWeight.w700),
-          ),
-        ),
         children: [
           Padding(
             padding: const EdgeInsets.all(16),
             child: Align(
               alignment: Alignment.centerLeft,
               child: SelectableText(
+                key: PageStorageKey((_key, _site, row.id, 'history-note')),
                 row.note.isEmpty ? 'No note recorded.' : row.note,
               ),
             ),

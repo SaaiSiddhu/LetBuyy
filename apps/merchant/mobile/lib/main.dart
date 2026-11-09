@@ -34,6 +34,7 @@ import 'services/coupon_service.dart';
 import 'services/cms_service.dart';
 import 'services/custom_domains.dart';
 import 'services/media_service.dart';
+import 'services/native_media_selection.dart';
 import 'services/metafield_service.dart';
 import 'services/notification_settings_service.dart';
 import 'services/platform_blocked_service.dart';
@@ -85,9 +86,7 @@ void main() {
           final actor = authService.currentUser?.id;
           return actor == null
               ? null
-              : AppConfig.environment == 'staging'
-              ? 'staging:$actor'
-              : actor;
+              : '${AppConfig.persistenceNamespace()}$actor';
         },
       );
 
@@ -116,6 +115,9 @@ void main() {
         mobileBffBaseUrl: AppConfig.bffBaseUrl,
         sessionCookieName: AppConfig.sessionCookieName,
         csrfCookieName: AppConfig.csrfCookieName,
+        storageNamespace: AppConfig.environment == 'staging'
+            ? ''
+            : AppConfig.persistenceNamespace(),
         turnstileTokenProvider: () => AppConfig.turnstileToken,
       );
       final browserAuth = MerchantBrowserAuth(
@@ -165,6 +167,21 @@ void main() {
       const appBadgeService = AppBadgeService();
       final storeService = StoreService(api: apiClient, cache: cacheService);
       storeContext = StoreContext(storeService: storeService);
+      final nativeSelection = NativeMediaSelection(
+        contextProvider: () {
+          final actor = authService.currentUser?.id,
+              store = storeContext.selectedStoreId;
+          return actor == null || store == null
+              ? null
+              : (
+                  actorId: actor,
+                  storeId: store,
+                  version: apiClient.captureRequestContext(),
+                );
+        },
+      );
+      // Optional file recovery never holds up authentication/startup rendering.
+      unawaited(nativeSelection.initialize());
       final telemetryService = TelemetryService(
         sink: await SharedPreferencesTelemetrySink.open(),
         storeIdProvider: () => storeContext.selectedStoreId,
@@ -273,6 +290,9 @@ void main() {
               value: browserAuth,
             ),
             ChangeNotifierProvider<StoreContext>.value(value: storeContext),
+            ChangeNotifierProvider<NativeMediaSelection>.value(
+              value: nativeSelection,
+            ),
 
             // Data services
             ChangeNotifierProvider<StoreService>.value(value: storeService),
@@ -308,7 +328,11 @@ void main() {
               create: (_) => MoneyService(api: apiClient),
             ),
             ChangeNotifierProvider<KycService>(
-              create: (_) => KycService(api: apiClient),
+              create: (_) => KycService(
+                api: apiClient,
+                actorIdProvider: () => authService.currentUser?.id,
+                storeIdProvider: () => storeContext.selectedStoreId,
+              ),
             ),
             ChangeNotifierProvider<TwoFactorService>(
               create: (_) => TwoFactorService(
@@ -334,7 +358,11 @@ void main() {
               create: (_) => DomainService(api: apiClient),
             ),
             ChangeNotifierProvider<MediaService>(
-              create: (_) => MediaService(api: apiClient),
+              create: (_) => MediaService(
+                api: apiClient,
+                actorIdProvider: () => authService.currentUser?.id,
+                storeIdProvider: () => storeContext.selectedStoreId,
+              ),
             ),
             ChangeNotifierProvider<MetafieldService>(
               create: (_) => MetafieldService(api: apiClient),

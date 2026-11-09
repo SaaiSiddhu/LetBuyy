@@ -1,0 +1,18 @@
+{
+  "started_at": "2026-11-08T08:51:43.468214+00:00",
+  "supervisor_pid": 24852,
+  "source": "merchant-catalog-availability-source-v105",
+  "source_sha256": "fc30461575a839bc0d3e11b1ad2109c803bdfeeb1befef33b6dd076c3c4eeb35",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--reporter",
+    "expanded"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 24856,
+  "exit_code": 0,
+  "finished_at": "2026-11-08T08:52:38.315708+00:00",
+  "source_unchanged": true,
+  "source_readback_sha256": "fc30461575a839bc0d3e11b1ad2109c803bdfeeb1befef33b6dd076c3c4eeb35"
+}

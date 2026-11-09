@@ -1,0 +1,19 @@
+{
+  "started_at": "2026-11-07T05:31:50.859000+00:00",
+  "supervisor_pid": 10022,
+  "source": "merchant-web-media-cap-baseline-v73",
+  "source_sha256": "2d8d5fc9cdff0ce7ec78f023d9de22371c4391d7c815ea09f68957a15927ca4a",
+  "command": [
+    "env",
+    "TSX_TSCONFIG_PATH=/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/apps/merchant/web/tsconfig.json",
+    "node",
+    "--import",
+    "tsx",
+    "--test",
+    "--test-name-pattern",
+    "product media capacity",
+    "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/apps/merchant/web/src/components/products/product-conflict.test.tsx"
+  ],
+  "status": "RUNNING",
+  "child_pid": 10029
+}

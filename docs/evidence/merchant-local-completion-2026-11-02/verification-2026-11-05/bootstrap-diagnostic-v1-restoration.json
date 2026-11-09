@@ -1,0 +1,11 @@
+{
+  "at": "2026-11-06T09:52:10.800040+00:00",
+  "status": "EXACT_FOUR_PREIMAGES_AND_WHOLE_SOURCE_85C6_RESTORED",
+  "from_source": "a674722f9c9627d5c79058e79a5e7acc6919bb85200852c4ac83a75075f47077",
+  "to_source": "85c6e28b0e4fa33b40a35cf8f09c4a3c354226802236c8fec04989fd0835abe4",
+  "entries": 8467,
+  "diagnostic_run": "83f8a8e0176e",
+  "diagnostic_flow": "PASS/NOT_ACCEPTED_AS_REPAIR;61hangnotreproduced",
+  "owned_cleanup_empty": true,
+  "current_bounded_native_accepted": false
+}

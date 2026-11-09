@@ -1,0 +1,47 @@
+{
+  "at": "2026-11-05T02:28:08.002841+00:00",
+  "status": "FAILED_WEB_NOTE_RESPONSE_WAIT_ONE_DIRECTION_OBSERVED",
+  "run_id": "21ce81f7a725",
+  "runner_exit": 1,
+  "controller_exit": 1,
+  "suite_seconds": 312.4,
+  "source_sha256": "22b970835287138f8da5344dc544400d03a62ad0b222b164ee637799104fa9b8",
+  "native_input_entries": 4806,
+  "all_native_inputs_match_broad": true,
+  "apk": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v28/qualified-artifact/merchant-local-debug.apk",
+  "apk_sha256": "097c124c0ec9727101786293b59fafcb022bf3a61b7767c25d434e263b034e7b",
+  "installed_apk_matches": true,
+  "owned_resources_empty": {
+    "containers": [],
+    "networks": [],
+    "volumes": []
+  },
+  "reverse_restored": [],
+  "forward_preserved": [
+    [
+      "emulator-5580",
+      "tcp:52367",
+      "localabstract:chrome_devtools_remote"
+    ]
+  ],
+  "awake_retired": true,
+  "customer_mobile_commands": [
+    {
+      "method": "PATCH",
+      "path": "/v1/customers/synthetic-native-detail%40example.invalid",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/v1/customers/synthetic-native-detail%40example.invalid/notes",
+      "status": 201,
+      "wire_status": 201
+    }
+  ],
+  "partial_ui_observation": "Native phone/note confirmations plus normal web phone/native-note visibility; compound test failed during web note submission observation.",
+  "failure": "Chrome foreground resolved connection. Web phone/native-note visibility confirmed; web note response wait timed out. No web-note POST observed at Gateway. No bidirectional acceptance or fresh resubmit of the old intent.",
+  "mobile_to_web_visibility_observed": true,
+  "web_to_mobile_unaccepted": true,
+  "visual_finding": "Independently viewed source3status gap is clear; actual note keyboard and Save/Cancel remain visible."
+}

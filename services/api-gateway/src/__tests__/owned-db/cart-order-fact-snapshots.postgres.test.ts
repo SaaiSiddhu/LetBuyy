@@ -24,7 +24,7 @@ function data<T>(response:{status:number;text:string;json:unknown}):T { const pa
 function product(metadata:object={},stock=10,tenant:SyntheticTenant=site,images:string[]=[]){
  const id=crypto.randomUUID();psql(`INSERT INTO products(id,store_id,site_id,name,slug,price,sku,stock,is_active,status,metadata,images)
  VALUES('${id}','${tenant.siteId}','${tenant.siteId}','Synthetic snapshot product','syn-${id}',1290,'SYN-${id}',${stock},true,'active',${json(metadata)},ARRAY[${images.map(quote).join(',')}]::text[]);
- SELECT public.set_inventory_level_available('${id}',NULL,'${tenant.locationId}',${stock},NULL);`);return id;
+ WITH _fixture_inventory_scope436 AS MATERIALIZED (SELECT set_config('app.site_id','${tenant.siteId}',true)) SELECT public.set_inventory_level_available('${id}',NULL,'${tenant.locationId}',${stock},NULL) FROM _fixture_inventory_scope436;`);return id;
 }
 const version=(id:string)=>Number(psql(`SELECT version FROM products WHERE id='${id}';`));
 async function draft(id:string,text='Asha',variant_id:string|null=null):Promise<PersonalizationCartDraft>{
@@ -73,7 +73,7 @@ async function archiveProduct(id:string){const key=crypto.randomUUID();const res
 
 test('real read-only review producer returns only current variant-bound facts/echo and never creates a cart',async()=>{
  const id=product({personalization:facts,private_supplier_token:'NEVER_PUBLIC'},2),variant=crypto.randomUUID(),empty=crypto.randomUUID();
- psql(`INSERT INTO product_options(product_id,name,position,values) VALUES('${id}','Finish',0,'["Walnut","Oak"]');INSERT INTO product_variants(id,product_id,title,price,inventory_qty,option1) VALUES('${variant}','${id}','Walnut',1290,2,'Walnut'),('${empty}','${id}','Oak',1290,0,'Oak');SELECT public.set_inventory_level_available('${id}','${variant}','${site.locationId}',2,NULL);SELECT public.set_inventory_level_available('${id}','${empty}','${site.locationId}',0,NULL);`);
+ psql(`INSERT INTO product_options(product_id,name,position,values) VALUES('${id}','Finish',0,'["Walnut","Oak"]');INSERT INTO product_variants(id,product_id,title,price,inventory_qty,option1) VALUES('${variant}','${id}','Walnut',1290,2,'Walnut'),('${empty}','${id}','Oak',1290,0,'Oak');WITH _fixture_inventory_scope436 AS MATERIALIZED (SELECT set_config('app.site_id','${site.siteId}',true)) SELECT public.set_inventory_level_available('${id}','${variant}','${site.locationId}',2,NULL) FROM _fixture_inventory_scope436;WITH _fixture_inventory_scope436 AS MATERIALIZED (SELECT set_config('app.site_id','${site.siteId}',true)) SELECT public.set_inventory_level_available('${id}','${empty}','${site.locationId}',0,NULL) FROM _fixture_inventory_scope436;`);
  const before=psql(`SELECT count(*) FROM carts WHERE store_id='${site.siteId}';`);
  const path=`/v1/storefront/${site.subdomain}/products/${id}/personalization-review`;
  const response=await gateway.request(`${path}?variant_id=${variant}`);assert.equal(response.status,200,response.text);assert.equal(response.headers.get('Cache-Control'),'no-store');
@@ -160,11 +160,15 @@ test('same locked product/variant/options/facts observation is mandatory at orde
 test('one canonical order transaction freezes exact personalization, options and saved gift image identity; retries have one effect',async()=>{
  const images=['https://example.invalid/open.webp','https://example.invalid/closed.webp'];
  const id=product({personalization:facts,gifts:{contents:[{label:'Notebook',quantity:1}],mediaRoles:{openBox:0,closedBox:1}}},6,site,images);
- const response=await cart([input(id,await draft(id,'आशा José')),input(id,await draft(id,'Kabir'))]);assert.equal(response.status,201,response.text);const accepted=data<Cart>(response),key=crypto.randomUUID();
+ const response=await cart([input(id,await draft(id,'आशा José')),input(id,await draft(id,'Kabir'))]);assert.equal(response.status,201,response.text);const accepted=data<Cart>(response),key=crypto.randomUUID(),acceptedRevision=version(id);
  const [first,second]=await Promise.all([owned.psqlAsync(orderSql(items(accepted),key)),owned.psqlAsync(orderSql(items(accepted),key))]);assert.equal(first,second);
  const saved=JSON.parse(psql(`SELECT jsonb_agg(product_snapshot ORDER BY product_snapshot->'niche'->'personalization'->>'text') FROM order_items WHERE order_id='${first}';`)) as Array<{niche:unknown;images:string[]}>;
  assert.equal(saved.length,2);assert.deepEqual(saved.map(row=>readProductFactSnapshot(row.niche)?.personalization?.text).sort(),['Kabir','आशा José'].sort());assert.deepEqual(saved[0].images,images);
  assert.equal(psql(`SELECT count(*) FROM order_items WHERE order_id='${first}';`),'2');
+ assert(version(id)>acceptedRevision,'Canonical stock/cache writes still advance the catalog revision; they cannot suppress stale-editor protection');
+ assert.equal(psql(`SELECT bool_and((product_snapshot->>'product_version')::bigint=${acceptedRevision})FROM order_items WHERE order_id='${first}';`),'t','Both accepted configurations retain the same pre-effect revision');
+ assert.equal(psql(`SELECT available||'|'||reserved FROM inventory_levels WHERE product_id='${id}'AND variant_id IS NULL AND location_id='${site.locationId}';`),'4|0','Two distinct configurations consume exactly two of the six physical units');
+ assert.equal(psql(`SELECT stock FROM products WHERE id='${id}';`),'4','The buyer-visible cache reflects final stock after both lines');
  const before=JSON.stringify(saved);psql(`UPDATE products SET metadata='{}',images=ARRAY['https://example.invalid/changed.webp'],version=version+1 WHERE id='${id}';`);
  assert.equal(psql(orderSql(items(accepted),key)),first,'receipt replay returns original even after catalog edits');
  assert.equal(JSON.stringify(JSON.parse(psql(`SELECT jsonb_agg(product_snapshot ORDER BY product_snapshot->'niche'->'personalization'->>'text') FROM order_items WHERE order_id='${first}';`))),before);
@@ -198,7 +202,7 @@ test('exact named beauty options with spaces and Hindi are captured from durable
  const id=product({beauty:{routineStage:'colour',format:'Tint',shadeOptionName:'Shade name',shades:[{value:'Rose 02'},{value:'Amber 04'}]}}),variant=crypto.randomUUID();
  psql(`INSERT INTO product_options(product_id,name,position,values) VALUES('${id}','Shade name',0,'["Rose 02","Amber 04"]'),('${id}','पैक आकार',1,'["दो इकाइयाँ"]');
  INSERT INTO product_variants(id,product_id,title,price,inventory_qty,option1,option2,metadata) VALUES('${variant}','${id}','Uninformative title',1290,3,'Rose 02','दो इकाइयाँ','{}');
- SELECT public.set_inventory_level_available('${id}','${variant}','${site.locationId}',3,NULL);`);
+ WITH _fixture_inventory_scope436 AS MATERIALIZED (SELECT set_config('app.site_id','${site.siteId}',true)) SELECT public.set_inventory_level_available('${id}','${variant}','${site.locationId}',3,NULL) FROM _fixture_inventory_scope436;`);
  const response=await cart([input(id,undefined,1,variant)]);assert.equal(response.status,201,response.text);const accepted=data<Cart>(response);
  assert.deepEqual(accepted.lines[0].niche_snapshot.selected_options,[{name:'Shade name',value:'Rose 02'},{name:'पैक आकार',value:'दो इकाइयाँ'}]);
  const order=psql(orderSql(items(accepted)));
@@ -282,7 +286,7 @@ async function marketCart(lines:object[],existing?:Cart){return gateway.request(
 
 test('approved marketplace same-variant configurations merge equally, remain distinct, share stock and recover captured intent',async()=>{
  const id=product({personalization:facts},6),variant=crypto.randomUUID();
- psql(`INSERT INTO product_options(product_id,name,position,values) VALUES('${id}','Wood',0,'["Walnut"]');INSERT INTO product_variants(id,product_id,title,price,inventory_qty,option1,metadata) VALUES('${variant}','${id}','Walnut',1290,6,'Walnut','{}');SELECT public.set_inventory_level_available('${id}','${variant}','${site.locationId}',6,NULL);`);
+ psql(`INSERT INTO product_options(product_id,name,position,values) VALUES('${id}','Wood',0,'["Walnut"]');INSERT INTO product_variants(id,product_id,title,price,inventory_qty,option1,metadata) VALUES('${variant}','${id}','Walnut',1290,6,'Walnut','{}');WITH _fixture_inventory_scope436 AS MATERIALIZED (SELECT set_config('app.site_id','${site.siteId}',true)) SELECT public.set_inventory_level_available('${id}','${variant}','${site.locationId}',6,NULL) FROM _fixture_inventory_scope436;`);
  const listing=approveListing(id),a=await draft(id,'Asha',variant),b=await draft(id,'Kabir',variant);
  const line=(personalization:PersonalizationCartDraft,quantity=1)=>({...input(id,personalization,quantity,variant),marketplace_listing_id:listing});
  const overflow=await marketCart([line(a,4),line(b,3)]);assert.equal(overflow.status,409,overflow.text);

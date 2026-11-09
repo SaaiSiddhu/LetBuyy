@@ -1,0 +1,22 @@
+{
+  "build_script_sha256": "3a65b7c13c9b28216d61c7699512a3e3844eb860148a94e2253d319cc877358f",
+  "status": "RUNNING",
+  "source_sha256": "dc5e2e0af9f5da7b4e2ec11a68b3c343cb5953daa83de34009a4c5e6fb228c8c",
+  "source_inputs": 8472,
+  "supervisor_pid": 49334,
+  "owned_root": "/private/tmp/letbuyy-merchant-recovery-v16-ios-qdkm8dwh",
+  "platform": "ios",
+  "started_at": "2026-11-06T12:03:57.908836+00:00",
+  "defines": {
+    "ENVIRONMENT": "local",
+    "ACCOUNTS_ENVIRONMENT": "development",
+    "BFF_BASE_URL": "http://127.0.0.1:54350/v1",
+    "API_BASE_URL": "http://127.0.0.1:54350/v1",
+    "IDENTITY_BASE_URL": "http://127.0.0.1:54351",
+    "ADMIN_BASE_URL": "http://127.0.0.1:54353",
+    "STOREFRONT_BASE_URL": "http://127.0.0.1:54354"
+  },
+  "steps": [],
+  "scope": "Normal main.dart debug compile/artifact only. No install, launch, sign-in, provider, web-mobile sync, device, hosted or release acceptance.",
+  "active_child_pid": 49339
+}

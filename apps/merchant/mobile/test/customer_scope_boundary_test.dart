@@ -66,6 +66,24 @@ class FixedStores extends StoreService {
       .toList();
 }
 
+Future<void> revealCustomer(
+  WidgetTester tester,
+  String text, {
+  double step = 200,
+}) async {
+  final scrollable = find.byType(Scrollable).first;
+  for (var attempt = 0; attempt < 30; attempt++) {
+    if (find.text(text).evaluate().isNotEmpty) {
+      await tester.ensureVisible(find.text(text).last);
+      await tester.pumpAndSettle();
+      return;
+    }
+    await tester.drag(scrollable, Offset(0, -step));
+    await tester.pumpAndSettle();
+  }
+  fail('Customer viewport did not reveal $text after bounded scrolling.');
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -309,6 +327,7 @@ void main() {
       await tester.pumpWidget(
         MultiProvider(
           providers: [
+            Provider<ApiClient>.value(value: api),
             ChangeNotifierProvider.value(value: stores),
             ChangeNotifierProvider.value(value: service),
           ],
@@ -316,7 +335,9 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
+      await revealCustomer(tester, 'Private A');
       expect(find.text('Private A'), findsOneWidget);
+      await revealCustomer(tester, 'Add customer', step: -200);
       await tester.tap(find.byTooltip('Add customer'));
       await tester.pumpAndSettle();
       await tester.enterText(
@@ -329,14 +350,13 @@ void main() {
       expect(find.text('Sensitive draft'), findsNothing);
       expect(find.text('Save customer'), findsNothing);
       expect(
-        find.text(
-          'Store access changed. Close this form and reload the selected store.',
-        ),
+        find.text('Close this form and reopen it from the selected store.'),
         findsOneWidget,
       );
       expect(writes, isEmpty);
       await tester.tap(find.text('Close'));
       await tester.pumpAndSettle();
+      await revealCustomer(tester, 'Private B');
       expect(find.text('Private B'), findsOneWidget);
     },
   );
@@ -365,6 +385,7 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    await revealCustomer(tester, 'Private A');
     expect(find.text('Private A'), findsOneWidget);
     expect(
       find.text('Segments could not be loaded. Refresh to retry.'),
@@ -433,48 +454,51 @@ void main() {
     },
   );
 
-  testWidgets('detail edit dialog hides private fields after a store switch', (
-    tester,
-  ) async {
-    SharedPreferences.setMockInitialValues({});
-    late StoreContext stores;
-    final writes = <RequestOptions>[];
-    final api = client((r, h) {
-      if (r.method != 'GET') writes.add(r);
-      respond(
-        r,
-        h,
-        r.path.endsWith('/customers/a%40example.test') ? customer('a') : [],
-      );
-    }, scope: () => stores.requestContextKey);
-    stores = StoreContext(storeService: FixedStores(api));
-    await stores.loadStores();
-    await tester.pumpWidget(
-      MultiProvider(
-        providers: [
-          ChangeNotifierProvider.value(value: stores),
-          ChangeNotifierProvider(create: (_) => CustomerService(api: api)),
-          ChangeNotifierProvider(create: (_) => OrderService(api: api)),
-        ],
-        child: MaterialApp(
-          home: CustomerDetailScreen(
-            email: 'a@example.test',
-            initialCustomer: CustomerContract.fromJson(customer('a')),
+  testWidgets(
+    'detail profile editor hides private fields after a store switch',
+    (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      late StoreContext stores;
+      final writes = <RequestOptions>[];
+      final api = client((r, h) {
+        if (r.method != 'GET') writes.add(r);
+        respond(
+          r,
+          h,
+          r.path.endsWith('/customers/a%40example.test') ? customer('a') : [],
+        );
+      }, scope: () => stores.requestContextKey);
+      stores = StoreContext(storeService: FixedStores(api));
+      await stores.loadStores();
+      await tester.pumpWidget(
+        MultiProvider(
+          providers: [
+            ChangeNotifierProvider.value(value: stores),
+            ChangeNotifierProvider(create: (_) => CustomerService(api: api)),
+            ChangeNotifierProvider(create: (_) => OrderService(api: api)),
+          ],
+          child: MaterialApp(
+            home: CustomerDetailScreen(
+              email: 'a@example.test',
+              initialCustomer: CustomerContract.fromJson(customer('a')),
+            ),
           ),
         ),
-      ),
-    );
-    await tester.pumpAndSettle();
-    await tester.tap(find.byTooltip('Edit customer'));
-    await tester.pumpAndSettle();
-    expect(find.text('Private'), findsOneWidget);
-    await stores.selectStore(stores.stores.last);
-    await tester.pumpAndSettle();
-    expect(find.text('Private'), findsNothing);
-    expect(find.text('Private A'), findsNothing);
-    expect(find.text('Store access changed'), findsOneWidget);
-    expect(writes, isEmpty);
-  });
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.byTooltip('Edit customer'));
+      await tester.pumpAndSettle();
+      expect(find.text('Private A'), findsOneWidget);
+      expect(find.byKey(const Key('customer-task-first_name')), findsOneWidget);
+      await stores.selectStore(stores.stores.last);
+      await tester.pumpAndSettle();
+      expect(find.text('Private'), findsNothing);
+      expect(find.text('Private A'), findsNothing);
+      expect(find.text('Customer access changed'), findsOneWidget);
+      expect(find.byKey(const Key('customer-task-first_name')), findsNothing);
+      expect(writes, isEmpty);
+    },
+  );
 
   testWidgets(
     'customer browsing follows cursor pages and searches the server',
@@ -520,22 +544,29 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
+      await revealCustomer(tester, 'First customer');
       expect(find.text('First customer'), findsOneWidget);
+      await revealCustomer(tester, 'Next');
       await tester.tap(find.text('Next'));
       await tester.pumpAndSettle();
+      await revealCustomer(tester, 'Last customer', step: -200);
       expect(find.text('Last customer'), findsOneWidget);
       expect(find.text('Page 2'), findsOneWidget);
       expect(reads.last.queryParameters['cursor'], 'second-page');
+      await revealCustomer(tester, 'Previous');
       await tester.tap(find.text('Previous'));
       await tester.pumpAndSettle();
+      await revealCustomer(tester, 'First customer');
       expect(find.text('First customer'), findsOneWidget);
       expect(reads.last.queryParameters['cursor'], isNull);
+      await revealCustomer(tester, 'Search customers', step: -200);
       await tester.enterText(find.byType(TextField), 'Beyond the first thirty');
       await tester.pump(const Duration(milliseconds: 350));
       await tester.pumpAndSettle();
       expect(reads.last.queryParameters['search'], 'Beyond the first thirty');
       expect(reads.last.queryParameters['page'], 1);
       expect(reads.last.queryParameters['cursor'], isNull);
+      await revealCustomer(tester, 'Beyond the first thirty');
       expect(find.text('Beyond the first thirty'), findsNWidgets(2));
     },
   );

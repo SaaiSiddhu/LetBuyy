@@ -28,6 +28,22 @@ test('KYC file upload remains private, tenant-owned and pending provider evidenc
     const indiaCleanupRollback = readFileSync(new URL('../../../../../database/supabase/rollback/428_kyc_india_cleanup_due.rollback.sql', import.meta.url), 'utf8');
     const earlyScanMigration = readFileSync(new URL('../../../../../database/supabase/migrations/429_kyc_india_early_scan_retry.sql', import.meta.url), 'utf8');
     const earlyScanRollback = readFileSync(new URL('../../../../../database/supabase/rollback/429_kyc_india_early_scan_retry.rollback.sql', import.meta.url), 'utf8');
+    const laterKycMigrations = [429, 430, 431, 432].map(number => {
+        const files = {
+            429: 'kyc_india_pending_retention',
+            430: 'kyc_store_closure_cleanup',
+            431: 'kyc_india_deletion_deadline',
+            432: 'kyc_india_exact_legal_hold',
+        } as const;
+        const filename = `${number}_${files[number as keyof typeof files]}`;
+        return {
+            forward: readFileSync(new URL(`../../../../../database/supabase/migrations/${filename}.sql`, import.meta.url), 'utf8'),
+            rollback: readFileSync(new URL(`../../../../../database/supabase/rollback/${filename}.rollback.sql`, import.meta.url), 'utf8'),
+        };
+    });
+    // Rewind dependent KYC layers before replaying the original 420 boundary.
+    // This is a pristine owned database, before any hold or deletion receipt.
+    for (const layer of [...laterKycMigrations].reverse()) owned.psql(layer.rollback);
     owned.psql(earlyScanRollback);
     owned.psql(indiaCleanupRollback);
     owned.psql(scanRollback);
@@ -49,6 +65,7 @@ test('KYC file upload remains private, tenant-owned and pending provider evidenc
     owned.psql(scanMigration);
     owned.psql(indiaCleanupMigration);
     owned.psql(earlyScanMigration);
+    for (const layer of laterKycMigrations) owned.psql(layer.forward);
     assert.match(owned.psqlExpectError(`UPDATE merchant_kyc_documents
         SET metadata=jsonb_build_object('private_object_key', 'kyc/${preflightTenant.siteId}/business_pan/forged')
         WHERE site_id='${preflightTenant.siteId}' AND document_type='identity_proof';`),

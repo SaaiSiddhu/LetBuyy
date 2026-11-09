@@ -1,0 +1,17 @@
+{
+  "root": "/private/tmp/letbuyy-ios-ui-20261108-38aeee4bfb",
+  "fixture": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/merchant-create-retire-v133-local-ios.postgres.test.ts",
+  "source": "merchant-creation-retirement-source-v102",
+  "scope": "Exact task-owned iOS simulator, normal synthetic auth; source/local only; preserve app/data/Photos and restore Shutdown; no host9002",
+  "controls": {
+    "/private/tmp/letbuyy-ios-ui-20261108-38aeee4bfb/run_fixture.py": "1fe3e76b70bbe2678d917a83923cd95da5465c43e6c8e2b8ac94cf1c4cbc0c9d",
+    "/private/tmp/letbuyy-ios-ui-20261108-38aeee4bfb/device-receipt.json": "ceff340143a7b9faf7b2980543ba7e0941118b61d9118de2f5431dcfd39b9592",
+    "/private/tmp/letbuyy-ios-ui-20261108-38aeee4bfb/Auth.swift": "3648cb23f97d5d34bec03aaff65152bce183e71465d85a5791ef5fe6cc869810",
+    "/private/tmp/letbuyy-ios-ui-20261108-38aeee4bfb/run_chain-reviewed-v2.py": "4aae7b8d916492c453188bc9e229188cd4401935800d93a93b5bf0c46f7d0834",
+    "/private/tmp/letbuyy-ios-ui-20261108-38aeee4bfb/run_ui_guard.py": "1b55952cc1203372795de7e60db664108a096a1828a60a5080f09847f0b60fb5",
+    "/private/tmp/letbuyy-ios-ui-20261108-38aeee4bfb/verify_installed.py": "b8a469889620758bef07f7cc80a18d1ac0e092ea7c281149eab419067bd5bf33",
+    "/private/tmp/letbuyy-ios-ui-20261108-38aeee4bfb/run_ui.py": "054424a04636e219665a46d0a0c0375c3974517a725662645336fc2bd4e4ff83",
+    "/private/tmp/letbuyy-ios-ui-20261108-38aeee4bfb/control-admission.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+    "/private/tmp/letbuyy-ios-ui-20261108-38aeee4bfb/Create.swift": "d0bf7811f29c484ad7e3525bbf0a66961ebbace2e806b0d749df70f038f2cb76"
+  }
+}

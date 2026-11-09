@@ -1,0 +1,46 @@
+{
+  "started_at": "2026-11-06T08:51:23.232971+00:00",
+  "supervisor_pid": 75873,
+  "source_sha256": "85c6e28b0e4fa33b40a35cf8f09c4a3c354226802236c8fec04989fd0835abe4",
+  "status": "CURRENT_LOCAL_SOURCE_PASS_WITH_EXACT_BACKEND_BROWSER_REUSE",
+  "steps": [
+    {
+      "step": "gateway-unit",
+      "exit_code": 0
+    },
+    {
+      "step": "root-contracts",
+      "exit_code": 0
+    },
+    {
+      "step": "app-analysis",
+      "exit_code": 0
+    },
+    {
+      "step": "full-flutter",
+      "exit_code": 0
+    },
+    {
+      "step": "governance",
+      "exit_code": 0
+    },
+    {
+      "step": "android-compile",
+      "exit_code": 0
+    },
+    {
+      "step": "ios-compile",
+      "exit_code": 0
+    },
+    {
+      "step": "artifact-readback",
+      "exit_code": 0
+    }
+  ],
+  "private_root": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4",
+  "prior_scoped_passes": "merchant-recovery-v11-reused-scopes.json",
+  "active_step": null,
+  "child_pid": 88268,
+  "source_unchanged": true,
+  "finished_at": "2026-11-06T08:54:34.871490+00:00"
+}

@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { createMiddleware } from 'hono/factory';
 import { z } from 'zod';
 import type { Context } from 'hono';
@@ -6,6 +7,8 @@ import { IdempotencyExecutionAdapter } from '../execution/idempotency-execution.
 import { getSupabaseAdmin } from '../lib/supabase';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { assertStaffPermission } from './staff-permission';
+import { AppError, ValidationError } from '../lib/errors';
+import { validateUploadMime, mediaKindForUpload, uploadLimitForKind, uploadLimitLabel } from '../lib/upload-mime';
 import {isWarehouseCommandPath,isProductImportCommandPath} from '@letbuyy/shared-types';
 
 type JsonValue = null | boolean | number | string | JsonValue[] | { [key: string]: JsonValue };
@@ -15,6 +18,8 @@ declare module 'hono' {
     interface ContextVariableMap {
         paymentConfigurationClaim: { id: string; siteId: string; requestHash: string } | undefined;
         atomicIdempotencyCommitted: boolean | undefined;
+        mediaCommandClaim: { id: string; siteId: string; requestHash: string } | undefined;
+        publicUploadClaim: { id: string; siteId: string; requestHash: string; sha256: string; recoveryBody: JsonValue | null | undefined } | undefined;
     }
 }
 
@@ -115,6 +120,56 @@ async function readJsonBodySnapshot(c: GatewayContext): Promise<{
     return { rawBody, body: safeJsonRecord(rawBody) };
 }
 
+// Hono caches formData(): the route reads the same File rather than cloning and
+// buffering the multipart request again. Only fields consumed by /upload are
+// receipt inputs; transport boundaries and content-length are not file identity.
+async function publicUploadSnapshot(c: GatewayContext): Promise<{ body: Record<string, unknown>; file: File; expectedSha256?: string }> {
+    let form: FormData;
+    try { form = await c.req.formData(); }
+    catch { throw new ValidationError('Expected a multipart file upload'); }
+    const entry: unknown = form.get('file');
+    if (!entry || typeof entry === 'string' || typeof (entry as { stream?: unknown }).stream !== 'function') {
+        throw new ValidationError('No file provided');
+    }
+    const file = entry as File;
+    const mime = validateUploadMime(file);
+    if (!mime.ok) throw new AppError(mime.error, 400, 'MIME_NOT_ALLOWED');
+    const limit = uploadLimitForKind(mediaKindForUpload(file));
+    if (file.size > limit) throw new AppError(`File too large (max ${uploadLimitLabel(limit)})`, 400, 'VALIDATION');
+    const body: Record<string, unknown> = {};
+    for (const field of ['store_id', 'site_id', 'folder']) {
+        const value = form.get(field);
+        if (value !== null && typeof value !== 'string') throw new ValidationError(`Invalid ${field}`);
+        if (value !== null) body[field] = value;
+    }
+    const expected = form.get('sha256_hex');
+    if (expected !== null && !z.string().regex(/^[a-f0-9]{64}$/).safeParse(expected).success)
+        throw new ValidationError('Invalid file checksum');
+    return { body, file, ...(typeof expected === 'string' ? { expectedSha256: expected } : {}) };
+}
+
+async function publicFileDigest(file: File): Promise<string> {
+    const hash = createHash('sha256');
+    const reader = file.stream().getReader();
+    try {
+        for (;;) {
+            const chunk = await reader.read();
+            if (chunk.done) break;
+            hash.update(chunk.value);
+        }
+        return hash.digest('hex');
+    } finally { reader.releaseLock(); }
+}
+
+async function currentMediaOwner(c: GatewayContext, siteId: string): Promise<boolean> {
+    const selectedStore = c.req.header('X-Store-ID')?.trim();
+    if (selectedStore && selectedStore !== siteId) return false;
+    const auth = c.get('auth');
+    const db = getSupabaseAdmin(c);
+    const user = auth?.user ? await resolveCustomUser(db, auth.user) : null;
+    return Boolean(user && await verifySiteOwnership(db, siteId, user.id, auth.user.storeId));
+}
+
 function idempotencyKeyFromRequest(c: GatewayContext, body: Record<string, unknown> | null): string | null {
     const header = c.req.header('X-Idempotency-Key') || c.req.header('Idempotency-Key');
     if (header?.trim()) return header.trim();
@@ -201,9 +256,13 @@ export const protectedMutationIdempotency = createMiddleware<{ Bindings: Env }>(
         && ['/payments/subscription/order', '/payments/subscription/recover', '/payments/subscription/verify'].includes(orderPath);
     // Product PATCH owns an atomic actor/payload/version-bound receipt after live access checks.
     const routeOwnedInventoryAdjustment = method === 'POST' && orderPath === '/inventory/adjust';
+    const routeOwnedInventoryBatch = method === 'POST' && orderPath === '/inventory/bulk-adjust';
     // These warehouse commands and their stop protocol own immutable receipts in one transaction.
     const routeOwnedWarehouseCommand = method === 'POST' && isWarehouseCommandPath(orderPath);
     const routeOwnedProductImport = method === 'POST' && isProductImportCommandPath(orderPath);
+    // Category metadata reauthorizes and replays inside one owner-bound SQL command.
+    const routeOwnedCategory = (method === 'POST' && orderPath === '/categories')
+        || (['PATCH','DELETE'].includes(method) && /^\/categories\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(orderPath));
     // Membership commands own live-owner/version/payload-bound SQL receipts.
     const routeOwnedCollectionMembership = method === 'PUT' && /^\/products\/collections\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/products$/i.test(orderPath);
     // Product PATCH owns an atomic actor/payload/version-bound receipt after live access checks.
@@ -213,6 +272,8 @@ export const protectedMutationIdempotency = createMiddleware<{ Bindings: Env }>(
     // site-scoped receipt before writing to the private object bucket.
     // India intent/completion use a durable tenant-fenced receipt. HTTP replay
     // could return an expired S3 policy or bypass fresh ownership/version checks.
+    // Receipt lookup is read-only and must never allocate a second mutation claim.
+    const routeOwnedUploadRecovery = method === 'POST' && orderPath === '/upload/recover';
     const routeOwnedKycUpload = method === 'POST' && ['/kyc/documents/upload', '/kyc/documents/upload-intent', '/kyc/documents/upload-complete'].includes(orderPath);
     // Refresh must recheck current ownership and evidence on every retry. An
     // outer cached 200 would return an old approval after resubmission and
@@ -221,12 +282,27 @@ export const protectedMutationIdempotency = createMiddleware<{ Bindings: Env }>(
     // The gift-card RPC owns a serialised, site-bound issue receipt. HTTP replay
     // would return its one-time code again and skip the route's live owner check.
     const routeOwnedGiftCardIssue = method === 'POST' && orderPath === '/products/gift-cards';
-    if (routeOwnedProductImport || routeOwnedWarehouseCommand || routeOwnedKycUpload || routeOwnedKycRefresh || routeOwnedGiftCardIssue || routeOwnedCollectionMembership || routeOwnedInventoryAdjustment || routeOwnedSubscriptionCheckout || routeOwnedProductReceipt || routeOwnedMoneyClaim || credentialCommand || routeOwnedOrderReceipt || !MUTATION_METHODS.has(method) || !isProtectedMutationPath(c.req.path, method)) {
+    const routeOwnedCollectionMetadata = (method === 'POST' && ['/smart-collections', '/products/collections'].includes(orderPath))
+        || (['PATCH', 'DELETE'].includes(method) && /^\/(?:smart-collections|products\/collections)\/[^/]+$/.test(orderPath));
+    if (routeOwnedInventoryBatch) {
+        // Preserve the mandatory-key gate while leaving live authorization,
+        // all item effects and acknowledgement in the canonical SQL receipt.
+        const {body} = await readJsonBodySnapshot(c);
+        const key = idempotencyKeyFromRequest(c, body);
+        if (!key) return c.json({error: {code: 'IDEMPOTENCY_KEY_REQUIRED', message: 'An idempotency key is required for this mutation.'}}, 400);
+        IdempotencyExecutionAdapter.normalizeKey(key);
+        await next();
+        return;
+    }
+    if (routeOwnedUploadRecovery || routeOwnedCollectionMetadata || routeOwnedCategory || routeOwnedProductImport || routeOwnedWarehouseCommand || routeOwnedKycUpload || routeOwnedKycRefresh || routeOwnedGiftCardIssue || routeOwnedCollectionMembership || routeOwnedInventoryAdjustment || routeOwnedSubscriptionCheckout || routeOwnedProductReceipt || routeOwnedMoneyClaim || credentialCommand || routeOwnedOrderReceipt || !MUTATION_METHODS.has(method) || !isProtectedMutationPath(c.req.path, method)) {
         await next();
         return;
     }
 
-    const { rawBody, body } = await readJsonBodySnapshot(c);
+    const publicUpload = method === 'POST' && /^\/upload\/?$/.test(orderPath)
+        && (c.req.header('content-type') || '').includes('multipart/form-data')
+        ? await publicUploadSnapshot(c) : null;
+    const { rawBody, body } = publicUpload ? { rawBody: '', body: publicUpload.body } : await readJsonBodySnapshot(c);
     const idempotencyKey = idempotencyKeyFromRequest(c, body);
     if (!idempotencyKey) {
         return c.json({
@@ -250,6 +326,28 @@ export const protectedMutationIdempotency = createMiddleware<{ Bindings: Env }>(
     if (!z.string().uuid().safeParse(siteId).success) {
         return c.json({ error: { code: 'IDEMPOTENCY_SITE_INVALID',
             message: 'A valid store context is required for this mutation.' } }, 400);
+    }
+
+    const mediaCommand = method === 'POST' && /^\/media\/?$/.test(orderPath)
+        || (method === 'PATCH' || method === 'DELETE') && /^\/media\/[^/]+$/.test(orderPath);
+    const mediaReceipt = /^\/(?:upload|media)(?:\/|$)/.test(orderPath);
+    if (mediaReceipt && !(await currentMediaOwner(c, siteId))) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
+    }
+    if (publicUpload) {
+        IdempotencyExecutionAdapter.normalizeKey(idempotencyKey);
+        const digest = await publicFileDigest(publicUpload.file);
+        if (publicUpload.expectedSha256 && publicUpload.expectedSha256 !== digest)
+            throw new AppError('The selected file changed before upload. Retain the original request for review.', 409, 'UPLOAD_FILE_CHANGED');
+        publicUpload.body.file = {
+            name: publicUpload.file.name, content_type: publicUpload.file.type,
+            size: publicUpload.file.size, sha256: digest,
+        };
+        // Hashing may yield while authority changes. A previous owner must not
+        // acquire or replay a receipt after losing access during that work.
+        if (!(await currentMediaOwner(c, siteId))) {
+            return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
+        }
     }
 
     // Product creation still owns its existing HTTP receipt and mandatory key.
@@ -285,7 +383,7 @@ export const protectedMutationIdempotency = createMiddleware<{ Bindings: Env }>(
     const claim = await idempotency.begin({
         siteId,
         key: idempotencyKey,
-        scope: `http:${method}:${normalizePath(c.req.path)}`,
+        scope: `http:${method}:${mediaCommand ? normalizePath(c.req.path).replace(/\/$/, '') : normalizePath(c.req.path)}`,
         requestBody: requestBodyForHash({
             method,
             path: c.req.path,
@@ -296,6 +394,12 @@ export const protectedMutationIdempotency = createMiddleware<{ Bindings: Env }>(
             contentLength: c.req.header('content-length'),
         }),
         requestId: c.req.header('X-Request-ID') || null,
+        ...(publicUpload ? { initialResourceType: 'public_upload_pending', initialResponseBody: {
+            upload_progress: { version: 1, object_id: crypto.randomUUID(), actor_id: c.get('auth').user.id },
+        } } : {}),
+        ...(mediaCommand ? { initialResourceType: 'media_command_pending', initialResponseBody: {
+            media_progress: { version: 1, actor_id: c.get('auth').user.id },
+        } } : {}),
     });
 
     if (claim.kind === 'replay') {
@@ -307,6 +411,16 @@ export const protectedMutationIdempotency = createMiddleware<{ Bindings: Env }>(
             },
         });
     }
+
+    if (mediaCommand) c.set('mediaCommandClaim', {
+        id: claim.id, siteId: claim.siteId, requestHash: claim.requestHash,
+    });
+
+    if (publicUpload) c.set('publicUploadClaim', {
+        id: claim.id, siteId: claim.siteId, requestHash: claim.requestHash,
+        sha256: (publicUpload.body.file as { sha256: string }).sha256,
+        recoveryBody: claim.recoveryBody,
+    });
 
     if (/^\/stores\/[^/]+\/payment-config$/.test(orderPath)) c.set('paymentConfigurationClaim', {
         id: claim.id, siteId: claim.siteId, requestHash: claim.requestHash,
@@ -345,5 +459,6 @@ export const protectedMutationIdempotency = createMiddleware<{ Bindings: Env }>(
         id: claim.id,
         responseBody: replayBody,
         statusCode: c.res.status,
+        ...(publicUpload ? { requireDurable: true } : {}),
     });
 });

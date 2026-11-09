@@ -1,0 +1,254 @@
+{
+  "at": "2026-11-07T07:42:37.399304+00:00",
+  "status": "BOUNDED_CURRENT_IOS_CAMERA_UNAVAILABLE_VIDEO_MODEL_IMPORT_RECOVERY_PLAYBACK_WEB_SYNC_PASS",
+  "source": "merchant-camera-video-model-source-v84",
+  "source_sha256": "5f78a66e349980b7538b8c5a894967984d34baf80072677cfc2f30283dbdea1c",
+  "source_inputs": 8502,
+  "run_id": "c55db46206e7",
+  "private_root": "/private/tmp/letbuyy-ios-ui-20261107-a7454jq9",
+  "normal_auth": true,
+  "actual_safari_downloads_and_os_files": true,
+  "actual_formats": [
+    "model/gltf+json",
+    "model/gltf-binary",
+    "video/mp4"
+  ],
+  "uploads": 3,
+  "registered_media": 3,
+  "objects": 3,
+  "object_hashes": {
+    "model/gltf+json": "ed10bedd7a8def287f1becb69b44c27b92be54106690468ce80e30d65798feed",
+    "model/gltf-binary": "771aab1e5dc970de039ae87cbbd6268d4186a6e5185963bd267e14d5b56e98a3",
+    "video/mp4": "7d3ae55c4de9cdb5e6ace4fd41382b13dfeac881a4e9366f659d16f5edfc2940"
+  },
+  "original_model_receipt_recovered_after_restart": true,
+  "model_byte_upload_commands": 1,
+  "media_list_video_byte_gets": 0,
+  "actual_video_range_requests": [
+    {
+      "source": "actual-identity",
+      "range": "bytes=0-1",
+      "content_range": "bytes 0-1/5585",
+      "asset_kind": "video",
+      "path": "/assets/public-media/media/7e26781a-9d79-4197-a51b-7004b6d5c6cc/5d1e3b6af5f049b3ad254a3e7412957d.mp4",
+      "method": "GET",
+      "status": 206,
+      "wire_status": 206
+    },
+    {
+      "source": "actual-identity",
+      "range": "bytes=0-5584",
+      "content_range": "bytes 0-5584/5585",
+      "asset_kind": "video",
+      "path": "/assets/public-media/media/7e26781a-9d79-4197-a51b-7004b6d5c6cc/5d1e3b6af5f049b3ad254a3e7412957d.mp4",
+      "method": "GET",
+      "status": 206,
+      "wire_status": 206
+    }
+  ],
+  "actual_video_decode_progress_pause_mute_seek_background_pause": true,
+  "model_caption_native_web_both_directions": true,
+  "camera_permission_and_unavailable_retry": true,
+  "camera_permission_restored": true,
+  "installed_artifact": {
+    "at": "2026-11-07T07:23:11.969664+00:00",
+    "source": "merchant-camera-video-model-source-v84",
+    "normal_debug_build": true,
+    "all_installed_files_equal": true,
+    "files": 401,
+    "manifest_sha256": "a2cfb3c8cc3ddee71c66143446f8669db690d6e1723196fff4387a8d972f9abc",
+    "artifact": "/private/tmp/letbuyy-ios-ui-20261107-a7454jq9/native-ios-v105/qualified-artifact/Runner.app",
+    "installed": "/Users/saai_mithra/Library/Developer/CoreSimulator/Devices/B907B390-5B08-490F-BC6A-8900667B2D94/data/Containers/Bundle/Application/2EAB77B4-3604-43E7-9193-1E3B15A85BC5/Runner.app"
+  },
+  "compiled_workers": {
+    "run_id": "c55db46206e7",
+    "runtime": "workerd",
+    "gateway_sha256": "268451af3840c7b6a5b3fae821d10396b0854b75d4fb732bef52303a8fdeea4f",
+    "bff_sha256": "a69d2c007207f8e72813af19f7aa7e93f26409b1bf0e4450e6aeef4ffd0d3b42",
+    "entrypoints": [
+      "services/api-gateway/src/index.ts",
+      "services/mobile-bff/src/index.ts"
+    ],
+    "transport": "Owned Node HTTP and service-binding observer; no business response stubs",
+    "hosted": false
+  },
+  "controls": {
+    "admitted_original_unchanged_except_active_phase_copy": true,
+    "allowed_active_phase_copy": [
+      "/private/tmp/letbuyy-ios-ui-20261107-a7454jq9/MerchantUITests.swift"
+    ],
+    "each_phase_control_hash_verified": true,
+    "phase_terminals": {
+      "Auth-terminal.json": {
+        "exit": 0,
+        "accepted": true,
+        "run_id": "c55db46206e7",
+        "phase": "Auth",
+        "attempt": 1,
+        "control_file": "/private/tmp/letbuyy-ios-ui-20261107-a7454jq9/Auth.swift",
+        "control_sha256": "3648cb23f97d5d34bec03aaff65152bce183e71465d85a5791ef5fe6cc869810"
+      },
+      "Download-attempt2-terminal.json": {
+        "exit": 0,
+        "accepted": true,
+        "run_id": "c55db46206e7",
+        "phase": "Download",
+        "attempt": 2,
+        "control_file": "/private/tmp/letbuyy-ios-ui-20261107-a7454jq9/Download-observed-coordinate.swift",
+        "control_sha256": "55ed3b602a9374b5e58af543d74853cb9f46e117d1871f216a04b0061a5093f2"
+      },
+      "Download-terminal.json": {
+        "exit": 65,
+        "accepted": false,
+        "run_id": "c55db46206e7",
+        "phase": "Download",
+        "attempt": 1,
+        "control_file": "/private/tmp/letbuyy-ios-ui-20261107-a7454jq9/Download.swift",
+        "control_sha256": "98be2179f77927279bfc7a4d05837dd0f74e69c36ae41056348be2fe1a59c26b"
+      },
+      "Import-attempt2-terminal.json": {
+        "exit": 65,
+        "accepted": false,
+        "run_id": "c55db46206e7",
+        "phase": "Import",
+        "attempt": 2,
+        "control_file": "/private/tmp/letbuyy-ios-ui-20261107-a7454jq9/Import-observed-menu.swift",
+        "control_sha256": "3ff5dfe89f7574b8ea547f9fdbe450d73df20104a907da13c07c26b62706caa1"
+      },
+      "Import-attempt3-terminal.json": {
+        "exit": 65,
+        "accepted": false,
+        "run_id": "c55db46206e7",
+        "phase": "Import",
+        "attempt": 3,
+        "control_file": "/private/tmp/letbuyy-ios-ui-20261107-a7454jq9/Import-observed-direct-button.swift",
+        "control_sha256": "a6065df68501714bde58f8f2fe6ff16ec2addd7da260f1c2f9173090dfab2bf1"
+      },
+      "Import-attempt4-terminal.json": {
+        "exit": 65,
+        "accepted": false,
+        "run_id": "c55db46206e7",
+        "phase": "Import",
+        "attempt": 4,
+        "control_file": "/private/tmp/letbuyy-ios-ui-20261107-a7454jq9/Import-observed-files-cells.swift",
+        "control_sha256": "1540f641720207ecfc25cc281be926d577a65129a621feb5aabe131b67421863"
+      },
+      "Import-attempt5-terminal.json": {
+        "exit": 65,
+        "accepted": false,
+        "run_id": "c55db46206e7",
+        "phase": "Import",
+        "attempt": 5,
+        "control_file": "/private/tmp/letbuyy-ios-ui-20261107-a7454jq9/Import-observed-recovered-model.swift",
+        "control_sha256": "8ae9b2598e8cab7b8671f4f18db8e85b31e04a68aa80bc5d8f71fe2502f7a5b9"
+      },
+      "Import-attempt6-terminal.json": {
+        "exit": 0,
+        "accepted": true,
+        "run_id": "c55db46206e7",
+        "phase": "Import",
+        "attempt": 6,
+        "control_file": "/private/tmp/letbuyy-ios-ui-20261107-a7454jq9/Import-observed-camera-permission.swift",
+        "control_sha256": "be5a39d8ffa92ca7d4708ed05cecb8da5638ab31fbc904fb0e71a7c1e2260d0f"
+      },
+      "Import-terminal.json": {
+        "exit": 65,
+        "accepted": false,
+        "run_id": "c55db46206e7",
+        "phase": "Import",
+        "attempt": 1,
+        "control_file": "/private/tmp/letbuyy-ios-ui-20261107-a7454jq9/Import.swift",
+        "control_sha256": "f783ea3c1f07b9d8da23f26114371f395ad03f6ae21b06ebe051a551173b4272"
+      },
+      "Preview-attempt2-terminal.json": {
+        "exit": 65,
+        "accepted": false,
+        "run_id": "c55db46206e7",
+        "phase": "Preview",
+        "attempt": 2,
+        "control_file": "/private/tmp/letbuyy-ios-ui-20261107-a7454jq9/Preview-observed-play-icon.swift",
+        "control_sha256": "9c6636b5ae6f392b96ed8cdc74267b7735c3e5947a6cd4cdbba14d60672661e2"
+      },
+      "Preview-attempt3-terminal.json": {
+        "exit": 0,
+        "accepted": true,
+        "run_id": "c55db46206e7",
+        "phase": "Preview",
+        "attempt": 3,
+        "control_file": "/private/tmp/letbuyy-ios-ui-20261107-a7454jq9/Preview-observed-position-control.swift",
+        "control_sha256": "99b32df332b209b07aa7d474c72daabe55eeaa27e587cd72c627738c245a51ae"
+      },
+      "Preview-terminal.json": {
+        "exit": 65,
+        "accepted": false,
+        "run_id": "c55db46206e7",
+        "phase": "Preview",
+        "attempt": 1,
+        "control_file": "/private/tmp/letbuyy-ios-ui-20261107-a7454jq9/Preview.swift",
+        "control_sha256": "c4d9e0d6fec4f166d85a44c11edc0c5eb22ec339f78338396b476c3875c9511f"
+      },
+      "Readback-attempt2-terminal.json": {
+        "exit": 65,
+        "accepted": false,
+        "run_id": "c55db46206e7",
+        "phase": "Readback",
+        "attempt": 2,
+        "control_file": "/private/tmp/letbuyy-ios-ui-20261107-a7454jq9/Readback-observed-model-label.swift",
+        "control_sha256": "e6d5424c292f74520d1d74ddcde8569db99daac4f58d0cacc7cb762106fc39a3"
+      },
+      "Readback-attempt3-terminal.json": {
+        "exit": 0,
+        "accepted": true,
+        "run_id": "c55db46206e7",
+        "phase": "Readback",
+        "attempt": 3,
+        "control_file": "/private/tmp/letbuyy-ios-ui-20261107-a7454jq9/Readback-observed-query-count.swift",
+        "control_sha256": "734326f92ad55701f3459d34ec6c4e3383237633254e999babe319a31ac90e70"
+      },
+      "Readback-terminal.json": {
+        "exit": 65,
+        "accepted": false,
+        "run_id": "c55db46206e7",
+        "phase": "Readback",
+        "attempt": 1,
+        "control_file": "/private/tmp/letbuyy-ios-ui-20261107-a7454jq9/Readback.swift",
+        "control_sha256": "6eb3ad6f4ce6b59603aba66c9521f6f23e623cc960c61e97d7959e05c15405bf"
+      }
+    },
+    "failed_phase_attempts_retained": [
+      "Download-terminal.json",
+      "Import-attempt2-terminal.json",
+      "Import-attempt3-terminal.json",
+      "Import-attempt4-terminal.json",
+      "Import-attempt5-terminal.json",
+      "Import-terminal.json",
+      "Preview-attempt2-terminal.json",
+      "Preview-terminal.json",
+      "Readback-attempt2-terminal.json",
+      "Readback-terminal.json"
+    ],
+    "caveat": "Journey accepted as cumulative, observed phases with immutable retry controls; failed selector/build attempts remain failures. Import/recovery effects were never reset/repeated to manufacture a pass."
+  },
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "ports54350_to54353_free": true,
+  "device_restoration": {
+    "udid": "B907B390-5B08-490F-BC6A-8900667B2D94",
+    "name": "LetBuyy Merchant Local 20261103 br1jhgh8",
+    "state": "Shutdown",
+    "restored_original103_admission_state": true,
+    "camera_consent_restored_to_not_determined": true,
+    "no_photo_or_download_deletion": true,
+    "app_and_data_retained": true,
+    "host9002": "Never touched"
+  },
+  "readback_sha256": "a9841408e4dc471a8f786032d3db0d3e9b4baa48aaf8d9112e8a0982bddaae3d",
+  "whole_features_accepted": 0,
+  "boundaries": "No physical camera capture;native3D/AR renderer;MOV/WebM device run;fresh Android runtime;buyer/provider/hosted/release/full122 acceptance."
+}

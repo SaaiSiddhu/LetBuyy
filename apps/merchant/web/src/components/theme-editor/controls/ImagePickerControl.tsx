@@ -1,5 +1,7 @@
 'use client'
 
+import { useMediaUploadTarget } from '@/components/media/MediaRecoveryProvider'
+
 /**
  * ImagePickerControl.tsx — Phase X: Image setting control with media library browsing.
  *
@@ -40,13 +42,7 @@ interface ImagePickerControlProps {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-function uploadedImageUrl(payload: unknown): string | null {
-    if (!payload || typeof payload !== 'object') return null
-    const data = (payload as { data?: unknown }).data
-    if (!data || typeof data !== 'object') return null
-    const url = (data as { url?: unknown }).url
-    return typeof url === 'string' && url.length > 0 ? url : null
-}
+
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
@@ -58,6 +54,7 @@ export function ImagePickerControl({
     helpText,
 }: ImagePickerControlProps) {
     const id = useId()
+    const mediaUpload = useMediaUploadTarget(storeName, id)
     const { notify } = useToast()
     const [isUploading, setIsUploading] = useState(false)
     const [uploadError, setUploadError] = useState<string | null>(null)
@@ -68,7 +65,7 @@ export function ImagePickerControl({
         async (event: ChangeEvent<HTMLInputElement>) => {
             const file = event.target.files?.[0]
             event.target.value = ''
-            if (!file) return
+            if (!file || mediaUpload.blocked) return
 
             if (!storeName) {
                 const message = 'Store context is unavailable for uploads.'
@@ -77,44 +74,30 @@ export function ImagePickerControl({
                 return
             }
 
+            const current = mediaUpload.capture()
             setIsUploading(true)
             setUploadError(null)
 
             try {
-                const formData = new FormData()
-                formData.append('file', file)
-                const response = await fetch(
-                    `/api/stores/${encodeURIComponent(storeName)}/upload`,
-                    { method: 'POST', body: formData }
-                )
-                const payload = await response.json().catch(() => null)
-                const url = uploadedImageUrl(payload)
+                const asset = await mediaUpload.upload(file)
+            const url = asset.url
 
-                if (!response.ok || !url) {
-                    const message =
-                        payload && typeof payload === 'object' &&
-                        typeof (payload as { error?: unknown }).error === 'string'
-                            ? (payload as { error: string }).error
-                            : 'Image upload failed.'
-                    throw new Error(message)
-                }
-
-                // RISK-DUAL-N01: emit URL only
-                onChange(url)
+            onChange(url)
                 notify({
                     title: 'Image uploaded',
                     description: `${label} is ready to save with this draft.`,
                     variant: 'success',
                 })
             } catch (err) {
+                if (!current()) return
                 const message = err instanceof Error ? err.message : 'Image upload failed.'
                 setUploadError(message)
                 notify({ title: 'Image upload failed', description: message, variant: 'critical' })
             } finally {
-                setIsUploading(false)
+                if (current()) setIsUploading(false)
             }
         },
-        [storeName, label, onChange, notify]
+        [storeName, label, onChange, notify, mediaUpload.upload, mediaUpload.blocked, mediaUpload.capture]
     )
 
     // ── Library selection ─────────────────────────────────────────────────
@@ -181,7 +164,7 @@ export function ImagePickerControl({
                             className="te-field-file-input"
                             type="file"
                             accept="image/jpeg,image/png,image/webp,image/gif"
-                            disabled={isUploading}
+                            disabled={isUploading || mediaUpload.blocked}
                             onChange={handleFileChange}
                             aria-label="Upload image file"
                         />

@@ -1,0 +1,11 @@
+[
+  "apps/merchant/mobile/lib/screens/kyc/kyc_screen.dart",
+  "apps/merchant/mobile/lib/screens/products/product_form_screen.dart",
+  "apps/merchant/mobile/lib/screens/products/product_options_editor.dart",
+  "apps/merchant/mobile/test/form_sheet_semantics_geometry_test.dart",
+  "apps/merchant/mobile/test/kyc_upload_layout_test.dart",
+  "apps/merchant/mobile/test/mobile_services_test.dart",
+  "apps/merchant/mobile/test/product_edit_concurrency_test.dart",
+  "apps/merchant/mobile/test/product_option_matrix_workflow_test.dart",
+  "services/api-gateway/src/__tests__/owned-db/product-atomic-edits.postgres.test.ts"
+]

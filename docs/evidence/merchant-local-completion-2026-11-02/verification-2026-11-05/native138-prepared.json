@@ -1,0 +1,18 @@
+{
+  "root": "/private/tmp/letbuyy-merchant-local-20261108-27ee3d677b",
+  "fixture": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/merchant-catalog-availability-v138-local-android.postgres.test.ts",
+  "source": "merchant-catalog-availability-source-v106",
+  "Flutter105_reuse": "catalog-availability105-to106-input-equivalence.json; only backend verification checksum changed",
+  "scope": "Normal synthetic auth; real availability7,web stock edit5/native Refresh5,native variant stock edit6/web6 with base0 preserved; then Code creation/lostreply/replay/retirement/history regression. Only task emulator/simulator,54350\u201354353,host9002nevercontacted; iOS139 after Android138cleanup.",
+  "controls": {
+    "/private/tmp/letbuyy-merchant-local-20261108-27ee3d677b/Auth.py": "d46212a0c445303842e57dec1bf80b61bd31d27400955e06aa282e07d7d6d0a3",
+    "/private/tmp/letbuyy-merchant-local-20261108-27ee3d677b/run_fixture.py": "e8c1fa6986892a0e20d387cb17ad110051f11b63d7403cbdd828af0d031a010d",
+    "/private/tmp/letbuyy-merchant-local-20261108-27ee3d677b/ui_helpers.py": "29f37e915804fc22aa85849b03d32f4be500684e18b2241a19885093c60108ae",
+    "/private/tmp/letbuyy-merchant-local-20261108-27ee3d677b/Create.py": "157a1fb4487126650ff5f3eb5f9b8c56b72accc8b3d7232d78c773efd47456d9",
+    "/private/tmp/letbuyy-merchant-local-20261108-27ee3d677b/run_ui_guard.py": "bacfe8ee75b09203346ffb54cbcef8f4c7e60b727bef687bf61b606ee4d1a97c",
+    "/private/tmp/letbuyy-merchant-local-20261108-27ee3d677b/run_ui.py": "6f3533c5095f0b541b921e5ed0d2e72a7c9b27547ebb5cfef814b1b78183ab49",
+    "/private/tmp/letbuyy-merchant-local-20261108-27ee3d677b/run_chain.py": "e24844e4da993512ca605d04481d7fa9b543153d36471cfc4f69d70d89e48694",
+    "/private/tmp/letbuyy-merchant-local-20261108-27ee3d677b/control-admission.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+    "/private/tmp/letbuyy-merchant-local-20261108-27ee3d677b/android-device-receipt.json": "ead3aa994d439d2bc8b90bf02865abb07162bbb77e3c4df5e79e7a2476a15be0"
+  }
+}

@@ -1,64 +1,57 @@
 import 'package:flutter/material.dart';
-import '../themes/app_colors.dart';
-import '../themes/app_text_styles.dart';
+import '../tokens/letbuyy_tokens.dart';
 
 class ErrorView extends StatelessWidget {
   final String message;
   final VoidCallback? onRetry;
+  final String title;
+  final String retryLabel;
 
   const ErrorView({
     super.key,
     required this.message,
     this.onRetry,
+    this.title = 'Something went wrong',
+    this.retryLabel = 'Try Again',
   });
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(40.0),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(LetbuyySpacingTokens.space24),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              width: 120,
-              height: 120,
-              decoration: BoxDecoration(
-                color: AppColors.error.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
+            ExcludeSemantics(
+              child: Icon(
                 Icons.error_outline,
-                size: 60,
-                color: AppColors.error,
+                size: LetbuyySpacingTokens.space48,
+                color: theme.colorScheme.error,
               ),
             ),
-            const SizedBox(height: 30),
-            Text(
-              'Oops! Something went wrong',
-              style: AppTextStyles.headlineMedium,
-              textAlign: TextAlign.center,
+            const SizedBox(height: LetbuyySpacingTokens.space16),
+            Semantics(
+              header: true,
+              child: Text(
+                title,
+                style: theme.textTheme.titleLarge,
+                textAlign: TextAlign.center,
+              ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: LetbuyySpacingTokens.space12),
             Text(
               message,
-              style: AppTextStyles.bodyLarge.copyWith(
-                color: AppColors.textSecondary,
-              ),
+              style: theme.textTheme.bodyLarge,
               textAlign: TextAlign.center,
             ),
             if (onRetry != null) ...[
-              const SizedBox(height: 30),
-              ElevatedButton.icon(
+              const SizedBox(height: LetbuyySpacingTokens.space24),
+              OutlinedButton.icon(
                 onPressed: onRetry,
                 icon: const Icon(Icons.refresh),
-                label: const Text('Try Again'),
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 32,
-                    vertical: 16,
-                  ),
-                ),
+                label: Text(retryLabel),
               ),
             ],
           ],

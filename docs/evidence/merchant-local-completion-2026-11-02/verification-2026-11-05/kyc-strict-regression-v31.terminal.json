@@ -1,0 +1,28 @@
+{
+  "started_at": "2026-11-06T14:38:18.063955+00:00",
+  "supervisor_pid": 19918,
+  "source": "merchant-kyc-strict-source-v31",
+  "source_sha256": "55f76446297d1af7daadc9c6076b6e09868a1c48eeeaca600f20f5f2516b81a8",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "test/kyc_containment_test.dart",
+    "test/kyc_public_validation_test.dart",
+    "test/kyc_india_upload_test.dart",
+    "test/kyc_interrupted_upload_recovery_test.dart",
+    "test/kyc_upload_surface_test.dart",
+    "test/kyc_upload_layout_test.dart",
+    "test/kyc_provider_lifetime_test.dart",
+    "test/kyc_selection_frame_test.dart",
+    "test/kyc_recovery_screen_test.dart",
+    "--reporter",
+    "expanded"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 19921,
+  "exit_code": 0,
+  "finished_at": "2026-11-06T14:38:30.513820+00:00",
+  "source_unchanged": true,
+  "source_readback_sha256": "55f76446297d1af7daadc9c6076b6e09868a1c48eeeaca600f20f5f2516b81a8"
+}

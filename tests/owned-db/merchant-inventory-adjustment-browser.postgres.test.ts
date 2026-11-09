@@ -14,7 +14,9 @@ import {Gateway, gatewayEnv, newIdentityKeys, INTERNAL_SECRET} from '../../servi
 import {requireOwnedDatabase, startOwnedPooledSqlProxy, startOwnedClientRuntime, stopOwnedClientRuntime,
     type OwnedClientProcess, type OwnedPooledSqlProxy} from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
 import {newSyntheticTenant, seedSyntheticTenant} from '../../services/api-gateway/src/__tests__/owned-db/synthetic-tenant';
+import {createLocalTurnstileProvider, LOCAL_TURNSTILE_SECRET} from '../fixtures/local-turnstile-provider';
 
+let challenge:Awaited<ReturnType<typeof createLocalTurnstileProvider>>|undefined;
 const owned=requireOwnedDatabase(),site=newSyntheticTenant('stock-recovery');
 const ownerId=crypto.randomUUID(),staffId=crypto.randomUUID();
 const email=(id:string)=>`syn-stock-browser-${id}@example.invalid`;
@@ -45,7 +47,7 @@ async function signIn(context:BrowserContext,id:string,password:string){
 }
 before(async()=>{
     // The actual Gateway may reach only this fixture's loopback services.
-    // Identity's existing official challenge-test transport is a separate child.
+    // Identity verifies one-use challenges only through this run's owned local provider.
     globalThis.fetch=(async(input,init)=>{
         const url=new URL(typeof input==='string'?input:input instanceof URL?input.href:input.url);
         if(!['127.0.0.1','localhost','[::1]'].includes(url.hostname)&&!url.hostname.endsWith('.localhost')){
@@ -82,33 +84,34 @@ before(async()=>{
     await new Promise<void>(r=>bridge!.listen(0,'127.0.0.1',r));
     const apiOrigin=`http://127.0.0.1:${(bridge.address() as {port:number}).port}`;
     const shared={INTERNAL_API_SECRET:INTERNAL_SECRET,NEXT_PUBLIC_ACCOUNTS_URL:identityOrigin,NEXT_PUBLIC_ADMIN_URL:merchantOrigin};
-    identity=startOwnedClientRuntime(owned,'identity-next',{port:identityPort,env:{...shared,LETBUYY_API_URL:apiOrigin+'/v1',LETBUYY_IDENTITY_ISSUER:identityOrigin,
+    challenge=await createLocalTurnstileProvider(owned);
+    identity=startOwnedClientRuntime(owned,'identity-next-production',{port:identityPort,providerFixture:challenge.profile,env:{...shared,LETBUYY_API_URL:apiOrigin+'/v1',LETBUYY_IDENTITY_ISSUER:identityOrigin,
         LETBUYY_IDENTITY_PRIVATE_JWK:JSON.stringify({...await exportJWK(keys.privateKey),alg:'ES256',kid:keys.kid}),
         ACCOUNTS_COOKIE_SECRET:crypto.randomUUID()+crypto.randomUUID(),COOKIE_DOMAIN:'',
-        NEXT_PUBLIC_TURNSTILE_SITE_KEY:'1x00000000000000000000AA',TURNSTILE_SECRET_KEY:'1x0000000000000000000000000000000AA',
+        NEXT_PUBLIC_TURNSTILE_SITE_KEY:'1x00000000000000000000AA',TURNSTILE_SECRET_KEY:LOCAL_TURNSTILE_SECRET,
         LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false',NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false',RESEND_API_KEY:'',LETBUYY_EMAIL_API_KEY:''}});
-    merchant=startOwnedClientRuntime(owned,'merchant-next',{port:merchantPort,env:{...shared,LETBUYY_API_BASE_URL:apiOrigin+'/v1'}});
+    merchant=startOwnedClientRuntime(owned,'merchant-next-production',{port:merchantPort,env:{...shared,LETBUYY_API_BASE_URL:apiOrigin+'/v1'}});
     await Promise.all([ready(identityOrigin+'/login',identity),ready(merchantOrigin,merchant)]);
     browser=await chromium.launch({headless:true});ownerA=await browser.newContext();ownerB=await browser.newContext();staff=await browser.newContext();
-    for(const context of [ownerA,ownerB,staff]){context.setDefaultTimeout(30000);context.setDefaultNavigationTimeout(90000);}
+    for(const context of [ownerA,ownerB,staff]){await challenge.attachBrowser(context,[identityOrigin,merchantOrigin]);context.setDefaultTimeout(30000);context.setDefaultNavigationTimeout(90000);}
     await signIn(ownerA,ownerId,password);await signIn(ownerB,ownerId,password);await signIn(staff,staffId,password);
     checkpoints.push('three_normal_identity_sign_ins');
 },{timeout:660000});
 after(async()=>{
     console.info('OWNED_INVENTORY_ADJUSTMENT_BROWSER '+JSON.stringify({runId:owned.runId,checkpoints,normalSignIns:checkpoints.includes('three_normal_identity_sign_ins')?3:0,
-        positiveCredentialInjection:false,fixtureKind:'local Next development runtimes + actual Gateway/PostgREST/owned PostgreSQL',
+        positiveCredentialInjection:false,fixtureKind:'local Next production builds + actual Gateway/PostgREST/owned PostgreSQL',
         calls:calls.filter(c=>c.inventoryBody!==undefined).map(({path,method,status,lost,key,productId})=>({path,method,status,lost,key,productId})),
         gatewayExternalRequestsRefused:refusedGatewayExternalRequests,
-        challengeMode:'Existing official Turnstile test-key transport; production anti-bot unverified',
-        runtimeSupervisors:[{kind:"merchant-next",pid:merchant?.pid},{kind:"identity-next",pid:identity?.pid}],providerTransactions:0,hostedVerified:false,privateScreenshots:false}));
-    await browser?.close();await stopOwnedClientRuntime(merchant);await stopOwnedClientRuntime(identity);
+        challengeMode:'Owned local one-use challenge provider; production anti-bot unverified',localChallengeCounts:challenge?.counts,
+        runtimeSupervisors:[{kind:"merchant-next-production",pid:merchant?.pid},{kind:"identity-next-production",pid:identity?.pid}],providerTransactions:0,hostedVerified:false,privateScreenshots:false}));
+    await browser?.close();await stopOwnedClientRuntime(merchant);await stopOwnedClientRuntime(identity);await challenge?.close();
     await gateway?.settle();await closePooledSqlClients();await proxy?.stop();
     if(bridge){bridge.closeAllConnections();await new Promise<void>(r=>bridge!.close(()=>r()));}
     globalThis.fetch=originalFetch;
     assert.equal(refusedGatewayExternalRequests,0,'The stock journey attempted an undeclared external Gateway request');
 });
 
-function product(name:string){const id=crypto.randomUUID(),variantId=crypto.randomUUID();owned.psql(`INSERT INTO products(id,site_id,store_id,name,slug,price,stock,is_active,status)VALUES('${id}','${site.siteId}','${site.siteId}','${name}','syn-${id}',100,10,true,'active');INSERT INTO product_variants(id,product_id,title,sku,price,inventory_qty)VALUES('${variantId}','${id}','M','SYN-STOCK-${id}',100,0);SELECT set_inventory_level_available('${id}','${variantId}','${site.locationId}',10,'${ownerId}');`);return{id,variantId,name,levelId:owned.psql(`SELECT id FROM inventory_levels WHERE product_id='${id}' AND variant_id='${variantId}' AND location_id='${site.locationId}';`)};}
+function product(name:string){const id=crypto.randomUUID(),variantId=crypto.randomUUID();owned.psql(`INSERT INTO products(id,site_id,store_id,name,slug,price,stock,is_active,status)VALUES('${id}','${site.siteId}','${site.siteId}','${name}','syn-${id}',100,10,true,'active');INSERT INTO product_variants(id,product_id,title,sku,price,inventory_qty)VALUES('${variantId}','${id}','M','SYN-STOCK-${id}',100,0);WITH _fixture_inventory_scope436 AS MATERIALIZED (SELECT set_config('app.site_id','${site.siteId}',true)) SELECT set_inventory_level_available('${id}','${variantId}','${site.locationId}',10,'${ownerId}') FROM _fixture_inventory_scope436;`);return{id,variantId,name,levelId:owned.psql(`SELECT id FROM inventory_levels WHERE product_id='${id}' AND variant_id='${variantId}' AND location_id='${site.locationId}';`)};}
 type Stock=ReturnType<typeof product>;
 const endpoint=()=>`${merchantOrigin}/api/stores/${site.subdomain}/inventory/adjust`;
 const row=(page:Page,p:Stock)=>page.getByRole('row').filter({has:page.getByText(p.name,{exact:true})});

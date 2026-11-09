@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { createRequire } from 'node:module'
+import { createRequire, Module } from 'node:module'
+import { readFileSync } from 'node:fs'
 import { createHash } from 'node:crypto'
 import React, { act } from 'react'
 import {prepareWarehouseCommand} from '@letbuyy/shared-types'
@@ -55,6 +56,8 @@ const readPages = {
     policySettings: () => import('../src/app/[store]/settings/policies/page'),
     notificationSettings: () => import('../src/app/[store]/settings/notifications/page'),
     businessSettings: () => import('../src/app/[store]/settings/business/page'),
+    storePreferences: () => import('../src/app/[store]/online-store/preferences/page'),
+    billingProfile: () => import('../src/app/[store]/settings/billing/profile/page'),
     storefrontPages: () => import('../src/app/[store]/online-store/pages/page'),
     segments: () => import('../src/app/[store]/customers/segments/page'),
     inventory: () => import('../src/app/[store]/products/inventory/page'),
@@ -168,6 +171,22 @@ test('web reservations preserve all seven recorded lifecycle states and both rec
     try { for (const status of ['Active','Hold','Committed','Released','Expired','Fulfilled','Cancelled']) assert.match(h.text(), new RegExp(status)) } finally { await h.close() }
     const receipts = await mount('inventoryReceipts', async () => historyResponse([receiptRecord(), { ...receiptRecord('transfer'), id: '55555555-5555-4555-8555-555555555555' }]))
     try { assert.match(receipts.text(), /PO Receipt/); assert.match(receipts.text(), /Transfer Receipt/) } finally { await receipts.close() }
+})
+for (const committed of [false, true]) test(`web transfer ${committed ? 'shipment' : 'hold'} displays its bound lifetime and reference`, async () => {
+    const original = reservationRecord()
+    const row = { ...original, expires_at: null, status: committed ? 'committed' : 'active',
+        transfer: { id: '77777777-7777-4777-8777-777777777777', reservation_id: original.id,
+            line_id: '88888888-8888-4888-8888-888888888888', site_id: historySite,
+            product_id: original.product_id, variant_id: null,
+            source_location_id: original.location_id, transfer_number: 'TR-SYN-LIFETIME',
+            status: committed ? 'shipped' : 'reserved', quantity_requested: original.quantity,
+            quantity_received: 0, base_received: 0 } }
+    const h = await mount('inventoryReservations', async () => historyResponse([row]))
+    try {
+        assert.match(h.text(), new RegExp(committed ? 'Committed at shipment' : 'Held until shipment'))
+        assert.match(h.text(), /TR-SYN-LIFETIME/)
+        assert.doesNotMatch(h.text(), /Failed to load reservations|Invalid Date/)
+    } finally { await h.close() }
 })
 test('web reservation pagination retains applied filters while draft inputs change', async () => {
     const queries: URL[] = []
@@ -351,10 +370,22 @@ type ContentPage = keyof typeof readPages
 type Transport = (url: string, init?: RequestInit) => Promise<Response>
 
 async function mount(kind: ContentPage | 'orders' | 'customers' | 'analytics' | 'search' | 'notifications' | 'purchasing' | 'transfers' | 'assistant' | 'themeLibrary' | 'previewUpdate' | 'loyalty' | 'checkoutDomain' | 'connectDomain', transport: Transport,configureStorage?:(storage:Storage)=>void,initialProtocolAvailable=true) {
+    const cssPath = new URL('../src/components/theme-library/theme-workspace.module.css', import.meta.url).pathname
+    const previousCss = requireUI.cache[cssPath]
+    if (kind === 'storePreferences') {
+        // This Node/JSDOM lane checks behavior, not CSS layout. Admit only the
+        // real visibility component's exact style module; production browser
+        // acceptance still builds and renders the actual CSS through Next.
+        const classes = [...readFileSync(cssPath, 'utf8').matchAll(/\.([A-Za-z_][A-Za-z0-9_-]*)/g)].map(match => match[1])
+        const styleModule = new Module(cssPath)
+        styleModule.filename = cssPath; styleModule.loaded = true
+        styleModule.exports = Object.fromEntries(classes.map(name => [name, name]))
+        requireUI.cache[cssPath] = styleModule
+    }
     const dom = new JSDOM('<!doctype html><div id="root"></div>', { url: 'http://localhost/alpha/orders' })
-    const productImports=kind==='productImports';
+    const productImports=kind==='productImports',categoryScope=kind==='categories',mediaScope=kind==='gallery';
     const warehouse=kind==='purchasing'||kind==='transfers'||kind==='locations'||kind==='suppliers';
-    if(warehouse||productImports)Object.defineProperty(dom.window.navigator,'locks',{value:{request:async(_name:string,callback:()=>unknown)=>callback()}});
+    if(warehouse||productImports||categoryScope||mediaScope)Object.defineProperty(dom.window.navigator,'locks',{value:{request:async(_name:string,callback:()=>unknown)=>callback()}});
     const domGlobals = ['window', 'document', 'navigator', 'self', 'localStorage', 'sessionStorage', 'MutationObserver', 'HTMLElement', 'Element']
     const previous = Object.fromEntries([...domGlobals, 'fetch'].map(name => [name, Object.getOwnPropertyDescriptor(globalThis, name)]))
     for (const name of domGlobals) Object.defineProperty(globalThis, name, {
@@ -370,12 +401,16 @@ async function mount(kind: ContentPage | 'orders' | 'customers' | 'analytics' | 
         }):Response.json({error:{code:'NOT_FOUND'}},{status:404}));}
         return transport(url, init);
     }) as typeof fetch
+    dom.window.fetch = globalThis.fetch
     configureStorage?.(dom.window.localStorage);
     const { createRoot } = await import('react-dom/client')
     const { AppRouterContext } = await import('next/dist/shared/lib/app-router-context.shared-runtime.js')
     const { PathParamsContext } = await import('next/dist/shared/lib/hooks-client-context.shared-runtime.js')
     const { ToastProvider } = await import('@letbuyy/ui')
     const { MerchantSecurityContext } = await import('../src/components/security/MerchantSecurityContext')
+    const { MediaRecoveryProvider } = await import('../src/components/media/MediaRecoveryProvider')
+    // Mirror AdminShell: account/store changes unmount the previous private page.
+    const MediaBoundary = mediaScope ? MediaRecoveryProvider : ({children}:{children:React.ReactNode;store:string}) => <>{children}</>
     const Component: React.ElementType = kind === 'connectDomain' ? (await import('../src/components/domains/ConnectDomainWizard')).ConnectDomainWizard
         : kind === 'checkoutDomain' ? (await import('../src/components/domains/CheckoutDomainCard')).CheckoutDomainCard
         : kind === 'themeLibrary' ? (await import('../src/components/theme-library/ThemeLibraryWorkspace')).ThemeLibraryWorkspace
@@ -393,11 +428,11 @@ async function mount(kind: ContentPage | 'orders' | 'customers' | 'analytics' | 
     let completions = 0
     const root = createRoot(dom.window.document.getElementById('root')!)
     const router = { back() {}, forward() {}, refresh() {}, hmrRefresh() {}, push() {}, replace() {}, prefetch() {} }
-    const render = async (store = 'alpha', actorId = productImports?importActor:warehouse?'11111111-1111-4111-8111-111111111111':'actor-a') => {
+    const render = async (store = 'alpha', actorId = productImports?importActor:warehouse||categoryScope||mediaScope?'11111111-1111-4111-8111-111111111111':'actor-a') => {
         await act(async () => root.render(
             <AppRouterContext.Provider value={router}><PathParamsContext.Provider value={{ store }}>
-                <ToastProvider duration={0}><MerchantSecurityContext.Provider value={{ actorId, store,siteId:(warehouse||productImports)?(store==='alpha'?historySite:'22222222-2222-4222-8222-222222222222'):undefined }}>
-                    <Component initialDomain="shop.example.invalid" onConnected={() => completions++} actorId={actorId} currentVersionId="current-version" availableVersionId="next-version" themeSlug="synthetic-theme" storeId={kind === 'previewUpdate' ? store : kind === 'themeLibrary' ? null : 'site-a'} store={store} storeName="Synthetic Store" siteType="store" appPlatformEnabled={false} onClose={() => {}} storeData={{ id: 'site-a', name: 'Synthetic Store', store_name: 'Synthetic Store', subdomain: store, site_type: 'store', status: 'draft', trial_ends_at: null, trial_status: null, theme_id: 'modern', theme_settings: null, custom_domain: null }} />
+                <ToastProvider duration={0}><MerchantSecurityContext.Provider value={{ actorId, store,siteId:(warehouse||productImports||categoryScope||mediaScope)?(store==='alpha'?historySite:'22222222-2222-4222-8222-222222222222'):undefined }}>
+                    <MediaBoundary key={`${actorId}:${store}`} store={store}><Component initialDomain="shop.example.invalid" onConnected={() => completions++} actorId={actorId} currentVersionId="current-version" availableVersionId="next-version" themeSlug="synthetic-theme" storeId={kind === 'previewUpdate' ? store : kind === 'themeLibrary' ? null : 'site-a'} store={store} storeName="Synthetic Store" siteType="store" appPlatformEnabled={false} onClose={() => {}} storeData={{ id: 'site-a', name: 'Synthetic Store', store_name: 'Synthetic Store', subdomain: store, site_type: 'store', status: 'draft', trial_ends_at: null, trial_status: null, theme_id: 'modern', theme_settings: null, custom_domain: null }} /></MediaBoundary>
                 </MerchantSecurityContext.Provider></ToastProvider>
             </PathParamsContext.Provider></AppRouterContext.Provider>,
         ))
@@ -464,6 +499,10 @@ async function mount(kind: ContentPage | 'orders' | 'customers' | 'analytics' | 
         },
         async close() {
             await act(async () => root.unmount()); dom.window.close()
+            if (kind === 'storePreferences') {
+                if (previousCss) requireUI.cache[cssPath] = previousCss
+                else delete requireUI.cache[cssPath]
+            }
             for (const [name, descriptor] of Object.entries(previous)) {
                 if (descriptor) Object.defineProperty(globalThis, name, descriptor)
                 else Reflect.deleteProperty(globalThis, name)
@@ -1005,12 +1044,168 @@ test('theme library starts alongside catalog metadata and never flashes false em
 })
 
 function settingsResponse(url: string) {
-    if (url.includes('/settings')) return json({ id: 'site-a', version: 1, name: 'Current store', business_profile: {}, site_settings: {} })
+    if (url.includes('/settings')) return json({ id: 'site-a', version: 7, name: 'Current store', business_profile: {}, site_settings: {} })
     if (url.includes('/navigation')) return json({ items: [] })
     if (url.includes('/localization')) return json({ locales: [], default_locale: 'en', currency: 'INR', timezone: 'Asia/Kolkata' })
     if (url.endsWith('/kyc')) return json({ overall_status: 'not_started', provider_mode: 'sandbox', required_documents: [], documents: [] })
     if (url.endsWith('/commission')) return json({ currency: 'INR', schedule: { commission_bps: 0, gst_bps: 1800 }, summary: { gross_amount_minor: 0, commission_amount_minor: 0, gst_amount_minor: 0, net_payable_minor: 0 } })
     return json([])
+}
+
+test('store Preferences reads canonical metadata, preserves explicit clears and saves its observed revision', async () => {
+    let command: Record<string, unknown> | undefined
+    const h = await mount('storePreferences', async (url, init) => {
+        if (url.endsWith('/settings')) {
+            if (init?.method === 'PATCH') {
+                command = JSON.parse(String(init.body)) as Record<string, unknown>
+                assert.equal(new Headers(init.headers).get('X-LetBuyy-Merchant-Context'), 'actor-a')
+                return json({ id: 'site-a', version: 8 })
+            }
+            return json({ id: 'site-a', version: 7, meta_title: '', meta_description: '', seo_title: 'Retired alias title', seo_description: 'Retired alias description' })
+        }
+        return settingsResponse(url)
+    })
+    try {
+        assert(!h.controls().some(control => /Retired alias/.test(String(control.value))))
+        await h.setField('input[placeholder="My Store - Modern Fashion"]', 'Current canonical title')
+        await h.click('Save changes')
+        assert.equal(command?.version, 7); assert.equal(command?.seo_title, 'Current canonical title')
+        assert.equal(command?.seo_description, ''); assert.match(h.text(), /Preferences saved/)
+    } finally { await h.close() }
+})
+
+const billingProfileRow = (version: number, gstin = '27ABCDE1234F1Z5') => ({
+    profile: { store_id: 'site-a', version, gstin, gst_state_code: gstin.slice(0, 2), legal_name: 'Synthetic legal owner', currency: 'INR' }, mandates: [],
+})
+test('billing GSTIN sends its observed revision and actor and confirms fresh readback', async () => {
+    let version = 7, gstin = '27ABCDE1234F1Z5', command: Record<string, unknown> | undefined
+    const h = await mount('billingProfile', async (url, init) => {
+        if (url.endsWith('/billing')) return json(billingProfileRow(version, gstin))
+        if (url.endsWith('/settings') && init?.method === 'PATCH') {
+            command = JSON.parse(String(init.body)) as Record<string, unknown>
+            assert.equal(new Headers(init.headers).get('X-LetBuyy-Merchant-Context'), 'actor-a')
+            version++; gstin = String(command.gstin)
+            return json({ id: 'site-a', version })
+        }
+        return settingsResponse(url)
+    })
+    try {
+        await h.click('Edit'); await h.setField('input[placeholder="22ABCDE1234F1Z5"]', '29ABCDE1234F1Z5')
+        await h.click('Save GSTIN')
+        assert.equal(command?.version, 7); assert.equal(command?.gst_state_code, '29')
+        assert.match(h.text(), /GSTIN saved/); assert.match(h.text(), /29ABCDE1234F1Z5/)
+    } finally { await h.close() }
+})
+test('a billing refresh cannot replace a GSTIN draft or silently rebase its command', async () => {
+    let version = 7, command: Record<string, unknown> | undefined
+    const h = await mount('billingProfile', async (url, init) => {
+        if (url.endsWith('/billing')) return json(billingProfileRow(version))
+        if (url.endsWith('/settings') && init?.method === 'PATCH') {
+            command = JSON.parse(String(init.body)) as Record<string, unknown>
+            return Response.json({ error: { message: 'Store settings changed. Reload before saving.' } }, { status: 409 })
+        }
+        return settingsResponse(url)
+    })
+    try {
+        await h.click('Edit'); await h.setField('input[placeholder="22ABCDE1234F1Z5"]', '29ABCDE1234F1Z5')
+        version = 8; await h.click('Refresh billing profile')
+        assert(h.controls().some(control => control.value === '29ABCDE1234F1Z5'))
+        await h.click('Save GSTIN'); assert.equal(command?.version, 7)
+        assert.match(h.text(), /Reload current billing profile/)
+        await h.click('Reload billing profile'); await h.dialogClick('Cancel')
+        assert(h.controls().some(control => control.value === '29ABCDE1234F1Z5'))
+        await h.click('Reload billing profile'); await h.dialogClick('Reload profile')
+        assert(!h.controls().some(control => control.value === '29ABCDE1234F1Z5'))
+    } finally { await h.close() }
+})
+
+test('a retired General settings removal cannot redirect or notify a replacement actor', async () => {
+    const old = deferred<Response>(); let requested = false
+    const h = await mount('generalSettings', async (url, init) => {
+        if (url.endsWith('/settings') && init?.method === 'DELETE') {
+            requested = true
+            assert.equal(new Headers(init.headers).get('X-LetBuyy-Merchant-Context'), 'actor-a')
+            assert.match(new Headers(init.headers).get('X-Idempotency-Key') ?? '', /^[a-f0-9-]{36}$/)
+            return old.promise
+        }
+        return settingsResponse(url)
+    })
+    try {
+        await h.click('Delete store'); await h.dialogClick('Delete store'); assert(requested)
+        await h.render('alpha', 'actor-b')
+        await act(async () => old.resolve(json({ id: 'site-a' })))
+        assert.doesNotMatch(h.text(), /Store deletion started|Could not delete store/)
+    } finally { old.resolve(json({ id: 'site-a' })); await h.close() }
+})
+
+for (const kind of ['generalSettings', 'businessSettings'] as const) {
+    const selector = kind === 'generalSettings' ? 'input[placeholder="My Awesome Store"]' : 'input[placeholder="As registered with the government / GST"]'
+    const savedMessage = kind === 'generalSettings' ? /Settings saved/ : /Business details saved/
+    const reloadLabel = kind === 'generalSettings' ? 'Reload current settings' : 'Reload current business details'
+    const reloadConfirm = kind === 'generalSettings' ? 'Reload settings' : 'Reload business details'
+    const row = (version = 7, name = 'Current store') => ({ id: 'site-a', version, name, legal_name: name, business_profile: {}, site_settings: {} })
+    test(`${kind} sends its observed revision and current actor with one request key`, async () => {
+        let command: Record<string, unknown> | undefined, headers: Headers | undefined
+        const h = await mount(kind, async (url, init) => {
+            if (url.endsWith('/settings') && init?.method === 'PATCH') {
+                command = JSON.parse(String(init.body)) as Record<string, unknown>
+                headers = new Headers(init.headers)
+                return json(row(8, 'Reviewed synthetic name'))
+            }
+            return url.endsWith('/settings') ? json(row()) : settingsResponse(url)
+        })
+        try {
+            await h.setField(selector, 'Reviewed synthetic name'); await h.click('Save')
+            assert.equal(command?.version, 7)
+            assert.equal(headers?.get('X-LetBuyy-Merchant-Context'), 'actor-a')
+            assert.match(headers?.get('X-Idempotency-Key') ?? '', /^[a-f0-9-]{36}$/)
+            assert.match(h.text(), savedMessage)
+        } finally { await h.close() }
+    })
+    test(`${kind} keeps refused edits until an explicit current reload`, async () => {
+        let revision = 7, writes = 0
+        const h = await mount(kind, async (url, init) => {
+            if (url.endsWith('/settings') && init?.method === 'PATCH') {
+                writes++; revision = 8
+                return Response.json({ error: { code: 'STORE_UPDATE_CONFLICT', message: 'Store settings changed. Reload before saving.' } }, { status: 409 })
+            }
+            return url.endsWith('/settings') ? json(row(revision, revision === 7 ? 'Current store' : 'Newer canonical name')) : settingsResponse(url)
+        })
+        try {
+            await h.setField(selector, 'Private retained draft'); await h.click('Save')
+            assert.equal(writes, 1); assert.match(h.text(), /Reload current/)
+            assert(h.controls().some(control => control.value === 'Private retained draft'))
+            await h.click('Save'); assert.equal(writes, 1, 'a refused snapshot cannot issue another write')
+            await h.click(reloadLabel); await h.dialogClick('Cancel')
+            assert(h.controls().some(control => control.value === 'Private retained draft'))
+            await h.click(reloadLabel); await h.dialogClick(reloadConfirm)
+            assert(h.controls().some(control => control.value === 'Newer canonical name'))
+            assert(!h.controls().some(control => control.value === 'Private retained draft'))
+            assert.equal(writes, 1)
+        } finally { await h.close() }
+    })
+    test(`${kind} rejects an acknowledgement for another store`, async () => {
+        const h = await mount(kind, async (url, init) => url.endsWith('/settings')
+            ? json(init?.method === 'PATCH' ? { ...row(8), id: 'other-store' } : row()) : settingsResponse(url))
+        try {
+            await h.setField(selector, 'Unconfirmed edit'); await h.click('Save')
+            assert.match(h.text(), /acknowledgement could not be confirmed/)
+            assert.doesNotMatch(h.text(), savedMessage)
+        } finally { await h.close() }
+    })
+    test(`${kind} retires a late save and draft on same-store actor replacement`, async () => {
+        const old = deferred<Response>()
+        const h = await mount(kind, async (url, init) => url.endsWith('/settings')
+            ? init?.method === 'PATCH' ? old.promise : json(row()) : settingsResponse(url))
+        try {
+            await h.setField(selector, 'Private retired draft'); await h.click('Save')
+            await h.render('alpha', 'actor-b')
+            assert(!h.controls().some(control => control.value === 'Private retired draft'))
+            await act(async () => old.resolve(json(row(8, 'Private retired draft'))))
+            assert.doesNotMatch(h.text(), savedMessage)
+            assert(!h.controls().some(control => control.value === 'Private retired draft'))
+        } finally { old.resolve(json(row(8))); await h.close() }
+    })
 }
 
 test('notification preferences hide switches when the authoritative read is unavailable', async () => {

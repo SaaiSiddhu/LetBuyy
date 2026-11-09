@@ -114,6 +114,7 @@ export async function loadListingVariantsFromDatabase(
     const { data, error } = await db
         .from('product_variants')
         .select(PUBLIC_VARIANT_SELECT)
+        .is('deleted_at', null)
         .eq('product_id', productId)
         .order('position', { ascending: true });
     return { data: (data as Record<string, unknown>[] | null) ?? [], error: error as DatabaseErrorLike };

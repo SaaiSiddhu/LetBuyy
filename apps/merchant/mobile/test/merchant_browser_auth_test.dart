@@ -1,3 +1,4 @@
+import 'package:letbuyy_store/config/app_config.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
@@ -39,7 +40,9 @@ class FakeBrowser implements AuthenticationBrowser {
 }
 
 class Journey {
-  final storage = MemoryStorage(), browser = FakeBrowser();
+  final MemoryStorage storage;
+  final browser = FakeBrowser();
+  final requests = <({String origin, String path, bool bearer})>[];
   late final StoreAuthService auth;
   late final MerchantBrowserAuth flow;
   late final http.Client httpClient;
@@ -49,15 +52,24 @@ class Journey {
   Completer<void>? exchangeHold, validationHold;
   Completer<void>? logoutHold, logoutEntered;
   Completer<void>? exchangeEntered, validationEntered;
-  Journey() {
+  Journey({
+    String identityOrigin = 'https://accounts.letbuyy.com',
+    String environment = 'production',
+    MemoryStorage? sharedStorage,
+  }) : storage = sharedStorage ?? MemoryStorage() {
     httpClient = MockClient((request) async {
+      requests.add((
+        origin: request.url.origin,
+        path: request.url.path,
+        bearer: request.headers.containsKey('authorization'),
+      ));
       if (request.url.path.endsWith('/requests')) {
         initiation = jsonDecode(request.body) as Map<String, dynamic>;
         return http.Response(
           jsonEncode({
             'requestId': requestId,
             'authorizationUrl':
-                'https://accounts.letbuyy.com/mobile/authorize#request=$requestId&launch=${'l' * 43}',
+                '$identityOrigin/mobile/authorize#request=$requestId&launch=${'l' * 43}',
             'managementProof': 'm' * 43,
             'expiresAt': DateTime.now()
                 .add(const Duration(minutes: 15))
@@ -120,14 +132,24 @@ class Journey {
     });
     auth = StoreAuthService(
       api: ApiClient(baseUrl: 'https://bff.example.invalid/v1', maxRetries: 0),
-      identityBaseUrl: 'https://accounts.letbuyy.com',
+      identityBaseUrl: identityOrigin,
+      storageNamespace: AppConfig.persistenceNamespace(
+        environmentName: environment,
+        identityUrl: identityOrigin,
+      ),
+      sessionCookieName: environment == 'staging'
+          ? 'lb_session_staging'
+          : 'lb_session',
+      csrfCookieName: environment == 'staging'
+          ? 'letbuyy_csrf_staging'
+          : 'letbuyy_csrf',
       secureStorage: storage,
       httpClient: httpClient,
     );
     flow = MerchantBrowserAuth(
       auth: auth,
-      identityBaseUrl: 'https://accounts.letbuyy.com',
-      environment: 'production',
+      identityBaseUrl: identityOrigin,
+      environment: environment,
       clientId: 'merchant_android',
       browser: browser,
       storage: storage,
@@ -135,11 +157,144 @@ class Journey {
     );
   }
   String get callback =>
-      'https://accounts.letbuyy.com/merchant/auth/callback?request=$requestId&state=${initiation!['state']}&code=$code';
+      '${flow.callback}?request=$requestId&state=${initiation!['state']}&code=$code';
 }
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  for (final closeFirst in [true, false]) {
+    test(
+      'browser return close signal does not cancel a valid callback (closeFirst=$closeFirst)',
+      () async {
+        final j = Journey();
+        await j.flow.initialize();
+        await j.flow.begin('login');
+        j.exchangeHold = Completer();
+        j.exchangeEntered = Completer();
+        if (closeFirst) j.browser.events.add(null);
+        j.browser.events.add(j.callback);
+        await j.exchangeEntered!.future.timeout(const Duration(seconds: 2));
+        if (!closeFirst) j.browser.events.add(null);
+        await Future<void>.delayed(const Duration(milliseconds: 400));
+        expect(
+          j.cancellations,
+          0,
+          reason:
+              'A browser returning its callback is not an explicit account-action cancellation.',
+        );
+        j.exchangeHold!.complete();
+        for (var i = 0; i < 100 && j.auth.currentUser?.id != newActor; i++) {
+          await Future<void>.delayed(const Duration(milliseconds: 10));
+        }
+        expect(j.auth.currentUser?.id, newActor);
+        expect(j.exchanges, 1);
+        j.flow.dispose();
+      },
+    );
+  }
+  test(
+    'browser close without a callback cancels once and preserves the original actor',
+    () async {
+      final j = Journey();
+      await j.auth.acceptHostedSession(
+        token: oldToken,
+        expectedUserId: oldActor,
+      );
+      await j.flow.initialize();
+      await j.flow.begin('switch_account');
+      j.browser.events.add(null);
+      j.browser.events.add(null);
+      for (var i = 0; i < 100 && j.auth.accountTransition; i++) {
+        await Future<void>.delayed(const Duration(milliseconds: 10));
+      }
+      expect(j.cancellations, 1);
+      expect(j.exchanges, 0);
+      expect(j.auth.currentUser?.id, oldActor);
+      expect(j.auth.accountTransition, false);
+      expect(j.storage.data.containsKey(MerchantBrowserAuth.pendingKey), false);
+      j.flow.dispose();
+    },
+  );
+  for (final scope in [
+    (environment: 'staging', origin: 'https://accounts-staging.letbuyy.com'),
+    (environment: 'development', origin: 'http://localhost:9002'),
+    (environment: 'development', origin: 'http://localhost:9003'),
+  ])
+    test(
+      'browser candidate cannot cross into ${scope.environment} ${scope.origin}',
+      () async {
+        final production = Journey();
+        await production.flow.begin('login');
+        production.unavailable = true;
+        await production.flow.handleCallback(production.callback);
+        final retained =
+            production.storage.data[MerchantBrowserAuth.candidateKey];
+        expect(
+          retained,
+          isNotNull,
+          reason: 'Populated production candidate is mandatory.',
+        );
+        final other = Journey(
+          identityOrigin: scope.origin,
+          environment: scope.environment,
+          sharedStorage: production.storage,
+        );
+        await other.flow.initialize();
+        expect(
+          other.requests.where((request) => request.bearer),
+          isEmpty,
+          reason:
+              'A different environment must not transmit a sealed production bearer.',
+        );
+        expect(other.auth.isSignedIn, false);
+        await other.flow.cancel();
+        expect(
+          production.storage.data[MerchantBrowserAuth.candidateKey] == retained,
+          true,
+          reason:
+              'Unrelated profile cancellation preserves the original candidate.',
+        );
+        other.flow.dispose();
+        other.auth.dispose();
+        production.flow.dispose();
+        production.auth.dispose();
+      },
+    );
+
+  test(
+    'development candidate stays bound to its original local issuer',
+    () async {
+      const origin = 'http://localhost:9002';
+      final original = Journey(
+        identityOrigin: origin,
+        environment: 'development',
+      );
+      await original.flow.begin('login');
+      original.unavailable = true;
+      await original.flow.handleCallback(original.callback);
+      final key =
+          AppConfig.persistenceNamespace(
+            environmentName: 'development',
+            identityUrl: origin,
+          ) +
+          MerchantBrowserAuth.candidateKey;
+      final retained = original.storage.data[key];
+      expect(retained, isNotNull);
+      final other = Journey(
+        identityOrigin: 'http://localhost:9003',
+        environment: 'development',
+        sharedStorage: original.storage,
+      );
+      await other.flow.initialize();
+      expect(other.requests.where((request) => request.bearer), isEmpty);
+      await other.flow.cancel();
+      expect(original.storage.data[key] == retained, true);
+      other.flow.dispose();
+      other.auth.dispose();
+      original.flow.dispose();
+      original.auth.dispose();
+    },
+  );
   test(
     'local logout clears access before an unavailable revocation reply',
     () async {

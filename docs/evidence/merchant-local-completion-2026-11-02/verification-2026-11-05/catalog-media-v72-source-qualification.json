@@ -1,0 +1,22 @@
+{
+  "at": "2026-11-07T05:10:54.514878+00:00",
+  "source": "merchant-catalog-media-source-v72",
+  "sha256": "d8bb3cf5df966db7f0003c964399c5b89d985a6014a3b4287a6df4405b8a5c39",
+  "inputs": 8497,
+  "flutter": {
+    "pass": 1688,
+    "fail": 0,
+    "skip": 0
+  },
+  "analysis_issues": 0,
+  "governance": {
+    "pass": 114,
+    "not_applicable": 1,
+    "fail": 0,
+    "isolated_capsule": true
+  },
+  "root_contracts": 398,
+  "unchanged_TS_web_API_SQL_security_reuse": "catalog-media-v72-source-delta.json",
+  "runtime": "Android101 running, not accepted; Android debug identity origin9002only/emulator reverse to54351. No Mac9002connection.",
+  "whole_features_accepted": 0
+}

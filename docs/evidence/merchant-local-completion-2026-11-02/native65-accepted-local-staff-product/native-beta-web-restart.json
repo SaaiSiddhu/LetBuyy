@@ -1,0 +1,13 @@
+{
+  "run_id": "65570e9272a9",
+  "steps": [
+    "normal-native-web-owner-settings-read",
+    "normal-app-restart-restores-beta-selection",
+    "supported-native-manager-product-edit"
+  ],
+  "evidence": [
+    "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v65/native-web-alpha-read.png",
+    "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v65/native-beta-restart-selection.png",
+    "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v65/native-staff-product-saved.png"
+  ]
+}

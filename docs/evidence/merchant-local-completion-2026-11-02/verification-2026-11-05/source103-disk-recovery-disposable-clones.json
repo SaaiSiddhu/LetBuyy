@@ -1,0 +1,34 @@
+{
+  "at": "2026-11-08T08:31:27.263035+00:00",
+  "scope": "Verified terminal disposable validation copies only; original source, source manifests, reports, build outputs, backup and device data retained",
+  "removed": [
+    {
+      "capsule": "/private/tmp/letbuyy-merchant-creation-retirement-v102-governance-z59b6ge6",
+      "receipt": "merchant-creation-retirement-v102-governance.terminal.json",
+      "source": "merchant-creation-retirement-source-v102.source.json",
+      "verified_inputs": 8524,
+      "exit_code": 0
+    },
+    {
+      "capsule": "/private/tmp/letbuyy-merchant-creation-retirement-v97-governance-re2eg3s4",
+      "receipt": "merchant-creation-retirement-v97-governance.terminal.json",
+      "source": "merchant-creation-retirement-source-v97.source.json",
+      "verified_inputs": 8524,
+      "exit_code": 0
+    },
+    {
+      "capsule": "/private/tmp/letbuyy-merchant-creation-retirement-v103-governance-v2-z3kq8g8z",
+      "receipt": "merchant-creation-retirement-v103-governance-v2.terminal.json",
+      "source": "merchant-creation-retirement-source-v103.source.json",
+      "verified_inputs": 8525,
+      "exit_code": 0
+    },
+    {
+      "capsule": "/private/tmp/letbuyy-merchant-creation-retirement-v103-governance-hbrwotnl",
+      "receipt": "merchant-creation-retirement-v103-governance.terminal.json",
+      "source": "merchant-creation-retirement-source-v103.source.json",
+      "verified_inputs": 8525,
+      "exit_code": 1
+    }
+  ]
+}

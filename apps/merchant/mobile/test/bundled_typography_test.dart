@@ -47,11 +47,43 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             theme: theme,
-            home: const Scaffold(body: Text('Merchant ₹25.00')),
+            home: Scaffold(
+              body: Column(
+                children: [
+                  const Text('Merchant ₹25.00'),
+                  Card(
+                    child: Text(
+                      'Warehouse request awaiting confirmation',
+                      style: theme.textTheme.titleSmall,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         );
         await tester.pumpAndSettle();
         expect(find.text('Merchant ₹25.00'), findsOneWidget);
+        final heading = tester.widget<RichText>(
+          find.descendant(
+            of: find.text('Warehouse request awaiting confirmation'),
+            matching: find.byType(RichText),
+          ),
+        );
+        final background = theme.cardTheme.color ?? theme.colorScheme.surface;
+        final foreground = Color.alphaBlend(
+          heading.text.style!.color!,
+          background,
+        );
+        final a = foreground.computeLuminance(),
+            b = background.computeLuminance();
+        final contrast = ((a > b ? a : b) + .05) / ((a < b ? a : b) + .05);
+        expect(
+          contrast,
+          greaterThanOrEqualTo(4.5),
+          reason:
+              '${theme.brightness} recovery headings must remain readable on actual Merchant cards.',
+        );
         expect(tester.takeException(), isNull);
       }
       final license = await LicenseRegistry.licenses.firstWhere(

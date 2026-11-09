@@ -1,0 +1,17 @@
+{
+  "started_at": "2026-11-06T03:34:26.628081+00:00",
+  "supervisor_pid": 82974,
+  "source": "switcher-staff-source-v6",
+  "source_sha256": "8e7cf5dff2b908436420fb53e90e9340968b8506547ffb8445a604f29868e69a",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 82976,
+  "exit_code": 0,
+  "finished_at": "2026-11-06T03:35:30.054655+00:00",
+  "source_unchanged": true,
+  "source_readback_sha256": "8e7cf5dff2b908436420fb53e90e9340968b8506547ffb8445a604f29868e69a"
+}

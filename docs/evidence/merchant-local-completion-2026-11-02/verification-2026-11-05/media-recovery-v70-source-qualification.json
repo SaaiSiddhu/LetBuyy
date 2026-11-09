@@ -1,0 +1,58 @@
+{
+  "at": "2026-11-07T04:08:31.098999+00:00",
+  "source": "227c67d04d52c7d0cad74e5709db40e4dd93ca7917d7317a1d29a7fe680ac508",
+  "inputs": 8496,
+  "checks": {
+    "flutter": {
+      "passed": 1676,
+      "failed": 0,
+      "skipped": 0,
+      "receipt": "media-recovery-v70-flutter-all.terminal.json"
+    },
+    "flutter_analysis": {
+      "issues": 0,
+      "receipt": "media-recovery-v70-flutter-analysis.terminal.json"
+    },
+    "web_tests": {
+      "phase_passes": [
+        655,
+        818,
+        295,
+        13
+      ],
+      "failed": 0,
+      "skipped": 0,
+      "uncaught_event_errors": 0,
+      "receipt": "media-recovery-v69-web-tests.terminal.json",
+      "reuse_boundary": "media-recovery-v70-source-delta.json"
+    },
+    "web_types": {
+      "exit": 0,
+      "receipt": "media-recovery-v69-web-types.terminal.json",
+      "reuse_boundary": "media-recovery-v70-source-delta.json"
+    },
+    "real_browser_checksum": {
+      "exit": 0,
+      "size_bytes": 104857600,
+      "receipt": "media-recovery-v70-browser-worker-v2.terminal.json",
+      "prior_sandbox_attempt": "media-recovery-v70-browser-worker.terminal.json; no loopback-listen permission, did not exercise browser"
+    },
+    "governance": {
+      "passed": 114,
+      "not_applicable": 1,
+      "failed": 0,
+      "receipt": "merchant-media-recovery-v70-governance-v1.terminal.json",
+      "original_source_and_index_unchanged": true
+    }
+  },
+  "security_invariant": {
+    "unchanged_from_source66": [
+      "config/security/next-security-headers.ts",
+      "apps/merchant/web/next.config.ts"
+    ],
+    "mechanism": "Existing locked fast-sha256 1.3.0 incremental pure JavaScript in the existing worker. No production CSP expansion or dynamic evaluation.",
+    "review_rejection": "Proposed broader wasm execution CSP permission was rejected by automatic review; removed and replaced by compatible JS digest without changing the security boundary."
+  },
+  "runtime": "native93 currently running; no acceptance claimed",
+  "whole_features_accepted": 0
+}

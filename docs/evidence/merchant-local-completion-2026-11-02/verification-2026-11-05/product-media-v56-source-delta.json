@@ -1,0 +1,15 @@
+{
+  "from": "70794e68bd47bf97c4331ab71f5a3f968231b63153cb23f0f6889ebdda31e445",
+  "to": "70cb44be58fb9a998ef1e35ca2b33bd0ae8c8ed45ddd1742d4723806f0119933",
+  "changed": [
+    "apps/merchant/mobile/lib/screens/content/media_library_screen.dart",
+    "apps/merchant/mobile/lib/screens/products/product_form_screen.dart",
+    "apps/merchant/mobile/lib/services/media_service.dart",
+    "apps/merchant/mobile/test/mobile_services_test.dart",
+    "apps/merchant/mobile/test/product_media_attachment_test.dart",
+    "packages/dart/models/lib/shared_contracts.dart",
+    "packages/dart/models/lib/src/media_contracts.dart"
+  ],
+  "unchanged_backend_web_sql_inputs": true,
+  "acceptance": "Source preservation only; previous Android runtime is retained as historical source54 proof. No inference of current iOS or full product/buyer acceptance."
+}

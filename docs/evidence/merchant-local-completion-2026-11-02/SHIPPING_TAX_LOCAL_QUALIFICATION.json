@@ -1,0 +1,59 @@
+{
+  "runId": "0380f3b9163d",
+  "tests": 23,
+  "assertionsPassed": 23,
+  "assertionsFailed": 0,
+  "skipped": 0,
+  "cancelled": 0,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "suites": [
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/checkout-tax-authority.postgres.test.ts",
+      "tests": 12,
+      "pass": 12,
+      "fail": 0,
+      "skipped": 0,
+      "code": 0
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/gst-invoice-issuance.test.ts",
+      "tests": 1,
+      "pass": 1,
+      "fail": 0,
+      "skipped": 0,
+      "code": 0
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/gst-tax-computation.test.ts",
+      "tests": 1,
+      "pass": 1,
+      "fail": 0,
+      "skipped": 0,
+      "code": 0
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/shipping-profiles.postgres.test.ts",
+      "tests": 1,
+      "pass": 1,
+      "fail": 0,
+      "skipped": 0,
+      "code": 0
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/shipping-tax-settings.postgres.test.ts",
+      "tests": 8,
+      "pass": 8,
+      "fail": 0,
+      "skipped": 0,
+      "code": 0
+    }
+  ],
+  "scope": "Owned disposable current local schema, Gateway/SQL contracts and synthetic inputs. No native/browser/full-feature/provider/carrier/legal certification."
+}

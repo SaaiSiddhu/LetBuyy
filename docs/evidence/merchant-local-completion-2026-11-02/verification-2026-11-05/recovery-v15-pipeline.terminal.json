@@ -1,0 +1,10 @@
+{
+  "finished_at": "2026-11-06T11:42:54.256748+00:00",
+  "source_sha256": "33f1b05d3834fe738d8bb7a8598e75a601ba86085e5a634832b31e3de99e48cf",
+  "checks": {
+    "flutter-v15-regression": 0,
+    "flutter-v15-analysis": 1
+  },
+  "source_unchanged": true,
+  "status": "FAIL"
+}

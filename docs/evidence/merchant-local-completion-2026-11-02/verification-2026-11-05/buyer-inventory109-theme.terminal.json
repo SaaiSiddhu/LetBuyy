@@ -1,0 +1,11 @@
+{
+  "command": [
+    "pnpm",
+    "--filter",
+    "@letbuyy/theme-engine",
+    "test"
+  ],
+  "source": "merchant-buyer-inventory-source-v109",
+  "exit_code": 1,
+  "ended_at": "2026-11-08T10:17:38.689426+00:00"
+}

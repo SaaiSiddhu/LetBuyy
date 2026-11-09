@@ -1,0 +1,14 @@
+{
+  "at": "2026-11-07T05:55:39.596552+00:00",
+  "core_inputs_equal": 8498,
+  "sha256": "fea6117e135deda4002896d072904f1655ab872fe949caa7c33455fb0e6c3820",
+  "active_source_matches": true,
+  "all122unique_ledger_rows_retained": true,
+  "no_active_runner": true,
+  "index_entries_unchanged_since_preaccepted_governance_v2": true,
+  "index_bytes_equal_governance_v2_after": true,
+  "index_sha256": "70093e9e3001a3b3e8769c109c01384e08169200420511ee064a0771b5c91a50",
+  "docs": "Current source73 checkpoint and source72native101/clientreuse/browser102 evidence reconciled; historical snapshots remain historical.",
+  "resource_report": "catalog-media-v73-final-device-state.json",
+  "full_feature_acceptance": false
+}

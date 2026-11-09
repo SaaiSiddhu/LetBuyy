@@ -92,3 +92,29 @@ for(const transfer of [false,true])for(const fault of ['none','target','site','p
  if(fault==='none')assert.equal((await get()).lines[0].quantity_received,2);
  else await assert.rejects(get,e=>e instanceof LetbuyyApiError&&e.code==='WAREHOUSE_DOCUMENTS_UNVERIFIED');
 });
+
+for(const transfer of [false,true])test((transfer?'transfer':'PO')+' read labels validate identity, site, product ownership and historical absence',()=>{
+ const schema=transfer?WarehouseTransferSchema:WarehousePurchaseOrderSchema;
+ const base=record(transfer) as Record<string,unknown>,lines=base.lines as Array<Record<string,unknown>>;
+ const product={id:uuid(6),store_id:uuid(1),name:'Synthetic product',sku:'SYN-P',deleted_at:null};
+ const variant={id:uuid(10),product_id:uuid(6),title:'Synthetic large',sku:'SYN-L'};
+ lines[0].product=product;lines[0].variant_id=uuid(10);lines[0].variant=variant;
+ const location={id:uuid(7),store_id:uuid(1),name:'Synthetic origin',deleted_at:null};
+ base[transfer?'source_location':'location']=location;
+ if(transfer)base.destination_location={...location,id:uuid(8),name:'Synthetic destination'};
+ assert.equal(schema.safeParse(base).success,true,'same-site positive control');
+ for(const fault of ['product-id','product-site','product-name','product-sku','product-date','variant-id','variant-parent','variant-title','variant-sku','location-id','location-site','location-name','location-date','destination-site']){
+  if(!transfer&&fault==='destination-site')continue;
+  const row=structuredClone(base),line=(row.lines as Array<Record<string,unknown>>)[0];
+  const p=line.product as Record<string,unknown>,v=line.variant as Record<string,unknown>,l=row[transfer?'source_location':'location'] as Record<string,unknown>;
+  if(fault==='product-id')p.id=uuid(99);if(fault==='product-site')p.store_id=uuid(99);if(fault==='product-name')p.name=42;if(fault==='product-sku')p.sku=42;if(fault==='product-date')p.deleted_at='unknown';
+  if(fault==='variant-id')v.id=uuid(99);if(fault==='variant-parent')v.product_id=uuid(99);if(fault==='variant-title')v.title=42;if(fault==='variant-sku')v.sku=42;
+  if(fault==='location-id')l.id=uuid(99);if(fault==='location-site')l.store_id=uuid(99);if(fault==='location-name')l.name=42;if(fault==='location-date')l.deleted_at='unknown';
+  if(fault==='destination-site')(row.destination_location as Record<string,unknown>).store_id=uuid(99);
+  assert.equal(schema.safeParse(row).success,false,fault);
+ }
+ const historical=structuredClone(base);(historical.lines as Array<Record<string,unknown>>)[0].product=null;(historical.lines as Array<Record<string,unknown>>)[0].variant=null;historical[transfer?'source_location':'location']=null;
+ assert.equal(schema.safeParse(historical).success,true,'missing relation does not erase historical document');
+ const deleted=structuredClone(base);((deleted.lines as Array<Record<string,unknown>>)[0].product as Record<string,unknown>).deleted_at='2026-11-03T00:00:00Z';
+ assert.equal(schema.safeParse(deleted).success,true,'deleted reference is explicit read data');
+});

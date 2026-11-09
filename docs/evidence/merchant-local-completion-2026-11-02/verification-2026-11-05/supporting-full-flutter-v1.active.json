@@ -1,0 +1,15 @@
+{
+  "started_at": "2026-11-05T18:21:03.261639+00:00",
+  "supervisor_pid": 52549,
+  "source": "supporting-source-v1",
+  "source_sha256": "f0ddd3bc8c41e9fc5000353464d10f66a298abdb8a51d27b0e6d99e183ee0a33",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "--reporter",
+    "expanded"
+  ],
+  "status": "RUNNING",
+  "child_pid": 52551
+}

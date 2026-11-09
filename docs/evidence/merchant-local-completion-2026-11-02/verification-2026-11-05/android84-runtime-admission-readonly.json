@@ -1,0 +1,11 @@
+{
+  "owner_verified": true,
+  "qemu_pid": 79160,
+  "adb_pid": 68633,
+  "avd": "LetBuyy_Merchant_Parity_20261106_c6cefc",
+  "initial_boot_completed": true,
+  "forward": "",
+  "reverse": "",
+  "no_mutations": true,
+  "host9002": "Not contacted"
+}

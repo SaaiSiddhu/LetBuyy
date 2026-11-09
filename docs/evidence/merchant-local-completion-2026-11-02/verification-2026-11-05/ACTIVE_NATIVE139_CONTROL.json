@@ -1,0 +1,19 @@
+{
+  "at": "2026-11-08T09:38:41.122802+00:00",
+  "root": "/private/tmp/letbuyy-ios-ui-20261108-2dc682c2c0",
+  "run_id": "921ee95f027a",
+  "latest_admitted": "Create-resume-functional-stock-five-v6.swift",
+  "phase": "Create6accepted/Auth1accepted",
+  "already_acknowledged": [
+    "normalAuth",
+    "native7 and web7",
+    "webM3to1 produces5",
+    "native5readback"
+  ],
+  "next": "Public buyer availability; geometry/default-tap observations stay separate",
+  "source_frozen": false,
+  "preservation": "All failed controls, screenshots and exports remain retained",
+  "status": "TERMINAL_FUNCTIONAL_PASS",
+  "cleanup": "empty",
+  "device": "Shutdown restored"
+}

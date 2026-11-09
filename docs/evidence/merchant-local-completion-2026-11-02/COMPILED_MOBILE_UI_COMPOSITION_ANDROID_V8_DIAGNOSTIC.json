@@ -1,0 +1,84 @@
+{
+  "at": "2026-11-04T12:27:20.386394+00:00",
+  "status": "FAILED_BOUNDED_NATIVE_VERIFIER_CHART_TARGET_UNRESOLVED",
+  "full_app_accepted": false,
+  "run": {
+    "runId": "3a528e5d9905",
+    "assertionsPassed": 0,
+    "assertionsFailed": 1,
+    "cancelled": 0,
+    "skipped": 0,
+    "wallSeconds": 319.9,
+    "suiteSeconds": 317.9,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    }
+  },
+  "source_manifest": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-composition-v13.source.json",
+  "artifact": {
+    "run_id": "3a528e5d9905",
+    "source_sha256": "eee36065888cac21b99438ee64f8bafaaa57cc61d79cbcf755ca30715a7a423a",
+    "apk": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-category-v8/qualified-artifact/merchant-local-debug.apk",
+    "source_build_path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/apps/merchant/mobile/build/app/outputs/flutter-apk/app-debug.apk",
+    "original_bytes_retained": true,
+    "sha256": "d283e843f91b90756d968a08d6a704ffefe3837b1569747f54410c5934da5ee0",
+    "defines": {
+      "ENVIRONMENT": "local",
+      "BFF_BASE_URL": "http://127.0.0.1:54350/v1",
+      "API_BASE_URL": "http://127.0.0.1:54350/v1",
+      "IDENTITY_BASE_URL": "http://localhost:9002",
+      "ADMIN_BASE_URL": "http://localhost:54353",
+      "STOREFRONT_BASE_URL": "http://localhost:54354",
+      "LOCAL_CHALLENGE_SDK_URL": "http://127.0.0.1:58853/fixtures/turnstile/api.js",
+      "TURNSTILE_SITE_KEY": "1x00000000000000000000AA",
+      "MOBILE_PUSH_DEVICE_TOKEN": "",
+      "SENTRY_DSN": "SKIP_NEEDS_HUMAN_LOCAL_SENTRY_DSN"
+    },
+    "build_method": "flutter-config-only-then-offline-gradle-debug",
+    "installed_readback": true,
+    "scope": "Local debug artifact only; no hosted/provider/release certification."
+  },
+  "launcher_cleanup": {
+    "at": "2026-11-04T12:23:26.268818+00:00",
+    "serial": "emulator-5580",
+    "adb_port": 15038,
+    "runner_exit": 1,
+    "controller_exit": 1,
+    "baseline": [],
+    "before": [],
+    "removed": [],
+    "refused": [],
+    "after": [],
+    "scope": "Only current-run exact reverse tuples on task emulator. Host9002 never accessed."
+  },
+  "observed_before_stop": {
+    "normal_native_pkce_sign_in": true,
+    "search_confirmed_empty_read": true,
+    "AI_draft_actual_keyboard_close_no_command": true,
+    "Staff_required_email_keyboard_role_viewer_draft_cancel_readback_no_invite": true,
+    "Settings_dark_supporting_copy": true,
+    "native_images_visually_inspected": [
+      "native-ai-operator-keyboard-draft.png",
+      "native-staff-role-applied-draft.png",
+      "native-root-navigation-dark.png"
+    ]
+  },
+  "failure": {
+    "reason": "UI companion exact/prefix matcher did not find Daily revenue values during bounded downward scrolling. Visible attention state was already below the chart, showing payout/quick actions/activity. No backend/renderer defect established.",
+    "hypothesis": "ExpansionTile native label may append a comma-delimited hint; existing matcher splits only newline. New native observation must capture actual label or explicit unavailable state.",
+    "not_exercised": [
+      "chart value expansion",
+      "new segment spacing",
+      "category recovery",
+      "web category readback"
+    ],
+    "post_terminal_probe": "App was retired by cleanup; read-only hierarchy contained no current Merchant scrollable, so it cannot recover the chart observation."
+  },
+  "business_mutations_from_these_areas": 0,
+  "next": "Preserve failed run; source remains qualified/fixed. Correct only native observation in freshv9, requiring explicit actual title/hint and visible current control or recording genuine unavailable state separately. No backend/schema/test harness semantics change."
+}

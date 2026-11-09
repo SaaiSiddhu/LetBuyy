@@ -1,3 +1,4 @@
+import 'support/membership_page.dart';
 import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -54,15 +55,17 @@ void reply(
         'data': data,
         'meta':
             overrideMeta ??
-            {
-              'store_id': r.queryParameters['store_id'],
-              'total': count,
-              'page': page,
-              'per_page': 100,
-              'total_pages': (count / 100).ceil(),
-              'has_next': page * 100 < count,
-              'has_prev': page > 1,
-            },
+            (Uri.parse(r.path).path.endsWith('/stores')
+                ? membershipPageMeta(count)
+                : {
+                    'store_id': r.queryParameters['store_id'],
+                    'total': count,
+                    'page': page,
+                    'per_page': 100,
+                    'total_pages': (count / 100).ceil(),
+                    'has_next': page * 100 < count,
+                    'has_prev': page > 1,
+                  }),
       },
     ),
   );
@@ -419,17 +422,19 @@ class _WidgetApi extends ApiClient {
       data: rows,
       total: rows.length,
       page: 1,
-      limit: 100,
+      limit: path == '/stores' ? 50 : 100,
       hasMore: false,
-      meta: {
-        'store_id': site,
-        'total': rows.length,
-        'page': 1,
-        'per_page': 100,
-        'total_pages': 1,
-        'has_next': false,
-        'has_prev': false,
-      },
+      meta: path == '/stores'
+          ? membershipPageMeta(rows.length)
+          : {
+              'store_id': site,
+              'total': rows.length,
+              'page': 1,
+              'per_page': 100,
+              'total_pages': 1,
+              'has_next': false,
+              'has_prev': false,
+            },
     );
   }
 

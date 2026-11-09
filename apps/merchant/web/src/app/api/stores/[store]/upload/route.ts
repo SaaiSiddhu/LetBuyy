@@ -1,45 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
-import type { CreateMediaInput } from '@letbuyy/api-client'
 import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
-import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
+import { merchantSecurityScope, privateSecurityResponse } from '@/lib/api/merchant-security-scope'
 
-export async function POST(
-    request: NextRequest,
-    { params }: { params: Promise<{ store: string }> }
-) {
+/** Bytes and registration have separate durable receipts. Never swallow a
+ * registration failure or reallocate the upload to recover its acknowledgement. */
+export async function POST(request: NextRequest, { params }: { params: Promise<{ store: string }> }) {
     try {
-        const { store } = await params
-        const resolved = await resolveOwnedStoreId(decodeURIComponent(store))
-
-        if (resolved.error) return resolved.error
-
-        const formData = await request.formData()
-        const file = formData.get('file')
-        if (!file || typeof file === 'string') {
-            return NextResponse.json({ error: 'File is required' }, { status: 400 })
-        }
-        const uploadFile = file as File
-
-        formData.set('folder', `${resolved.storeId}/products`)
-        formData.set('store_id', resolved.storeId)
-
-        const apiClient = createMerchantApiClient()
-        const uploaded = await apiClient.upload.file(formData, { query: { store_id: resolved.storeId } })
-
-        if (uploaded?.url) {
-            await apiClient.media.create({
-                store_id: resolved.storeId,
-                filename: uploaded.key || uploadFile.name,
-                original_name: uploadFile.name,
-                url: uploaded.url,
-                mime_type: uploadFile.type || uploaded.content_type || 'application/octet-stream',
-                size_bytes: uploadFile.size || uploaded.size || 0,
-                folder: 'products',
-            } as CreateMediaInput).catch(() => null)
-        }
-
-        return NextResponse.json({ data: uploaded }, { status: 201 })
-    } catch (err) {
-        return merchantApiErrorResponse(err, 'Unable to upload file')
-    }
+        const scope = await merchantSecurityScope(request, params)
+        if (scope.error) return scope.error
+        const form = await request.formData(), file = form.get('file')
+        if (!file || typeof file === 'string') return privateSecurityResponse(NextResponse.json({ error: 'File is required' }, { status: 400 }))
+        form.set('folder', `${scope.storeId}/products`)
+        form.set('store_id', scope.storeId)
+        // The original recoverable fingerprint carries tenant context in the
+        // form/header. A redundant URL query creates a different saved request.
+        const data = await createMerchantApiClient(scope.storeId).upload.file(form, { headers: scope.headers, idempotencyKey: scope.headers['X-Idempotency-Key'] })
+        return privateSecurityResponse(NextResponse.json({ data }, { status: 201 }))
+    } catch (error) { return privateSecurityResponse(merchantApiErrorResponse(error, 'Unable to confirm upload')) }
 }

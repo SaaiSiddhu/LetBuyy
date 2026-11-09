@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { createHash, randomUUID } from 'node:crypto';
 import test, {beforeEach,afterEach} from 'node:test';
 const originalFetch=globalThis.fetch;
 beforeEach(()=>{globalThis.fetch=(async(input:RequestInfo|URL)=>{const url=new URL(typeof input==='string'?input:input instanceof URL?input.href:input.url);assert.equal(url.origin,'https://upload-unit.invalid');const table=url.pathname.split('/').pop();if(table==='users_custom')return Response.json([{id:'user-owner',email:'owner@example.invalid'}]);if(table==='sites')return Response.json([{id:'store-owner'}]);throw new Error('Unexpected upload unit dependency');}) as typeof fetch;});
@@ -8,9 +9,31 @@ import type { Env } from '../index';
 import uploadRouter from '../routes/upload.ts';
 
 function createUploadApp(userId: string, bucket: Partial<R2Bucket>, storeId = 'store-owner') {
+    const objects = new Map<string, R2Object>();
+    // Policy-unit fixture only. Mounted Gateway/owned PG + compiled workerd
+    // suites prove real claim allocation and actual conditional R2 behavior.
+    const fixtureBucket = { ...bucket,
+        head: bucket.head || (async (key: string) => objects.get(key) || null),
+        put: async (key: string, value: ReadableStream<Uint8Array>, options?: R2PutOptions) => {
+            if (objects.has(key)) return null;
+            const bytes = new Uint8Array(await new Response(value).arrayBuffer());
+            await bucket.put?.(key, bytes, options);
+            const object = { key, size: bytes.length, customMetadata: options?.customMetadata,
+                httpMetadata: options?.httpMetadata } as unknown as R2Object;
+            objects.set(key, object); return object;
+        },
+    } as unknown as R2Bucket;
     const app = new Hono<{ Bindings: Env }>();
     app.use('*', async (c, next) => {
         c.set('auth', { user: { id: userId, email: 'owner@example.com', storeId } });
+        if (c.req.method === 'POST' && (c.req.header('content-type') || '').includes('multipart/form-data')) {
+            const form = await c.req.formData(); const file = form.get('file') as unknown as File;
+            if (file && typeof file.arrayBuffer === 'function') c.set('publicUploadClaim', {
+                id: randomUUID(), siteId: storeId, requestHash: 'synthetic-policy-only',
+                sha256: createHash('sha256').update(new Uint8Array(await file.arrayBuffer())).digest('hex'),
+                recoveryBody: { upload_progress: { version: 1, object_id: randomUUID(), actor_id: userId } },
+            });
+        }
         await next();
     });
     app.route('/upload', uploadRouter);
@@ -20,7 +43,7 @@ function createUploadApp(userId: string, bucket: Partial<R2Bucket>, storeId = 's
             ENVIRONMENT: 'test',
             SUPABASE_URL: 'https://upload-unit.invalid',
             SUPABASE_SERVICE_ROLE_KEY: 'synthetic-upload-unit-only',
-            R2_BUCKET: bucket as R2Bucket,
+            R2_BUCKET: fixtureBucket,
         } as Env,
     };
 }

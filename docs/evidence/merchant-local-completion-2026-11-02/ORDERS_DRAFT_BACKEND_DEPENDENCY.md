@@ -1,0 +1,11 @@
+# Native Orders draft backend dependency
+
+Fixed UI source13 / Androidrun20 (`a4e102bf98f2`) reached the actual local Gateway and received HTTP500 from POST `/v1/orders/drafts` three times. The first structured error is `Tenant table draft_orders requires a tenant/owner predicate before execution`; subsequent attempts say `Draft order creation failed`. Real GET `/v1/orders` returned200 before this command. This was the unchanged owned local fixture, not production or a mocked order result.
+
+`services/api-gateway/src/routes/orders.ts:228` defines `loadDraftOrder`; its draft query has `.eq(id,draftId)` without a site predicate. `tenant/tenant-scoped.ts:165` refuses an unscoped tenant read. The create path inserts the draft/lines before calling this lookup; the convert path also calls it. These source observations make the missing scoped lookup an inferred cause. They do not prove final committed state. The first request may have committed partial work before acknowledgement failed; never report “no draft created” fromHTTP500.
+
+The independent READONLY witness proved no matching native draft/order before the request. It never observed a converted order, then stopped when the owned runner retired. An additional checkpoint refused the retired ready metadata before any query. The final database was correctly cleaned up; post-failure committed state remains unknown. The transport log has no Orders body/key digests, so three attempts are not effect-once proof.
+
+The UI kept the exact input, displayed the unknown outcome and disabled another Save. Six selected actual Android screenshots, including two real keyboards and the unknown state, were independently inspected. The compoundnative test is0pass/1fail,835suite/836.8wallseconds, no skips/cancellations. No create/convert or full sync acceptance follows.
+
+The current attachment explicitly protects backend/API/SQL/tenancy/idempotency/persistence behavior. No guard is disabled and no backend source changed. A separately scoped backend repair must preserve the canonical tenant guard, original command identity and retained data, address scoped create/reload/convert/replay behavior, and qualify actual local owner/staff +fault/retry/readback before repeating this positive gate. Continue independent frontend Detail/Returns work now.

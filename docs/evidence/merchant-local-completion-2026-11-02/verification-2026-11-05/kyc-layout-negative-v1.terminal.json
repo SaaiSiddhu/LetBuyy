@@ -1,0 +1,18 @@
+{
+  "started_at": "2026-11-06T08:39:53.521326+00:00",
+  "supervisor_pid": 62432,
+  "source": "kyc-layout-negative-v1",
+  "source_sha256": "828e4fe998f091fec19b2f861996c22ccecadc47c17aeec2ef9947c4c4679383",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "test/kyc_upload_layout_test.dart"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 62437,
+  "exit_code": 1,
+  "finished_at": "2026-11-06T08:39:56.295607+00:00",
+  "source_unchanged": true,
+  "source_readback_sha256": "828e4fe998f091fec19b2f861996c22ccecadc47c17aeec2ef9947c4c4679383"
+}

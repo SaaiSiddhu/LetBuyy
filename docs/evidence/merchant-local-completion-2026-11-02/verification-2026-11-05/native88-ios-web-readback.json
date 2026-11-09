@@ -1,0 +1,76 @@
+{
+  "at": "2026-11-06T23:51:38.213985+00:00",
+  "status": "BOUNDED_LOCAL_IOS_WEB_PASS_SINGLE_SAVE_TAP_WITH_VISIBLE_FEEDBACK",
+  "run_id": "736d90079837",
+  "source": "merchant-editor-feedback-source-v62",
+  "source_sha256": "8e2b9f6b03ff9ea79a70dd6cd0c17f2af00bd10eafac03df6119d8ba08c4b5a4",
+  "source_inputs": 8487,
+  "artifact": {
+    "at": "2026-11-06T23:50:18.277325+00:00",
+    "source_sha256": "8e2b9f6b03ff9ea79a70dd6cd0c17f2af00bd10eafac03df6119d8ba08c4b5a4",
+    "artifact_manifest_sha256": "f5b7ea372005e5456a21df3e2a3a854cd87152d6a97860309fbfc9ff7b9e0caa",
+    "files": 401,
+    "installed_equal_retained_normal_simulator_build": true,
+    "scope": "Artifact custody only; UI acceptance separate. No physical or release proof."
+  },
+  "normal_synthetic_credentials_and_automatic_callback": true,
+  "os_picker_and_shared_media_workflow": true,
+  "one_native_save_tap_without_snackbar_expiry_wait": true,
+  "visible_feedback_geometry": "LETBUYY_FEEDBACK_FRAME (0.0, 680.0, 402.0, 80.0) UPDATE (16.0, 776.0, 370.0, 48.0)",
+  "web_image_decoded_4x4": true,
+  "web_save_native_refresh": true,
+  "final_product": {
+    "name": "Synthetic iOS web product",
+    "price_inr": 100,
+    "stock": 4,
+    "image_count": 1
+  },
+  "media_rows": 1,
+  "public_objects": 1,
+  "public_sha256": "2b0872c5f3a670beb4f0ab1213afd7668835da6feeccf4cd68f9e2ddcf97e931",
+  "native_write_calls": [
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/upload",
+      "method": "POST",
+      "status": 201
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/media",
+      "method": "POST",
+      "status": 201
+    },
+    {
+      "source": "actual-mobile-bff",
+      "path": "/v1/products/c9f8d5a4-56d2-4c36-b338-381a9de0a807",
+      "method": "PATCH",
+      "status": 200
+    }
+  ],
+  "ui_product": {
+    "exit": 0,
+    "native_product_saved": true,
+    "normal_auth": true,
+    "run_id": "736d90079837"
+  },
+  "ui_web_readback": {
+    "exit": 0,
+    "run_id": "736d90079837",
+    "accepted": true,
+    "web_name_readback": true,
+    "normal_native_refresh": true
+  },
+  "backend_exit": 0,
+  "source_unchanged_after_teardown": true,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "whole_feature_or_full_ios_or_full122_or_release_accepted": false,
+  "limits": "Normal synthetic iOS Accounts and OS photo picker, original Media workflow, native product save/web image decode, web save/native readback. Local compiled Worker/PG/R2 proof only; no buyer render, iOS camera, provider, hosted or full122 acceptance."
+}

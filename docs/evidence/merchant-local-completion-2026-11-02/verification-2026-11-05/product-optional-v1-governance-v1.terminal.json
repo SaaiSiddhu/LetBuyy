@@ -1,0 +1,12 @@
+{
+  "at": "2026-11-06T06:03:08.323005+00:00",
+  "status": "TERMINAL",
+  "exit_code": 0,
+  "capsule": "/private/tmp/letbuyy-product-optional-v1-governance-uji9hyrf",
+  "purpose": "Disposable validation copy only, no implementation/worktree/merge/push/release",
+  "source_sha256": "3bdf36a7aeeda56b390310bb931a9584b784666459ce072fcb7d7113ed97c48d",
+  "core_inputs_byte_equal": 8457,
+  "original_source_unchanged": true,
+  "original_index_unchanged": true,
+  "report": "product-optional-v1-governance-v1-report.json"
+}

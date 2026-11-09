@@ -103,7 +103,8 @@ class SessionVerificationUnavailableException implements Exception {
   String toString() => 'Unable to verify your account. Please retry.';
 }
 
-class MerchantIdentityUnavailableException extends SessionVerificationUnavailableException {
+class MerchantIdentityUnavailableException
+    extends SessionVerificationUnavailableException {
   const MerchantIdentityUnavailableException();
   @override
   String toString() => 'Sign-in is temporarily unavailable. Please retry.';
@@ -125,7 +126,9 @@ class StoreAuthService extends ChangeNotifier {
     http.Client? httpClient,
     String sessionCookieName = 'lb_session',
     String csrfCookieName = 'letbuyy_csrf',
+    String storageNamespace = '',
   }) : _api = api,
+       _storageNamespace = storageNamespace,
        _sessionCookieName = sessionCookieName,
        _csrfCookieName = csrfCookieName,
        _identityBaseUrl = _trimTrailingSlash(identityBaseUrl),
@@ -147,9 +150,11 @@ class StoreAuthService extends ChangeNotifier {
     }
   }
 
-  String get _sessionTokenKey => _sessionCookieName;
-  String get _sessionUserKey => '${_sessionCookieName}_user';
-  String get _sessionExpiresAtKey => '${_sessionCookieName}_expires_at';
+  final String _storageNamespace;
+  String get _sessionTokenKey => '$_storageNamespace$_sessionCookieName';
+  String get _sessionUserKey => '$_storageNamespace${_sessionCookieName}_user';
+  String get _sessionExpiresAtKey =>
+      '$_storageNamespace${_sessionCookieName}_expires_at';
   final String _csrfCookieName;
   final String _sessionCookieName;
 
@@ -181,10 +186,10 @@ class StoreAuthService extends ChangeNotifier {
     notifyListeners();
   }
 
-
   MerchantSessionUser? get currentUser => _session?.user;
   bool get isSignedIn => _session != null;
-  String? get accessToken => accountTransition || _signingOut ? null : _session?.token;
+  String? get accessToken =>
+      accountTransition || _signingOut ? null : _session?.token;
   DateTime? get sessionExpiresAt => _session?.expiresAt;
   Stream<AuthState> get authStateChanges => _authEvents.stream;
   bool _sessionRecoveryPending = false;
@@ -432,8 +437,9 @@ class StoreAuthService extends ChangeNotifier {
           final request = http.Request('POST', _identityUri('/api/auth/logout'))
             ..followRedirects = false
             ..headers['Authorization'] = 'Bearer $token';
-          final response = await http.Response.fromStream(await _http.send(request))
-              .timeout(const Duration(seconds: 20));
+          final response = await http.Response.fromStream(
+            await _http.send(request),
+          ).timeout(const Duration(seconds: 20));
           lastLogoutRevocationConfirmed = response.statusCode == 200;
         } catch (_) {
           lastLogoutRevocationConfirmed = false;
@@ -632,8 +638,9 @@ class StoreAuthService extends ChangeNotifier {
       final request = http.Request('GET', _identityUri('/api/auth/session'))
         ..headers['Authorization'] = 'Bearer $token'
         ..followRedirects = false;
-      final response = await http.Response.fromStream(await _http.send(request))
-          .timeout(const Duration(seconds: 20));
+      final response = await http.Response.fromStream(
+        await _http.send(request),
+      ).timeout(const Duration(seconds: 20));
       final body = _decodeBody(response);
       // An HTML protection/login page, timeout or 5xx is not revocation. Only
       // an explicit Identity denial may retire the original encrypted token.
@@ -654,7 +661,9 @@ class StoreAuthService extends ChangeNotifier {
         throw const MerchantIdentityUnavailableException();
       }
       return MerchantSession(
-        token: body['rotated_session_token'] is String ? body['rotated_session_token'] as String : _extractCookie(response, _sessionCookieName) ?? token,
+        token: body['rotated_session_token'] is String
+            ? body['rotated_session_token'] as String
+            : _extractCookie(response, _sessionCookieName) ?? token,
         user: user,
         expiresAt: _parseDateTime(body['expires_at'] ?? body['expiresAt']),
       );

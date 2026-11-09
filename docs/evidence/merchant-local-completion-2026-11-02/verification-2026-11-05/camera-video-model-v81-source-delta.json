@@ -1,0 +1,23 @@
+{
+  "from": "source73",
+  "to": "source81",
+  "source_sha256": "5b8e0195e33aa978957abdf557a3dfd49b9ddcd9b2febd28111856d6a12727d4",
+  "changed": [
+    "apps/merchant/mobile/lib/screens/content/media_library_screen.dart",
+    "apps/merchant/mobile/lib/services/media_service.dart",
+    "apps/merchant/mobile/lib/widgets/shared/image_source_sheet.dart",
+    "apps/merchant/mobile/lib/widgets/shared/merchant_media_picker.dart",
+    "apps/merchant/mobile/test/media_interrupted_upload_recovery_test.dart",
+    "apps/merchant/mobile/test/media_model_upload_menu_test.dart",
+    "apps/merchant/mobile/test/media_public_upload_admission_test.dart",
+    "apps/merchant/mobile/test/media_video_controls_test.dart",
+    "apps/merchant/mobile/test/merchant_media_picker_test.dart",
+    "packages/dart/models/lib/src/media_contracts.dart",
+    "scripts/governance/test-suite-catalog.mjs",
+    "services/api-gateway/src/routes/public-assets.ts",
+    "tests/governance/gateway-db-lane.test.mjs",
+    "tests/owned-db/merchant-public-media-range-workerd.postgres.test.ts"
+  ],
+  "web_application_inputs_unchanged": true,
+  "reuse_boundary": "Source73 web unit/type gates apply to byte-identical web inputs; current compiled Gateway range and native source require fresh qualification/runtime. Android101 and iOS95 are historical for their exact prior client inputs."
+}

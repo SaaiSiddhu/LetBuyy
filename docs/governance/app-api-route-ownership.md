@@ -24,6 +24,8 @@ This document records app-local API route authority for the P4 product remediati
 
 ## Inventory Changes
 
+- 2026-11-07 (MERCHANT-MEDIA-RECOVERY): inventory 247 → 248. `apps/merchant/web/src/app/api/v1/stores/[store]/upload/recover/route.ts` is a `gateway-proxy` to the existing `/v1/upload/recover` via the canonical SDK. It binds live session, mounted actor, owned site, original upload key and exact folder; it performs no byte upload, database write, provider mutation or local domain transition. Media registration/update/removal reuse the existing Media proxies with original SDK request keys. Runtime topology and canonical ownership are unchanged.
+
 > **Where the count lives now (2026-09-29).** The route ratchet and the classification rules moved into
 > `scripts/validators/app-api-route-inventory.mjs`; `domain-boundary-validator.mjs` enforces them and the
 > tests call into that module, so no test carries its own copy of the number. The list below stops at 129
@@ -254,3 +256,5 @@ ESLint baseline were regenerated together. Gateway remains the owner of KYC,
 stock and payment decisions; the existing Accounts issuer owns native exchange.
 No new runtime, route class, database writer or identity issuer is introduced.
 The smaller branch-local inventory totals above are historical receipts.
+
+2026-11-09 recovery integration: retained `apps/internal/console/src/app/api/kyc-holds/action/route.ts` from the KYC source. It is a same-origin MFA-bound gateway proxy; Gateway/Postgres own exact receipt scope, current permissions, idempotency and audit. Combined existing topology inventory is 249 routes (248 plus this one proxy); no runtime added.

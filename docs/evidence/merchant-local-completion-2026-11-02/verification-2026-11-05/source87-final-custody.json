@@ -1,0 +1,52 @@
+{
+  "at": "2026-11-07T11:24:35.557537+00:00",
+  "source": "merchant-webm-abort-source-v87",
+  "source_sha256": "e831c0f58dd6a6447cb6a60190e962096732a19577e7162bb5be075540b70c18",
+  "all_core_inputs_equal": 8506,
+  "head": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+  "branch": "codex/merchant-mobile-parity",
+  "staged_entries_equal_HEAD": true,
+  "staged_entries_sha256": "67a04f878906e4a92b9a852969da907cd465dc8b3df2be0083d6d42262986c9d",
+  "raw_index_sha256": "4f631b7c99e1f1e569f0ccc244d432b7e1e4b20391687f45b6304ee4b17d2ba3",
+  "raw_index_sha256_at_governance": "6b2e1ed2424e517f7c943e6e3a27f0846cc9607455ef7a95fe3b7941724bea46",
+  "raw_index_bytes_equal_governance": false,
+  "raw_index_note": "Raw index bytes differ from the earlier governance receipt. All staged path/mode/blob entries still match HEAD and their prior SHA;all8506core source inputs match. Cause of raw-byte difference not established. No raw-index restoration or staging mutation attempted.",
+  "runs": {
+    "android116": {
+      "run_id": "ce6c4e0d693b",
+      "chain": {
+        "backend_exit": 0,
+        "ui_exit": 0,
+        "at": "2026-11-07T11:16:25.692514+00:00"
+      },
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "ios117": {
+      "run_id": "c4e529bee7d4",
+      "chain": {
+        "backend_exit": 0,
+        "ui_exit": 0,
+        "at": "2026-11-07T11:22:03.335166+00:00"
+      },
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    }
+  },
+  "android_device": "native116-device-final-readback.json",
+  "ios_device": "native117-runtime-readback.json",
+  "source_frozen": false,
+  "scope": "Owned local media completion checkpoint only. No push,merge,hosted activation,release or whole-feature certification."
+}

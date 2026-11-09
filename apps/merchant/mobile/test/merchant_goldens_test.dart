@@ -1,21 +1,22 @@
+import 'support/membership_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:letbuyy_models/letbuyy_models.dart' hide JsonMap;
 import 'package:letbuyy_store/app/store_context.dart';
 import 'package:letbuyy_store/l10n/app_localizations.dart';
 import 'package:letbuyy_store/services/api_client.dart';
-import 'package:letbuyy_store/services/app_badge_service.dart';
 import 'package:letbuyy_store/services/cache_service.dart';
 import 'package:letbuyy_store/services/customer_service.dart';
-import 'package:letbuyy_store/services/order_service.dart';
 import 'package:letbuyy_store/services/store_service.dart';
 import 'package:letbuyy_store/screens/customers/customers_screen.dart';
-import 'package:letbuyy_store/screens/orders/order_detail_screen.dart';
 import 'package:letbuyy_store/screens/store_health/store_health_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:letbuyy_store/theme/store_theme.dart';
+import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart'
+    show initializeLetbuyyTypography;
 
 class _TolerantGoldenComparator extends LocalFileComparator {
   _TolerantGoldenComparator(super.testFile, {this.tolerance = 0.05});
@@ -58,29 +59,13 @@ void main() {
     }
   });
 
-  testWidgets('golden: order detail fulfillment surface', (tester) async {
-    final api = _GoldenApiClient();
-    await _pumpGolden(
-      tester,
-      providers: _orderProviders(api),
-      child: OrderDetailScreen(
-        orderId: 'order_1',
-        initialOrder: OrderContract.fromJson(_orderJson()),
-      ),
-    );
-
-    await expectLater(
-      find.byType(OrderDetailScreen),
-      matchesGoldenFile('goldens/order_detail_fulfillment.png'),
-    );
-  });
-
   testWidgets('golden: customers CRM list surface', (tester) async {
     final api = _GoldenApiClient();
     await _pumpGolden(
       tester,
       providers: _storeProviders(api),
       child: const CustomersScreen(),
+      theme: StoreTheme.light(),
     );
 
     await expectLater(
@@ -90,12 +75,20 @@ void main() {
   });
 
   testWidgets('golden: store health center surface', (tester) async {
+    await initializeLetbuyyTypography();
+    final icons = FontLoader('MaterialIcons')
+      ..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'));
+    await icons.load();
     final api = _GoldenApiClient();
     await _pumpGolden(
       tester,
       providers: _storeProviders(api),
       child: const StoreHealthScreen(),
+      theme: StoreTheme.light(),
     );
+
+    expect(find.text('Launch readiness'), findsOneWidget);
+    expect(find.byType(LinearProgressIndicator), findsNothing);
 
     await expectLater(
       find.byType(StoreHealthScreen),
@@ -108,6 +101,7 @@ Future<void> _pumpGolden(
   WidgetTester tester, {
   required List<SingleChildWidget> providers,
   required Widget child,
+  ThemeData? theme,
 }) async {
   SharedPreferences.setMockInitialValues({
     'letbuyy.selected_store_id': 'store_1',
@@ -123,7 +117,7 @@ Future<void> _pumpGolden(
       child: MaterialApp(
         localizationsDelegates: const [AppLocalizations.delegate],
         supportedLocales: AppLocalizations.supportedLocales,
-        theme: ThemeData(useMaterial3: true),
+        theme: theme ?? ThemeData(useMaterial3: true),
         home: child,
       ),
     ),
@@ -145,21 +139,6 @@ List<SingleChildWidget> _storeProviders(_GoldenApiClient api) {
     ChangeNotifierProvider<CustomerService>(
       create: (_) => CustomerService(api: api),
     ),
-  ];
-}
-
-List<SingleChildWidget> _orderProviders(_GoldenApiClient api) {
-  final appBadgeService = const AppBadgeService();
-  return [
-    ..._storeProviders(api),
-    ChangeNotifierProvider<OrderService>(
-      create: (_) => OrderService(
-        api: api,
-        cache: CacheService.memory(),
-        appBadgeService: appBadgeService,
-      ),
-    ),
-    Provider<AppBadgeService>.value(value: appBadgeService),
   ];
 }
 
@@ -195,8 +174,9 @@ class _GoldenApiClient extends ApiClient {
       data: rows,
       total: rows.length,
       page: 1,
-      limit: rows.length,
+      limit: path == '/stores' ? 50 : rows.length,
       hasMore: false,
+      meta: path == '/stores' ? membershipPageMeta(rows.length) : const {},
     );
   }
 
@@ -221,7 +201,7 @@ class _GoldenApiClient extends ApiClient {
   Object _jsonFor(String path) {
     switch (path) {
       case '/orders/order_1':
-        return _orderJson();
+        return goldenOrderJson();
       case '/stores/store_1/health':
         return _storeHealthJson();
       case '/customers/segments':
@@ -248,7 +228,7 @@ Map<String, dynamic> _storeJson() => {
   'updated_at': '2026-06-01T00:00:00.000Z',
 };
 
-Map<String, dynamic> _orderJson() => {
+Map<String, dynamic> goldenOrderJson() => {
   'id': 'order_1',
   'store_id': 'store_1',
   'order_number': 'LB-1001',
@@ -341,7 +321,9 @@ Map<String, dynamic> _customerSegmentJson() => {
   'store_id': 'store_1',
   'name': 'VIP customers',
   'description': 'High-value repeat buyers',
-  'rules': const { 'tags_any': ['vip'] },
+  'rules': const {
+    'tags_any': ['vip'],
+  },
   'customer_count': 1,
   'created_at': '2026-06-01T10:00:00.000Z',
   'updated_at': '2026-06-01T10:00:00.000Z',

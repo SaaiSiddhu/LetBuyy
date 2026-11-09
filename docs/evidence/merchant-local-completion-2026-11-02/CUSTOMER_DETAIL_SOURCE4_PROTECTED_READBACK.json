@@ -1,0 +1,40 @@
+{
+  "at": "2026-11-05T02:41:18.918096+00:00",
+  "baseline_files": 5195,
+  "changed": [
+    {
+      "path": "apps/merchant/mobile/lib/services/customer_service.dart",
+      "before_sha256": "8331a55932bbca8dcf8f950fcb3294b153f5fee57037be9842d55b4ebf3aa657",
+      "after_sha256": "02bf3fbaa66bdc80e5cc346c721199ffa68b8a30e70e6387b87aec7802b9930e"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/services/order_service.dart",
+      "before_sha256": "72d427d480823620029c7b8e5611cd28b615a1a18b69d520dec7431cf884dd56",
+      "after_sha256": "bdf6f40109b1bd8e71a5f2e6faa16375ff0cd646e064fa64772b6e4c03a2241a"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/services/return_service.dart",
+      "before_sha256": "5641c8198a50feee603787bc788c6b3c9520acafb7ece8b967832c532cdbb143",
+      "after_sha256": "3cfe0f4442c079c18bcd661c9af60f6f8493574c4a41231edc22804438a00c8c"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/services/staff_service.dart",
+      "before_sha256": "c26ea3b1dce22b5a267aabf5b4a8c770b675fa18a477cee0201f4fd1f5c583b1",
+      "after_sha256": "62ef6b12164f667a519961d14c4798ae795251b26f09c3951292b4be013335ca"
+    }
+  ],
+  "source_sha256": "5f0644af1bb505f15adbf1dfdf896bc4e27f415ce182fc65137be39c2ab980ff",
+  "exceptions": {
+    "staff": "Same retained already qualified frontend cache/lifetime exception; byte-identical to historical Orders13. No new change.",
+    "orders": "Classified list/detail read lifetime, provenance and record admission only; ORDERS_PRESENTATION_BOUNDARY.md. Original command/security/calculation/cache expressions require current parsed proof. Includes read-only current-context/store helper for the existing shipping provider/capability endpoint, per the same boundary document; no command/cache/business change.",
+    "returns": "Classified current-query/page metadata, generation/disposal/denial/record admission only; RETURNS_PRESENTATION_BOUNDARY.md. Original complete command/model/security/journal/upsert bodies require current parsed proof. Includes shared current denial, exact accepted list generation, and current page metadata admission; no original command/model body changed.",
+    "customers": "Fourth classified client read-only response/context/generation/disposal/observed-denial/provenance admission. Original commands/helpers/SDK arguments/cache key, serialization and storage expressions verified by parsed proof; no new persistent permission/namespace policy. See CUSTOMERS_PRESENTATION_BOUNDARY.md."
+  },
+  "prior_three_exceptions_byte_identical_to_v15": true,
+  "all_other_protected_files_unchanged": true,
+  "storage_owner_byte_identical": true,
+  "parsed_preservation_checks": 535,
+  "not_claimed": "No backend/API/SQL/RLS/auth/money/persistence policy change, durable revocation/recovery certification, hosted permission proof or whole-service correctness claim.",
+  "all_protected_bytes_identical_to_source2": true,
+  "all_protected_bytes_identical_to_source3": true
+}

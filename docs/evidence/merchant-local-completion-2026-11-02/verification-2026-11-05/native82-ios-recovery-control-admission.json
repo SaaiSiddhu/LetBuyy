@@ -1,0 +1,6 @@
+{
+  "source": "source58",
+  "swift_sha256": "ee574b7092993bad77ff778271d315f49cccc9c263a8093001cd8e1e9298ccf6",
+  "supersedes_prepared_swift_only": "native82-ios-control-admission.json",
+  "delta": "Observed normal Back to Login recovery is allowed before fresh Log in, as in the earlier accepted Android controller; no app-data reset or injected session."
+}

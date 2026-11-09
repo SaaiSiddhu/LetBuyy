@@ -4,6 +4,8 @@
 // Cross-runtime integration: normal Identity -> Merchant Next -> Gateway -> owned PG.
 // No positive credential injection, fake product API, or provider transaction.
 import assert from 'node:assert/strict';
+import {createLocalTurnstileProvider,LOCAL_TURNSTILE_SECRET} from '../fixtures/local-turnstile-provider';
+import {triggerProductImportRecovery} from '../../services/queue-workers/src/index';
 import test, {after, before} from 'node:test';
 import {createServer, type Server} from 'node:http';
 import {readFileSync} from 'node:fs';
@@ -17,8 +19,10 @@ import {requireOwnedDatabase, startOwnedPooledSqlProxy, startOwnedClientRuntime,
     type OwnedClientProcess, type OwnedPooledSqlProxy} from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
 import {newSyntheticTenant, seedSyntheticTenant} from '../../services/api-gateway/src/__tests__/owned-db/synthetic-tenant';
 
+let challenge:Awaited<ReturnType<typeof createLocalTurnstileProvider>>|undefined;
 const owned=requireOwnedDatabase(),site=newSyntheticTenant('product-browser');
 const ownerId=crypto.randomUUID(),staffId=crypto.randomUUID();
+const importRecoverySecret='owned-product-import-purpose-only-key-not-an-identity-secret';
 const email=(id:string)=>`syn-product-browser-${id}@example.invalid`;
 let bridge:Server|undefined,identity:OwnedClientProcess|undefined,merchant:OwnedClientProcess|undefined;
 let proxy:OwnedPooledSqlProxy|undefined,gateway:Gateway|undefined,browser:Browser|undefined;
@@ -50,7 +54,7 @@ async function signIn(context:BrowserContext,id:string,password:string){
 }
 before(async()=>{
     // The actual Gateway may reach only this fixture's loopback services.
-    // Identity's existing official challenge-test transport is a separate child.
+    // Identity verifies one-use challenges only through this run's owned local provider.
     globalThis.fetch=(async(input,init)=>{
         const url=new URL(typeof input==='string'?input:input instanceof URL?input.href:input.url);
         if(!['127.0.0.1','localhost','[::1]'].includes(url.hostname)&&!url.hostname.endsWith('.localhost')){
@@ -71,7 +75,8 @@ before(async()=>{
     proxy=await startOwnedPooledSqlProxy(owned);const keys=await newIdentityKeys();
     exportStorage=new Miniflare({modules:true,script:'export default {fetch(){return new Response("Not found",{status:404})}}',compatibilityDate:'2026-05-25',cf:false,r2Buckets:['R2_BUCKET'],r2Persist:false});
     await exportStorage.ready;
-    gateway=new Gateway(gatewayEnv(owned,keys,{ENVIRONMENT:'local',LETBUYY_IDENTITY_ISSUER:identityOrigin,R2_BUCKET:await exportStorage.getR2Bucket('R2_BUCKET'),...proxy.env()}));
+    gateway=new Gateway(gatewayEnv(owned,keys,{ENVIRONMENT:'development',PRODUCT_IMPORT_REQUEST_SECRET:importRecoverySecret,LETBUYY_IDENTITY_ISSUER:identityOrigin,R2_BUCKET:await exportStorage.getR2Bucket('R2_BUCKET'),...proxy.env()}));
+    owned.psql(`INSERT INTO site_entitlement_overrides(site_id,limits,reason,created_by,updated_by) VALUES('${site.siteId}','{"products":100}','Synthetic local browser import acceptance','${ownerId}','${ownerId}');`);
     bridge=createServer(async(req,res)=>{
         const chunks:Buffer[]=[];for await(const c of req)chunks.push(Buffer.from(c));const body=Buffer.concat(chunks).toString();
         const headers=new Headers();for(const[k,v]of Object.entries(req.headers))if(typeof v==='string'&&!['host','connection','content-length','transfer-encoding','accept-encoding'].includes(k))headers.set(k,v);
@@ -89,15 +94,16 @@ before(async()=>{
     await new Promise<void>(r=>bridge!.listen(0,'127.0.0.1',r));
     const apiOrigin=`http://127.0.0.1:${(bridge.address() as {port:number}).port}`;
     const shared={INTERNAL_API_SECRET:INTERNAL_SECRET,NEXT_PUBLIC_ACCOUNTS_URL:identityOrigin,NEXT_PUBLIC_ADMIN_URL:merchantOrigin};
-    identity=startOwnedClientRuntime(owned,'identity-next-production',{port:identityPort,env:{...shared,LETBUYY_API_URL:apiOrigin+'/v1',LETBUYY_IDENTITY_ISSUER:identityOrigin,
+    challenge=await createLocalTurnstileProvider(owned);
+    identity=startOwnedClientRuntime(owned,'identity-next-production',{port:identityPort,providerFixture:challenge.profile,env:{...shared,LETBUYY_API_URL:apiOrigin+'/v1',LETBUYY_IDENTITY_ISSUER:identityOrigin,
         LETBUYY_IDENTITY_PRIVATE_JWK:JSON.stringify({...await exportJWK(keys.privateKey),alg:'ES256',kid:keys.kid}),
         ACCOUNTS_COOKIE_SECRET:crypto.randomUUID()+crypto.randomUUID(),COOKIE_DOMAIN:'',
-        NEXT_PUBLIC_TURNSTILE_SITE_KEY:'1x00000000000000000000AA',TURNSTILE_SECRET_KEY:'1x0000000000000000000000000000000AA',
+        NEXT_PUBLIC_TURNSTILE_SITE_KEY:'1x00000000000000000000AA',TURNSTILE_SECRET_KEY:LOCAL_TURNSTILE_SECRET,
         LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false',NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false',RESEND_API_KEY:'',LETBUYY_EMAIL_API_KEY:''}});
     merchant=startOwnedClientRuntime(owned,'merchant-next-production',{port:merchantPort,env:{...shared,LETBUYY_API_BASE_URL:apiOrigin+'/v1'}});
     await Promise.all([ready(identityOrigin+'/login',identity),ready(merchantOrigin,merchant)]);
     browser=await chromium.launch({headless:true});ownerA=await browser.newContext();ownerB=await browser.newContext();staff=await browser.newContext();
-    for(const context of [ownerA,ownerB,staff]){context.setDefaultTimeout(30000);context.setDefaultNavigationTimeout(90000);}
+    for(const context of [ownerA,ownerB,staff]){await challenge.attachBrowser(context,[identityOrigin,merchantOrigin]);context.setDefaultTimeout(30000);context.setDefaultNavigationTimeout(90000);}
     await signIn(ownerA,ownerId,password);await signIn(ownerB,ownerId,password);await signIn(staff,staffId,password);
     checkpoints.push('three_normal_identity_sign_ins');
 },{timeout:660000});
@@ -106,9 +112,9 @@ after(async()=>{
         positiveCredentialInjection:false,readProfiles,fixtureKind:'local Next production builds + actual Gateway/PostgREST/owned PostgreSQL',
         calls:calls.filter(c=>c.productBody!==undefined).map(({path,method,status,lost,key})=>({path,method,status,lost,key})),
         gatewayExternalRequestsRefused:refusedGatewayExternalRequests,
-        challengeMode:'Existing official Turnstile test-key transport; production anti-bot unverified',
+        challengeMode:'Owned local one-use challenge provider; production anti-bot unverified',localChallengeCounts:challenge?.counts,
         providerTransactions:0,hostedVerified:false,privateScreenshots:false}));
-    await browser?.close();await stopOwnedClientRuntime(merchant);await stopOwnedClientRuntime(identity);
+    await browser?.close();await stopOwnedClientRuntime(merchant);await stopOwnedClientRuntime(identity);await challenge?.close();
     await gateway?.settle();await exportStorage?.dispose();await closePooledSqlClients();await proxy?.stop();
     if(bridge){bridge.closeAllConnections();await new Promise<void>(r=>bridge!.close(()=>r()));}
     globalThis.fetch=originalFetch;
@@ -120,7 +126,7 @@ function product(){const id=crypto.randomUUID(),variantId=crypto.randomUUID();ow
     VALUES('${id}','${site.siteId}','${site.siteId}','Synthetic browser product','syn-browser-${id}',100,5,true,'active','India');
     INSERT INTO product_options(product_id,name,position,values)VALUES('${id}','Size',0,'["M"]');
     INSERT INTO product_variants(id,product_id,title,sku,price,inventory_qty,option1)VALUES('${variantId}','${id}','M','SYN-BROWSER-M',100,0,'M');
-    SELECT set_inventory_level_available('${id}','${variantId}','${site.locationId}',5,'${ownerId}');`);return{id,variantId};}
+    WITH _fixture_inventory_scope436 AS MATERIALIZED (SELECT set_config('app.site_id','${site.siteId}',true)) SELECT set_inventory_level_available('${id}','${variantId}','${site.locationId}',5,'${ownerId}') FROM _fixture_inventory_scope436;`);return{id,variantId};}
 const endpoint=(id:string)=>`${merchantOrigin}/api/stores/${site.subdomain}/products/${id}`;
 const version=(id:string)=>Number(owned.psql(`SELECT version FROM products WHERE id='${id}';`));
 const receiptCount=(id:string)=>Number(owned.psql(`SELECT count(*) FROM product_edit_receipts WHERE product_id='${id}';`));
@@ -284,21 +290,31 @@ test('production import UI refuses invalid later rows, then tracks a quoted mult
     const before=count();
     try{
         await page.goto(`${merchantOrigin}/${site.subdomain}/export`);
+        await page.getByRole('link',{name:'Open CSV imports',exact:true}).click();
+        await expect(page.getByLabel('Choose CSV',{exact:true})).toBeEnabled();
         await page.locator('input[type="file"]').setInputFiles({name:'invalid.csv',mimeType:'text/csv',buffer:Buffer.from('name,price\nSynthetic valid,10\nSynthetic invalid,3oops')});
-        const [refused]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname.endsWith('/products/import')&&r.request().method()==='POST'),page.getByRole('button',{name:'Import CSV',exact:true}).click()]);
+        await expect(page.getByLabel('CSV contents',{exact:true})).toHaveValue('name,price\nSynthetic valid,10\nSynthetic invalid,3oops');
+        await expect(page.getByRole('button',{name:'Start import',exact:true})).toBeEnabled();
+        const [refused]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname.endsWith('/products/import')&&r.request().method()==='POST'),page.getByRole('button',{name:'Start import',exact:true}).click()]);
         assert.equal(refused.status(),400,await refused.text());
         await expect(page.getByText('CSV row 3 has an invalid price.',{exact:true}).first()).toBeVisible();
         assert.equal(count(),before);
         const csv='name,description,price,stock\r\n"Synthetic browser CSV 東京","  First\r\nSecond ""quoted""  ",12.34,3\r\n';
         await page.locator('input[type="file"]').setInputFiles({name:'quoted.csv',mimeType:'text/csv',buffer:Buffer.from(csv)});
-        await page.getByRole('button',{name:'Import CSV',exact:true}).click();
-        await expect(page.getByText('Import complete',{exact:true})).toBeVisible({timeout:45000});
-        await expect(page.getByText('1 product imported.',{exact:true})).toBeVisible();
+        await expect(page.getByLabel('CSV contents',{exact:true})).toHaveValue(csv.replaceAll('\r\n','\n'));
+        await expect(page.getByRole('button',{name:'Start import',exact:true})).toBeEnabled();
+        const [registered]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname.endsWith('/products/import')&&r.request().method()==='POST'),page.getByRole('button',{name:'Start import',exact:true}).click()]);
+        assert.equal(registered.status(),202);await expect(page.getByRole('button',{name:'Refresh status',exact:true})).toBeEnabled();
+        await triggerProductImportRecovery({ENVIRONMENT:'development',PRODUCT_IMPORT_RECOVERY:'bound-request-v1',PRODUCT_IMPORT_REQUEST_SECRET:importRecoverySecret,
+            API_GATEWAY_SERVICE:{fetch:async(request:Request)=>{const result=await gateway!.request(new URL(request.url).pathname,{method:request.method,headers:request.headers,body:await request.text()});return new Response(result.text,{status:result.status,headers:result.headers});}}} as never);
+        await page.getByRole('button',{name:'Refresh status',exact:true}).click();
+        await expect(page.getByText('completed: 1/1 products committed · 0 pending · 0 failed · 0 stopped.',{exact:true})).toBeVisible({timeout:45000});
+        await expect(page.getByText('Row 1: completed',{exact:false})).toBeVisible();
         assert.equal(count(),before+1);
         const persisted=JSON.parse(owned.psql(`SELECT json_build_object('description',description,'price',price,'stock',stock) FROM products WHERE store_id='${site.siteId}' AND name='Synthetic browser CSV 東京'`));
         assert.deepEqual(persisted,{description:'  First\r\nSecond "quoted"  ',price:12.34,stock:3});
-        assert.equal(new URL(page.url()).pathname,`/${site.subdomain}/export`);
-        checkpoints.push('production_import_invalid_later_row_no_products_quoted_multiline_progress_complete');
+        assert.equal(new URL(page.url()).pathname,`/${site.subdomain}/products/import`);
+        checkpoints.push('local_import_invalid_later_row_no_products_quoted_multiline_actual_worker_transport_complete');
     }finally{await page.close();}
 });
 

@@ -1,0 +1,28 @@
+{
+  "at": "2026-11-04T21:09:13.187659+00:00",
+  "status": "SOURCE_VERIFIED_LOCAL_ANDROID_COMPILE_ONLY",
+  "source": "mobile-ui-order-returns-v4",
+  "sourceSha256": "a971cb63b19e548941a128c03e325e8074619680cab52cd11b4eb2fdbf46827e",
+  "sourceEntries": 7471,
+  "sourceUnchanged": true,
+  "buildExits": [
+    0,
+    0
+  ],
+  "app": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/android-order-returns-v2-artifact/merchant-local-debug.apk",
+  "apkSha256": "a35822569ae10ceed14ee4721355d7fef1ae9d669ddc7431e197ae21103b592d",
+  "bytes": 120687944,
+  "package": "package: name='com.letbuyy.store' versionCode='1' versionName='1.0.0' platformBuildVersionName='16' platformBuildVersionCode='36' compileSdkVersion='36' compileSdkVersionCodename='16'",
+  "abi": "arm64-v8a",
+  "debugSigningCertificateSha256": "840b9593d99255d0ab3fe3569039628d1b98c52c2d08d16da76fe85d9dabdb18",
+  "existingDebugSigningIdentityPreserved": true,
+  "debugProfile": "Existing XDG_CONFIG_HOME/Gradle/Android paths preserved; no signing asset change.",
+  "mode": "Normal lib/main.dart debug APK; installed cached dependencies/offline Gradle, normal Flutter configuration, local-only defines.",
+  "limitations": [
+    "Compile/artifact integrity only. No current Android installation, UI, authentication, backend, web sync, provider or production acceptance.",
+    "No release signing, Play Store, physical-device performance or whole-feature certification."
+  ],
+  "full_manifest": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/android-order-returns-v2-artifact.json",
+  "source_manifest": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-order-returns-v4.source.json",
+  "historical_scope": "This artifact compiles archived source4; subsequent shared-denial UI refinement is newer and not compiled/accepted by this report."
+}

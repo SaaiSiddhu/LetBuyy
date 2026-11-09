@@ -1,0 +1,60 @@
+{
+  "at": "2026-11-05T03:49:07.663986+00:00",
+  "status": "SOURCE2_LOCAL_QUALIFIED_WITH_EXISTING_PROTECTED_STAFF_FAILURE_NEW_ARTIFACTS_PENDING",
+  "source": {
+    "sha256": "fb331a523e999cd59c849d5f33d6a10c4e2a82983615726f9b364a6845cb1d70",
+    "core_inputs": 7489,
+    "manifest": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-analytics-v2.source.json",
+    "archive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-analytics-v2-qualified-source"
+  },
+  "focused": {
+    "pass": 37,
+    "fail": 0
+  },
+  "full_flutter": {
+    "pass": 1310,
+    "fail": 1,
+    "skip": 0,
+    "existing_failure": "Staff namespace policy; untouched outside frontend scope"
+  },
+  "app_ui_kit_analysis_issues": 0,
+  "parsed_preservation_checks": 548,
+  "protected_files": 5195,
+  "classified_frontend_client_exceptions": 5,
+  "all_protected_bytes_identical_to_source1": true,
+  "governance": {
+    "source_sha256": "fb331a523e999cd59c849d5f33d6a10c4e2a82983615726f9b364a6845cb1d70",
+    "core_inputs": 7489,
+    "actual_clone_core_bytes_equal": true,
+    "capsule": "governance-category-capsule-v40",
+    "counts": {
+      "PASS": 114,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "SKIP": 0,
+      "NOT_APPLICABLE": 1
+    },
+    "ok": true,
+    "exit": 0
+  },
+  "implemented": [
+    "Visible canonical shell and applied4period choice, current owner/query/action/denial lifetimes, same-scope refresh, independent optional live state/recovery.",
+    "Exact paise and honest missing metrics; current actual zero/previous-zero retained; no lifetime-store fallback.",
+    "One active recorded-series chart family used by Dashboard/Analytics, real zero/negative/gap values, exact dated alternative, bounded labels, both-theme320dp2.4tests, reduced motion.",
+    "Paid-only calendar order population labelled distinctly from all-created rolling summary; already fetched all-time status buckets exposed without merging/recalculating.",
+    "Correct limited top-product/source populations and unavailable omitted revenue; no fabricated recency."
+  ],
+  "diagnostics": [
+    "negative2reproduced5presentation failures; v1fixture omitted empty live arrays corrected before negative2.",
+    "focused3measured33px bounded chart overflow; repaired viewport.",
+    "focused4actual PageStorage double/bool collision during scrolling; isolated keys fix passed5.",
+    "focused6test fixture name overrode ProductsApi; corrected.",
+    "focused8test selected Tooltip instead of actual IconButton; corrected without assertion weakening.",
+    "paid-population negative10fails as expected, label repair now37pass.",
+    "focused11wrong model library import failed compile; existing Merchant public OrderStatus wrapper used in12."
+  ],
+  "android": "30failedcontrollerentryselector; source unchanged. See failed readback/closed resources. Fresh31running with actual View Analytics label and additional native section observations.",
+  "ios": "14compile-only PASS,377actual retainedbundlefiles rehashed,ownedtarget Shutdown. No runtime/launch.",
+  "programme": "119applicable remains open;120/121excluded;122paused;51frozen;199ledger rows includealiases/hosts,113unreviewed, unique denominator null.",
+  "not_claimed": "No whole-app/full-feature, hosted/provider, actual paid/nonzero device evidence, iOS runtime, physical performance, release or production certification."
+}

@@ -1,0 +1,12 @@
+{
+  "from": "5f78a66e349980b7538b8c5a894967984d34baf80072677cfc2f30283dbdea1c",
+  "to": "0cb3bfe0736fb53a642e3e9b14bf033bd8d713d429b8e72a7fa31eb8dee6e279",
+  "changed": [
+    "apps/merchant/mobile/ios/Runner/Info.plist",
+    "apps/merchant/mobile/lib/widgets/shared/merchant_media_picker.dart",
+    "apps/merchant/mobile/test/merchant_media_picker_test.dart"
+  ],
+  "all_other_core_files_identical": true,
+  "backend_shared_contracts_governance_inputs_identical": true,
+  "purpose": "iOS capture/recording privacy descriptions and generic photo/video unavailable message only;no backend changes."
+}

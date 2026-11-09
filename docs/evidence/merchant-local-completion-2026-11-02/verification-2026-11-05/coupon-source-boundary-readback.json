@@ -1,0 +1,19 @@
+{
+  "current_source_sha256": "80e4c4f1f08a4b6e06a3b46e1abc76a36e4b164f9b4ae0584fd4a9894e3c1a0f",
+  "entry_inputs": 8440,
+  "current_inputs": 8443,
+  "unchanged_entry_files": 8435,
+  "changed_or_added": [
+    "apps/merchant/mobile/lib/screens/discounts/coupon_form_screen.dart",
+    "apps/merchant/mobile/lib/screens/discounts/coupon_validation_sheet.dart",
+    "apps/merchant/mobile/lib/screens/discounts/coupons_screen.dart",
+    "apps/merchant/mobile/lib/services/coupon_service.dart",
+    "apps/merchant/mobile/lib/widgets/shared/warehouse_list_scaffold.dart",
+    "apps/merchant/mobile/test/coupon_lifetime_test.dart",
+    "apps/merchant/mobile/test/coupon_presentation_test.dart",
+    "apps/merchant/mobile/test/mobile_services_test.dart"
+  ],
+  "unexpected": [],
+  "all_other_code_and_authority_files_unchanged": true,
+  "protected_client_exception": "Only CouponService reader/presentation admission. All five command method bodies parsed equal. Existing other services, SDKs, models, StoreContext, servers, database, migrations and policy source unchanged from entry."
+}

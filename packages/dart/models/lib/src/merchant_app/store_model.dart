@@ -93,8 +93,12 @@ class StoreModel {
   final Map<String, dynamic> invoiceAddress;
   final String? invoiceFooter;
   final int invoiceNumberNext;
+
   /// Monotonic sites revision used by conditional profile updates.
   final int version;
+
+  /// Unknown in older read caches; never invent a revision for an edit.
+  final int? version;
 
   // Timestamps
   final DateTime createdAt;
@@ -155,7 +159,7 @@ class StoreModel {
     this.invoiceAddress = const {},
     this.invoiceFooter,
     this.invoiceNumberNext = 1,
-    this.version = 1,
+    this.version,
     required this.createdAt,
     required this.updatedAt,
     this.publishedAt,
@@ -238,8 +242,14 @@ class StoreModel {
       ),
       teamMemberCount:
           data['teamMemberCount'] ?? data['team_member_count'] ?? 0,
-      seoTitle: data['seoTitle'] ?? data['seo_title'],
-      seoDescription: data['seoDescription'] ?? data['seo_description'],
+      // sites owns metadata under meta_*. Existing cache/API aliases are read
+      // only when that canonical key is absent; an explicit clear must win.
+      seoTitle: data.containsKey('meta_title')
+          ? data['meta_title']
+          : data['seoTitle'] ?? data['seo_title'],
+      seoDescription: data.containsKey('meta_description')
+          ? data['meta_description']
+          : data['seoDescription'] ?? data['seo_description'],
       totalVisitors: data['totalVisitors'] ?? data['total_visitors'] ?? 0,
       totalOrders: data['totalOrders'] ?? data['total_orders'] ?? 0,
       domainStatus: data['domainStatus'] ?? data['domain_status'] ?? 'pending',
@@ -279,7 +289,9 @@ class StoreModel {
       invoiceFooter: data['invoiceFooter'] ?? data['invoice_footer'],
       invoiceNumberNext:
           data['invoiceNumberNext'] ?? data['invoice_number_next'] ?? 1,
-      version: data['version'] ?? 1,
+      version: data['version'] is int && (data['version'] as int) > 0
+          ? data['version'] as int
+          : null,
       createdAt:
           _parseTimestamp(data['createdAt'] ?? data['created_at']) ??
           DateTime.now(),
@@ -327,6 +339,7 @@ class StoreModel {
       'team_member_count': teamMemberCount,
       'seo_title': seoTitle,
       'seo_description': seoDescription,
+      if (version != null) 'version': version,
       'total_visitors': totalVisitors,
       'total_orders': totalOrders,
       'domain_status': domainStatus,
@@ -361,6 +374,7 @@ class StoreModel {
 
   /// Copy with new values
   StoreModel copyWith({
+    int? version,
     String? id,
     String? sellerId,
     String? name,
@@ -419,6 +433,7 @@ class StoreModel {
     StoreTemplateModel? templateConfig,
   }) {
     return StoreModel(
+      version: version ?? this.version,
       id: id ?? this.id,
       sellerId: sellerId ?? this.sellerId,
       name: name ?? this.name,

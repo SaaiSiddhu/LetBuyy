@@ -1,0 +1,13 @@
+{
+  "stage": "shared-tests",
+  "exit_code": 0,
+  "source_unchanged": true,
+  "source_sha256": "8b0d289d2cbe5ebbc0da066a90e6b9eae5ce177c4587f2a030c59474f2c742a4",
+  "command": [
+    "pnpm",
+    "--filter",
+    "@letbuyy/shared-types",
+    "test"
+  ],
+  "cwd": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy"
+}

@@ -1,0 +1,24 @@
+{
+  "at": "2026-11-06T12:49:04.950304+00:00",
+  "source": "merchant-media-recovery-source-v19",
+  "source_sha256": "d96d70f03ee973960cef9160955f03fec01b28c416a92a888cac2afc03f47269",
+  "gateway_unit": {
+    "tests": 2087,
+    "pass": 2087,
+    "fail": 0,
+    "skip": 0
+  },
+  "typecheck_exit_code": 0,
+  "owned_media_tests": {
+    "tests": 7,
+    "pass": 7,
+    "fail": 0,
+    "reused_source": "v18",
+    "difference": "Only FormData File type narrowing changed in v19; current owned rerun still required for final candidate."
+  },
+  "transport": "Dio20 MIME cases pass without any SDK MIME repair.",
+  "open": [
+    "R2 acceptance before server receipt completion remains unqualified; no effect-once claim for that interval.",
+    "Durable mobile upload/create identity and explicit uncertainty state in progress."
+  ]
+}

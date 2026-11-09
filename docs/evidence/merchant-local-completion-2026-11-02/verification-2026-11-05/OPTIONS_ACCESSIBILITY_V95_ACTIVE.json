@@ -1,0 +1,31 @@
+{
+  "at": "2026-11-08T05:37:43.166686+00:00",
+  "source_sha256": "6a9dffa117db5c1be62f26f57d8f031910f3e599fc966a1eb0cfc87392519a18",
+  "entries": 8519,
+  "implementation": [
+    "Product-owned option names, values, additions, removals and order using canonical product edit",
+    "Duplicate combination rejection and guarded variant removal",
+    "Complex private KYC recovery uses canonical full-page fixed-footer editor; original shared short-form implementation and SDK untouched"
+  ],
+  "verified": {
+    "flutter": {
+      "passed": 1772,
+      "failed": 0,
+      "source_unchanged": true
+    }
+  },
+  "pending": [
+    "analysis",
+    "owned API/Postgres option/reservation tests",
+    "actual isolated governance",
+    "Android129 native option/web and KYC recovery",
+    "iOS130 actual accessibility taps and option/web readback"
+  ],
+  "native_roots": {
+    "android": "/private/tmp/letbuyy-merchant-local-20261108-f7a3c2efea",
+    "ios": "/private/tmp/letbuyy-ios-ui-20261108-41bbfcc398"
+  },
+  "whole_features_accepted": 0,
+  "host9002": "No contact/probe/bind/stop",
+  "scope": "Local synthetic only"
+}

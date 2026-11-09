@@ -1,0 +1,18 @@
+[
+  {
+    "path": "apps/merchant/mobile/lib/app/auth_wrapper.dart",
+    "sha256": "83e9960498b945feb8f6a1b5c65fff0d4da35f6cf22aed3181088460c3d7cee8"
+  },
+  {
+    "path": "apps/merchant/mobile/lib/app/store_context.dart",
+    "sha256": "cba9abd7a1e34370a73227399e8a331d8fa3efc9752d19b5b6adecd3090ce5d2"
+  },
+  {
+    "path": "apps/merchant/mobile/lib/services/store_service.dart",
+    "sha256": "633486fc613694740e3bb78ecf541c2ec03227449c60d6e92f1712068ca57a53"
+  },
+  {
+    "path": "apps/merchant/mobile/lib/main.dart",
+    "sha256": "39d8bd4a225a32716676c111db1ecccde7a96a449a1ecfacfa495d0b379818ad"
+  }
+]

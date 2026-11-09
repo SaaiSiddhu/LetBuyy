@@ -26,7 +26,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { merchantApiFetch, merchantApiErrorResponse } from '@/lib/api/client'
-import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
+import { merchantSecurityScope, privateSecurityResponse } from '@/lib/api/merchant-security-scope'
 
 // Valid media types (mirrors the gateway media-library route)
 const VALID_MEDIA_TYPES = ['image', 'video', 'all'] as const
@@ -59,7 +59,6 @@ export async function GET(
     { params }: { params: Promise<{ store: string }> }
 ) {
     try {
-        const { store } = await params
         const { searchParams } = new URL(request.url)
 
         // Validate type (default: all)
@@ -84,7 +83,7 @@ export async function GET(
         const limit = parseLimit(searchParams.get('limit'))
 
         // Resolve + verify store ownership (merchant ES256 session only)
-        const resolved = await resolveOwnedStoreId(decodeURIComponent(store))
+        const resolved = await merchantSecurityScope(request, params, false)
         if (resolved.error) return resolved.error
 
         // Build gateway query — store_id is always the resolved/verified id,
@@ -100,7 +99,7 @@ export async function GET(
         const gatewayPath = `/themes/media-library?${queryParts.join('&')}`
 
         // Forward to gateway — no direct DB; gateway enforces verifySiteOwnership
-        const gatewayResponse = await merchantApiFetch(gatewayPath, { requireSession: true })
+        const gatewayResponse = await merchantApiFetch(gatewayPath, { requireSession: true, headers: resolved.headers })
 
         // Forward non-ok gateway status verbatim (e.g. 404 = gateway not yet deployed)
         if (!gatewayResponse.ok) {
@@ -110,7 +109,7 @@ export async function GET(
             } catch {
                 payload = { error: { code: 'GATEWAY_ERROR', message: 'Media library fetch failed' } }
             }
-            return NextResponse.json(payload, { status: gatewayResponse.status })
+            return privateSecurityResponse(NextResponse.json(payload, { status: gatewayResponse.status }))
         }
 
         // Normalise to { data: [], meta: {} }
@@ -121,10 +120,10 @@ export async function GET(
             body = {}
         }
 
-        return NextResponse.json({
+        return privateSecurityResponse(NextResponse.json({
             data: Array.isArray(body.data) ? body.data : [],
             meta: body.meta ?? {},
-        })
+        }))
     } catch (err) {
         return merchantApiErrorResponse(err, 'Media library fetch failed')
     }

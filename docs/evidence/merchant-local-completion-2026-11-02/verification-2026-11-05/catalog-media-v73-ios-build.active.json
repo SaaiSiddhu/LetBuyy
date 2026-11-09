@@ -1,0 +1,18 @@
+{
+  "started_at": "2026-11-07T05:45:21.678158+00:00",
+  "supervisor_pid": 14644,
+  "source": "merchant-catalog-media-source-v73",
+  "source_sha256": "fea6117e135deda4002896d072904f1655ab872fe949caa7c33455fb0e6c3820",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "build",
+    "ios",
+    "--device-id=B907B390-5B08-490F-BC6A-8900667B2D94",
+    "--simulator",
+    "--debug",
+    "--no-pub",
+    "--dart-define-from-file=/private/tmp/letbuyy-catalog-media-v73-ios-build/dart-defines.json"
+  ],
+  "status": "RUNNING",
+  "child_pid": 14647
+}

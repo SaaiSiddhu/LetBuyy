@@ -24,7 +24,7 @@ function data<T>(response:{status:number;text:string;json:unknown}):T { const pa
 function product(metadata:object={},stock=10,tenant:SyntheticTenant=site,images:string[]=[]){
  const id=crypto.randomUUID();psql(`INSERT INTO products(id,store_id,site_id,name,slug,price,sku,stock,is_active,status,metadata,images)
  VALUES('${id}','${tenant.siteId}','${tenant.siteId}','Synthetic snapshot product','syn-${id}',1290,'SYN-${id}',${stock},true,'active',${json(metadata)},ARRAY[${images.map(quote).join(',')}]::text[]);
- SELECT public.set_inventory_level_available('${id}',NULL,'${tenant.locationId}',${stock},NULL);`);return id;
+ WITH _fixture_inventory_scope436 AS MATERIALIZED (SELECT set_config('app.site_id','${tenant.siteId}',true)) SELECT public.set_inventory_level_available('${id}',NULL,'${tenant.locationId}',${stock},NULL) FROM _fixture_inventory_scope436;`);return id;
 }
 const version=(id:string)=>Number(psql(`SELECT version FROM products WHERE id='${id}';`));
 async function draft(id:string,text='Asha',variant_id:string|null=null):Promise<PersonalizationCartDraft>{
@@ -99,7 +99,7 @@ async function archiveProduct(id:string){const key=crypto.randomUUID();const res
 test('DOWN refuses sellable variant-only facts and named options without active carts; supported retirement preserves history',async()=>{
  for(const metadata of[{food:{netQuantity:{value:250,unit:'g'}}},{furniture:{assembled:{width:12,unit:'cm'}}},{books:{kind:'book',language:'English',format:'paperback'}},{}]){
   const id=product({},4),variant=crypto.randomUUID();
-  psql(`INSERT INTO product_options(product_id,name,position,values) VALUES('${id}','Pack name',0,'["Single"]');INSERT INTO product_variants(id,product_id,title,price,inventory_qty,option1,metadata) VALUES('${variant}','${id}','Synthetic variant-only capability',1290,4,'Single',${json(metadata)});SELECT public.set_inventory_level_available('${id}','${variant}','${site.locationId}',4,NULL);`);
+  psql(`INSERT INTO product_options(product_id,name,position,values) VALUES('${id}','Pack name',0,'["Single"]');INSERT INTO product_variants(id,product_id,title,price,inventory_qty,option1,metadata) VALUES('${variant}','${id}','Synthetic variant-only capability',1290,4,'Single',${json(metadata)});WITH _fixture_inventory_scope436 AS MATERIALIZED (SELECT set_config('app.site_id','${site.siteId}',true)) SELECT public.set_inventory_level_available('${id}','${variant}','${site.locationId}',4,NULL) FROM _fixture_inventory_scope436;`);
   assert.equal(psql(`SELECT count(*) FROM carts WHERE store_id='${site.siteId}' AND status='active' AND fact_acceptance_version=1;`),'0');
   assert.match(owned.psqlScriptExpectError(migration('rollback')),/388 rollback requires/);
   const response=await cart([input(id,undefined,1,variant)]);assert.equal(response.status,201,response.text);const accepted=data<Cart>(response);

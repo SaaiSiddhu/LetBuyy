@@ -1,0 +1,15 @@
+{
+  "at": "2026-11-05T18:00:12.156710+00:00",
+  "status": "INDEPENDENT_IOS_DEBUG_ARTIFACT_READBACK_PASS",
+  "source_sha256": "8ffd6e530d90589bd68607a9a910c50414f3389cca26213ceded0c483884aae6",
+  "artifact": {
+    "path": "/private/tmp/letbuyy-security-ios-uhooww8m/Runner.app",
+    "files": 377,
+    "manifest_sha256": "33a0337ae325639c54b1d38e8204101eda8279e239b32da52189b0c0b2c9fe58"
+  },
+  "all_retained_files_equal": 377,
+  "bundle_id": "com.letbuyy.store",
+  "executable_architecture": "/private/tmp/letbuyy-security-ios-uhooww8m/Runner.app/Runner: Mach-O 64-bit executable arm64",
+  "owned_simulator_remains_shutdown": true,
+  "scope": "Current security/Coupon source compile/artifact only; no simulator launch/auth/API/sync/provider/physical/performance/signed-release acceptance."
+}

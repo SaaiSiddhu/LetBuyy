@@ -1,0 +1,12 @@
+{
+  "from": "a7fe3f7c0040e74fe50f47ab69354d5ecfe8e67c69a151cad95ef98ff478f857",
+  "to": "23ed7b54ec793bf87949a3b90dd175918ca6b709f152ceb3cc14a108eb145147",
+  "changed": [
+    "apps/merchant/mobile/lib/services/product_service.dart",
+    "apps/merchant/mobile/test/product_creation_intent_test.dart",
+    "apps/merchant/mobile/test/product_creation_workflow_test.dart"
+  ],
+  "TS_API_BFF_database_auth_shared_contracts_web_bytes_unchanged": true,
+  "SecurityCommandStore_bytes_unchanged": true,
+  "meaning": "106owned backend/retirement tests,63web editor and current typed web/API evidence retained for identical consumed inputs;103new Code API5 and Dart/native gates qualify the changed catalog capture"
+}

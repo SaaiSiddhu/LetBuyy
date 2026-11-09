@@ -1,0 +1,12 @@
+{
+  "at": "2026-11-07T04:52:20.138560+00:00",
+  "status": "TERMINAL",
+  "exit_code": 0,
+  "capsule": "/private/tmp/letbuyy-merchant-catalog-media-v72-governance-z0mcuv2z",
+  "purpose": "Disposable validation copy only, no implementation/worktree/merge/push/release",
+  "source_sha256": "d8bb3cf5df966db7f0003c964399c5b89d985a6014a3b4287a6df4405b8a5c39",
+  "core_inputs_byte_equal": 8497,
+  "original_source_unchanged": true,
+  "original_index_unchanged": true,
+  "report": "merchant-catalog-media-v72-governance-v1-report.json"
+}

@@ -1,0 +1,19 @@
+{
+  "started_at": "2026-11-07T10:59:43.518333+00:00",
+  "supervisor_pid": 51482,
+  "source": "merchant-webm-abort-source-v87",
+  "source_sha256": "e831c0f58dd6a6447cb6a60190e962096732a19577e7162bb5be075540b70c18",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "--reporter",
+    "expanded"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 51488,
+  "exit_code": 0,
+  "finished_at": "2026-11-07T11:00:32.500208+00:00",
+  "source_unchanged": true,
+  "source_readback_sha256": "e831c0f58dd6a6447cb6a60190e962096732a19577e7162bb5be075540b70c18"
+}

@@ -125,14 +125,14 @@ function Workspace({store,actorId,siteId}:{store:string;actorId:string;siteId:st
         {error&&<Banner variant="critical">{error}</Banner>}{supportError&&<Banner variant="warning">{supportError}</Banner>}
         {pending&&<Banner variant="warning">An original registration needs confirmation. Keep its CSV. <Button disabled={busy} onClick={recover}>Recover original registration</Button><Button disabled={busy} onClick={stopRegistration}>Stop original request</Button></Banner>}
         <Section><Card><p>Up to 500 rows and one MiB per request. Large quoted files may need to be split. Creates active products; existing products are not updated. Required: name. Optional: price (rupees), description, category, stock, tags, images. Separate tags and image URLs with semicolons. Unsupported columns are refused.</p>
-            <label>Choose UTF-8 CSV <input aria-label="Choose CSV" type="file" accept=".csv,text/csv" disabled={busy} onChange={e=>{const file=e.target.files?.[0];e.target.value='';if(!file)return;void run(async()=>{
+            <label>Choose UTF-8 CSV <input aria-label="Choose CSV" type="file" accept=".csv,text/csv" disabled={busy||!supported} onChange={e=>{const file=e.target.files?.[0];e.target.value='';if(!file)return;void run(async()=>{
                 if(file.size>PRODUCT_IMPORT_MAX_BYTES||file.size===0)throw new Error('Use a CSV of at most one MiB.')
                 const bytes=await file.arrayBuffer();check();let decoded:string
                 try{decoded=new TextDecoder('utf-8',{fatal:true,ignoreBOM:true}).decode(bytes)}catch{throw new Error('Choose a valid UTF-8 CSV.')}
                 setSource(decoded);setFilename(file.name)
             })}}/></label>{filename&&<p>{filename}</p>}
             <p><a download="product-import-template.csv" href="data:text/csv;charset=utf-8,name%2Cprice%2Cdescription%2Ccategory%2Cstock%2Ctags%2Cimages%0AExample%20product%2C10.50%2C%2C%2C0%2C%2C%0A">Download template</a></p>
-            <Textarea label="CSV contents" value={source} onChange={e=>setSource(e.target.value)} disabled={busy} rows={6} maxLength={PRODUCT_IMPORT_MAX_BYTES}/>
+            <Textarea label="CSV contents" value={source} onChange={e=>setSource(e.target.value)} disabled={busy||!supported} rows={6} maxLength={PRODUCT_IMPORT_MAX_BYTES}/>
             <Button onClick={submit} disabled={busy||!supported}>{pending?'Submit original CSV':'Start import'}</Button>
         </Card></Section>
         {job&&<Section title="Original import"><Card><p>{job.id}</p><p aria-live="polite">{job.total_rows===0?'Registration was stopped before any rows were accepted.':`${job.status}: ${job.row_count}/${job.total_rows} products committed · ${job.pending_rows} pending · ${job.failed_rows} failed · ${job.stopped_rows} stopped.`}</p>

@@ -1,0 +1,40 @@
+{
+  "at": "2026-11-05T04:20:09.471892+00:00",
+  "baseline_files": 5195,
+  "changed": [
+    {
+      "path": "apps/merchant/mobile/lib/services/analytics_service.dart",
+      "before_sha256": "d4761a8d0ba90f4e0eaade3833ba75316ba32f940f00019938dc6118af04b700",
+      "after_sha256": "9d3855081aea573d17f3fc81bfaaa20c5e96ba132376c7b980ac534da6b2c324"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/services/customer_service.dart",
+      "before_sha256": "8331a55932bbca8dcf8f950fcb3294b153f5fee57037be9842d55b4ebf3aa657",
+      "after_sha256": "02bf3fbaa66bdc80e5cc346c721199ffa68b8a30e70e6387b87aec7802b9930e"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/services/order_service.dart",
+      "before_sha256": "72d427d480823620029c7b8e5611cd28b615a1a18b69d520dec7431cf884dd56",
+      "after_sha256": "bdf6f40109b1bd8e71a5f2e6faa16375ff0cd646e064fa64772b6e4c03a2241a"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/services/return_service.dart",
+      "before_sha256": "5641c8198a50feee603787bc788c6b3c9520acafb7ece8b967832c532cdbb143",
+      "after_sha256": "3cfe0f4442c079c18bcd661c9af60f6f8493574c4a41231edc22804438a00c8c"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/services/staff_service.dart",
+      "before_sha256": "c26ea3b1dce22b5a267aabf5b4a8c770b675fa18a477cee0201f4fd1f5c583b1",
+      "after_sha256": "62ef6b12164f667a519961d14c4798ae795251b26f09c3951292b4be013335ca"
+    }
+  ],
+  "source_sha256": "3825de3424739ed105f842a151f4ae9a5f2379936911885833da89b6bc04d3d7",
+  "prior_four_exceptions_byte_identical_to_v18": true,
+  "analytics_exception": "Only safe response-presence flags and read-only API-context getter. Entire original client/model/parser/default/SDK/read ordering/notifications AST equals retained original after stripping enumerated metadata. No numeric/calculation/API/persistence/security policy change. See ANALYTICS_PRESENTATION_BOUNDARY.md.",
+  "parsed_preservation_checks": 548,
+  "all_other_protected_files_unchanged": true,
+  "storage_owner_byte_identical": true,
+  "backend_or_hosted_acceptance": false,
+  "all_protected_bytes_identical_to_analytics_source1": true,
+  "all_protected_bytes_identical_to_analytics_source2": true
+}

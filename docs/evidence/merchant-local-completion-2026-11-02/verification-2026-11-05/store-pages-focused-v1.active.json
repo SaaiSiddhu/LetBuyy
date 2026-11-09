@@ -1,0 +1,16 @@
+{
+  "started_at": "2026-11-06T05:17:10.042280+00:00",
+  "supervisor_pid": 46993,
+  "source": "store-pages-source-v1",
+  "source_sha256": "920f06fe753b1a2953cd8df6bb4b26292d600a8a44a1025a38fb273057146571",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "test/store_membership_pagination_test.dart",
+    "test/store_discovery_transport_test.dart",
+    "test/store_session_boundary_test.dart"
+  ],
+  "status": "RUNNING",
+  "child_pid": 46995
+}

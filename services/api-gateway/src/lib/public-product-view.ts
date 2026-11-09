@@ -19,7 +19,7 @@ import { readApparelFacts, readProductNicheFacts, readVariantNicheFacts } from '
 
 // Everything a storefront needs to render a product page. Nothing here is commercially sensitive.
 export const PUBLIC_PRODUCT_SELECT: string =
-    'id,store_id,name,slug,description,price,compare_price,category,product_type,tags,images,thumbnail_url,stock,track_inventory,is_active,is_featured,weight,country_of_origin,importer_details,seo_title,seo_description,created_at,updated_at,variants,metadata';
+    'id,store_id,name,slug,description,price,compare_price,category,product_type,tags,images,thumbnail_url,stock,catalog_available_quantity,track_inventory,is_active,is_featured,weight,country_of_origin,importer_details,seo_title,seo_description,created_at,updated_at,variants,metadata';
 
 // Same list without `variants`, for the path that hydrates variants from product_variants instead of
 // reading the products row's own column.
@@ -130,6 +130,13 @@ export function toPublicProduct<T extends Record<string, unknown>>(product: T): 
     const result: Record<string, unknown> = {};
     for (const [key, value] of Object.entries(product)) {
         if (!PUBLIC_PRODUCT_FIELDS.has(key)) continue;
+        if (key === 'catalog_available_quantity') {
+            // Pooled PostgreSQL returns int8 as text; PostgREST uses JSON numbers.
+            const quantity = typeof value === 'number' ? value
+                : typeof value === 'string' && /^\d+$/.test(value) ? Number(value) : null;
+            result[key] = quantity !== null && Number.isSafeInteger(quantity) && quantity >= 0 ? quantity : null;
+            continue;
+        }
         if (key === 'metadata') {
             const apparel = readApparelFacts(value);
             result.metadata = { ...readProductNicheFacts(value), ...(apparel ? { apparel } : {}) };

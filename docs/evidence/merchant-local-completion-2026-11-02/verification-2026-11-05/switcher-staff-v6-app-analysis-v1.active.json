@@ -1,0 +1,13 @@
+{
+  "started_at": "2026-11-06T03:34:17.582560+00:00",
+  "supervisor_pid": 82929,
+  "source": "switcher-staff-source-v6",
+  "source_sha256": "8e7cf5dff2b908436420fb53e90e9340968b8506547ffb8445a604f29868e69a",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "analyze",
+    "--no-pub"
+  ],
+  "status": "RUNNING",
+  "child_pid": 82931
+}

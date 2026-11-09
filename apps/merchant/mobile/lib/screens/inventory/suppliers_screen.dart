@@ -1,3 +1,4 @@
+import '../../widgets/shared/warehouse_list_scaffold.dart';
 import '../../widgets/shared/warehouse_command_recovery.dart';
 import 'package:letbuyy_models/letbuyy_models.dart'
     show warehouseOptionStatuses, WarehouseCommandIntent;
@@ -25,7 +26,8 @@ class _InventorySuppliersScreenState extends State<InventorySuppliersScreen> {
   bool _isLoading = true;
   String? _storeId;
   String? _error;
-  Object? _viewKey;
+  Object? _viewKey, _loadedQuery;
+  Object get _query => (_viewKey, _storeId, _page, _search, _status, _sort);
   int _readGeneration = 0;
   int _page = 1;
   String _search = '', _status = '', _sort = 'name_asc';
@@ -36,7 +38,7 @@ class _InventorySuppliersScreenState extends State<InventorySuppliersScreen> {
   MerchantStoreView? get _view =>
       _storeId == null ? null : (key: _viewKey, storeId: _storeId!);
   bool _matches(MerchantStoreView? view) =>
-      merchantStoreViewCurrent(context, view);
+      mounted && merchantStoreViewCurrent(context, view);
 
   late AppThemeColors colors;
 
@@ -47,15 +49,19 @@ class _InventorySuppliersScreenState extends State<InventorySuppliersScreen> {
     _load();
   }
 
-  Future<void> _load() async {
+  Future<void> _load({bool retain = false}) async {
     if (!mounted) return;
+    final keep = retain && _loadedQuery == _query && _matches(_view);
     final generation = ++_readGeneration;
     setState(() {
       _isLoading = true;
       _error = null;
-      _total = null;
-      _more = false;
-      _suppliers = [];
+      if (!keep) {
+        _total = null;
+        _more = false;
+        _suppliers = [];
+        _loadedQuery = null;
+      }
     });
     final stores = context.read<StoreContext>();
     try {
@@ -71,6 +77,7 @@ class _InventorySuppliersScreenState extends State<InventorySuppliersScreen> {
         });
         return;
       }
+      final query = _query;
       final service = context.read<InventoryService>();
       final rows = await service.fetchSuppliers(
         view.storeId,
@@ -82,6 +89,7 @@ class _InventorySuppliersScreenState extends State<InventorySuppliersScreen> {
       if (!_matches(view) || generation != _readGeneration) return;
       setState(() {
         _suppliers = rows;
+        _loadedQuery = query;
         _total = service.suppliersTotal;
         _more = service.suppliersHasMore;
         _isLoading = false;
@@ -98,7 +106,13 @@ class _InventorySuppliersScreenState extends State<InventorySuppliersScreen> {
       setState(() {
         _viewKey = stores.requestContextKey;
         _storeId = stores.selectedStoreId;
-        _suppliers = [];
+        if (!keep ||
+            error is ApiException && [401, 403].contains(error.statusCode)) {
+          _suppliers = [];
+          _total = null;
+          _more = false;
+          _loadedQuery = null;
+        }
         _error =
             'Check your connection and current store permissions, then refresh.';
         _isLoading = false;
@@ -113,6 +127,7 @@ class _InventorySuppliersScreenState extends State<InventorySuppliersScreen> {
     if (_viewKey != stores.requestContextKey) {
       _viewKey = stores.requestContextKey;
       ++_readGeneration;
+      _loadedQuery = null;
       _storeId = null;
       _page = 1;
       _warehouseReady = false;
@@ -129,9 +144,31 @@ class _InventorySuppliersScreenState extends State<InventorySuppliersScreen> {
         if (mounted) _load();
       });
     }
-    return Scaffold(
-      backgroundColor: colors.bgStart,
-      floatingActionButton: FloatingActionButton.extended(
+    final view = _view, generation = _readGeneration;
+    bool current() =>
+        mounted &&
+        _matches(view) &&
+        generation == _readGeneration &&
+        mobile_tokens.isLetbuyySurfaceCurrent(context);
+    final canRefresh = !_isLoading;
+    final readKey = stores.requestContextKey;
+    bool currentRead() =>
+        mounted &&
+        generation == _readGeneration &&
+        context.read<StoreContext>().requestContextKey == readKey &&
+        mobile_tokens.isLetbuyySurfaceCurrent(context);
+    return WarehouseListScaffold(
+      scrollIdentity: _query,
+      title: 'Suppliers',
+      description: 'Vendors used for replenishment and purchase orders',
+      refreshLabel: 'Refresh suppliers',
+      loading: _isLoading,
+      onRefresh: canRefresh
+          ? () async {
+              if (currentRead() && !_isLoading) await _load(retain: true);
+            }
+          : null,
+      action: FilledButton.icon(
         onPressed:
             !_warehouseReady ||
                 _warehouseBusy ||
@@ -139,86 +176,90 @@ class _InventorySuppliersScreenState extends State<InventorySuppliersScreen> {
                 _isLoading ||
                 _error != null
             ? null
-            : _createSupplier,
-        backgroundColor: mobile_tokens.LetbuyyColorTokens.brandPrimary,
-        foregroundColor: Colors.white,
+            : () {
+                if (current()) _createSupplier();
+              },
         icon: const Icon(Icons.person_add_alt_1_outlined),
         label: const Text('New supplier'),
       ),
-      body: Container(
-        decoration: colors.backgroundGradient,
-        child: SafeArea(
-          child: Column(
-            children: [
-              _header(),
-              if (_view != null)
-                WarehouseCommandRecovery(
-                  view: _view!,
-                  onReady: (ready) {
-                    if (mounted && _warehouseReady != ready)
-                      setState(() => _warehouseReady = ready);
+      header: [
+        if (view != null)
+          WarehouseCommandRecovery(
+            view: view,
+            onReady: (ready) {
+              if (_matches(view) && _warehouseReady != ready)
+                setState(() => _warehouseReady = ready);
+            },
+            onResolved: _load,
+          ),
+        Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: TextButton.icon(
+            onPressed: _storeId == null || _isLoading
+                ? null
+                : () {
+                    if (current()) _filter();
                   },
-                  onResolved: _load,
-                ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: TextButton.icon(
-                    onPressed: _storeId == null ? null : _filter,
-                    icon: const Icon(Icons.filter_list),
-                    label: Text(
-                      _search.isEmpty && _status.isEmpty && _sort == 'name_asc'
-                          ? 'Filter and sort'
-                          : 'Filters applied · Edit',
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  children: [
-                    IconButton(
-                      tooltip: 'Previous page',
-                      onPressed: _isLoading || _page == 1
-                          ? null
-                          : () {
-                              setState(() => _page--);
-                              _load();
-                            },
-                      icon: const Icon(Icons.chevron_left),
-                    ),
-                    Expanded(
-                      child: Text(
-                        _total == null
-                            ? 'Page $_page · Count unavailable'
-                            : '$_total matching records · Page $_page',
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    IconButton(
-                      tooltip: 'Next page',
-                      onPressed: _isLoading || !_more
-                          ? null
-                          : () {
-                              setState(() => _page++);
-                              _load();
-                            },
-                      icon: const Icon(Icons.chevron_right),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(child: _isLoading ? _loading() : _body()),
-            ],
+            icon: const Icon(Icons.filter_list),
+            label: Text(
+              _search.isEmpty && _status.isEmpty && _sort == 'name_asc'
+                  ? 'Filter and sort'
+                  : 'Filters applied · Edit',
+            ),
           ),
         ),
-      ),
+        Row(
+          children: [
+            IconButton(
+              tooltip: 'Previous page',
+              onPressed: _isLoading || _page == 1
+                  ? null
+                  : () {
+                      if (!current() || _isLoading) return;
+                      setState(() => _page--);
+                      _load();
+                    },
+              icon: const Icon(Icons.chevron_left),
+            ),
+            Expanded(
+              child: Text(
+                _total == null
+                    ? 'Page $_page · Count unavailable'
+                    : '$_total matching records · Page $_page',
+                textAlign: TextAlign.center,
+              ),
+            ),
+            IconButton(
+              tooltip: 'Next page',
+              onPressed: _isLoading || !_more
+                  ? null
+                  : () {
+                      if (!current() || _isLoading || !_more) return;
+                      setState(() => _page++);
+                      _load();
+                    },
+              icon: const Icon(Icons.chevron_right),
+            ),
+          ],
+        ),
+        if (_isLoading && _loadedQuery != null)
+          const Text(
+            'Refreshing the same page. Previously loaded records are shown below.',
+          ),
+        if (_error != null && _loadedQuery != null)
+          Semantics(
+            liveRegion: true,
+            child: Text(
+              'Refresh unavailable. Previously loaded records are shown below. $_error',
+            ),
+          ),
+      ],
+      slivers: [_isLoading && _loadedQuery == null ? _loading() : _body()],
     );
   }
 
   Future<void> _filter() async {
+    if (!mounted || !mobile_tokens.isLetbuyySurfaceCurrent(context)) return;
     final view = _view;
     if (!_matches(view)) return;
     final result = await showWarehouseListFilters(
@@ -238,47 +279,8 @@ class _InventorySuppliersScreenState extends State<InventorySuppliersScreen> {
     _load();
   }
 
-  Widget _header() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
-      child: Row(
-        children: [
-          IconButton(
-            tooltip: 'Back',
-            icon: Icon(Icons.arrow_back_rounded, color: colors.textPrimary),
-            onPressed: () => Navigator.maybePop(context),
-          ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Suppliers',
-                  style: TextStyle(
-                    color: colors.textPrimary,
-                    fontSize: 22,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                Text(
-                  'Vendors used for replenishment and purchase orders',
-                  style: TextStyle(color: colors.textSecondary, fontSize: 12),
-                ),
-              ],
-            ),
-          ),
-          IconButton(
-            tooltip: 'Refresh suppliers',
-            icon: Icon(Icons.refresh_rounded, color: colors.textSecondary),
-            onPressed: _load,
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _body() {
-    if (_error != null) {
+    if (_error != null && _loadedQuery == null) {
       return _centerState(
         Icons.error_outline_rounded,
         'Could not load suppliers',
@@ -296,11 +298,9 @@ class _InventorySuppliersScreenState extends State<InventorySuppliersScreen> {
             : 'Add suppliers before creating purchase orders.',
       );
     }
-    return RefreshIndicator(
-      color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
-      onRefresh: _load,
-      child: ListView.builder(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 96),
+    return SliverPadding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+      sliver: SliverList.builder(
         itemCount: _suppliers.length,
         itemBuilder: (context, index) {
           final supplier = _suppliers[index];
@@ -358,29 +358,29 @@ class _InventorySuppliersScreenState extends State<InventorySuppliersScreen> {
       children: [
         Icon(icon, size: 14, color: colors.textTertiary),
         const SizedBox(width: 4),
-        Text(
-          value,
-          style: TextStyle(color: colors.textSecondary, fontSize: 12),
+        Flexible(
+          child: Text(
+            value,
+            style: TextStyle(color: colors.textSecondary, fontSize: 12),
+          ),
         ),
       ],
     );
   }
 
   Future<void> _createSupplier() async {
+    if (!mounted || !mobile_tokens.isLetbuyySurfaceCurrent(context)) return;
     final view = _view;
     if (!_matches(view) || !_warehouseReady || _warehouseBusy) return;
-    final input = await showModalBottomSheet<InventorySupplierInput>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: colors.card,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
-      ),
-      builder: (_) => guardMerchantStoreView(
-        view,
-        _SupplierForm(storeId: view!.storeId, colors: colors),
-      ),
-    );
+    final input = await mobile_tokens
+        .showLetbuyyFormSheet<InventorySupplierInput>(
+          context: context,
+          builder: (_) => guardMerchantStoreView(
+            view,
+            _SupplierForm(storeId: view!.storeId, colors: colors),
+            sheet: true,
+          ),
+        );
     if (input == null || !_matches(view) || input.storeId != view!.storeId)
       return;
 
@@ -404,48 +404,52 @@ class _InventorySuppliersScreenState extends State<InventorySuppliersScreen> {
   }
 
   Widget _loading() {
-    return Center(
-      child: CircularProgressIndicator(
-        color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
+    return SliverFillRemaining(
+      hasScrollBody: false,
+      child: Center(
+        child: CircularProgressIndicator(
+          color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
+        ),
       ),
     );
   }
 
   Widget _centerState(IconData icon, String title, String subtitle) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, color: colors.textTertiary, size: 48),
-            const SizedBox(height: 12),
-            Text(
-              title,
-              style: TextStyle(
-                color: colors.textPrimary,
-                fontWeight: FontWeight.w800,
+    return SliverFillRemaining(
+      hasScrollBody: false,
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, color: colors.textTertiary, size: 48),
+              const SizedBox(height: 12),
+              Text(
+                title,
+                style: TextStyle(
+                  color: colors.textPrimary,
+                  fontWeight: FontWeight.w800,
+                ),
               ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              subtitle,
-              textAlign: TextAlign.center,
-              style: TextStyle(color: colors.textSecondary),
-            ),
-          ],
+              const SizedBox(height: 6),
+              Text(
+                subtitle,
+                textAlign: TextAlign.center,
+                style: TextStyle(color: colors.textSecondary),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
   void _showSnackBar(String message, {bool isError = false}) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: isError ? colors.error : colors.success,
-        behavior: SnackBarBehavior.floating,
-      ),
+    mobile_tokens.showLetbuyyOperationFeedback(
+      context,
+      message: message,
+      isError: isError,
     );
   }
 }
@@ -482,60 +486,48 @@ class _SupplierFormState extends State<_SupplierForm> {
   @override
   Widget build(BuildContext context) {
     final colors = widget.colors;
-    return Padding(
-      padding: EdgeInsets.fromLTRB(
-        18,
-        18,
-        18,
-        MediaQuery.of(context).viewInsets.bottom + 18,
-      ),
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'New supplier',
-              style: TextStyle(
-                color: colors.textPrimary,
-                fontSize: 18,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-            const SizedBox(height: 14),
-            _field(_name, 'Supplier name'),
-            _field(_contact, 'Contact name'),
-            _field(_email, 'Email'),
-            _field(_phone, 'Phone'),
-            _field(_address, 'Address'),
-            const SizedBox(height: 10),
-            if (_validation != null)
-              Text(_validation!, style: TextStyle(color: colors.error)),
-            FilledButton.icon(
-              onPressed: () {
-                final input = InventorySupplierInput(
-                  storeId: widget.storeId,
-                  name: _name.text,
-                  contactName: _contact.text,
-                  email: _email.text,
-                  phone: _phone.text,
-                  address: _address.text,
-                );
-                try {
-                  WarehouseCommandIntent.supplier(input);
-                } on FormatException {
-                  setState(
-                    () => _validation =
-                        'Enter a supplier name, valid email, and contact details within their limits.',
-                  );
-                  return;
-                }
-                Navigator.pop(context, input);
-              },
-              icon: const Icon(Icons.save_outlined),
-              label: const Text('Create supplier'),
-            ),
-          ],
+    return mobile_tokens.LetbuyyFormSheet(
+      title: 'New supplier',
+      description:
+          'Save contact details for replenishment and purchase orders.',
+      actions: [
+        FilledButton.icon(
+          onPressed: () {
+            final input = InventorySupplierInput(
+              storeId: widget.storeId,
+              name: _name.text,
+              contactName: _contact.text,
+              email: _email.text,
+              phone: _phone.text,
+              address: _address.text,
+            );
+            try {
+              WarehouseCommandIntent.supplier(input);
+            } on FormatException {
+              setState(
+                () => _validation =
+                    'Enter a supplier name, valid email, and contact details within their limits.',
+              );
+              return;
+            }
+            mobile_tokens.completeLetbuyySurface(context, input);
+          },
+          icon: const Icon(Icons.save_outlined),
+          label: const Text('Create supplier'),
         ),
+      ],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _field(_name, 'Supplier name'),
+          _field(_contact, 'Contact name'),
+          _field(_email, 'Email'),
+          _field(_phone, 'Phone'),
+          _field(_address, 'Address'),
+          const SizedBox(height: 10),
+          if (_validation != null)
+            Text(_validation!, style: TextStyle(color: colors.error)),
+        ],
       ),
     );
   }
@@ -543,10 +535,15 @@ class _SupplierFormState extends State<_SupplierForm> {
   Widget _field(TextEditingController controller, String label) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
-      child: TextField(
+      child: mobile_tokens.CustomTextField(
         controller: controller,
-        style: TextStyle(color: widget.colors.textPrimary),
-        decoration: InputDecoration(labelText: label),
+        label: label,
+        keyboardType: identical(controller, _email)
+            ? TextInputType.emailAddress
+            : identical(controller, _phone)
+            ? TextInputType.phone
+            : TextInputType.text,
+        textInputAction: TextInputAction.next,
       ),
     );
   }

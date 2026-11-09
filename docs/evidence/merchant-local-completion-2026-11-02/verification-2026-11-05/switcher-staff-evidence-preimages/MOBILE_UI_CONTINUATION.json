@@ -1,0 +1,378 @@
+{
+  "updated_at": "2026-11-05T20:35:10.182536+00:00",
+  "scope": "Continue comprehensive frontend-only Merchant UI migration, one agent in this exact existing dirty worktree. Preserve backend, Dart domain/persistence rules and all prior WIP. No push/merge/deploy/new worktree.",
+  "head": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+  "source": {
+    "head": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+    "sha256": "78af178afaafa150298483820690ca5ed87b9c627fe208ea5d6148c3e7e1d636",
+    "entries": 8448,
+    "manifest": "verification-2026-11-05/utilities-source-v4.source.json",
+    "status": "1513fullPASS/1unchangedStaffFAIL/0SKIP;38focusedPASS;0analysis;114gov;Android/iOSdebugcompiled+independentartifact/fontreadback;10widgetrenders",
+    "role": "Current qualified frontend source;current native/hosted/full feature acceptance remains open"
+  },
+  "active": {
+    "status": "NO_RUNNING_VERIFICATION;NEXT_AUTHORIZED_FRONTEND_WORK_OPEN",
+    "area": "StoreSwitcherButton and remaining complete Merchant UI journeys",
+    "next": "Use the same dirty worktree and existing plan;preserve current source/checkpoints. Build real current-scope short-sheet and selection feedback through unchanged StoreContext. No backend/persistence/policy edits under frontend scope."
+  },
+  "next": [
+    "Migrate StoreSwitcherButton using the existing authorized membership list/selectStore/persistence;reproduce stale sheet/actor/store callbacks,held preference completion,truthful discovery/selection failure and large text through the real owner.",
+    "Continue canonical shipping/tax/content/money and all remaining ledger journeys;47source rows remain unreviewed;211nonadditive rows and the final unique surface denominator remain unresolved.",
+    "Current-UI Android/iOS/provider/hosted/physical/release acceptance remains separate.119applicable programme open;120/121excluded,122paused,51frozen. KnownStafffailure and unavailable native38 terminal remain explicit."
+  ],
+  "notes": [
+    "Native v3 category run d08d94ab152d passed on editor source4710f... old root; current whole-source category rerun remains separate.",
+    "Native v4 interrupted launcher used old companion. Scoped Docker owner12768 readback empty; reverse maps restored. Added only mis-scoped ui-attention to v3; prior successful evidence unchanged and custody caveat recorded.",
+    "Native v5 failed too-exact field label selector; real normal-width clipping found. v6 native images show all5labels fixed; stopped at an unsupported hint serialization assertion. Stock dump omits Android hintText; pinned source and actual Flutter semantic label prove observation limit, not app label bug. No spoken screen-reader acceptance.",
+    "v10 source archived by all7448 exact hashes; only retained test file bytes reconstructed by removing later added test and matching original hash. v12 differs only in app test; application/native implementation bytes unchanged.",
+    "Full981pass/1known protected namespace failure, no skip; analyses0issues;35ASTdomain preservation checks. Do not fix persistent namespace under frontend scope or call full suite green.",
+    "Mac host9002 belongs another task, never bind/probe/stop. Emulator reverse9002->54351 is scoped; preserve old forward52367. Heavy jobs sequential.",
+    "ADB input/screenshots explicitly authorized only task emulator5580/server15038; no auto input retries. Normal synthetic PKCE sign-in only. iOS3 compile-only with safe54351 config; no iOS UI.",
+    "All old122-feature programme boundaries retained:119applicable;120/121excluded;122paused;51frozen. Feature count is not screen count.",
+    "2026-11-05: previous /private/tmp run archives/AVD/controller lost; receipts historical only. Fresh current source manifests/helpers and11changed-file custody saved under verification-2026-11-05. Current Coupon/security source full1433PASS/1knownStaffFAIL,114gov, analyses0, Android/iOScompile-only. Named security/gift/app gates and theme51 untouched."
+  ],
+  "catalog_source": {
+    "sha256": "966d2024bf79f37b48889a371ce2f6271c15c00a11a89ed173be287c1eeeb3ab",
+    "entries": 7457,
+    "full_flutter": "1036PASS/1existing protected Staff namespace FAIL/0SKIP",
+    "analyses": "App/UIkit0issues",
+    "parsed_preservation": 70,
+    "runtime": "No newer Android/iOS proof;last native/dashboardv36 retained"
+  },
+  "field_copy": {
+    "at": "2026-11-04T16:56:54.249303+00:00",
+    "status": "FIELDS_V3_LOCAL_QUALIFIED_WITH_EXISTING_PROTECTED_FAILURE_NEW_ARTIFACTS_PENDING",
+    "source": "ce31422f57f32f09b3e38de4dfb553a68935ffc33fe553c6d571ad741081ff99/7462",
+    "archive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-fields-v3-qualified-source",
+    "negative_v1": "0PASS/6FAIL actualRenderParagraphdidExceedMaxLines=true forhelper/expliciterror/validatorerror inboth themes320dp scale2.4",
+    "fixed": "Canonicalhelper/error widgetswrapfullcopy; nativeFormFieldvalidation/priority/callback/inputlimits unchanged. CSVfieldspacedbelowfileactions",
+    "focused_v2": "52PASS/0FAIL originalproduct/CSVrecovery andUIkitformspluscopycases",
+    "full_v3": {
+      "passed": 1059,
+      "failed": 1,
+      "skipped": 0,
+      "existing_failure": "ProtectedStaffnamespacepolicy outsidefrontend",
+      "app_and_ui_kit_analysis_issues": 0,
+      "parsed_preservation_checks": 125
+    },
+    "precedence": "Both explicitcaptionandvalidatorerror tested;validationerrorwins;suppliedcaptionalone doesnotchangeForm.validate originalpolicy",
+    "native": "Newfieldsourcehasno newAndroid/iOSartifactyet;v40Androidv15/iOSv5 archivedproofs applyonlytheirsource",
+    "next": "CollectionsUIcohortperMOBILE_UI_COLLECTIONS_MIGRATION_PLAN.json;sourcewillbeunfrozen;newbroadgovernance/artifactsaftercoherentcohort"
+  },
+  "collections": {
+    "at": "2026-11-04T17:33:21.673652+00:00",
+    "status": "COLLECTIONS_V11_LOCAL_QUALIFIED_WITH_ONE_EXISTING_PROTECTED_FAILURE_ANDROID_V16_RUNNING",
+    "source": {
+      "head": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+      "manifest": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-collections-v11.source.json",
+      "sha256": "4bca3d04017756e2af1f0fb1e34377f2a6adcc649584a61d9283671e3f86a2b6",
+      "entries": 7463,
+      "archive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-collections-v11-qualified-source"
+    },
+    "implemented": [
+      "Collections list uses shared responsive header, applied type/search/page labels and native choice sheets; same-query refresh retains labelled prior rows with shell-visible progress; captured refresh cannot bypass busy state.",
+      "Complex manual/smart metadata editor is one canonical full page with native fields, pinned Save/Close and dirty Back. Rule selectors retain six fields/seven operators/two match values with explicit Apply.",
+      "Rule cards retain native text/focus identity through removal of an earlier rule using widget keys, with no UI key inserted into the rule payload.",
+      "Saved preview remains server-evaluated, revision-bound and explicitly exact or capped; its progress stays above the scrolled body. Draft changes are not claimed evaluated.",
+      "Membership uses flowing full names, one lazy ordered list and accessible drag/Move/Remove alternatives with original ordered IDs/versions/recovery. Current assignment review is a guarded durable page.",
+      "A real late-preview/disposed State context error was fixed with mounted-first current-view checks. Matching previously existing UI owners receive only that getter guard; their complete method bodies compare unchanged.",
+      "Shared field helper and explicit/validator errors wrap readable text; validator priority and native input behavior retained from fields-v3."
+    ],
+    "diagnostics_retained": {
+      "collections_v6": "256PASS/1test selector failure: RawTooltip cast as IconButton; corrected actual widget predicate.",
+      "collections_v7": "Two new fixture assumptions failed: smart update scopes store in options rather than body; lazy progress unbuilt above scroll exposed real UI visibility finding.",
+      "collections_v8": "280PASS/1real disposed-State preview failure; fixed mounted-first guard.",
+      "collections_v9": "283PASS/0FAIL focused collection/service/UI foundations after guards.",
+      "hero_negative_v10": "0PASS/1FAIL reproduces same disposed-State error after held clipboard acknowledgement.",
+      "scope": "No test diagnostic is represented as an application command/database failure unless actually observed."
+    },
+    "local_qualification": {
+      "full_flutter": {
+        "passed": 1070,
+        "failed": 1,
+        "skipped": 0,
+        "failure": "Existing protected staff_scope_boundary_test: positive hosted invitation remains in its existing namespace; local restore cannot adopt it",
+        "failure_scope": "Outside newfrontend authority; no namespace policy change or weakened assertion."
+      },
+      "app_analysis_issues": 0,
+      "ui_kit_analysis_issues": 0,
+      "parsed_preservation_checks": 241,
+      "governance": {
+        "capsule": "governance-category-capsule-v28",
+        "passed": 114,
+        "failed": 0,
+        "blocked": 0,
+        "skipped": 0,
+        "not_applicable": 1,
+        "all_code_inputs_matched": 7463
+      },
+      "protected_readback": {
+        "baseline_files": 5195,
+        "readback": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-protected-readback-v8.json",
+        "only_difference": "Same retained Staff presentation/cache exception; all other protected files unchanged."
+      }
+    },
+    "android": {
+      "status": "RUNNING_NOT_ACCEPTED",
+      "launcher": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/run-catalog-v16.py",
+      "inputs": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/catalog-v16-controller-inputs.json",
+      "scope": "Unmodified owned local backend/web collection harness, new bounded normal UI controller for updated containers. No hosted/provider/iOS or entireprogramme claim."
+    },
+    "ios": "New source compile/runtime pending; prior v40 iOSv5 compiles only that retained source.",
+    "cleanup": "Container replacement is implemented; no source/assets wholesale deleted and no dependent cleanup accepted before newruntime/integration proof.",
+    "programme": "119applicable remainsopen;120/121excluded;122paused;51frozen;unique surface denominator unreconciled.",
+    "superseded_current_status": "Historicalv11details; use MOBILE_UI_COLLECTIONS_PROGRESS.json and Androidv19/iOSv6 reports for qualifiedsource22closure."
+  },
+  "orders_next": {
+    "status": "List/draft/packing/tracking/cancel/export qualified on historical13; Detail/Returns now implemented and current fixed-source broad qualification in progress.",
+    "report": "MOBILE_UI_ORDERS_PROGRESS.json"
+  },
+  "current_work": "Inventory document semantics verified as a native40 substep; compound run failed before setters. Search focus reproduced/repaired and79focused+2strict positive cases pass; broad qualification running. No full native acceptance.",
+  "customer_next": {
+    "status": "Create/list and existing segment lifetime updated; current broader local qualification in progress. Detail and9caller tasks remain planned.",
+    "plan": "MOBILE_UI_CUSTOMERS_DISCOVERY.md",
+    "read_boundary": "CUSTOMERS_PRESENTATION_BOUNDARY.md",
+    "service": "Fourth classified client read/provenance/disposal/admission exception. Original commands/helpers/SDK/cache expressions require current parsed proof; no backend/persistence policy change.",
+    "unknown_create": "Existing SDK generates a new key per call and service does not expose it. Prepared UI has no automatic retry; keep fields, persistent warning, explicit leave/review. No durable recovery claim.",
+    "historical_prepared_create_files": "The old pending-editor/apply script entries have already been applied and superseded. Do not replay them."
+  },
+  "last_qualified_customer_list_source": {
+    "sha256": "4b2f91c5e74ff028a025bdee21c7216151011e6472d61b7d91913dc6335d1cbb",
+    "archive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-customer-list-v2-qualified-source",
+    "native": "Android26boundedPASS; iOS11compile-only"
+  },
+  "analytics_current": {
+    "source": {
+      "head": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+      "sha256": "3825de3424739ed105f842a151f4ae9a5f2379936911885833da89b6bc04d3d7",
+      "entries": 7489,
+      "manifest": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-analytics-v3.source.json",
+      "status": "Archived source3:38focusedPASS;1311fullPASS/1knownStaffFAIL;0analysisissues;548AST;114gov41;5195protected baseline same5clientexceptions. Native32boundedPASS, iOS15compile-onlyPASS, both independently closed."
+    },
+    "android": "COMPILED_MOBILE_UI_ANALYTICS_ANDROID_WEB_V32_QUALIFICATION.json",
+    "ios": "ANALYTICS_SOURCE3_IOS15_COMPILE_READBACK.json",
+    "open_shared_copy_finding": "All-null series generic Recorded values are available below copy needs later shared family review; no fake zero values.",
+    "positive_data_gate": "Paid/nonzero/product ranking native not accepted; actual ranking empty."
+  },
+  "warehouse_current": {
+    "progress": "MOBILE_UI_WAREHOUSE_PROGRESS.json",
+    "plan": "MOBILE_UI_WAREHOUSE_MIGRATION_PLAN.md",
+    "preimages": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-frontend-preimages.json",
+    "current_artifacts": "Current Coupon1 Android/iOS debug compiles only; native38 original outcome unconfirmed; fresh native Warehouse acceptance remains open.",
+    "source": {
+      "sha256": "c6cdc0e5e85cafa2e699ba482d151087a8031ca13045ea61e8780fd2aaef6846",
+      "entries": 7504,
+      "manifest": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-warehouse-v6.source.json"
+    },
+    "local_qualification": "MOBILE_UI_WAREHOUSE_SOURCE6_LOCAL_QUALIFICATION.json",
+    "native36": "COMPILED_MOBILE_UI_WAREHOUSE_ANDROID_WEB_V36_DIAGNOSTIC.json",
+    "native37": "COMPILED_MOBILE_UI_WAREHOUSE_ANDROID_WEB_V37_DIAGNOSTIC.json"
+  },
+  "discounts_next": "Active Coupon source implemented/locally qualified; see MOBILE_UI_COUPONS_PROGRESS.json. Deferred Gift-card activation unchanged.",
+  "supporting_next": "MOBILE_UI_SUPPORTING_SURFACES_DISCOVERY.md and MOBILE_UI_SECURITY_AND_GATES_DISCOVERY.md: current route/host/inline variants classified; no activation or app edits.",
+  "coupons_current": {
+    "status": "COUPON_SOURCE1_LOCAL_QUALIFIED_1424PASS_1KNOWN_STAFFFAIL_114GOV_ANDROID_IOS_COMPILE_ONLY",
+    "report": "MOBILE_UI_COUPONS_PROGRESS.json"
+  },
+  "inventory_current": {
+    "rows": 204,
+    "unreviewed_source_rows": 68,
+    "app_lib_dart_files": 193,
+    "unique_denominator": null
+  },
+  "security_current": {
+    "status": "Security1 local qualification and both debug compiles closed; no active verification process",
+    "area": "Supporting/utility and AI frontend continuation; fresh owned native verification open",
+    "session": null,
+    "source_sha256": "8ffd6e530d90589bd68607a9a910c50414f3389cca26213ceded0c483884aae6",
+    "source_entries": 8444,
+    "report": "MOBILE_UI_SECURITY_PROGRESS.json",
+    "next": "Reuse this exact worktree. Current source may unfreeze for next coherent frontend cohort. Read supporting/utility discovery; reproduce next before edits. Recover task emulator/control assets for fresh native Warehouse/Coupon/security acceptance. No backend/persistence/activation/release expansion."
+  },
+  "supporting_current": {
+    "report": "MOBILE_UI_SUPPORTING_PROGRESS.json",
+    "source": {
+      "sha256": "a2a5672ed7707f9b10a0aa6fd49fadb27227410002e60a56af97c23f3c6d9cb3",
+      "entries": 8442,
+      "snapshot_version": 2
+    },
+    "status": "SUPPORTING_SOURCE2_LOCAL_QUALIFIED_WITH_KNOWN_PROTECTED_STAFF_FAILURE_ANDROID_IOS_COMPILE_ONLY"
+  },
+  "content_review_current": {
+    "evidence": "MOBILE_UI_CONTENT_DISCOVERY.md",
+    "source_rows_reviewed": 13,
+    "unreviewed_source_rows": 55,
+    "unique_surface_denominator": null
+  },
+  "source_review_current": {
+    "ledger_rows_nonadditive": 211,
+    "unreviewed_source_rows": 49,
+    "unique_surface_denominator": null,
+    "content": "MOBILE_UI_CONTENT_DISCOVERY.md",
+    "money": "MOBILE_UI_MONEY_DISCOVERY.md",
+    "shipping_tax": "MOBILE_UI_SHIPPING_TAX_DISCOVERY.md"
+  },
+  "inventory_search_current": {
+    "source_sha256": "2d70c5e307ef5fd263f30d85d5c905069e5d6f80d3d78ece70425c3459b69d60",
+    "report": "MOBILE_UI_INVENTORY_SEARCH_FIX.md",
+    "full_flutter": {
+      "pass": 1470,
+      "fail": 1,
+      "skip": 0,
+      "known_protected_staff_failure_only": true
+    },
+    "analysis": "0issues",
+    "governance": "114PASS",
+    "android": "inventory-search-android-artifact-readback.json; compile only",
+    "ios": "inventory-search-ios-artifact-readback.json;377files compile only,simulator Shutdown",
+    "native41": "Launching; no accepted outcome yet",
+    "managed_setter_controls": {
+      "pass": 20,
+      "fail": 0,
+      "skip": 0,
+      "raw_setter_denial_cases": 12,
+      "parent_and_child_cleanup_independently_empty": true
+    }
+  },
+  "latest_native_warehouse": {
+    "at": "2026-11-05T19:48:19.605431+00:00",
+    "status": "BOUNDED_LOCAL_NATIVE_WEB_WAREHOUSE_AND_SETTERS_PASS",
+    "run_id": "abac88df509d",
+    "source_sha256": "2d70c5e307ef5fd263f30d85d5c905069e5d6f80d3d78ece70425c3459b69d60",
+    "source_inputs": 8442,
+    "native_dependency_sha256": "17c2f53685f885a2ba9488eb4cab420525ac20cbc38148eb4121e7022d8b39ed",
+    "native_dependency_entries": 4834,
+    "apk_sha256": "8dcb8ed60ac7582479ba67d8be95b6434b006831e03fbaa0199a700b18b2d3aa",
+    "apk": "/private/tmp/letbuyy-merchant-local-20261106-25feac2c/native-warehouse-v41/qualified-artifact/merchant-local-debug.apk",
+    "installed_bytes_independently_equal": true,
+    "compiled_workers": {
+      "run_id": "abac88df509d",
+      "runtime": "workerd",
+      "gateway_sha256": "555853cc5d735552c834697e7c4624af1cfb432af330d09bcdb36ca820b5dd34",
+      "bff_sha256": "4db6627fabda2fc4ff8140faadbd7cd5e2c315b3c7b427553a8b8630456ca8a5",
+      "entrypoints": [
+        "services/api-gateway/src/index.ts",
+        "services/mobile-bff/src/index.ts"
+      ],
+      "transport": "Owned Node HTTP and service-binding observer; no business response stubs",
+      "hosted": false
+    },
+    "runner_pass": 1,
+    "runner_fail": 0,
+    "runner_skip": 0,
+    "controller_exit": 0,
+    "source_and_controller_inputs_unchanged": true,
+    "synthetic_login_inputs_retired": true,
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    },
+    "next_markers_remaining": [],
+    "forward_baseline_restored": true,
+    "reverse_baseline_restored": true,
+    "staff_ui_status": "OBSERVED_OWNER_EMPTY_ROSTER_REQUIRED_INPUT_KEYBOARD_CANCEL_FRESH_READ",
+    "limits": "Normal local owner Android/browser/compiled-Worker/Postgres journey only. Synthetic customer hold prerequisite; no buyer-authenticated checkout, real staff effects, variants/allocation permutations, metadata edit/delete, iOS runtime, real provider, hosted, physical performance, signed release or full feature acceptance. Native38 remains unknown.",
+    "durable_evidence": "native41-accepted-local-warehouse/MANIFEST.json"
+  },
+  "notifications_loyalty_discovery": {
+    "document": "MOBILE_UI_NOTIFICATIONS_LOYALTY_DISCOVERY.md",
+    "source_review_only": true,
+    "ledger_rows": 211,
+    "unreviewed_source_rows": 47,
+    "unique_denominator": null
+  },
+  "latest_saved_fields": {
+    "document": "MOBILE_UI_SAVED_FIELDS_FIX.md",
+    "source_sha256": "823d816f06cb8b21ecedb637f9ea6dc6cdf390c6caeae5fbb7676cf4231dc37a",
+    "protected_other_inputs": 8440,
+    "new_frontend_tests": 8,
+    "focused_pass": 37,
+    "native": "pending",
+    "ios_runtime": "pending",
+    "hosted": "not authorized in this frontend scope",
+    "status": "LOCAL_SOURCE_QUALIFICATION_COMPLETE_WITH_KNOWN_STAFF_FAILURE",
+    "qualification": "saved-fields-qualification.terminal.json",
+    "full_flutter": {
+      "pass": 1478,
+      "fail": 1,
+      "skip": 0,
+      "known_protected_staff_failure_only": true
+    },
+    "app_analysis_issues": 0,
+    "governance_pass": 114,
+    "android_readback": "saved-fields-android-artifact-readback.json",
+    "ios_readback": "saved-fields-ios-artifact-readback.json",
+    "android_apk_sha256": "7d94a60b19a1fe818ffc10a3de7f57a202d6c1ba6493fae9b443c1d9480b0afa",
+    "ios_files": 377
+  },
+  "latest_confirmation": {
+    "document": "MOBILE_UI_CONFIRMATION_FIX.md",
+    "focused_pass": 41,
+    "new_frontend_tests": 7,
+    "negative": "0PASS/7FAIL;canonical76px overflow then fixed",
+    "protected_other_inputs": 8442,
+    "native": "pending",
+    "ios_runtime": "pending",
+    "hosted": "not authorized by frontend task",
+    "status": "LOCAL_QUALIFICATION_COMPLETE_WITH_KNOWN_STAFF_FAILURE",
+    "source_sha256": "1029fe659065f6110351560cecd8ece3f7656665f2b499ec6e9019a9b216eb65",
+    "qualification": "verification-2026-11-05/confirmation-qualification.terminal.json",
+    "full_flutter": {
+      "pass": 1485,
+      "fail": 1,
+      "skip": 0
+    },
+    "app_analysis_issues": 0,
+    "ui_kit_analysis_issues": 0,
+    "governance_pass": 114,
+    "android_readback": "verification-2026-11-05/confirmation-android-artifact-readback.json",
+    "ios_readback": "verification-2026-11-05/confirmation-ios-artifact-readback.json"
+  },
+  "latest_utilities": {
+    "document": "MOBILE_UI_UTILITIES_PROGRESS.md",
+    "source_sha256": "78af178afaafa150298483820690ca5ed87b9c627fe208ea5d6148c3e7e1d636",
+    "focused_pass": 38,
+    "new_frontend_tests": 22,
+    "protected_other_inputs": 8442,
+    "help_original_uris_and_modes_preserved": true,
+    "capability_copy_and_availability_policy_unchanged": true,
+    "native": "pending",
+    "ios_runtime": "pending",
+    "hosted": "not authorized by frontend task",
+    "source_entries": 8448,
+    "new_unique_since_confirmation": 28,
+    "theme_original_bytes_preserved_except_named_filled_button_insertion": true,
+    "visual": "verification-2026-11-05/utility-rendered-v3/MANIFEST.json",
+    "previous_qualified_utilities2": "1507fullPASS/1knownStaffFAIL;do not confuse with current source",
+    "status": "LOCAL_SOURCE_QUALIFIED_WITH_KNOWN_STAFF_FAILURE;CURRENT_NATIVE_AND_HOSTED_ACCEPTANCE_OPEN",
+    "full_flutter": {
+      "pass": 1513,
+      "fail": 1,
+      "skip": 0,
+      "known_protected_staff_failure_only": true
+    },
+    "app_analysis_issues": 0,
+    "governance": {
+      "PASS": 114,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "SKIP": 0,
+      "NOT_APPLICABLE": 1
+    },
+    "qualification": "verification-2026-11-05/utility-final-qualification.terminal.json",
+    "checkpoint": "verification-2026-11-05/FINAL_LOCAL_CHECKPOINT.json",
+    "android_readback": "verification-2026-11-05/utility-final-android-artifact-readback.json",
+    "ios_readback": "verification-2026-11-05/utility-final-ios-artifact-readback.json",
+    "ios_files": 377,
+    "packaged_icons_font_equal": true
+  },
+  "historical_analytics_source_at_frontend_entry": {
+    "head": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+    "sha256": "3825de3424739ed105f842a151f4ae9a5f2379936911885833da89b6bc04d3d7",
+    "entries": 7489,
+    "manifest": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-analytics-v3.source.json",
+    "status": "Archived source3:38focusedPASS;1311fullPASS/1knownStaffFAIL;0analysisissues;548AST;114gov41;5195protected baseline same5clientexceptions. Native32boundedPASS, iOS15compile-onlyPASS, both independently closed.",
+    "role": "Last broadly qualified archived baseline; current Warehouse frontend WIP differs"
+  }
+}

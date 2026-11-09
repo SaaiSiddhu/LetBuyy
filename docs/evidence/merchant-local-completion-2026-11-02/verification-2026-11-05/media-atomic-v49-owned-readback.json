@@ -1,0 +1,53 @@
+{
+  "runId": "4fcd18844d69",
+  "tests": 43,
+  "assertionsPassed": 41,
+  "assertionsFailed": 2,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "results": [
+    {
+      "name": "media-commands.postgres",
+      "pass": 12,
+      "fail": 0,
+      "skipped": 0,
+      "failures": [],
+      "cleanup": {
+        "rest": true,
+        "database": true
+      }
+    },
+    {
+      "name": "merchant-media-recovery.postgres",
+      "pass": 18,
+      "fail": 0,
+      "skipped": 0,
+      "failures": [],
+      "cleanup": {
+        "rest": true,
+        "database": true
+      }
+    },
+    {
+      "name": "merchant-mobile-actions.postgres",
+      "pass": 11,
+      "fail": 2,
+      "skipped": 0,
+      "failures": [
+        "not ok 3 - blog and collection edit/archive actions use authorized tenant predicates",
+        "not ok 5 - inventory location address and purchase-order receiving persist through real worker/RPCs"
+      ],
+      "cleanup": {
+        "rest": true,
+        "database": true
+      }
+    }
+  ],
+  "boundary": "No aggregate feature acceptance. v48 final failure was psql status-line parsing. v49 actual Media12PASS, prior upload18PASS; broader old fixture collection/warehouse calls rejected by current canonical contracts, upgraded in50 with explicit legacy rejection retained."
+}

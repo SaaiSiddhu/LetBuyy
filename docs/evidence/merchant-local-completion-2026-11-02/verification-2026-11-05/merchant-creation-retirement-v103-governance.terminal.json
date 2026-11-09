@@ -1,0 +1,15 @@
+{
+  "at": "2026-11-08T08:13:28.108068+00:00",
+  "status": "TERMINAL",
+  "exit_code": 1,
+  "capsule": "/private/tmp/letbuyy-merchant-creation-retirement-v103-governance-hbrwotnl",
+  "purpose": "Disposable validation copy only, no implementation/worktree/merge/push/release",
+  "source_sha256": "23ed7b54ec793bf87949a3b90dd175918ca6b709f152ceb3cc14a108eb145147",
+  "core_inputs_byte_equal": 8525,
+  "original_source_unchanged": true,
+  "original_index_unchanged": true,
+  "original_index_entries_unchanged": true,
+  "index_sha256_before": "a7f67ddf7f7fde21a4c9ff9f83720c474b0b7027444fe4bf3237eb6d65a55da3",
+  "index_sha256_after": "a7f67ddf7f7fde21a4c9ff9f83720c474b0b7027444fe4bf3237eb6d65a55da3",
+  "report": "merchant-creation-retirement-v103-governance-report.json"
+}

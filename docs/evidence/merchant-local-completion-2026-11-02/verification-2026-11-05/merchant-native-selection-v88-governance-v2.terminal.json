@@ -1,0 +1,15 @@
+{
+  "at": "2026-11-07T18:18:29.392772+00:00",
+  "status": "TERMINAL",
+  "exit_code": 0,
+  "capsule": "/private/tmp/letbuyy-merchant-native-selection-v88-governance-wlfqh_x3",
+  "purpose": "Disposable validation copy only, no implementation/worktree/merge/push/release",
+  "source_sha256": "54ea0701b120edf04ee2952dc57506c488add797cb991b7a1015cc062e2f189c",
+  "core_inputs_byte_equal": 8511,
+  "original_source_unchanged": true,
+  "original_index_unchanged": true,
+  "original_index_entries_unchanged": true,
+  "index_sha256_before": "4f631b7c99e1f1e569f0ccc244d432b7e1e4b20391687f45b6304ee4b17d2ba3",
+  "index_sha256_after": "4f631b7c99e1f1e569f0ccc244d432b7e1e4b20391687f45b6304ee4b17d2ba3",
+  "report": "merchant-native-selection-v88-governance-v2-report.json"
+}

@@ -1,0 +1,11 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "tests/governance/gateway-db-lane.test.mjs"
+  ],
+  "tsconfig": null,
+  "source": "merchant-buyer-inventory-source-v109",
+  "exit_code": 1,
+  "ended_at": "2026-11-08T10:17:42.912220+00:00"
+}

@@ -17,6 +17,8 @@ import { hashMerchantPassword } from '../../services/api-gateway/src/lib/merchan
 import { Gateway, gatewayEnv, newIdentityKeys, INTERNAL_SECRET, tapRest, type RestTap } from '../../services/api-gateway/src/__tests__/owned-db/gateway-harness';
 import { requireOwnedDatabase, startOwnedPooledSqlProxy, type OwnedPooledSqlProxy, createOwnedCheckoutTlsCertificate, startOwnedClientRuntime, stopOwnedClientRuntime, type OwnedClientProcess } from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
 import { newSyntheticTenant, seedSyntheticOrder, seedSyntheticTenant, type SeedOptions } from '../../services/api-gateway/src/__tests__/owned-db/synthetic-tenant';
+import { createLocalTurnstileProvider, LOCAL_TURNSTILE_SECRET } from '../fixtures/local-turnstile-provider';
+import { createOwnedProviderFetch } from '../../scripts/governance/owned-provider-network.mjs';
 
 const owned = requireOwnedDatabase();
 let proxy:OwnedPooledSqlProxy,gateway:Gateway,tap:RestTap;
@@ -24,6 +26,8 @@ const slug = 'letbuyy-core'; // Canonical Liquid starter; use the current sealed
 const password = 'Synthetic-published-storefront-pass-42';
 let identityOrigin: string, merchantOrigin: string, commerceOrigin: string;
 let bridge: Server | undefined, browser: Browser | undefined;
+let challenge: Awaited<ReturnType<typeof createLocalTurnstileProvider>> | undefined;
+const originalFetch = globalThis.fetch;
 let checkoutTls: HttpsServer | undefined, checkoutTlsPort: number;
 const clients: OwnedClientProcess[] = [];
 const contexts: BrowserContext[] = [];
@@ -54,12 +58,14 @@ async function ready(url: string, child: OwnedClientProcess) {
     const deadline = Date.now() + 300_000;
     while (Date.now() < deadline) {
         assert.equal(child.exitCode, null, 'owned Next runtime remains running');
-        try { if ((await fetch(url, { signal: AbortSignal.timeout(2000) })).status < 500) return; } catch { /* cold compile */ }
+        try { if ((await fetch(url, { redirect: 'manual', signal: AbortSignal.timeout(2000) })).status < 500) return; } catch { /* cold compile */ }
         await new Promise(resolve => setTimeout(resolve, 200));
     }
     throw new Error('owned Next readiness timed out');
 }
 before(async () => {
+    challenge = await createLocalTurnstileProvider(owned);
+    globalThis.fetch = createOwnedProviderFetch(originalFetch, challenge.profile);
     proxy=await startOwnedPooledSqlProxy(owned);
     tap=tapRest(owned.restUrl,async(call,forward)=>{const result=await forward();if(!result.ok)console.info('N4_DATABASE_READ_DIAGNOSTIC '+JSON.stringify({resource:call.resource,status:result.status,body:(await result.clone().text()).slice(0,600)}));return result;});
     assert.equal(owned.psql(`SELECT default_template->'liquidBundle'->'package'->>'slug' FROM themes WHERE slug='${slug}';`),'letbuyy-core-liquid');
@@ -129,11 +135,11 @@ before(async () => {
     const common = { INTERNAL_API_SECRET: INTERNAL_SECRET, LETBUYY_INTERNAL_API_SECRET: INTERNAL_SECRET,
         NEXT_PUBLIC_ACCOUNTS_URL: identityOrigin, NEXT_PUBLIC_ADMIN_URL: merchantOrigin,
         LETBUYY_ENABLE_DEV_AUTH_BYPASS: 'false', NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS: 'false' };
-    clients.push(startOwnedClientRuntime(owned, 'identity-next-production', { port: identityPort, env: { ...common,
+    clients.push(startOwnedClientRuntime(owned, 'identity-next-production', { port: identityPort, providerFixture: challenge.profile, env: { ...common,
         LETBUYY_API_URL: apiOrigin + '/v1', LETBUYY_IDENTITY_ISSUER: identityOrigin,
         LETBUYY_IDENTITY_PRIVATE_JWK: JSON.stringify({ ...await exportJWK(keys.privateKey), alg: 'ES256', kid: keys.kid }),
         ACCOUNTS_COOKIE_SECRET: crypto.randomUUID() + crypto.randomUUID(), COOKIE_DOMAIN: '',
-        NEXT_PUBLIC_TURNSTILE_SITE_KEY: '1x00000000000000000000AA', TURNSTILE_SECRET_KEY: '1x0000000000000000000000000000000AA',
+        NEXT_PUBLIC_TURNSTILE_SITE_KEY: '1x00000000000000000000AA', TURNSTILE_SECRET_KEY: LOCAL_TURNSTILE_SECRET,
         RESEND_API_KEY: '', LETBUYY_EMAIL_API_KEY: '' } }));
     clients.push(startOwnedClientRuntime(owned, 'merchant-next-production', { port: merchantPort, env: { ...common,
         LETBUYY_API_BASE_URL: apiOrigin + '/v1', NEXT_PUBLIC_STOREFRONT_URL: commerceOrigin,
@@ -164,12 +170,14 @@ before(async () => {
 after(async () => {
     await Promise.allSettled(contexts.map(context => context.close()));
     await browser?.close();
+    await Promise.allSettled(clients.map(child => stopOwnedClientRuntime(child)));
     await gateway?.settle();tap?.restore();await closePooledSqlClients();await proxy?.stop();
     if (checkoutTls?.listening) await new Promise<void>(resolve => {
         checkoutTls!.close(() => resolve()); checkoutTls!.closeAllConnections();
     });
-    await Promise.allSettled(clients.map(child => stopOwnedClientRuntime(child)));
-    if (bridge?.listening) await new Promise<void>(resolve => bridge!.close(() => resolve()));
+    if (bridge?.listening) { bridge.closeAllConnections(); await new Promise<void>(resolve => bridge!.close(() => resolve())); }
+    await challenge?.close();
+    globalThis.fetch = originalFetch;
 });
 
 async function fixture(tag: string, options: SeedOptions = {}) {
@@ -191,6 +199,12 @@ async function fixture(tag: string, options: SeedOptions = {}) {
         WHERE i.store_id=p.store_id AND i.product_id=p.id) FROM products p WHERE p.id='${product}';`),'25|25',
         'the positive purchase fixture has matching public availability and canonical inventory');
     const context = await browser!.newContext({ viewport: { width: 1440, height: 1000 } }); contexts.push(context);
+    await challenge!.attachBrowser(context, [identityOrigin, merchantOrigin, commerceOrigin]);
+    // These exact two HTTPS origins terminate on this fixture's verified owned
+    // TLS listener; Chromium maps *.localhost to loopback and trusts only its
+    // ephemeral SPKI. Keep every other nonlocal/browser provider request denied.
+    const tlsOrigins = new Set([`https://${tenant.subdomain}.localhost:${checkoutTlsPort}`, `https://checkout.localhost:${checkoutTlsPort}`]);
+    await context.route(url => tlsOrigins.has(url.origin), route => route.continue());
     context.setDefaultNavigationTimeout(90_000);
     const page = await context.newPage(); page.setDefaultTimeout(30_000); page.setDefaultNavigationTimeout(90_000);
     const previewDocuments: unknown[] = [];
@@ -463,6 +477,49 @@ test('normal Merchant publication renders the saved Liquid heading on the real p
     await customBuyer.reload();
     await expect(customBuyer.getByRole('link', { name: updatedContact }).first()).toBeVisible();
     await expect(customBuyer.getByRole('link', { name: contactEmail })).toHaveCount(0);
+});
+
+test('Merchant General closes the owned store and queues its private KYC file without claiming order erasure', { timeout: 180_000 }, async t => {
+    const f = await fixture('general-close'); t.after(() => f.context.close());
+    const receipt = crypto.randomUUID(), document = crypto.randomUUID();
+    const key = `kyc/${f.tenant.siteId}/business_pan/${receipt}`;
+    owned.psql(`INSERT INTO kyc_private_object_cleanup_jobs
+      (id,site_id,object_key,purpose,storage_provider,document_type,expected_sha256_hex,
+       expected_bytes,expected_content_type,reference_last4,upload_idempotency_key,
+       created_at,intent_expires_at,next_attempt_at,object_version_id,head_verified_at,
+       status,outcome,completed_at,created_by,updated_by)
+      VALUES ('${receipt}','${f.tenant.siteId}','${key}','upload_reservation',
+       'aws_s3_mumbai','business_pan','${'a'.repeat(64)}',1234,'application/pdf','1234',
+       '${crypto.randomUUID()}',now()-interval '10 minutes',now()-interval '7 minutes',
+       now()+interval '1 hour','synthetic-version',now()-interval '5 minutes',
+       'completed','retained',now()-interval '4 minutes','${f.owner}','${f.owner}');
+      INSERT INTO merchant_kyc_documents(id,site_id,document_type,status,provider,provider_mode,
+       document_number_last4,submitted_at,metadata)
+      VALUES ('${document}','${f.tenant.siteId}','business_pan','submitted',
+       'letbuyy_sandbox_kyc','sandbox','1234',now(),
+       '{"private_storage_provider":"aws_s3_mumbai","private_object_key":"${key}",
+         "private_upload_receipt_id":"${receipt}","private_object_version_id":"synthetic-version",
+         "sha256":"${'a'.repeat(64)}","byte_size":1234,
+         "content_type":"application/pdf","malware_scan_status":"pending"}'::jsonb);`);
+    await signIn(f.page, f.email);
+    await f.page.goto(`${merchantOrigin}/${f.tenant.subdomain}/settings/general`);
+    await expect(f.page.getByRole('button', { name: 'Close store', exact: true })).toBeVisible();
+    await expect(f.page.getByText(/Order, tax, and audit records may be retained/)).toBeVisible();
+    await f.page.getByRole('button', { name: 'Close store', exact: true }).click();
+    const dialog = f.page.getByRole('dialog');
+    await expect(dialog.getByText(/Some order, tax, and audit records will be retained/)).toBeVisible();
+    const [closed] = await Promise.all([
+        f.page.waitForResponse(r => new URL(r.url()).pathname === `/api/stores/${f.tenant.subdomain}/settings`
+            && r.request().method() === 'DELETE'),
+        dialog.getByRole('button', { name: 'Close store', exact: true }).click(),
+    ]);
+    assert.equal(closed.status(), 200, await closed.text());
+    assert.equal(owned.psql(`SELECT status||':'||published::text||':'||(deleted_at IS NOT NULL)::text
+      FROM sites WHERE id='${f.tenant.siteId}';`), 'suspended:false:true');
+    assert.equal(owned.psql(`SELECT metadata->>'private_object_key' IS NULL
+      FROM merchant_kyc_documents WHERE id='${document}';`), 't');
+    assert.equal(owned.psql(`SELECT purpose||':'||status||':'||(closure_requested_at IS NOT NULL)::text
+      FROM kyc_private_object_cleanup_jobs WHERE id='${receipt}';`), 'replaced_object:pending:true');
 });
 
 test('two Merchant settings tabs report stale saves and preserve a cleared contact field', { timeout: 180_000 }, async t => {

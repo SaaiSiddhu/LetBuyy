@@ -1,0 +1,18 @@
+{
+  "at": "2026-11-06T05:45:48.226803+00:00",
+  "baseline": "store-pages-source-v3",
+  "source": "web-mobile-switcher-source-v2",
+  "sha256": "6b04cb93b05b5cc2a745b8720d44a02e866283be64efc7c831019a3a24491eda",
+  "entries": 8456,
+  "changed": [
+    "apps/merchant/mobile/lib/widgets/store/store_switcher_button.dart",
+    "apps/merchant/mobile/test/store_switcher_long_population_test.dart",
+    "apps/merchant/web/package.json",
+    "apps/merchant/web/src/lib/auth/session.ts",
+    "apps/merchant/web/tests/store-membership-paging.test.mjs"
+  ],
+  "production_scope": "One existing mobile selector moves original refresh above choices;one existing web cached loader composes and validates memberships through existing SDK;web package test entry adds its regression file",
+  "original_staff_assertion_byte_unchanged": true,
+  "backend_sql_sdk_identity_models_ui_kit_unchanged": true,
+  "all_other_baseline_inputs_unchanged": true
+}

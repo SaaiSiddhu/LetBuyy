@@ -1,0 +1,33 @@
+{
+  "status": "FAILED_RETAINED_UI_DRIVER_NOT_APP_ACCEPTANCE",
+  "private_root": "/private/tmp/letbuyy-ios-ui-20261108-61dfdf4bae",
+  "variant": {
+    "exit": 65,
+    "accepted": false,
+    "run_id": "b762a62b2b0c",
+    "phase": "Variants",
+    "attempt": 1,
+    "control_file": "/private/tmp/letbuyy-ios-ui-20261108-61dfdf4bae/Variants.swift",
+    "control_sha256": "4f4879574907de225ae49dc45dc55312f01002a3094fd8d85e102450c5ac86a9"
+  },
+  "chain": {
+    "backend_exit": 1,
+    "ui_exit": 1,
+    "at": "2026-11-08T04:23:07.285712+00:00"
+  },
+  "device": {
+    "udid": "B907B390-5B08-490F-BC6A-8900667B2D94",
+    "baseline_restored": "Shutdown",
+    "existing_files_and_photos_preserved": true
+  },
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "next_root": "/private/tmp/letbuyy-ios-ui-20261108-133778cee8",
+  "reason": "Price field existed with zero frame while Option2 keyboard focused; app-level swipes missed the main form; diagnostic window expired."
+}

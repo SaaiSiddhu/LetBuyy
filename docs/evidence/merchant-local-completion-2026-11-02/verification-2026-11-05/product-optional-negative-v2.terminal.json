@@ -1,0 +1,18 @@
+{
+  "started_at": "2026-11-06T05:58:14.052567+00:00",
+  "supervisor_pid": 10662,
+  "source": "web-mobile-switcher-source-v2",
+  "source_sha256": "6b04cb93b05b5cc2a745b8720d44a02e866283be64efc7c831019a3a24491eda",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/product_optional_edit_v2_test.dart"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 10664,
+  "exit_code": 1,
+  "finished_at": "2026-11-06T05:58:17.357460+00:00",
+  "source_unchanged": true,
+  "source_readback_sha256": "6b04cb93b05b5cc2a745b8720d44a02e866283be64efc7c831019a3a24491eda"
+}

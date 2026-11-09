@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../theme/app_theme_colors.dart';
+import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import 'merchant_store_view.dart';
 
 typedef WarehouseFilterSelection = ({
@@ -13,9 +13,8 @@ Future<WarehouseFilterSelection?> showWarehouseListFilters(
   required WarehouseFilterSelection initial,
   required List<String> statuses,
   required bool documents,
-}) => showModalBottomSheet<WarehouseFilterSelection>(
+}) => showLetbuyyFormSheet<WarehouseFilterSelection>(
   context: context,
-  isScrollControlled: true,
   builder: (_) => guardMerchantStoreView(
     view,
     _Filters(
@@ -24,6 +23,7 @@ Future<WarehouseFilterSelection?> showWarehouseListFilters(
       statuses: statuses,
       documents: documents,
     ),
+    sheet: true,
   ),
 );
 
@@ -52,8 +52,10 @@ class _FiltersState extends State<_Filters> {
   }
 
   void _apply() {
-    if (merchantStoreViewCurrent(context, widget.view))
-      Navigator.pop(context, (
+    if (mounted &&
+        merchantStoreViewCurrent(context, widget.view) &&
+        isLetbuyySurfaceCurrent(context))
+      completeLetbuyySurface(context, (
         search: _search.text.trim(),
         status: _status,
         sort: _sort,
@@ -66,94 +68,75 @@ class _FiltersState extends State<_Filters> {
       .join(' ');
   @override
   Widget build(BuildContext context) {
-    final colors = AppThemeColors.of(context);
     final sorts = widget.documents
         ? const {'newest': 'Newest first', 'oldest': 'Oldest first'}
         : const {'name_asc': 'Name A to Z', 'name_desc': 'Name Z to A'};
-    return Material(
-      color: colors.card,
-      child: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.fromLTRB(
-            18,
-            18,
-            18,
-            MediaQuery.of(context).viewInsets.bottom + 18,
-          ),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const Text(
-                  'Filter and sort',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: _search,
-                  maxLength: 80,
-                  onSubmitted: (_) => _apply(),
-                  decoration: InputDecoration(
-                    labelText: widget.documents ? 'Document number' : 'Name',
-                    hintText: 'Search the full matching population',
-                  ),
-                ),
-                DropdownButtonFormField<String>(
-                  initialValue: _status,
-                  isExpanded: true,
-                  decoration: const InputDecoration(labelText: 'Status'),
-                  items: [
-                    const DropdownMenuItem(
-                      value: '',
-                      child: Text('All statuses'),
-                    ),
-                    for (final status in widget.statuses)
-                      DropdownMenuItem(
-                        value: status,
-                        child: Text(_label(status)),
-                      ),
-                  ],
-                  onChanged: (value) => setState(() => _status = value ?? ''),
-                ),
-                const SizedBox(height: 12),
-                DropdownButtonFormField<String>(
-                  initialValue: _sort,
-                  isExpanded: true,
-                  decoration: const InputDecoration(labelText: 'Sort'),
-                  items: [
-                    for (final item in sorts.entries)
-                      DropdownMenuItem(
-                        value: item.key,
-                        child: Text(item.value),
-                      ),
-                  ],
-                  onChanged: (value) => setState(() => _sort = value ?? _sort),
-                ),
-                const SizedBox(height: 16),
-                FilledButton(
-                  onPressed: _apply,
-                  child: const Text('Apply filters'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    if (merchantStoreViewCurrent(context, widget.view))
-                      Navigator.pop(context, (
-                        search: '',
-                        status: '',
-                        sort: widget.documents ? 'newest' : 'name_asc',
-                      ));
-                  },
-                  child: const Text('Clear filters'),
-                ),
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Cancel'),
-                ),
-              ],
-            ),
-          ),
+    return LetbuyyFormSheet(
+      title: 'Filter and sort',
+      actions: [
+        TextButton(
+          onPressed: () => completeLetbuyySurface(context),
+          child: const Text('Cancel'),
         ),
+        TextButton(
+          onPressed: () {
+            if (mounted &&
+                merchantStoreViewCurrent(context, widget.view) &&
+                isLetbuyySurfaceCurrent(context))
+              completeLetbuyySurface(context, (
+                search: '',
+                status: '',
+                sort: widget.documents ? 'newest' : 'name_asc',
+              ));
+          },
+          child: const Text('Clear filters'),
+        ),
+        FilledButton(onPressed: _apply, child: const Text('Apply filters')),
+      ],
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          CustomTextField(
+            controller: _search,
+            maxLength: 80,
+            onSubmitted: (_) => _apply(),
+            label: widget.documents ? 'Document number' : 'Name',
+            helperText: 'Search the full matching population',
+          ),
+          DropdownButtonFormField<String>(
+            initialValue: _status,
+            isExpanded: true,
+            isDense: false,
+            itemHeight: null,
+            decoration: const InputDecoration(labelText: 'Status'),
+            items: [
+              const DropdownMenuItem(value: '', child: Text('All statuses')),
+              for (final status in widget.statuses)
+                DropdownMenuItem(value: status, child: Text(_label(status))),
+            ],
+            onChanged: (value) {
+              if (mounted && isLetbuyySurfaceCurrent(context))
+                setState(() => _status = value ?? '');
+            },
+          ),
+          const SizedBox(height: 12),
+          DropdownButtonFormField<String>(
+            initialValue: _sort,
+            isExpanded: true,
+            isDense: false,
+            itemHeight: null,
+            decoration: const InputDecoration(labelText: 'Sort'),
+            items: [
+              for (final item in sorts.entries)
+                DropdownMenuItem(value: item.key, child: Text(item.value)),
+            ],
+            onChanged: (value) {
+              if (mounted && isLetbuyySurfaceCurrent(context))
+                setState(() => _sort = value ?? _sort);
+            },
+          ),
+        ],
       ),
     );
   }

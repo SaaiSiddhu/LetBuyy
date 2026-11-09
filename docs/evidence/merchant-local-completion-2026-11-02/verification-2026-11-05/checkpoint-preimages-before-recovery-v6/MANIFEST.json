@@ -1,0 +1,26 @@
+[
+  {
+    "path": "docs/evidence/merchant-local-completion-2026-11-02/MOBILE_UI_CONTINUATION.json",
+    "sha256": "7c00c7962a3153328bc16df45ac6fc1ee5b183fff6f0b14135c08ba159200daa"
+  },
+  {
+    "path": "docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/FINAL_LOCAL_CHECKPOINT.json",
+    "sha256": "b1a6f949470ddf3d557e2fde7be9887ff9216c69363a6e3159fe42a9ba905c33"
+  },
+  {
+    "path": "docs/evidence/merchant-local-completion-2026-11-02/HANDOFF.md",
+    "sha256": "6fe4a22d0f3c7efc679ce97b44ce59dfcb241e288a8992d93789386fd8020c7c"
+  },
+  {
+    "path": "docs/evidence/merchant-local-completion-2026-11-02/STAFF_SCOPE_NEXT_AUDIT.json",
+    "sha256": "4f8d22adc6facfcd2eb7182af727884d994d4a49fa58743684dc6943a91d5b77"
+  },
+  {
+    "path": "docs/evidence/merchant-local-completion-2026-11-02/MOBILE_UI_SURFACE_LEDGER.json",
+    "sha256": "b2a010c162fb11ecc4c676366641350b585dd493d80ed56a6ae49fbc8c4f8f6d"
+  },
+  {
+    "path": "docs/evidence/merchant-mobile-parity-2026-10-30/FEATURE_LEDGER.md",
+    "sha256": "9675b0fc84ce26bbf2f97b0f595f89ed8e13a01788321ad9abe2b8c0002ef225"
+  }
+]

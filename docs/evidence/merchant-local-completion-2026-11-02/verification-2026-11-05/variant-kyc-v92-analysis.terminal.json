@@ -1,0 +1,17 @@
+{
+  "started_at": "2026-11-08T03:30:27.736585+00:00",
+  "supervisor_pid": 98092,
+  "source": "merchant-variant-kyc-source-v92",
+  "source_sha256": "301759e68499ef70f54512568c75cb9bb28cca2fde9fb10be31ee27e2878bd8f",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "analyze",
+    "--no-pub"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 98097,
+  "exit_code": 0,
+  "finished_at": "2026-11-08T03:30:36.727449+00:00",
+  "source_unchanged": true,
+  "source_readback_sha256": "301759e68499ef70f54512568c75cb9bb28cca2fde9fb10be31ee27e2878bd8f"
+}

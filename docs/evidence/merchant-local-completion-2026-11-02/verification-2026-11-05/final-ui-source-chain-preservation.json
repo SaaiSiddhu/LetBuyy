@@ -1,0 +1,23 @@
+{
+  "accepted_native41_source_sha256": "2d70c5e307ef5fd263f30d85d5c905069e5d6f80d3d78ece70425c3459b69d60",
+  "current_source_sha256": "78af178afaafa150298483820690ca5ed87b9c627fe208ea5d6148c3e7e1d636",
+  "current_inputs": 8448,
+  "changed_from_native41": [
+    "apps/merchant/mobile/lib/screens/content/navigation_screen.dart",
+    "apps/merchant/mobile/lib/screens/settings/help_screen.dart",
+    "apps/merchant/mobile/lib/screens/settings/shipping_screen.dart",
+    "apps/merchant/mobile/lib/theme/store_theme.dart",
+    "apps/merchant/mobile/lib/widgets/shared/capability_gate.dart",
+    "apps/merchant/mobile/lib/widgets/shared/confirm_dialog.dart",
+    "apps/merchant/mobile/test/capability_presentation_test.dart",
+    "apps/merchant/mobile/test/confirmation_presentation_test.dart",
+    "apps/merchant/mobile/test/filled_button_readability_test.dart",
+    "apps/merchant/mobile/test/help_presentation_test.dart",
+    "apps/merchant/mobile/test/navigation_item_preservation_test.dart",
+    "apps/merchant/mobile/test/shipping_rate_preservation_test.dart",
+    "packages/dart/ui_kit/lib/src/widgets/confirmation_dialog.dart"
+  ],
+  "same_original_canonical_inputs": 8435,
+  "backend_domain_identity_persistence_fixture_changes": [],
+  "meaning": "Whole-file custody proves preservation only. Native41 runtime acceptance stays on its own APK; UI source/build and render evidence belong to utilities4. No full feature acceptance."
+}

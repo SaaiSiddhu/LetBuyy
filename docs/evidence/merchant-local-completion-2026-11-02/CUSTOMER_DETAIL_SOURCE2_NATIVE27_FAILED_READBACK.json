@@ -1,0 +1,45 @@
+{
+  "at": "2026-11-05T01:59:44.652748+00:00",
+  "status": "FAILED_NORMAL_WEB_COMPANION_CONNECTION_NO_SYNC_ACCEPTANCE",
+  "run_id": "be49eeaa4e41",
+  "runner_exit": 1,
+  "controller_exit": 1,
+  "suite_seconds": 604.6,
+  "source_sha256": "da6328ce7e9a50b07a32be33f77efcd3dd2c29e5b9a889a0d8592e52a61f547e",
+  "native_input_entries": 4806,
+  "all_native_inputs_match_broad": true,
+  "apk": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v27/qualified-artifact/merchant-local-debug.apk",
+  "apk_sha256": "ef36823a2b4fb168a1bc31d20c6013d63040d08068f75d3bf2c6fe5d4f3c57e9",
+  "installed_apk_matches": true,
+  "owned_resources_empty": {
+    "containers": [],
+    "networks": [],
+    "volumes": []
+  },
+  "reverse_restored": [],
+  "forward_preserved": [
+    [
+      "emulator-5580",
+      "tcp:52367",
+      "localabstract:chrome_devtools_remote"
+    ]
+  ],
+  "awake_retired": true,
+  "customer_mobile_commands": [
+    {
+      "method": "PATCH",
+      "path": "/v1/customers/synthetic-native-detail%40example.invalid",
+      "status": 200,
+      "wire_status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/v1/customers/synthetic-native-detail%40example.invalid/notes",
+      "status": 201,
+      "wire_status": 201
+    }
+  ],
+  "partial_ui_observation": "Native Customer edit phone and add note reached in-app fresh readback confirmations; compound test failed before normal web access.",
+  "failure": "Second connectOverCDP client timed out while Chrome was backgrounded. Web/readback acceptance remains open, not diagnosed as an app/API failure.",
+  "visual_finding": "Saved feedback touches/overlaps first floating field label; source3correction and actual image recheck required."
+}

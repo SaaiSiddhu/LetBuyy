@@ -1,0 +1,117 @@
+{
+  "status": "PASS_BOUNDED_NATIVE_UI_DIAGNOSTIC",
+  "at": "2026-11-04T09:52:45.296765+00:00",
+  "fullAppAccepted": false,
+  "classification": "DIAGNOSTIC_ONLY_NO_FEATURE_ACCEPTANCE",
+  "source": {
+    "sha256": "1b47a3d265862016fb7266b2a69116b759d6980f2b0c5b17cc48989643a511db",
+    "entries": 7446,
+    "manifest": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-foundations-v7.source.json",
+    "archive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-foundations-v7-qualified-source",
+    "heldAndTerminalVerified": true
+  },
+  "harnessArtifact": {
+    "run_id": "e33bed18e6d3",
+    "source_sha256": "c40023c13d99041cbeacb91ce9d4c0f7fc2e5840cbe25320bd8f550594936fcd",
+    "apk_sha256": "7977c8d7a55c454f01e7c46749d3ca4f6ca611d454059c56c7c1ad60eb2fa533",
+    "classification": "DIAGNOSTIC_ONLY_NO_FEATURE_ACCEPTANCE",
+    "seededStock": 3,
+    "stockWrites": 0,
+    "scope": "Normal native authenticated transfer draft and observed field-focus/hit-test evidence. No successful transfer, full inventory or release certification."
+  },
+  "run": {
+    "runId": "e33bed18e6d3",
+    "tests": 1,
+    "assertionsPassed": 1,
+    "assertionsFailed": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "wallSeconds": 411.3,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    }
+  },
+  "launcherCleanup": {
+    "at": "2026-11-04T09:38:16.838914+00:00",
+    "serial": "emulator-5580",
+    "adb_port": 15038,
+    "runner_exit": 0,
+    "controller_exit": 0,
+    "baseline": [],
+    "before": [],
+    "removed": [],
+    "refused": [],
+    "after": [],
+    "scope": "Only current-run exact reverse tuples on task emulator. Host9002 never accessed."
+  },
+  "observations": [
+    {
+      "run_id": "e33bed18e6d3",
+      "scope": "Actual current normal APK, owner read/validation/cancel and dirty editor; both theme keyboard compositions. No Staff/warehouse command submitted, provider, web sync or full-feature acceptance.",
+      "original_theme": "Dark",
+      "restored_theme": "Dark",
+      "stale_required_error_retired": true,
+      "evidence": [
+        "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v35/native-staff-dark-corrected-keyboard.png",
+        "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v35/native-staff-light-corrected-keyboard.png",
+        "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v35/native-transfer-current-outline-colors.png"
+      ]
+    },
+    {
+      "run_id": "e33bed18e6d3",
+      "dirty_prompt": true
+    },
+    {
+      "run_id": "e33bed18e6d3",
+      "keyboard": {
+        "flags": {
+          "mInputShown": false,
+          "mIsInputViewShown": true,
+          "mWindowVisible": false
+        },
+        "keyboard_packages": [],
+        "shown": false,
+        "source": "owned Android IME boolean metadata + visible native packages; no dump contents retained"
+      },
+      "quantity2_retained": true
+    },
+    {
+      "run_id": "e33bed18e6d3",
+      "dirty_prompt": true
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-v35-native-staff-dark-corrected-keyboard.png",
+      "sha256": "8a233557c6ee3593b846649feb3bcf074a915fb0f962013a955e00ad3b86d742",
+      "visuallyInspected": true,
+      "observed": "Both Staff themes: persistent corrected email, real keyboard and reachable action; transfer: readable outlined selections, quantity2 and full-page task. Exact scope depends on image."
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-v35-native-transfer-current-outline-colors.png",
+      "sha256": "94035a6340ea88f5ddb4a2c24e57c48993e1864da8f7620a85cc9fe6c2bb2886",
+      "visuallyInspected": true,
+      "observed": "Both Staff themes: persistent corrected email, real keyboard and reachable action; transfer: readable outlined selections, quantity2 and full-page task. Exact scope depends on image."
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-v35-native-staff-light-corrected-keyboard.png",
+      "sha256": "dd803601b485f7dc12231917a97a42ef210ecdb8801854502b05ab6376b8bed2",
+      "visuallyInspected": true,
+      "observed": "Both Staff themes: persistent corrected email, real keyboard and reachable action; transfer: readable outlined selections, quantity2 and full-page task. Exact scope depends on image."
+    }
+  ],
+  "findingsClosedAtBoundedScope": [
+    "UI-FOUND-COLOR-02: current inherited outlined action pairing, composed regressions and inspected native transfer",
+    "UI-STAFF-05: required email clears after correction in both themes"
+  ],
+  "limits": [
+    "No staff or warehouse command submitted; diagnostic stock remains3 free/0held with zero transfer/receipt writes.",
+    "No new web sync, full Staff effects, provider, hosted, physical-device or iOS acceptance.",
+    "Full Flutter959pass/1protected persistence failure; remaining app-local explicit color overrides need review."
+  ]
+}

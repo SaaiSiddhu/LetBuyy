@@ -1,0 +1,36 @@
+{
+  "at": "2026-11-08T04:47:31.422642+00:00",
+  "source_sha256": "fbde9fe512840dcdc0d84ace8143a461aafbdfdac65fd14b626f2187234c10d7",
+  "source_inputs_byte_equal": 8516,
+  "staged_entries_sha256_unchanged": "67a04f878906e4a92b9a852969da907cd465dc8b3df2be0083d6d42262986c9d",
+  "raw_index_sha256": "8a1272236d22f4689fb94c792da0ec8b5f7de41983877a15e7f346bcd1327bc3",
+  "raw_index_baseline": "4f631b7c99e1f1e569f0ccc244d432b7e1e4b20391687f45b6304ee4b17d2ba3",
+  "raw_index_equal_to_baseline": false,
+  "index_note": "Raw index bytes changed;staged paths/modes/blobs remain exact baseline and8516core inputs equal. No raw-index restore or staged mutation performed.",
+  "ios": {
+    "udid": "B907B390-5B08-490F-BC6A-8900667B2D94",
+    "baseline_restored": "Shutdown",
+    "owned_runner_cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "photos_existing_files_preserved": true
+  },
+  "android": {
+    "exact_owned_avd_pid": 79160,
+    "owned_avd_name": "LetBuyy_Merchant_Parity_20261106_c6cefc",
+    "existing_booted_avd_preserved": true,
+    "reverse_mappings_restored_empty": true,
+    "application_stopped": true,
+    "existing_files_photos_preserved": true,
+    "camera_used_in_this_journey": false
+  },
+  "ports54350_to54353_free": true,
+  "host9002": "Never contacted/probed/bound/stopped",
+  "all_current_owned_supervisors_terminal": true,
+  "all122accepted": false
+}

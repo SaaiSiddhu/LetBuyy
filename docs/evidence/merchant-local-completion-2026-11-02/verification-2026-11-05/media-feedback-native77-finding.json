@@ -1,0 +1,39 @@
+{
+  "at": "2026-11-06T18:56:21.271304+00:00",
+  "status": "OBSERVED_NATIVE53_MEDIA_TOAST_PAIR_NEEDS_SHARED_FEEDBACK_REPAIR",
+  "source_sha256": "8d91014727d143e0fce8e1ee5e3dc578c1d4c89f5cafc0eaaca0e50c14e6286a",
+  "screenshot": "native77-accepted-local-kyc-media-staff/native-media-recovered-and-edited.png",
+  "trace": [
+    "apps/merchant/mobile/lib/screens/content/media_library_screen.dart:_showMessage",
+    "packages/dart/ui_kit/lib/src/tokens/letbuyy_tokens.dart:green500",
+    "apps/merchant/mobile/lib/theme/store_theme.dart:snackBarTheme"
+  ],
+  "foreground": "#FFFFFF",
+  "success_background": "#22C55E",
+  "success_ratio": 2.2786,
+  "error_background": "#EF4444",
+  "error_ratio": 3.7631,
+  "normal_text_target": 4.5,
+  "measurement": "Exact source-token relative luminance, with actual compiled screenshot visually inspected; no pixel sampling or spoken screen-reader acceptance claimed.",
+  "repair": {
+    "status": "SOURCE54_CURRENT_NATIVE78_REPAIRED_AND_MEASURED",
+    "only_method": "MediaLibraryScreen._showMessage",
+    "existing_owner": "showLetbuyyOperationFeedback",
+    "current_source_sha256": "70794e68bd47bf97c4331ab71f5a3f968231b63153cb23f0f6889ebdda31e445",
+    "actual_foreground_rgba": [
+      255,
+      255,
+      255,
+      255
+    ],
+    "actual_background_rgba": [
+      30,
+      41,
+      59,
+      255
+    ],
+    "actual_pair_ratio": 14.6287,
+    "pixel_readback": "native78-visual-pixel-readback.json",
+    "scope": "Exact native success-toast pixels plus34focused/1656fullFlutter/0analysis; no fullapp/spokenAAcertification."
+  }
+}

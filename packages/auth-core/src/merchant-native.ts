@@ -50,3 +50,21 @@ export function parseMerchantNativeCallback(url: string, expected: { redirectUri
             && MerchantNativeSecretSchema.safeParse(code).success ? { code: code! } : null;
     } catch { return null; }
 }
+
+/** A package-bound Android launch of the SAME registered callback, not another
+ * redirect authority. Ordinary same-origin web navigation can stay in Chrome,
+ * particularly for the debug loopback host which cannot use Digital Asset Links.
+ * No caller-controlled package, component, extras or fallback origin is accepted.
+ */
+export function merchantNativeAndroidReturnIntent(callback: string): string | null {
+    try {
+        if (callback.length > 1024) return null;
+        const redirectUri = callback.split('?')[0];
+        if (!MERCHANT_NATIVE_ENVIRONMENTS.some(environment => merchantNativeCallback('merchant_android', 'android_https', environment) === redirectUri)) return null;
+        const actual = new URL(callback), requestId = actual.searchParams.get('request'), state = actual.searchParams.get('state');
+        if (!z.uuid().safeParse(requestId).success || !MerchantNativeSecretSchema.safeParse(state).success
+            || !parseMerchantNativeCallback(callback, { redirectUri, requestId: requestId!, state: state! })) return null;
+        const query = new URLSearchParams({ request: requestId!, state: state!, code: actual.searchParams.get('code')! });
+        return `intent://${actual.host}${actual.pathname}?${query}#Intent;scheme=${actual.protocol.slice(0, -1)};package=com.letbuyy.store;end`;
+    } catch { return null; }
+}

@@ -8,6 +8,7 @@ import {WarehouseCommandRecovery} from '@/components/products/WarehouseCommandRe
 import { useReadRequest } from '@/lib/api/use-read-request'
 import {WarehouseDocumentPageMetaSchema,WarehouseTransferSchema} from '@letbuyy/shared-types'
 import {useWarehouseDocument} from '@/lib/inventory/use-warehouse-document'
+import {warehouseLineLabel,warehouseLocationLabel} from '@/lib/inventory/warehouse-labels'
 import { useProductPicker } from '@/lib/api/use-product-picker'
 import { useInventoryLocations } from '@/lib/api/use-inventory-locations'
 import type { WarehouseOptionControls } from '@/lib/api/use-warehouse-options'
@@ -517,13 +518,8 @@ function ReceiveTransferModal({ submitCommand, blocked,
                                 >
                                     <div className="mb-[var(--lb-space-2)] flex flex-wrap items-center gap-[var(--lb-space-2)]">
                                         <span className="text-[length:var(--lb-font-size-sm)] font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-primary)]">
-                                            Product ID: {line.product_id.slice(0, 8)}…
+                                            {warehouseLineLabel(line)}
                                         </span>
-                                        {line.variant_id && (
-                                            <span className="text-[length:var(--lb-font-size-xs)] text-[var(--lb-color-text-tertiary)]">
-                                                Variant: {line.variant_id.slice(0, 8)}…
-                                            </span>
-                                        )}
                                         <span className="text-[length:var(--lb-font-size-xs)] text-[var(--lb-color-text-secondary)]">
                                             Requested: {line.quantity_requested} · Shipped: {line.quantity_shipped} · Received: {line.quantity_received} · Remaining: {remaining}
                                         </span>
@@ -657,9 +653,6 @@ function WarehouseWorkspace({store}:{store:string}) {
         setReceivingTransfer(transfer)
     }
 
-    function locationName(id: string): string {
-        return locations.find((l) => l.id === id)?.name ?? id.slice(0, 8) + '…'
-    }
 
     // ── render ──────────────────────────────────────────────────────────────
 
@@ -779,13 +772,13 @@ function WarehouseWorkspace({store}:{store:string}) {
                                             </td>
                                             <td className="py-[var(--lb-space-3)] pr-[var(--lb-space-4)] text-[var(--lb-color-text-secondary)]">
                                                 <span className="inline-flex items-center gap-[var(--lb-space-1)]">
-                                                    {locationName(transfer.source_location_id)}
+                                                    {warehouseLocationLabel(transfer.source_location,transfer.source_location_id)}
                                                     <MaterialIcon
                                                         name="arrow_forward"
                                                         className="text-[length:var(--lb-font-size-sm)] text-[var(--lb-color-text-tertiary)]"
                                                         aria-hidden="true"
                                                     />
-                                                    {locationName(transfer.destination_location_id)}
+                                                    {warehouseLocationLabel(transfer.destination_location,transfer.destination_location_id)}
                                                 </span>
                                             </td>
                                             <td className="py-[var(--lb-space-3)] pr-[var(--lb-space-4)]">

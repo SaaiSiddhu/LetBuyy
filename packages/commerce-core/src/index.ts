@@ -72,6 +72,8 @@ function validateProductFactReferences(data: {
   }
 }
 
+export const PRODUCT_IMAGE_LIMIT = 20;
+
 export const CreateProductSchema = z
   .object({
     store_id: UuidSchema,
@@ -81,7 +83,7 @@ export const CreateProductSchema = z
     compare_price: MoneySchema.optional().nullable(),
     cost_price: MoneySchema.optional().nullable(),
     cost_per_item: MoneySchema.optional().nullable(),
-    images: z.array(UrlSchema).max(20).default([]),
+    images: z.array(UrlSchema).max(PRODUCT_IMAGE_LIMIT).default([]),
     category: z.string().max(100).optional(),
     product_type: z.string().max(100).optional().nullable(),
     vendor: z.string().max(100).optional().nullable(),
@@ -120,7 +122,7 @@ export const UpdateProductSchema = z.object({
   price: MoneySchema.optional(),
   compare_price: MoneySchema.optional().nullable(),
   cost_per_item: MoneySchema.optional().nullable(),
-  images: z.array(UrlSchema).max(20).optional(),
+  images: z.array(UrlSchema).max(PRODUCT_IMAGE_LIMIT).optional(),
   category: z.string().max(100).optional().nullable(),
   product_type: z.string().max(100).optional().nullable(),
   vendor: z.string().max(100).optional().nullable(),
@@ -570,7 +572,8 @@ export interface ProductModel extends ProductNicheFacts {
   category?: string;
   countryOfOrigin?: string;
   importerDetails?: string;
-  stock: number;
+  /** Public free units from the inventory read projection; null is unconfirmed. */
+  stock: number | null;
   isActive?: boolean;
   rating?: number;
   reviewCount?: number;
@@ -1153,9 +1156,10 @@ export function mapProductStockInventoryRecord(product: ProductInventoryFallback
 }
 
 export function mapInventoryLevelRecord(level: InventoryLevelSourceRow): InventoryLevel {
-  const available = commerceNumber(level.available);
+  const onHand = commerceNumber(level.available);
   const reserved = commerceNumber(level.reserved);
   const incoming = commerceNumber(level.incoming);
+  const available = Math.max(0, onHand - reserved);
 
   return {
     id: level.id,
@@ -1170,8 +1174,8 @@ export function mapInventoryLevelRecord(level: InventoryLevelSourceRow): Invento
     available,
     reserved,
     incoming,
-    on_hand: available + reserved,
-    sellable: Math.max(0, available - reserved),
+    on_hand: onHand,
+    sellable: available,
     track_inventory: level.products?.track_inventory !== false,
     updated_at: level.updated_at,
   };

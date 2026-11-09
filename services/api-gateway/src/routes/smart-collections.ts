@@ -1,274 +1,89 @@
-// ============================================================
-// SMART COLLECTIONS — CRUD + live preview
-// Gateway route: /v1/smart-collections
-// ============================================================
-
-import { Hono } from 'hono';
+// Compatibility transport over the one canonical collections authority.
+// Old smart_collections is a sealed migration source, never a live second writer.
+import { Hono, type Context } from 'hono';
+import { z } from 'zod';
+import {
+    SmartCollectionSchema, SmartCollectionPageSchema, SmartCollectionListQuerySchema,
+    SmartCollectionPreviewQuerySchema, CreateSmartCollectionSchema, UpdateSmartCollectionSchema,
+    UuidSchema, type CollectionMetadata, type SmartCollection,
+    type CreateSmartCollectionInput, type UpdateSmartCollectionInput,
+} from '@letbuyy/shared-types';
 import type { Env } from '../index';
-import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
-import { assertStaffPermission } from '../middleware/staff-permission';
-import { dbFailureBody, getSupabaseAdmin, success } from '../lib/supabase';
-import { resolveOwnedStoreScope } from '../lib/tenant-context';
-import { filterProducts, type SmartCondition, type SmartMatchType, type EvalProduct } from '../lib/smart-collection-eval';
+import { AppError, ForbiddenError, NotFoundError, ValidationError } from '../lib/errors';
+import { resolveCollectionStoreScope } from '../lib/collection-store-scope';
+import { validate } from '../middleware/validation';
+import { success } from '../lib/supabase';
+import { readCollectionMetadata, readCollectionMetadataPage, executeCollectionMetadataCommand, previewCollectionRules } from '../execution/collection-metadata.adapter';
 
 const router = new Hono<{ Bindings: Env }>();
+const IdSchema = z.object({ id: UuidSchema }).strict();
+router.use('*', async (c, next) => { c.header('Cache-Control', 'private, no-store'); await next(); });
 
-// Columns selected for the smart_collections table
-const SC_COLUMNS = 'id,store_id,name,slug,description,conditions,match_type,created_at,created_by,updated_by,version';
-
-// Columns selected for products during preview evaluation
-const PRODUCT_PREVIEW_COLUMNS = 'id,name,product_type,vendor,tags,price,stock';
-
-// Max products fetched for preview evaluation (guard against massive catalogs)
-const PREVIEW_PRODUCT_LIMIT = 500;
-
-// Max sample product IDs returned in preview response
-const PREVIEW_SAMPLE_SIZE = 10;
-
-interface SmartCollectionRow {
-    id: string;
-    store_id: string;
-    name: string;
-    slug: string;
-    description?: string | null;
-    conditions: SmartCondition[];
-    match_type: SmartMatchType;
-    created_at: string;
-    created_by?: string | null;
-    updated_by?: string | null;
-    version: number;
+type AppContext = Context<{ Bindings: Env }>;
+function selectedStore(c: AppContext, requested?: string): string {
+    const selected = requested || c.req.query('store_id') || c.req.header('X-Store-ID') || c.get('auth').user.storeId;
+    if (!UuidSchema.safeParse(selected).success) throw new ValidationError('Select a store before continuing.');
+    const header = c.req.header('X-Store-ID'), session = c.get('auth').user.storeId;
+    if (header && header !== selected || session && session !== selected) throw new ForbiddenError('The selected store changed.');
+    return selected!;
+}
+function key(c: AppContext): string {
+    const first = c.req.header('X-Idempotency-Key'), second = c.req.header('Idempotency-Key');
+    const value = first || second;
+    if (first && second && first !== second || !UuidSchema.safeParse(value).success) {
+        throw new ValidationError('Keep the original collection save key.');
+    }
+    return value!;
+}
+function projection(value: CollectionMetadata): SmartCollection {
+    if (value.collection_type !== 'smart') throw new NotFoundError('Smart collection not found.');
+    return SmartCollectionSchema.parse({ id: value.id, store_id: value.store_id, name: value.title, slug: value.slug,
+        description: value.description, conditions: value.conditions, match_type: value.match_type, is_active: value.is_active,
+        created_at: value.created_at, created_by: value.created_by, updated_by: value.updated_by, version: value.version });
 }
 
-interface SmartCollectionOwnerRow {
-    id: string;
-    store_id?: string | null;
-}
-
-// ── GET / — list smart collections for a store ────────────────────────────────
-router.get('/', async (c) => {
-    const auth = c.get('auth');
-    const storeId = c.req.query('store_id');
-
-    if (!storeId) {
-        return c.json({ success: false, error: { code: 'VALIDATION_ERROR', message: 'store_id query parameter is required' } }, 400);
-    }
-
-    const db = getSupabaseAdmin(c);
-    const customUser = await resolveCustomUser(db, auth.user);
-
-    if (!customUser) {
-        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
-    }
-
-    if (!(await verifySiteOwnership(db, storeId, customUser.id, auth.user.storeId))) {
-        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
-    }
-
-    const { data, error } = await db
-        .from('smart_collections')
-        .select(SC_COLUMNS)
-        .eq('store_id', storeId)
-        .is('deleted_at', null)
-        .order('created_at', { ascending: false });
-
-    if (error) {
-        return c.json({ success: false, error: { code: 'DB_ERROR', message: error.message } }, 500);
-    }
-
-    return c.json(success(data || []));
+router.get('/', validate('query', SmartCollectionListQuerySchema), async c => {
+    const query = c.get('validatedQuery') as z.infer<typeof SmartCollectionListQuerySchema>;
+    const scope = await resolveCollectionStoreScope(c, selectedStore(c, query.store_id), 'products:read');
+    const page = await readCollectionMetadataPage(c.env, scope, 'smart', query.page, query.limit, query.search || '');
+    const result = SmartCollectionPageSchema.safeParse({ ...page, data: page.data.map(projection) });
+    if (!result.success) throw new AppError('The collection list could not be confirmed. Retry loading it.', 503, 'COLLECTIONS_UNCONFIRMED');
+    return c.json(result.data);
 });
-
-// ── POST / — create a smart collection ───────────────────────────────────────
-router.post('/', async (c) => {
-    const auth = c.get('auth');
-    const body = await c.req.json() as {
-        store_id: string;
-        name: string;
-        slug: string;
-        description?: string;
-        conditions: SmartCondition[];
-        match_type?: SmartMatchType;
-    };
-
-    if (!body.store_id || !body.name || !body.slug) {
-        return c.json({ success: false, error: { code: 'VALIDATION_ERROR', message: 'store_id, name, and slug are required' } }, 400);
-    }
-
-    const db = getSupabaseAdmin(c);
-    const customUser = await resolveCustomUser(db, auth.user);
-
-    if (!customUser) {
-        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
-    }
-
-    if (!(await verifySiteOwnership(db, body.store_id, customUser.id, auth.user.storeId))) {
-        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
-    }
-
-    const staffBlock = await assertStaffPermission(c, body.store_id, customUser.id, 'products:write');
-    if (staffBlock) return staffBlock;
-
-    // Check slug uniqueness within the store
-    const { data: existing } = await db
-        .from('smart_collections')
-        .select('id')
-        .eq('store_id', body.store_id)
-        .eq('slug', body.slug)
-        .is('deleted_at', null)
-        .limit(1);
-
-    if (existing && existing.length > 0) {
-        return c.json({ success: false, error: { code: 'CONFLICT', message: 'A smart collection with this slug already exists' } }, 409);
-    }
-
-    const { data, error } = await db
-        .from('smart_collections')
-        .insert({
-            store_id: body.store_id,
-            name: body.name,
-            slug: body.slug,
-            description: body.description ?? null,
-            conditions: body.conditions ?? [],
-            match_type: body.match_type ?? 'all',
-            created_by: customUser.id,
-        })
-        .select(SC_COLUMNS)
-        .single();
-
-    if (error) {
-        return c.json({ success: false, error: { code: 'DB_ERROR', message: error.message } }, 500);
-    }
-
-    return c.json(success(data), 201);
+router.get('/:id/preview', validate('param', IdSchema), validate('query', SmartCollectionPreviewQuerySchema), async c => {
+    const scope = await resolveCollectionStoreScope(c, selectedStore(c), 'products:read');
+    return c.json(success(await previewCollectionRules(c.env, scope, c.req.param('id'))));
 });
-
-// ── PATCH /:id — update a smart collection ────────────────────────────────────
-router.patch('/:id', async (c) => {
-    const auth = c.get('auth');
-    const collectionId = c.req.param('id');
-    const body = await c.req.json() as Partial<{
-        name: string;
-        slug: string;
-        description: string | null;
-        conditions: SmartCondition[];
-        match_type: SmartMatchType;
-    }>;
-
-    const db = getSupabaseAdmin(c);
-    const customUser = await resolveCustomUser(db, auth.user);
-
-    // Resolve ownership first via the collection record
-    const { data: existing } = await db
-        .from('smart_collections')
-        .select('id, store_id')
-        .eq('id', collectionId)
-        .is('deleted_at', null)
-        .single();
-
-    const owned = existing as SmartCollectionOwnerRow | null;
-    if (!customUser || !owned?.store_id || !(await verifySiteOwnership(db, owned.store_id, customUser.id, auth.user.storeId))) {
-        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
-    }
-
-    const staffBlock = await assertStaffPermission(c, owned.store_id, customUser.id, 'products:write');
-    if (staffBlock) return staffBlock;
-
-    // Build patch object from allowed mutable fields only
-    const patch: Record<string, unknown> = {};
-    if (body.name !== undefined) patch.name = body.name;
-    if (body.slug !== undefined) patch.slug = body.slug;
-    if ('description' in body) patch.description = body.description ?? null;
-    if (body.conditions !== undefined) patch.conditions = body.conditions;
-    if (body.match_type !== undefined) patch.match_type = body.match_type;
-    patch.updated_by = customUser.id;
-
-    if (Object.keys(patch).length <= 1) {
-        // Only updated_by was set — nothing to actually update
-        return c.json({ success: false, error: { code: 'VALIDATION_ERROR', message: 'No valid fields to update' } }, 400);
-    }
-
-    // Slug uniqueness check if slug is being changed
-    if (body.slug !== undefined) {
-        const { data: slugConflict } = await db
-            .from('smart_collections')
-            .select('id')
-            .eq('store_id', owned.store_id)
-            .eq('slug', body.slug)
-            .neq('id', collectionId)
-            .is('deleted_at', null)
-            .limit(1);
-
-        if (slugConflict && slugConflict.length > 0) {
-            return c.json({ success: false, error: { code: 'CONFLICT', message: 'A smart collection with this slug already exists' } }, 409);
-        }
-    }
-
-    const { data, error } = await db
-        .from('smart_collections')
-        .update(patch)
-        .eq('id', collectionId)
-        .select(SC_COLUMNS)
-        .single();
-
-    if (error || !data) {
-        return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Smart collection not found' } }, 404);
-    }
-
-    return c.json(success(data));
+router.get('/:id', validate('param', IdSchema), validate('query', SmartCollectionPreviewQuerySchema), async c => {
+    const scope = await resolveCollectionStoreScope(c, selectedStore(c), 'products:read');
+    return c.json(success(projection(await readCollectionMetadata(c.env, scope, c.req.param('id')))));
 });
-
-// ── GET /:id/preview — evaluate conditions against the store's products ───────
-router.get('/:id/preview', async (c) => {
-    const auth = c.get('auth');
-    const collectionId = c.req.param('id');
-    const queryStore = c.req.query('store_id')?.trim();
-    const headerStore = c.req.header('X-Store-ID')?.trim();
-    const storeId = queryStore || headerStore || auth.user.storeId;
-    if (!storeId) {
-        return c.json({ success: false, error: { code: 'VALIDATION_ERROR', message: 'store_id is required for preview' } }, 400);
-    }
-    if ((auth.user.storeId && auth.user.storeId !== storeId) || (headerStore && headerStore !== storeId)) {
-        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
-    }
-
-    // The selected store is only a hint. Resolve its current owner/tenant with
-    // the canonical context helper before reading private collection fields.
-    const { db, siteId } = await resolveOwnedStoreScope(c, storeId);
-    const { data: sc, error: scError } = await db
-        .from('smart_collections')
-        .select(SC_COLUMNS)
-        .eq('store_id', siteId)
-        .eq('id', collectionId)
-        .is('deleted_at', null)
-        .maybeSingle();
-
-    // A missing or out-of-scope id has the same public shape. There is no
-    // preliminary cross-tenant existence/owner lookup or tenant-guard bypass.
-    if (scError) return c.json(dbFailureBody(), 500);
-    if (!sc) {
-        return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Smart collection not found' } }, 404);
-    }
-    const scRow = sc as SmartCollectionRow;
-    const { data: products, error: prodError } = await db
-        .from('products')
-        .select(PRODUCT_PREVIEW_COLUMNS)
-        .eq('store_id', siteId)
-        .is('deleted_at', null)
-        .eq('is_active', true)
-        .limit(PREVIEW_PRODUCT_LIMIT);
-    if (prodError) return c.json(dbFailureBody(), 500);
-
-    const evalProducts = (products || []) as EvalProduct[];
-    const matched = filterProducts(evalProducts, scRow.conditions ?? [], (scRow.match_type as SmartMatchType) ?? 'all');
-    return c.json(success({
-        collection_id: scRow.id,
-        match_type: scRow.match_type,
-        condition_count: (scRow.conditions ?? []).length,
-        count: matched.length,
-        sample_product_ids: matched.slice(0, PREVIEW_SAMPLE_SIZE).map((p) => p.id),
-        evaluated_of: evalProducts.length,
-        capped_at: PREVIEW_PRODUCT_LIMIT,
-    }));
+router.post('/', validate('json', CreateSmartCollectionSchema), async c => {
+    const body = c.get('validatedBody') as CreateSmartCollectionInput;
+    const scope = await resolveCollectionStoreScope(c, selectedStore(c, body.store_id), 'products:write');
+    const receipt = await executeCollectionMetadataCommand(c.env, scope, 'create', null, {
+        store_id: scope.siteId, idempotency_key: key(c), collection_type: 'smart', title: body.name,
+        slug: body.slug, description: body.description, conditions: body.conditions, match_type: body.match_type,
+        is_active: body.is_active,
+    });
+    return c.json(success(receipt), 201);
+});
+router.patch('/:id', validate('param', IdSchema), validate('json', UpdateSmartCollectionSchema), async c => {
+    const body = c.get('validatedBody') as UpdateSmartCollectionInput;
+    const scope = await resolveCollectionStoreScope(c, selectedStore(c), 'products:write');
+    const { name, ...fields } = body;
+    const receipt = await executeCollectionMetadataCommand(c.env, scope, 'update', c.req.param('id'), {
+        ...fields, ...(name !== undefined ? { title: name } : {}), collection_type: 'smart', store_id: scope.siteId, idempotency_key: key(c),
+    });
+    return c.json(success(receipt));
+});
+router.delete('/:id', validate('param', IdSchema), validate('json', z.object({ version: z.number().int().positive() }).strict()), async c => {
+    const body = c.get('validatedBody') as { version: number };
+    const scope = await resolveCollectionStoreScope(c, selectedStore(c), 'products:write');
+    const receipt = await executeCollectionMetadataCommand(c.env, scope, 'delete', c.req.param('id'), {
+        collection_type: 'smart', store_id: scope.siteId, idempotency_key: key(c), version: body.version,
+    });
+    return c.json(success(receipt));
 });
 
 export default router;

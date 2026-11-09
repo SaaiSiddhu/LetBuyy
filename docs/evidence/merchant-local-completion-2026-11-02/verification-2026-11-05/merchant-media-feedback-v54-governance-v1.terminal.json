@@ -1,0 +1,12 @@
+{
+  "at": "2026-11-06T19:00:13.213174+00:00",
+  "status": "TERMINAL",
+  "exit_code": 0,
+  "capsule": "/private/tmp/letbuyy-merchant-media-feedback-v54-governance-6jum0nbf",
+  "purpose": "Disposable validation copy only, no implementation/worktree/merge/push/release",
+  "source_sha256": "70794e68bd47bf97c4331ab71f5a3f968231b63153cb23f0f6889ebdda31e445",
+  "core_inputs_byte_equal": 8484,
+  "original_source_unchanged": true,
+  "original_index_unchanged": true,
+  "report": "merchant-media-feedback-v54-governance-v1-report.json"
+}

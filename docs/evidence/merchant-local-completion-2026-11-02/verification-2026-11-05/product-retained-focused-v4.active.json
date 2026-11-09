@@ -1,0 +1,18 @@
+{
+  "started_at": "2026-11-06T08:13:11.220758+00:00",
+  "supervisor_pid": 37867,
+  "source": "staff-kyc-product-source-v4",
+  "source_sha256": "d080ea17c06f499b545e0c10e05b4a63c70fdc6e3060909101ed365dbd9a3a13",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "test/product_retained_metadata_test.dart",
+    "test/product_optional_edit_test.dart",
+    "test/product_edit_concurrency_test.dart",
+    "--reporter",
+    "expanded"
+  ],
+  "status": "RUNNING",
+  "child_pid": 37871
+}

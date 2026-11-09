@@ -33,6 +33,8 @@ export const GATEWAY_DB_SUITE_DIR = 'services/api-gateway/src/__tests__/owned-db
 // These suites intentionally qualify an exact predecessor and then apply/retire
 // its next migration. Newer current-stack journeys stay on the full chain.
 export const HISTORICAL_GATEWAY_MIGRATION_CEILINGS = Object.freeze({
+    // SQL-only414 DOWN controls must see414; live warehouse/device suites keep the full chain.
+    'services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-rollback.postgres.test.ts': 414,
     'services/api-gateway/src/__tests__/owned-db/cart-order-fact-retirement388.postgres.test.ts': 388,
     // These retire/reapply the exact captured schema/role profiles. Current-stack
     // mounted-browser counterparts below retain the complete migration chain.
@@ -56,6 +58,7 @@ export const ROOT_GATEWAY_DB_SUITE_DIR = 'tests/owned-db';
 export const ROOT_GATEWAY_DB_SUITES = [
     'tests/owned-db/ad-credit-purchase.postgres.test.ts',
     'tests/owned-db/console-current-oncall-browser.postgres.test.ts',
+    'tests/owned-db/console-kyc-legal-hold-browser.postgres.test.ts',
     'tests/owned-db/console-mfa-reset-delivery.postgres.test.ts',
     'tests/owned-db/console-mfa-reset.postgres.test.ts',
     'tests/owned-db/console-oncall-schedules-browser.postgres.test.ts',
@@ -70,25 +73,32 @@ export const ROOT_GATEWAY_DB_SUITES = [
     'tests/owned-db/loyalty-reversal-recovery.postgres.test.ts',
     'tests/owned-db/managed-supabase-migration-admission.postgres.test.ts',
     'tests/owned-db/managed-supabase-support-free-admission.postgres.test.ts',
-    'tests/owned-db/order-lifecycle-email.postgres.test.ts',
-    'tests/owned-db/notification-worker-transport.postgres.test.ts',
+    'tests/owned-db/merchant-category-commands-browser.postgres.test.ts',
     'tests/owned-db/merchant-collection-membership-browser.postgres.test.ts',
     'tests/owned-db/merchant-accounts-browser.postgres.test.ts',
+    'tests/owned-db/merchant-buyer-inventory-projection.postgres.test.ts',
     'tests/owned-db/merchant-dashboard-access.postgres.test.ts',
     'tests/owned-db/merchant-entitlement-authority-browser.postgres.test.ts',
     'tests/owned-db/merchant-export.postgres.test.ts',
     'tests/owned-db/merchant-free-subscription-browser.postgres.test.ts',
     'tests/owned-db/merchant-inventory-adjustment-browser.postgres.test.ts',
     'tests/owned-db/merchant-loyalty-browser.postgres.test.ts',
+    'tests/owned-db/merchant-transfer-managed-admission.postgres.test.ts',
+    'tests/owned-db/merchant-media-commands-workerd.postgres.test.ts',
+    'tests/owned-db/merchant-media-workerd.postgres.test.ts',
     'tests/owned-db/merchant-mobile-mfa-transport.postgres.test.ts',
     'tests/owned-db/merchant-product-edit-browser.postgres.test.ts',
     'tests/owned-db/merchant-product-status-browser.postgres.test.ts',
+    'tests/owned-db/merchant-public-media-range-workerd.postgres.test.ts',
     'tests/owned-db/merchant-public-signup-browser.postgres.test.ts',
     'tests/owned-db/merchant-push-preferences.postgres.test.ts',
     'tests/owned-db/merchant-smart-collection-preview-browser.postgres.test.ts',
     'tests/owned-db/merchant-staff-invitation-delivery.postgres.test.ts',
+    'tests/owned-db/merchant-store-profile-browser.postgres.test.ts',
     'tests/owned-db/money-ledger-reconciliation-traversal.postgres.test.ts',
     'tests/owned-db/native-core-storefront-browser.postgres.test.ts',
+    'tests/owned-db/notification-worker-transport.postgres.test.ts',
+    'tests/owned-db/order-lifecycle-email.postgres.test.ts',
     'tests/owned-db/payment-refund-reconciliation.postgres.test.ts',
     'tests/owned-db/payout-statement-replay.postgres.test.ts',
     'tests/owned-db/platform-job-recovery-browser.postgres.test.ts',

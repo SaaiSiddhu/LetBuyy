@@ -1,0 +1,12 @@
+{
+  "at": "2026-11-06T02:52:29.837394+00:00",
+  "status": "TERMINAL",
+  "exit_code": 0,
+  "capsule": "/private/tmp/letbuyy-switcher-staff-v4-governance-76neoc_o",
+  "purpose": "Disposable validation copy only, no implementation/worktree/merge/push/release",
+  "source_sha256": "e7377adba2eef6dcac508a93f8dc79bad2f6d40e7a0502d5ae6b9bb094a08cd5",
+  "core_inputs_byte_equal": 8450,
+  "original_source_unchanged": true,
+  "original_index_unchanged": true,
+  "report": "switcher-staff-v4-governance-v1-report.json"
+}

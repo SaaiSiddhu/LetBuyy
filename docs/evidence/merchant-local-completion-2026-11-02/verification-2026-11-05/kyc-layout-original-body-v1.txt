@@ -1,0 +1,108 @@
+      body: Column(
+        children: [
+          ListTile(
+            leading: const Icon(Icons.lock_outline),
+            title: const Text('Private document upload'),
+            subtitle: Text(
+              _loading
+                  ? 'Checking private upload availability.'
+                  : _error != null
+                  ? 'Verification is unavailable. Retry to check whether private upload is available.'
+                  : _overview?['india_direct_upload_available'] == true
+                  ? 'India upload test: your photo goes directly to private storage. Security scan and provider review are still pending.'
+                  : _overview?['private_upload_available'] == false
+                  ? 'Private upload is unavailable. Your saved status remains visible; retry later.'
+                  : 'Upload verification documents here. A trusted security scan must pass before provider review.',
+            ),
+          ),
+          Expanded(
+            child: _loading
+                ? const Center(child: CircularProgressIndicator())
+                : _error != null
+                ? _EmptyState(
+                    message: _error!,
+                    actionLabel: 'Retry',
+                    onTap: _load,
+                  )
+                : Builder(
+                    builder: (context) {
+                      final overview = _overview ?? const <String, dynamic>{};
+                      final documents = _listOfMaps(overview['documents']);
+                      final requirements = _listOfMaps(
+                        overview['required_documents'],
+                      );
+                      return RefreshIndicator(
+                        onRefresh: _load,
+                        child: ListView(
+                          padding: const EdgeInsets.all(16),
+                          children: [
+                            _StatusPanel(overview: overview),
+                            const SizedBox(height: 16),
+                            Text(
+                              'Verification documents',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: colors.textPrimary,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            ...requirements.map(
+                              (item) => _RequirementTile(
+                                item: item,
+                                referenceRecorded: documents.any(
+                                  (doc) =>
+                                      doc['document_type'] ==
+                                          item['document_type'] &&
+                                      _referenceOnly(doc),
+                                ),
+                                onRecord:
+                                    _referenceOpen ||
+                                        (overview['private_upload_available'] !=
+                                                true &&
+                                            overview['india_direct_upload_available'] !=
+                                                true)
+                                    ? null
+                                    : () => _showReferenceDialog(
+                                        item['document_type']?.toString(),
+                                      ),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              'Submitted documents',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: colors.textPrimary,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            if (documents.isEmpty)
+                              const _EmptyState(
+                                message: 'No documents submitted yet.',
+                                detail:
+                                    'Upload documents privately. Reference digits alone do not verify identity or bank ownership.',
+                              )
+                            else
+                              ...documents.map(
+                                (document) => _DocumentTile(
+                                  document: document,
+                                  refreshing: _refreshingId == document['id'],
+                                  onRefresh:
+                                      _refreshingId != null || _referenceOpen
+                                      ? null
+                                      : () => _refreshDocument(
+                                          document['id'].toString(),
+                                        ),
+                                ),
+                              ),
+                            const SizedBox(height: 80),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+          ),
+        ],
+      ),

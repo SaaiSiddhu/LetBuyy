@@ -1,0 +1,16 @@
+{
+  "command": [
+    "node",
+    "--import",
+    "tsx",
+    "--test",
+    "docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/buyer-inventory111-authored-theme-render-probe5.test.ts"
+  ],
+  "env": {
+    "TSX_TSCONFIG_PATH": "apps/commerce/web/tsconfig.json"
+  },
+  "exit_code": 1,
+  "source": "merchant-buyer-inventory-source-v111",
+  "retry_reason": "Source inspection confirms current authored collections intentionally link to PDP and have no quick-add. Assert real product link/name, no invented sold-out/zero, no purchase controls. PDP still requires disabled controls/unknown status. Labelled sample niche facts avoid empty unsupported products. Core quick-add remains covered separately.",
+  "at": "2026-11-08T10:31:44.949275+00:00"
+}

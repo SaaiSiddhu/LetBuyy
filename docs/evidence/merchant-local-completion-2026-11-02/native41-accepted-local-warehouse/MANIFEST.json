@@ -1,0 +1,118 @@
+{
+  "at": "2026-11-05T19:48:43.582688+00:00",
+  "run_id": "abac88df509d",
+  "source_sha256": "2d70c5e307ef5fd263f30d85d5c905069e5d6f80d3d78ece70425c3459b69d60",
+  "apk_sha256": "8dcb8ed60ac7582479ba67d8be95b6434b006831e03fbaa0199a700b18b2d3aa",
+  "files": {
+    "artifact.json": {
+      "sha256": "8ed858ea05d2fcf7e316a0294320ab736a31e5b03eb7be2bb6ea4de405ff205a",
+      "bytes": 1226
+    },
+    "source-snapshot.json": {
+      "sha256": "c684b9a0100e8c802373fd792cdc5e7a8ca9f70b6da848888998a54e8f6b3660",
+      "bytes": 733919
+    },
+    "compiled-workers.json": {
+      "sha256": "d79c9a29972ba1c705034cf9ec4f8e13175dc16d62d05adc5ae20eb0128740fe",
+      "bytes": 399
+    },
+    "backend-verified.json": {
+      "sha256": "7c8575b7c9a672eb4e83ae9f5346231b555ece640387d624a2e4a0d25a37b0e3",
+      "bytes": 29160
+    },
+    "stock-backend-verified.json": {
+      "sha256": "8e4356203e4ce58667b091808d417b702082ea03e1e4c1e89b2ef02d8f98fb07",
+      "bytes": 77271
+    },
+    "setter-backend-verified.json": {
+      "sha256": "bc847811776484f71f0bcb8fe5a2db920c013630449e15ea00664181e836b6b2",
+      "bytes": 94323
+    },
+    "stock-document-native-read.json": {
+      "sha256": "b158e140b90d90a00395deee41bd75f5a1454e5e930827428c1927ab6f2784c3",
+      "bytes": 714
+    },
+    "native-auth-observed.json": {
+      "sha256": "e722c076f29bdf09f61583bab14e964d87e1aadca6aa95b4b993156c6d8a0d7b",
+      "bytes": 148
+    },
+    "staff-ui-observed.json": {
+      "sha256": "eb9518f27bd8c48641ec2ee444a7969db6fcc77790e052ae736cbca15490e2ca",
+      "bytes": 764
+    },
+    "journey-ready.json": {
+      "sha256": "e5730222476b15c54e25fa25dc92063eddbd8a48f8ff3510f087d6a34c4a62e7",
+      "bytes": 141
+    },
+    "native-web-absolute-stock-read.png": {
+      "sha256": "46fc827a4e9cc6b65d0637fb39a3baa3175d518b304a9619d6e0587c9442a0a1",
+      "bytes": 182023
+    },
+    "native-transfer-full-document-read.png": {
+      "sha256": "99a9ba2509e8b4a21e69c37e518c5519b09ea7776dc96c21d3a877ed22de1a53",
+      "bytes": 178351
+    },
+    "native-po-full-document-read.png": {
+      "sha256": "50176dac5de070a3172b38f410bb9f2eff5e7a9e386ea003943c48e9eaf7064c",
+      "bytes": 183720
+    },
+    "native-stock-delta-keyboard.png": {
+      "sha256": "f3d044cb07ea23a79a629ede4161cefb22bfd44420cf3708181ed80723db51d8",
+      "bytes": 170183
+    },
+    "native-stock-original-pending.png": {
+      "sha256": "505506d4c6d9c208d2de6dcfb226da1a107790a1557a49895c8358a953a3ad59",
+      "bytes": 252941
+    },
+    "native-stock-restart-retained.png": {
+      "sha256": "a1572d85c0dc225ae53d193465682c577aa4f0e71ee0dff8a7e5320053bcd58b",
+      "bytes": 231473
+    },
+    "native-stock-delta-confirmed-current-free.png": {
+      "sha256": "e4b1c7db0f16d4090c1d2d6d7c918433ea81e57c783d36db784d9641b751b614",
+      "bytes": 181897
+    },
+    "native-staff-required-email.png": {
+      "sha256": "101bbe195a7d50421611d027a61ec99adb017089e7aab25d30a7601a4bc160a2",
+      "bytes": 109501
+    },
+    "native-staff-cancelled-roster.png": {
+      "sha256": "814cda7054faffb4cf603efdfcb016e9961c95562c933d2f1bee545a07caf7d5",
+      "bytes": 93555
+    },
+    "web-native-transfer-completed.png": {
+      "sha256": "f5d36a4a6512476636c7961cd74951cb9e3fb5922cf87c82b0d7c32c63556fae",
+      "bytes": 104828
+    },
+    "web-native-purchase-order-completed.png": {
+      "sha256": "4e88a86199e34bd164bcbf2452361293284cde5b193a2edca739bdccfb99aa45",
+      "bytes": 108677
+    },
+    "web-native-adjusted-stock-read.png": {
+      "sha256": "a2d3873f0e44bc43c28a56cfa2bf34e7ab0dfd0a423237174c435e3f3374b574",
+      "bytes": 136481
+    },
+    "native-warehouse-v41.json": {
+      "sha256": "24e27d900bdb76611aec2c53c8f63c5ccf13f026af0f0c68daff63176430ba26",
+      "bytes": 75855
+    },
+    "warehouse-v41-launcher-cleanup.json": {
+      "sha256": "df7b6e4ddef177ff8a3e6a93cd544aaa516049363a5f87342495bb07ab3c135c",
+      "bytes": 319
+    },
+    "native-warehouse-v41-ui.log": {
+      "sha256": "946ceab5c5c11b25258a69e15f2546e877fd8b694b8718cfec2158be0ed14030",
+      "bytes": 1202
+    },
+    "native41-independent-readback.json": {
+      "sha256": "368c5fb3c28ef42b97b0fe30568ff6c086cae8fca74c01dccfc451103006942f",
+      "bytes": 1958
+    },
+    "native41-prepared.json": {
+      "sha256": "c3af014cf663abbc7ae454b3c181b03b538dd7580f26c8b94c2de1ae1b632f4c",
+      "bytes": 1149
+    }
+  },
+  "limits": "Normal local owner Android/browser/compiled-Worker/Postgres journey only. Synthetic customer hold prerequisite; no buyer-authenticated checkout, real staff effects, variants/allocation permutations, metadata edit/delete, iOS runtime, real provider, hosted, physical performance, signed release or full feature acceptance. Native38 remains unknown.",
+  "privacy": "Explicit whitelist; original login inputs retired before copy. No raw runtime/env/credential stores."
+}

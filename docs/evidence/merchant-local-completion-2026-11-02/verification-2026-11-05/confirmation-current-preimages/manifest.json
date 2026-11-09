@@ -1,0 +1,7 @@
+{
+  "baseline": "saved-fields-source-v4",
+  "files": {
+    "apps/merchant/mobile/lib/widgets/shared/confirm_dialog.dart": "3c936e9a28d76d75c7c61d20a79d1acb175a437f39d3ed54dfa30307b27041a3",
+    "packages/dart/ui_kit/lib/src/widgets/confirmation_dialog.dart": "d1d89682e35d35ed580d34859f8ad0df5b3f9faf04f3101d1883263f99bb76f9"
+  }
+}

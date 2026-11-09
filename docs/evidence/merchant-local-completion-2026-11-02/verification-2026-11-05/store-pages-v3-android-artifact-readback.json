@@ -1,0 +1,19 @@
+{
+  "at": "2026-11-06T05:26:20.661047+00:00",
+  "status": "INDEPENDENT_DEBUG_APK_READBACK_PASS",
+  "source_sha256": "dee2756c4b94267b7bf2b3b9bcb01a9fcafd87b86643f375b55232523f518e32",
+  "artifact": {
+    "path": "/private/tmp/letbuyy-store-pages-v3-android-qbty4cvy/merchant-local-debug.apk",
+    "sha256": "0a33892466cd193276e8f346e83f0366f65dcd1d62c67555b19123943e09c41f",
+    "bytes": 151930679
+  },
+  "actual_sha256": "0a33892466cd193276e8f346e83f0366f65dcd1d62c67555b19123943e09c41f",
+  "compiled_arm64_engine": true,
+  "debug_kernel_present": true,
+  "normal_main": true,
+  "installed": false,
+  "runtime_verified": false,
+  "scope": "Normal debug compile/archive only. Native41 proves its own preceding warehouse artifact only; current StoreSwitcher/Staff source has no native acceptance.",
+  "material_icons_bytes": 1645184,
+  "material_icons_sha256": "d9865b671a09d683d13a863089d8825e0f61a37696ce5d7d448bc8023aa62453"
+}

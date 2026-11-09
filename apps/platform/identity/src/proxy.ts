@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getAdminUrl } from '@/lib/config/urls'
+import { getAdminUrl, isConfiguredLocalAccountsOrigin } from '@/lib/config/urls'
 import { resolveLetbuyyPlatformCookieNames, verifyLetbuyySessionCookieValue } from '@letbuyy/auth-core'
 
 const PUBLIC_ROUTES = ['/check-email', '/api/']
@@ -45,7 +45,7 @@ export function proxy(request: NextRequest) {
 
         response.cookies.set(names.csrf, csrfToken, {
             httpOnly: false,
-            secure: process.env.NODE_ENV === 'production',
+            secure: !isConfiguredLocalAccountsOrigin(request.nextUrl.origin),
             sameSite: 'strict',
             path: '/',
             maxAge: 60 * 60,

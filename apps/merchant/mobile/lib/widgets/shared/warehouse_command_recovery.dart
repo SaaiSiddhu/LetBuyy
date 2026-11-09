@@ -1,3 +1,4 @@
+import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../services/inventory_service.dart';
@@ -95,34 +96,27 @@ class _WarehouseCommandRecoveryState extends State<WarehouseCommandRecovery> {
         _reading ||
         !_protocolReady ||
         _pending == null ||
-        !_current(view))
+        !_current(view) ||
+        !isLetbuyySurfaceCurrent(context))
       return;
     if (stop) {
-      final confirmed = await showDialog<bool>(
+      final confirmed = await showLetbuyyConfirmation(
         context: context,
-        builder: (_) => guardMerchantStoreView(
-          view,
-          AlertDialog(
-            title: const Text('Stop the original request?'),
-            content: const Text(
-              'If it already applied, this confirms its outcome. '
-              'Otherwise, it prevents that request from applying later. '
-              'It does not undo an action that already happened.',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: const Text('Back'),
-              ),
-              FilledButton(
-                onPressed: () => Navigator.pop(context, true),
-                child: const Text('Confirm stop'),
-              ),
-            ],
-          ),
-        ),
+        title: 'Stop the original request?',
+        message:
+            'If it already applied, this confirms its outcome. '
+            'Otherwise, it prevents that request from applying later. '
+            'It does not undo an action that already happened.',
+        confirmLabel: 'Confirm stop',
+        cancelLabel: 'Back',
+        destructive: true,
+        guard: (_, confirmation) => guardMerchantStoreView(view, confirmation),
       );
-      if (confirmed != true || !_current(view) || !_protocolReady) return;
+      if (confirmed != true ||
+          !_current(view) ||
+          !_protocolReady ||
+          !isLetbuyySurfaceCurrent(context))
+        return;
     }
     widget.onReady(false);
     setState(() {
@@ -197,7 +191,13 @@ class _WarehouseCommandRecoveryState extends State<WarehouseCommandRecovery> {
             if (_error != null) Text(_error!),
             if (!_reading && (_pending == null || !_protocolReady))
               TextButton(
-                onPressed: _busy ? null : _read,
+                onPressed: _busy
+                    ? null
+                    : () {
+                        if (_current(widget.view) &&
+                            isLetbuyySurfaceCurrent(context))
+                          _read();
+                      },
                 child: const Text('Check again'),
               ),
             if (_pending != null)

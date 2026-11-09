@@ -1,0 +1,12 @@
+{
+  "command": [
+    "pnpm",
+    "--filter",
+    "@letbuyy/customer-web",
+    "test"
+  ],
+  "source": "merchant-buyer-inventory-source-v111",
+  "exit_code": 0,
+  "reason": "Existing mapper moved without duplicating it; nullable public availability and Liquid runtime guard affect multiple buyer consumers. Full existing app suite checks those adjacent contracts.",
+  "at": "2026-11-08T10:39:11.282587+00:00"
+}

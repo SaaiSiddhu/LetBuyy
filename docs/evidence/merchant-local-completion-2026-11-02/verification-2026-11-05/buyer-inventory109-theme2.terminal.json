@@ -1,0 +1,12 @@
+{
+  "command": [
+    "pnpm",
+    "--filter",
+    "@letbuyy/theme-engine",
+    "test"
+  ],
+  "source": "merchant-buyer-inventory-source-v109",
+  "exit_code": 1,
+  "retry_reason": "tsx local IPC listen blocked by sandbox before tests; same source/command with approved local runtime permissions",
+  "ended_at": "2026-11-08T10:18:08.935275+00:00"
+}

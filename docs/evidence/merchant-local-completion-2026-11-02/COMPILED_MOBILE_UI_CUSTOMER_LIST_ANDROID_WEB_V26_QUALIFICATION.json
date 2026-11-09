@@ -1,0 +1,115 @@
+{
+  "at": "2026-11-05T00:25:28.273073+00:00",
+  "status": "BOUNDED_COMPOUND_ANDROID_WEB_PASS",
+  "run_id": "08f33b990b9a",
+  "runner_exit": 0,
+  "controller_exit": 0,
+  "tests": {
+    "pass": 1,
+    "fail": 0,
+    "skip": 0,
+    "cancelled": 0
+  },
+  "suite_seconds": 499.6,
+  "wall_seconds": 501.2,
+  "broad_source_sha256": "4b2f91c5e74ff028a025bdee21c7216151011e6472d61b7d91913dc6335d1cbb",
+  "native_source_sha256": "b3a7a3e426ad42bea8764679f051e7ca28ba88dfcf3ad920e03b61a3157d63d8",
+  "native_input_entries": 4802,
+  "all_native_inputs_match_broad_snapshot": true,
+  "apk": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v26/qualified-artifact/merchant-local-debug.apk",
+  "apk_sha256": "e53169393439c61d588818211f54ca2b87c4853cd661d0fc3c3cca3e15644253",
+  "actual_installed_apk_sha256": "e53169393439c61d588818211f54ca2b87c4853cd661d0fc3c3cca3e15644253",
+  "original_build_bytes_retained": true,
+  "canonical_order_items_stock_readback_unchanged": true,
+  "customer_order_return_shipping_money_commands_through_mobile_bff": 0,
+  "reverse_mappings_restored": [],
+  "original_forward_rows_preserved": [
+    [
+      "emulator-5580",
+      "tcp:52367",
+      "localabstract:chrome_devtools_remote"
+    ]
+  ],
+  "owned_docker_resources_empty": {
+    "containers": [],
+    "networks": [],
+    "volumes": []
+  },
+  "owned_awake_helper_retired": true,
+  "image_review": {
+    "reviewer": "current single agent via original run PNGs",
+    "images": [
+      {
+        "original": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v26/native-return-required-order.png",
+        "retained": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-native26-native-return-required-order.png",
+        "sha256": "146645339696b4323d29715c378f80448ff1bfb62453c85313fddd26ca18bd7b",
+        "independently_viewed": true
+      },
+      {
+        "original": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v26/native-return-kept-draft.png",
+        "retained": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-native26-native-return-kept-draft.png",
+        "sha256": "92faa63a660efa89f2037e03884454c7deeddd9eb98e751ba5534705cd48254b",
+        "independently_viewed": true
+      },
+      {
+        "original": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v26/native-customer-input-0-keyboard.png",
+        "retained": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-native26-native-customer-input-0-keyboard.png",
+        "sha256": "2599d13ac6bb20d14258887a670d925f20117897898778bca7a830250b406c3b",
+        "independently_viewed": true
+      },
+      {
+        "original": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v26/native-customer-input-1-keyboard.png",
+        "retained": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-native26-native-customer-input-1-keyboard.png",
+        "sha256": "33cc2c675eb45a1968f97822ce0a2e7cd51b11d0f0f4ebb919954d3b95b03ba3",
+        "independently_viewed": true
+      },
+      {
+        "original": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v26/native-customer-input-2-keyboard.png",
+        "retained": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-native26-native-customer-input-2-keyboard.png",
+        "sha256": "aee0e75174408bf4bef0e2ad89409c010e68eb019ff022340f1de01d9863db7d",
+        "independently_viewed": true
+      },
+      {
+        "original": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v26/native-customer-input-3-keyboard.png",
+        "retained": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-native26-native-customer-input-3-keyboard.png",
+        "sha256": "f3b471210682256219fbd692180cf5bf1fda443769d50f24931a3420f7ad987e",
+        "independently_viewed": true
+      },
+      {
+        "original": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v26/native-customer-create-all-fields-draft.png",
+        "retained": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-native26-native-customer-create-all-fields-draft.png",
+        "sha256": "f860e3cbee7b82a8de16947358c23624405415c27fdd860f41f72aa62c57b3ec",
+        "independently_viewed": true
+      },
+      {
+        "original": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v26/native-customer-create-dirty-back-kept.png",
+        "retained": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-native26-native-customer-create-dirty-back-kept.png",
+        "sha256": "f3b471210682256219fbd692180cf5bf1fda443769d50f24931a3420f7ad987e",
+        "independently_viewed": true
+      },
+      {
+        "original": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v26/native-detail-order-list.png",
+        "retained": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-native26-native-detail-order-list.png",
+        "sha256": "5c8049c8d82a056ab629a168b00603fe07a5652046a57703c40d6f377713bb29",
+        "independently_viewed": true
+      },
+      {
+        "original": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v26/native-fulfillment-provider-unavailable.png",
+        "retained": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-native26-native-fulfillment-provider-unavailable.png",
+        "sha256": "b2bb3e3351c33ce8add6d11992c8beef47ac41c6dfa3603b13c3acd61f1c551d",
+        "independently_viewed": true
+      }
+    ],
+    "findings": [
+      "Return required error appears once and retires after a valid Order ID.",
+      "Customer name, email, numeric phone and tags keyboards observed with footer above the actual keyboard; exact synthetic input retained.",
+      "Marketing selected before actual Android Back; email/phone/tags retained after keeping the draft. Marketing persistence after Back and actual save/web sync not independently accepted.",
+      "Canonical one-line Order count1 and199total remain visible; pending_cod bucket/picker coverage and list UTC-label consistency remain previously recorded presentation work.",
+      "Provider reports SANDBOX/unavailable and booking action is disabled; no provider request submitted.",
+      "Native26did not capture/accept the populated Customer list query/pagination/export/denial matrix; those retain source/client-test evidence only."
+    ]
+  },
+  "scope": "Normal local Android/browser PKCE and existing collection original-key/web/native readback; local canonical COD prerequisite, Order/Returns read/form/cancel, Customer four-field keyboard/marketing/actual Android Back/keep/discard. No Customer save or normal buyer checkout, provider booking, hosted, iOS, whole119programme or release certification.",
+  "source_archive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-customer-list-v2-qualified-source",
+  "existing_protected_staff_failure_retained": true
+}

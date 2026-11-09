@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:letbuyy_store/services/api_client.dart';
+import 'membership_page.dart';
 
 const siteA = '22222222-2222-4222-8222-222222222222',
     siteB = '33333333-3333-4333-8333-333333333333';
@@ -52,6 +53,15 @@ class MemoryStorage extends FlutterSecureStorage {
     MacOsOptions? mOptions,
     WindowsOptions? wOptions,
   }) async => data[key];
+  @override
+  Future<Map<String, String>> readAll({
+    IOSOptions? iOptions,
+    AndroidOptions? aOptions,
+    LinuxOptions? lOptions,
+    WebOptions? webOptions,
+    MacOsOptions? mOptions,
+    WindowsOptions? wOptions,
+  }) async => Map.of(data);
   @override
   Future<void> write({
     required String key,
@@ -148,6 +158,7 @@ class LoyaltyTransport extends ApiClient {
     limit: 50,
     total: 2,
     hasMore: false,
+    meta: membershipPageMeta(2),
   );
 }
 

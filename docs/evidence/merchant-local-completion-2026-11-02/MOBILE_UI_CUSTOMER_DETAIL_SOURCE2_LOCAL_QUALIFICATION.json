@@ -1,0 +1,62 @@
+{
+  "at": "2026-11-05T01:48:16.465651+00:00",
+  "status": "Source2local qualification archived with one existing protected Staff failure; Android27active, fresh iOS pending. No complete-feature or production certification.",
+  "head": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+  "source_sha256": "da6328ce7e9a50b07a32be33f77efcd3dd2c29e5b9a889a0d8592e52a61f547e",
+  "snapshot_input_entries": 7486,
+  "archive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-customer-detail-v2-qualified-source",
+  "snapshot_note": "Four diagnostic golden-failure PNGs remain captured for custody, not source authority or release artifacts.",
+  "flutter": {
+    "pass": 1273,
+    "fail": 1,
+    "skip": 0,
+    "failure": "Unchanged protected Staff positive-hosted-invitation namespace assertion.",
+    "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-customer-detail-source2-full-flutter.log"
+  },
+  "analysis": {
+    "merchant_app": "0issues",
+    "shared_ui_kit": "0issues"
+  },
+  "preservation": {
+    "parsed_checks": 509,
+    "all_passed": true,
+    "protected_baseline_files": 5195,
+    "classified_client_read_exceptions": 4,
+    "prior_three_exceptions_byte_identical": true,
+    "all_other_protected_files_unchanged": true
+  },
+  "governance": {
+    "counts": {
+      "PASS": 114,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "SKIP": 0,
+      "NOT_APPLICABLE": 1
+    },
+    "exit_code": 0,
+    "actual_post_gate_clone_core_byte_equality": 7486,
+    "readback": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/customer-detail-v2-governance36-readback.json"
+  },
+  "implemented": [
+    "Primary/4optional independent current-model read presentation; live/stored/prior failure and denied/unknown remain distinct.",
+    "All9tasks connected to canonical shared sheets/full-page editors/brief confirmations with stable controllers, native validation/drafts, current owner/store/API/profile/route checks, one pending operation, uncertain outcome retention and reads-only acknowledged recovery.",
+    "Address creation exact existing store/customer_phone/schema binding, unsupported phone PATCH readonly, canonical email resource binding, optional null/preference preservation.",
+    "Profile names use raw name fields without inferred email or mixed display fallback parts; missing marketing is not false.",
+    "WhatsApp original4choices retained with factual required-variable readiness; no fictional tracking/store/order/checkout values or invented initial order-ready message. Email/provider and redaction acknowledgement do not imply delivery/full erasure."
+  ],
+  "failed_evidence_retained": [
+    "Source1full1271PASS/2FAIL: old cross-store test expected inferred Private instead of actual provided first_name Private A; protected Staff failure. Source2preserves raw name fields, updates only editor selectors/labels and strengthens private-field absence checks.",
+    "Source1parsed proof rejected new shared UI callback hooks; retargeted the proof to preserve exact default geometry/dirty/busy/result behavior while admitting explicit caller hooks. No repository validator changed.",
+    "Parsed loadRecentOrders whole-body equality was intentionally inapplicable to removing its fake empty-success fallback; exact SDK inputs and original input calculations are preserved instead.",
+    "v19task test compilation failure and v23unused synthetic inset diagnosis retained."
+  ],
+  "android": "27active on exact4controller input manifest; source fixed.",
+  "ios": "No source2new iOS artifact yet; iOS11belongs archived CustomerList2 and is compile-only.",
+  "pending": [
+    "Native27terminal, installed APK/exact-source/readback/owned-cleanup checks and independent screenshots.",
+    "iOS12compile-only; actual iOS runtime/physical-screen-reader/performance remain pending.",
+    "Remaining Customer task runtime branches, owner/staff/denial population, hosted/providers and full119programme remain open.",
+    "198ledger rows include alias hosts;114candidates still unreviewed; unique surface denominator remains null."
+  ],
+  "no_change": "No backend/API/BFF server/schema/RLS/auth/financial/provider/storage/persistence policy/infrastructure/deployment change."
+}

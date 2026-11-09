@@ -1,0 +1,11 @@
+{
+  "source_sha256": "2d70c5e307ef5fd263f30d85d5c905069e5d6f80d3d78ece70425c3459b69d60",
+  "only_app_difference_from_document1": "Local draft text removed from Inventory scroll identity; underlying actor/store/server-page identity retained. Exact rest-of-file byte equality.",
+  "all_other_canonical_inputs_unchanged": 8440,
+  "protected_domain_command_service_backend_bytes_unchanged": true,
+  "changed": [
+    "apps/merchant/mobile/lib/screens/inventory/inventory_screen.dart",
+    "apps/merchant/mobile/test/inventory_read_presentation_test.dart"
+  ],
+  "focused": "79PASS plus2strict-positive incremental-input cases PASS"
+}

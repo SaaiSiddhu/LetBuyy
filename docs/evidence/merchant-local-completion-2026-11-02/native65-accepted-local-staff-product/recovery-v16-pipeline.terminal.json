@@ -1,0 +1,12 @@
+{
+  "finished_at": "2026-11-06T11:47:44.162714+00:00",
+  "source_sha256": "dc5e2e0af9f5da7b4e2ec11a68b3c343cb5953daa83de34009a4c5e6fb228c8c",
+  "checks": {
+    "flutter-v16-regression": 0,
+    "flutter-v16-analysis": 0,
+    "kyc-recovery-visual-v5": 0,
+    "isolated-governance": 0
+  },
+  "source_unchanged": true,
+  "status": "PASS"
+}

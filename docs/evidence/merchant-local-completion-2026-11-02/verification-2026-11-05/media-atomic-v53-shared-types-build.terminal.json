@@ -1,0 +1,14 @@
+{
+  "stage": "shared-types-build",
+  "exit_code": 0,
+  "source_unchanged": true,
+  "source_sha256": "8d91014727d143e0fce8e1ee5e3dc578c1d4c89f5cafc0eaaca0e50c14e6286a",
+  "command": [
+    "pnpm",
+    "--filter",
+    "@letbuyy/shared-types",
+    "build",
+    "--force"
+  ],
+  "cwd": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy"
+}

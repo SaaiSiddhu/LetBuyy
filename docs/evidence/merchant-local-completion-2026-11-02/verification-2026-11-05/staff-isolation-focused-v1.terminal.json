@@ -1,0 +1,24 @@
+{
+  "started_at": "2026-11-06T02:30:43.512414+00:00",
+  "supervisor_pid": 46009,
+  "source": "staff-isolation-source-v1",
+  "source_sha256": "0e5407f9860a5e0930ec441d204494e4e9f478fb217dcdd3d0e4becfb8e7b7ef",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "--timeout",
+    "45s",
+    "test/staff_scope_boundary_test.dart",
+    "test/staff_environment_isolation_test.dart",
+    "test/staff_invitation_contract_test.dart",
+    "test/staff_retry_contract_test.dart",
+    "test/staff_ui_test.dart"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 46014,
+  "exit_code": 0,
+  "finished_at": "2026-11-06T02:30:51.187532+00:00",
+  "source_unchanged": true,
+  "source_readback_sha256": "0e5407f9860a5e0930ec441d204494e4e9f478fb217dcdd3d0e4becfb8e7b7ef"
+}

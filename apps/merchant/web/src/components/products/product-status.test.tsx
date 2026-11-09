@@ -26,9 +26,9 @@ function deferred<T>() { let resolve!: (value: T) => void; const promise = new P
 
 async function mount(transport: Transport) {
     const dom = new JSDOM('<!doctype html><div id="root"></div>', { url: 'https://merchant.example.test/alpha/products/' + id })
-    const names = ['window', 'document', 'navigator', 'self', 'fetch']
+    const names = ['window', 'document', 'navigator', 'self', 'Element', 'fetch']
     const previous = Object.fromEntries(names.map(name => [name, Object.getOwnPropertyDescriptor(globalThis, name)]))
-    for (const name of names.slice(0, 4)) Object.defineProperty(globalThis, name, { configurable: true, writable: true,
+    for (const name of names.slice(0, 5)) Object.defineProperty(globalThis, name, { configurable: true, writable: true,
         value: name === 'window' || name === 'self' ? dom.window : dom.window[name] })
     globalThis.fetch = ((input: RequestInfo | URL, init?: RequestInit) => String(input).includes('marketplace-listings')
         ? Promise.resolve(json(null)) : transport(String(input), init)) as typeof fetch
@@ -193,4 +193,20 @@ test('an outstanding collection response cannot hydrate a newly selected store',
         await act(async()=>late.resolve(json([row(29,'Alpha late')])));await refresh
         assert.match(h.text(),/Beta only/);assert.doesNotMatch(h.text(),/Alpha late/)
     }finally{await h.close()}
+})
+
+
+test('catalog availability uses live SKU quantity and leaves the base edit quantity untouched', async () => {
+    const current = { ...row(), stock: 0, catalog_available_quantity: 7 }
+    const h = await mount(async () => json([current]))
+    try { assert.match(h.text(), /7 in stock/); assert.doesNotMatch(h.text(), /0 in stock|Low stock/); assert.equal(current.stock, 0) }
+    finally { await h.close() }
+})
+
+test('null, missing and invalid inventory projection cannot display cached base stock', async () => {
+    for (const value of [null, undefined, -1, 1.5, '7']) {
+        const h = await mount(async () => json([{ ...row(), stock: 99, catalog_available_quantity: value }]))
+        try { assert.match(h.text(), /Stock unavailable/); assert.doesNotMatch(h.text(), /99 in stock|Low stock/) }
+        finally { await h.close() }
+    }
 })

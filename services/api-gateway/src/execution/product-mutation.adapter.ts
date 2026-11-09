@@ -47,6 +47,12 @@ function mutationError(error: unknown): never {
     if (message.includes('PRODUCT_PERSONALIZATION_INVALID')) {
         throw new ValidationError('Supply valid personalization facts with a positive revision, or explicitly remove them.');
     }
+    if (message.includes('PRODUCT_VARIANT_RETIREMENT_BLOCKED')) {
+        throw new AppError('A variant cannot be retired until its stock, reservations and open orders, purchasing, transfers, fulfillment and returns are cleared. Your draft is kept.', 409, 'PRODUCT_VARIANT_IN_USE');
+    }
+    if (message.includes('PRODUCT_VARIANT_RETIRED')) {
+        throw new AppError('This variant has been retired. Reload the product and select an available variant.', 409, 'PRODUCT_VARIANT_RETIRED');
+    }
     if (message.includes('PRODUCT_EDIT_VARIANT_REMOVAL')) {
         throw new AppError('A removed variant still has stock or history. Keep that variant and adjust its availability instead.', 409, 'PRODUCT_VARIANT_IN_USE');
     }

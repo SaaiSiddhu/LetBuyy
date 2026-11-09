@@ -1,0 +1,12 @@
+{
+  "started_at": "2026-11-08T08:48:20.874068+00:00",
+  "supervisor_pid": 22815,
+  "source": "merchant-catalog-availability-source-v104",
+  "source_sha256": "8fb4aa611bacc450cc618981c2dd0a80610005967e8f3f80b9820871556372a1",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "analyze"
+  ],
+  "status": "RUNNING",
+  "child_pid": 22819
+}

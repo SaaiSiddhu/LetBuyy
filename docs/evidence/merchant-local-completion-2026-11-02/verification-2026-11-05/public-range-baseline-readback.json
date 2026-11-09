@@ -1,0 +1,17 @@
+{
+  "runId": "a828bf6c58f6",
+  "tests": 13,
+  "assertionsPassed": 2,
+  "assertionsFailed": 11,
+  "skipped": 0,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "original_route_sha256": "bbe73976f827505880ac3e2240722da4545d2d065ae97ee4f4287c478a79f744",
+  "scope": "Actual compiled Worker/R2 pre-fix baseline; Range responses return200/full bytes, protected-object controls pass. Parent/subtests counts overlap."
+}

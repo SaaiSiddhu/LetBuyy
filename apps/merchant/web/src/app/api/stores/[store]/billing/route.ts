@@ -61,6 +61,8 @@ export async function GET(
                 mandates: mandatesPayload.mandates,
                 invoices: invoicesPayload.invoices,
                 profile: {
+                    store_id: storeRecord.id,
+                    version: storeRecord.version,
                     gstin: storeRecord.gstin || null,
                     gst_state_code: storeRecord.gst_state_code || null,
                     legal_name: storeRecord.legal_name || null,

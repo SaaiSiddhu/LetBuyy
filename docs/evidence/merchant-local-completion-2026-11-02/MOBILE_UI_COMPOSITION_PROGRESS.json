@@ -1,0 +1,239 @@
+{
+  "at": "2026-11-04T12:38:12.116889+00:00",
+  "status": "IMPLEMENTED_FIXTURE_QUALIFIED_BOUNDED_NATIVE_SYNC_WITH_FOLLOWUPS",
+  "full_app_accepted": false,
+  "source": {
+    "manifest": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-composition-v13.source.json",
+    "sha256": "46f88d64f62e614f2ad9bbd0be5693abb77e224c3366e94584d2c2eb063323e6",
+    "entries": 7452,
+    "archive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-composition-v13-qualified-source"
+  },
+  "changes": [
+    "Native-evidenced segment input adjacency fixed with canonical inter-field spacing; parsers, rules, commands, versions and existing retry identity unchanged.",
+    "Search empty state now requires a successful current read, never the debounce interval or a held request.350ms and original two API requests/limits/parsers unchanged.",
+    "Canonical bounded choice is an actual nullable validated FormField with draft-only radios, Apply/Cancel, external-value sync, disabled dispatch and focus return. Staff role choices/required validator and save/recovery preserved.",
+    "AI operator uses canonical sheet/field/scroll/inset owner. Captured original view guards selection resolution and response/error/finally settlement; retired store view removes private results/input; service and tool commands unchanged.",
+    "Settings caption roles use existing readable token companions, full supporting copy and trailing-action reflow. Theme provider policy/persistence unchanged.",
+    "Revenue chart shows exact canonical formatter values, no1000multiplier, no toInt total truncation or animation-scaled monetary points. Daily values have a non-gesture reading path; reporting period uses draft/apply choice. Unsupported Live total/comparison copy removed; daily analytics/financial calculations unchanged."
+  ],
+  "checks": {
+    "composition_v2_negative": {
+      "passed": 0,
+      "failed": 2,
+      "findings": [
+        "Segment field gap0",
+        "Search false no-match during debounce"
+      ]
+    },
+    "composition_v3": {
+      "exit": 79,
+      "reason": "No tests matched plain-name with pipe; no acceptance claimed"
+    },
+    "composition_v4": {
+      "passed": 2,
+      "failed": 0
+    },
+    "operator_v1": {
+      "load_failure": 1,
+      "reason": "Fixture passed store ID to model method; corrected to selectStoreById"
+    },
+    "operator_v2_negative": {
+      "passed": 0,
+      "failed": 1,
+      "finding": "Late old-store private result visible"
+    },
+    "composition_v5": {
+      "format_exit": 65,
+      "reason": "Test-only closing parenthesis; preserved output; no suite run"
+    },
+    "composition_v6": {
+      "passed": 21,
+      "failed": 2,
+      "reason": "Staff action reachability fixture scrolled before input/layout settled. Added post-input settle; actual hit-test assertion retained."
+    },
+    "staff_choice_v7": {
+      "passed": 4,
+      "failed": 0
+    },
+    "composition_v8": {
+      "passed": 27,
+      "failed": 0
+    },
+    "operator_v9": {
+      "load_failure": 1,
+      "reason": "Held StoreContext override omitted existing force named argument; corrected fixture"
+    },
+    "operator_v10": {
+      "passed": 4,
+      "failed": 0,
+      "cases": [
+        "late result retirement",
+        "store change during held ensure prevents dispatch",
+        "both-theme scale2.4 keyboard inset draft/error and reachable command",
+        "duplicate submission and busy Back blocked"
+      ]
+    },
+    "settings_v1_negative": {
+      "passed": 0,
+      "failed": 4,
+      "findings": [
+        "Light hint pairing2.564041:1",
+        "Dark caption pairing3.074007:1",
+        "Both-theme79px trailing row overflow at scale2.4"
+      ]
+    },
+    "chart_v1_negative": {
+      "passed": 0,
+      "failed": 3,
+      "findings": [
+        "Initial tooltip\u20b90 for source\u20b912.34; source also multiplied settled value1000",
+        "Both-theme40px chart row overflow at scale2.4"
+      ]
+    },
+    "chart_v2": {
+      "passed": 5,
+      "failed": 0
+    },
+    "composition_v11": {
+      "full_passed": 995,
+      "full_failed": 2,
+      "app_analysis_issues": 1,
+      "ui_kit_analysis_issues": 0,
+      "remaining": [
+        "Known protected Staff namespace failure",
+        "CRM golden6.65percent after intentional caption change"
+      ],
+      "corrected": [
+        "Removed now-unnecessary nullable role callback comparison",
+        "Inspected/retained previous synthetic golden and updated only CRM image with same comparator tolerance"
+      ],
+      "preservation_attempt": "Wrong package config; no proof claimed"
+    },
+    "composition_v12": {
+      "full_passed": 996,
+      "full_failed": 1,
+      "skipped": 0,
+      "remaining": "DEP-STAFF-01 local restore adopts hosted invitation namespace; protected persistence policy unchanged",
+      "app_analysis_issues": 0,
+      "ui_kit_analysis_issues": 0,
+      "domain_preservation_checks": 36,
+      "basis": "Exact AST comparison; search bodies compared excluding only new read-completion flag. Staff save unchanged."
+    },
+    "v12_to_v13": {
+      "basis": "All source, config, test and golden inputs byte-identical. Only four owned generated v11 failure PNGs moved to retained temporary evidence after hash proof.",
+      "from": "3841ab8e23e7b0bafb84da7688c2c7d7be6a52b553154bd46a35f77a4033a677",
+      "to": "46f88d64f62e614f2ad9bbd0be5693abb77e224c3366e94584d2c2eb063323e6",
+      "delta": [
+        "apps/merchant/mobile/test/failures/customers_crm_list_isolatedDiff.png",
+        "apps/merchant/mobile/test/failures/customers_crm_list_maskedDiff.png",
+        "apps/merchant/mobile/test/failures/customers_crm_list_masterImage.png",
+        "apps/merchant/mobile/test/failures/customers_crm_list_testImage.png"
+      ],
+      "qualification_reused": "v12 full996pass/1protectedfail; both analyses0issues;36preservation checks. No rerun needed for output-only custody move."
+    },
+    "governance_v25": {
+      "counts": {
+        "PASS": 114,
+        "FAIL": 0,
+        "BLOCKED": 0,
+        "SKIP": 0,
+        "NOT_APPLICABLE": 1
+      },
+      "ok": true,
+      "source_code_entries_matched": 7452,
+      "gate": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/governance-category-capsule-v25.gate.json",
+      "prerequisites": "install/shared-build/SDK/contracts-provider/web-recovery/governance-regression all exit0"
+    }
+  },
+  "protected_readback": {
+    "at": "2026-11-04T12:14:44.848398+00:00",
+    "baseline_files": 5195,
+    "changed": [
+      "apps/merchant/mobile/lib/services/staff_service.dart"
+    ],
+    "staff_exception": "Same presentation lifetime/cache fencing bytes as previously qualified shell-v12; domain/storage bodies unchanged; no new protected change this cohort.",
+    "all_other_protected_files_unchanged": true
+  },
+  "golden_review": {
+    "at": "2026-11-04T12:12:04.304646+00:00",
+    "prior_sha256": "98943987283e4e57770973e1908e267e001fb0ae52fa3c826047b572330ab8e8",
+    "prior_preserved": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/customers-crm-golden-before-composition-v12.png",
+    "actual_reviewed": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/customers-crm-v11-testImage.png",
+    "review": "Master and current actual synthetic Ahem raster images inspected. Current source uses intentionally darker readable supporting copy; fixture remains Ahem geometry rather than native typography proof. Existing CRM data and API unchanged. No comparator/tolerance weakened. Update only this golden after bounded view review; native acceptance separate.",
+    "full_suite_before_update": {
+      "passed": 995,
+      "failed": 2,
+      "failures": [
+        "Known protected Staff persistence namespace",
+        "CRM golden6.65percent pixel difference after caption change"
+      ]
+    }
+  },
+  "active": {
+    "native": "v9 terminal pass9eb24191ec2f,460.5suite/462.1wall seconds; cleanupempty/mapsrestored; no active run",
+    "governance": "v25 terminal114pass/1N/A"
+  },
+  "limits": [
+    "Existing119-feature programme remains open;120/121excluded,122paused,51frozen. No new backend/hosted scope.",
+    "AI command effects/providers and actual native scoped late result remain fixture-only, not accepted end to end.",
+    "No new native/iOS runtime or physical performance acceptance yet.",
+    "Existing chart private unused helpers retained as cleanup candidates; no broad legacy deletion.",
+    "Actual surface denominator still unreconciled; many source/caller/state cohorts remain unreviewed."
+  ],
+  "native_preparation": {
+    "attempts_started": 1,
+    "caught_before_execution": [
+      "Python compile attempted prohibited default cache path; used compile() in memory",
+      "Exact-pair assertion caught stale companion filename in copied launcher; corrected before any v8 execution"
+    ],
+    "no_auto_input_retry": true
+  },
+  "native_v8_diagnostic": "COMPILED_MOBILE_UI_COMPOSITION_ANDROID_V8_DIAGNOSTIC.json",
+  "native_visual_followups": [
+    {
+      "id": "UI-AI-03",
+      "finding": "Suggestions and four-line field consume initial keyboard viewport; native Run footer not yet observed with keyboard. Collapse suggestion disclosure without removing options."
+    },
+    {
+      "id": "UI-SETTINGS-03",
+      "finding": "Supplied metadata chevron moved below caption; keep bounded metadata inline and wide Theme action below."
+    },
+    {
+      "id": "UI-CHART-06",
+      "finding": "Native all-zero graph shows repeated0labels because fractional axis ticks use toInt; format display ticks without truncating fractions. Daily rows require viewport-aware scroll, date/amount row verification and screenshot after expansion."
+    }
+  ],
+  "next_cohort_contract": {
+    "reviewed_owners": [
+      "HomeScreen972lines",
+      "PremiumHeader909lines",
+      "HeroStoreCard1113lines",
+      "QuickActionsGrid329lines",
+      "ActivityTimeline263lines",
+      "SkeletonLoader183lines"
+    ],
+    "preserve": [
+      "All StoreContext selection/persistence/membership behavior; use existing selectStore only",
+      "StoreService publish/unpublish original arguments and actual result meaning",
+      "MerchantBillingState labels/fraction/nullability and all financial calculations",
+      "Original visit/share/QR image capture/file/share operations and native ownership",
+      "Existing HomeWidget/AppBadge side effects and analytics read contract; protected service source unchanged"
+    ],
+    "implementation_plan": [
+      "Canonical account/store-selection/QR sheets; store options are loaded available records, not fabricated all-store population",
+      "Store selection remains draft until explicit Apply, handles existing current selection and expected switch lifetime without calling disposed Home callbacks",
+      "Shared presentation-only Product Usage owner for Settings and Hero; unknown/unlimited never gets a made-up meter",
+      "Hero responsive Card/actions and current-state labels, no perpetual pulse/shimmer/blur; preserve actual publication command",
+      "Home responsive metrics, selected period sheet, safe publish response/finally lifetime and truthful metric date labels; preserve all source numeric calculations/formatters",
+      "Skeleton static semantic equivalent under reduced motion; native platform transitions preserved",
+      "Collapse AI suggestions and keep metadata chevrons inline; wide Theme action uses deliberate below placement"
+    ],
+    "acceptance": [
+      "Actual positive widget transport through existing service arguments, failure/draft/Cancel/Apply, scope switches and disposal",
+      "Small windows/long data/large text/both themes/reduced-motion and real open keyboards",
+      "Scoped native read-only/writes and actual readback under owned existing harness; separate provider/hosted/iOS gates",
+      "Eligibility-based cleanup only; no new backend/schema/auth/storage/infra behavior"
+    ]
+  },
+  "native_v9": "COMPILED_MOBILE_UI_COMPOSITION_ANDROID_WEB_V9_QUALIFICATION.json"
+}

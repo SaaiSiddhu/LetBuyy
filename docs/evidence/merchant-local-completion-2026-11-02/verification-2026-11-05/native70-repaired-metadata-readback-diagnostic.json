@@ -1,0 +1,17 @@
+{
+  "at": "2026-11-06T16:59:01.583980+00:00",
+  "source_sha256": "7b3d68cff186f04b58661b987e52954d2b63ae452e0d7befcfbda20a108d355e",
+  "run_id": "6509a7753f42",
+  "status": "REPAIRED_NATIVE_METADATA_RENDERED_SELECTOR_MISSED_MERGED_CARD_LINE",
+  "observed": "Current source43 completed real no-file recovery/create and metadata PATCH/readback. Native screenshot is healthy, without the old assertion. Actual ImageView semantics contain exact saved alt text inside combined filename/type/alt/folder label. Test demanded it be the first line.",
+  "accepted_scope": "Repair has actual native visual/readback evidence, but this failed full run is not full KYC/web/Staff journey acceptance.",
+  "next": "Native71 changes only readback selector to exact saved line within one observed visible ImageView media card; all fault/key/object/store/Staff assertions retained.",
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  }
+}

@@ -1,5 +1,7 @@
 'use client'
 
+import { useMediaUploadTarget } from '@/components/media/MediaRecoveryProvider'
+
 /**
  * VideoControl.tsx — Phase U: Video file URL entry + upload
  *
@@ -30,16 +32,11 @@ interface VideoControlProps {
     storeName?: string
 }
 
-function extractUploadedUrl(payload: unknown): string | null {
-    if (!payload || typeof payload !== 'object') return null
-    const data = (payload as { data?: unknown }).data
-    if (!data || typeof data !== 'object') return null
-    const url = (data as { url?: unknown }).url
-    return typeof url === 'string' && url.length > 0 ? url : null
-}
+
 
 export function VideoControl({ field, value, onChange, storeName }: VideoControlProps) {
     const id = useId()
+    const mediaUpload = useMediaUploadTarget(storeName, `${id}:${field.type}:${field.label}`)
     const [isUploading, setIsUploading] = useState(false)
     const [uploadError, setUploadError] = useState<string | null>(null)
     // Phase X: media library state
@@ -73,40 +70,27 @@ export function VideoControl({ field, value, onChange, storeName }: VideoControl
     const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0]
         event.target.value = ''
-        if (!file) return
+        if (!file || mediaUpload.blocked) return
 
         if (!storeName) {
             setUploadError('Store context is unavailable for uploads.')
             return
         }
 
+        const current = mediaUpload.capture()
         setIsUploading(true)
         setUploadError(null)
 
         try {
-            const formData = new FormData()
-            formData.append('file', file)
-
-            const response = await fetch(`/api/stores/${encodeURIComponent(storeName)}/upload`, {
-                method: 'POST',
-                body: formData,
-            })
-            const payload = await response.json().catch(() => null)
-            const url = extractUploadedUrl(payload)
-
-            if (!response.ok || !url) {
-                const msg =
-                    payload && typeof payload === 'object' && typeof (payload as { error?: unknown }).error === 'string'
-                        ? (payload as { error: string }).error
-                        : 'Video upload failed.'
-                throw new Error(msg)
-            }
+            const asset = await mediaUpload.upload(file)
+            const url = asset.url
 
             onChange(url)
         } catch (err) {
+                if (!current()) return
             setUploadError(err instanceof Error ? err.message : 'Video upload failed.')
         } finally {
-            setIsUploading(false)
+            if (current()) setIsUploading(false)
         }
     }
 
@@ -142,7 +126,7 @@ export function VideoControl({ field, value, onChange, storeName }: VideoControl
                         className="te-field-file-input"
                         type="file"
                         accept="video/mp4,video/webm,video/quicktime"
-                        disabled={isUploading}
+                        disabled={isUploading || mediaUpload.blocked}
                         onChange={handleFileChange}
                         aria-label="Upload video file"
                     />

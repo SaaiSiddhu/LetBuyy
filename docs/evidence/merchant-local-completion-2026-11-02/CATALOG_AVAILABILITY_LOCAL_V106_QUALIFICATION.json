@@ -1,0 +1,38 @@
+{
+  "at": "2026-11-08T09:38:41.122802+00:00",
+  "source_sha256": "c872c19cb9e02fa7581afaa64b6dbf0ef4e50dd44ccbfdc5fb1950fa784ded6f",
+  "core_inputs": 8529,
+  "scope": "Authorized local Merchant implementation/tests/debug builds only; no hosted migration/release",
+  "fixed": "Canonical live-SKU availability separate from unchanged editable base stock; web/mobile list values, unknown state, global stock filters/counts/sort and tied known/unknown cursors",
+  "migration": "439 forward plus guarded DOWN; read-only invoker function over existing product/inventory authority, no new relation/cache/runtime",
+  "gates": {
+    "Flutter": "1789PASS source105; all Flutter/production inputs byte equal106",
+    "analysis": "0issues source106 --no-pub",
+    "governance": "114PASS/1NA source106; original source/index/staged entries unchanged",
+    "web_list": "10PASS on unchanged104web/shared inputs",
+    "gateway_types": "PASS current106",
+    "web_types": "PASS unchanged104web/shared inputs",
+    "owned_availability": "10PASS current106 run7d3534802bbf; RLS, modes, count/page/cursor, reservation/location, retirement, unknown, max100 and retained-data/guarded rollback",
+    "broader_current106": "creation5, cart21, inventory16, retired-buyer-cart1 PASS. Fresh atomic92PASS b1a29c2d74e5 with mandatory owned prepared slots2; earlier135-test cohort retains134PASS/1configuration failure, never relabelled green."
+  },
+  "native": {
+    "Android138": "PASS 2bccaec188c9; initial7\u2192web5\u2192native6, base0 preserved; normal auth/Code create/lostreply/replay/retire/history; empty cleanup/maps restored",
+    "iOS139": "FUNCTIONAL PASS921ee95f027a; original five driver failures retained; canonical7/web5/native6/base0 and Code create/replay/retire/history; cleanup empty,401installedfiles match,Shutdown restored. Generic visual/AX alignment remains open."
+  },
+  "compiled_buyer103": "PASS75deb1788eef current103 before availability changes; full normal signup/store/product/CoreLiquid/manual+Smart/search/COD/repeat/profile/address regression. Not a current106buyer pass.",
+  "next": [
+    "Fix confirmed buyer availability mismatch using same canonical read; observation479ee2c15a16 records expected7,publicStock0,Model0,Liquidfalse",
+    "Unwind439 before438 in its rollback boundary suite and reapply in order",
+    "Fresh current compiled buyer and remaining122criteria"
+  ],
+  "failed_verification_retained": [
+    "104two oldFlutterfixtures missing projection; 105fixtures corrected and1789PASS",
+    "105analyzer failed generated iOS package-refresh contention before analysis; sequential106analysisPASS",
+    "105raw retained-row proof exceeded stdout buffer;106in-DB whole-row SHA/count passes",
+    "139driver viewport-only failures before stock writes; no application change or false green"
+  ],
+  "whole_features_accepted": 0,
+  "host9002": "Never contacted",
+  "source_frozen": false,
+  "current_source_readback": "All8529coreinputs unchanged after both native chains and current gates"
+}

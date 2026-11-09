@@ -1,0 +1,73 @@
+{
+  "at": "2026-11-06T07:14:15.572627+00:00",
+  "status": "INDEPENDENT_CURRENT_LOCAL_KYC_SOURCE_GATES_PASS",
+  "source_sha256": "9924957f802fbd5b77c395e3ad18b19573d7ad5fbb886a9ad39419b4ba456769",
+  "inputs": 8459,
+  "source_unchanged": true,
+  "tests": {
+    "kyc-selection-v2-full-flutter-v1": {
+      "pass": 1586,
+      "fail": 0,
+      "skip": 0
+    },
+    "kyc-selection-focused-v2": {
+      "pass": 49,
+      "fail": 0,
+      "skip": 0
+    }
+  },
+  "app_analysis_issues": 0,
+  "governance": {
+    "PASS": 114,
+    "FAIL": 0,
+    "BLOCKED": 0,
+    "SKIP": 0,
+    "NOT_APPLICABLE": 1
+  },
+  "existing_governance_advisories": 211,
+  "original_index_unchanged": true,
+  "android": {
+    "at": "2026-11-06T07:12:48.936421+00:00",
+    "status": "INDEPENDENT_DEBUG_APK_READBACK_PASS",
+    "source_sha256": "9924957f802fbd5b77c395e3ad18b19573d7ad5fbb886a9ad39419b4ba456769",
+    "artifact": {
+      "path": "/private/tmp/letbuyy-kyc-selection-v2-android-rw62q03t/merchant-local-debug.apk",
+      "sha256": "939a0be0361a250cfed998033be3e070f632e46f52bb2f136aeeeffaa42b6d7b",
+      "bytes": 151924275
+    },
+    "actual_sha256": "939a0be0361a250cfed998033be3e070f632e46f52bb2f136aeeeffaa42b6d7b",
+    "compiled_arm64_engine": true,
+    "debug_kernel_present": true,
+    "normal_main": true,
+    "installed": false,
+    "runtime_verified": false,
+    "scope": "Normal debug compile/archive only. Native58 preserves its own prior StoreSwitcher/Staff artifact acceptance; current KYC changes have no new native acceptance.",
+    "material_icons_bytes": 1645184,
+    "material_icons_sha256": "d9865b671a09d683d13a863089d8825e0f61a37696ce5d7d448bc8023aa62453"
+  },
+  "ios": {
+    "at": "2026-11-06T07:12:48.936421+00:00",
+    "status": "INDEPENDENT_IOS_DEBUG_ARTIFACT_READBACK_PASS",
+    "source_sha256": "9924957f802fbd5b77c395e3ad18b19573d7ad5fbb886a9ad39419b4ba456769",
+    "artifact": {
+      "path": "/private/tmp/letbuyy-kyc-selection-v2-ios-r7vz0l12/Runner.app",
+      "files": 377,
+      "manifest_sha256": "2e16241eb633ef07574fff699fae8dcfa7c8ea46a43531385419bce56e2149aa"
+    },
+    "all_retained_files_equal": 377,
+    "bundle_id": "com.letbuyy.store",
+    "executable_architecture": "/private/tmp/letbuyy-kyc-selection-v2-ios-r7vz0l12/Runner.app/Runner: Mach-O 64-bit executable arm64",
+    "owned_simulator_remains_shutdown": true,
+    "scope": "Debug compile/archive only; no iOS launch, auth, backend, sync or release acceptance.",
+    "material_icons_sha256": "d9865b671a09d683d13a863089d8825e0f61a37696ce5d7d448bc8023aa62453"
+  },
+  "preservation": "kyc-selection-v2-preservation-web-reuse.json",
+  "native58": "Exact prior99ddsource/APK; independent accepted bounded StoreSwitcher/Staff story. No current KYC native proof.",
+  "no_provider_hosted_release": true,
+  "qualification_controls": {
+    "kyc_selection_v2_qualification.py": "9d5ecbfdb0bb29aa1d868f81f0adb75699c7d50689a4607e150f9d0c776cb708",
+    "kyc_selection_v2_governance_capsule.py": "6fed4106ff330301f03ed5078a7707c3094f56e1487b8eed507f873024d8374b",
+    "build_kyc_selection_v2_artifact.py": "65dc589392819541f0775f0e521030cccd7d97f3954a2f6ac70e96fcc74e1d50",
+    "read_kyc_selection_v2_artifacts.py": "1752b761c1837906535f0e41f575e69baed4277ad313ce58aebef89b0678d3e3"
+  }
+}

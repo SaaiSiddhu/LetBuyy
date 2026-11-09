@@ -1,0 +1,18 @@
+# Billing source and caller discovery
+
+The complete Billing screen (590 lines), SubscriptionService (629 lines), subscription catalog projection, actual named/alias/Settings callers, provider construction and relevant Dart SubscriptionApi methods were reviewed. Gateway subscription read, history, checkout/recovery ingress and verification binding were traced. Provider execution, pricing and checkout screens remain separate review/acceptance work. One existing surface row is source reviewed; no new unique surface denominator or billing acceptance is inferred.
+
+The active Billing screen uses persisted catalog/billing values, integer minor units and saved inclusive-tax evidence. Unknown payment amounts and provider mode are visibly unavailable. Gateway ownership checks precede its current billing reads and checkout/recovery commands; verification binds the saved actor/site/plan/period/provider reference before signature/provider checks. These controls must be preserved.
+
+Candidates requiring composed reproduction and canonical-owner review:
+
+1. Billing captures only account epoch and selected ID, rather than the complete view generation/provider identity. Its initial selection await, retained callbacks and late recovery/checkout navigation need actual StoreContext A→B→A and equal-key-provider tests. Existing SDK/server scope guards may deny some races; source observations alone do not prove an unauthorized effect.
+2. `_recoverFailedPayment` uses mutable `_storeId` and does not visibly retire against the full originating view around every await or covering route. Its `activated` result comes from the server and must never be fabricated or inferred from checkout creation.
+3. SubscriptionService serializes checkout work but captures actor inside the queued action, and SDK context at eventual dispatch. Current account/store/issuer changes during queue or secure-storage awaits require positive-control tests before any presentation or persistence repair.
+4. The saved checkout key is `letbuyy.subscription.checkouts.v1:<actor>`. The current provider uses the default secure storage; the string does not include environment/issuer. Local adoption of hosted data must be tested. Original production/staging keys and unresolved attempts must be preserved; do not guess ownership, delete ambiguous entries or silently migrate money recovery records.
+5. The Gateway history read silently limits to20 and the SDK exposes only a list. Completing the existing API pagination/consumer contract is necessary before complete invoice-history coverage can be claimed. Invoice detail/export controls are also separate from read-only cards.
+6. Fresh empty/error/permission, retry, concurrent refresh and large-text layouts need the shared mobile composition and current-view tests. Current billing/history are coupled by `Future.wait`; one failed read blocks both panels.
+
+Legacy static plan helpers and the nullable legacy subscription adapter have no active lib call sites in the inspected tree; their old numbers/defaults must not be treated as the active catalog or reactivated. Source review did not invoke recovery, cancellation, provider checkout, verification, a real payment, storage migration or hosted operation.
+
+Current product source stays frozen for native55. The original checkout/reference keys, money arithmetic, idempotency/verification authority and provider gates remain untouched by this read-only audit. Any consequential ambiguity about retained money-intent ownership requires a concrete human decision before dependent work, while independent authorized repairs continue.

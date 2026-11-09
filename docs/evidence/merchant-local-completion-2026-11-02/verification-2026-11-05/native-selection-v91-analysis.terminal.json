@@ -1,0 +1,17 @@
+{
+  "started_at": "2026-11-07T19:01:02.896467+00:00",
+  "supervisor_pid": 48308,
+  "source": "merchant-native-selection-source-v91",
+  "source_sha256": "5b655a37c2bcc1b2f6e79cea831340addb0329c8b4b60b4a1f4aff33bafdec6c",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "analyze",
+    "--no-pub"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 48312,
+  "exit_code": 0,
+  "finished_at": "2026-11-07T19:01:08.845480+00:00",
+  "source_unchanged": true,
+  "source_readback_sha256": "5b655a37c2bcc1b2f6e79cea831340addb0329c8b4b60b4a1f4aff33bafdec6c"
+}

@@ -1,0 +1,20 @@
+{
+  "at": "2026-11-04T22:20:41.503279+00:00",
+  "run_id": "9fbe51ac88b5",
+  "terminal": "0compoundPASS/1FAIL/0SKIP;632.3suite/633.8wall seconds;not timeout",
+  "source": "Order/Returns6 unchanged",
+  "failure": "Owned helper assertion with empty message before Order receipt; no Order/Returns acceptance.",
+  "inference": "The helper emits app.site_id via SELECT set_config and then the order UUID, but asserts one UUID after COMMIT. This can reject a committed fixture; exact failing frame was not retained by22. New23 emits no GUC row and retains explicit precommit/trace diagnostics.",
+  "commit_boundary": "Do not claim no fixture committed. No retry in22; its disposable owned database was removed. New23 has a new owned run/database/site.",
+  "remaining": {
+    "containers": [],
+    "networks": [],
+    "volumes": []
+  },
+  "cleanup": "Exact22label resources empty; no broad cleanup. Reverse baseline restored; forward readback pending.",
+  "artifact": "Native22 original APK retained/installed-readback SHA6b79458c4f0f2c41a0be344b842209f86b860a782fa12359e3c3407ac6380a2e",
+  "native_source_inputs": 4791,
+  "source_sha256": "76fefd7ec1c2edc182517a1e40a0bb4c7cc2747060d3379ecd7635768b80de31",
+  "source_scope": "All4791native input rows match corresponding held7471core source6 rows; verify terminal readback before relying.",
+  "limits": "No Order/Returns runtime, provider, iOS UI, hosted or full feature acceptance. Existing collection steps were observed but compound run failed."
+}

@@ -1,0 +1,112 @@
+{
+  "at": "2026-11-07T09:40:37.677597+00:00",
+  "status": "BOUNDED_ANDROID_MOV_H264_WEBM_VP8_FILES_PLAYBACK_WEB_SYNC_PASS",
+  "source": "merchant-camera-video-model-source-v84",
+  "source_sha256": "5f78a66e349980b7538b8c5a894967984d34baf80072677cfc2f30283dbdea1c",
+  "fixture_source_sha256": "7f100b77ff23b63944b4df231d742dd1262b3ad1dfc181cd9c43ec4e08411869",
+  "fixture_inputs_matching_source84": 4877,
+  "run_id": "d613a35b46f7",
+  "private_root": "/private/tmp/letbuyy-merchant-local-20261107-acd6ac2f50",
+  "runner": {
+    "tests": 1,
+    "assertionsPassed": 1,
+    "assertionsFailed": 0,
+    "skipped": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    }
+  },
+  "formats": [
+    "video/quicktime H264",
+    "video/webm VP8"
+  ],
+  "uploads": 2,
+  "objects": 2,
+  "hashes": {
+    "video/quicktime": "41df40017e22408682731f8eb5686d16b1cdc52d9a9ee0623d98b2dbed62e3c3",
+    "video/webm": "87d37fd5c013df089147c9f05f2bf8962e55906cc3ff8c4ec79017551d18954a"
+  },
+  "no_passive_video_fetch": true,
+  "actual_native_decode_progress_pause_mute_seek_background": true,
+  "native_web_caption_sync": true,
+  "installed_apk_sha256": "30c71a29ffd64471e549d4e1bcde9f7dafd0c494890d9aec77691b6242c14e39",
+  "installed_equals_retained": true,
+  "phase_terminals": {
+    "Readback-terminal.json": {
+      "phase": "Readback",
+      "attempt": 1,
+      "exit": 0,
+      "accepted": true,
+      "run_id": "d613a35b46f7",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261107-acd6ac2f50/Readback.py",
+      "control_sha256": "431e578545a92397025bd942be1c44075b337e52274637ac50bb3262012e5878"
+    },
+    "Import-attempt2-terminal.json": {
+      "phase": "Import",
+      "attempt": 2,
+      "exit": 1,
+      "accepted": false,
+      "run_id": "d613a35b46f7",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261107-acd6ac2f50/Import-observed-downloads-continuation.py",
+      "control_sha256": "02208f55f41a2fe59afb1f12a5ac334ab9b6de3d7c41a0dfe27e17a061ee310a"
+    },
+    "Preview-terminal.json": {
+      "phase": "Preview",
+      "attempt": 1,
+      "exit": 0,
+      "accepted": true,
+      "run_id": "d613a35b46f7",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261107-acd6ac2f50/Preview.py",
+      "control_sha256": "8dc3af538d59152adbcfc2a1ecd9d42cdde0d2c3c2fa1fe3e5e3614a73d53a95"
+    },
+    "Import-attempt3-terminal.json": {
+      "phase": "Import",
+      "attempt": 3,
+      "exit": 1,
+      "accepted": false,
+      "run_id": "d613a35b46f7",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261107-acd6ac2f50/Import-observed-scanned-fixtures.py",
+      "control_sha256": "50c9356fd723b1611c66e03523fb1bb1cf07482796425b29c98703628ee14184"
+    },
+    "Auth-terminal.json": {
+      "phase": "Auth",
+      "attempt": 1,
+      "exit": 0,
+      "accepted": true,
+      "run_id": "d613a35b46f7",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261107-acd6ac2f50/Auth.py",
+      "control_sha256": "f6bcc432b6a07c86d54d243e9e35bc6cd47c7d17bd373b886f87b9d6322f5969"
+    },
+    "Import-terminal.json": {
+      "phase": "Import",
+      "attempt": 1,
+      "exit": 1,
+      "accepted": false,
+      "run_id": "d613a35b46f7",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261107-acd6ac2f50/Import.py",
+      "control_sha256": "7e58892741e09397028bff1ddc75457e23e65dbca3dd08e0da9cbb28e6820404"
+    },
+    "Import-attempt4-terminal.json": {
+      "phase": "Import",
+      "attempt": 4,
+      "exit": 0,
+      "accepted": true,
+      "run_id": "d613a35b46f7",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261107-acd6ac2f50/Import-observed-indexed-picker.py",
+      "control_sha256": "4027f364d5c5aeb78b8c1b0504c9e4b04883030adc8b00b999ae1c43c373d998"
+    }
+  },
+  "mapping_custody": {
+    "run_id": "d613a35b46f7",
+    "reverse_baseline_restored": true,
+    "forward_baseline_restored": true,
+    "host9002_never_touched": true
+  },
+  "whole_features_accepted": 0,
+  "limits": "Source84 local synthetic Android emulator/normal Accounts/compiled Gateway+BFF/Next/owned PostgreSQL/R2. Failed driver navigation attempts retained, two generated fixtures explicitly indexed in MediaStore then real Files selections. No successful upload reset; exactly2 byte-upload commands and2 registrations. Not all codecs, web video decoding, current source85 native runtime, iOS MOV/WebM, physical/provider/hosted/release/full122 acceptance."
+}

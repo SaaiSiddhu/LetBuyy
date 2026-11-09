@@ -1,5 +1,6 @@
 export {
   UploadMediaSchema,
+  RegisterMediaSchema,
   UpdateMediaSchema,
   ListMediaQuery,
   BulkDeleteMediaSchema,

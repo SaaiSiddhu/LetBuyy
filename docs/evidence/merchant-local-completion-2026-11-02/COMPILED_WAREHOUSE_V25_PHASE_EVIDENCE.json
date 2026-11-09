@@ -1,0 +1,270 @@
+{
+  "kind": "BOUNDED_PHASE_EVIDENCE; OVERALL_TEST_FAILED",
+  "runId": "3cb24bace837",
+  "overall": {
+    "pass": 0,
+    "fail": 1,
+    "skip": 0,
+    "runnerExit": 1,
+    "controllerExit": 1,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    }
+  },
+  "globalSourceSnapshot": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/inventory-setter-guard-v9.source.json",
+  "apkSha256": "8941b40245edb91a0c1a847c1f67afad383ed1242da84103d03dd6a641968b8e",
+  "compiledWorkers": {
+    "run_id": "3cb24bace837",
+    "runtime": "workerd",
+    "gateway_sha256": "d2880351cd3a6dd81ee302a816ca058a65d22d901363b3e7ece1b3a3a7ab57b4",
+    "bff_sha256": "1cef74ec3baed72d32afad1e061f58ff4a84bf0c03a432dc4f1ec7588f8d9f63",
+    "entrypoints": [
+      "services/api-gateway/src/index.ts",
+      "services/mobile-bff/src/index.ts"
+    ],
+    "transport": "Owned Node HTTP and service-binding observer; no business response stubs",
+    "hosted": false
+  },
+  "completedPhase": "Compiled Gateway/BFF normal native metadata/reply-loss/restart/original retry, supplier and web metadata readback/profile acknowledgement; native PO4/receive3recovery, transfer2reserve/ship/receive1, held/committed reservation on native+web, web remaining1+1completion and native final readback. Independent stock/receipt assertions wrote stock-backend-verified.json before the setter extension.",
+  "warehouseFinal": {
+    "po": {
+      "id": "296e1ae1-7388-43a7-8fac-2abb3810502f",
+      "notes": null,
+      "total": 502,
+      "status": "received",
+      "site_id": "896dbe3f-7285-41a5-8acd-53006259a79d",
+      "currency": "INR",
+      "metadata": {},
+      "subtotal": 502,
+      "po_number": "PO-20261104-DAE1BA88",
+      "created_at": "2026-11-04T01:25:56.65531+00:00",
+      "created_by": "12ef0460-2fd5-4a0b-a023-0791ccac7880",
+      "deleted_at": null,
+      "ordered_at": "2026-11-04T01:25:56.65531+00:00",
+      "request_id": "flutter-builder-1793755556016945",
+      "updated_at": "2026-11-04T01:31:46.03071+00:00",
+      "updated_by": "12ef0460-2fd5-4a0b-a023-0791ccac7880",
+      "expected_at": null,
+      "location_id": "aa0dbfd7-aff6-4af4-b0f1-e1a71e37c5ff",
+      "received_at": "2026-11-04T01:31:46.03071+00:00",
+      "supplier_id": "415b374e-a4b0-4da6-b45f-9f3044e17aa6",
+      "cancelled_at": null,
+      "idempotency_key": "95a502c8-660a-48b8-8932-ddeafd0720b9"
+    },
+    "levels": [
+      {
+        "id": "55639227-1e99-4e1e-abf4-6a2aa4831a96",
+        "version": 3,
+        "incoming": 0,
+        "reserved": 0,
+        "store_id": "896dbe3f-7285-41a5-8acd-53006259a79d",
+        "available": 2,
+        "created_at": "2026-11-04T01:31:40.891825+00:00",
+        "deleted_at": null,
+        "product_id": "16151edb-0458-42fb-a517-faa6fecdb366",
+        "updated_at": "2026-11-04T01:31:46.611605+00:00",
+        "variant_id": null,
+        "location_id": "2dc41d5e-cfd2-4039-b4dd-a0d5879fa42c",
+        "free_quantity": 2,
+        "on_hand_quantity": 2,
+        "incoming_quantity": 0,
+        "reserved_quantity": 0,
+        "available_quantity": 2,
+        "committed_quantity": 0,
+        "unavailable_quantity": 0,
+        "safety_stock_quantity": 0
+      },
+      {
+        "id": "a26c8caf-c141-45f0-8e68-002358cb2c61",
+        "version": 6,
+        "incoming": 0,
+        "reserved": 0,
+        "store_id": "896dbe3f-7285-41a5-8acd-53006259a79d",
+        "available": 2,
+        "created_at": "2026-11-04T01:25:56.65531+00:00",
+        "deleted_at": null,
+        "product_id": "16151edb-0458-42fb-a517-faa6fecdb366",
+        "updated_at": "2026-11-04T01:31:46.03071+00:00",
+        "variant_id": null,
+        "location_id": "aa0dbfd7-aff6-4af4-b0f1-e1a71e37c5ff",
+        "free_quantity": 2,
+        "on_hand_quantity": 2,
+        "incoming_quantity": 0,
+        "reserved_quantity": 0,
+        "available_quantity": 2,
+        "committed_quantity": 2,
+        "unavailable_quantity": 0,
+        "safety_stock_quantity": 0
+      }
+    ],
+    "po_lines": [
+      {
+        "id": "02d1a197-ce02-4e5d-a3f2-4f139418b2f4",
+        "status": "received",
+        "site_id": "896dbe3f-7285-41a5-8acd-53006259a79d",
+        "metadata": {},
+        "unit_cost": 125.5,
+        "created_at": "2026-11-04T01:25:56.65531+00:00",
+        "created_by": "12ef0460-2fd5-4a0b-a023-0791ccac7880",
+        "deleted_at": null,
+        "product_id": "16151edb-0458-42fb-a517-faa6fecdb366",
+        "total_cost": 502,
+        "updated_at": "2026-11-04T01:31:46.03071+00:00",
+        "updated_by": "12ef0460-2fd5-4a0b-a023-0791ccac7880",
+        "variant_id": null,
+        "location_id": "aa0dbfd7-aff6-4af4-b0f1-e1a71e37c5ff",
+        "quantity_ordered": 4,
+        "purchase_order_id": "296e1ae1-7388-43a7-8fac-2abb3810502f",
+        "quantity_received": 4
+      }
+    ],
+    "receipts": [
+      {
+        "target": "2dc41d5e-cfd2-4039-b4dd-a0d5879fa42c",
+        "operation": "location.create",
+        "key_digest": "9f3b01351068f87b896fcbeb114a5cc80d0fc2d3b8cc351aa26bb5fa93364b0a",
+        "row_digest": "077f57b55da8e37a9da928c2a64105048d75414e165d8a61fc24fa8f74db249b"
+      },
+      {
+        "target": "c5538724-7809-44ee-b9b0-0f9f2d08df20",
+        "operation": "location.create",
+        "key_digest": "9268a67ce39d4c670f8ae685249ee34f5532e9f7d577f6d655a264820c451d48",
+        "row_digest": "7a4b4d06a2ab599ba0311360e4c87ebcfe7e6ed55dbf03c972c76e3ffc7025b6"
+      },
+      {
+        "target": "296e1ae1-7388-43a7-8fac-2abb3810502f",
+        "operation": "purchase_order.create",
+        "key_digest": "f1cb46c02f6622c5f730991eb5f1e21ac928f9ae996ef5bfba7f7db0d903853b",
+        "row_digest": "3b234d8fe2dbf170fc101f61dbd83b09afbc3b21d31c42d49894f4c22b46584d"
+      },
+      {
+        "target": "296e1ae1-7388-43a7-8fac-2abb3810502f",
+        "operation": "purchase_order.receive",
+        "key_digest": "f3e174b2880cd1d62b56e10ffcab11b2656d9f7790f4c4ab552ca71873d9961b",
+        "row_digest": "189a24a60cc7c593275313823893505519c3e4d85b32377d2c1d86c1644da1db"
+      },
+      {
+        "target": "296e1ae1-7388-43a7-8fac-2abb3810502f",
+        "operation": "purchase_order.receive",
+        "key_digest": "47df7f4b9723c1dad4c574842e3aadf9adf9d5058cc286c10f0d861a36a20bf4",
+        "row_digest": "5aabb8786d58555a1f238d78c85df062678751cc68de14f1c05c0d552a1e04c3"
+      },
+      {
+        "target": "415b374e-a4b0-4da6-b45f-9f3044e17aa6",
+        "operation": "supplier.create",
+        "key_digest": "18123c4c558a97518d9997f37c9ec7e97b309d3f4eba7a53e0bc58179dd13d45",
+        "row_digest": "82efa0a15ad3aeb4ec66e09c5899fa50f0d93f53d765f92eef57d8e1f1f7f395"
+      },
+      {
+        "target": "803ca6a4-0b93-442f-b7eb-d731cc4f4f07",
+        "operation": "supplier.create",
+        "key_digest": "d09d3b19d3edd687ba9cf6459f96907d4be7a35617f1c77bb27a761db6804f83",
+        "row_digest": "a3bdc10a53a29129fbe3a6d9c7c1effd7722eda467823633841b9d0df1103fd6"
+      },
+      {
+        "target": "587d7dee-eb0e-4735-9f65-51e989db1f14",
+        "operation": "transfer.create",
+        "key_digest": "5e03a8c6d606b262ebb366a70bf66f18a8b29deef44547a825980e9436233ef7",
+        "row_digest": "2871634506b024c5e8a793c21d220a3a5acf6fb452b4305ff7d9edfd00de9786"
+      },
+      {
+        "target": "587d7dee-eb0e-4735-9f65-51e989db1f14",
+        "operation": "transfer.receive",
+        "key_digest": "f7ac0a824ab2a78dad0315f2daa26392fe842a0274e8e40e1558ad221952549e",
+        "row_digest": "41ff2d9601e22307ce8109663d2dc0448934d16aba90ca51adc67e53a50777dc"
+      },
+      {
+        "target": "587d7dee-eb0e-4735-9f65-51e989db1f14",
+        "operation": "transfer.receive",
+        "key_digest": "bd52eb46c7b7bd783afc22bf98775caf6e177e73c2223bdccabfabe2820808c3",
+        "row_digest": "477ed1a2f3edaaf46a01e8c95df7bbf856339ab2d838d42da0920d9d49211598"
+      },
+      {
+        "target": "587d7dee-eb0e-4735-9f65-51e989db1f14",
+        "operation": "transfer.ship",
+        "key_digest": "85a733c8235304d54b1ac8df3e08fb598db66b657f2af29e5627cacaea943b89",
+        "row_digest": "ed7832cfc813e4793d3497bf79dcba3abe5645ed482f74c68580100fbc04aba4"
+      }
+    ],
+    "transfer": {
+      "id": "587d7dee-eb0e-4735-9f65-51e989db1f14",
+      "notes": null,
+      "status": "received",
+      "site_id": "896dbe3f-7285-41a5-8acd-53006259a79d",
+      "metadata": {},
+      "created_at": "2026-11-04T01:28:58.716519+00:00",
+      "created_by": "12ef0460-2fd5-4a0b-a023-0791ccac7880",
+      "deleted_at": null,
+      "request_id": "flutter-builder-1793755738141639",
+      "shipped_at": "2026-11-04T01:30:14.30367+00:00",
+      "updated_at": "2026-11-04T01:31:46.611605+00:00",
+      "updated_by": "12ef0460-2fd5-4a0b-a023-0791ccac7880",
+      "received_at": "2026-11-04T01:31:46.611605+00:00",
+      "cancelled_at": null,
+      "idempotency_key": "a715baa4-3a18-4e73-b6c7-beb6f7051235",
+      "transfer_number": "TR-20261104-2768A089",
+      "source_location_id": "aa0dbfd7-aff6-4af4-b0f1-e1a71e37c5ff",
+      "destination_location_id": "2dc41d5e-cfd2-4039-b4dd-a0d5879fa42c"
+    },
+    "reservations": [
+      {
+        "id": "7e160ff6-1b89-4e93-a581-599465996adb",
+        "status": "committed",
+        "order_id": null,
+        "quantity": 2,
+        "store_id": "896dbe3f-7285-41a5-8acd-53006259a79d",
+        "created_at": "2026-11-04T01:28:58.716519+00:00",
+        "created_by": "12ef0460-2fd5-4a0b-a023-0791ccac7880",
+        "deleted_at": null,
+        "expires_at": "infinity",
+        "product_id": "16151edb-0458-42fb-a517-faa6fecdb366",
+        "updated_at": "2026-11-04T01:30:14.30367+00:00",
+        "variant_id": null,
+        "location_id": "aa0dbfd7-aff6-4af4-b0f1-e1a71e37c5ff",
+        "released_at": null,
+        "committed_at": "2026-11-04T01:30:14.30367+00:00",
+        "release_reason": null,
+        "idempotency_key": "warehouse.transfer:3b356a97-192c-44de-956f-60f7cf616a99",
+        "commit_idempotency_key": "warehouse.ship:3b356a97-192c-44de-956f-60f7cf616a99",
+        "release_idempotency_key": null
+      }
+    ],
+    "product_stock": 2,
+    "transfer_lines": [
+      {
+        "id": "3b356a97-192c-44de-956f-60f7cf616a99",
+        "status": "received",
+        "site_id": "896dbe3f-7285-41a5-8acd-53006259a79d",
+        "metadata": {},
+        "created_at": "2026-11-04T01:28:58.716519+00:00",
+        "created_by": "12ef0460-2fd5-4a0b-a023-0791ccac7880",
+        "deleted_at": null,
+        "product_id": "16151edb-0458-42fb-a517-faa6fecdb366",
+        "updated_at": "2026-11-04T01:31:46.611605+00:00",
+        "updated_by": "12ef0460-2fd5-4a0b-a023-0791ccac7880",
+        "variant_id": null,
+        "transfer_id": "587d7dee-eb0e-4735-9f65-51e989db1f14",
+        "reservation_id": "7e160ff6-1b89-4e93-a581-599465996adb",
+        "quantity_shipped": 2,
+        "quantity_received": 2,
+        "quantity_requested": 2
+      }
+    ]
+  },
+  "failure": "New private controller required the quantity label in EditText text/content-desc. It stopped at the actual adjustment dialog before typing/submitting any stock setter. The task fixture then stopped its APK, so later read-only inspection correctly refused a no-longer-visible dialog. No UI/source defect or setter mutation is claimed from that selector failure.",
+  "fullFeatureAccepted": false,
+  "setterSyncAccepted": false,
+  "evidence": [
+    "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v25.json",
+    "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v25/stock-backend-verified.json",
+    "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v25/ui-attention.json",
+    "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v25/artifact.json",
+    "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v25/compiled-workers.json",
+    "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-v25-launcher-cleanup.json"
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "source": "source72",
+  "run_id": "71afd856196e",
+  "private_root": "/private/tmp/letbuyy-merchant-local-20261107-d0bd1e21fe",
+  "aggregate_exit": 1,
+  "android_build": "PASS, installed bytes verified",
+  "normal_native_auth": "NOT ACCEPTED; no credential entry reached by driver",
+  "native_bff_calls": 0,
+  "boundary": "Mobile sign-in request201 then cancel200; no credentials. Root cause under test: IPv6-owned Next socket versus IPv4 Android reverse. Byte relay added to98 only, no app source or authentication changes.",
+  "mappings_restored": true,
+  "source_unchanged_after_teardown": true,
+  "whole_features_accepted": 0
+}

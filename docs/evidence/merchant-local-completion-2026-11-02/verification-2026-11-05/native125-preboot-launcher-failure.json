@@ -1,0 +1,9 @@
+{
+  "at": "2026-11-08T04:13:19.187145+00:00",
+  "status": "PREBOOT_LAUNCHER_REFERENCE_FAILURE;NO_APP_RUNTIME_RESULT",
+  "private_root": "/private/tmp/letbuyy-ios-ui-20261108-61dfdf4bae",
+  "failure": "Missing merchant-video-formats-v125 fixture;actual fixture is merchant-variant-kyc-v125",
+  "device_unchanged": "Initial Shutdown;failure occurred before try/boot block",
+  "continuation": "run_chain-reviewed-v2.py with exact control digest and fail-fast input readback",
+  "whole_features_accepted": 0
+}

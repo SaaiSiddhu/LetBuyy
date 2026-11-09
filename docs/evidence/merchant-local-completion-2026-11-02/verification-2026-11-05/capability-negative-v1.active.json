@@ -1,0 +1,16 @@
+{
+  "started_at": "2026-11-05T20:09:41.856264+00:00",
+  "supervisor_pid": 84419,
+  "source": "capability-negative-v1",
+  "source_sha256": "1e71b87e80af8513b6d21bbc4b9a030f4255b736dc351a1fdd808f9e5ad3b24b",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "--timeout",
+    "45s",
+    "test/capability_presentation_test.dart"
+  ],
+  "status": "RUNNING",
+  "child_pid": 84421
+}

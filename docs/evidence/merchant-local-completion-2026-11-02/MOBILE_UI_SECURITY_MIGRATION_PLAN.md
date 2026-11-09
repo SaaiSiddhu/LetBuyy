@@ -1,0 +1,11 @@
+# Security presentation continuation — 5 November 2026
+
+The fixed Coupon1 source has completed broad local checks and both debug compiles. Continue existing frontend-only work; do not activate new security routes or change account policy.
+
+The active inline TwoFactorScreen serves refund.approve and payout.release. Named manage-security routes continue to open HostedAccountScreen; local enrollment/disable/recovery body is retained source and must not be activated by this migration. Complete source and original TwoFactorService/command storage/SDK/callers have been read. Preimages are retained in verification-2026-11-05/security-preimages with hashes.
+
+Reproduce: payout title incorrectly says refund; a captured covered-route callback can dispatch before `_current` rejects its response; covered read/command completion can leave the screen busy indefinitely. Preserve the service's actor/store/version checks, all protected bytes, original operation keys/expectedContext, proof consumer/action, OTP formats, recovery-code acknowledgement and explicit Close while pending. Closing never implies cancellation or approval.
+
+Use canonical responsive app bar, field, feedback and shell-visible progress. Split same-owner settlement from foreground dispatch. Retain the exact current-route proof-delivery check and never deliver a proof to a covered/closing consumer. A command completing while covered must leave a visible unconfirmed state, clear the busy presentation safely and require existing status readback before any further command; it must not invent persistence, replay effects or silently issue a fresh challenge. Preserve original security helper/operation bodies except proven UI lifetime guards. Challenge-key reset remains the explicit existing user action, guarded by current route/owner/busy state.
+
+Verify the four negative cases, existing security recovery/closing tests, action-specific exact proof consumption, large text/both themes, native OTP editing, current account/store changes and denied/failed/late responses. Add parsed protected body/argument comparisons and current source hashes. Auth/SDK/database/service files stay identical. Local controlled transport does not establish physical/native/hosted/provider/account security acceptance. Whole119 programme remains open.

@@ -1,0 +1,12 @@
+{
+  "from": "fc30461575a839bc0d3e11b1ad2109c803bdfeeb1befef33b6dd076c3c4eeb35",
+  "to": "c872c19cb9e02fa7581afaa64b6dbf0ef4e50dd44ccbfdc5fb1950fa784ded6f",
+  "changed": [
+    "services/api-gateway/src/__tests__/owned-db/catalog-availability.postgres.test.ts"
+  ],
+  "all_production_and_flutter_inputs_byte_equal": true,
+  "reason": "Bound retained-data equality in the database as exact row counts and per-table whole-row SHA256; no raw multi-megabyte row export or raised buffer limit",
+  "preserved_failed_run": "catalog-availability105-owned1.json: max100 case passed; raw full-row verification exceeded child-process stdout buffer before rollback test ran",
+  "Flutter105": "1789PASS",
+  "analysis105": "generated iOS ephemeral-folder contention before analyzer; rerun106 with --no-pub after Flutter terminal"
+}

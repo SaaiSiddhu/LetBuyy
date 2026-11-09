@@ -1,0 +1,16 @@
+{
+  "started_at": "2026-11-06T08:10:04.370214+00:00",
+  "supervisor_pid": 37520,
+  "source": "product-retained-negative-v1",
+  "source_sha256": "821f8c52d65bf63798b5c7fff95f1a42d65533c38b56e786fdcbd3c8d14b3361",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "test/product_retained_metadata_test.dart",
+    "--reporter",
+    "expanded"
+  ],
+  "status": "RUNNING",
+  "child_pid": 37522
+}

@@ -1,0 +1,10 @@
+[
+  {
+    "path": "apps/merchant/mobile/test/goldens/store_health_center.png",
+    "sha256": "112b814447a0eae4da01c73572c3745d1360dddfbed37afb4e847ab907a00f83"
+  },
+  {
+    "path": "apps/merchant/mobile/test/merchant_goldens_test.dart",
+    "sha256": "c934e87a63d85b0aba3962b25fe13a2252973a34fd3d3c60a63a9c81317a75b7"
+  }
+]

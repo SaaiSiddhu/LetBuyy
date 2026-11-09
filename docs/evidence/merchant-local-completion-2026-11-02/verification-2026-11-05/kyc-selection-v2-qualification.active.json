@@ -1,0 +1,37 @@
+{
+  "supervisor_pid": 99408,
+  "source_sha256": "9924957f802fbd5b77c395e3ad18b19573d7ad5fbb886a9ad39419b4ba456769",
+  "started_at": "2026-11-06T07:07:57.784892+00:00",
+  "steps": [
+    {
+      "step": "app-analysis",
+      "exit_code": 0
+    },
+    {
+      "step": "full-flutter",
+      "exit_code": 0
+    },
+    {
+      "step": "governance",
+      "exit_code": 0
+    },
+    {
+      "step": "android-compile",
+      "exit_code": 0
+    },
+    {
+      "step": "ios-compile",
+      "exit_code": 0
+    },
+    {
+      "step": "artifact-readback",
+      "exit_code": 0
+    }
+  ],
+  "status": "TERMINAL_ORDERED_LOCAL_GATES_PASSED_ZERO_FAILURE_ALLOWANCE",
+  "web_reuse": "kyc-selection-v2-preservation-web-reuse.json;1732webPASS/typing;allweb/shared/backendbytesunchanged",
+  "ui_kit_analysis": "Reused fresh confirmation zero-issue UI-kit result; every UI-kit input byte remains equal.",
+  "active_step": null,
+  "finished_at": "2026-11-06T07:12:50.214404+00:00",
+  "source_unchanged": true
+}

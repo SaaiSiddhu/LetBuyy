@@ -1,0 +1,113 @@
+{
+  "kind": "BOUNDED_LOCAL_COMPILED_ANDROID_WEB_INVENTORY_ACCEPTANCE",
+  "status": "PASS",
+  "runId": "6e52c7eb23c5",
+  "baselineHead": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+  "branch": "codex/merchant-mobile-parity",
+  "globalSourceSha256": "077a6cd4faa5b7401c3e0701ccbf8b5f0808a1f9429b1575e7178fa9cca38576",
+  "sourceManifest": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/inventory-setter-guard-v9.source.json",
+  "sourceArchive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/inventory-setter-guard-v9-qualified-source",
+  "sourceEntries": 7432,
+  "sourceUnchangedThroughTerminal": true,
+  "runtimeSourceSha256": "6e37d85995170c377e8fc7fee148f42eeb9deccfe95216d13cfe0b62314713a0",
+  "tests": {
+    "pass": 1,
+    "fail": 0,
+    "skip": 0,
+    "cancelled": 0
+  },
+  "runnerExit": 0,
+  "controllerExit": 0,
+  "apk": {
+    "sha256": "39e2f49c44fdd3bfe81cc5555b77e9a1262d2b93530c395c9d662eef31ef7911",
+    "path": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v26/qualified-artifact/merchant-local-debug.apk",
+    "buildMode": "normal main/debug/android-arm64; Flutter config-only then offline Gradle",
+    "installedReadback": true,
+    "originalBytesRetained": true,
+    "releaseArtifact": false
+  },
+  "compiledWorkers": {
+    "run_id": "6e52c7eb23c5",
+    "runtime": "workerd",
+    "gateway_sha256": "d2880351cd3a6dd81ee302a816ca058a65d22d901363b3e7ece1b3a3a7ab57b4",
+    "bff_sha256": "1cef74ec3baed72d32afad1e061f58ff4a84bf0c03a432dc4f1ec7588f8d9f63",
+    "entrypoints": [
+      "services/api-gateway/src/index.ts",
+      "services/mobile-bff/src/index.ts"
+    ],
+    "transport": "Owned Node HTTP and service-binding observer; no business response stubs",
+    "hosted": false
+  },
+  "actors": [
+    "one synthetic current owner"
+  ],
+  "authentication": "Actual normal Android Accounts credential form and automatic fresh PKCE return; normal independent Merchant web sign-in; no session injection; owned local one-use challenge fixture. Real hosted/provider authentication is separate.",
+  "warehouse": {
+    "native": "Location committed reply loss/restart/exact-original retry; supplier creation; PO4units@125.50/receive3reply-loss recovery; transfer2reserve/held view/ship/committed view/receive1",
+    "web": "Read native records and status, create location/supplier for native readback, acknowledge native profile, complete remaining1PO and1transfer",
+    "nativeFinalRead": "Both web-completed documents read as Received with current readable labels",
+    "finalBeforeSetterPrerequisite": {
+      "physical": 4,
+      "free": 4,
+      "reserved": 0,
+      "incoming": 0,
+      "transit": 0,
+      "locations": 2,
+      "defaultProductCache": 2,
+      "warehouseCommandReceipts": 11
+    },
+    "originalPartialReceiptUnchanged": true,
+    "sameTransferReservationActiveToCommitted": true
+  },
+  "setters": {
+    "prerequisite": "One real canonical finite customer hold at default source; synthetic prerequisite, not buyer-authenticated checkout acceptance",
+    "nativeDelta": "+2via normal Inventory dialog; committed reply loss, process restart, exact original key/body retry, fresh display3free/1held/4physical",
+    "webAbsolute": "Normal product editor reads3free then saves4free; source becomes5physical/1held/4free",
+    "nativeWebReadback": "Normal refresh displays4free/1reserved/5onhand",
+    "effectCounts": {
+      "adjustmentReceipts": 1,
+      "productEditReceipts": 1
+    },
+    "originalHoldAndWarehouseReceiptsUnchanged": true
+  },
+  "visualInspection": [
+    "Native numeric software keyboard actually open with exact2entry",
+    "Native current web result:4Available shown,4Low,1reserved,5onhand,0incoming",
+    "Earlier run25same-source recovery toast/dark banner inspected; separate confirmed error-toast contrast finding remains open"
+  ],
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "reverseMappingBaselineAndFinal": [],
+  "governance": {
+    "gate": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/governance-category-capsule-v20.gate.json",
+    "pass": 114,
+    "fail": 0,
+    "blocked": 0,
+    "skip": 0,
+    "notApplicable": 1
+  },
+  "evidence": [
+    "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v26.json",
+    "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v26/stock-backend-verified.json",
+    "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v26/setter-backend-verified.json",
+    "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v26/artifact.json",
+    "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v26/compiled-workers.json",
+    "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v26/source-snapshot.json",
+    "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-v26-controller-inputs.json",
+    "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-v26-launcher-cleanup.json"
+  ],
+  "limitations": [
+    "Not whole-feature/full119or122acceptance",
+    "Native staff/multistore/variants, broader inventory/history/operations and other groups remain open",
+    "Error toast contrast3.7631is a confirmed unrepaired UI issue",
+    "Bulk-adjust direct caller still needs an owned positive reproduction",
+    "No iOS UI/hosted/real-provider/signed-release/production acceptance"
+  ],
+  "updatedAt": "2026-11-04T01:52:12.361995+00:00"
+}

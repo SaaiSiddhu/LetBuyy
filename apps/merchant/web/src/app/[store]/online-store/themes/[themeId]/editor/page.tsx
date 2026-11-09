@@ -1956,6 +1956,7 @@ function PropertyPanel({
                 {selection.kind === 'theme' && selectedThemeGroup ? (
                     <section className="theme-os-property-card">
                         <SchemaFormRenderer
+                            key={`theme:${selectedThemeGroupKey}`}
                             schema={selectedThemeGroup.fields}
                             values={themeSettings}
                             onChange={onThemeSettingChange}
@@ -1968,6 +1969,7 @@ function PropertyPanel({
                     <section className="theme-os-property-card">
                         {selectedSectionSchema ? (
                             <SchemaFormRenderer
+                                key={`section:${selectedSection.id}`}
                                 schema={selectedSectionSchema.settings_schema}
                                 values={selectedSection.settings}
                                 onChange={(key, value) => onSectionSettingChange(selectedSection.id, key, value)}
@@ -1994,6 +1996,7 @@ function PropertyPanel({
                     <section className="theme-os-property-card">
                         {selectedBlockSchema ? (
                             <SchemaFormRenderer
+                                key={`block:${selectedSection.id}:${selectedBlock.id}`}
                                 schema={selectedBlockSchema.fields}
                                 values={selectedBlock.settings}
                                 onChange={(key, value) => onBlockSettingChange(selectedSection.id, selectedBlock.id, key, value)}

@@ -1,9 +1,10 @@
 'use client'
 
 import { useReadRequest } from '@/lib/api/use-read-request'
+import { useMerchantSecurityContext } from '@/components/security/MerchantSecurityContext'
 
 import { getAccountsUrl, getStorefrontRootDomain } from '@/lib/public-urls'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { DEFAULT_ADMIN_LOCALE, SUPPORTED_ADMIN_LOCALES, getAdminLocaleOptions, normalizeAdminLocale } from '@/lib/i18n/admin-locales'
 import {
@@ -149,11 +150,23 @@ function localeDisplayName(code: string): string {
 
 export default function GeneralSettingsPage() {
     const { store } = useParams<{ store: string }>()
+    const { actorId, siteId } = useMerchantSecurityContext(store)
+    return <GeneralSettingsWorkspace key={JSON.stringify([actorId, siteId, store])} store={store} actorId={actorId} />
+}
+
+function GeneralSettingsWorkspace({ store, actorId }: { store: string; actorId: string }) {
     const { notify } = useToast()
+    const active = useRef(true)
+    useLayoutEffect(() => {
+        active.current = true
+        return () => { active.current = false }
+    }, [])
 
     const [loading, setLoading] = useState(true)
     const [loadError, setLoadError] = useState<string | null>(null)
     const [saveState, setSaveState] = useState<SaveState>('saved')
+    const [saveNeedsReload, setSaveNeedsReload] = useState(false)
+    const [reloadDialogOpen, setReloadDialogOpen] = useState(false)
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
     const [deleting, setDeleting] = useState(false)
     const [initialData, setInitialData] = useState<GeneralData | null>(null)
@@ -203,6 +216,7 @@ export default function GeneralSettingsPage() {
         const request = beginLoad()
         const readSignal = signal ? AbortSignal.any([signal, request.signal]) : request.signal
         setLoading(true)
+        setVersion(null)
         setLoadError(null)
         try {
             const res = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, { cache: 'no-store', signal: readSignal })
@@ -212,8 +226,9 @@ export default function GeneralSettingsPage() {
 
             const d = isRecord(payload?.data) ? payload.data : null
             if (!d) throw new Error('Store details were not returned')
-            if (typeof d.version !== 'number') throw new Error('Store revision was not returned')
-            setVersion(d.version)
+            if (!Number.isSafeInteger(d.version) || (d.version as number) <= 0) throw new Error('Store revision was not returned. Reload before editing.')
+            setVersion(d.version as number)
+            setSaveNeedsReload(false)
 
             const bp = isRecord(d.business_profile) ? d.business_profile : {}
             const addr = isRecord(d.invoice_address) ? d.invoice_address : {}
@@ -274,9 +289,9 @@ export default function GeneralSettingsPage() {
 
     const handleSave = useCallback(async (event?: React.FormEvent<HTMLFormElement>) => {
         event?.preventDefault()
-        if (!hasUnsavedChanges || saveState === 'saving') return
+        if (!active.current || saveNeedsReload || !hasUnsavedChanges || saveState === 'saving') return
         if (version === null) {
-            notify({ title: 'Reload required', description: 'Store revision is unavailable. Reload before saving.', variant: 'warning' })
+            notify({ title: 'Reload required', description: 'The current store revision is unavailable. Reload before saving.', variant: 'warning' })
             return
         }
         setSaveState('saving')
@@ -317,26 +332,30 @@ export default function GeneralSettingsPage() {
 
             const res = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
                 method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'X-LetBuyy-Merchant-Context': actorId, 'X-Idempotency-Key': crypto.randomUUID() },
                 body: JSON.stringify(body),
             })
             const payload = await res.json().catch(() => null) as ApiPayload | null
+            if (!active.current) return
             if (!res.ok) throw new Error(getPayloadError(payload, 'Unable to save store settings'))
             const saved = isRecord(payload?.data) ? payload.data : null
-            if (typeof saved?.version !== 'number') throw new Error('Save completed but revision readback is unavailable. Reload to confirm current settings.')
-
-            setVersion(saved.version)
-            setRawBP(businessProfile)
-            setRawAddr(invoiceAddress)
+            if (saved?.id !== data.id || !Number.isSafeInteger(saved?.version) || saved?.version !== version + 1) {
+                throw new Error('The save acknowledgement could not be confirmed. Reload current settings before another change.')
+            }
+            setVersion(saved.version as number)
+            setRawBP(body.business_profile)
+            setRawAddr(body.invoice_address)
             setInitialData(data)
             setSaveState('saved')
             notify({ title: 'Settings saved', description: 'Store details updated successfully.', variant: 'success' })
         } catch (err) {
+            if (!active.current) return
             const msg = err instanceof Error ? err.message : 'Unable to save settings'
             setSaveState('unsaved')
+            setSaveNeedsReload(true)
             notify({ title: 'Could not save settings', description: msg, variant: 'critical' })
         }
-    }, [data, hasUnsavedChanges, notify, rawAddr, rawBP, saveState, store, version])
+    }, [actorId, data, hasUnsavedChanges, notify, rawAddr, rawBP, saveNeedsReload, saveState, store, version])
 
     // ── Discard ───────────────────────────────────────────────────────────────
 
@@ -350,21 +369,25 @@ export default function GeneralSettingsPage() {
     // ── Delete ────────────────────────────────────────────────────────────────
 
     const handleDelete = useCallback(async () => {
-        if (deleting) return
+        if (!active.current || deleting) return
         setDeleting(true)
         try {
-            const res = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, { method: 'DELETE' })
+            const res = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
+                method: 'DELETE', headers: { 'X-LetBuyy-Merchant-Context': actorId, 'X-Idempotency-Key': crypto.randomUUID() },
+            })
             const payload = await res.json().catch(() => null) as ApiPayload | null
-            if (!res.ok) throw new Error(getPayloadError(payload, 'Unable to delete store'))
-            notify({ title: 'Store deletion started', description: 'Redirecting to your workspace…', variant: 'success' })
+            if (!active.current) return
+            if (!res.ok) throw new Error(getPayloadError(payload, 'Unable to close store'))
+            notify({ title: 'Store closed', description: 'Redirecting to your workspace…', variant: 'success' })
             window.location.href = getAccountsUrl()
         } catch (err) {
-            const msg = err instanceof Error ? err.message : 'Unable to delete store'
+            if (!active.current) return
+            const msg = err instanceof Error ? err.message : 'Unable to close store'
             setDeleting(false)
             setDeleteDialogOpen(false)
-            notify({ title: 'Could not delete store', description: msg, variant: 'critical' })
+            notify({ title: 'Could not close store', description: msg, variant: 'critical' })
         }
-    }, [deleting, notify, store])
+    }, [actorId, deleting, notify, store])
 
     // ── Languages & localization actions (live) ────────────────────────────────
 
@@ -471,8 +494,15 @@ export default function GeneralSettingsPage() {
                     onSave: () => void handleSave(),
                     onDiscard: handleDiscard,
                     saveLabel: 'Save',
+                    saveDisabled: version === null || saveNeedsReload,
                 }}
             >
+                {saveNeedsReload && (
+                    <Banner variant="warning" title="Reload current settings before another change"
+                        action={<Button variant="secondary" onClick={() => setReloadDialogOpen(true)}>Reload current settings</Button>}>
+                        The save was refused or its acknowledgement was unavailable. Your edits remain until you reload.
+                    </Banner>
+                )}
                 {loadError && (
                     <Banner
                         variant="critical"
@@ -792,23 +822,31 @@ export default function GeneralSettingsPage() {
                 <Section variant="grouped" title="Danger zone"  className="settings-home-card--danger">
                     <div className="settings-form-danger-row">
                         <div className="settings-form-danger-copy">
-                            <span className="settings-form-danger-title">Delete this store</span>
+                            <span className="settings-form-danger-title">Close this store</span>
                             <span className="settings-form-danger-desc">
-                                Permanently deletes all products, orders, pages, and settings. This cannot be undone.
+                                Stops selling and queues private KYC files for deletion. Order, tax, and audit records may be retained.
                             </span>
                         </div>
                         <Button variant="destructive" onClick={() => setDeleteDialogOpen(true)} loading={deleting}>
-                            Delete store
+                            Close store
                         </Button>
                     </div>
                 </Section>
             </SettingsPane>
 
             <ConfirmDialog
+                open={reloadDialogOpen}
+                title="Reload current settings?"
+                description="Discard this form's unsaved edits and load the current store revision."
+                confirmLabel="Reload settings"
+                onClose={() => setReloadDialogOpen(false)}
+                onConfirm={() => { setReloadDialogOpen(false); void loadData() }}
+            />
+            <ConfirmDialog
                 open={deleteDialogOpen}
-                title={`Delete ${data.name || 'this store'}?`}
-                description="This permanently deletes the store, products, orders, pages, and settings. This action cannot be undone."
-                confirmLabel={deleting ? 'Deleting…' : 'Delete store'}
+                title={`Close ${data.name || 'this store'}?`}
+                description="Selling will stop and your private KYC files will be queued for deletion. Some order, tax, and audit records will be retained. You cannot reopen the store from settings."
+                confirmLabel={deleting ? 'Closing…' : 'Close store'}
                 destructive
                 onClose={() => { if (!deleting) setDeleteDialogOpen(false) }}
                 onConfirm={() => void handleDelete()}

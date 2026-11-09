@@ -1,0 +1,69 @@
+{
+  "status": "FAIL",
+  "source_sha256": "af0b694c85f952556a26f139587db22f7c00f873e0a9634603a80b52d7aa00ba",
+  "results": [
+    {
+      "stage": "shared-types-build",
+      "exit_code": 0,
+      "source_unchanged": true,
+      "source_sha256": "af0b694c85f952556a26f139587db22f7c00f873e0a9634603a80b52d7aa00ba",
+      "command": [
+        "pnpm",
+        "--filter",
+        "@letbuyy/shared-types",
+        "build",
+        "--force"
+      ],
+      "cwd": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy"
+    },
+    {
+      "stage": "ts-client-check",
+      "exit_code": 0,
+      "source_unchanged": true,
+      "source_sha256": "af0b694c85f952556a26f139587db22f7c00f873e0a9634603a80b52d7aa00ba",
+      "command": [
+        "pnpm",
+        "--filter",
+        "@letbuyy/api-client",
+        "typecheck"
+      ],
+      "cwd": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy"
+    },
+    {
+      "stage": "root-contracts",
+      "exit_code": 0,
+      "source_unchanged": true,
+      "source_sha256": "af0b694c85f952556a26f139587db22f7c00f873e0a9634603a80b52d7aa00ba",
+      "command": [
+        "pnpm",
+        "run",
+        "test:contracts"
+      ],
+      "cwd": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy"
+    },
+    {
+      "stage": "models-analysis",
+      "exit_code": 0,
+      "source_unchanged": true,
+      "source_sha256": "af0b694c85f952556a26f139587db22f7c00f873e0a9634603a80b52d7aa00ba",
+      "command": [
+        "/Users/saai_mithra/Library/Developer/flutter/bin/dart",
+        "analyze"
+      ],
+      "cwd": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/packages/dart/models"
+    },
+    {
+      "stage": "gateway-db-lane",
+      "exit_code": 1,
+      "source_unchanged": true,
+      "source_sha256": "af0b694c85f952556a26f139587db22f7c00f873e0a9634603a80b52d7aa00ba",
+      "command": [
+        "node",
+        "--test",
+        "tests/governance/gateway-db-lane.test.mjs"
+      ],
+      "cwd": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy"
+    }
+  ],
+  "finished_at": "2026-11-06T15:16:19.673034+00:00"
+}

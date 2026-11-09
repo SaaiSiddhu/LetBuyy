@@ -1,0 +1,14 @@
+{
+  "source26_to27_changed_paths": [
+    "tests/governance/gateway-db-lane.test.mjs"
+  ],
+  "qualified_inputs_equal": "All Gateway runtime, schemas, SDK, app and owned-suite inputs are byte equal. Only explicit owned test inventory expectations were updated.",
+  "reused_source26": {
+    "owned": "12PASS run6491d9945fb6;emptycleanup",
+    "gateway_typecheck": "PASS",
+    "gateway_unit": "2087PASS",
+    "shared_types_check": "PASS",
+    "shared_types_tests": "23PASS"
+  },
+  "limits": "No reused native media/browser/provider or whole122 acceptance."
+}

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/shared/native_media_recovery_frame.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
 
 // All other screens are imported but Flutter's tree-shaking
@@ -54,6 +55,7 @@ import '../screens/money/money_screen.dart';
 import '../screens/kyc/kyc_screen.dart';
 import '../screens/products/products_screen.dart';
 import '../screens/products/collections_screen.dart';
+import '../screens/products/categories_screen.dart';
 import '../screens/store_health/store_health_screen.dart';
 import '../screens/subscription/pricing_screen.dart';
 import '../screens/subscription/connect_razorpay_screen.dart';
@@ -113,6 +115,7 @@ enum AppRouteId {
   purchaseOrders,
   inventoryTransfers,
   collections,
+  categories,
   products,
   orders,
   orderDetail,
@@ -248,6 +251,7 @@ class AppRoutes {
   static const String purchaseOrders = '/inventory/purchase-orders';
   static const String inventoryTransfers = '/inventory/transfers';
   static const String collections = '/collections';
+  static const String categories = '/categories';
   static const String products = '/products';
   static const String orders = '/orders';
   static const String orderDetail = '/orders/detail';
@@ -598,6 +602,11 @@ class AppRoutes {
       builder: (_) => const CollectionsScreen(),
     ),
     AppRouteSpec(
+      id: AppRouteId.categories,
+      path: categories,
+      builder: (_) => const CategoriesScreen(),
+    ),
+    AppRouteSpec(
       id: AppRouteId.products,
       path: products,
       builder: (_) => const ProductsScreen(),
@@ -919,10 +928,27 @@ class AppRoutes {
   }
 
   /// Fast route for root auth wrapper - no animation delay
+  static String? nativeSelectionRoute(String purpose) =>
+      purpose.startsWith('private-kyc-')
+      ? kyc
+      : purpose.startsWith('product-image')
+      ? products
+      : purpose.startsWith('store-logo:')
+      ? storeDetails
+      : purpose.startsWith('theme-')
+      ? null
+      : media;
+
+  static Widget withNativeMediaRecovery(Widget page) =>
+      NativeMediaRecoveryFrame(
+        routeForPurpose: nativeSelectionRoute,
+        child: page,
+      );
+
   static PageRoute _buildFastRoute(Widget page, RouteSettings settings) {
     return PageRouteBuilder(
       settings: settings,
-      pageBuilder: (_, __, ___) => page,
+      pageBuilder: (_, __, ___) => withNativeMediaRecovery(page),
       transitionDuration: Duration.zero,
       reverseTransitionDuration: Duration.zero,
     );
@@ -930,6 +956,9 @@ class AppRoutes {
 
   /// Standard route with smooth animation
   static MaterialPageRoute _buildRoute(Widget page, RouteSettings settings) {
-    return MaterialPageRoute(builder: (_) => page, settings: settings);
+    return MaterialPageRoute(
+      builder: (_) => withNativeMediaRecovery(page),
+      settings: settings,
+    );
   }
 }

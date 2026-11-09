@@ -1,387 +1,679 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:fl_chart/fl_chart.dart';
+import 'package:letbuyy_core/letbuyy_core.dart' show PriceFormatter;
 import 'package:provider/provider.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import '../../app/store_context.dart';
-import '../../theme/app_theme_colors.dart';
-import '../../services/analytics_service.dart';
-
 import '../../models/store_model.dart';
-import '../../widgets/dashboard/stats_row.dart';
+import '../../models/order_model.dart' show OrderStatus;
+import '../../services/analytics_service.dart';
+import '../../services/api_client.dart';
+import '../../widgets/shared/recorded_history_chart.dart';
 
-/// Analytics screen
+/// Existing report readers, bound to one applied store/account/period lifetime.
 class AnalyticsScreen extends StatefulWidget {
   const AnalyticsScreen({super.key});
-
   @override
   State<AnalyticsScreen> createState() => _AnalyticsScreenState();
 }
 
 class _AnalyticsScreenState extends State<AnalyticsScreen> {
+  late final StoreContext _stores;
+  late final AnalyticsService _service;
+  Object? _boundContext;
   StoreModel? _store;
   StoreAnalytics? _analytics;
   StoreLiveView? _liveView;
-  bool _isLoading = true;
-  bool _loadFailed = false;
-  AppThemeColors get _colors => AppThemeColors.of(context);
   String _selectedPeriod = '7d';
+  bool _reading = false, _liveReading = false, _retired = false;
+  bool _denied = false, _emptyStore = false, _selectingInitialStore = false;
+  int _generation = 0, _discoveryEpoch = 0;
+  String? _error, _liveError;
+
+  Object get _currentContext =>
+      (_stores.requestContextKey, _service.requestContext);
+  bool get _current => mounted && !_retired && _boundContext == _currentContext;
+  bool get _active => mounted && ModalRoute.of(context)?.isCurrent == true;
+  bool _owns(int generation) => _current && generation == _generation;
+  String _amount(double value) =>
+      '₹${PriceFormatter.formatPriceWithoutSymbol(value)}';
 
   @override
   void initState() {
     super.initState();
-    _loadStore();
+    _stores = context.read<StoreContext>();
+    _service = context.read<AnalyticsService>();
+    _boundContext = _currentContext;
+    _stores.addListener(_observeOwner);
+    _service.addListener(_observeOwner);
+    Future<void>.microtask(_load);
   }
 
-  Future<void> _loadStore() async {
-    setState(() {
-      _isLoading = true;
-      _loadFailed = false;
-    });
-    try {
-      final store = await context.read<StoreContext>().ensureSelectedStore();
-      StoreAnalytics? analytics;
-      StoreLiveView? liveView;
-      if (store != null) {
-        final analyticsService = context.read<AnalyticsService>();
-        analytics = await analyticsService.getStoreAnalytics(
-          store.id,
-          period: _selectedPeriod,
-        );
-        try {
-          liveView = await analyticsService.getLiveView(store.id);
-        } catch (error) {
-          debugPrint('Error loading live view: $error');
-        }
-      }
-      if (!mounted) return;
-      setState(() {
-        _store = store;
-        _analytics = analytics;
-        _liveView = liveView;
-      });
-    } catch (e) {
-      if (mounted) setState(() => _loadFailed = true);
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
+  void _observeOwner() {
+    if (!mounted || _boundContext == _currentContext) return;
+    // First store discovery has no previous report to disclose. An account
+    // epoch change still retires it. The returned selection is checked below.
+    if (_selectingInitialStore &&
+        _stores.requestContextVersion == _discoveryEpoch) {
+      _boundContext = _currentContext;
+      return;
     }
+    _retireOwner();
+  }
+
+  void _retireOwner() {
+    ++_generation;
+    setState(() {
+      _retired = true;
+      _store = null;
+      _analytics = null;
+      _liveView = null;
+      _reading = _liveReading = false;
+      _error = _liveError = null;
+    });
+  }
+
+  @override
+  void dispose() {
+    ++_generation;
+    _stores.removeListener(_observeOwner);
+    _service.removeListener(_observeOwner);
+    super.dispose();
+  }
+
+  void _deny() {
+    ++_generation;
+    setState(() {
+      _denied = true;
+      _analytics = null;
+      _liveView = null;
+      _reading = _liveReading = false;
+      _error = _liveError = null;
+    });
+  }
+
+  bool _accessFailure(Object error) =>
+      error is ApiException && const [401, 403].contains(error.statusCode);
+
+  Future<void> _load({String? period}) async {
+    if (!mounted ||
+        !identical(context.read<StoreContext>(), _stores) ||
+        !identical(context.read<AnalyticsService>(), _service))
+      return;
+    if (!_active || (_reading && (period == null || period == _selectedPeriod)))
+      return;
+    final changedPeriod = period != null && period != _selectedPeriod;
+    final generation = ++_generation;
+    _boundContext = _currentContext;
+    final selectedBefore = _stores.selectedStoreId;
+    _discoveryEpoch = _stores.requestContextVersion;
+    _selectingInitialStore = selectedBefore == null;
+    setState(() {
+      _retired = _denied = _emptyStore = false;
+      _reading = true;
+      _liveReading = false;
+      _error = _liveError = null;
+      if (period != null) _selectedPeriod = period;
+      if (changedPeriod) {
+        _analytics = null;
+        _liveView = null;
+      }
+    });
+    final requestedPeriod = _selectedPeriod;
+    try {
+      final store = await _stores.ensureSelectedStore();
+      _selectingInitialStore = false;
+      if (!_owns(generation)) return;
+      if (store == null) {
+        setState(() {
+          _emptyStore = true;
+          _store = null;
+          _analytics = null;
+          _liveView = null;
+          _reading = false;
+        });
+        return;
+      }
+      if (_stores.selectedStoreId != store.id ||
+          (selectedBefore != null && selectedBefore != store.id)) {
+        _retireOwner();
+        return;
+      }
+      setState(() => _store = store);
+      final analytics = await _service.getStoreAnalytics(
+        store.id,
+        period: requestedPeriod,
+      );
+      if (!_owns(generation)) return;
+      setState(() {
+        _analytics = analytics;
+        _reading = false;
+        _liveReading = true;
+      });
+      // The primary report is useful now. Optional activity never gates it.
+      await _readLive(store.id, generation);
+    } catch (error) {
+      _selectingInitialStore = false;
+      if (!_owns(generation)) return;
+      if (_accessFailure(error)) {
+        _deny();
+      } else {
+        setState(() {
+          _reading = false;
+          _error = _analytics == null
+              ? 'Analytics could not load. Try again.'
+              : 'Refresh failed. Showing the last loaded report for this store and period.';
+        });
+      }
+    }
+  }
+
+  Future<void> _readLive(String storeId, int generation) async {
+    try {
+      final live = await _service.getLiveView(storeId);
+      if (!_owns(generation)) return;
+      setState(() {
+        _liveView = live;
+        _liveReading = false;
+      });
+    } catch (error) {
+      if (!_owns(generation)) return;
+      if (_accessFailure(error)) {
+        _deny();
+      } else {
+        setState(() {
+          _liveReading = false;
+          _liveError = _liveView == null
+              ? 'Live activity could not load.'
+              : 'Activity refresh failed. Showing the last loaded activity snapshot.';
+        });
+      }
+    }
+  }
+
+  Future<void> _retryLive() async {
+    if (!_current ||
+        !_active ||
+        _denied ||
+        _reading ||
+        _liveReading ||
+        _store == null)
+      return;
+    final generation = _generation;
+    setState(() {
+      _liveReading = true;
+      _liveError = null;
+    });
+    await _readLive(_store!.id, generation);
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
-
+    // Provider replacement/context changes also hide old data before any action.
+    final stores = context.watch<StoreContext>(),
+        service = context.watch<AnalyticsService>();
+    final ownerChanged =
+        !_current ||
+        !identical(stores, _stores) ||
+        !identical(service, _service);
+    final replacedOwner =
+        !identical(stores, _stores) || !identical(service, _service);
+    final capturedContext = _boundContext, capturedGeneration = _generation;
+    bool currentAction() =>
+        _active &&
+        _current &&
+        !_denied &&
+        capturedContext == _boundContext &&
+        capturedGeneration == _generation;
+    final theme = Theme.of(context);
+    final analytics = !ownerChanged && !_denied ? _analytics : null;
     return Scaffold(
-      backgroundColor: _colors.bgStart,
-      appBar: AppBar(
-        title: const Text('Analytics'),
-        backgroundColor: _colors.bgStart,
-        surfaceTintColor: _colors.bgStart,
+      appBar: CustomAppBar.responsive(
+        context: context,
+        title: 'Analytics',
         actions: [
-          PopupMenuButton<String>(
-            initialValue: _selectedPeriod,
-            onSelected: (value) {
-              setState(() => _selectedPeriod = value);
-              _loadStore();
-            },
-            itemBuilder: (context) => [
-              _buildPeriodMenuItem('7d', 'Last 7 days'),
-              _buildPeriodMenuItem('30d', 'Last 30 days'),
-              _buildPeriodMenuItem('90d', 'Last 90 days'),
-              _buildPeriodMenuItem('12m', 'Last 12 months'),
-            ],
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Row(
-                children: [
-                  Text(
-                    _getPeriodLabel(_selectedPeriod),
-                    style: TextStyle(
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 13,
-                    ),
-                  ),
-                  const SizedBox(width: 4),
-                  Icon(
-                    Icons.keyboard_arrow_down_rounded,
-                    color: AppColors.primary,
-                    size: 20,
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(width: 16),
-        ],
-      ),
-      body: _loadFailed
-          ? Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text('Analytics could not load. Please retry.'),
-                  TextButton(
-                    onPressed: _loadStore,
-                    child: const Text('Retry analytics'),
-                  ),
-                ],
-              ),
-            )
-          : ListView(
-              padding: const EdgeInsets.all(20),
-              children: [
-                // Stats overview
-                StatsRow(
-                  views: _analytics?.totalViews ?? _store?.totalVisitors ?? 0,
-                  sales: _analytics?.totalOrders ?? _store?.totalOrders ?? 0,
-                  revenue: (_analytics?.totalRevenue ?? 0).round(),
-                  products:
-                      _analytics?.totalProducts ?? 0,
-                ),
-                const SizedBox(height: 24),
-
-                _buildComparisonStrip(),
-                const SizedBox(height: 24),
-
-                _buildLiveViewCard(),
-                const SizedBox(height: 24),
-
-                // Real order and revenue charts from analytics daily buckets.
-                _buildChartCard(
-                  title: 'Revenue',
-                  icon: Icons.trending_up_rounded,
-                  color: Colors.blue,
-                  series: _analytics?.dailyStats ?? const <DailyStats>[],
-                  previousSeries:
-                      _analytics?.comparison.previousDailyStats ??
-                      const <DailyStats>[],
-                  previousLabel:
-                      _analytics?.comparison.previousLabel ?? 'Previous period',
-                  valueFor: (day) => day.revenue,
-                  valueLabel: (value) => '₹${value.toStringAsFixed(2)}',
-                ),
-                const SizedBox(height: 16),
-
-                _buildChartCard(
-                  title: 'Orders',
-                  icon: Icons.shopping_bag_rounded,
-                  color: Colors.green,
-                  series: _analytics?.dailyStats ?? const <DailyStats>[],
-                  previousSeries:
-                      _analytics?.comparison.previousDailyStats ??
-                      const <DailyStats>[],
-                  previousLabel:
-                      _analytics?.comparison.previousLabel ?? 'Previous period',
-                  valueFor: (day) => day.orders.toDouble(),
-                  valueLabel: (value) => value.toStringAsFixed(0),
-                ),
-                const SizedBox(height: 24),
-
-                // Top products
-                const Text(
-                  'Top Products',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-                ),
-                const SizedBox(height: 12),
-                _buildTopProductsList(),
-                const SizedBox(height: 24),
-
-                // Traffic sources
-                const Text(
-                  'Traffic Sources',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-                ),
-                const SizedBox(height: 12),
-                _buildTrafficSourcesList(),
-              ],
-            ),
-    );
-  }
-
-  Widget _buildLiveViewCard() {
-    final liveView = _liveView;
-    final snapshot = liveView?.available == true ? liveView : null;
-
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: _colors.card,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+          IconButton(
+            tooltip: 'Refresh analytics',
+            icon: const Icon(Icons.refresh_rounded),
+            onPressed: currentAction() && !_reading
+                ? () {
+                    if (currentAction()) unawaited(_load());
+                  }
+                : null,
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(
-                  Icons.monitor_heart_rounded,
-                  color: AppColors.primary,
-                  size: 20,
-                ),
+      body: SafeArea(
+        top: false,
+        child: Column(
+          children: [
+            if (_reading && !ownerChanged)
+              const LinearProgressIndicator(
+                semanticsLabel: 'Loading analytics',
               ),
-              const SizedBox(width: 12),
-              const Expanded(
-                child: Text(
-                  'Live View',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-                ),
-              ),
-              if (snapshot != null)
-                Text(
-                  'Updated ${_formatSeen(snapshot.lastSeenAt)}',
-                  style: TextStyle(color: _colors.textSecondary, fontSize: 12),
-                ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          if (snapshot == null)
-            _buildMetricPlaceholder(
-              icon: Icons.radar_rounded,
-              title: liveView == null
-                  ? 'Live view unavailable'
-                  : 'No live traffic yet',
-              body:
-                  'Live storefront activity appears after traffic data is collected.',
-            )
-          else ...[
-            Row(
-              children: [
-                Expanded(
-                  child: _buildLiveMetric(
-                    'Active now',
-                    snapshot.activeSessions,
-                  ),
-                ),
-                Expanded(
-                  child: _buildLiveMetric('Visitors', snapshot.visitors),
-                ),
-                Expanded(
-                  child: _buildLiveMetric('Page views', snapshot.pageViews),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(child: _buildLiveMetric('Carts', snapshot.cartAdds)),
-                Expanded(
-                  child: _buildLiveMetric(
-                    'Checkouts',
-                    snapshot.checkoutsStarted,
-                  ),
-                ),
-                Expanded(
-                  child: _buildLiveMetric(
-                    'Window',
-                    snapshot.windowMinutes,
-                    suffix: 'm',
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 18),
-            _buildLiveEntryList('Top pages', snapshot.topPages),
-            const SizedBox(height: 12),
-            _buildLiveEntryList('Traffic sources', snapshot.trafficSources),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildLiveMetric(String label, int value, {String suffix = ''}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          '$value$suffix',
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
-        ),
-        const SizedBox(height: 2),
-        Text(
-          label,
-          style: TextStyle(color: _colors.textSecondary, fontSize: 12),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildLiveEntryList(String title, List<LiveViewEntry> entries) {
-    if (entries.isEmpty) return const SizedBox.shrink();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
-        const SizedBox(height: 8),
-        ...entries
-            .take(3)
-            .map(
-              (entry) => Padding(
-                padding: const EdgeInsets.only(bottom: 6),
-                child: Row(
+            Expanded(
+              child: RefreshIndicator(
+                onRefresh: _load,
+                child: ListView(
+                  key: const PageStorageKey('merchant-analytics-report'),
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.all(LetbuyySpacingTokens.space16),
                   children: [
-                    Expanded(
-                      child: Text(
-                        entry.label,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                    LetbuyyChoiceField<String>(
+                      label: 'Reporting period',
+                      value: _selectedPeriod,
+                      choices: const [
+                        LetbuyyChoice(value: '7d', label: 'Last 7 days'),
+                        LetbuyyChoice(value: '30d', label: 'Last 30 days'),
+                        LetbuyyChoice(value: '90d', label: 'Last 90 days'),
+                        LetbuyyChoice(value: '12m', label: 'Last 12 months'),
+                      ],
+                      onChanged: !ownerChanged && !_denied
+                          ? (value) {
+                              if (currentAction())
+                                unawaited(_load(period: value));
+                            }
+                          : null,
+                    ),
+                    const SizedBox(height: LetbuyySpacingTokens.space16),
+                    if (ownerChanged)
+                      _state(
+                        'Store or account changed',
+                        replacedOwner
+                            ? 'Reopen Analytics to load the current account’s report.'
+                            : 'Load the selected store’s report to continue.',
+                        action: 'Load selected store',
+                        onPressed: replacedOwner ? null : () => _load(),
+                      )
+                    else if (_denied)
+                      _state(
+                        'Analytics access unavailable',
+                        'Report access could not be confirmed. No previous report is displayed.',
+                        action: 'Check access again',
+                        onPressed: () => _load(),
+                      )
+                    else if (_emptyStore)
+                      _state(
+                        'No store selected',
+                        'Choose a store to view its analytics.',
+                        action: 'Check selected store',
+                        onPressed: () => _load(),
+                      )
+                    else ...[
+                      if (_store != null) ...[
+                        Text(_store!.name, style: theme.textTheme.titleMedium),
+                        const SizedBox(height: LetbuyySpacingTokens.space8),
+                      ],
+                      Text(
+                        _getPeriodLabel(_selectedPeriod),
+                        style: theme.textTheme.titleLarge,
                       ),
-                    ),
-                    Text(
-                      entry.value.toString(),
-                      style: const TextStyle(fontWeight: FontWeight.w600),
-                    ),
+                      if (_reading)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: LetbuyySpacingTokens.space12,
+                          ),
+                          child: Text(
+                            analytics == null
+                                ? 'Loading this period’s report…'
+                                : 'Refreshing this store and period. Previous values remain below.',
+                            style: theme.textTheme.bodyMedium,
+                          ),
+                        ),
+                      if (_error != null)
+                        _state(
+                          'Report unavailable',
+                          _error!,
+                          action: 'Retry analytics',
+                          onPressed: _reading ? null : () => _load(),
+                        ),
+                      if (analytics != null) ...[
+                        const SizedBox(height: LetbuyySpacingTokens.space16),
+                        _overview(analytics),
+                        const SizedBox(height: LetbuyySpacingTokens.space24),
+                        _comparison(analytics.comparison),
+                        const SizedBox(height: LetbuyySpacingTokens.space24),
+                        _live(),
+                        const SizedBox(height: LetbuyySpacingTokens.space24),
+                        _history(analytics, revenue: true),
+                        const SizedBox(height: LetbuyySpacingTokens.space16),
+                        _history(analytics, revenue: false),
+                        const SizedBox(height: LetbuyySpacingTokens.space24),
+                        _orderStatuses(analytics),
+                        const SizedBox(height: LetbuyySpacingTokens.space24),
+                        _products(analytics),
+                        const SizedBox(height: LetbuyySpacingTokens.space24),
+                        _traffic(analytics),
+                      ],
+                    ],
                   ],
                 ),
               ),
             ),
-      ],
-    );
-  }
-
-  String _formatSeen(DateTime? seenAt) {
-    if (seenAt == null) return 'recently';
-    final diff = DateTime.now().toUtc().difference(seenAt.toUtc());
-    if (diff.inSeconds < 60) return 'just now';
-    if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
-    return '${diff.inHours}h ago';
-  }
-
-  PopupMenuItem<String> _buildPeriodMenuItem(String value, String label) {
-    return PopupMenuItem(
-      value: value,
-      child: Row(
-        children: [
-          Text(label),
-          if (_selectedPeriod == value) ...[
-            const Spacer(),
-            Icon(Icons.check_rounded, size: 18, color: AppColors.primary),
           ],
-        ],
+        ),
       ),
     );
   }
+
+  Widget _state(
+    String title,
+    String message, {
+    String? action,
+    VoidCallback? onPressed,
+  }) => Card(
+    margin: const EdgeInsets.symmetric(vertical: LetbuyySpacingTokens.space8),
+    child: Padding(
+      padding: const EdgeInsets.all(LetbuyySpacingTokens.space16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(title, style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: LetbuyySpacingTokens.space8),
+          Text(message),
+          if (action != null) ...[
+            const SizedBox(height: LetbuyySpacingTokens.space12),
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: TextButton(onPressed: onPressed, child: Text(action)),
+            ),
+          ],
+        ],
+      ),
+    ),
+  );
+
+  Widget _overview(StoreAnalytics data) => StatGrid(
+    children: [
+      StatTile(
+        icon: Icons.payments_outlined,
+        label: 'Revenue',
+        value: data.summaryAvailable
+            ? _amount(data.totalRevenue)
+            : 'Unavailable',
+        supportingText: 'Paid-order revenue · rolling period',
+      ),
+      StatTile(
+        icon: Icons.shopping_bag_outlined,
+        label: 'Orders',
+        value: data.summaryAvailable ? '${data.totalOrders}' : 'Unavailable',
+        supportingText: 'Orders created in the rolling period',
+      ),
+      StatTile(
+        icon: Icons.visibility_outlined,
+        label: 'Visits',
+        value: data.viewsAvailable ? '${data.totalViews}' : 'Unavailable',
+        supportingText: 'Reported visits for this period',
+      ),
+      StatTile(
+        icon: Icons.inventory_2_outlined,
+        label: 'Products',
+        value: data.summaryAvailable ? '${data.totalProducts}' : 'Unavailable',
+        supportingText: 'Active catalog · not period filtered',
+      ),
+    ],
+  );
+
+  Widget _comparison(
+    StoreAnalyticsComparison comparison,
+  ) => _section('Period comparison', [
+    Text(comparison.previousLabel),
+    const SizedBox(height: LetbuyySpacingTokens.space12),
+    StatGrid(
+      children: [
+        for (final row in [
+          (label: 'Revenue', metric: comparison.revenue, money: true),
+          (label: 'Orders', metric: comparison.orders, money: false),
+          (
+            label: 'Average order value',
+            metric: comparison.averageOrderValue,
+            money: true,
+          ),
+        ])
+          StatTile(
+            icon: Icons.compare_arrows_rounded,
+            label: row.label,
+            value: row.metric.available
+                ? (row.money
+                      ? _amount(row.metric.value)
+                      : row.metric.value.toStringAsFixed(0))
+                : 'Unavailable',
+            supportingText: row.metric.available
+                ? 'Previous: ${row.money ? _amount(row.metric.previous) : row.metric.previous.toStringAsFixed(0)}\n${row.metric.changePct > 0 ? '+' : ''}${row.metric.changePct.toStringAsFixed(1)}% change reported'
+                : 'No complete comparison returned.',
+          ),
+      ],
+    ),
+  ]);
+
+  Widget _section(String title, List<Widget> children) => Card(
+    margin: EdgeInsets.zero,
+    child: Padding(
+      padding: const EdgeInsets.all(LetbuyySpacingTokens.space16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(title, style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: LetbuyySpacingTokens.space12),
+          ...children,
+        ],
+      ),
+    ),
+  );
+
+  Widget _live() {
+    final snapshot = _liveView;
+    return _section('Live View', [
+      if (_liveReading) ...[
+        const LinearProgressIndicator(semanticsLabel: 'Loading live activity'),
+        const SizedBox(height: LetbuyySpacingTokens.space8),
+        Text(
+          snapshot == null
+              ? 'Loading live activity…'
+              : 'Refreshing activity. Previous snapshot remains below.',
+        ),
+      ],
+      if (_liveError != null) ...[
+        Text(_liveError!),
+        Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: TextButton(
+            onPressed: _reading || _liveReading ? null : _retryLive,
+            child: const Text('Retry live activity'),
+          ),
+        ),
+      ],
+      if (snapshot == null && !_liveReading && _liveError == null)
+        const Text('Live view unavailable')
+      else if (snapshot != null && !snapshot.available)
+        const Text(
+          'No live traffic yet. Activity appears after traffic data is collected.',
+        )
+      else if (snapshot != null) ...[
+        Text(
+          snapshot.lastSeenAt == null
+              ? 'Last activity time unavailable'
+              : 'Last recorded activity: ${snapshot.lastSeenAt!.toUtc().toIso8601String()}',
+        ),
+        const SizedBox(height: LetbuyySpacingTokens.space12),
+        if (!snapshot.metricsAvailable)
+          const Text('Live metrics incomplete. Missing values are unavailable.')
+        else
+          StatGrid(
+            children: [
+              for (final metric in [
+                (label: 'Active now', value: '${snapshot.activeSessions}'),
+                (label: 'Visitors', value: '${snapshot.visitors}'),
+                (label: 'Page views', value: '${snapshot.pageViews}'),
+                (label: 'Carts', value: '${snapshot.cartAdds}'),
+                (label: 'Checkouts', value: '${snapshot.checkoutsStarted}'),
+                (label: 'Window', value: '${snapshot.windowMinutes}m'),
+              ])
+                StatTile(
+                  icon: Icons.radar_rounded,
+                  label: metric.label,
+                  value: metric.value,
+                ),
+            ],
+          ),
+        const SizedBox(height: LetbuyySpacingTokens.space16),
+        _liveEntries('Top pages · up to 3', snapshot.topPages),
+        const SizedBox(height: LetbuyySpacingTokens.space12),
+        _liveEntries('Traffic sources · up to 3', snapshot.trafficSources),
+      ],
+    ]);
+  }
+
+  Widget _liveEntries(String title, List<LiveViewEntry> entries) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      Text(title, style: Theme.of(context).textTheme.titleSmall),
+      for (final entry in entries.take(3))
+        Padding(
+          padding: const EdgeInsets.symmetric(
+            vertical: LetbuyySpacingTokens.space8,
+          ),
+          child: Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            spacing: LetbuyySpacingTokens.space12,
+            runSpacing: LetbuyySpacingTokens.space4,
+            children: [
+              Text(entry.label.isEmpty ? 'Label unavailable' : entry.label),
+              Text(entry.valueAvailable ? '${entry.value}' : 'Unavailable'),
+            ],
+          ),
+        ),
+    ],
+  );
+
+  Widget _history(StoreAnalytics analytics, {required bool revenue}) {
+    RecordedHistorySeries series(String label, List<DailyStats> days) =>
+        RecordedHistorySeries(
+          label: label,
+          dates: days.map((day) => day.date).toList(growable: false),
+          values: days
+              .map(
+                (day) => revenue
+                    ? (day.revenueAvailable ? day.revenue : null)
+                    : (day.ordersAvailable ? day.orders.toDouble() : null),
+              )
+              .toList(growable: false),
+        );
+    return RecordedHistoryChart(
+      key: ValueKey((
+        'analytics-history',
+        revenue,
+        _selectedPeriod,
+        _boundContext,
+      )),
+      title: revenue ? 'Revenue' : 'Paid orders',
+      icon: revenue ? Icons.trending_up_rounded : Icons.shopping_bag_outlined,
+      current: series(_getPeriodLabel(_selectedPeriod), analytics.dailyStats),
+      previous: analytics.comparison.previousDailyStats.isEmpty
+          ? null
+          : series(
+              analytics.comparison.previousLabel,
+              analytics.comparison.previousDailyStats,
+            ),
+      formatValue: revenue ? _amount : (value) => value.toStringAsFixed(0),
+      discreteValues: !revenue,
+      valuesTitle: revenue ? 'Daily revenue values' : 'Daily paid-order values',
+      supportingText: revenue
+          ? 'Paid-order revenue · calendar buckets in Asia/Kolkata. Summary uses a rolling period.'
+          : 'Paid orders only · calendar buckets in Asia/Kolkata. The summary includes all created orders in its rolling period.',
+    );
+  }
+
+  Widget _orderStatuses(StoreAnalytics analytics) =>
+      _section('Orders by status', [
+        const Text('All recorded orders · not filtered by reporting period.'),
+        const SizedBox(height: LetbuyySpacingTokens.space12),
+        if (analytics.ordersByStatus.isEmpty)
+          const Text('No order statuses returned.')
+        else
+          StatGrid(
+            children: [
+              for (final entry in analytics.ordersByStatus.entries)
+                StatTile(
+                  icon: Icons.receipt_long_outlined,
+                  label:
+                      OrderStatus.values
+                          .where((status) => status.name == entry.key)
+                          .firstOrNull
+                          ?.displayName ??
+                      (entry.key.isEmpty ? 'Status unavailable' : entry.key),
+                  value: '${entry.value}',
+                ),
+            ],
+          ),
+      ]);
+
+  Widget _products(StoreAnalytics analytics) => _section('Top Products', [
+    const Text(
+      'Up to 5 reported products · ranked by units sold · not period filtered.',
+    ),
+    if (analytics.topProducts.isEmpty) ...[
+      const SizedBox(height: LetbuyySpacingTokens.space12),
+      const Text(
+        'No ranked products returned. This does not establish that sales are zero.',
+      ),
+    ],
+    for (final entry in analytics.topProducts.asMap().entries) ...[
+      const SizedBox(height: LetbuyySpacingTokens.space16),
+      Text('${entry.key + 1}', style: Theme.of(context).textTheme.labelLarge),
+      Text(
+        entry.value.name.isEmpty
+            ? 'Product name unavailable'
+            : entry.value.name,
+        style: Theme.of(context).textTheme.titleSmall,
+      ),
+      const SizedBox(height: LetbuyySpacingTokens.space8),
+      Text(
+        entry.value.revenueAvailable
+            ? '${_amount(entry.value.revenue)} revenue'
+            : 'Revenue unavailable',
+      ),
+      Text(
+        entry.value.ordersAvailable
+            ? '${entry.value.orders} sold'
+            : 'Units sold unavailable',
+      ),
+    ],
+  ]);
+
+  Widget _traffic(StoreAnalytics analytics) => _section('Traffic Sources', [
+    const Text('Up to 5 reported sources · selected reporting period.'),
+    const SizedBox(height: LetbuyySpacingTokens.space12),
+    if (!analytics.trafficSourcesAvailable)
+      const Text('Traffic attribution unavailable for this period.')
+    else if (analytics.trafficSources.isEmpty)
+      const Text('No traffic sources returned for this period.')
+    else
+      for (final source in analytics.trafficSources) ...[
+        Text(
+          source.label.isEmpty ? 'Source label unavailable' : source.label,
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
+        const SizedBox(height: LetbuyySpacingTokens.space8),
+        Text(
+          source.sessionsAvailable
+              ? '${source.sessions} sessions'
+              : 'Sessions unavailable',
+        ),
+        if (source.percentageAvailable) ...[
+          const SizedBox(height: LetbuyySpacingTokens.space8),
+          LinearProgressIndicator(
+            value: (source.percentage / 100).clamp(0.0, 1.0).toDouble(),
+            semanticsLabel: '${source.label} reported share',
+            semanticsValue: '${source.percentage.toStringAsFixed(1)}%',
+          ),
+          const SizedBox(height: LetbuyySpacingTokens.space4),
+          Text('${source.percentage.toStringAsFixed(1)}%'),
+        ] else
+          const Text('Share unavailable'),
+        const SizedBox(height: LetbuyySpacingTokens.space16),
+      ],
+  ]);
 
   String _getPeriodLabel(String period) {
     switch (period) {
@@ -396,551 +688,5 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
       default:
         return 'Last 7 days';
     }
-  }
-
-  Widget _buildComparisonStrip() {
-    final comparison = _analytics?.comparison;
-
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: _colors.card,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: comparison?.hasPreviousData == true
-          ? Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      width: 36,
-                      height: 36,
-                      decoration: BoxDecoration(
-                        color: AppColors.primary.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Icon(
-                        Icons.compare_arrows_rounded,
-                        color: AppColors.primary,
-                        size: 20,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Period comparison',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 16,
-                            ),
-                          ),
-                          Text(
-                            comparison!.previousLabel,
-                            style: TextStyle(
-                              color: _colors.textSecondary,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Wrap(
-                  spacing: 12,
-                  runSpacing: 12,
-                  children: [
-                    _buildComparisonMetric(
-                      'Revenue',
-                      comparison.revenue,
-                      (value) => '₹${value.toStringAsFixed(2)}',
-                    ),
-                    _buildComparisonMetric(
-                      'Orders',
-                      comparison.orders,
-                      (value) => value.toStringAsFixed(0),
-                    ),
-                    _buildComparisonMetric(
-                      'AOV',
-                      comparison.averageOrderValue,
-                      (value) => '₹${value.toStringAsFixed(2)}',
-                    ),
-                  ],
-                ),
-              ],
-            )
-          : _buildMetricPlaceholder(
-              icon: Icons.compare_arrows_rounded,
-              title: 'No comparison yet',
-              body:
-                  'Period comparison appears after a full previous range is recorded.',
-            ),
-    );
-  }
-
-  Widget _buildComparisonMetric(
-    String label,
-    AnalyticsMetricDelta metric,
-    String Function(double value) formatValue,
-  ) {
-    final changeColor = metric.changePct > 0
-        ? Colors.green[700]!
-        : metric.changePct < 0
-        ? Colors.red[700]!
-        : Colors.grey[700]!;
-    final sign = metric.changePct > 0 ? '+' : '';
-
-    return ConstrainedBox(
-      constraints: const BoxConstraints(minWidth: 140, maxWidth: 220),
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: _colors.surfaceVariant,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.grey.withValues(alpha: 0.14)),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              label,
-              style: TextStyle(color: _colors.textSecondary, fontSize: 12),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              formatValue(metric.value),
-              style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              '$sign${metric.changePct.toStringAsFixed(1)}% vs ${formatValue(metric.previous)}',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                color: changeColor,
-                fontWeight: FontWeight.w600,
-                fontSize: 12,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildChartCard({
-    required String title,
-    required IconData icon,
-    required Color color,
-    required List<DailyStats> series,
-    required List<DailyStats> previousSeries,
-    required String previousLabel,
-    required double Function(DailyStats day) valueFor,
-    required String Function(double value) valueLabel,
-  }) {
-    final spots = <FlSpot>[
-      for (var index = 0; index < series.length; index += 1)
-        FlSpot(index.toDouble(), valueFor(series[index])),
-    ];
-    final previousSpots = <FlSpot>[
-      for (var index = 0; index < previousSeries.length; index += 1)
-        FlSpot(index.toDouble(), valueFor(previousSeries[index])),
-    ];
-    final chartLength = [
-      series.length,
-      previousSeries.length,
-    ].reduce((value, element) => value > element ? value : element);
-    final hasData =
-        spots.any((spot) => spot.y > 0) ||
-        previousSpots.any((spot) => spot.y > 0);
-    final maxValue = [
-      ...spots,
-      ...previousSpots,
-    ].fold<double>(0, (max, spot) => spot.y > max ? spot.y : max);
-    final labelSeries = series.isNotEmpty ? series : previousSeries;
-
-    return Container(
-      height: 236,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: _colors.card,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(icon, color: color, size: 20),
-              ),
-              const SizedBox(width: 12),
-              Text(
-                title,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 15,
-                ),
-              ),
-            ],
-          ),
-          Expanded(
-            child: hasData && chartLength > 1
-                ? Padding(
-                    padding: const EdgeInsets.only(top: 18),
-                    child: LineChart(
-                      LineChartData(
-                        minY: 0,
-                        maxY: maxValue <= 0 ? 1 : maxValue * 1.2,
-                        gridData: FlGridData(
-                          drawVerticalLine: false,
-                          horizontalInterval: maxValue <= 0
-                              ? 1
-                              : (maxValue / 3).ceilToDouble(),
-                          getDrawingHorizontalLine: (_) => FlLine(
-                            color: Colors.grey.withValues(alpha: 0.14),
-                            strokeWidth: 1,
-                          ),
-                        ),
-                        borderData: FlBorderData(show: false),
-                        titlesData: FlTitlesData(
-                          topTitles: const AxisTitles(
-                            sideTitles: SideTitles(showTitles: false),
-                          ),
-                          rightTitles: const AxisTitles(
-                            sideTitles: SideTitles(showTitles: false),
-                          ),
-                          leftTitles: AxisTitles(
-                            sideTitles: SideTitles(
-                              showTitles: true,
-                              reservedSize: 40,
-                              getTitlesWidget: (value, _) => Text(
-                                valueLabel(value),
-                                style: TextStyle(
-                                  color: _colors.textSecondary,
-                                  fontSize: 10,
-                                ),
-                              ),
-                            ),
-                          ),
-                          bottomTitles: AxisTitles(
-                            sideTitles: SideTitles(
-                              showTitles: true,
-                              interval: (chartLength / 3)
-                                  .clamp(1, 10)
-                                  .toDouble(),
-                              getTitlesWidget: (value, _) {
-                                final index = value.round();
-                                if (index < 0 || index >= labelSeries.length) {
-                                  return const SizedBox.shrink();
-                                }
-                                final date = labelSeries[index].date;
-                                return Padding(
-                                  padding: const EdgeInsets.only(top: 6),
-                                  child: Text(
-                                    '${date.day}/${date.month}',
-                                    style: TextStyle(
-                                      color: _colors.textSecondary,
-                                      fontSize: 10,
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-                        lineBarsData: [
-                          if (previousSpots.isNotEmpty)
-                            LineChartBarData(
-                              spots: previousSpots,
-                              isCurved: true,
-                              color: color.withValues(alpha: 0.38),
-                              barWidth: 2,
-                              dashArray: const [6, 4],
-                              dotData: const FlDotData(show: false),
-                              belowBarData: BarAreaData(show: false),
-                            ),
-                          if (spots.isNotEmpty)
-                            LineChartBarData(
-                              spots: spots,
-                              isCurved: true,
-                              color: color,
-                              barWidth: 3,
-                              dotData: const FlDotData(show: false),
-                              belowBarData: BarAreaData(
-                                show: true,
-                                color: color.withValues(alpha: 0.12),
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                  )
-                : _buildMetricPlaceholder(
-                    icon: Icons.bar_chart_rounded,
-                    title: 'No ${title.toLowerCase()} data yet',
-                    body: 'This chart appears after real orders are recorded.',
-                  ),
-          ),
-          if (hasData) ...[
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                _buildChartLegend(color, _getPeriodLabel(_selectedPeriod)),
-                const SizedBox(width: 14),
-                _buildChartLegend(
-                  color.withValues(alpha: 0.42),
-                  previousLabel,
-                  dashed: true,
-                ),
-              ],
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildChartLegend(Color color, String label, {bool dashed = false}) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: 18,
-          height: dashed ? 2 : 3,
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(999),
-          ),
-        ),
-        const SizedBox(width: 6),
-        Text(
-          label,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(color: _colors.textSecondary, fontSize: 11),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildTopProductsList() {
-    final products = _analytics?.topProducts ?? const <TopProduct>[];
-
-    return Container(
-      decoration: BoxDecoration(
-        color: _colors.card,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: products.isEmpty
-          ? _buildMetricPlaceholder(
-              icon: Icons.inventory_2_outlined,
-              title: 'No product sales yet',
-              body:
-                  'Product ranking appears after order line items are recorded.',
-            )
-          : Column(
-              children: products.asMap().entries.map((entry) {
-                final index = entry.key;
-                final product = entry.value;
-                return ListTile(
-                  leading: Container(
-                    width: 32,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      color: _getRankColor(index).withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Center(
-                      child: Text(
-                        '${index + 1}',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: _getRankColor(index),
-                        ),
-                      ),
-                    ),
-                  ),
-                  title: Text(product.name),
-                  subtitle: Text(
-                    '₹${product.revenue.toStringAsFixed(2)} revenue',
-                  ),
-                  trailing: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.green[50],
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      '${product.orders} sold',
-                      style: TextStyle(
-                        color: Colors.green[700],
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
-    );
-  }
-
-  Color _getRankColor(int index) {
-    switch (index) {
-      case 0:
-        return Colors.amber;
-      case 1:
-        return Colors.grey;
-      case 2:
-        return Colors.orange;
-      default:
-        return Colors.grey;
-    }
-  }
-
-  Widget _buildTrafficSourcesList() {
-    final sources = _analytics?.trafficSources ?? const <TrafficSourceEntry>[];
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: _colors.card,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: sources.isEmpty
-          ? _buildMetricPlaceholder(
-              icon: Icons.query_stats_rounded,
-              title: 'No traffic sources yet',
-              body:
-                  'Source attribution appears after traffic data is collected.',
-            )
-          : Column(
-              children: sources
-                  .map(
-                    (source) => Padding(
-                      padding: const EdgeInsets.only(bottom: 14),
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  source.label,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                              Text(
-                                '${source.sessions} sessions',
-                                style: TextStyle(
-                                  color: _colors.textSecondary,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(999),
-                            child: LinearProgressIndicator(
-                              value: (source.percentage / 100)
-                                  .clamp(0.0, 1.0)
-                                  .toDouble(),
-                              minHeight: 8,
-                              backgroundColor: Colors.grey[200],
-                              color: AppColors.primary,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: Text(
-                              '${source.percentage.toStringAsFixed(1)}%',
-                              style: TextStyle(
-                                color: _colors.textSecondary,
-                                fontSize: 11,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  )
-                  .toList(),
-            ),
-    );
-  }
-
-  Widget _buildMetricPlaceholder({
-    required IconData icon,
-    required String title,
-    required String body,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 20),
-      child: Column(
-        children: [
-          Icon(icon, size: 36, color: Colors.grey[500]),
-          const SizedBox(height: 10),
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            body,
-            textAlign: TextAlign.center,
-            style: TextStyle(color: _colors.textSecondary, fontSize: 13),
-          ),
-        ],
-      ),
-    );
   }
 }

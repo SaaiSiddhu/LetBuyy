@@ -1,0 +1,26 @@
+[
+  {
+    "path": "services/api-gateway/src/routes/employee.ts",
+    "sha256": "c3e7a0d0615d96536e596e6647ba40e81fff9986896d6c3057c63afe97734ee9"
+  },
+  {
+    "path": "packages/shared-types/src/index.ts",
+    "sha256": "48b18c2a6b182ea3035991c71b233ed53283ca598535c6f1927dabb2dcbe3d81"
+  },
+  {
+    "path": "packages/typescript/api-client/src/index.ts",
+    "sha256": "9badd87ad4f5f50b531cb9e9056c7bb14ceec418e5bc135659b4f7cdcd269350"
+  },
+  {
+    "path": "packages/dart/api_client/lib/src/api_client.dart",
+    "sha256": "4bef9dbb72c9396a318d5de3bb4c33ee83adc66d72a09d0cc3bfc06e65ad92c8"
+  },
+  {
+    "path": "apps/merchant/mobile/test/staff_scope_boundary_test.dart",
+    "sha256": "b4e2e1b48f9af69d7ec6ebc5033af000e195ee6b498f10bdfec368d4316640a0"
+  },
+  {
+    "path": "apps/merchant/mobile/test/mobile_services_test.dart",
+    "sha256": "41f021efe361ff801854d2c01ee0e8f5a3b5e18a6741b4dea44b623140359c07"
+  }
+]

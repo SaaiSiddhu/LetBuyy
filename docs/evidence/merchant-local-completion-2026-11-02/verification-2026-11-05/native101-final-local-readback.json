@@ -1,0 +1,55 @@
+{
+  "at": "2026-11-07T05:31:02.111284+00:00",
+  "status": "BOUNDED_LOCAL_ANDROID_CATEGORY_AND_MEDIA_RECOVERY_PASS;FULL_FEATURES_OPEN",
+  "source": "merchant-catalog-media-source-v72",
+  "source_sha256": "d8bb3cf5df966db7f0003c964399c5b89d985a6014a3b4287a6df4405b8a5c39",
+  "inputs": 8497,
+  "run_id": "efd4bf313c98",
+  "normal_synthetic_signin_callback": true,
+  "category_page2_selection_to_web": true,
+  "web_category_to_native": true,
+  "native_os_photo_to_product_and_web": true,
+  "metadata_web_to_native_fields": 5,
+  "native_encrypted_pending_restart_original_key_body_replay": true,
+  "native_replay_updated_at_unchanged": true,
+  "web_original_key_upload_edit_delete_recovery": true,
+  "deleted_picker_row_absent_referenced_bytes_decoded": true,
+  "product": {
+    "category": "Synthetic web category",
+    "price": 100,
+    "stock": 4,
+    "images": 2
+  },
+  "active_media_rows": 1,
+  "public_objects": 2,
+  "installed_apk_equals_retained": true,
+  "apk_sha256": "8bdef8457807869264daa07e6e423227b271820e0e09ec3dca9b0039ae5d2a46",
+  "controls_admission_still_equal": true,
+  "private_root": "/private/tmp/letbuyy-merchant-local-20261107-5b752fbd16",
+  "gates": {
+    "flutter": 1688,
+    "analysis_issues": 0,
+    "root_contracts": 398,
+    "governance_pass": 114,
+    "governance_not_applicable": 1,
+    "source70_byte_equal_web_API_SQL_reuse": "catalog-media-v72-source-delta.json"
+  },
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "adb_mapping_custody": {
+    "run_id": "efd4bf313c98",
+    "reverse_baseline_restored": true,
+    "forward_baseline_restored": true,
+    "host9002_never_touched": true
+  },
+  "resource_state": "No backend/controller/build process remains; verified task emulator left Booted as at admission, app force-stopped and its data/Photos preserved.",
+  "source_frozen": false,
+  "whole_features_accepted": 0,
+  "limits": "Local synthetic Android/Chromium/Accounts/compiled Worker/PostgreSQL/PostgREST/R2 only. Current iOS runtime remains source70/native95. No physical/provider/buyerLiquid/hosted/release/full122certification."
+}

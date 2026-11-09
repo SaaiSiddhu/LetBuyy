@@ -1,0 +1,38 @@
+{
+  "started_at": "2026-11-06T08:31:59.103647+00:00",
+  "supervisor_pid": 44736,
+  "source_sha256": "cdd6849c07447a0af351c9edf6e11801fa9ac03cf79f38a8e453a698a919c8f6",
+  "status": "CURRENT_ORDERED_SOURCE_AND_INVITATION_BROWSER_PASS",
+  "steps": [
+    {
+      "step": "owned-db",
+      "exit_code": 0
+    },
+    {
+      "step": "governance",
+      "exit_code": 0
+    },
+    {
+      "step": "android-compile",
+      "exit_code": 0
+    },
+    {
+      "step": "ios-compile",
+      "exit_code": 0
+    },
+    {
+      "step": "artifact-readback",
+      "exit_code": 0
+    },
+    {
+      "step": "invitation-browser",
+      "exit_code": 0
+    }
+  ],
+  "private_root": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4",
+  "prior_scoped_passes": "merchant-recovery-v9-reused-scopes.json",
+  "active_step": null,
+  "child_pid": 58716,
+  "source_unchanged": true,
+  "finished_at": "2026-11-06T08:35:55.240713+00:00"
+}

@@ -1,0 +1,31 @@
+{
+  "run_id": "b939730eba17",
+  "scope": "Actual normal Accounts/Merchant/ownedGateway/database diagnostic;no device/provider/full journey acceptance",
+  "expected_src": "http://127.0.0.1:65353/__owned__/product.png",
+  "actual": {
+    "src": "http://127.0.0.1:65353/__owned__/product.png",
+    "currentSrc": "http://127.0.0.1:65353/__owned__/product.png",
+    "complete": true,
+    "width": 4,
+    "height": 4,
+    "error": null
+  },
+  "events": [
+    {
+      "kind": "image-response",
+      "status": 200,
+      "type": "image/png"
+    }
+  ],
+  "image_reads": 2,
+  "direct_bytes_equal": true,
+  "img_src_csp": " img-src 'self' data: blob: https: http://localhost:65350 http://localhost:65351 http://127.0.0.1:65353",
+  "provider_counts": {
+    "issued": 1,
+    "verified": 1,
+    "refused": 0,
+    "browserExternalRefused": 0,
+    "nativeSdkServed": 0,
+    "nativeIssued": 0
+  }
+}

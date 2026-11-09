@@ -1,592 +1,535 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
+import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import 'package:provider/provider.dart';
 import '../../app/store_context.dart';
-
 import '../../app/routes.dart';
 import '../../services/coupon_service.dart';
-import '../../theme/app_theme_colors.dart';
-import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' as mobile_tokens;
+import '../../services/api_client.dart' show ApiException;
+import '../../widgets/shared/merchant_store_view.dart';
+import '../../widgets/shared/warehouse_list_scaffold.dart';
+import 'coupon_validation_sheet.dart';
 
 class CouponsScreen extends StatefulWidget {
   const CouponsScreen({super.key});
-
   @override
   State<CouponsScreen> createState() => _CouponsScreenState();
 }
 
 class _CouponsScreenState extends State<CouponsScreen> {
   List<CouponContract> _coupons = [];
-  bool _isLoading = true;
-  bool _activeOnly = false;
-  String? _storeId;
-  String? _error;
-
-  late AppThemeColors colors;
+  bool _isLoading = true,
+      _activeOnly = false,
+      _busy = false,
+      _confirming = false;
+  bool _denied = false, _reviewRequired = false;
+  String? _storeId, _error, _notice;
+  Object? _viewKey, _loadedQuery;
+  int _readGeneration = 0, _page = 1;
+  int? _total;
+  bool? _more;
+  Object get _query => (_viewKey, _storeId, _activeOnly, _page);
+  MerchantStoreView? get _view =>
+      _storeId == null ? null : (key: _viewKey, storeId: _storeId!);
+  bool _matches(MerchantStoreView? view, int generation) =>
+      mounted &&
+      merchantStoreViewCurrent(context, view) &&
+      generation == _readGeneration;
+  bool _current(MerchantStoreView? view, int generation) =>
+      _matches(view, generation) && isLetbuyySurfaceCurrent(context);
+  bool get _commandsAllowed =>
+      !_isLoading &&
+      !_busy &&
+      !_confirming &&
+      !_denied &&
+      !_reviewRequired &&
+      _loadedQuery == _query &&
+      _error == null;
 
   @override
   void initState() {
     super.initState();
+    _viewKey = context.read<StoreContext>().requestContextKey;
     _loadCoupons();
   }
 
-  Future<void> _loadCoupons() async {
+  Future<void> _loadCoupons({bool retain = false}) async {
+    if (!mounted) return;
+    final keep =
+        retain &&
+        _loadedQuery == _query &&
+        merchantStoreViewCurrent(context, _view);
+    final generation = ++_readGeneration;
+    final stores = context.read<StoreContext>();
     setState(() {
       _isLoading = true;
       _error = null;
+      if (!keep) {
+        _coupons = [];
+        _loadedQuery = null;
+        _total = null;
+        _more = null;
+      }
     });
-
     try {
-      _storeId ??=
-          (await context.read<StoreContext>().ensureSelectedStore())?.id;
-      if (_storeId == null) {
-        if (mounted) {
-          setState(() {
-            _coupons = [];
-            _isLoading = false;
-          });
-        }
+      await stores.ensureSelectedStore();
+      if (!mounted ||
+          generation != _readGeneration ||
+          _viewKey != stores.requestContextKey)
+        return;
+      _viewKey = stores.requestContextKey;
+      _storeId = stores.selectedStoreId;
+      final view = _view;
+      if (view == null) {
+        setState(() {
+          _error = 'Select a store to continue.';
+          _isLoading = false;
+        });
         return;
       }
-
-      final coupons = await context.read<CouponService>().fetchCoupons(
-        _storeId!,
+      final query = _query;
+      final result = await context.read<CouponService>().readCouponsPage(
+        view.storeId,
         active: _activeOnly ? true : null,
+        page: _page,
       );
-      if (mounted) {
-        setState(() {
-          _coupons = coupons;
-          _isLoading = false;
-        });
-      }
+      if (!_matches(view, generation)) return;
+      setState(() {
+        _coupons = result.rows;
+        _total = result.total;
+        _more = result.hasNext;
+        _loadedQuery = query;
+        _isLoading = false;
+        _denied = false;
+        // This refresh is a readback, not a durable recovery protocol.
+        _reviewRequired = false;
+      });
     } catch (error) {
-      if (mounted) {
-        setState(() {
-          _error = error.toString();
-          _isLoading = false;
-        });
-      }
+      if (!mounted ||
+          generation != _readGeneration ||
+          _viewKey != stores.requestContextKey)
+        return;
+      setState(() {
+        _denied =
+            error is ApiException && [401, 403].contains(error.statusCode);
+        if (!keep || _denied) {
+          _coupons = [];
+          _loadedQuery = null;
+          _total = null;
+          _more = null;
+        }
+        _error = _denied
+            ? 'Current account or store access could not be confirmed.'
+            : 'Coupons could not be read. Check your connection and current store access.';
+        _isLoading = false;
+      });
     }
   }
-
-  int get _activeCount => _coupons.where((coupon) => coupon.isActive).length;
 
   @override
   Widget build(BuildContext context) {
-    colors = AppThemeColors.of(context);
-
-    return Scaffold(
-      backgroundColor: colors.bgStart,
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _storeId == null ? null : () => _openForm(),
-        backgroundColor: mobile_tokens.LetbuyyColorTokens.brandPrimary,
-        foregroundColor: Colors.white,
-        icon: const Icon(Icons.add_rounded),
-        label: const Text('Coupon'),
-      ),
-      body: Container(
-        decoration: colors.backgroundGradient,
-        child: SafeArea(
-          child: Column(
-            children: [
-              _header(),
-              _toolbar(),
-              _stats(),
-              Expanded(child: _isLoading ? _loading() : _body()),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _header() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Coupons',
-                  style: TextStyle(
-                    color: colors.textPrimary,
-                    fontSize: 22,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                Text(
-                  'Discount codes and redemption limits',
-                  style: TextStyle(color: colors.textSecondary, fontSize: 12),
-                ),
-              ],
-            ),
-          ),
-          IconButton(
-            tooltip: 'Refresh coupons',
-            icon: Icon(Icons.refresh_rounded, color: colors.textSecondary),
-            onPressed: _loadCoupons,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _toolbar() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-      child: Row(
-        children: [
-          FilterChip(
-            selected: _activeOnly,
-            label: const Text('Active only'),
-            avatar: const Icon(Icons.check_circle_outline, size: 18),
-            selectedColor: colors.success.withValues(alpha: 0.16),
-            checkmarkColor: colors.success,
-            onSelected: (selected) {
-              setState(() => _activeOnly = selected);
-              _loadCoupons();
+    final stores = context.watch<StoreContext>();
+    if (_viewKey != stores.requestContextKey) {
+      _viewKey = stores.requestContextKey;
+      ++_readGeneration;
+      _storeId = null;
+      _coupons = [];
+      _loadedQuery = null;
+      _total = null;
+      _more = null;
+      _page = 1;
+      _activeOnly = false;
+      _busy = false;
+      _confirming = false;
+      _denied = false;
+      _reviewRequired = false;
+      _notice = null;
+      _error = null;
+      _isLoading = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _loadCoupons();
+      });
+    }
+    final view = _view,
+        generation = _readGeneration,
+        readKey = stores.requestContextKey;
+    bool current() => _current(view, generation);
+    bool currentRead() =>
+        mounted &&
+        generation == _readGeneration &&
+        context.read<StoreContext>().requestContextKey == readKey &&
+        isLetbuyySurfaceCurrent(context);
+    final loaded = _loadedQuery == _query;
+    return WarehouseListScaffold(
+      title: 'Coupons',
+      description: 'Discount codes and redemption limits',
+      refreshLabel: 'Refresh coupons',
+      scrollIdentity: _query,
+      loading: _isLoading || _busy,
+      onRefresh: _isLoading || _busy || _confirming
+          ? null
+          : () async {
+              if (currentRead() && !_isLoading && !_busy && !_confirming)
+                await _loadCoupons(retain: true);
             },
-          ),
-          const Spacer(),
-          TextButton.icon(
-            onPressed: _storeId == null ? null : _validateCoupon,
-            icon: const Icon(Icons.verified_outlined, size: 18),
-            label: const Text('Validate'),
-          ),
-        ],
+      action: FilledButton.icon(
+        onPressed: !_commandsAllowed
+            ? null
+            : () {
+                if (current() && _commandsAllowed) _openForm();
+              },
+        icon: const Icon(Icons.add),
+        label: const Text('New coupon'),
       ),
-    );
-  }
-
-  Widget _stats() {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-      child: Row(
-        children: [
-          Expanded(
-            child: _metric(
-              'Coupons',
-              _coupons.length.toString(),
-              Icons.local_offer_outlined,
+      header: [
+        Wrap(
+          spacing: 12,
+          runSpacing: 8,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            FilterChip(
+              selected: _activeOnly,
+              label: const Text('Active only'),
+              onSelected: _isLoading || _busy || _confirming || view == null
+                  ? null
+                  : (selected) {
+                      if (!current() || _isLoading || _busy || _confirming)
+                        return;
+                      setState(() {
+                        _activeOnly = selected;
+                        _page = 1;
+                      });
+                      _loadCoupons();
+                    },
             ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: _metric(
-              'Active',
-              _activeCount.toString(),
-              Icons.toggle_on_outlined,
+            TextButton.icon(
+              onPressed: !_commandsAllowed
+                  ? null
+                  : () {
+                      if (current() && _commandsAllowed) _validateCoupon();
+                    },
+              icon: const Icon(Icons.verified_outlined),
+              label: const Text('Validate'),
             ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: _metric(
-              'Used',
-              _coupons
-                  .fold<int>(
-                    0,
-                    (sum, coupon) => sum + _intValue(coupon['used_count']),
-                  )
-                  .toString(),
-              Icons.redeem_outlined,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _metric(String label, String value, IconData icon) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: colors.card,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: colors.cardBorder),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(
-            icon,
-            color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
-            size: 18,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            value,
-            style: TextStyle(
-              color: colors.textPrimary,
-              fontWeight: FontWeight.w800,
-              fontSize: 16,
-            ),
-          ),
-          Text(
-            label,
-            style: TextStyle(color: colors.textSecondary, fontSize: 11),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _loading() {
-    return Center(
-      child: CircularProgressIndicator(
-        color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
-      ),
-    );
-  }
-
-  Widget _body() {
-    if (_error != null) {
-      return _centerState(
-        icon: Icons.error_outline_rounded,
-        title: 'Could not load coupons',
-        subtitle: _error!,
-        action: TextButton.icon(
-          onPressed: _loadCoupons,
-          icon: const Icon(Icons.refresh_rounded),
-          label: const Text('Retry'),
+          ],
         ),
-      );
-    }
-
-    if (_coupons.isEmpty) {
-      return _centerState(
-        icon: Icons.local_offer_outlined,
-        title: 'No coupons yet',
-        subtitle: 'Create a discount code for campaigns or customer support.',
-      );
-    }
-
-    return RefreshIndicator(
-      color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
-      onRefresh: _loadCoupons,
-      child: ListView.builder(
-        padding: const EdgeInsets.fromLTRB(16, 4, 16, 96),
-        itemCount: _coupons.length,
-        itemBuilder: (context, index) => _couponCard(_coupons[index]),
-      ),
-    );
-  }
-
-  Widget _couponCard(CouponContract coupon) {
-    final tone = coupon.isActive ? colors.success : colors.warning;
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: colors.card,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: colors.cardBorder),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  coupon.code,
-                  style: TextStyle(
-                    color: colors.textPrimary,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-              ),
-              _chip(coupon.isActive ? 'Active' : 'Inactive', tone),
-              PopupMenuButton<String>(
-                icon: Icon(
-                  Icons.more_horiz_rounded,
-                  color: colors.textTertiary,
-                ),
-                color: colors.card,
-                onSelected: (value) {
-                  if (value == 'edit') _openForm(coupon);
-                  if (value == 'toggle') _toggle(coupon);
-                  if (value == 'delete') _delete(coupon);
-                },
-                itemBuilder: (context) => [
-                  const PopupMenuItem(value: 'edit', child: Text('Edit')),
-                  PopupMenuItem(
-                    value: 'toggle',
-                    child: Text(coupon.isActive ? 'Deactivate' : 'Activate'),
-                  ),
-                  PopupMenuItem(
-                    value: 'delete',
-                    child: Text(
-                      'Delete',
-                      style: TextStyle(color: colors.error),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            _description(coupon),
-            style: TextStyle(color: colors.textSecondary),
-          ),
-          const SizedBox(height: 10),
-          Wrap(
-            spacing: 10,
-            runSpacing: 6,
-            children: [
-              _miniMetric(Icons.percent_rounded, _discountLabel(coupon)),
-              _miniMetric(
-                Icons.shopping_cart_outlined,
-                'Min ${_money(_doubleValue(coupon['minimum_order_amount']))}',
-              ),
-              _miniMetric(
-                Icons.redeem_outlined,
-                '${_intValue(coupon['used_count'])}/${_limitLabel(coupon)} used',
-              ),
-              if (_nonEmpty(coupon['expires_at']) != null)
-                _miniMetric(
-                  Icons.event_outlined,
-                  _shortDate(coupon['expires_at'].toString()),
-                ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _chip(String label, Color color) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          color: color,
-          fontSize: 12,
-          fontWeight: FontWeight.w800,
-        ),
-      ),
-    );
-  }
-
-  Widget _miniMetric(IconData icon, String value) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, size: 14, color: colors.textTertiary),
-        const SizedBox(width: 4),
+        const SizedBox(height: 12),
         Text(
-          value,
-          style: TextStyle(color: colors.textSecondary, fontSize: 12),
+          _activeOnly
+              ? 'Applied filter: active, not expired'
+              : 'Applied filter: all coupons',
+        ),
+        if (loaded) ...[
+          const SizedBox(height: 12),
+          StatGrid(
+            children: [
+              StatTile(
+                icon: Icons.local_offer_outlined,
+                label: 'Matching coupons',
+                value: _total?.toString() ?? 'Unavailable',
+              ),
+              StatTile(
+                icon: Icons.list_alt,
+                label: 'On this page',
+                value: _coupons.length.toString(),
+              ),
+              StatTile(
+                icon: Icons.toggle_on_outlined,
+                label: 'Enabled on this page',
+                value: _coupons
+                    .where((coupon) => coupon.isActive)
+                    .length
+                    .toString(),
+              ),
+              StatTile(
+                icon: Icons.redeem_outlined,
+                label: 'Uses on this page',
+                value: _loadedUses(),
+              ),
+            ],
+          ),
+        ] else
+          Text(_isLoading ? 'Reading coupons…' : 'Coupon counts unavailable.'),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            IconButton(
+              tooltip: 'Previous page',
+              onPressed: _isLoading || _busy || _confirming || _page == 1
+                  ? null
+                  : () {
+                      if (!current() ||
+                          _isLoading ||
+                          _busy ||
+                          _confirming ||
+                          _page == 1)
+                        return;
+                      setState(() => _page--);
+                      _loadCoupons();
+                    },
+              icon: const Icon(Icons.chevron_left),
+            ),
+            Expanded(child: Text('Page $_page', textAlign: TextAlign.center)),
+            IconButton(
+              tooltip: 'Next page',
+              onPressed: _isLoading || _busy || _confirming || _more != true
+                  ? null
+                  : () {
+                      if (!current() ||
+                          _isLoading ||
+                          _busy ||
+                          _confirming ||
+                          _more != true)
+                        return;
+                      setState(() => _page++);
+                      _loadCoupons();
+                    },
+              icon: const Icon(Icons.chevron_right),
+            ),
+          ],
+        ),
+        if (loaded && _more == null)
+          const Text('Further-page availability was not supplied.'),
+        if (_error != null)
+          LetbuyyInlineFeedback(
+            title: loaded
+                ? 'Showing the last confirmed page. Refresh did not complete.'
+                : 'Coupons unavailable',
+            message: _error!,
+            kind: LetbuyyFeedbackKind.error,
+          ),
+        if (_notice != null)
+          LetbuyyInlineFeedback(
+            title: _reviewRequired ? 'Change unconfirmed' : 'Coupon update',
+            message: _notice!,
+          ),
+      ],
+      slivers: [
+        if (loaded && _coupons.isEmpty)
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(
+                _activeOnly
+                    ? 'No coupons match the applied filter.'
+                    : 'No coupons yet. Create a discount code to get started.',
+              ),
+            ),
+          ),
+        SliverPadding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+          sliver: SliverList.builder(
+            itemCount: _coupons.length,
+            itemBuilder: (context, index) =>
+                _couponCard(_coupons[index], view, generation),
+          ),
         ),
       ],
     );
   }
 
-  Widget _centerState({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    Widget? action,
-  }) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 48, color: colors.textTertiary),
-            const SizedBox(height: 12),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: colors.textPrimary,
-                fontSize: 16,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              subtitle,
-              textAlign: TextAlign.center,
-              style: TextStyle(color: colors.textSecondary),
-            ),
-            if (action != null) ...[const SizedBox(height: 14), action],
-          ],
-        ),
-      ),
-    );
-  }
-
-  Future<void> _openForm([CouponContract? coupon]) async {
-    if (_storeId == null) return;
-    final changed = await Navigator.pushNamed(
-      context,
-      AppRoutes.couponForm,
-      arguments: {'storeId': _storeId, 'coupon': coupon},
-    );
-    if (changed == true) _loadCoupons();
-  }
-
-  Future<void> _toggle(CouponContract coupon) async {
-    try {
-      await context.read<CouponService>().toggleCoupon(coupon);
-      _showSnackBar(
-        coupon.isActive ? 'Coupon deactivated' : 'Coupon activated',
-      );
-      _loadCoupons();
-    } catch (error) {
-      _showSnackBar(error.toString(), isError: true);
-    }
-  }
-
-  Future<void> _delete(CouponContract coupon) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: colors.card,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(
-          'Delete ${coupon.code}?',
-          style: TextStyle(color: colors.textPrimary),
-        ),
-        content: Text(
-          'This coupon will no longer be available.',
-          style: TextStyle(color: colors.textSecondary),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(
-              'Cancel',
-              style: TextStyle(color: colors.textSecondary),
+  Widget _couponCard(
+    CouponContract coupon,
+    MerchantStoreView? view,
+    int generation,
+  ) => Card(
+    margin: const EdgeInsets.only(bottom: 12),
+    child: Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SelectableText(
+            coupon.code,
+            key: PageStorageKey((coupon.id, 'coupon-code')),
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          const SizedBox(height: 12),
+          Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: LetbuyyStatusBadge(
+              label: coupon.isActive ? 'Enabled' : 'Inactive',
+              tone: coupon.isActive
+                  ? LetbuyyStatusTone.success
+                  : LetbuyyStatusTone.warning,
             ),
           ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text('Delete', style: TextStyle(color: colors.error)),
+          const SizedBox(height: 12),
+          Text(_description(coupon)),
+          Text('Discount: ${_discountLabel(coupon)}'),
+          Text(
+            coupon['minimum_order_amount'] == null
+                ? 'Minimum order amount: not supplied'
+                : 'Min ${_money(_doubleValue(coupon['minimum_order_amount']))}',
+          ),
+          Text(
+            '${_observedUsage(coupon)?.toString() ?? 'Unavailable'}/${_limitLabel(coupon)} used',
+          ),
+          if (_nonEmpty(coupon['starts_at']) != null)
+            Text('Starts at: ${coupon['starts_at']}'),
+          if (_nonEmpty(coupon['expires_at']) != null)
+            Text('Expires at: ${coupon['expires_at']}'),
+          OverflowBar(
+            spacing: 12,
+            overflowSpacing: 8,
+            alignment: MainAxisAlignment.start,
+            children: [
+              TextButton(
+                onPressed: !_commandsAllowed
+                    ? null
+                    : () {
+                        if (_current(view, generation) && _commandsAllowed)
+                          _openForm(coupon);
+                      },
+                child: const Text('Edit'),
+              ),
+              TextButton(
+                onPressed: !_commandsAllowed
+                    ? null
+                    : () {
+                        if (_current(view, generation) && _commandsAllowed)
+                          _toggle(coupon);
+                      },
+                child: Text(coupon.isActive ? 'Deactivate' : 'Activate'),
+              ),
+              TextButton(
+                onPressed: !_commandsAllowed
+                    ? null
+                    : () {
+                        if (_current(view, generation) && _commandsAllowed)
+                          _delete(coupon);
+                      },
+                child: const Text('Remove'),
+              ),
+            ],
           ),
         ],
       ),
+    ),
+  );
+
+  Future<void> _openForm([CouponContract? coupon]) async {
+    final view = _view, generation = _readGeneration;
+    if (!_current(view, generation) || !_commandsAllowed) return;
+    await Navigator.pushNamed(
+      context,
+      AppRoutes.couponForm,
+      arguments: {'storeId': view!.storeId, 'coupon': coupon},
     );
+    if (_current(view, generation)) await _loadCoupons(retain: true);
+  }
 
-    if (confirmed != true) return;
+  Future<void> _toggle(CouponContract coupon) async {
+    final service = context.read<CouponService>();
+    await _mutate(() async {
+      await service.toggleCoupon(coupon);
+    }, coupon.isActive ? 'Coupon deactivated' : 'Coupon activated');
+  }
 
+  Future<void> _delete(CouponContract coupon) async {
+    final view = _view, generation = _readGeneration;
+    if (!_current(view, generation) || !_commandsAllowed) return;
+    setState(() => _confirming = true);
+    final confirmed = await showLetbuyyConfirmation(
+      context: context,
+      title: 'Remove ${coupon.code}?',
+      message:
+          'This removes the coupon from use by deactivating it. Its saved record is retained.',
+      confirmLabel: 'Remove from use',
+      guard: (_, confirmation) => guardMerchantStoreView(
+        _matches(view, generation) ? view : null,
+        confirmation,
+      ),
+    );
+    if (!_matches(view, generation)) return;
+    setState(() => _confirming = false);
+    if (!confirmed || !_current(view, generation) || !_commandsAllowed) return;
+    final service = context.read<CouponService>();
+    await _mutate(
+      () => service.deleteCoupon(coupon.id),
+      'Coupon removed from use',
+    );
+  }
+
+  Future<void> _mutate(Future<void> Function() command, String success) async {
+    final view = _view, generation = _readGeneration;
+    if (!_current(view, generation) || !_commandsAllowed) return;
+    setState(() {
+      _busy = true;
+      _notice = null;
+    });
     try {
-      await context.read<CouponService>().deleteCoupon(coupon.id);
-      _showSnackBar('Coupon deleted');
-      _loadCoupons();
+      await command();
+      if (!_matches(view, generation)) return;
+      setState(() {
+        _busy = false;
+        _notice = success;
+      });
+      if (_current(view, generation)) await _loadCoupons(retain: true);
     } catch (error) {
-      _showSnackBar(error.toString(), isError: true);
+      if (!_matches(view, generation)) return;
+      setState(() {
+        _busy = false;
+        _reviewRequired = true;
+        _notice =
+            'The change outcome is unconfirmed. No request will be retried automatically. Refresh and review the saved coupon state before starting another change.';
+        if (error is ApiException && [401, 403].contains(error.statusCode)) {
+          _denied = true;
+          _coupons = [];
+          _loadedQuery = null;
+          _total = null;
+          _more = null;
+          _error = 'Current account or store access could not be confirmed.';
+        }
+      });
     }
   }
 
   Future<void> _validateCoupon() async {
-    final codeController = TextEditingController();
-    final subtotalController = TextEditingController();
-    final result = await showDialog<Map<String, String>>(
+    final view = _view, generation = _readGeneration;
+    if (!_current(view, generation) || !_commandsAllowed) return;
+    await showLetbuyyFormSheet<void>(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: colors.card,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(
-          'Validate coupon',
-          style: TextStyle(color: colors.textPrimary),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: codeController,
-              textCapitalization: TextCapitalization.characters,
-              style: TextStyle(color: colors.textPrimary),
-              decoration: InputDecoration(
-                labelText: 'Code',
-                labelStyle: TextStyle(color: colors.textSecondary),
-              ),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: subtotalController,
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
-              ),
-              style: TextStyle(color: colors.textPrimary),
-              decoration: InputDecoration(
-                labelText: 'Cart subtotal',
-                labelStyle: TextStyle(color: colors.textSecondary),
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              'Cancel',
-              style: TextStyle(color: colors.textSecondary),
-            ),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, {
-              'code': codeController.text.trim(),
-              'subtotal': subtotalController.text.trim(),
-            }),
-            child: Text(
-              'Validate',
-              style: TextStyle(
-                color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-
-    if (result == null || _storeId == null || result['code']!.isEmpty) return;
-
-    try {
-      final response = await context.read<CouponService>().validateCoupon(
-        storeId: _storeId!,
-        code: result['code']!,
-        subtotal: double.tryParse(result['subtotal'] ?? ''),
-      );
-      _showSnackBar(response['message']?.toString() ?? 'Coupon is valid');
-    } catch (error) {
-      _showSnackBar(error.toString(), isError: true);
-    }
-  }
-
-  void _showSnackBar(String message, {bool isError = false}) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: isError ? colors.error : colors.success,
-        behavior: SnackBarBehavior.floating,
-        margin: const EdgeInsets.all(16),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      builder: (_) => CouponValidationSheet(
+        view: view!,
+        ownerCurrent: () => _matches(view, generation) && !_denied,
+        onDenied: () {
+          if (!_matches(view, generation)) return;
+          setState(() {
+            _denied = true;
+            _coupons = [];
+            _loadedQuery = null;
+            _total = null;
+            _more = null;
+            _error = 'Current account or store access could not be confirmed.';
+          });
+        },
       ),
     );
   }
 
-  String _description(CouponContract coupon) {
-    return _nonEmpty(coupon['description']) ??
-        '${_discountLabel(coupon)} discount';
+  int? _observedUsage(CouponContract coupon) {
+    final raw = coupon.toJson().containsKey('usage_count')
+        ? coupon['usage_count']
+        : coupon['used_count'];
+    if (raw is int && raw >= 0) return raw;
+    if (raw is num && raw.isFinite && raw >= 0 && raw == raw.toInt())
+      return raw.toInt();
+    return null;
   }
 
+  String _loadedUses() {
+    final uses = _coupons.map(_observedUsage).toList(growable: false);
+    return uses.any((value) => value == null)
+        ? 'Unavailable'
+        : uses.fold<int>(0, (sum, value) => sum + value!).toString();
+  }
+
+  String _description(CouponContract coupon) =>
+      _nonEmpty(coupon['description']) ?? '${_discountLabel(coupon)} discount';
   String _discountLabel(CouponContract coupon) {
-    if (coupon.type == 'percentage')
-      return '${coupon.value.toStringAsFixed(0)}%';
+    if (coupon.type == 'percentage') return '${coupon.value}%';
     if (coupon.type == 'free_shipping') return 'Free shipping';
     return _money(coupon.value);
   }
@@ -598,11 +541,6 @@ class _CouponsScreenState extends State<CouponsScreen> {
 
   String _money(double amount) {
     return 'INR ${NumberFormat.decimalPattern('en_IN').format(amount)}';
-  }
-
-  String _shortDate(String raw) {
-    final date = DateTime.tryParse(raw);
-    return date == null ? raw : DateFormat('MMM d').format(date.toLocal());
   }
 
   int _intValue(Object? value) {

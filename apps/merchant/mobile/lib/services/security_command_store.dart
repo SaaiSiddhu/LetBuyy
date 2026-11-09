@@ -20,7 +20,7 @@ class PendingSecurityCommand {
     this.command,
     this.key,
     JsonMap intent,
-  ) : intent = Map.unmodifiable(SecurityCommandStore.captureIntent(intent));
+  ) : intent = SecurityCommandStore.freezeIntent(intent);
   final String actor, store, command, key;
   final JsonMap intent;
   String get encoded => jsonEncode({
@@ -39,10 +39,103 @@ class SecurityCommandStore {
     FlutterSecureStorage storage = const FlutterSecureStorage(),
     String environment = AppConfig.environment,
   }) : _storage = storage,
-       _namespace = environment == 'staging' ? 'staging:' : '';
+       _namespace = AppConfig.persistenceNamespace(
+         environmentName: environment,
+       );
   final FlutterSecureStorage _storage;
   final String _namespace;
   static Future<void>? _tail;
+  String _exclusiveName(String command) {
+    if (!RegExp(r'^[a-z][a-z0-9-]{2,60}$').hasMatch(command)) {
+      throw const FormatException('Choose a valid device request.');
+    }
+    return 'letbuyy.security.exclusive.v1:$_namespace$command';
+  }
+
+  /// One OS picker can outlive the current Flutter actor/store. This encrypted
+  /// device slot preserves its original owner; reading it grants no authority.
+  /// Call mutations inside [serialized], without holding that lock over OS UI.
+  Future<PendingSecurityCommand?> readExclusive(String command) async {
+    final raw = await _storage.read(key: _exclusiveName(command));
+    if (raw == null) return null;
+    final data = jsonDecode(raw);
+    if (data is! Map ||
+        data['actor'] is! String ||
+        (data['actor'] as String).isEmpty ||
+        data['store'] is! String ||
+        (data['store'] as String).isEmpty) {
+      throw const FormatException('The saved device request needs review.');
+    }
+    return _decode(
+      (
+        actorId: data['actor'] as String,
+        storeId: data['store'] as String,
+        version: null,
+      ),
+      command,
+      raw,
+    );
+  }
+
+  Future<PendingSecurityCommand> prepareExclusive(
+    MerchantSecurityContext c,
+    String command,
+    JsonMap intent, {
+    required void Function() check,
+  }) async {
+    check();
+    if (await readExclusive(command) != null) {
+      throw const ApiException(
+        message: 'Review the previous file selection first.',
+        statusCode: 409,
+        code: 'NATIVE_SELECTION_PENDING',
+      );
+    }
+    check();
+    final value = PendingSecurityCommand(
+      c.actorId,
+      c.storeId,
+      command,
+      const Uuid().v4(),
+      intent,
+    );
+    await _storage.write(key: _exclusiveName(command), value: value.encoded);
+    check();
+    return value;
+  }
+
+  Future<PendingSecurityCommand> replaceExclusive(
+    PendingSecurityCommand previous,
+    JsonMap intent,
+  ) async {
+    final old = await readExclusive(previous.command);
+    if (old?.encoded != previous.encoded) {
+      throw const ApiException(
+        message: 'The saved file selection changed.',
+        statusCode: 409,
+        code: 'NATIVE_SELECTION_CHANGED',
+      );
+    }
+    final next = PendingSecurityCommand(
+      previous.actor,
+      previous.store,
+      previous.command,
+      previous.key,
+      intent,
+    );
+    await _storage.write(
+      key: _exclusiveName(previous.command),
+      value: next.encoded,
+    );
+    return next;
+  }
+
+  Future<void> completeExclusive(PendingSecurityCommand previous) async {
+    final old = await readExclusive(previous.command);
+    if (old?.encoded != previous.encoded) return;
+    await _storage.delete(key: _exclusiveName(previous.command));
+  }
+
   String _name(MerchantSecurityContext c, String command) =>
       'letbuyy.security.command.v1:$_namespace${c.actorId}:${c.storeId}:$command';
   static Object? _ordered(Object? value) => value is Map
@@ -58,6 +151,17 @@ class SecurityCommandStore {
   static JsonMap captureIntent(JsonMap value) {
     _noCredentials(value);
     return asJsonMap(jsonDecode(_intent(value)));
+  }
+
+  static JsonMap freezeIntent(JsonMap value) {
+    Object? freeze(Object? item) => item is Map
+        ? Map<String, dynamic>.unmodifiable(
+            item.map((key, value) => MapEntry(key.toString(), freeze(value))),
+          )
+        : item is List
+        ? List<Object?>.unmodifiable(item.map(freeze))
+        : item;
+    return freeze(captureIntent(value)) as JsonMap;
   }
 
   static void _noCredentials(Object? value) {
@@ -119,6 +223,14 @@ class SecurityCommandStore {
     check();
     final raw = await _storage.read(key: _name(c, command));
     check();
+    return _decode(c, command, raw);
+  }
+
+  PendingSecurityCommand? _decode(
+    MerchantSecurityContext c,
+    String command,
+    String? raw,
+  ) {
     if (raw == null) return null;
     final value = jsonDecode(raw);
     if (value is! Map ||
@@ -138,6 +250,31 @@ class SecurityCommandStore {
       value['key'],
       intent,
     );
+  }
+
+  /// Discover existing recovery records in this exact environment/actor/store.
+  /// Other storage values never become results or diagnostics. Callers still
+  /// reconcile every operation through the server under current authority.
+  Future<List<PendingSecurityCommand>> readPrefix(
+    MerchantSecurityContext c,
+    String prefix, {
+    required void Function() check,
+  }) async {
+    if (!RegExp(r'^[a-z][a-z0-9-]*:$').hasMatch(prefix))
+      throw const FormatException('Choose a valid saved request family.');
+    check();
+    final values = await _storage.readAll();
+    check();
+    final base = _name(c, ''),
+        names =
+            values.keys
+                .where((key) => key.startsWith(_name(c, prefix)))
+                .toList()
+              ..sort();
+    return List<PendingSecurityCommand>.unmodifiable([
+      for (final name in names)
+        _decode(c, name.substring(base.length), values[name])!,
+    ]);
   }
 
   Future<PendingSecurityCommand> prepare(
@@ -186,5 +323,34 @@ class SecurityCommandStore {
     check();
     await _storage.delete(key: _name(c, command.command));
     check();
+  }
+
+  /// Atomically retain progress for the same logical request. Call from the
+  /// existing serialized boundary; never delete the old intent before writing.
+  Future<PendingSecurityCommand> replaceIntent(
+    MerchantSecurityContext c,
+    PendingSecurityCommand previous,
+    JsonMap intent, {
+    required void Function() check,
+  }) async {
+    final old = await read(c, previous.command, check: check);
+    if (old?.encoded != previous.encoded) {
+      throw const ApiException(
+        message: 'The saved request changed. Reload before continuing.',
+        statusCode: 409,
+        code: 'PENDING_SECURITY_COMMAND_CHANGED',
+      );
+    }
+    final next = PendingSecurityCommand(
+      c.actorId,
+      c.storeId,
+      previous.command,
+      previous.key,
+      intent,
+    );
+    check();
+    await _storage.write(key: _name(c, previous.command), value: next.encoded);
+    check();
+    return next;
   }
 }

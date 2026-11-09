@@ -7,6 +7,17 @@ class AppConfig {
   static String get csrfCookieName =>
       environment == 'staging' ? 'letbuyy_csrf_staging' : 'letbuyy_csrf';
 
+  /// Local issuers must never adopt hosted credentials, pending commands or
+  /// private caches, even when a task build shares the native application ID.
+  static String persistenceNamespace({
+    String environmentName = environment,
+    String identityUrl = identityBaseUrl,
+  }) => switch (environmentName) {
+    'production' => '',
+    'staging' => 'staging:',
+    _ => '$environmentName:${Uri.encodeComponent(identityUrl)}:',
+  };
+
   /// Checked before restoring a session or constructing authenticated clients.
   /// A staging label must never turn production defaults into a test backend.
   static String? endpointConfigurationError({
@@ -15,11 +26,46 @@ class AppConfig {
     String apiUrl = apiBaseUrl,
     String identityUrl = identityBaseUrl,
     String adminUrl = adminBaseUrl,
+    String storefrontUrl = storefrontBaseUrl,
+    String challengeSdkUrl = localChallengeSdkUrl,
   }) {
     if (environmentName == 'local' || environmentName == 'development') {
+      bool local(String value, String path) {
+        final uri = Uri.tryParse(value);
+        return uri != null &&
+            const {'http', 'https'}.contains(uri.scheme) &&
+            (const {
+                  'localhost',
+                  '127.0.0.1',
+                  '::1',
+                  '10.0.2.2',
+                }.contains(uri.host) ||
+                uri.host.endsWith('.localhost')) &&
+            uri.hasPort &&
+            uri.port >= 1024 &&
+            uri.port <= 65535 &&
+            uri.userInfo.isEmpty &&
+            !uri.hasQuery &&
+            !uri.hasFragment &&
+            (uri.path == path || uri.path == '$path/');
+      }
+
+      if (!local(challengeSdkUrl, '/fixtures/turnstile/api.js') ||
+          !local(bffUrl, '/v1') ||
+          !local(apiUrl, '/v1') ||
+          bffUrl.replaceFirst(RegExp(r'/$'), '') !=
+              apiUrl.replaceFirst(RegExp(r'/$'), '') ||
+          !local(identityUrl, '') ||
+          !local(adminUrl, '') ||
+          !local(storefrontUrl, '')) {
+        return 'Local testing requires explicit local endpoints for every service. Install a corrected build.';
+      }
       return null;
     }
     final production = environmentName == 'production';
+    if (challengeSdkUrl.isNotEmpty) {
+      return 'A local verification fixture cannot be used in a hosted environment.';
+    }
     if (!production && environmentName != 'staging') {
       return 'The app environment is not supported.';
     }
@@ -79,7 +125,9 @@ class AppConfig {
   /// Exact first-party Accounts estate; kept separate from diagnostic labels.
   static const String accountsEnvironment = String.fromEnvironment(
     'ACCOUNTS_ENVIRONMENT',
-    defaultValue: environment == 'local' || environment == 'development' ? 'development' : environment,
+    defaultValue: environment == 'local' || environment == 'development'
+        ? 'development'
+        : environment,
   );
 
   /// Public Merchant origin used to validate pasted invitation destinations.
@@ -119,6 +167,18 @@ class AppConfig {
     'TURNSTILE_SITE_KEY',
     defaultValue: 'SKIP_NEEDS_HUMAN_MOBILE_TURNSTILE_SITE_KEY',
   );
+
+  /// Explicit provider simulation for owned local native acceptance. This only
+  /// selects the SDK; Identity must still verify every proof on the server.
+  /// Hosted builds refuse this define before reading private persistent state.
+  static const String localChallengeSdkUrl = String.fromEnvironment(
+    'LOCAL_CHALLENGE_SDK_URL',
+  );
+  static String get challengeScriptUrl =>
+      const {'local', 'development'}.contains(environment) &&
+          localChallengeSdkUrl.isNotEmpty
+      ? localChallengeSdkUrl
+      : 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
 
   /// Optional local/dev harness token for exercising mobile device registration.
   ///

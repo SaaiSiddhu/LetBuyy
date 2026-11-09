@@ -139,28 +139,49 @@ test('coupons are isolated by owned store for CRUD and validation', () => {
     assert.match(routeSource, /pricing_authority:\s*plan\.pricingAuthority/);
 });
 
-test('categories are isolated by owned store for tree reads and mutations', () => {
+test('categories use the selected owner scope and guarded tenant SQL for reads and mutations', () => {
     const routeSource = source('routes/categories.ts');
-
-    assert.match(routeSource, /\.in\('store_id',\s*ownedStoreIds\)/);
-    assert.match(routeSource, /verifySiteOwnership\(db,\s*storeId,\s*customUser\.id,\s*auth\.user\.storeId\)/);
-    assert.match(routeSource, /verifySiteOwnership\(db,\s*body\.store_id,\s*customUser\.id,\s*auth\.user\.storeId\)/);
-    assert.match(routeSource, /\.from\('product_categories'\)\s*[\s\S]*\.eq\('id',\s*categoryId\)/);
-    assert.match(routeSource, /verifySiteOwnership\(db,\s*data\.store_id,\s*customUser\.id,\s*auth\.user\.storeId\)/);
-    assert.match(routeSource, /\.select\('id, store_id'\)\s*[\s\S]*\.eq\('id',\s*categoryId\)/);
-    assert.match(routeSource, /verifySiteOwnership\(db,\s*ownedCategory\.store_id,\s*customUser\.id,\s*auth\.user\.storeId\)/);
+    const adapter=source('execution/product-category.adapter.ts');
+    const sql=repositorySource('database/supabase/migrations/433_product_category_commands.sql');
+    // Structural companion to the owner-positive, real role/GUC denials in
+    // merchant-category-commands.postgres.test.ts. No cross-store existence
+    // lookup or service-role category table path remains in the route.
+    assert.match(routeSource,/resolveOwnedStoreScope\(c,input\.store_id\)/);
+    assert.match(routeSource,/resolveOwnedStoreScope\(c,site\.data\)/);
+    assert.doesNotMatch(routeSource,/getSupabaseAdmin|\.from\('product_categories'\)/);
+    assert.match(adapter,/withTenantTx\(env,scope\.tenant/);
+    assert.match(adapter,/await bindOwnedTenantActor\(sql,scope\)/);
+    for(const operation of ['read_product_category_v1','read_product_category_page_v1','apply_product_category_command_v1'])assert(adapter.includes('public.'+operation));
+    assert.match(adapter,/\[scope\.siteId,scope\.customUser\.id/);
+    for(const fragment of ["current_setting('role',true) IS DISTINCT FROM 'app_tenant'","current_setting('app.site_id',true)","current_setting('app.actor_id',true)","current_setting('request.jwt.claim.sub',true)",
+        'WHERE id=p_category AND store_id=p_site AND deleted_at IS NULL','REVOKE ALL ON public.product_categories,public.product_category_command_receipts',
+        'ALTER TABLE public.product_categories FORCE ROW LEVEL SECURITY','ALTER TABLE public.product_category_command_receipts FORCE ROW LEVEL SECURITY'])assert(sql.includes(fragment),fragment);
 });
 
 test('media metadata reads, updates, and deletes require owned store access', () => {
     const routeSource = source('routes/media.ts');
-
+    const command = source('execution/media-command.adapter.ts');
+    const resolver = source('lib/tenant-context.ts');
     assert.match(routeSource, /if \(!storeId\)/);
     assert.match(routeSource, /verifySiteOwnership\(db,\s*storeId,\s*customUser\.id,\s*auth\.user\.storeId\)/);
     assert.match(routeSource, /\.from\('media'\)\s*[\s\S]*\.eq\('store_id',\s*storeId\)/);
-    assert.match(routeSource, /verifySiteOwnership\(db,\s*body\.store_id,\s*customUser\.id,\s*auth\.user\.storeId\)/);
-    assert.match(routeSource, /\.from\('media'\)\s*[\s\S]*\.select\('store_id'\)\s*[\s\S]*\.eq\('id',\s*mediaId\)/);
-    assert.match(routeSource, /\.from\('media'\)\s*[\s\S]*\.select\('store_id, url'\)\s*[\s\S]*\.eq\('id',\s*mediaId\)/);
-    assert.match(routeSource, /verifySiteOwnership\(db,\s*ownedMedia\.store_id,\s*customUser\.id,\s*auth\.user\.storeId\)/);
+    assert.equal([...routeSource.matchAll(/await resolveOwnedStoreScope\(c, (?:body\.store_id|claim\.siteId)\)/g)].length, 3);
+    assert.equal([...routeSource.matchAll(/await commitMediaCommand\(c\.env, scope,/g)].length, 3);
+    assert.match(resolver, /const ownsStore = await verifySiteOwnership\(db, siteId, customUser\.id, authUser\.storeId\)/);
+    assert.match(resolver, /if \(!ownsStore\)\s*\{\s*throw new ForbiddenError/);
+    assert.match(command, /await withTenantTx\(env, scope\.tenant/);
+    assert.match(command, /await bindOwnedTenantActor\(tx, scope\)/);
+    assert.match(command, /FROM public\.sites WHERE id=\$1::uuid AND deleted_at IS NULL\s*AND\(custom_user_id=\$2::uuid OR user_id=\$2::uuid\) FOR SHARE/);
+    assert.match(command, /if \(owners\.length !== 1\) throw new ForbiddenError/);
+    assert(command.indexOf('if (owners.length !== 1)') < command.indexOf("receipt.status === 'completed'"));
+    assert.match(command, /WHERE id=\$1::uuid AND site_id=\$2::uuid AND request_hash=\$3 AND scope=\$4 AND deleted_at IS NULL FOR UPDATE/);
+    assert.match(command, /saved\.media_progress\.actor_id !== scope\.customUser\.id/);
+    assert.match(command, /SELECT id FROM public\.media WHERE id=\$1::uuid AND store_id=\$2::uuid\s*AND deleted_at IS NULL FOR UPDATE/);
+    assert.match(command, /DELETE FROM public\.media WHERE id=\$1::uuid AND store_id=\$2::uuid/);
+    assert.match(command, /WHERE id=\$1::uuid AND store_id=\$2::uuid RETURNING to_jsonb\(media\)/);
+    assert.doesNotMatch(command, /SET LOCAL ROLE service_role|getSupabaseAdminUnguarded/);
+    // Behavioral fault, concurrency, live revocation and populated RLS controls
+    // run in tests/owned-db/merchant-media-commands-workerd.postgres.test.ts; source checks are structural.
 });
 
 test('pages, policies, and navigation require owned store checks before content changes', () => {

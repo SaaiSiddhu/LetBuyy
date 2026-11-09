@@ -2,6 +2,45 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { createContentSecurityPolicy } from '../../config/security/next-security-headers';
 
+test('local verification CSP is explicit, loopback-only and absent from hosted policies', () => {
+  const keys = ['NEXT_PUBLIC_ENV', 'NEXT_PUBLIC_ACCOUNTS_URL'] as const;
+  const prior = Object.fromEntries(keys.map(key => [key, process.env[key]]));
+  const origin = 'http://127.0.0.1:54359';
+  const sdk = origin + '/fixtures/turnstile/api.js';
+  try {
+    for (const [environment, accounts, script, allowed] of [
+      ['development', 'http://localhost:54351', sdk, true],
+      ['development', 'http://127.0.0.1:54351', sdk, true],
+      ['staging', 'http://localhost:54351', sdk, false],
+      ['production', 'http://localhost:54351', sdk, false],
+      ['development', 'https://accounts.letbuyy.com', sdk, false],
+      ['development', 'http://outside.example:54351', sdk, false],
+      ['development', 'http://localhost:54351/other', sdk, false],
+      ['development', 'http://localhost:54351', sdk + '?other=1', false],
+      ['development', 'http://localhost:54351', origin + '/arbitrary.js', false],
+      ['development', 'http://localhost:54351', 'http://outside.example:54359/fixtures/turnstile/api.js', false],
+    ] as const) {
+      process.env.NEXT_PUBLIC_ENV = environment;
+      process.env.NEXT_PUBLIC_ACCOUNTS_URL = accounts;
+      assert.equal(createContentSecurityPolicy().includes(origin), false);
+      const policy = createContentSecurityPolicy({ localVerificationSdkUrl: script });
+      for (const name of ['script-src', 'connect-src']) {
+        const source = policy.split('; ').find(value => value.startsWith(name + ' ')) || '';
+        assert.equal(source.includes(origin), allowed);
+      }
+      for (const name of ['frame-src', 'form-action', 'img-src']) {
+        assert.equal((policy.split('; ').find(value => value.startsWith(name + ' ')) || '').includes(origin), false);
+      }
+      assert.equal(policy.includes('https://challenges.cloudflare.com'), true);
+    }
+  } finally {
+    for (const key of keys) {
+      if (prior[key] === undefined) delete process.env[key];
+      else process.env[key] = prior[key];
+    }
+  }
+});
+
 const nextConfigModules = [
   ['app-marketplace', '../../apps/frozen/app-store/next.config.ts'],
   ['developer-portal', '../../apps/frozen/developer-portal/next.config.ts'],

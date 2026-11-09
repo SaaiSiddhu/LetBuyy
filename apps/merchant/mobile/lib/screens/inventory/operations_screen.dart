@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import '../../app/store_context.dart';
 import '../../services/api_client.dart' show ApiException;
 import '../../services/inventory_service.dart';
@@ -23,6 +24,7 @@ class _InventoryOperationsScreenState extends State<InventoryOperationsScreen> {
   }
 
   Future<void> _prepare() async {
+    if (!mounted) return;
     setState(() {
       _preparing = true;
       _error = null;
@@ -48,12 +50,16 @@ class _InventoryOperationsScreenState extends State<InventoryOperationsScreen> {
     final service = context.read<InventoryService>();
     return Scaffold(
       backgroundColor: colors.bgStart,
-      appBar: AppBar(title: const Text('Operations dashboard')),
+      appBar: CustomAppBar.responsive(
+        context: context,
+        title: 'Operations dashboard',
+      ),
       body: SafeArea(
         child: _preparing
             ? const Center(child: CircularProgressIndicator())
             : _error != null || view == null
-            ? Center(
+            ? SingleChildScrollView(
+                padding: const EdgeInsets.all(16),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -64,7 +70,12 @@ class _InventoryOperationsScreenState extends State<InventoryOperationsScreen> {
                       ),
                     ),
                     TextButton(
-                      onPressed: _prepare,
+                      onPressed: () {
+                        if (mounted &&
+                            isLetbuyySurfaceCurrent(context) &&
+                            !_preparing)
+                          _prepare();
+                      },
                       child: const Text('Retry store'),
                     ),
                   ],
@@ -239,18 +250,14 @@ class _InventoryOperationsScreenState extends State<InventoryOperationsScreen> {
   }
 }
 
-Widget _value(String label, String value) => ListTile(
-  dense: true,
-  title: Text(label),
-  trailing: SizedBox(
-    width: 110,
-    child: Align(
-      alignment: Alignment.centerRight,
-      child: FittedBox(
-        fit: BoxFit.scaleDown,
-        child: Text(value, style: const TextStyle(fontWeight: FontWeight.w700)),
-      ),
-    ),
+Widget _value(String label, String value) => Padding(
+  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      Text(label),
+      Text(value, style: const TextStyle(fontWeight: FontWeight.w700)),
+    ],
   ),
 );
 String _status(String value) =>
@@ -289,6 +296,9 @@ class _MetricPanelState<T> extends State<_MetricPanel<T>> {
   T? _data;
   bool _loading = true;
   String? _error;
+  bool get _matches =>
+      mounted && merchantStoreViewCurrent(context, widget.view);
+  bool get _canAct => _matches && isLetbuyySurfaceCurrent(context) && !_loading;
   @override
   void initState() {
     super.initState();
@@ -297,28 +307,28 @@ class _MetricPanelState<T> extends State<_MetricPanel<T>> {
     });
   }
 
-  Future<void> _load() async {
+  Future<void> _load({bool retain = false}) async {
+    if (!_matches || !isLetbuyySurfaceCurrent(context) || retain && _loading)
+      return;
     final generation = ++_generation;
     setState(() {
       _loading = true;
-      _data = null;
+      if (!retain) _data = null;
       _error = null;
     });
     try {
       final data = await widget.load(_page);
-      if (!merchantStoreViewCurrent(context, widget.view) ||
-          generation != _generation)
-        return;
+      if (!_matches || generation != _generation) return;
       setState(() {
         _data = data;
         _loading = false;
       });
     } catch (error) {
-      if (!merchantStoreViewCurrent(context, widget.view) ||
-          generation != _generation)
-        return;
+      if (!_matches || generation != _generation) return;
       setState(() {
         _loading = false;
+        if (error is ApiException && [401, 403].contains(error.statusCode))
+          _data = null;
         _error = error is ApiException && error.statusCode == 403
             ? 'You do not have access to these operations metrics.'
             : error is ApiException && error.statusCode == 401
@@ -333,6 +343,7 @@ class _MetricPanelState<T> extends State<_MetricPanel<T>> {
 
   @override
   Widget build(BuildContext context) {
+    final generation = _generation;
     final data = _data,
         meta = data == null ? null : widget.metadata?.call(data),
         label = widget.pageLabel;
@@ -355,31 +366,51 @@ class _MetricPanelState<T> extends State<_MetricPanel<T>> {
                 ),
                 IconButton(
                   tooltip: 'Refresh ${widget.title.toLowerCase()}',
-                  onPressed: _load,
+                  onPressed: _loading
+                      ? null
+                      : () {
+                          if (_canAct && generation == _generation)
+                            _load(retain: true);
+                        },
                   icon: const Icon(Icons.refresh),
                 ),
               ],
             ),
             if (_loading)
-              const Padding(
-                padding: EdgeInsets.all(16),
-                child: Center(child: CircularProgressIndicator()),
-              )
-            else if (_error != null)
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    const LinearProgressIndicator(),
+                    Text(
+                      data == null
+                          ? 'Loading current metrics…'
+                          : 'Refreshing the same page. Previously loaded metrics are shown below.',
+                    ),
+                  ],
+                ),
+              ),
+            if (_error != null)
               Padding(
                 padding: const EdgeInsets.all(12),
                 child: Column(
                   children: [
                     Text(_error!),
+                    if (data != null)
+                      const Text(
+                        'Previously loaded metrics are shown below; refresh is unavailable.',
+                      ),
                     TextButton(
-                      onPressed: _load,
+                      onPressed: () {
+                        if (_canAct && generation == _generation)
+                          _load(retain: true);
+                      },
                       child: Text('Retry ${widget.title.toLowerCase()}'),
                     ),
                   ],
                 ),
-              )
-            else if (data != null)
-              widget.render(data),
+              ),
+            if (data != null) widget.render(data),
             if (meta != null) Text('${meta.total} matching $label'),
             if (label != null && (_page > 1 || meta?.hasNext == true))
               Column(
@@ -392,6 +423,8 @@ class _MetricPanelState<T> extends State<_MetricPanel<T>> {
                         onPressed: _loading || _page <= 1
                             ? null
                             : () {
+                                if (!_canAct || generation != _generation)
+                                  return;
                                 setState(() => _page--);
                                 _load();
                               },
@@ -401,6 +434,8 @@ class _MetricPanelState<T> extends State<_MetricPanel<T>> {
                         onPressed: _loading || meta?.hasNext != true
                             ? null
                             : () {
+                                if (!_canAct || generation != _generation)
+                                  return;
                                 setState(() => _page++);
                                 _load();
                               },

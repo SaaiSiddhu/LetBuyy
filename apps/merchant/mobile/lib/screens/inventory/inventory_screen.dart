@@ -1,3 +1,5 @@
+import '../../widgets/shared/warehouse_list_scaffold.dart';
+import '../../widgets/shared/merchant_option_picker.dart';
 import '../../services/api_client.dart' show ApiException;
 import '../../widgets/shared/merchant_store_view.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +28,9 @@ class _InventoryScreenState extends State<InventoryScreen> {
   String _query = '';
   String? _storeId;
   String? _error;
-  Object? _viewKey;
+  Object? _viewKey, _loadedQuery;
+  Object get _readQuery => (_viewKey, _storeId, _page, _lowStockOnly);
+  bool _checkingPending = false;
   int _readGeneration = 0, _page = 1;
   bool _hasMore = false, _isAdjusting = false;
   bool _hasPendingAdjustment = false, _pendingUnavailable = true;
@@ -39,7 +43,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
   MerchantStoreView? get _view =>
       _storeId == null ? null : (key: _viewKey, storeId: _storeId!);
   bool _matches(MerchantStoreView? view) =>
-      merchantStoreViewCurrent(context, view);
+      mounted && merchantStoreViewCurrent(context, view);
 
   late AppThemeColors colors;
 
@@ -56,15 +60,20 @@ class _InventoryScreenState extends State<InventoryScreen> {
     super.dispose();
   }
 
-  Future<void> _loadInventory() async {
+  Future<void> _loadInventory({bool retain = false}) async {
     if (!mounted) return;
+    final keep = retain && _loadedQuery == _readQuery && _matches(_view);
     final generation = ++_readGeneration;
     setState(() {
       _isLoading = true;
       _error = null;
-      _levels = [];
-      _hasMore = false;
+      if (!keep) {
+        _levels = [];
+        _hasMore = false;
+        _loadedQuery = null;
+      }
       _pendingUnavailable = true;
+      _checkingPending = true;
     });
     final stores = context.read<StoreContext>();
     try {
@@ -80,6 +89,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
         });
         return;
       }
+      final query = _readQuery;
       final service = context.read<InventoryService>();
       final levels = await service.fetchLevels(
         view.storeId,
@@ -87,6 +97,12 @@ class _InventoryScreenState extends State<InventoryScreen> {
         page: _page,
       );
       if (!_matches(view) || generation != _readGeneration) return;
+      setState(() {
+        _levels = levels;
+        _hasMore = service.levelsHasMore;
+        _loadedQuery = query;
+        _isLoading = false;
+      });
       var pending = false, pendingUnavailable = false;
       try {
         pending = await service.pendingAdjustment(view.storeId) != null;
@@ -99,6 +115,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
         _hasMore = service.levelsHasMore;
         _hasPendingAdjustment = pending;
         _pendingUnavailable = pendingUnavailable;
+        _checkingPending = false;
         _isLoading = false;
       });
     } catch (error) {
@@ -113,7 +130,13 @@ class _InventoryScreenState extends State<InventoryScreen> {
       setState(() {
         _viewKey = stores.requestContextKey;
         _storeId = stores.selectedStoreId;
-        _levels = [];
+        if (!keep ||
+            error is ApiException && [401, 403].contains(error.statusCode)) {
+          _levels = [];
+          _hasMore = false;
+          _loadedQuery = null;
+        }
+        _checkingPending = false;
         _error = 'Check your connection and current store access, then retry.';
         _isLoading = false;
       });
@@ -159,6 +182,8 @@ class _InventoryScreenState extends State<InventoryScreen> {
     if (_viewKey != stores.requestContextKey) {
       _viewKey = stores.requestContextKey;
       ++_readGeneration;
+      _loadedQuery = null;
+      _checkingPending = false;
       _storeId = null;
       _levels = [];
       _hasMore = false;
@@ -175,141 +200,149 @@ class _InventoryScreenState extends State<InventoryScreen> {
       });
     }
 
-    return Scaffold(
-      backgroundColor: colors.bgStart,
-      body: Container(
-        decoration: colors.backgroundGradient,
-        child: SafeArea(
-          child: Column(
+    final view = _view, generation = _readGeneration;
+    bool current() =>
+        _matches(view) &&
+        generation == _readGeneration &&
+        mobile_tokens.isLetbuyySurfaceCurrent(context);
+    final readKey = stores.requestContextKey;
+    bool currentRead() =>
+        mounted &&
+        generation == _readGeneration &&
+        context.read<StoreContext>().requestContextKey == readKey &&
+        mobile_tokens.isLetbuyySurfaceCurrent(context);
+    return WarehouseListScaffold(
+      // Local keystrokes keep the active editor mounted. Only the underlying
+      // authorized server page changes this scroll state's identity.
+      scrollIdentity: _readQuery,
+      title: 'Inventory',
+      description:
+          'Adjust stock and monitor low inventory. Search and the shown metrics apply only to this loaded page.',
+      refreshLabel: 'Refresh inventory',
+      loading: _isLoading,
+      onRefresh: _isLoading
+          ? null
+          : () async {
+              if (currentRead() && !_isLoading)
+                await _loadInventory(retain: true);
+            },
+      headerActions: [
+        IconButton(
+          tooltip: 'Scan barcode',
+          icon: const Icon(Icons.qr_code_scanner_rounded),
+          onPressed: _commandsBlocked
+              ? null
+              : () {
+                  if (current()) _scanAndAdjust();
+                },
+        ),
+      ],
+      header: [
+        _searchAndFilter(),
+        _wmsShortcuts(),
+        if (_loadedQuery != null) _stats(),
+        if (_isLoading && _loadedQuery != null)
+          const Text(
+            'Refreshing the same page. Previously loaded quantities are shown below.',
+          ),
+        if (_error != null && _loadedQuery != null)
+          Text(
+            'Refresh unavailable. Previously loaded quantities are shown below. $_error',
+          ),
+        if (!_isLoading && _hasPendingAdjustment)
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _header(),
-              _searchAndFilter(),
-              _wmsShortcuts(),
-              if (!_isLoading && _error == null) _stats(),
-              if (!_isLoading && _hasPendingAdjustment)
-                ListTile(
-                  title: const Text('A stock change needs confirmation'),
-                  subtitle: const Text(
-                    'Retry the original saved change before starting another adjustment.',
-                  ),
-                  trailing: TextButton(
-                    onPressed: _isAdjusting ? null : _retryPendingAdjustment,
-                    child: const Text('Retry original'),
-                  ),
+              const Text('A stock change needs confirmation'),
+              const Text(
+                'Retry the original saved change before starting another adjustment.',
+              ),
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: TextButton(
+                  onPressed: _isAdjusting
+                      ? null
+                      : () {
+                          if (current()) _retryPendingAdjustment();
+                        },
+                  child: const Text('Retry original'),
                 ),
-              if (!_isLoading && _pendingUnavailable && _error == null)
-                const Padding(
-                  padding: EdgeInsets.all(12),
-                  child: Text(
-                    'Saved stock changes could not be checked. Refresh before adjusting inventory.',
-                  ),
-                ),
-              Expanded(child: _isLoading ? _loading() : _body()),
-              if (_page > 1 || _hasMore)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TextButton(
-                      onPressed: _page > 1 && !_isLoading
-                          ? () => _changePage(-1)
-                          : null,
-                      child: const Text('Previous'),
-                    ),
-                    Text('Page $_page'),
-                    TextButton(
-                      onPressed: _hasMore && !_isLoading
-                          ? () => _changePage(1)
-                          : null,
-                      child: const Text('Next'),
-                    ),
-                  ],
-                ),
+              ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _header() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Inventory',
-                  style: TextStyle(
-                    color: colors.textPrimary,
-                    fontSize: 22,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                Text(
-                  'Adjust stock and monitor low inventory',
-                  style: TextStyle(color: colors.textSecondary, fontSize: 12),
-                ),
-              ],
-            ),
+        if (_checkingPending) const Text('Checking saved stock changes…'),
+        if (!_checkingPending &&
+            !_isLoading &&
+            _pendingUnavailable &&
+            _error == null)
+          const Text(
+            'Saved stock changes could not be checked. Refresh before adjusting inventory.',
           ),
-          IconButton(
-            tooltip: 'Scan barcode',
-            icon: Icon(
-              Icons.qr_code_scanner_rounded,
-              color: colors.textSecondary,
-            ),
-            onPressed: _scanAndAdjust,
+        if (_page > 1 || _hasMore)
+          Wrap(
+            alignment: WrapAlignment.center,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              TextButton(
+                onPressed: _page > 1 && !_isLoading
+                    ? () {
+                        if (current()) _changePage(-1);
+                      }
+                    : null,
+                child: const Text('Previous'),
+              ),
+              Text('Page $_page'),
+              TextButton(
+                onPressed: _hasMore && !_isLoading
+                    ? () {
+                        if (current()) _changePage(1);
+                      }
+                    : null,
+                child: const Text('Next'),
+              ),
+            ],
           ),
-          IconButton(
-            tooltip: 'Refresh inventory',
-            icon: Icon(Icons.refresh_rounded, color: colors.textSecondary),
-            onPressed: _loadInventory,
-          ),
-        ],
-      ),
+      ],
+      slivers: [
+        _isLoading && _loadedQuery == null
+            ? _loading()
+            : _body(
+                onRetry: () {
+                  if (currentRead() && !_isLoading) _loadInventory();
+                },
+              ),
+      ],
     );
   }
 
   Widget _searchAndFilter() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-      child: Row(
-        children: [
-          Expanded(
-            child: TextField(
-              controller: _searchController,
-              onChanged: (value) => setState(() => _query = value),
-              style: TextStyle(color: colors.textPrimary),
-              decoration: InputDecoration(
-                hintText: 'Filter this page by product, SKU or location',
-                hintStyle: TextStyle(color: colors.textTertiary),
-                prefixIcon: Icon(
-                  Icons.search_rounded,
-                  color: colors.textTertiary,
-                ),
-                filled: true,
-                fillColor: colors.surfaceVariant,
-                border: _inputBorder(colors.divider),
-                enabledBorder: _inputBorder(colors.divider),
-                focusedBorder: _inputBorder(
-                  mobile_tokens.LetbuyyColorTokens.brandPrimary,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 10),
-          Tooltip(
+    final view = _view, generation = _readGeneration;
+    bool current() =>
+        _matches(view) &&
+        generation == _readGeneration &&
+        mobile_tokens.isLetbuyySurfaceCurrent(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        mobile_tokens.CustomTextField(
+          controller: _searchController,
+          label: 'Filter this page',
+          helperText: 'Filter this page by product, SKU or location',
+          prefixIcon: Icons.search_rounded,
+          onChanged: (value) {
+            if (current()) setState(() => _query = value);
+          },
+        ),
+        Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: Tooltip(
             message: 'Low stock only',
             child: FilterChip(
               selected: _lowStockOnly,
               label: const Text('Low'),
               avatar: const Icon(Icons.warning_amber_rounded, size: 18),
-              selectedColor: colors.warning.withValues(alpha: 0.16),
-              checkmarkColor: colors.warning,
               onSelected: (selected) {
+                if (!current()) return;
                 setState(() {
                   _lowStockOnly = selected;
                   _page = 1;
@@ -318,8 +351,8 @@ class _InventoryScreenState extends State<InventoryScreen> {
               },
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -368,7 +401,10 @@ class _InventoryScreenState extends State<InventoryScreen> {
     ];
 
     return SizedBox(
-      height: 48,
+      height: (MediaQuery.textScalerOf(context).scale(18) + 24).clamp(
+        48.0,
+        double.infinity,
+      ),
       child: ListView.separated(
         padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
         scrollDirection: Axis.horizontal,
@@ -399,89 +435,51 @@ class _InventoryScreenState extends State<InventoryScreen> {
     );
   }
 
-  Widget _stats() {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-      child: Row(
-        children: [
-          Expanded(
-            child: _metric(
-              'Available shown',
-              _availableUnits.toString(),
-              Icons.inventory_2_outlined,
-            ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: _metric(
-              'Low shown',
-              _lowStockCount.toString(),
-              Icons.warning_amber_rounded,
-            ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: _metric(
-              'Out shown',
-              _outOfStockCount.toString(),
-              Icons.remove_shopping_cart_outlined,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _metric(String label, String value, IconData icon) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: colors.card,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: colors.cardBorder),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(
-            icon,
-            color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
-            size: 18,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            value,
-            style: TextStyle(
-              color: colors.textPrimary,
-              fontWeight: FontWeight.w800,
-              fontSize: 16,
-            ),
-          ),
-          Text(
-            label,
-            style: TextStyle(color: colors.textSecondary, fontSize: 11),
-          ),
-        ],
-      ),
-    );
-  }
+  Widget _stats() => Padding(
+    padding: const EdgeInsets.symmetric(vertical: 12),
+    child: mobile_tokens.StatGrid(
+      minimumTileWidth: 110,
+      children: [
+        _metric(
+          'Available shown',
+          _availableUnits.toString(),
+          Icons.inventory_2_outlined,
+        ),
+        _metric(
+          'Low shown',
+          _lowStockCount.toString(),
+          Icons.warning_amber_rounded,
+        ),
+        _metric(
+          'Out shown',
+          _outOfStockCount.toString(),
+          Icons.remove_shopping_cart_outlined,
+        ),
+      ],
+    ),
+  );
+  Widget _metric(String label, String value, IconData icon) =>
+      mobile_tokens.StatTile(icon: icon, label: label, value: value);
 
   Widget _loading() {
-    return Center(
-      child: CircularProgressIndicator(
-        color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
+    return SliverFillRemaining(
+      hasScrollBody: false,
+      child: Center(
+        child: CircularProgressIndicator(
+          color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
+        ),
       ),
     );
   }
 
-  Widget _body() {
-    if (_error != null) {
+  Widget _body({VoidCallback? onRetry}) {
+    if (_error != null && _loadedQuery == null) {
       return _centerState(
         icon: Icons.error_outline_rounded,
         title: 'Could not load inventory',
         subtitle: _error!,
         action: TextButton.icon(
-          onPressed: _loadInventory,
+          onPressed: onRetry,
           icon: const Icon(Icons.refresh_rounded),
           label: const Text('Retry'),
         ),
@@ -505,11 +503,9 @@ class _InventoryScreenState extends State<InventoryScreen> {
       );
     }
 
-    return RefreshIndicator(
-      color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
-      onRefresh: _loadInventory,
-      child: ListView.builder(
-        padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+    return SliverPadding(
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+      sliver: SliverList.builder(
         itemCount: levels.length,
         itemBuilder: (context, index) => _levelCard(levels[index]),
       ),
@@ -519,10 +515,10 @@ class _InventoryScreenState extends State<InventoryScreen> {
   Widget _levelCard(InventoryLevel level) {
     final view = _view;
     final tone = level.isOutOfStock
-        ? colors.error
+        ? mobile_tokens.LetbuyyStatusTone.danger
         : level.isLowStock
-        ? colors.warning
-        : colors.success;
+        ? mobile_tokens.LetbuyyStatusTone.warning
+        : mobile_tokens.LetbuyyStatusTone.success;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
@@ -540,17 +536,16 @@ class _InventoryScreenState extends State<InventoryScreen> {
               Expanded(
                 child: Text(
                   level.label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     color: colors.textPrimary,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
               ),
-              _stockChip(level, tone),
             ],
           ),
+          const SizedBox(height: 8),
+          _stockChip(level, tone),
           const SizedBox(height: 8),
           Wrap(
             spacing: 10,
@@ -586,25 +581,16 @@ class _InventoryScreenState extends State<InventoryScreen> {
             ],
           ),
           const SizedBox(height: 12),
-          Row(
+          Wrap(
+            alignment: WrapAlignment.end,
+            spacing: 8,
+            runSpacing: 8,
             children: [
-              Expanded(
-                child: LinearProgressIndicator(
-                  value: (level.available.clamp(0, 20)) / 20,
-                  minHeight: 6,
-                  borderRadius: BorderRadius.circular(99),
-                  color: tone,
-                  backgroundColor: colors.surfaceVariant,
-                ),
-              ),
-              const SizedBox(width: 12),
               IconButton(
                 tooltip: 'View stock history',
                 icon: const Icon(Icons.history),
                 onPressed: () {
-                  if (!merchantStoreViewCurrent(context, view) ||
-                      level.storeId != view!.storeId)
-                    return;
+                  if (!_matches(view) || level.storeId != view!.storeId) return;
                   Navigator.pushNamed(
                     context,
                     AppRoutes.inventoryHistory,
@@ -619,9 +605,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                 tooltip: 'View reservations',
                 icon: const Icon(Icons.lock_clock_outlined),
                 onPressed: () {
-                  if (!merchantStoreViewCurrent(context, view) ||
-                      level.storeId != view!.storeId)
-                    return;
+                  if (!_matches(view) || level.storeId != view!.storeId) return;
                   Navigator.pushNamed(
                     context,
                     AppRoutes.inventoryReservations,
@@ -655,26 +639,19 @@ class _InventoryScreenState extends State<InventoryScreen> {
     );
   }
 
-  Widget _stockChip(InventoryLevel level, Color tone) {
+  Widget _stockChip(
+    InventoryLevel level,
+    mobile_tokens.LetbuyyStatusTone tone,
+  ) {
     final label = level.isOutOfStock
         ? 'Out'
         : level.isLowStock
         ? 'Low'
         : 'In stock';
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: tone.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Text(
-        '${level.available} $label',
-        style: TextStyle(
-          color: tone,
-          fontSize: 12,
-          fontWeight: FontWeight.w800,
-        ),
-      ),
+    return mobile_tokens.LetbuyyStatusBadge(
+      label: '${level.available} $label',
+      tone: tone,
+      compact: true,
     );
   }
 
@@ -684,9 +661,11 @@ class _InventoryScreenState extends State<InventoryScreen> {
       children: [
         Icon(icon, size: 14, color: colors.textTertiary),
         const SizedBox(width: 4),
-        Text(
-          value,
-          style: TextStyle(color: colors.textSecondary, fontSize: 12),
+        Flexible(
+          child: Text(
+            value,
+            style: TextStyle(color: colors.textSecondary, fontSize: 12),
+          ),
         ),
       ],
     );
@@ -698,69 +677,62 @@ class _InventoryScreenState extends State<InventoryScreen> {
     required String subtitle,
     Widget? action,
   }) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, color: colors.textTertiary, size: 48),
-            const SizedBox(height: 12),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: colors.textPrimary,
-                fontSize: 16,
-                fontWeight: FontWeight.w800,
+    return SliverFillRemaining(
+      hasScrollBody: false,
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, color: colors.textTertiary, size: 48),
+              const SizedBox(height: 12),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: colors.textPrimary,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                ),
               ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              subtitle,
-              textAlign: TextAlign.center,
-              style: TextStyle(color: colors.textSecondary),
-            ),
-            if (action != null) ...[const SizedBox(height: 14), action],
-          ],
+              const SizedBox(height: 6),
+              Text(
+                subtitle,
+                textAlign: TextAlign.center,
+                style: TextStyle(color: colors.textSecondary),
+              ),
+              if (action != null) ...[const SizedBox(height: 14), action],
+            ],
+          ),
         ),
       ),
     );
   }
 
   Future<String?> _chooseLocation(MerchantStoreView view) async {
-    final locations = await context.read<InventoryService>().fetchLocations(
-      view.storeId,
-    );
-    if (!_matches(view)) return null;
-    if (locations.isEmpty) {
-      _showSnackBar(
-        'Create an inventory location before adjusting stock.',
-        isError: true,
-      );
+    if (!_matches(view) || !mobile_tokens.isLetbuyySurfaceCurrent(context))
       return null;
-    }
-    return showDialog<String>(
-      context: context,
-      builder: (context) => guardMerchantStoreView(
-        view,
-        SimpleDialog(
-          title: const Text('Choose stock location'),
-          children: [
-            for (final location in locations)
-              SimpleDialogOption(
-                onPressed: () {
-                  if (_matches(view)) Navigator.pop(context, location.id);
-                },
-                child: Text(location.name),
-              ),
-          ],
-        ),
+    final service = context.read<InventoryService>();
+    final location = await chooseMerchantOption<InventoryLocationContract>(
+      context,
+      view,
+      'Choose stock location',
+      (page, query) => service.readLocationsPage(
+        view.storeId,
+        page: page,
+        search: query,
+        status: 'all',
       ),
+      (row) => row.name,
     );
+    if (!_matches(view) || !mobile_tokens.isLetbuyySurfaceCurrent(context))
+      return null;
+    return location?.id;
   }
 
   Future<void> _retryPendingAdjustment() async {
+    if (!mounted || !mobile_tokens.isLetbuyySurfaceCurrent(context)) return;
     final view = _view;
     if (!_matches(view) || _isAdjusting || !_hasPendingAdjustment) return;
     setState(() => _isAdjusting = true);
@@ -788,6 +760,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
   }
 
   Future<void> _adjust(InventoryLevel level) async {
+    if (!mounted || !mobile_tokens.isLetbuyySurfaceCurrent(context)) return;
     final view = _view;
     if (!_matches(view) || level.storeId != view!.storeId || _commandsBlocked)
       return;
@@ -829,6 +802,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
   }
 
   Future<void> _scanAndAdjust() async {
+    if (!mounted || !mobile_tokens.isLetbuyySurfaceCurrent(context)) return;
     final view = _view;
     if (!_matches(view) || _commandsBlocked) return;
     setState(() => _isAdjusting = true);
@@ -885,268 +859,272 @@ class _InventoryScreenState extends State<InventoryScreen> {
   Future<_InventoryAdjustment?> _adjustmentDialog(
     InventoryLevel level,
     MerchantStoreView view,
-  ) {
+  ) async {
     final deltaController = TextEditingController();
     final noteController = TextEditingController();
     var reason = 'adjustment';
-
-    return showDialog<_InventoryAdjustment>(
-      context: context,
-      builder: (context) => guardMerchantStoreView(
-        view,
-        StatefulBuilder(
-          builder: (context, setDialogState) => AlertDialog(
-            backgroundColor: colors.card,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
+    String? error;
+    ModalRoute<_InventoryAdjustment>? sheetRoute;
+    try {
+      return await mobile_tokens.showLetbuyyFormSheet<_InventoryAdjustment>(
+        context: context,
+        builder: (context) {
+          sheetRoute = ModalRoute.of<_InventoryAdjustment>(context);
+          return guardMerchantStoreView(
+            view,
+            StatefulBuilder(
+              builder: (context, setDialogState) =>
+                  mobile_tokens.LetbuyyFormSheet(
+                    title: 'Adjust ${level.label}',
+                    actions: [
+                      TextButton(
+                        onPressed: () =>
+                            mobile_tokens.completeLetbuyySurface(context),
+                        child: const Text('Cancel'),
+                      ),
+                      FilledButton(
+                        onPressed: () {
+                          if (!mobile_tokens.isLetbuyySurfaceCurrent(context) ||
+                              !_matches(view))
+                            return;
+                          final delta = int.tryParse(
+                            deltaController.text.trim().replaceFirst('+', ''),
+                          );
+                          if (delta == null || delta == 0) {
+                            setDialogState(
+                              () => error = 'Enter a non-zero adjustment',
+                            );
+                            return;
+                          }
+                          mobile_tokens.completeLetbuyySurface(
+                            context,
+                            _InventoryAdjustment(
+                              delta: delta,
+                              reason: reason,
+                              note: noteController.text.trim(),
+                            ),
+                          );
+                        },
+                        child: const Text('Apply'),
+                      ),
+                    ],
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        mobile_tokens.CustomTextField(
+                          controller: deltaController,
+                          keyboardType: const TextInputType.numberWithOptions(
+                            signed: true,
+                          ),
+                          label: 'Change quantity',
+                          hint: '+5 or -2',
+                        ),
+                        const SizedBox(height: 12),
+                        DropdownButtonFormField<String>(
+                          initialValue: reason,
+                          isExpanded: true,
+                          decoration: const InputDecoration(
+                            labelText: 'Reason',
+                          ),
+                          items: const [
+                            DropdownMenuItem(
+                              value: 'adjustment',
+                              child: Text('Adjustment'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'recount',
+                              child: Text('Recount'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'received',
+                              child: Text('Received'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'damaged',
+                              child: Text('Damaged'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'return',
+                              child: Text('Return'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'correction',
+                              child: Text('Correction'),
+                            ),
+                          ],
+                          onChanged: (value) {
+                            if (value != null)
+                              setDialogState(() => reason = value);
+                          },
+                        ),
+                        const SizedBox(height: 12),
+                        mobile_tokens.CustomTextField(
+                          controller: noteController,
+                          minLines: 2,
+                          maxLines: 3,
+                          label: 'Note',
+                        ),
+                        if (error != null)
+                          Semantics(
+                            liveRegion: true,
+                            child: Text(
+                              error!,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.error,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
             ),
-            title: Text(
-              'Adjust ${level.label}',
-              style: TextStyle(color: colors.textPrimary),
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: deltaController,
-                  keyboardType: const TextInputType.numberWithOptions(
-                    signed: true,
-                  ),
-                  style: TextStyle(color: colors.textPrimary),
-                  decoration: InputDecoration(
-                    labelText: 'Change quantity',
-                    hintText: '+5 or -2',
-                    labelStyle: TextStyle(color: colors.textSecondary),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                DropdownButtonFormField<String>(
-                  value: reason,
-                  dropdownColor: colors.card,
-                  style: TextStyle(color: colors.textPrimary),
-                  decoration: InputDecoration(
-                    labelText: 'Reason',
-                    labelStyle: TextStyle(color: colors.textSecondary),
-                  ),
-                  items: const [
-                    DropdownMenuItem(
-                      value: 'adjustment',
-                      child: Text('Adjustment'),
-                    ),
-                    DropdownMenuItem(value: 'recount', child: Text('Recount')),
-                    DropdownMenuItem(
-                      value: 'received',
-                      child: Text('Received'),
-                    ),
-                    DropdownMenuItem(value: 'damaged', child: Text('Damaged')),
-                    DropdownMenuItem(value: 'return', child: Text('Return')),
-                    DropdownMenuItem(
-                      value: 'correction',
-                      child: Text('Correction'),
-                    ),
-                  ],
-                  onChanged: (value) {
-                    if (value != null) setDialogState(() => reason = value);
-                  },
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: noteController,
-                  minLines: 2,
-                  maxLines: 3,
-                  style: TextStyle(color: colors.textPrimary),
-                  decoration: InputDecoration(
-                    labelText: 'Note',
-                    labelStyle: TextStyle(color: colors.textSecondary),
-                  ),
-                ),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text(
-                  'Cancel',
-                  style: TextStyle(color: colors.textSecondary),
-                ),
-              ),
-              TextButton(
-                onPressed: () {
-                  if (!_matches(view)) return;
-                  final delta = int.tryParse(
-                    deltaController.text.trim().replaceFirst('+', ''),
-                  );
-                  if (delta == null || delta == 0) {
-                    _showSnackBar('Enter a non-zero adjustment', isError: true);
-                    return;
-                  }
-                  Navigator.pop(
-                    context,
-                    _InventoryAdjustment(
-                      delta: delta,
-                      reason: reason,
-                      note: noteController.text.trim(),
-                    ),
-                  );
-                },
-                child: Text(
-                  'Apply',
-                  style: TextStyle(
-                    color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+            sheet: true,
+          );
+        },
+      );
+    } finally {
+      if (sheetRoute != null) await sheetRoute!.completed;
+      deltaController.dispose();
+      noteController.dispose();
+    }
   }
 
   Future<_ScannedInventoryAdjustment?> _scanAdjustmentDialog(
     InventoryBarcodeLookup lookup,
     MerchantStoreView view,
     String location,
-  ) {
+  ) async {
     final deltaController = TextEditingController();
     final noteController = TextEditingController();
     var reason = 'recount';
-
-    return showDialog<_ScannedInventoryAdjustment>(
-      context: context,
-      builder: (context) => guardMerchantStoreView(
-        view,
-        StatefulBuilder(
-          builder: (context, setDialogState) => AlertDialog(
-            backgroundColor: colors.card,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            title: Text(
-              'Adjust ${lookup.label}',
-              style: TextStyle(color: colors.textPrimary),
-            ),
-            content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Scanned ${lookup.barcode}',
-                      style: TextStyle(color: colors.textSecondary),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: deltaController,
-                    keyboardType: const TextInputType.numberWithOptions(
-                      signed: true,
-                    ),
-                    style: TextStyle(color: colors.textPrimary),
-                    decoration: InputDecoration(
-                      labelText: 'Change quantity',
-                      hintText: '+5 or -2',
-                      labelStyle: TextStyle(color: colors.textSecondary),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  const SizedBox(height: 12),
-                  DropdownButtonFormField<String>(
-                    value: reason,
-                    dropdownColor: colors.card,
-                    style: TextStyle(color: colors.textPrimary),
-                    decoration: InputDecoration(
-                      labelText: 'Reason',
-                      labelStyle: TextStyle(color: colors.textSecondary),
-                    ),
-                    items: const [
-                      DropdownMenuItem(
-                        value: 'recount',
-                        child: Text('Recount'),
+    String? error;
+    ModalRoute<_ScannedInventoryAdjustment>? sheetRoute;
+    try {
+      return await mobile_tokens.showLetbuyyFormSheet<
+        _ScannedInventoryAdjustment
+      >(
+        context: context,
+        builder: (context) {
+          sheetRoute = ModalRoute.of<_ScannedInventoryAdjustment>(context);
+          return guardMerchantStoreView(
+            view,
+            StatefulBuilder(
+              builder: (context, setDialogState) =>
+                  mobile_tokens.LetbuyyFormSheet(
+                    title: 'Adjust ${lookup.label}',
+                    actions: [
+                      TextButton(
+                        onPressed: () =>
+                            mobile_tokens.completeLetbuyySurface(context),
+                        child: const Text('Cancel'),
                       ),
-                      DropdownMenuItem(
-                        value: 'received',
-                        child: Text('Received'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'damaged',
-                        child: Text('Damaged'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'correction',
-                        child: Text('Correction'),
+                      FilledButton(
+                        onPressed: () {
+                          if (!mobile_tokens.isLetbuyySurfaceCurrent(context) ||
+                              !_matches(view))
+                            return;
+                          final delta = int.tryParse(
+                            deltaController.text.trim().replaceFirst('+', ''),
+                          );
+                          if (delta == null || delta == 0) {
+                            setDialogState(
+                              () => error = 'Enter a non-zero adjustment',
+                            );
+                            return;
+                          }
+                          mobile_tokens.completeLetbuyySurface(
+                            context,
+                            _ScannedInventoryAdjustment(
+                              delta: delta,
+                              reason: reason,
+                              note: noteController.text.trim(),
+                              locationId: location,
+                            ),
+                          );
+                        },
+                        child: const Text('Apply'),
                       ),
                     ],
-                    onChanged: (value) {
-                      if (value != null) setDialogState(() => reason = value);
-                    },
-                  ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: noteController,
-                    minLines: 2,
-                    maxLines: 3,
-                    style: TextStyle(color: colors.textPrimary),
-                    decoration: InputDecoration(
-                      labelText: 'Note',
-                      labelStyle: TextStyle(color: colors.textSecondary),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text('Scanned ${lookup.barcode}'),
+                        const SizedBox(height: 12),
+                        mobile_tokens.CustomTextField(
+                          controller: deltaController,
+                          keyboardType: const TextInputType.numberWithOptions(
+                            signed: true,
+                          ),
+                          label: 'Change quantity',
+                          hint: '+5 or -2',
+                        ),
+                        const SizedBox(height: 12),
+                        DropdownButtonFormField<String>(
+                          initialValue: reason,
+                          isExpanded: true,
+                          decoration: const InputDecoration(
+                            labelText: 'Reason',
+                          ),
+                          items: const [
+                            DropdownMenuItem(
+                              value: 'recount',
+                              child: Text('Recount'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'received',
+                              child: Text('Received'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'damaged',
+                              child: Text('Damaged'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'correction',
+                              child: Text('Correction'),
+                            ),
+                          ],
+                          onChanged: (value) {
+                            if (value != null)
+                              setDialogState(() => reason = value);
+                          },
+                        ),
+                        const SizedBox(height: 12),
+                        mobile_tokens.CustomTextField(
+                          controller: noteController,
+                          minLines: 2,
+                          maxLines: 3,
+                          label: 'Note',
+                        ),
+                        if (error != null)
+                          Semantics(
+                            liveRegion: true,
+                            child: Text(
+                              error!,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.error,
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
                   ),
-                ],
-              ),
             ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text(
-                  'Cancel',
-                  style: TextStyle(color: colors.textSecondary),
-                ),
-              ),
-              TextButton(
-                onPressed: () {
-                  if (!_matches(view)) return;
-                  final delta = int.tryParse(
-                    deltaController.text.trim().replaceFirst('+', ''),
-                  );
-                  if (delta == null || delta == 0) {
-                    _showSnackBar('Enter a non-zero adjustment', isError: true);
-                    return;
-                  }
-                  Navigator.pop(
-                    context,
-                    _ScannedInventoryAdjustment(
-                      delta: delta,
-                      reason: reason,
-                      note: noteController.text.trim(),
-                      locationId: location,
-                    ),
-                  );
-                },
-                child: Text(
-                  'Apply',
-                  style: TextStyle(
-                    color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+            sheet: true,
+          );
+        },
+      );
+    } finally {
+      if (sheetRoute != null) await sheetRoute!.completed;
+      deltaController.dispose();
+      noteController.dispose();
+    }
   }
 
   void _showSnackBar(String message, {bool isError = false}) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: isError ? colors.error : colors.success,
-        behavior: SnackBarBehavior.floating,
-        margin: const EdgeInsets.all(16),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      ),
+    mobile_tokens.showLetbuyyOperationFeedback(
+      context,
+      message: message,
+      isError: isError,
     );
   }
 }

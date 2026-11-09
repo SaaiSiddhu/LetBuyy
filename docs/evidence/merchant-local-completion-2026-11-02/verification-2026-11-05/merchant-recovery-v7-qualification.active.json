@@ -1,0 +1,21 @@
+{
+  "started_at": "2026-11-06T08:27:42.340799+00:00",
+  "supervisor_pid": 41361,
+  "source_sha256": "8e456fc19e2ff8f5a348e9f31ce5d9bd66b4c4364f4367c66324ab258d909c76",
+  "status": "RUNNING",
+  "steps": [
+    {
+      "step": "root-contracts",
+      "exit_code": 0
+    },
+    {
+      "step": "dart-sdk",
+      "exit_code": 0
+    }
+  ],
+  "private_root": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4",
+  "prior_scoped_passes": "merchant-recovery-v7-reused-scopes.json",
+  "active_step": "app-analysis",
+  "child_pid": 41565,
+  "source_unchanged": true
+}

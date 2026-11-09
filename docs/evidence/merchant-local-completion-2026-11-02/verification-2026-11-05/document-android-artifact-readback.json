@@ -1,0 +1,17 @@
+{
+  "at": "2026-11-05T19:04:55.035087+00:00",
+  "status": "INDEPENDENT_DEBUG_APK_READBACK_PASS",
+  "source_sha256": "b1ab9fa3bfb563d17d6285aeaeffbc80845ef39d521c5c0cfdcf028856df8e4d",
+  "artifact": {
+    "path": "/private/tmp/letbuyy-document-android-5h21_3iu/merchant-local-debug.apk",
+    "sha256": "7a0027844f3870af78dbd0cefcdea088d1fa765bde9aba3083d737b448218c9d",
+    "bytes": 151911728
+  },
+  "actual_sha256": "7a0027844f3870af78dbd0cefcdea088d1fa765bde9aba3083d737b448218c9d",
+  "compiled_arm64_engine": true,
+  "debug_kernel_present": true,
+  "normal_main": true,
+  "installed": false,
+  "runtime_verified": false,
+  "scope": "Normal debug compile/archive only. Native40 is a separate fresh fixture/build."
+}

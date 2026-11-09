@@ -1,0 +1,19 @@
+{
+  "started_at": "2026-11-05T17:32:45.677637+00:00",
+  "supervisor_pid": 9704,
+  "source": "coupon-source-v1",
+  "source_sha256": "80e4c4f1f08a4b6e06a3b46e1abc76a36e4b164f9b4ae0584fd4a9894e3c1a0f",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "--reporter",
+    "expanded"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 9707,
+  "exit_code": 1,
+  "finished_at": "2026-11-05T17:33:38.912696+00:00",
+  "source_unchanged": true,
+  "source_readback_sha256": "80e4c4f1f08a4b6e06a3b46e1abc76a36e4b164f9b4ae0584fd4a9894e3c1a0f"
+}

@@ -1,0 +1,60 @@
+{
+  "at": "2026-11-06T23:17:27.677970+00:00",
+  "run_id": "a0a6bab2c162",
+  "status": "BOUNDED_LOCAL_FUNCTIONAL_IOS_WEB_PASS_WITH_RETRIED_UPDATE",
+  "source": "merchant-product-media-ios-source-v59",
+  "source_sha256": "999e0d6b6ca0b1064b4b0b4f3dcacaaabd050a44105d5c1a9ecb2be51de44184",
+  "artifact": {
+    "at": "2026-11-06T23:12:38.354153+00:00",
+    "source_sha256": "999e0d6b6ca0b1064b4b0b4f3dcacaaabd050a44105d5c1a9ecb2be51de44184",
+    "artifact_manifest_sha256": "152ca0384655271ff59f63a0f527c53f96a42b6530ddd324c82dda97f734ded0",
+    "files": 401,
+    "installed_equal_retained_normal_simulator_build": true,
+    "scope": "Artifact custody only; UI acceptance collected separately. No physical or release proof."
+  },
+  "normal_credentials_and_callback": true,
+  "synthetic_only": true,
+  "ui_save": {
+    "exit": 0,
+    "native_product_saved": true,
+    "normal_auth": true,
+    "run_id": "a0a6bab2c162"
+  },
+  "ui_web_readback": {
+    "exit": 0,
+    "run_id": "a0a6bab2c162",
+    "accepted": true,
+    "web_name_readback": true,
+    "normal_native_refresh": true
+  },
+  "terminal": {
+    "exit": 0,
+    "runner_pid": 19692,
+    "finished_at": "2026-11-06T23:16:08.321331+00:00"
+  },
+  "final_product": {
+    "name": "Synthetic iOS web product",
+    "price": 100,
+    "stock": 4,
+    "image_count": 1
+  },
+  "media_rows": 1,
+  "public_objects": 1,
+  "public_sha256": "2b0872c5f3a670beb4f0ab1213afd7668835da6feeccf4cd68f9e2ddcf97e931",
+  "web_image_decoded_4x4": true,
+  "source_unchanged_after_teardown": true,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "diagnostics_preserved": [
+    "Initial combined Swift controller lexical-scope compile failure",
+    "First Update produced no API call; succeeded after activating the same current editor in a separate native UI test. This is not deterministic first-attempt interaction acceptance."
+  ],
+  "whole_feature_or_full_ios_or_release_accepted": false,
+  "limits": "Normal synthetic iOS Accounts and OS photo picker, original Media workflow, native product save/web image decode, web save/native readback. Local compiled Worker/PG/R2 proof only; no buyer render, iOS camera, provider, hosted or full122 acceptance."
+}

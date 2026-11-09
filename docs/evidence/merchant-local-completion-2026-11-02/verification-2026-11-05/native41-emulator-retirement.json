@@ -1,0 +1,12 @@
+{
+  "at": "2026-11-05T19:58:09.850295+00:00",
+  "status": "OWNED_EMULATOR_STOPPED_DATA_PRESERVED",
+  "pid": 68600,
+  "avd": "LetBuyy_Merchant_Parity_20261106_c6cefc",
+  "root": "/private/tmp/letbuyy-merchant-emulator-de849422c5",
+  "userdata_preserved": true,
+  "private_adb_server": 15038,
+  "other_emulators_and_servers_untouched": true,
+  "native41_readback_completed_before_stop": true,
+  "process_exit_independently_observed": true
+}

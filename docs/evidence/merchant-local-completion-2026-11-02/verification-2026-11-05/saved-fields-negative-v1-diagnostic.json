@@ -1,0 +1,6 @@
+{
+  "reason": "Controlled Dio initialization was awaited before pumping the widget fake-event loop; no app assertion reached. Retire only this exact owned test process; then wrap initial setup in tester.runAsync.",
+  "child_pid": 55465,
+  "signal": "SIGINT",
+  "app_defect_evidence": false
+}

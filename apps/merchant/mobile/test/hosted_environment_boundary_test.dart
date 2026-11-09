@@ -16,6 +16,10 @@ void main() {
         apiUrl: value['API_BASE_URL'] as String,
         identityUrl: value['IDENTITY_BASE_URL'] as String,
         adminUrl: value['ADMIN_BASE_URL'] as String? ?? AppConfig.adminBaseUrl,
+        storefrontUrl:
+            value['STOREFRONT_BASE_URL'] as String? ??
+            AppConfig.storefrontBaseUrl,
+        challengeSdkUrl: value['LOCAL_CHALLENGE_SDK_URL'] as String? ?? '',
       );
 
   test('checked-in hosted profiles select coherent isolated destinations', () {
@@ -72,4 +76,83 @@ void main() {
     staged['ENVIRONMENT'] = 'stagin';
     expect(check(staged), isNotNull);
   });
+
+  test(
+    'local profile declares every local service and keeps one API transport',
+    () {
+      final local = profile('local');
+      expect(check(local), isNull);
+      local['API_BASE_URL'] = 'http://10.0.2.2:9012/v1';
+      expect(check(local), isNotNull);
+    },
+  );
+
+  for (final key in [
+    'BFF_BASE_URL',
+    'API_BASE_URL',
+    'IDENTITY_BASE_URL',
+    'ADMIN_BASE_URL',
+    'STOREFRONT_BASE_URL',
+  ]) {
+    test('local label cannot admit a hosted $key', () {
+      final local = profile('local');
+      local[key] = profile('production')[key];
+      expect(check(local), isNotNull);
+    });
+  }
+  for (final url in [
+    'https://accounts.letbuyy.com',
+    'http://attacker.localhost.example:9002',
+    'http://10.0.2.2:9002?destination=hosted',
+    'http://user@localhost:9002',
+    'http://192.168.1.10:9002',
+    'http://localhost',
+    'ftp://localhost:9002',
+  ]) {
+    test('local identity refuses unowned destination $url', () {
+      final local = profile('local');
+      local['IDENTITY_BASE_URL'] = url;
+      expect(check(local), isNotNull);
+    });
+  }
+  test('local issuers have distinct persistent private state namespaces', () {
+    final first = AppConfig.persistenceNamespace(
+      environmentName: 'local',
+      identityUrl: 'http://localhost:9002',
+    );
+    final second = AppConfig.persistenceNamespace(
+      environmentName: 'local',
+      identityUrl: 'http://localhost:9003',
+    );
+    expect(first, isNot(second));
+    expect(
+      first,
+      isNot(AppConfig.persistenceNamespace(environmentName: 'production')),
+    );
+    expect(
+      first,
+      isNot(AppConfig.persistenceNamespace(environmentName: 'staging')),
+    );
+  });
+  for (final hosted in ['staging', 'production']) {
+    test('$hosted refuses an owned local challenge SDK define', () {
+      final value = profile(hosted);
+      value['LOCAL_CHALLENGE_SDK_URL'] =
+          'http://localhost:9004/fixtures/turnstile/api.js';
+      expect(check(value), isNotNull);
+    });
+  }
+  for (final sdk in [
+    '',
+    'https://challenges.cloudflare.com/turnstile/v0/api.js',
+    'http://localhost:9004/fixtures/turnstile/api.js?other=hosted',
+    'http://user@localhost:9004/fixtures/turnstile/api.js',
+    'http://localhost:9004/arbitrary.js',
+  ]) {
+    test('local verification requires the explicit owned SDK route: $sdk', () {
+      final value = profile('local');
+      value['LOCAL_CHALLENGE_SDK_URL'] = sdk;
+      expect(check(value), isNotNull);
+    });
+  }
 }

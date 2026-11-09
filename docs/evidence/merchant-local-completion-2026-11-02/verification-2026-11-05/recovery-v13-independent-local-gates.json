@@ -1,0 +1,15 @@
+{
+  "source_sha256": "97d73c40813b6f0e0c458ca33fbaedfe0fc3559fbb4c6fbc22a56b6d759e4cb3",
+  "started_at": "2026-11-06T11:24:38.085221+00:00",
+  "checks": {
+    "analysis": {
+      "exit_code": 0
+    },
+    "governance": {
+      "exit_code": 1
+    }
+  },
+  "finished_at": "2026-11-06T11:26:14.954736+00:00",
+  "source_unchanged": true,
+  "status": "FAIL"
+}

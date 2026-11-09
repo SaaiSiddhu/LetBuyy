@@ -1,0 +1,13 @@
+{
+  "started_at": "2026-11-07T10:08:58.227520+00:00",
+  "supervisor_pid": 14164,
+  "source": "merchant-webm-ios-source-v86",
+  "source_sha256": "72eea74898f1efecbb91bd868e286deeeefc42324ff59b6733f288262185cc8e",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "analyze",
+    "--no-pub"
+  ],
+  "status": "RUNNING",
+  "child_pid": 14166
+}

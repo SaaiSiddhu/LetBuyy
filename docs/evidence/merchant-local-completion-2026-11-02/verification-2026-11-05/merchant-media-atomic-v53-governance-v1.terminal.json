@@ -1,0 +1,12 @@
+{
+  "at": "2026-11-06T18:40:44.109548+00:00",
+  "status": "TERMINAL",
+  "exit_code": 0,
+  "capsule": "/private/tmp/letbuyy-merchant-media-atomic-v53-governance-t1_4a_hv",
+  "purpose": "Disposable validation copy only, no implementation/worktree/merge/push/release",
+  "source_sha256": "8d91014727d143e0fce8e1ee5e3dc578c1d4c89f5cafc0eaaca0e50c14e6286a",
+  "core_inputs_byte_equal": 8484,
+  "original_source_unchanged": true,
+  "original_index_unchanged": true,
+  "report": "merchant-media-atomic-v53-governance-v1-report.json"
+}

@@ -1,0 +1,11 @@
+{
+  "stage": "flutter-analysis",
+  "exit_code": 0,
+  "source_unchanged": true,
+  "source_sha256": "70794e68bd47bf97c4331ab71f5a3f968231b63153cb23f0f6889ebdda31e445",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "analyze",
+    "--no-pub"
+  ]
+}

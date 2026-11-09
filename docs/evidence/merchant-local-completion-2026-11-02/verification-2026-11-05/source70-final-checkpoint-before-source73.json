@@ -1,0 +1,119 @@
+{
+  "at": "2026-11-07T04:28:48.159391+00:00",
+  "status": "BOUNDED_LOCAL_MEDIA_RECOVERY_AND_IOS_WEB_SYNC_PASS;FULL_FEATURE_ACCEPTANCE_OPEN",
+  "source": {
+    "manifest": "merchant-media-recovery-source-v70.source.json",
+    "sha256": "227c67d04d52c7d0cad74e5709db40e4dd93ca7917d7317a1d29a7fe680ac508",
+    "inputs": 8496,
+    "head": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+    "branch": "codex/merchant-mobile-parity",
+    "frozen": false
+  },
+  "current_gates": {
+    "flutter": {
+      "pass": 1676,
+      "fail": 0,
+      "skip": 0
+    },
+    "analysis_issues": 0,
+    "web_phase_passes": [
+      655,
+      818,
+      295,
+      13
+    ],
+    "web_event_errors": 0,
+    "web_types_exit": 0,
+    "root_contracts": 398,
+    "browser_checksum": "Real browser/default and unchanged production CSP,3bytes and100MiB; no eval or Wasm policy permission added",
+    "governance": {
+      "pass": 114,
+      "not_applicable": 1,
+      "fail": 0
+    },
+    "owned_media_db": {
+      "run_id": "ce1e8f8bd731",
+      "pass": 12,
+      "fail": 0,
+      "skip": 0,
+      "suite": "tests/owned-db/merchant-media-commands-workerd.postgres.test.ts"
+    },
+    "android_debug_build_exit": 0,
+    "ios_simulator_build_exit": 0,
+    "native_ui_phases": 3,
+    "notice": "Suite counts overlap; do not sum."
+  },
+  "runtime": {
+    "run_id": "123f4ecc5372",
+    "normal_synthetic_auth_and_automatic_return": true,
+    "os_photo_upload_and_product_save": true,
+    "web_lost_upload_receipt_recovered_without_new_bytes": true,
+    "metadata_five_fields_web_to_native": true,
+    "native_caption_to_web": true,
+    "metadata_replay_updated_at_unchanged": true,
+    "delete_missing_row_receipt_recovered": true,
+    "referenced_bytes_preserved": true,
+    "picker_deleted_row_absent_with_remaining_positive_control": 1,
+    "retained_product_images_decoded": 2,
+    "final_active_media_rows": 1,
+    "final_public_objects": 2,
+    "final_product_price": 100,
+    "final_product_stock": 4
+  },
+  "artifact": {
+    "ios_installed_equals_retained": true,
+    "ios_files": 401,
+    "ios_manifest_sha256": "df1d1602702d5a84ffebccdcce4d7883b085b035a53f58044fb532759b00350d",
+    "android_apk_sha256": "a7baa383dc8774243cf91d229389e68bb6d5d6d7b96733e26529660ed2d9fe0f",
+    "android_scope": "Fresh local debug build only; no source70 Android UI test."
+  },
+  "programme": {
+    "applicable_open": 119,
+    "excluded": [
+      120,
+      121
+    ],
+    "paused": [
+      122
+    ],
+    "frozen": [
+      51
+    ],
+    "nonadditive_surface_inventory": 211,
+    "source_unreviewed_rows": 35,
+    "app_library_files": 193,
+    "unique_surface_denominator": null,
+    "full_feature_set_accepted": false
+  },
+  "next": [
+    "Broader product media camera/permissions/cancel, video/3D, variants/options/reorder and actual buyer Liquid render.",
+    "Product form hardcoded category choices versus the existing canonical category reader; web currently accepts free category metadata. Preserve the approved authority and existing category-name contract.",
+    "Current-role/revocation/store-switch runtime cases and remaining feature-by-feature web/mobile/buyer journeys.",
+    "Private KYC interrupted-object/provider acceptance and the historical90second startup cause remain separate.",
+    "Full122 programme remains119 applicable whole features open,120/121excluded,122paused,51frozen; source/surface denominator unresolved."
+  ],
+  "limits": "Local synthetic Accounts, Chromium, task iOS simulator, compiled Workers, isolated PostgreSQL/PostgREST/test R2 only. No physical/provider/inbox/buyer-Liquid/hosted/signed-release/production or whole122 certification.",
+  "report": "native95-final-local-readback.json",
+  "active_session": null,
+  "resource_state": {
+    "native_cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "db_cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "simulator": "Exact owned simulator Shutdown; app/data/Photos retained",
+    "foreign_host9002": "Never probed/bound/stopped"
+  },
+  "historical_source62_checkpoint": "source62-final-checkpoint-before-source70.json"
+}

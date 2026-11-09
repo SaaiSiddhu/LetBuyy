@@ -1,11 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import '../../app/store_context.dart';
 import '../../services/api_client.dart';
 import '../../services/customer_service.dart';
+import '../../widgets/shared/merchant_store_view.dart';
 
 /// Native editor for the existing CustomerSegmentRules contract. Customer spend
 /// and its threshold are rupee-valued commerce amounts, not ledger minor units.
@@ -32,12 +34,18 @@ class _CustomerSegmentSheetState extends State<CustomerSegmentSheet> {
   int? _preview;
   String? _error, _savedId, _commandKey;
   bool _saving = false, _previewing = false;
+  bool _apiBound = false, _readDenied = false;
+  Object? _apiContext;
   Map<String, dynamic>? _pending;
 
   bool get _current =>
       mounted &&
       context.read<StoreContext>().requestContextKey == _contextKey &&
-      context.read<StoreContext>().selectedStoreId == widget.storeId;
+      context.read<StoreContext>().selectedStoreId == widget.storeId &&
+      _apiBound &&
+      _apiContext == context.read<CustomerService>().requestContext &&
+      !_readDenied &&
+      !context.read<CustomerService>().hasDeniedRead(widget.storeId);
 
   @override
   void initState() {
@@ -225,222 +233,229 @@ class _CustomerSegmentSheetState extends State<CustomerSegmentSheet> {
     String? Function(String?)? validator,
     TextInputType? keyboardType,
     int maxLines = 1,
-  }) => TextFormField(
-    key: ValueKey('segment-$label'),
-    controller: controller,
-    enabled: _pending == null && !_saving,
-    onChanged: _edited,
-    keyboardType: keyboardType,
-    maxLines: maxLines,
-    validator: validator,
-    decoration: InputDecoration(labelText: label),
+  }) => Padding(
+    padding: const EdgeInsets.only(bottom: LetbuyySpacingTokens.space16),
+    child: CustomTextField(
+      key: ValueKey('segment-$label'),
+      controller: controller,
+      enabled: _pending == null && !_saving,
+      onChanged: _edited,
+      keyboardType: keyboardType,
+      maxLines: maxLines,
+      validator: validator,
+      label: label,
+    ),
   );
 
   @override
   Widget build(BuildContext context) {
     context.watch<StoreContext>();
+    final service = context.watch<CustomerService>();
+    if (!_apiBound) {
+      _apiBound = true;
+      _apiContext = service.requestContext;
+    }
+    if (service.hasDeniedRead(widget.storeId)) _readDenied = true;
     if (!_current ||
         (widget.segment != null && widget.segment!.storeId != widget.storeId)) {
-      return SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
+      return LetbuyyEditorScaffold(
+        title: 'Segment unavailable',
+        hasChanges: false,
+        body: ListView(
+          padding: const EdgeInsets.all(LetbuyySpacingTokens.space24),
+          children: [
+            const Text(
+              'Store access changed. Close this form and reload the selected store.',
+            ),
+            if (_pending != null)
               const Text(
-                'Store access changed. Close this form and reload the selected store.',
+                'A saved request may already have completed. Closing does not cancel server work and loses this editor’s retry state. Review segments after access is restored.',
               ),
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Close'),
-              ),
-            ],
-          ),
+          ],
+        ),
+        actions: TextButton(
+          onPressed: () => completeLetbuyySurface(context),
+          child: const Text('Close'),
         ),
       );
     }
     final enabled = _pending == null && !_saving;
-    return SafeArea(
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(
-          20,
-          16,
-          20,
-          MediaQuery.viewInsetsOf(context).bottom + 20,
-        ),
-        child: Form(
-          key: _form,
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  widget.segment == null ? 'Create segment' : 'Edit segment',
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                _field(
-                  _name,
-                  'Segment name',
-                  validator: (v) =>
-                      v == null || v.trim().isEmpty || v.trim().length > 100
-                      ? 'Enter a name of up to 100 characters.'
-                      : null,
-                ),
-                _field(
-                  _description,
-                  'Description',
-                  maxLines: 2,
-                  validator: (v) => (v?.length ?? 0) > 500
-                      ? 'Use up to 500 characters.'
-                      : null,
-                ),
-                DropdownButtonFormField<String>(
-                  initialValue: _status,
-                  decoration: const InputDecoration(
-                    labelText: 'Customer status',
+    return LetbuyyEditorScaffold(
+      title: widget.segment == null ? 'Create segment' : 'Edit segment',
+      hasChanges: _revision > 0 || _pending != null,
+      isBusy: _saving,
+      discardMessage: _pending == null
+          ? 'Your unsaved segment rules will be discarded.'
+          : 'This request may already have completed. Closing loses this editor’s retry state. Refresh segments before creating another.',
+      confirmationGuard: (_, confirmation) => guardMerchantStoreView((
+        key: _contextKey,
+        storeId: widget.storeId,
+      ), confirmation),
+      body: Form(
+        key: _form,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(LetbuyySpacingTokens.space20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _field(
+                _name,
+                'Segment name',
+                validator: (v) =>
+                    v == null || v.trim().isEmpty || v.trim().length > 100
+                    ? 'Enter a name of up to 100 characters.'
+                    : null,
+              ),
+              _field(
+                _description,
+                'Description',
+                maxLines: 2,
+                validator: (v) =>
+                    (v?.length ?? 0) > 500 ? 'Use up to 500 characters.' : null,
+              ),
+              LetbuyyChoiceField<String>(
+                label: 'Customer status',
+                value: _status,
+                choices: const [
+                  LetbuyyChoice(value: '', label: 'Any status'),
+                  LetbuyyChoice(value: 'active', label: 'Active'),
+                  LetbuyyChoice(value: 'disabled', label: 'Disabled'),
+                  LetbuyyChoice(value: 'invited', label: 'Invited'),
+                ],
+                onChanged: enabled
+                    ? (v) {
+                        setState(() => _status = v);
+                        _edited('');
+                      }
+                    : null,
+              ),
+              LetbuyyChoiceField<String>(
+                label: 'Marketing consent',
+                value: _marketing,
+                choices: const [
+                  LetbuyyChoice(value: '', label: 'Any consent'),
+                  LetbuyyChoice(value: 'yes', label: 'Accepts marketing'),
+                  LetbuyyChoice(
+                    value: 'no',
+                    label: 'Does not accept marketing',
                   ),
-                  items: const [
-                    DropdownMenuItem(value: '', child: Text('Any status')),
-                    DropdownMenuItem(value: 'active', child: Text('Active')),
-                    DropdownMenuItem(
-                      value: 'disabled',
-                      child: Text('Disabled'),
-                    ),
-                    DropdownMenuItem(value: 'invited', child: Text('Invited')),
-                  ],
-                  onChanged: enabled
-                      ? (v) {
-                          setState(() => _status = v ?? '');
-                          _edited('');
-                        }
-                      : null,
+                ],
+                onChanged: enabled
+                    ? (v) {
+                        setState(() => _marketing = v);
+                        _edited('');
+                      }
+                    : null,
+              ),
+              _field(
+                _tags,
+                'Tags (any)',
+                validator: (_) =>
+                    _tagValues.length > 20 ||
+                        _tagValues.any((tag) => tag.length > 50)
+                    ? 'Use up to 20 tags, each up to 50 characters.'
+                    : null,
+              ),
+              _field(
+                _orders,
+                'Minimum orders',
+                keyboardType: TextInputType.number,
+                validator: (v) =>
+                    v == null ||
+                        v.trim().isEmpty ||
+                        (int.tryParse(v.trim()) != null &&
+                            int.parse(v.trim()) >= 0)
+                    ? null
+                    : 'Enter a non-negative whole number.',
+              ),
+              _field(
+                _spend,
+                'Minimum spend (INR)',
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
                 ),
-                DropdownButtonFormField<String>(
-                  initialValue: _marketing,
-                  decoration: const InputDecoration(
-                    labelText: 'Marketing consent',
-                  ),
-                  items: const [
-                    DropdownMenuItem(value: '', child: Text('Any consent')),
-                    DropdownMenuItem(
-                      value: 'yes',
-                      child: Text('Accepts marketing'),
-                    ),
-                    DropdownMenuItem(
-                      value: 'no',
-                      child: Text('Does not accept marketing'),
-                    ),
-                  ],
-                  onChanged: enabled
-                      ? (v) {
-                          setState(() => _marketing = v ?? '');
-                          _edited('');
-                        }
-                      : null,
-                ),
-                _field(
-                  _tags,
-                  'Tags (any)',
-                  validator: (_) =>
-                      _tagValues.length > 20 ||
-                          _tagValues.any((tag) => tag.length > 50)
-                      ? 'Use up to 20 tags, each up to 50 characters.'
-                      : null,
-                ),
-                _field(
-                  _orders,
-                  'Minimum orders',
-                  keyboardType: TextInputType.number,
-                  validator: (v) =>
-                      v == null ||
-                          v.trim().isEmpty ||
-                          (int.tryParse(v.trim()) != null &&
-                              int.parse(v.trim()) >= 0)
+                validator: (v) {
+                  if (v == null || v.trim().isEmpty) return null;
+                  final value = double.tryParse(v.trim());
+                  return value != null &&
+                          value.isFinite &&
+                          value >= 0 &&
+                          value <= 99999999.99 &&
+                          RegExp(r'^\d+(\.\d{1,2})?$').hasMatch(v.trim())
                       ? null
-                      : 'Enter a non-negative whole number.',
-                ),
-                _field(
-                  _spend,
-                  'Minimum spend (INR)',
-                  keyboardType: const TextInputType.numberWithOptions(
-                    decimal: true,
+                      : 'Enter a rupee amount with up to two decimal places.';
+                },
+              ),
+              _field(
+                _after,
+                'Last order from (YYYY-MM-DD)',
+                keyboardType: TextInputType.datetime,
+                validator: (v) => v == null || v.isEmpty || _date(v) != null
+                    ? null
+                    : 'Enter a valid date as YYYY-MM-DD.',
+              ),
+              _field(
+                _before,
+                'Last order through (YYYY-MM-DD)',
+                keyboardType: TextInputType.datetime,
+                validator: (v) {
+                  if (v == null || v.isEmpty) return null;
+                  final date = _date(v), after = _date(_after.text);
+                  return date == null
+                      ? 'Enter a valid date as YYYY-MM-DD.'
+                      : after != null && date.isBefore(after)
+                      ? 'End date must follow the start date.'
+                      : null;
+                },
+              ),
+              const SizedBox(height: 12),
+              Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: LetbuyySpacingTokens.space12,
+                children: [
+                  TextButton.icon(
+                    onPressed: enabled && !_previewing ? _previewRules : null,
+                    icon: const Icon(Icons.visibility_outlined),
+                    label: Text(_previewing ? 'Loading preview…' : 'Preview'),
                   ),
-                  validator: (v) {
-                    if (v == null || v.trim().isEmpty) return null;
-                    final value = double.tryParse(v.trim());
-                    return value != null &&
-                            value.isFinite &&
-                            value >= 0 &&
-                            value <= 99999999.99 &&
-                            RegExp(r'^\d+(\.\d{1,2})?$').hasMatch(v.trim())
-                        ? null
-                        : 'Enter a rupee amount with up to two decimal places.';
-                  },
-                ),
-                _field(
-                  _after,
-                  'Last order from (YYYY-MM-DD)',
-                  keyboardType: TextInputType.datetime,
-                  validator: (v) => v == null || v.isEmpty || _date(v) != null
-                      ? null
-                      : 'Enter a valid date as YYYY-MM-DD.',
-                ),
-                _field(
-                  _before,
-                  'Last order through (YYYY-MM-DD)',
-                  keyboardType: TextInputType.datetime,
-                  validator: (v) {
-                    if (v == null || v.isEmpty) return null;
-                    final date = _date(v), after = _date(_after.text);
-                    return date == null
-                        ? 'Enter a valid date as YYYY-MM-DD.'
-                        : after != null && date.isBefore(after)
-                        ? 'End date must follow the start date.'
-                        : null;
-                  },
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    TextButton.icon(
-                      onPressed: enabled && !_previewing ? _previewRules : null,
-                      icon: const Icon(Icons.visibility_outlined),
-                      label: Text(_previewing ? 'Loading preview…' : 'Preview'),
-                    ),
-                    if (_preview != null) Text('$_preview customers'),
-                  ],
-                ),
-                if (_error != null)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: Text(
-                      _error!,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.error,
-                      ),
-                    ),
-                  ),
-                FilledButton(
-                  onPressed: _saving ? null : _save,
+                  if (_preview != null) Text('$_preview customers'),
+                ],
+              ),
+              if (_error != null)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
                   child: Text(
-                    _saving
-                        ? 'Confirming…'
-                        : _savedId != null
-                        ? 'Retry confirmation'
-                        : _pending != null
-                        ? 'Retry save'
-                        : 'Save segment',
+                    _error!,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
                   ),
                 ),
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Close'),
-                ),
-              ],
-            ),
+            ],
           ),
         ),
+      ),
+      actions: OverflowBar(
+        alignment: MainAxisAlignment.end,
+        spacing: LetbuyySpacingTokens.space12,
+        children: [
+          TextButton(
+            onPressed: _saving ? null : () => Navigator.maybePop(context),
+            child: const Text('Close'),
+          ),
+          FilledButton(
+            onPressed: _saving ? null : _save,
+            child: Text(
+              _saving
+                  ? 'Confirming…'
+                  : _savedId != null
+                  ? 'Retry confirmation'
+                  : _pending != null
+                  ? 'Retry save'
+                  : 'Save segment',
+            ),
+          ),
+        ],
       ),
     );
   }

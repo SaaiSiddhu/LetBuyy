@@ -1,0 +1,28 @@
+{
+  "at": "2026-11-05T19:23:06.575765+00:00",
+  "status": "TERMINAL_FAILED_BEFORE_STOCK_SETTERS_SEARCH_INPUT_REQUIRES_REPRODUCTION",
+  "run_id": "ef45eab9c346",
+  "runner_exit": 1,
+  "ui_exit": 1,
+  "pass": 0,
+  "fail": 1,
+  "skip": 0,
+  "source_sha256": "b1ab9fa3bfb563d17d6285aeaeffbc80845ef39d521c5c0cfdcf028856df8e4d",
+  "source_unchanged_at_terminal": true,
+  "apk_sha256": "5fbdfaaaac79fe3e2cf26e257d8fb2b90b4046535b741a9cb2ed216537fd6d72",
+  "retained_and_installed_apk_equal": true,
+  "document_semantics_fix_observed_on_android": true,
+  "po_transfer_stage": "Original full native/web document quantities and exact125.50cost observed; source-bound independent state/stock/immutable11receipt assertions completed. Compound run still failed later.",
+  "cause": "Inventory search entry did not equal full intended synthetic location string; no native adjustment POST occurred. Do not infer app vs controller focus cause until reproduction.",
+  "independent_cleanup": {
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    },
+    "reverse_baseline_restored": true,
+    "forward_baseline_restored": true,
+    "credentials_retired": true
+  },
+  "next": "Reproduce incremental search typing/focus and inspect scroll identity before any app or controller correction. Stock-setter and Staff native acceptance remains open."
+}

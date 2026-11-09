@@ -61,7 +61,7 @@ function variant(productId: string, size: string, price: number, stock: number, 
     const id = randomUUID();
     owned.psql(`INSERT INTO product_variants(id,product_id,title,price,inventory_qty,option1,metadata)
         VALUES(${q(id)},${q(productId)},${q('Synthetic ' + size)},${price},${stock},${q(size)},${json(metadata)});
-        SELECT public.set_inventory_level_available(${q(productId)},${q(id)},${q(a.locationId)},${stock},NULL);`);
+        WITH _fixture_inventory_scope436 AS MATERIALIZED (SELECT set_config('app.site_id','${a.siteId}',true)) SELECT public.set_inventory_level_available(${q(productId)},${q(id)},${q(a.locationId)},${stock},NULL) FROM _fixture_inventory_scope436;`);
     return id;
 }
 function browse(query: Record<string, unknown> = {}, tenant = a, only?: string[]) {

@@ -1,0 +1,202 @@
+{
+  "at": "2026-11-07T19:15:34.774744+00:00",
+  "status": "BOUNDED_CURRENT_ANDROID_CAMERA_PROCESS_DEATH_RECOVERY_ACCESSIBLE_REVIEW_AND_MOV_WEBM_WEB_SYNC_PASS;FULL122_OPEN",
+  "source": "merchant-native-selection-source-v91",
+  "source_sha256": "5b655a37c2bcc1b2f6e79cea831340addb0329c8b4b60b4a1f4aff33bafdec6c",
+  "private_root": "/private/tmp/letbuyy-merchant-local-20261108-911da75271",
+  "run_id": "a2ebf353bb12",
+  "runner": {
+    "tests": 1,
+    "assertionsPassed": 1,
+    "assertionsFailed": 0,
+    "skipped": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    }
+  },
+  "actual_process_deaths": {
+    "photo": {
+      "killed": {
+        "run_id": "a2ebf353bb12",
+        "old_pid": 18184,
+        "old_process_absent_before_camera_result": true,
+        "external_camera_remained_foreground": true
+      },
+      "recovered": {
+        "run_id": "a2ebf353bb12",
+        "accepted": true,
+        "old_pid": 18184,
+        "new_pid": 18846,
+        "old_process_absent_before_camera_result": true,
+        "review_visible_before_use": true,
+        "no_new_picker_or_session_injection": true
+      },
+      "no_write_before_use": {
+        "run_id": "a2ebf353bb12",
+        "accepted": true,
+        "uploads_before_explicit_use": 0,
+        "media_rows_before_explicit_use": 0
+      }
+    },
+    "video": {
+      "killed": {
+        "run_id": "a2ebf353bb12",
+        "old_pid": 18846,
+        "old_process_absent_before_camera_result": true,
+        "external_camera_remained_foreground": true
+      },
+      "recovered": {
+        "run_id": "a2ebf353bb12",
+        "accepted": true,
+        "old_pid": 18846,
+        "new_pid": 19536,
+        "old_process_absent_before_camera_result": true,
+        "review_visible_before_use": true,
+        "no_new_picker_or_session_injection": true
+      },
+      "no_write_before_use": {
+        "run_id": "a2ebf353bb12",
+        "accepted": true,
+        "uploads_before_explicit_use": 1,
+        "media_rows_before_explicit_use": 1
+      }
+    }
+  },
+  "uploads": 4,
+  "media_rows": 4,
+  "objects": 4,
+  "hashes": {
+    "image/jpeg": "580465d667d08db8bc04aa73ae31c084967cb3fa6c9e7991b40f9e8810704117",
+    "video/mp4": "c78de51ac1de720642dad2744d3c7306303d57dc2ade04d1d8808ded047d4e8c",
+    "video/quicktime": "41df40017e22408682731f8eb5686d16b1cdc52d9a9ee0623d98b2dbed62e3c3",
+    "video/webm": "87d37fd5c013df089147c9f05f2bf8962e55906cc3ff8c4ec79017551d18954a"
+  },
+  "actual_recording_and_MOV_WebM_controls": true,
+  "native_web_caption_readback": true,
+  "artifact": {
+    "run_id": "a2ebf353bb12",
+    "source_sha256": "7df60b8129fb875b4c7e96aaef32d9d012217ded28e2ad87750abf085f3c06c0",
+    "apk_sha256": "a30c3a8c5ea3194da04dcd24e66b78fe13e91cc1a51fc8624e903fb7d175b06b",
+    "installed_equals_retained": true,
+    "defines": {
+      "ENVIRONMENT": "local",
+      "BFF_BASE_URL": "http://127.0.0.1:54350/v1",
+      "API_BASE_URL": "http://127.0.0.1:54350/v1",
+      "IDENTITY_BASE_URL": "http://localhost:9002",
+      "ADMIN_BASE_URL": "http://localhost:54353",
+      "STOREFRONT_BASE_URL": "http://localhost:54354",
+      "LOCAL_CHALLENGE_SDK_URL": "http://127.0.0.1:56584/fixtures/turnstile/api.js",
+      "TURNSTILE_SITE_KEY": "1x00000000000000000000AA",
+      "MOBILE_PUSH_DEVICE_TOKEN": "",
+      "SENTRY_DSN": "SKIP_NEEDS_HUMAN_LOCAL_SENTRY_DSN"
+    },
+    "scope": "Current local debug Android artifact only."
+  },
+  "phase_terminals": {
+    "Readback-terminal.json": {
+      "phase": "Readback",
+      "attempt": 1,
+      "exit": 0,
+      "accepted": true,
+      "run_id": "a2ebf353bb12",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261108-911da75271/Readback.py",
+      "control_sha256": "d5734e573d00cea20cf765e7ccd89863c4273642d9814866ec01411860554efc"
+    },
+    "Photo-terminal.json": {
+      "phase": "Photo",
+      "attempt": 1,
+      "exit": 0,
+      "accepted": true,
+      "run_id": "a2ebf353bb12",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261108-911da75271/Photo.py",
+      "control_sha256": "9d9fc60a802dccd5acc059a4501e0459f598bfa98a6a32f3955adbe1806a6902"
+    },
+    "Video-terminal.json": {
+      "phase": "Video",
+      "attempt": 1,
+      "exit": 0,
+      "accepted": true,
+      "run_id": "a2ebf353bb12",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261108-911da75271/Video.py",
+      "control_sha256": "60528365b90ffed9eddbe31fb4dedfbead6275004a0c6a67d5d44cbc75985046"
+    },
+    "Preview-terminal.json": {
+      "phase": "Preview",
+      "attempt": 1,
+      "exit": 0,
+      "accepted": true,
+      "run_id": "a2ebf353bb12",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261108-911da75271/Preview.py",
+      "control_sha256": "030e0d1a0a6008bc57d8650d87125125b5dd4ed50489bee7c48a6d40a2feefae"
+    },
+    "CameraPreview-terminal.json": {
+      "phase": "CameraPreview",
+      "attempt": 1,
+      "exit": 0,
+      "accepted": true,
+      "run_id": "a2ebf353bb12",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261108-911da75271/CameraPreview.py",
+      "control_sha256": "27ed70475544d1a1a01fd7fa4ed8542fc754b79e34f6044b40e53936539461bd"
+    },
+    "Auth-terminal.json": {
+      "phase": "Auth",
+      "attempt": 1,
+      "exit": 0,
+      "accepted": true,
+      "run_id": "a2ebf353bb12",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261108-911da75271/Auth.py",
+      "control_sha256": "50c4542c732b7206a3f162599d1594c66133a3f92e52f8c3ce0126978617cd14"
+    },
+    "Import-terminal.json": {
+      "phase": "Import",
+      "attempt": 1,
+      "exit": 0,
+      "accepted": true,
+      "run_id": "a2ebf353bb12",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261108-911da75271/Import.py",
+      "control_sha256": "7aaa668efb53a831081d9aae98f77a8a8ca43bd2d2c7fa9ae5af78cd5978a48f"
+    }
+  },
+  "banner_accessibility": {
+    "accepted": true,
+    "actual_recovery_path": "Both Photo and Video original controls tap Review selection,open Saved file selection,tap Open original area,then enter the same camera purpose and explicitly Use saved file. No route workaround/repeated capture/session injection.",
+    "regression": "native_notice_semantics_test.dart",
+    "historical_failure_preserved": "native118-bounded-local-readback.json"
+  },
+  "fixture_source_projection": {
+    "core_paths_hash_equal": 4888,
+    "different_digest_basis": "Fixture ordered runtime/dependency input array and full qualification core-file map use different hash encodings/scopes. Exact overlapping path bytes all equal."
+  },
+  "proof_png_sha256": {
+    "native-camera-video-saved.png": "d2b74fe0cb0424e933c27e5d60e3702b72b6fc51ad84b06bcc169d10b8e7fb90",
+    "native-web-camera-and-WebM-readback.png": "6d0cf1cdc4530ba8929b5e1c80618f43081a2a4ea770627deeb5de17f2ac175f",
+    "native-photo-recovery-before-use.png": "828785f2ccc98100073ebd6a84299d13799c2744cc68039a7121dc0e52d7db0d",
+    "native-format-0-background-paused.png": "858247ac72a5d9c67209073ee679c7230c7164616f7bdc07dac135681e357910",
+    "native-format-0-progress.png": "f4c2ab939280d3fb04650d87088647f78a3afa1c72e9db197ec23728e5418af7",
+    "native-format-0-playing.png": "e2e3f32f10aa386bdaead951216dff056484bc100ab2be5bf5bd40670a63e993",
+    "native-video-recovery-before-use.png": "c314bed872c1e186b120ba7c297b08a5d45ac0e18c8e789b3890dd52a7c6fe85",
+    "native-camera-photo-saved.png": "ac90a60f6b56a37bf0e181f2e977514e84a5b390592db8537851706f8227e50f",
+    "native-MOV-WebM-imported.png": "0ef4cba6707a5f9beb77fb9ebe5da7ea88b04c7eb0f3524f8411d14ef013ac63",
+    "native-format-1-progress.png": "294186f7417b5a3bb3041a05f5900ebb802cafc1b2c65de361c7481ef935240c",
+    "native-recorded-video-playing.png": "da713587788e99f9b5035f1df8ba3b3d055856d8d69a395f49b6cd21dbce350a",
+    "native-recorded-video-paused.png": "c0376a67583600fe2216389390c62e91d8bf6ce5297b0e53cecbf11acdd1393a",
+    "web-native-camera-readback.png": "fab7a26eb01de7aa5eda93ae919dee149b06104f7c9308638719019266a0ac83",
+    "native-recorded-video-background-paused.png": "63545257f030d4a089c3a4e0dd919a5bbc9ff93e8c1eb36de805d8f900cf8a2a",
+    "native-recorded-video-progress.png": "f5e957e64ecf014efec67da1b9b0533c81813fa1a5487e0cc5a7b9cee739d115",
+    "web-native-video-formats-readback.png": "47632a189fc9fda1dd3865db98ce418df0949a1c7e9aec628377fa99d756b71b",
+    "native-recorded-video-seeked.png": "333163cc53fd463d01132f488ff11c6de4b8a9a9b8335d603c5ac2d8bdd996b5",
+    "native-format-1-playing.png": "c9f1694dedfc120cab1cc50efa53e0f47a61098e86311901495ce621c3ecfdec",
+    "native-format-1-background-paused.png": "f01c810d5cf2b7330cb17debfae8670474d0266211394b28e10201c4f6b01cf5"
+  },
+  "whole_features_accepted": 0,
+  "limits": [
+    "Actual Android15/API35 task emulator and emulated camera;no hostcamera/audio or physical device claim",
+    "Public-media camera JPEG/recordedMP4 and Files MOV/H264 WebM/VP8 only;not every codec/OS",
+    "Private KYC/provider/hosted/release and full122 acceptance remain open"
+  ]
+}

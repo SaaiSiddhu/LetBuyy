@@ -1,0 +1,28 @@
+{
+  "status": "SOURCE_VERIFIED_LOCAL_IOS_SIMULATOR_COMPILE_ONLY",
+  "sourceSnapshot": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/ios-warehouse-compile-v3.source.json",
+  "sourceSha256": "088a2bb60dcd98c911dc4997c69fb3fab739d3dff73778c17fb2152d811923cb",
+  "sourceUnchanged": true,
+  "buildExit": 0,
+  "mode": "debug simulator; --no-pub --no-codesign; default normal main entry",
+  "app": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/ios-warehouse-compile-v3-artifact/Runner.app",
+  "bundleId": "com.letbuyy.store",
+  "version": "1.0.0",
+  "build": "1",
+  "architecture": "Non-fat file: /private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/ios-warehouse-compile-v3-artifact/Runner.app/Runner is architecture: arm64",
+  "signingFacts": [
+    "Identifier=Runner",
+    "Signature=adhoc",
+    "TeamIdentifier=not set"
+  ],
+  "manifestSha256": "e6b59142063a690ad3000958e02c753a25a00b809889f161163eda3b42118b5e",
+  "limitations": [
+    "No iOS UI/auth/backend journey, no signed distribution or production certificate.",
+    "Local fixture defines only; original services now retired.",
+    "This precedes the approved but unimplemented436quantity cutover; it cannot qualify future Dart or schema changes."
+  ],
+  "preservedPriorAttempts": [
+    "v1compiler1: watch companion requires target ID.",
+    "v2compiler0but source freeze failed because Xcode added a second identical Swift dependency lock; not source-qualified."
+  ]
+}

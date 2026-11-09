@@ -1,0 +1,22 @@
+{
+  "started_at": "2026-11-07T05:47:55.089759+00:00",
+  "supervisor_pid": 28941,
+  "source": "merchant-catalog-media-source-v73",
+  "source_sha256": "fea6117e135deda4002896d072904f1655ab872fe949caa7c33455fb0e6c3820",
+  "command": [
+    "env",
+    "TSX_TSCONFIG_PATH=/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/apps/merchant/web/tsconfig.json",
+    "node",
+    "--import",
+    "tsx",
+    "--test",
+    "--test-name-pattern=late",
+    "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/apps/merchant/web/src/components/products/product-status.test.tsx"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 28944,
+  "exit_code": 0,
+  "finished_at": "2026-11-07T05:47:56.882853+00:00",
+  "source_unchanged": true,
+  "source_readback_sha256": "fea6117e135deda4002896d072904f1655ab872fe949caa7c33455fb0e6c3820"
+}

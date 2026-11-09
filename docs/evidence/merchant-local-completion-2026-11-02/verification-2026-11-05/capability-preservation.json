@@ -1,0 +1,15 @@
+{
+  "source_sha256": "7051354b8f4957a22d983e24dd51e973c850dfcbf03ec58850f3d9732e11aa99",
+  "changed": [
+    "apps/merchant/mobile/lib/widgets/shared/capability_gate.dart",
+    "apps/merchant/mobile/test/capability_presentation_test.dart"
+  ],
+  "all_other_inputs_unchanged": 8444,
+  "availability_enum_and_title_description_copy_policy_unchanged": true,
+  "available_child_identity_test": true,
+  "negative": "2PASS/8FAIL;2retired callbacks+6large-text1119px overflow",
+  "focused_pass": 10,
+  "fail": 0,
+  "skip": 0,
+  "native_and_integration": "pending"
+}

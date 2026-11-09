@@ -1,0 +1,26 @@
+{
+  "at": "2026-11-08T11:14:15.108070+00:00",
+  "source": "merchant-buyer-inventory-source-v113",
+  "source_sha256": "ad36cabb72ba7d40cb240194e1f1a749f7e97dba355d0cff6c9554c7a3b54f32",
+  "status": "TERMINAL_BOUNDED_PASS_FULL122_OPEN",
+  "session_id": 58702,
+  "fixture": "merchant-inventory-core-buyer-v113b.postgres.test.ts",
+  "admission": "compiled-buyer113b-admission.json",
+  "receipt": "compiled-buyer113b.json",
+  "passed": {
+    "current_app": 2217,
+    "current_owned": "25PASS d85118ec179f",
+    "governance": "114PASS/1NA; source/index unchanged",
+    "current_types": "Commerce0; Gateway1090 on unchanged inputs",
+    "commerce_mutation_regression": "134PASS ffc433894c46 with2preparedslots; unchanged SQL/consumers",
+    "theme": "2222PASS110 unchanged package",
+    "authored_unknown_render": "20PASS111 unchanged template/adapter inputs",
+    "compiled111j": "Focused stock PASS50f6c4cc5fbe; zero/unknown SSR +hydrated refusal, trial restoration; screenshots retained"
+  },
+  "next": "Per-feature full product/media/variant/collection and current-role/store-switch/revocation/concurrency matrices; generic iOS accessibility; then remaining Accounts/stores/themes/domains/buyer/orders/shipping/tax/money/growth/settings criteria. Existing frozen/operator/marketing/marketplace scope remains. No hosted activation.",
+  "host9002": "Never contact/probe/bind/stop; all sources/devices/data preserved.",
+  "source_unchanged": true,
+  "session_collected": true,
+  "run_id": "2e189895cd31",
+  "cleanup_empty": true
+}

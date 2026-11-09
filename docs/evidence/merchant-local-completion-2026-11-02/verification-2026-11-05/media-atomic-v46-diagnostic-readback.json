@@ -1,0 +1,16 @@
+{
+  "runId": "ed28587ada86",
+  "tests": 12,
+  "assertionsPassed": 1,
+  "assertionsFailed": 11,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "status": "DIAGNOSTIC_NOT_ACCEPTED",
+  "cause": "Serialized JSON strings were inferred as jsonb by prepared Postgres.js and encoded as JSON strings; v48 binds text before the explicit jsonb cast. No schema/guard relaxation."
+}

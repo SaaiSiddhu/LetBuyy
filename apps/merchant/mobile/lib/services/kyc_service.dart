@@ -1,10 +1,18 @@
 import 'dart:io';
+import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
 
 import 'api_client.dart';
+import 'package:letbuyy_models/letbuyy_models.dart'
+    show
+        MerchantKycOverview,
+        MerchantKycDocument,
+        merchantKycDocumentStatuses,
+        merchantKycEvidenceScanStatuses;
+import 'security_command_store.dart';
 
 typedef _KycOperation = ({
   int version,
@@ -25,10 +33,11 @@ Future<String> _postIndiaKycObject(
   Uri url,
   Map<String, String> fields,
   Uint8List bytes,
-  String filename,
-) async {
+  String filename, {
+  http.Client Function()? clientFactory,
+}) async {
   // A fresh client has no merchant token, cookies, or Gateway interceptors.
-  final client = http.Client();
+  final client = clientFactory?.call() ?? http.Client();
   try {
     final request = http.MultipartRequest('POST', url)
       ..followRedirects = false
@@ -40,7 +49,6 @@ Future<String> _postIndiaKycObject(
         .send(request)
         .timeout(const Duration(seconds: 30));
     final version = response.headers['x-amz-version-id'];
-    await response.stream.drain<void>();
     if (response.statusCode != 201 ||
         version == null ||
         version.isEmpty ||
@@ -50,6 +58,14 @@ Future<String> _postIndiaKycObject(
         statusCode: 503,
         code: 'KYC_INDIA_OBJECT_UNCONFIRMED',
       );
+    }
+    // The versioned 201 is the storage acknowledgement; the Gateway still
+    // verifies that exact version with HEAD before attaching any evidence.
+    // A failed or stalled response body must not discard the known receipt.
+    try {
+      await response.stream.drain<void>().timeout(const Duration(seconds: 10));
+    } catch (_) {
+      // No body fields are used as evidence. Preserve the acknowledged version.
     }
     return version;
   } finally {
@@ -146,11 +162,107 @@ String _imageContentType(Uint8List bytes) {
 }
 
 class KycService extends ChangeNotifier {
-  KycService({required ApiClient api, IndiaKycUploadPoster? postIndiaObject})
-    : _api = api,
-      _postIndiaObject = postIndiaObject ?? _postIndiaKycObject;
+  KycService({
+    required ApiClient api,
+    IndiaKycUploadPoster? postIndiaObject,
+    http.Client Function()? indiaClientFactory,
+    String? Function()? actorIdProvider,
+    String? Function()? storeIdProvider,
+    SecurityCommandStore? commands,
+  }) : _api = api,
+       _postIndiaObject =
+           postIndiaObject ??
+           (indiaClientFactory == null
+               ? _postIndiaKycObject
+               : (url, fields, bytes, filename) => _postIndiaKycObject(
+                   url,
+                   fields,
+                   bytes,
+                   filename,
+                   clientFactory: indiaClientFactory,
+                 )),
+       _actorIdProvider = actorIdProvider,
+       _storeIdProvider = storeIdProvider,
+       _commands = commands ?? SecurityCommandStore();
 
   final ApiClient _api;
+  final String? Function()? _actorIdProvider, _storeIdProvider;
+  final SecurityCommandStore _commands;
+  static const _uploadCommand = 'kyc-upload';
+  PendingSecurityCommand? _pendingUpload;
+  String? get pendingUploadKey => hasPendingUpload ? _pendingUpload?.key : null;
+  Map<String, dynamic>? get pendingUploadInput => hasPendingUpload
+      ? Map.unmodifiable(
+          SecurityCommandStore.captureIntent(
+            asJsonMap(_pendingUpload!.intent['input']),
+          ),
+        )
+      : null;
+  String? get pendingUploadTransport =>
+      hasPendingUpload ? _pendingUpload!.intent['transport'] as String? : null;
+
+  bool get hasPendingUpload {
+    _synchronizeContext();
+    if (_pendingUpload != null &&
+        (_pendingUpload!.actor != _actorIdProvider?.call() ||
+            _pendingUpload!.store != _storeIdProvider?.call()))
+      _pendingUpload = null;
+    return _pendingUpload != null;
+  }
+
+  bool get canResumeUpload =>
+      hasPendingUpload && _pendingUpload!.intent['stage'] == 'complete';
+  bool get canRetryUpload =>
+      hasPendingUpload && _pendingUpload!.intent['stage'] == 'intent';
+  String? get uploadRecoveryMessage {
+    if (!hasPendingUpload) return null;
+    return switch (_pendingUpload!.intent['stage']) {
+      'complete' =>
+        'Your photo reached storage. Resume confirmation without uploading it again.',
+      'object_pending' =>
+        'Storage may have received your photo, but its receipt was interrupted. The upload needs review before another photo can be sent.',
+      _ =>
+        'An interrupted upload is saved. Choose the same photo, document type and reference to resume it.',
+    };
+  }
+
+  MerchantSecurityContext _uploadContext(_KycOperation operation) {
+    final actor = _actorIdProvider?.call(), store = _storeIdProvider?.call();
+    if (actor == null ||
+        actor.trim().isEmpty ||
+        store == null ||
+        store != operation.storeId) {
+      throw _contextChanged();
+    }
+    return (actorId: actor, storeId: store, version: operation.context);
+  }
+
+  void _checkUpload(_KycOperation operation, MerchantSecurityContext c) {
+    _requireCurrent(operation);
+    if (_actorIdProvider?.call() != c.actorId ||
+        _storeIdProvider?.call() != c.storeId)
+      throw _contextChanged();
+  }
+
+  Future<void> _loadPending(_KycOperation operation) async {
+    if (_actorIdProvider == null || _storeIdProvider == null) return;
+    final c = _uploadContext(operation);
+    _pendingUpload = await _commands.serialized(
+      () => _commands.read(
+        c,
+        _uploadCommand,
+        check: () => _checkUpload(operation, c),
+      ),
+    );
+    _checkUpload(operation, c);
+  }
+
+  static ApiException _heldUpload() => const ApiException(
+    message:
+        'The storage receipt is unconfirmed. This upload needs review before another photo can be sent.',
+    statusCode: 409,
+    code: 'KYC_UPLOAD_NEEDS_REVIEW',
+  );
   final IndiaKycUploadPoster _postIndiaObject;
   bool _isLoading = false;
   bool _disposed = false;
@@ -172,6 +284,7 @@ class KycService extends ChangeNotifier {
       _boundStoreId = null;
       _overview = null;
       _refreshRetryKeys.clear();
+      _pendingUpload = null;
       _isLoading = false;
       _operationVersion++;
     }
@@ -189,7 +302,10 @@ class KycService extends ChangeNotifier {
   }
 
   List<Map<String, dynamic>> get documents =>
-      _listOfMaps(overview?['documents']);
+      List<Map<String, dynamic>>.unmodifiable(
+        (overview?['documents'] as List? ?? const [])
+            .cast<Map<String, dynamic>>(),
+      );
 
   static ApiException _contextChanged() => const ApiException(
     message: 'Verification context changed. Reload details.',
@@ -245,8 +361,22 @@ class KycService extends ChangeNotifier {
       _overview = null;
       throw _scopeMismatch();
     }
-    _overview = Map<String, dynamic>.from(value);
+    try {
+      _overview = MerchantKycOverview.fromJson(
+        value,
+        expectedSiteId: operation.storeId,
+      ).toJson();
+    } on FormatException {
+      _overview = null;
+      throw _invalidResponse();
+    }
   }
+
+  static ApiException _invalidResponse() => const ApiException(
+    message: 'Verification details could not be confirmed. Reload details.',
+    statusCode: 503,
+    code: 'KYC_INVALID_RESPONSE',
+  );
 
   void _finish(_KycOperation operation) {
     if (_isCurrent(operation)) {
@@ -272,7 +402,9 @@ class KycService extends ChangeNotifier {
     final operation = _begin(storeId, options);
     _overview = null;
     try {
-      return await _readOverview(operation);
+      final result = await _readOverview(operation);
+      await _loadPending(operation);
+      return result;
     } finally {
       _finish(operation);
     }
@@ -291,6 +423,21 @@ class KycService extends ChangeNotifier {
             document['site_id'] != operation.storeId)) {
       _overview = null;
       throw _scopeMismatch();
+    }
+    if (response.containsKey('document')) {
+      try {
+        MerchantKycDocument.fromJson(
+          document,
+          expectedSiteId: operation.storeId,
+        );
+      } on FormatException {
+        _overview = null;
+        throw _invalidResponse();
+      }
+    }
+    if (response.containsKey('overview') && response['overview'] is! Map) {
+      _overview = null;
+      throw _invalidResponse();
     }
     final value = response['overview'];
     if (value is Map) {
@@ -340,25 +487,19 @@ class KycService extends ChangeNotifier {
     required String documentType,
     required String documentNumberLast4,
     required File file,
+    String? selectionKey,
     ApiRequestOptions? options,
   }) async {
     final operation = _begin(storeId, options);
     try {
-      // The screen disables unavailable uploads, but the service must also
-      // refuse them before reading or sending document bytes.
-      if (_overview?['india_direct_upload_available'] != true &&
-          _overview?['private_upload_available'] != true) {
-        throw const ApiException(
-          message:
-              'Private India upload is unavailable. Refresh status and retry.',
-          statusCode: 503,
-          code: 'KYC_UPLOAD_UNAVAILABLE',
-        );
-      }
-      late final Map<String, dynamic> response;
-      if (_overview?['india_direct_upload_available'] == true) {
+      _requireUploadAvailable();
+      final c = _uploadContext(operation);
+      // Capture the account before queuing; a newer account cannot inherit work.
+      return await _commands.serialized(() async {
+        void check() => _checkUpload(operation, c);
+        check();
         final bytes = await file.readAsBytes();
-        _requireCurrent(operation);
+        check();
         if (bytes.isEmpty || bytes.length > 5 * 1024 * 1024) {
           throw const ApiException(
             message: 'Choose a document photo under 5 MB.',
@@ -367,56 +508,194 @@ class KycService extends ChangeNotifier {
           );
         }
         final contentType = _imageContentType(bytes);
-        final key = const Uuid().v4();
-        final requestOptions = operation.options.copyWith(idempotencyKey: key);
-        final intent = await _api.kyc.indiaUploadIntent({
+        final input = <String, dynamic>{
           'store_id': storeId,
           'document_type': documentType,
           'document_number_last4': documentNumberLast4,
           'content_type': contentType,
           'byte_size': bytes.length,
           'sha256_hex': sha256.convert(bytes).toString(),
-        }, options: requestOptions);
-        _requireCurrent(operation);
-        final ticket = _indiaTicket(
-          intent,
-          storeId,
-          documentType,
-          bytes.length,
-        );
-        final version = await _postIndiaObject(
-          ticket.url,
-          ticket.fields,
-          bytes,
-          file.uri.pathSegments.last,
-        );
-        _requireCurrent(operation);
-        if (version.isEmpty ||
-            version == 'null' ||
-            version.length > 1024 ||
-            RegExp(r'[\x00-\x1f\x7f]').hasMatch(version)) {
-          throw const ApiException(
-            message: 'Private storage did not return a valid object version.',
-            statusCode: 503,
-            code: 'KYC_INDIA_OBJECT_UNCONFIRMED',
+        };
+        var pending = await _commands.read(c, _uploadCommand, check: check);
+        if (pending != null) {
+          // Compare only immutable input; progress retains the original key.
+          if (jsonEncode(SecurityCommandStore.captureIntent(input)) !=
+              jsonEncode(
+                SecurityCommandStore.captureIntent(
+                  asJsonMap(pending.intent['input']),
+                ),
+              )) {
+            throw const ApiException(
+              message:
+                  'Recover the original photo and reference before changing this upload.',
+              statusCode: 409,
+              code: 'PENDING_SECURITY_COMMAND',
+            );
+          }
+        } else {
+          pending = await _commands.prepare(
+            c,
+            _uploadCommand,
+            {
+              'input': input,
+              'transport': _overview?['india_direct_upload_available'] == true
+                  ? 'india'
+                  : 'private',
+              'stage': 'intent',
+            },
+            check: check,
+            proposedKey: selectionKey,
           );
         }
-        response = await _api.kyc.indiaUploadComplete({
-          'store_id': storeId,
-          'receipt_id': ticket.receiptId,
-          'version_id': version,
-        }, options: requestOptions);
-      } else {
-        response = await _api.kyc.uploadDocument(
+        _pendingUpload = pending;
+        final requestOptions = operation.options.copyWith(
+          idempotencyKey: pending.key,
+          maxRetries: 0,
+        );
+        if (pending.intent['transport'] == 'india') {
+          if (_overview?['india_direct_upload_available'] != true)
+            throw _heldUpload();
+          if (pending.intent['stage'] == 'object_pending') throw _heldUpload();
+          if (pending.intent['stage'] == 'complete') {
+            return _completeIndia(operation, c, pending);
+          }
+          final intent = await _api.kyc.indiaUploadIntent(
+            input,
+            options: requestOptions,
+          );
+          check();
+          final ticket = _indiaTicket(
+            intent,
+            storeId,
+            documentType,
+            bytes.length,
+          );
+          // Persist BEFORE sending bytes. Unknown storage acknowledgement must
+          // never turn into another POST after a crash or account transition.
+          pending = await _commands.replaceIntent(c, pending, {
+            ...pending.intent,
+            'stage': 'object_pending',
+            'receipt_id': ticket.receiptId,
+          }, check: check);
+          _pendingUpload = pending;
+          final version = await _postIndiaObject(
+            ticket.url,
+            ticket.fields,
+            bytes,
+            file.uri.pathSegments.last,
+          );
+          check();
+          if (version.isEmpty ||
+              version == 'null' ||
+              version.length > 1024 ||
+              RegExp(r'[\x00-\x1f\x7f]').hasMatch(version))
+            throw _heldUpload();
+          pending = await _commands.replaceIntent(c, pending, {
+            ...pending.intent,
+            'stage': 'complete',
+            'version_id': version,
+          }, check: check);
+          _pendingUpload = pending;
+          return _completeIndia(operation, c, pending);
+        }
+        if (pending.intent['transport'] != 'private' ||
+            _overview?['private_upload_available'] != true) {
+          throw _heldUpload();
+        }
+        final response = await _api.kyc.uploadDocument(
           storeId: storeId,
           documentType: documentType,
           documentNumberLast4: documentNumberLast4,
           file: file,
-          options: operation.options,
+          options: requestOptions,
         );
-      }
-      await _acceptMutation(response, operation);
-      return response;
+        await _acceptMutation(response, operation);
+        await _commands.complete(c, pending, check: check);
+        _pendingUpload = null;
+        return response;
+      });
+    } finally {
+      _finish(operation);
+    }
+  }
+
+  void _requireUploadAvailable() {
+    if (_overview?['india_direct_upload_available'] != true &&
+        _overview?['private_upload_available'] != true) {
+      throw const ApiException(
+        message:
+            'Private India upload is unavailable. Refresh status and retry.',
+        statusCode: 503,
+        code: 'KYC_UPLOAD_UNAVAILABLE',
+      );
+    }
+  }
+
+  Future<Map<String, dynamic>> _completeIndia(
+    _KycOperation operation,
+    MerchantSecurityContext c,
+    PendingSecurityCommand pending,
+  ) async {
+    void check() => _checkUpload(operation, c);
+    check();
+    final receipt = pending.intent['receipt_id'],
+        version = pending.intent['version_id'];
+    if (receipt is! String ||
+        version is! String ||
+        receipt.isEmpty ||
+        version.isEmpty)
+      throw _heldUpload();
+    final response = await _api.kyc.indiaUploadComplete(
+      {'store_id': c.storeId, 'receipt_id': receipt, 'version_id': version},
+      options: operation.options.copyWith(
+        idempotencyKey: pending.key,
+        maxRetries: 0,
+      ),
+    );
+    check();
+    if (response['receipt_id'] != receipt ||
+        !merchantKycDocumentStatuses.contains(response['document_status']) ||
+        (response['evidence_scan_status'] != null &&
+            !merchantKycEvidenceScanStatuses.contains(
+              response['evidence_scan_status'],
+            ))) {
+      throw const ApiException(
+        message:
+            'Document confirmation could not be verified. Resume the saved confirmation.',
+        statusCode: 503,
+        code: 'KYC_UPLOAD_CONFIRMATION_INVALID',
+      );
+    }
+    await _acceptMutation(response, operation);
+    await _commands.complete(c, pending, check: check);
+    _pendingUpload = null;
+    return response;
+  }
+
+  /// Known object version can be confirmed after restart without retaining or
+  /// selecting the photo. Server permission/receipt checks remain authoritative.
+  Future<Map<String, dynamic>> resumeUpload(
+    String storeId, {
+    ApiRequestOptions? options,
+  }) async {
+    final operation = _begin(storeId, options);
+    try {
+      _requireUploadAvailable();
+      final c = _uploadContext(operation);
+      return await _commands.serialized(() async {
+        final pending = await _commands.read(
+          c,
+          _uploadCommand,
+          check: () => _checkUpload(operation, c),
+        );
+        if (pending == null ||
+            pending.intent['transport'] != 'india' ||
+            pending.intent['stage'] != 'complete' ||
+            _overview?['india_direct_upload_available'] != true)
+          throw _heldUpload();
+        _pendingUpload = pending;
+        return _completeIndia(operation, c, pending);
+      });
     } finally {
       _finish(operation);
     }
@@ -456,13 +735,5 @@ class KycService extends ChangeNotifier {
     _isLoading = false;
     _operationVersion++;
     super.dispose();
-  }
-
-  static List<Map<String, dynamic>> _listOfMaps(Object? value) {
-    if (value is! List) return const [];
-    return value
-        .whereType<Map>()
-        .map((row) => Map<String, dynamic>.from(row))
-        .toList(growable: false);
   }
 }

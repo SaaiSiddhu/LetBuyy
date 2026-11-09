@@ -1,0 +1,16 @@
+{
+  "status": "INDEPENDENT_DEBUG_APK_READBACK_PASS",
+  "source_sha256": "80e4c4f1f08a4b6e06a3b46e1abc76a36e4b164f9b4ae0584fd4a9894e3c1a0f",
+  "artifact": {
+    "path": "/private/tmp/letbuyy-coupon-android-7lbg2wcl/merchant-local-debug.apk",
+    "sha256": "66033f5f7d5fd16a8ccc42771f072e273e0146f5f3d028bd6b476100d08440d6",
+    "bytes": 151921237
+  },
+  "actual_sha256": "66033f5f7d5fd16a8ccc42771f072e273e0146f5f3d028bd6b476100d08440d6",
+  "compiled_arm64_engine": true,
+  "debug_kernel_present": true,
+  "normal_main": true,
+  "installed": false,
+  "runtime_verified": false,
+  "limits": "Compile/archive integrity only, no auth/backend/sync/physical/performance/production acceptance."
+}

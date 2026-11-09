@@ -1,3 +1,4 @@
+import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' show LetbuyyChoiceField;
 import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -151,8 +152,9 @@ Future<void> chooseProduct(
 ) async {
   await tap(tester, find.text('Choose product for line ${index + 1}'));
   await tap(tester, find.text('Synthetic shirt').last);
-  await tap(tester, find.byType(DropdownButtonFormField<String>).last);
+  await tap(tester, find.byType(LetbuyyChoiceField<String>).last);
   await tap(tester, find.text(variant).last);
+  await tap(tester, find.text('Apply selection'));
 }
 
 void main() {
@@ -322,7 +324,21 @@ void main() {
             .text,
         '7',
       );
-      await tap(tester, find.byTooltip('Close draft'));
+      await tap(tester, find.byTooltip('Back'));
+      expect(find.text('Discard changes?'), findsOneWidget);
+      await tap(tester, find.text('Cancel'));
+      expect(
+        tester
+            .widget<TextField>(
+              find.byKey(const ValueKey('warehouse-quantity-0')),
+            )
+            .controller!
+            .text,
+        '7',
+      );
+      await tap(tester, find.byTooltip('Back'));
+      await tap(tester, find.text('Discard changes'));
+      expect(find.text('New PO'), findsOneWidget);
       expect(tester.takeException(), isNull);
     },
   );
@@ -363,8 +379,11 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Receiving warehouse'), findsNothing);
       expect(find.text('Store access changed'), findsNWidgets(2));
-      await tap(tester, find.text('Close').last);
+      await tap(tester, find.byTooltip('Close').hitTestable());
+      expect(find.text('Store access changed'), findsOneWidget);
       await tap(tester, find.text('Close'));
+      expect(find.text('Store access changed'), findsNothing);
+      expect(find.text('Purchase orders'), findsOneWidget);
       expect(writes, isEmpty);
       expect(tester.takeException(), isNull);
     },

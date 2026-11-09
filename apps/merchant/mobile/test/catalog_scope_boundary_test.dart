@@ -10,6 +10,7 @@ import 'package:letbuyy_store/services/api_client.dart';
 import 'package:letbuyy_store/services/cache_service.dart';
 import 'package:letbuyy_store/services/product_service.dart';
 import 'package:letbuyy_store/services/store_service.dart';
+import 'support/membership_page.dart';
 
 Map<String, dynamic> product(String site, String name) => {
   'id': 'product_$name',
@@ -32,7 +33,9 @@ void respond(
     statusCode: status,
     data: {
       'data': data,
-      'meta': {'has_next': more, 'next_cursor': more ? 'synthetic-next' : null},
+      'meta': Uri.parse(r.path).path.endsWith('/stores')
+          ? membershipPageMeta((data as List).length)
+          : {'has_next': more, 'next_cursor': more ? 'synthetic-next' : null},
     },
   ),
 );
@@ -50,6 +53,47 @@ ApiClient client(
   dio.interceptors.add(InterceptorsWrapper(onRequest: handler));
   addTearDown(result.close);
   return result;
+}
+
+Finder get catalogViewport => find
+    .descendant(
+      of: find.byType(CustomScrollView),
+      matching: find.byType(Scrollable),
+    )
+    .first;
+Future<void> showCatalogControl(
+  WidgetTester tester,
+  Finder target, {
+  bool header = false,
+}) async {
+  await tester.scrollUntilVisible(
+    target,
+    header ? -250 : 250,
+    scrollable: catalogViewport,
+    maxScrolls: 20,
+  );
+  await tester.pumpAndSettle();
+  expect(target.hitTestable(), findsOneWidget);
+}
+
+Future<void> applyCatalogChoice(
+  WidgetTester tester,
+  String button,
+  String option,
+) async {
+  final target = find.widgetWithText(OutlinedButton, button);
+  await showCatalogControl(tester, target, header: true);
+  await tester.tap(target);
+  await tester.pumpAndSettle();
+  final radio = find.widgetWithText(RadioListTile<String>, option);
+  await tester.ensureVisible(radio);
+  await tester.pumpAndSettle();
+  expect(radio.hitTestable(), findsOneWidget);
+  await tester.tap(radio);
+  await tester.pumpAndSettle();
+  final apply = find.widgetWithText(FilledButton, 'Apply selection');
+  await tester.tap(apply);
+  await tester.pumpAndSettle();
 }
 
 void main() {
@@ -392,22 +436,20 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('1 On this page'), findsOneWidget);
       expect(find.text('1 Total'), findsNothing);
+      await showCatalogControl(tester, find.text('Next'));
       await tester.tap(find.text('Next'));
       await tester.pumpAndSettle();
       expect(calls.last['page'], 2);
       expect(find.text('Second page'), findsOneWidget);
+      await showCatalogControl(tester, find.byType(TextField), header: true);
       await tester.enterText(find.byType(TextField), 'Across catalog');
       await tester.pump(const Duration(milliseconds: 350));
       await tester.pumpAndSettle();
       expect(calls.last['search'], 'Across catalog');
       expect(calls.last['page'], 1);
-      await tester.tap(find.byKey(const ValueKey('product-filter-active')));
-      await tester.pumpAndSettle();
+      await applyCatalogChoice(tester, 'Product status: All', 'Active');
       expect(calls.last['status'], 'active');
-      await tester.tap(find.byType(DropdownButton<String>));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Price ↑').last);
-      await tester.pumpAndSettle();
+      await applyCatalogChoice(tester, 'Sort products: Newest', 'Price ↑');
       expect(calls.last['sort'], 'price');
       expect(calls.last['order'], 'asc');
       expect(tester.takeException(), isNull);
@@ -446,19 +488,8 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('₹129.75'), findsOneWidget);
       expect(find.text('₹150.25'), findsOneWidget);
-      final filter = find.byKey(const ValueKey('product-filter-out_of_stock'));
-      await tester.scrollUntilVisible(
-        filter,
-        150,
-        scrollable: find
-            .descendant(
-              of: find.byType(ListView),
-              matching: find.byType(Scrollable),
-            )
-            .first,
-      );
-      await tester.tap(filter);
-      await tester.pumpAndSettle();
+      await applyCatalogChoice(tester, 'Product status: All', 'Out of Stock');
+      await showCatalogControl(tester, find.text('Clear stock filter'));
       expect(
         find.text(
           'Stock filters are unavailable on this server. Select All products.',
@@ -504,10 +535,13 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    await showCatalogControl(tester, find.text('Next'));
     await tester.tap(find.text('Next'));
     await tester.pumpAndSettle();
+    await showCatalogControl(tester, find.text('Retry products'));
     expect(find.text('Retry products'), findsOneWidget);
     expect(find.text('First page'), findsNothing);
+    await showCatalogControl(tester, find.text('Previous'));
     await tester.tap(find.text('Previous'));
     await tester.pumpAndSettle();
     expect(find.text('First page'), findsOneWidget);

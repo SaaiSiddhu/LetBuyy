@@ -2,11 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../themes/app_colors.dart';
-import '../themes/app_text_styles.dart';
+import '../tokens/letbuyy_tokens.dart';
 
-/// A professional, high-performance text field strictly aligned with AppColors.
-/// Features internal state management for focus, error, and success visual feedback.
+/// Native editing with the host's theme, persistent labels and validation.
 class CustomTextField extends StatefulWidget {
   final TextEditingController? controller;
   final String? label;
@@ -41,6 +39,8 @@ class CustomTextField extends StatefulWidget {
   final TextAlign textAlign;
   final String? errorText;
   final bool isGlass;
+  final Iterable<String>? autofillHints;
+  final AutovalidateMode autovalidateMode;
 
   const CustomTextField({
     super.key,
@@ -77,6 +77,8 @@ class CustomTextField extends StatefulWidget {
     this.textAlign = TextAlign.start,
     this.errorText,
     this.isGlass = false,
+    this.autofillHints,
+    this.autovalidateMode = AutovalidateMode.disabled,
   });
 
   @override
@@ -98,6 +100,24 @@ class _CustomTextFieldState extends State<CustomTextField> {
     // Listen to controller to update success state dynamically
     if (widget.controller != null) {
       widget.controller!.addListener(_validateInternal);
+    }
+  }
+
+  @override
+  void didUpdateWidget(CustomTextField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.focusNode != widget.focusNode) {
+      _focusNode.removeListener(_handleFocusChange);
+      if (oldWidget.focusNode == null) _focusNode.dispose();
+      _focusNode = widget.focusNode ?? FocusNode();
+      _focusNode.addListener(_handleFocusChange);
+      _isFocused = _focusNode.hasFocus;
+    }
+    if (oldWidget.controller != widget.controller) {
+      oldWidget.controller?.removeListener(_validateInternal);
+      widget.controller?.addListener(_validateInternal);
+      _isValid = false;
+      _internalError = null;
     }
   }
 
@@ -127,7 +147,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
     if (widget.validator == null || widget.controller == null) return;
 
     final text = widget.controller!.text;
-    
+
     // Reset state if empty
     if (text.isEmpty) {
       if (_isValid) setState(() => _isValid = false);
@@ -147,178 +167,135 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
   @override
   Widget build(BuildContext context) {
-    // Determine current error state (External or Internal)
+    final theme = Theme.of(context), scheme = theme.colorScheme;
     final hasError = widget.errorText != null || _internalError != null;
-    
-    // --- Color Logic based on AppColors ---
-    Color getBorderColor() {
-      if (hasError) return AppColors.error;
-      if (_isFocused) return AppColors.primary;
-      if (widget.showSuccessState && _isValid) return AppColors.success.withValues(alpha: 0.6);
-      return AppColors.border; // Default subtle border
-    }
-
-    Color getIconColor() {
-      if (hasError) return AppColors.error;
-      if (_isFocused) return AppColors.primary;
-      if (widget.showSuccessState && _isValid) return AppColors.success;
-      return AppColors.textSecondary; // Muted Teal
-    }
-
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        // 1. Floating Header Label
-        if (widget.showLabel && widget.label != null) ...[
-          Padding(
-            padding: const EdgeInsets.only(left: 2, bottom: 6),
-            child: Text(
-              widget.label!,
-              style: AppTextStyles.labelLarge.copyWith(
-                fontWeight: FontWeight.w600,
-                color: hasError 
-                    ? AppColors.error 
-                    : _isFocused 
-                        ? AppColors.primary 
-                        : AppColors.textPrimary,
-              ),
-            ),
+    final success = theme.brightness == Brightness.dark
+        ? LetbuyyPrimitiveTokens.green500
+        : LetbuyyPrimitiveTokens.green700;
+    final accent = theme.brightness == Brightness.dark
+        ? LetbuyyColorTokens.primaryTextDark
+        : LetbuyyColorTokens.primaryTextLight;
+    final iconColor = hasError
+        ? scheme.error
+        : _isFocused
+        ? accent
+        : widget.showSuccessState && _isValid
+        ? success
+        : scheme.onSurfaceVariant;
+    final radius = BorderRadius.circular(LetbuyyRadiusTokens.lg * 1.0);
+    Widget supportingCopy(String text, {required bool error}) => Text(
+      text,
+      softWrap: true,
+      overflow: TextOverflow.visible,
+      style: theme.textTheme.bodySmall?.copyWith(
+        color: error ? scheme.error : scheme.onSurfaceVariant,
+      ),
+    );
+    // Keep the native input target inside this field. Otherwise Flutter may
+    // merge preceding record copy into its unfocused accessibility rectangle.
+    return Semantics(
+      container: true,
+      child: TextFormField(
+        controller: widget.controller,
+        initialValue: widget.initialValue,
+        focusNode: _focusNode,
+        autofocus: widget.autofocus,
+        enabled: widget.enabled,
+        readOnly: widget.readOnly,
+        obscureText: widget.obscureText,
+        keyboardType: widget.keyboardType,
+        textInputAction: widget.textInputAction,
+        textCapitalization: widget.textCapitalization,
+        maxLines: widget.maxLines,
+        minLines: widget.minLines,
+        maxLength: widget.maxLength,
+        inputFormatters: widget.inputFormatters,
+        enableSuggestions: widget.enableSuggestions,
+        autofillHints: widget.autofillHints,
+        autovalidateMode: widget.autovalidateMode,
+        autocorrect: widget.autocorrect,
+        textAlign: widget.textAlign,
+        // Widget error presentation preserves native FormField validation and its
+        // precedence over an explicit caption, without InputDecorator ellipsis.
+        errorBuilder: (_, error) => supportingCopy(error, error: true),
+        style: theme.textTheme.bodyLarge?.copyWith(color: scheme.onSurface),
+        cursorColor: accent,
+        decoration: InputDecoration(
+          labelText: widget.showLabel ? widget.label : null,
+          floatingLabelBehavior: FloatingLabelBehavior.always,
+          floatingLabelStyle: TextStyle(
+            color: hasError ? scheme.error : accent,
           ),
-        ],
-
-        // 2. The Input Field
-        TextFormField(
-          controller: widget.controller,
-          initialValue: widget.initialValue,
-          focusNode: _focusNode,
-          autofocus: widget.autofocus,
-          enabled: widget.enabled,
-          readOnly: widget.readOnly,
-          obscureText: widget.obscureText,
-          keyboardType: widget.keyboardType,
-          textInputAction: widget.textInputAction,
-          textCapitalization: widget.textCapitalization,
-          maxLines: widget.maxLines,
-          minLines: widget.minLines,
-          maxLength: widget.maxLength,
-          inputFormatters: widget.inputFormatters,
-          enableSuggestions: widget.enableSuggestions,
-          autocorrect: widget.autocorrect,
-          textAlign: widget.textAlign,
-          
-          // Typography
-          style: AppTextStyles.bodyLarge.copyWith(
-            fontWeight: FontWeight.w500,
-            color: widget.enabled ? AppColors.textPrimary : AppColors.textDisabled,
+          hintText: widget.hint,
+          helper: widget.helperText == null
+              ? null
+              : supportingCopy(widget.helperText!, error: false),
+          error: widget.errorText == null
+              ? null
+              : supportingCopy(widget.errorText!, error: true),
+          filled: true,
+          fillColor:
+              widget.fillColor ??
+              (widget.isGlass
+                  ? scheme.surface.withValues(alpha: 0.8)
+                  : scheme.surface),
+          contentPadding:
+              widget.contentPadding ??
+              const EdgeInsets.all(LetbuyySpacingTokens.space16),
+          prefixIcon: widget.prefixIcon == null
+              ? null
+              : Icon(widget.prefixIcon, color: iconColor),
+          suffixIcon:
+              widget.suffixIcon ??
+              (widget.showSuccessState && _isValid && !hasError
+                  ? Icon(Icons.check_circle_rounded, color: success)
+                  : null),
+          border: OutlineInputBorder(borderRadius: radius),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: radius,
+            borderSide: BorderSide(color: scheme.outline),
           ),
-          cursorColor: AppColors.primary,
-          
-          // Decoration
-            decoration: InputDecoration(
-            hintText: widget.hint,
-            helperText: widget.helperText,
-            errorText: widget.errorText, // Passed from parent
-            filled: true,
-            fillColor: widget.isGlass
-                ? (Theme.of(context).brightness == Brightness.dark
-                    ? AppColors.surfaceGlassDark
-                    : AppColors.surfaceGlass)
-                : (widget.fillColor ?? (widget.enabled ? AppColors.surface : AppColors.background)),
-            
-            // Spacing
-            contentPadding: widget.contentPadding ?? 
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-            
-            // Icons
-            prefixIcon: widget.prefixIcon != null
-                ? Icon(widget.prefixIcon, color: getIconColor(), size: 22)
-                : null,
-            
-            suffixIcon: widget.suffixIcon ?? (widget.showSuccessState && _isValid && !hasError
-                ? const Icon(Icons.check_circle_rounded, color: AppColors.success, size: 22)
-                : null),
-
-            // Border Styles
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: widget.isGlass ? BorderSide.none : const BorderSide(color: AppColors.border),
-            ),
-            
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: widget.isGlass
-                  ? BorderSide(color: Colors.white.withValues(alpha: 0.1), width: 1.0)
-                  : BorderSide(
-                      color: getBorderColor(),
-                      width: 1.0,
-                    ),
-            ),
-            
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(
-                color: AppColors.primary,
-                width: 1.5,
-              ),
-            ),
-            
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.error, width: 1.0),
-            ),
-            
-            focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.error, width: 1.5),
-            ),
-            
-            disabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: widget.isGlass 
-                  ? BorderSide.none
-                  : const BorderSide(color: AppColors.borderLight),
-            ),
-            
-            // Text Styles within Input
-            hintStyle: AppTextStyles.bodyMedium.copyWith(
-              color: widget.isGlass 
-                   ? (Theme.of(context).brightness == Brightness.dark ? Colors.white60 : Colors.black54)
-                   : AppColors.textHint,
-            ),
-            helperStyle: AppTextStyles.labelSmall.copyWith(
-              color: AppColors.textSecondary,
-            ),
-            errorStyle: AppTextStyles.labelSmall.copyWith(
-              color: AppColors.error,
-              fontWeight: FontWeight.w500,
-            ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: radius,
+            borderSide: BorderSide(color: accent, width: 2),
           ),
-          
-          // Validation Hook
-          validator: (value) {
-            final error = widget.validator?.call(value);
-            // Update internal state safely
-            if (_internalError != error) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (mounted) setState(() => _internalError = error);
-              });
-            }
-            return error;
-          },
-          
-          onChanged: (val) {
-             widget.onChanged?.call(val);
-             if (_internalError != null) {
-               setState(() => _internalError = null);
-             }
-          },
-          onFieldSubmitted: widget.onSubmitted,
-          onTap: widget.onTap,
-          onEditingComplete: widget.onEditingComplete,
+          errorBorder: OutlineInputBorder(
+            borderRadius: radius,
+            borderSide: BorderSide(color: scheme.error),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderRadius: radius,
+            borderSide: BorderSide(color: scheme.error, width: 2),
+          ),
+          disabledBorder: OutlineInputBorder(
+            borderRadius: radius,
+            borderSide: BorderSide(color: scheme.outlineVariant),
+          ),
+          hintStyle: theme.textTheme.bodyMedium?.copyWith(
+            color: scheme.onSurfaceVariant,
+          ),
+          helperStyle: theme.textTheme.bodySmall?.copyWith(
+            color: scheme.onSurfaceVariant,
+          ),
+          errorStyle: theme.textTheme.bodySmall?.copyWith(color: scheme.error),
         ),
-      ],
+        validator: (value) {
+          final error = widget.validator?.call(value);
+          if (_internalError != error) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) setState(() => _internalError = error);
+            });
+          }
+          return error;
+        },
+        onChanged: (value) {
+          widget.onChanged?.call(value);
+          if (_internalError != null) setState(() => _internalError = null);
+        },
+        onFieldSubmitted: widget.onSubmitted,
+        onTap: widget.onTap,
+        onEditingComplete: widget.onEditingComplete,
+      ),
     );
   }
 }
@@ -408,7 +385,7 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
       suffixIcon: IconButton(
         icon: Icon(
           _obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined,
-          color: _obscure ? AppColors.textHint : AppColors.primary,
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
           size: 20,
         ),
         onPressed: () => setState(() => _obscure = !_obscure),

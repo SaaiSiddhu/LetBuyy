@@ -1,0 +1,13 @@
+{
+  "run_id": "92d452e8952f",
+  "normal_entry": "Choose a store",
+  "observed_options": [
+    "Synthetic Alpha",
+    "Synthetic Beta"
+  ],
+  "chosen": "Synthetic Beta",
+  "staff_beyond_server_first_page": true,
+  "evidence": [
+    "/private/tmp/letbuyy-merchant-local-20261106-25feac2c/native-warehouse-v58/native-initial-beta-tail-choice.png"
+  ]
+}

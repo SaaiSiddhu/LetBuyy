@@ -1,0 +1,15 @@
+{
+  "root": "/private/tmp/letbuyy-merchant-local-20261108-33638f8e1e",
+  "fixture": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/merchant-create-retire-v132-local-android.postgres.test.ts",
+  "source": "merchant-creation-retirement-source-v102",
+  "scope": "Normal synthetic auth and UI; no session injection, no provider, no host9002 contact; original emulator data/mappings preserved",
+  "controls": {
+    "/private/tmp/letbuyy-merchant-local-20261108-33638f8e1e/Auth.py": "0e463d9188b204a9403cd20f55ccef0885571021f9ffe0273f0eaef0ba1081c0",
+    "/private/tmp/letbuyy-merchant-local-20261108-33638f8e1e/run_fixture.py": "b2b852ebd5af92304d004b39bb3e37c9f6260c364cc55bddaeb013fe7f213eb9",
+    "/private/tmp/letbuyy-merchant-local-20261108-33638f8e1e/ui_helpers.py": "5e8c227390508847a9154c29c9d60d004d300474434ea0327f7c2b36450fcd1e",
+    "/private/tmp/letbuyy-merchant-local-20261108-33638f8e1e/Create.py": "b31d3e6190727180c29437f5813e75ff0cc53b6bb5976a1bc14db954dfaa8bc9",
+    "/private/tmp/letbuyy-merchant-local-20261108-33638f8e1e/run_ui_guard.py": "23261d38fc356d9a4329909d78709b2063b0b5f7f89fd6de3c726d9e352fb681",
+    "/private/tmp/letbuyy-merchant-local-20261108-33638f8e1e/run_ui.py": "55c18ae3179d754465dc23b20ccf63b2f5b6f7aca894ba85978a7aea116c857e",
+    "/private/tmp/letbuyy-merchant-local-20261108-33638f8e1e/run_chain.py": "4622d37471ebee85caccee57a39d52d98f66dab385be9aeaf1a60f4b5c66ef4d"
+  }
+}

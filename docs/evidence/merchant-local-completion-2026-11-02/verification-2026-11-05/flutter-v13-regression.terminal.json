@@ -1,0 +1,19 @@
+{
+  "started_at": "2026-11-06T11:21:58.938886+00:00",
+  "supervisor_pid": 90540,
+  "source": "merchant-recovery-source-v13",
+  "source_sha256": "97d73c40813b6f0e0c458ca33fbaedfe0fc3559fbb4c6fbc22a56b6d759e4cb3",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "--reporter",
+    "expanded"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 90542,
+  "exit_code": 0,
+  "finished_at": "2026-11-06T11:23:27.560696+00:00",
+  "source_unchanged": true,
+  "source_readback_sha256": "97d73c40813b6f0e0c458ca33fbaedfe0fc3559fbb4c6fbc22a56b6d759e4cb3"
+}

@@ -1,0 +1,17 @@
+{
+  "started_at": "2026-11-08T07:13:03.213794+00:00",
+  "supervisor_pid": 43754,
+  "source": "merchant-creation-retirement-source-v97",
+  "source_sha256": "5c307067b14037d2bab909538cbd482225d88abdf9399ca9b42c7b5d7b8e3eeb",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 43801,
+  "exit_code": 0,
+  "finished_at": "2026-11-08T07:14:18.464446+00:00",
+  "source_unchanged": true,
+  "source_readback_sha256": "5c307067b14037d2bab909538cbd482225d88abdf9399ca9b42c7b5d7b8e3eeb"
+}

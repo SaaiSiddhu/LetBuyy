@@ -179,6 +179,7 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
         ? (resolvedVariant?.comparePrice ?? null)
         : product.compareAtPrice;
     const displayStock = (() => {
+        if (product.stock === null) return null;
         if (!hasVariants) return product.stock;
         const variants = product.variants || [];
         if (variants.length === 0) return product.stock;
@@ -204,12 +205,13 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
 
     const handleQuantity = (delta: number) => {
         const newQty = quantity + delta;
-        if (newQty >= 1 && newQty <= displayStock) {
+        if (displayStock !== null && newQty >= 1 && newQty <= displayStock) {
             setQuantity(newQty);
         }
     };
 
     const handleAddToCart = () => {
+        if (displayStock === null || displayStock <= 0) return;
         for (let i = 0; i < quantity; i++) {
             addToCart(product, resolvedVariant);
         }
@@ -218,6 +220,7 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
     };
 
     const handleBuyNow = () => {
+        if (displayStock === null || displayStock <= 0) return;
         for (let i = 0; i < quantity; i++) {
             addToCart(product, resolvedVariant);
         }
@@ -429,12 +432,12 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
                         {/* Stock Status */}
                         <div className="flex items-center gap-2 text-sm">
                             <div
-                                className={`w-2 h-2 rounded-full ${displayStock > 0 ? 'bg-green-500' : 'bg-red-500'}`}
+                                className={`w-2 h-2 rounded-full ${displayStock !== null && displayStock > 0 ? 'bg-green-500' : displayStock === null ? 'bg-surface' : 'bg-red-500'}`}
                             />
-                            <span className={displayStock > 0 ? 'text-green-600 font-medium' : 'text-red-600 font-medium'}>
-                                {displayStock > 0 ? 'In Stock' : 'Out of Stock'}
+                            <span className={displayStock !== null && displayStock > 0 ? 'text-green-600 font-medium' : displayStock === null ? 'text-theme-secondary' : 'text-red-600 font-medium'}>
+                                {displayStock === null ? 'Stock unavailable' : displayStock > 0 ? 'In Stock' : 'Out of Stock'}
                             </span>
-                            {displayStock > 0 && displayStock < 10 && (
+                            {displayStock !== null && displayStock > 0 && displayStock < 10 && (
                                 <span className="text-orange-500 text-xs">• Hurry! Only {displayStock} left</span>
                             )}
                         </div>
@@ -547,7 +550,7 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
                                     type="button"
                                     aria-label="Increase quantity"
                                     onClick={() => handleQuantity(1)}
-                                    disabled={quantity >= displayStock}
+                                    disabled={displayStock === null || quantity >= displayStock}
                                     className="flex h-11 w-11 items-center justify-center hover:bg-surface-hover disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
                                 >
                                     <Plus size={16} />
@@ -561,7 +564,7 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
                                 type="button"
                                 onClick={handleAddToCart}
                                 whileTap={{ scale: 0.98 }}
-                                disabled={displayStock === 0}
+                                disabled={displayStock === null || displayStock === 0}
                                 className={`flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border-2 py-3.5 font-semibold transition-all disabled:opacity-50 sm:flex-1 ${addedToCart
                                     ? 'bg-green-500 border-green-500 text-white'
                                     : 'hover:bg-surface-hover'
@@ -572,14 +575,14 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
                                 }}
                             >
                                 <ShoppingBag size={18} />
-                                {addedToCart ? 'Added!' : 'Add to Cart'}
+                                {displayStock === null ? 'Stock unavailable' : addedToCart ? 'Added!' : 'Add to Cart'}
                             </motion.button>
 
                             <motion.button
                                 type="button"
                                 onClick={handleBuyNow}
                                 whileTap={{ scale: 0.98 }}
-                                disabled={displayStock === 0}
+                                disabled={displayStock === null || displayStock === 0}
                                 className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl py-3.5 font-semibold text-white shadow-lg disabled:opacity-50 sm:flex-1"
                                 style={{ backgroundColor: colors.primaryColor }}
                             >

@@ -1,0 +1,45 @@
+# Merchant mobile — current local handoff
+
+Last qualified source: `merchant-kyc-receipt-source-v44`, SHA256 `4d0884bd1d999e12271b2ee11c026a08977a7a509d2e00a4508ee1c3bfc21372`, 8,482inputs. Branch`codex/merchant-mobile-parity`, HEAD`ab32485092cae0ac19145abf7b5a101fa3ea338e`; inherited WIP/index preserved. [Current proof](verification-2026-11-05/kyc-receipt-v44-local-readback.json), [continuation](MOBILE_UI_CONTINUATION.json). Historical handoff retained as`HANDOFF_before_source43_lifecycle.md`.
+
+## Implemented and locally qualified
+
+Strict canonical TS/Dart KYC validation fails closed for malformed/coerced/private/foreign/duplicate responses. Real compiled Worker public projection passes through the Dart service and is immutable. Invalid completion status/scan acknowledgements retain original receipt/version progress.
+
+Public uploads persist their original allocation in the existing canonical receipt before bytes. Recovery verifies the stored object's binding and can complete the same unfinished receipt without another object/key/claim. Conditional writes fence expired claimants. Legacy unfinished receipts without an allocation remain held. Encrypted actor/store-bound Media upload/create recovery retains original keys/input/stages; explicit original-file retry verifies hash/size and reuses original filename and metadata. Products now reaches the existing Media Library route.
+
+Native69 found a real metadata-dialog assertion after recover200/create201/PATCH200. Clean isolated old39 cases fail on Cancel and delayed-response Save with disposed-controller/dependents assertions. Dialog State now owns controllers until actual disposal after the reverse transition. Fields, actions, payload and owner/context guards are retained.
+
+Current gates:1,656FlutterPASS/0FAIL/0SKIP;26focusedMediaPASS;analysis0;114governancePASS/1NA in isolated capsule. Scoped byte equality in current proof ties unchanged backend/shared/webSDK inputs to20ownedPASS (5de1c5bad0e1, empty cleanup),2,087GatewayPASS,23sharedPASS,397rootcontractsPASS,8webKYCSDKPASS; Dart SDK135PASS/6existing opt-in integration skips, analysis0. Counts overlap; no whole-feature acceptance from counts.
+
+## Native74 accepted — bounded local cohort
+
+Run `54ecf4a294b8`, source44, APK SHA256 `7ba46ca33e36e35274bf847ae28c57f2425e5bb1b0c6ccfcb3613fb7b793c1c1`. Independent installed-byte/source/control audit passed. Actual normal Accounts native/browser login, OS photo picker, storage success plus lost original SQL acknowledgement, real process death and missing cache, same-receipt no-file recovery200, one original byte POST/object/library row, native metadata save/render, test-only private KYC upload and canonical matching web projection/visible pending status. Anonymous private read404 and public-bucket exclusion verified. Normal Gallery delete200 then native refresh empty; object retention follows existing cleanup policy. Bidirectional names,53memberships/Staff over2pages, process restart/preference, Staff product readback and stock/audit/outbox/receipt conservation, live downgrade403 and removal52 all passed.
+
+Source44 fixed the actual normal web Gallery DELETE400 by passing the resolved trusted store into the existing API client. Backend tenant rejection remains intact. Current web typecheckPASS,15read/ownershipPASS,408rootcontractsPASS,114governancePASS/1NA. Other gate reuse requires exact scoped byte equality as recorded.
+
+Safe57-file evidence custody is `native74-accepted-local-kyc-media-staff/`. Accepted APK and independently hash-verified8482-file source archive are under ignored private `artifacts/local-operational-proof/merchant-mobile/native74-54ecf4a294b8/`. No env/readiness/JWK/session/cookie export. Full runtime details are in `verification-2026-11-05/native74-independent-readback.json`; custody audit in `native74-cold-custody-readback.json`.
+
+Native73 passed upload/KYC/media-delete but raced old-name observation against web rename; retained as diagnostic. Native74 paired those observations before mutation. Earlier66–72 diagnostic/failure terminals retained; native69 exposed the real controller lifecycle defect, native72 the real missing-store web DELETE defect. Native65/source16 is historical. Source16 iOS remains compile-only. Native61's90second startup root cause remains unestablished; one-attempt Retry tests are separate evidence.
+
+## Current work — source53 qualification
+
+Source44negative `8f2e9c7d978e`:positive1PASS/3realFAIL reproduced same-key duplicated Media creation after lost completion, stranded library row after registry failure and numeric alt-text coercion. Repair uses existing withTenantTx/bindOwnedTenantActor under app_tenant/RLS/GUC to commit Media CRUD+registry+typed outbox+original HTTP receipt together. Canonical strict request schemas/SDK types, actor-bound pending progress, held legacy receipts and conditional status/hash/lease reclaim; no table, migration or runtime added. Physical objects retain existing separate cleanup. Only redacted stage/SQL-state diagnostic output.
+
+Source50owned `f446da391bf4`:45PASS/0FAIL/0SKIP (Media12, public upload18, Merchant actions13, compiled Worker upload/privateKYC2), cleanup empty. Lost actual COMMIT replies create/edit/delete replay same receipt; real registry/outbox/receipt faults roll back; concurrency, stale reclaim, missing pool, tenant/revocation/RLS, strict primitive/clearing and old-receipt hold pass. Old broader fixture now uses canonical collection version/key and warehouse protocol2, with explicit old-input400/426 and foreign-store403 denials retained. Source50tenant red-team `8c7423dbbb20`:2PASS, empty cleanup.
+
+Source51all5build/type gatesPASS, Gateway2087PASS, rootcontracts408PASS, shared23PASS. Two source-location tests retargeted to stronger ownership-before-replay, RLS/GUC, receipt/hash/scope locks and typed atomic outbox/receipt assertions; actual behavior remains proved separately.52added new suite to reviewed inventory,16lanePASS.52governance113PASS/1FAIL/1NA: new compiledWorker test inside service test dir imported root test helper, which dependency law correctly forbids. Original source/index unchanged by disposable capsule.
+
+53moves that new suite to `tests/owned-db/merchant-media-commands-workerd.postgres.test.ts`, beside existing compiledWorker fixture; all non-import test bytes/assertions are exactly preserved. Root catalog and reviewed root lane register it; no validator exception or boundary relaxation. A comment points to new path. Application/runtime/shared/SDK/migrations remain byte-identical50. Original preimage `verification-2026-11-05/media-commands-before-root-placement-v52.ts.snapshot`.
+
+Session43842reruns the new root suite with automatic gateway-db classification (no forced kind). Collect terminal then execute prepared `run_media_atomic_v53_pipeline.py`;53frozen until proof. Native75/76were prepared for50/52but never launched because gates had not passed; retain as not-run. After53gatesPASS prepare next native/browser run with53admission, repeat accepted74cohort, independently audit and preserve custody. Last accepted native74still applies only44; unchanged mobile/Dart bytes do not replace new backend integration.
+
+Continue119applicable feature traces and35source-unreviewed rows after current cohort. Native3D picker/reselection and actual startup-failure Retry remain useful next bounded journeys; do not expose unsupported formats or claim them verified from image proof. Marketplace/embedded execution forbidden; gift-card gate retained;51frozen;120/121excluded;122paused; unique denominator unresolved. Earlier45compile,46/47JSONencoding,48psqloutput,49obsoletecaller,50/51structuralinventory and52dependency diagnostics retained; no guard weakened.
+
+## Resources and boundaries
+
+N5`/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4`0700. Active exactQEMU79160, AVD`LetBuyy_Merchant_Parity_20261106_c6cefc`, root`/private/tmp/letbuyy-merchant-emulator-de849422c5`, ADB15038/serialemulator-5580. Reverify exact ownership/PID before control. Only task synthetic`/sdcard/Pictures/letbuyy-native-v66.png` was admitted from an empty MediaStore. Owned iOS B907B390-5B08-490F-BC6A-8900667B2D94 remainsShutdown. No global Docker/ADB cleanup. Host9002 belongs another task: never bind/probe/stop; only emulator reverse9002→owned54351 allowed.
+
+Governance runs only through disposable-copy capsule: prior working-root invocation auto-cleaned generated state and removed ignored Merchant`.vercel` association; do not guess/rebind. Active native-generated Next owner markers are not source; validate exact receipt/process/run before exclusion and verify full equality after teardown.
+
+Same chat, synthetic local work only; no push/merge/deploy/release/hosted/provider effects, real messages, memory writes, new agents/worktree or global cleanup. All122IDs:119applicableopen,120/121excluded,122paused,51frozen.211nonadditive surfaces/35source-unreviewed/193applibfiles remain inventory; unique denominator unresolved. Test-only local private R2 does not certify India/AWS/provider, physical device, iOS runtime or production.

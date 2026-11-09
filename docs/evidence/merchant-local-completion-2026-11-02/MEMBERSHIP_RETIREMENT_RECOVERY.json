@@ -1,0 +1,204 @@
+{
+  "status": "BOUNDED_CANONICAL_BACKEND_AND_ACTUAL_NATIVE_RETIREMENT_RECOVERY_ACCEPTED",
+  "negative": {
+    "runId": "e4ee4539455f",
+    "behavioralFailures": 2,
+    "exit": 1,
+    "observed": [
+      "Original committed membership acknowledgement becomes404after a later canonical metadata deletion. Live replay positive control preceded it.",
+      "Never-committed removed-target response has generic NOT_FOUND, so it cannot safely resolve retained original intent."
+    ],
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    }
+  },
+  "fixtureFailures": [
+    {
+      "runId": "2e02f468621f",
+      "reason": "Synthetic tag length; no behavior reached."
+    },
+    {
+      "runId": "5bd4d7ae522d",
+      "reason": "First real recovery defect reproduced; second fixture reused a unique store_name before ordinal was added."
+    }
+  ],
+  "repair": [
+    "Current435replacement checks current owner, manual-only policy, input and per-key lock, then exact immutable receipt identity before requiring a live parent for a NEW effect.",
+    "Existing legacy HTTP keys still return uncertain COLLECTION_MEMBERSHIP_LEGACY_KEY before deleted-target rejection; no legacy success is invented.",
+    "Only a missing new effect with no original/legacy acknowledgement returns specific COLLECTION_MEMBERSHIP_NOT_FOUND404."
+  ],
+  "original361Unchanged": {
+    "path": "database/supabase/migrations/361_collection_membership.sql",
+    "sha256": "a15fdd1112ae0971fba49042cd00ef5220a48946aff3d32e2358932875d72534"
+  },
+  "focusedDatabase": {
+    "runId": "24c937c56d3a",
+    "tests": 13,
+    "assertionsPassed": 13,
+    "assertionsFailed": 0,
+    "skipped": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    }
+  },
+  "typecheckExit": 0,
+  "limits": [
+    "Native changes after v14 are not yet accepted on an APK; prepared distinct v15 journey covers both committed and never-committed retirement recovery.",
+    "Current code differs from v14 source; preserve its exact archive and scoped old qualification.",
+    "Buyer rendered collection HTML, normal staff UI and the rest of119remain separate.",
+    "No hosted/provider/production/release action."
+  ],
+  "fullDatabase": {
+    "runId": "bebe02766ed7",
+    "tests": 34,
+    "assertionsPassed": 34,
+    "assertionsFailed": 0,
+    "skipped": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "exit": 0,
+    "suites": [
+      {
+        "name": "collection-list-read.postgres",
+        "code": 0,
+        "tests": 1,
+        "pass": 1,
+        "fail": 0,
+        "skipped": 0,
+        "seconds": 19.8
+      },
+      {
+        "name": "collection-membership-retirement-recovery.postgres",
+        "code": 0,
+        "tests": 2,
+        "pass": 2,
+        "fail": 0,
+        "skipped": 0,
+        "seconds": 3.8
+      },
+      {
+        "name": "collection-membership.postgres",
+        "code": 0,
+        "tests": 19,
+        "pass": 19,
+        "fail": 0,
+        "skipped": 0,
+        "seconds": 538.7
+      },
+      {
+        "name": "merchant-smart-collections.postgres",
+        "code": 0,
+        "tests": 12,
+        "pass": 12,
+        "fail": 0,
+        "skipped": 0,
+        "seconds": 7.1
+      }
+    ]
+  },
+  "nativeDiscoveryNegative": {
+    "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/membership-discovery-negative-mobile-v1.log",
+    "existingPassed": 13,
+    "newFailed": 1,
+    "exit": 1,
+    "behavior": "Actual normal Collections widget has no Retry saved product selection entry after its saved collection leaves the live list."
+  },
+  "nativeRepair": [
+    "Existing encrypted command store discovers only its exact environment/actor/store/family records; malformed matching records fail closed. Other storage never becomes UI/diagnostics.",
+    "Normal Collections entry offers original selection retry even if the collection is no longer listed. Discovery never executes a stored command.",
+    "Current canonical missing-target rejection retains a missing marker; explicit dismissal repeats original command under current owner and only then releases local intent. Generic404/outage/revocation retain it.",
+    "No new offline queue, authority, database table or permission store."
+  ],
+  "focusedNative": {
+    "collectionRecoveryCombinedPassed": 31,
+    "exit": 0,
+    "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/membership-discovery-mobile-v4.log",
+    "priorFixtureFailure": "v3 waited for an indeterminate busy animation while confirmation dialog was open. Bounded route-animation pump now preserves the full confirm/cancel assertions."
+  },
+  "sourceChecks": {
+    "source_sha256": "58fbf51649c8f808f3e8919c20ef022265808c51258dcd04bcf7aa9263a7fdc6",
+    "entries": 7410,
+    "fullFlutter": {
+      "pass": 917,
+      "fail": 0,
+      "exit": 0
+    },
+    "gatewayUnits": {
+      "pass": 2068,
+      "fail": 0,
+      "exit": 0
+    },
+    "analysis": {
+      "issues": 0,
+      "exit": 0
+    },
+    "governance": {
+      "counts": {
+        "PASS": 114,
+        "FAIL": 0,
+        "BLOCKED": 0,
+        "SKIP": 0,
+        "NOT_APPLICABLE": 1
+      },
+      "ok": true,
+      "problems": [],
+      "exit": 0,
+      "preliminaryChecks": [
+        {
+          "check": "install",
+          "exit": 0,
+          "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/governance-category-capsule-v9.install.log"
+        },
+        {
+          "check": "shared-build",
+          "exit": 0,
+          "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/governance-category-capsule-v9.shared-build.log"
+        },
+        {
+          "check": "sdk-typecheck",
+          "exit": 0,
+          "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/governance-category-capsule-v9.sdk-typecheck.log"
+        },
+        {
+          "check": "contracts-provider",
+          "exit": 0,
+          "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/governance-category-capsule-v9.contracts-provider.log"
+        },
+        {
+          "check": "web-recovery",
+          "exit": 0,
+          "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/governance-category-capsule-v9.web-recovery.log"
+        },
+        {
+          "check": "governance-regression",
+          "exit": 0,
+          "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/governance-category-capsule-v9.governance-regression.log"
+        }
+      ]
+    }
+  },
+  "currentDevice": {
+    "name": "native-catalog-v15",
+    "runId": "e425724c445d",
+    "status": "PASSED",
+    "runnerExit": 0,
+    "uiExit": 0,
+    "qualification": "MEMBERSHIP_RETIREMENT_ANDROID_WEB_V15_QUALIFICATION.json"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "at": "2026-11-06T07:50:46.840418+00:00",
+  "runner_pid": 29282,
+  "supervisor_pid": 28994,
+  "reason": "Docker API scoped ps timed out15s; child ownership check timed out before test body. Stop further suites and let existing runner perform owned cleanup. No guard weakened or global Docker restart.",
+  "source": "staff-list-source-v1",
+  "preceding_steps_passed": [
+    {
+      "step": "shared-types",
+      "exit_code": 0
+    },
+    {
+      "step": "gateway-types",
+      "exit_code": 0
+    },
+    {
+      "step": "ts-sdk-types",
+      "exit_code": 0
+    },
+    {
+      "step": "ts-sdk-contract",
+      "exit_code": 0
+    },
+    {
+      "step": "dart-sdk-contract",
+      "exit_code": 0
+    },
+    {
+      "step": "mobile-staff",
+      "exit_code": 0
+    }
+  ]
+}

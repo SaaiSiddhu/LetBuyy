@@ -1,0 +1,25 @@
+{
+  "at": "2026-11-06T15:47:52.663998+00:00",
+  "root": "/private/tmp/letbuyy-merchant-emulator-de849422c5",
+  "name": "LetBuyy_Merchant_Parity_20261106_c6cefc",
+  "emulator_pid": 79160,
+  "command": [
+    "/Volumes/Developer Tools/SDKs/android-sdk/emulator/emulator",
+    "-avd",
+    "LetBuyy_Merchant_Parity_20261106_c6cefc",
+    "-port",
+    "5580",
+    "-memory",
+    "3072",
+    "-gpu",
+    "auto",
+    "-no-window",
+    "-no-audio",
+    "-no-boot-anim",
+    "-no-snapshot-load",
+    "-no-snapshot-save"
+  ],
+  "status": "EXACT_OWNED_AVD_READY",
+  "scope": "Restart only exact owned stopped AVD; preserve userdata/other devices;no host9002 use.",
+  "completed_at": "2026-11-06T15:48:17.223789+00:00"
+}

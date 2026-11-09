@@ -138,7 +138,10 @@ export function classifyAppApiRoute(file) {
 // MERCHANT-WAREHOUSE-PREFLIGHT: one scoped, no-store protocol descriptor proxy.
 // It grants no lease/readiness and stays in the same existing gateway-proxy class.
 // MERCHANT-WAREHOUSE-DETAIL: two fresh owner-scoped document read proxies.
-export const APP_API_ROUTE_RATCHET = 247;
+// MERCHANT-MEDIA-RECOVERY: one thin session/actor/store-bound proxy to the existing
+// /v1/upload/recover receipt endpoint; no new upload or Media authority.
+// Recovery integration: exact MFA-bound Console legal-hold proxy, Gateway/SQL-owned.
+export const APP_API_ROUTE_RATCHET = 249;
 
 export function ownershipCounts(routes) {
   const counts = new Map();

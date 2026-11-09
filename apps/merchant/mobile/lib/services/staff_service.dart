@@ -118,9 +118,28 @@ class StaffService extends ChangeNotifier {
     required ApiClient api,
     String environment = AppConfig.environment,
   }) : _api = api,
-       _namespace = environment == 'staging' ? '.staging' : '';
+       // Preserve deployed hosted keys. Local issuers use the existing shared
+       // isolation policy and never adopt the ambiguous hosted bucket.
+       _namespace = switch (environment) {
+         'production' => '',
+         'staging' => '.staging',
+         _ =>
+           ':${AppConfig.persistenceNamespace(environmentName: environment)}',
+       };
 
   final ApiClient _api;
+  bool _disposed = false;
+  @override
+  void dispose() {
+    _disposed = true;
+    ++_readGeneration;
+    super.dispose();
+  }
+
+  void _notifyPresentation() {
+    if (!_disposed) notifyListeners();
+  }
+
   static const _storage = FlutterSecureStorage();
   final String _namespace;
   String get _pendingKey => 'letbuyy.staff.mutations.v1$_namespace';
@@ -142,13 +161,13 @@ class StaffService extends ChangeNotifier {
       );
     await _storage.write(key: _invitationKey, value: proof);
     _pendingInvitation = proof;
-    notifyListeners();
+    _notifyPresentation();
   }
 
   Future<void> clearInvitation() async {
     await _storage.delete(key: _invitationKey);
     _pendingInvitation = null;
-    notifyListeners();
+    _notifyPresentation();
   }
 
   Future<Map<String, dynamic>> previewInvitation() async {
@@ -172,6 +191,7 @@ class StaffService extends ChangeNotifier {
     StaffInviteInput input, {
     StaffMemberContract? renew,
   }) async {
+    final frame = _api.captureRequestContext();
     final body = {
       ...input.toJson(),
       if (renew != null) ...{
@@ -188,11 +208,8 @@ class StaffService extends ChangeNotifier {
         (options) => _api.employees.invite(body, options: options),
       ),
     );
-    _members = [
-      result.member,
-      ..._members.where((item) => item.id != result.member.id),
-    ];
-    notifyListeners();
+    _presentMember(result.member, frame);
+    _notifyPresentation();
     return result;
   }
 
@@ -202,9 +219,14 @@ class StaffService extends ChangeNotifier {
     Map<String, dynamic> body,
     Future<T> Function(ApiRequestOptions) send,
   ) {
+    // Bind queued UI intent before any await; the existing ApiClient guard must
+    // not capture a newer account/store after this command waits its turn.
+    // Durable intent/key/body representation and acknowledgement rules stay as-is.
+    final frame = _api.captureRequestContext();
     final result = Completer<T>();
     _mutationTail = _mutationTail.then((_) async {
       try {
+        _checkPresentationContext(frame);
         final raw = await _storage.read(key: _pendingKey);
         final pending = raw == null
             ? <String, dynamic>{}
@@ -216,7 +238,11 @@ class StaffService extends ChangeNotifier {
         pending[intent] = key;
         await _storage.write(key: _pendingKey, value: jsonEncode(pending));
         final value = await send(
-          ApiRequestOptions(idempotencyKey: key, body: body),
+          ApiRequestOptions(
+            idempotencyKey: key,
+            body: body,
+            expectedContextVersion: frame,
+          ),
         );
         pending.remove(intent);
         await _storage.write(key: _pendingKey, value: jsonEncode(pending));
@@ -229,25 +255,80 @@ class StaffService extends ChangeNotifier {
   }
 
   List<StaffMemberContract> _members = [];
-  List<StaffMemberContract> get members => List.unmodifiable(_members);
+  Object? _membersFrame;
+  String? _membersStoreId;
+  int _readGeneration = 0;
+  List<StaffMemberContract> get members =>
+      _membersFrame == _api.captureRequestContext()
+      ? List.unmodifiable(_members)
+      : const [];
+
+  void _checkPresentationContext(Object? frame) {
+    if (frame != _api.captureRequestContext()) {
+      throw const ApiException(
+        message: 'Store access changed. Reopen staff from the current store.',
+        statusCode: 409,
+        code: 'SESSION_CONTEXT_CHANGED',
+      );
+    }
+  }
+
+  void _presentMember(
+    StaffMemberContract member,
+    Object? frame, {
+    bool replaceOnly = false,
+  }) {
+    if (_disposed || frame != _api.captureRequestContext()) return;
+    ++_readGeneration;
+    _isLoading = false;
+    final previous = _membersFrame == frame && _membersStoreId == member.storeId
+        ? _members
+        : const <StaffMemberContract>[];
+    _membersFrame = frame;
+    _membersStoreId = member.storeId;
+    _members = replaceOnly
+        ? previous
+              .map((item) => item.id == member.id ? member : item)
+              .toList(growable: false)
+        : [member, ...previous.where((item) => item.id != member.id)];
+  }
 
   bool _isLoading = false;
-  bool get isLoading => _isLoading;
+  Object? _loadingFrame;
+  bool get isLoading =>
+      _isLoading && _loadingFrame == _api.captureRequestContext();
 
   Future<List<StaffMemberContract>> fetchStaff(String storeId) async {
+    final frame = _api.captureRequestContext();
+    final generation = ++_readGeneration;
+    _loadingFrame = frame;
     _isLoading = true;
-    notifyListeners();
+    _notifyPresentation();
     try {
-      final rows = await _api.employees.list(storeId: storeId);
-      _members = rows.map(StaffMemberContract.fromJson).toList(growable: false);
-      return _members;
+      final rows = await _api.employees.list(
+        storeId: storeId,
+        options: ApiRequestOptions(expectedContextVersion: frame),
+      );
+      _checkPresentationContext(frame);
+      final members = rows
+          .map(StaffMemberContract.fromJson)
+          .toList(growable: false);
+      if (generation == _readGeneration) {
+        _membersFrame = frame;
+        _membersStoreId = storeId;
+        _members = members;
+      }
+      return members;
     } finally {
-      _isLoading = false;
-      notifyListeners();
+      if (generation == _readGeneration) {
+        _isLoading = false;
+        _notifyPresentation();
+      }
     }
   }
 
   Future<StaffMemberContract> createStaff(StaffInviteInput input) async {
+    final frame = _api.captureRequestContext();
     final member = StaffMemberContract.fromJson(
       await _withRetryKey(
         'create',
@@ -256,8 +337,8 @@ class StaffService extends ChangeNotifier {
         (options) => _api.employees.create(input.toJson(), options: options),
       ),
     );
-    _members = [member, ..._members.where((item) => item.id != member.id)];
-    notifyListeners();
+    _presentMember(member, frame);
+    _notifyPresentation();
     return member;
   }
 
@@ -265,6 +346,7 @@ class StaffService extends ChangeNotifier {
     StaffMemberContract member,
     String role,
   ) async {
+    final frame = _api.captureRequestContext();
     final updated = StaffMemberContract.fromJson(
       await _withRetryKey(
         'update:${member.id}',
@@ -281,22 +363,27 @@ class StaffService extends ChangeNotifier {
         ),
       ),
     );
-    _members = _members
-        .map((item) => item.id == updated.id ? updated : item)
-        .toList(growable: false);
-    notifyListeners();
+    _presentMember(updated, frame, replaceOnly: true);
+    _notifyPresentation();
     return updated;
   }
 
   Future<void> removeStaff(StaffMemberContract member) async {
+    final frame = _api.captureRequestContext();
     await _withRetryKey(
       'remove:${member.id}',
       member.storeId,
       {'expected_updated_at': member.updatedAt, 'store_id': member.storeId},
       (options) => _api.employees.remove(member.id, options: options),
     );
-    _members = _members.where((item) => item.id != member.id).toList();
-    notifyListeners();
+    if (frame == _api.captureRequestContext() &&
+        _membersFrame == frame &&
+        _membersStoreId == member.storeId) {
+      ++_readGeneration;
+      _isLoading = false;
+      _members = _members.where((item) => item.id != member.id).toList();
+    }
+    _notifyPresentation();
   }
 }
 

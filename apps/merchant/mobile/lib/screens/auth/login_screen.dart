@@ -238,10 +238,13 @@ class _LoginScreenState extends State<LoginScreen>
 
   // ── Data ──────────────────────────────────────────────────
 
+  String get _savedEmailKey =>
+      '${AppConfig.persistenceNamespace()}store_user_email';
+
   Future<void> _loadSavedEmail() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final saved = prefs.getString('store_user_email');
+      final saved = prefs.getString(_savedEmailKey);
       if (saved != null && mounted) _emailController.text = saved;
     } catch (_) {}
   }
@@ -270,7 +273,7 @@ class _LoginScreenState extends State<LoginScreen>
       if (_isSignUpMode) {
         await authService.requestSignUpOtp(email, turnstileToken: token);
         final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('store_user_email', email);
+        await prefs.setString(_savedEmailKey, email);
         if (!mounted) return;
         Navigator.pushNamed(
           context,
@@ -287,7 +290,7 @@ class _LoginScreenState extends State<LoginScreen>
           );
           if (user == null) throw Exception('Sign-in failed');
           final prefs = await SharedPreferences.getInstance();
-          await prefs.setString('store_user_email', email);
+          await prefs.setString(_savedEmailKey, email);
           if (!mounted) return;
           await _navigateAfterAuth();
         } catch (e) {

@@ -1,0 +1,16 @@
+{
+  "runId": "f446da391bf4",
+  "tests": 45,
+  "assertionsPassed": 45,
+  "assertionsFailed": 0,
+  "cancelled": 0,
+  "skipped": 0,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  }
+}

@@ -1,0 +1,146 @@
+{
+  "at": "2026-11-04T12:38:12.116889+00:00",
+  "status": "PASS_BOUNDED_LOCAL_CATEGORY_SYNC_WITH_VISUAL_FOLLOWUPS",
+  "fullAppAccepted": false,
+  "source": {
+    "manifest": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-composition-v13.source.json",
+    "sha256": "46f88d64f62e614f2ad9bbd0be5693abb77e224c3366e94584d2c2eb063323e6",
+    "entries": 7452,
+    "archive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-composition-v13-qualified-source",
+    "terminal_unchanged": true
+  },
+  "run": {
+    "runId": "9eb24191ec2f",
+    "assertionsPassed": 1,
+    "assertionsFailed": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "wallSeconds": 462.1,
+    "suiteSeconds": 460.5,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    }
+  },
+  "artifact": {
+    "run_id": "9eb24191ec2f",
+    "source_sha256": "eee36065888cac21b99438ee64f8bafaaa57cc61d79cbcf755ca30715a7a423a",
+    "apk": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-category-v9/qualified-artifact/merchant-local-debug.apk",
+    "source_build_path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/apps/merchant/mobile/build/app/outputs/flutter-apk/app-debug.apk",
+    "original_bytes_retained": true,
+    "sha256": "b2e6a1274efd90a4b9709048ce9f482ea5d9a6069f518edc5bbbe6888e156b55",
+    "defines": {
+      "ENVIRONMENT": "local",
+      "BFF_BASE_URL": "http://127.0.0.1:54350/v1",
+      "API_BASE_URL": "http://127.0.0.1:54350/v1",
+      "IDENTITY_BASE_URL": "http://localhost:9002",
+      "ADMIN_BASE_URL": "http://localhost:54353",
+      "STOREFRONT_BASE_URL": "http://localhost:54354",
+      "LOCAL_CHALLENGE_SDK_URL": "http://127.0.0.1:62755/fixtures/turnstile/api.js",
+      "TURNSTILE_SITE_KEY": "1x00000000000000000000AA",
+      "MOBILE_PUSH_DEVICE_TOKEN": "",
+      "SENTRY_DSN": "SKIP_NEEDS_HUMAN_LOCAL_SENTRY_DSN"
+    },
+    "build_method": "flutter-config-only-then-offline-gradle-debug",
+    "installed_readback": true,
+    "scope": "Local debug artifact only; no hosted/provider/release certification."
+  },
+  "driver": {
+    "companion": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/android-category-auto-v9.py",
+    "sha256": "9c7f17f4bae163ced17590a1d312b4fb686370bf52e33d7432f6a0e3c4e67a92",
+    "launcher": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/run-category-v9.py",
+    "launcher_sha256": "6e6d602164677f9cb6c698a7067420cbad221589f32ce8504b88b991754a930b"
+  },
+  "launcher_cleanup": {
+    "at": "2026-11-04T12:35:45.411107+00:00",
+    "serial": "emulator-5580",
+    "adb_port": 15038,
+    "runner_exit": 0,
+    "controller_exit": 0,
+    "baseline": [],
+    "before": [],
+    "removed": [],
+    "refused": [],
+    "after": [],
+    "scope": "Only current-run exact reverse tuples on task emulator. Host9002 never accessed."
+  },
+  "integration": {
+    "normal_native_accounts_pkce_return": true,
+    "normal_web_accounts_sign_in": true,
+    "gateway_bff": "Actual existing Hono source handlers and BFF with owned PostgreSQL/PostgREST; this category run is not compiled Workerd",
+    "category": {
+      "native_rename_lost_reply_same_original_key_body_retry": true,
+      "one_native_effect": true,
+      "web_read_native_rename_then_saved_description": true,
+      "fresh_native_editor_exact_web_description": true,
+      "persisted_category_version": 3,
+      "category_receipts": 2,
+      "audits": 2,
+      "outbox": 2,
+      "assigned_products_propagated": 2
+    },
+    "proof": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-category-v9/backend-verified.json"
+  },
+  "native_presentation": {
+    "both_theme_navigation_and_settings_copy": true,
+    "real_search_empty_read_and_keyboard_close": true,
+    "AI_draft_keyboard_close": true,
+    "AI_command_submitted": false,
+    "Staff_required_corrected_email_role_viewer_draft_cancel_fresh_roster": true,
+    "Staff_command_submitted": false,
+    "segment_spacing_visually_fixed_keyboard_open": true,
+    "segment_choice_dirty_Back_cancel_preserved_explicit_discard": true,
+    "segment_command_submitted": false,
+    "chart_recorded_zero_series_and_exact_header": true,
+    "chart_expansion_action_native_label": "Daily revenue values, Collapsed",
+    "chart_daily_rows_visually_accepted": false,
+    "raw_chart_observation_status": "OBSERVED_RECORDED_ZERO_SERIES_AND_DAILY_VALUES",
+    "chart_acceptance_override": "Raw companion matched\u20b90.00 which also occurs in the header; before/after screenshots do not show daily rows. Graph/title/native expansion action observed, but daily-row viewport proof remains pending. Do not treat raw status as full acceptance."
+  },
+  "visual_followups": [
+    {
+      "id": "UI-AI-03",
+      "finding": "Suggestions and four-line field consume initial keyboard viewport; native Run footer not yet observed with keyboard. Collapse suggestion disclosure without removing options."
+    },
+    {
+      "id": "UI-SETTINGS-03",
+      "finding": "Supplied metadata chevron moved below caption; keep bounded metadata inline and wide Theme action below."
+    },
+    {
+      "id": "UI-CHART-06",
+      "finding": "Native all-zero graph shows repeated0labels because fractional axis ticks use toInt; format display ticks without truncating fractions. Daily rows require viewport-aware scroll, date/amount row verification and screenshot after expansion."
+    }
+  ],
+  "fixture_qualification": "996pass/1protected Staff namespace failure, no skip; both analyses0issues;36AST checks; governance114pass/1N/A exact7452inputs",
+  "screenshots": [
+    "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-composition-v9-native-root-navigation-dark.png",
+    "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-composition-v9-native-root-navigation-light.png",
+    "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-composition-v9-native-canonical-search-keyboard.png",
+    "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-composition-v9-native-search-confirmed-empty-keyboard.png",
+    "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-composition-v9-native-ai-operator-keyboard-draft.png",
+    "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-composition-v9-native-staff-role-applied-draft.png",
+    "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-composition-v9-native-revenue-recorded-history.png",
+    "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-composition-v9-native-revenue-exact-values.png",
+    "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-composition-v9-native-segment-full-page-keyboard.png",
+    "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-composition-v9-native-segment-choice-applied-draft.png",
+    "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-composition-v9-native-category-web-description-readback.png"
+  ],
+  "visually_inspected_here": [
+    "native-ai-operator-keyboard-draft.png(v8)",
+    "native-staff-role-applied-draft.png(v8)",
+    "native-root-navigation-dark.png(v8)",
+    "native-revenue-recorded-history.png(v9)",
+    "native-revenue-exact-values.png(v9)",
+    "native-segment-full-page-keyboard.png(v9)"
+  ],
+  "limits": [
+    "No native AI command/provider effects, Staff invitation/role/removal effects or segment Save/Preview/web synchronization.",
+    "No iOS runtime/current-source compile, spoken TalkBack/VoiceOver or physical-performance acceptance.",
+    "No buyer renderer, hosted/staging/provider sandbox or production release acceptance.",
+    "Whole app/119programme remain incomplete; surface denominator unreconciled."
+  ]
+}
