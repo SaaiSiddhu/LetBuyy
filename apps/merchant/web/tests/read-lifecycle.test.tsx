@@ -1119,7 +1119,7 @@ test('a billing refresh cannot replace a GSTIN draft or silently rebase its comm
     } finally { await h.close() }
 })
 
-test('a retired General settings removal cannot redirect or notify a replacement actor', async () => {
+test('a retired General settings closure cannot redirect or notify a replacement actor', async () => {
     const old = deferred<Response>(); let requested = false
     const h = await mount('generalSettings', async (url, init) => {
         if (url.endsWith('/settings') && init?.method === 'DELETE') {
@@ -1131,10 +1131,10 @@ test('a retired General settings removal cannot redirect or notify a replacement
         return settingsResponse(url)
     })
     try {
-        await h.click('Delete store'); await h.dialogClick('Delete store'); assert(requested)
+        await h.click('Close store'); await h.dialogClick('Close store'); assert(requested)
         await h.render('alpha', 'actor-b')
         await act(async () => old.resolve(json({ id: 'site-a' })))
-        assert.doesNotMatch(h.text(), /Store deletion started|Could not delete store/)
+        assert.doesNotMatch(h.text(), /Store closed|Could not close store/)
     } finally { old.resolve(json({ id: 'site-a' })); await h.close() }
 })
 

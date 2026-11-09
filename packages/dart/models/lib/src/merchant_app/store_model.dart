@@ -94,9 +94,6 @@ class StoreModel {
   final String? invoiceFooter;
   final int invoiceNumberNext;
 
-  /// Monotonic sites revision used by conditional profile updates.
-  final int version;
-
   /// Unknown in older read caches; never invent a revision for an edit.
   final int? version;
 
@@ -364,7 +361,6 @@ class StoreModel {
       'invoice_address': invoiceAddress,
       'invoice_footer': invoiceFooter,
       'invoice_number_next': invoiceNumberNext,
-      'version': version,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
       'published_at': publishedAt?.toIso8601String(),
@@ -426,7 +422,6 @@ class StoreModel {
     Map<String, dynamic>? invoiceAddress,
     String? invoiceFooter,
     int? invoiceNumberNext,
-    int? version,
     DateTime? createdAt,
     DateTime? updatedAt,
     DateTime? publishedAt,
@@ -485,7 +480,6 @@ class StoreModel {
       invoiceAddress: invoiceAddress ?? this.invoiceAddress,
       invoiceFooter: invoiceFooter ?? this.invoiceFooter,
       invoiceNumberNext: invoiceNumberNext ?? this.invoiceNumberNext,
-      version: version ?? this.version,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       publishedAt: publishedAt ?? this.publishedAt,
