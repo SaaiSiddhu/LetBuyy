@@ -71,13 +71,16 @@ const CANDIDATE_ROLLBACKS = new Map([
     [411, '411_authoritative_checkout_gst'],
     [412, '412_invoice_checkout_fact_parity'],
     [414, '414_gift_card_issue_replay_integrity'],
-    [416, '416_merchant_razorpay_webhook_secret'],
-    [421, '421_kyc_india_upload_intent'],
-    [422, '422_kyc_r2_india_provider_isolation'],
-    [424, '424_kyc_india_cleanup_due'],
-    [425, '425_kyc_india_early_scan_retry'],
+    [420, '420_merchant_razorpay_webhook_secret'],
+    [425, '425_kyc_india_upload_intent'],
+    [426, '426_kyc_r2_india_provider_isolation'],
+    [428, '428_kyc_india_cleanup_due'],
+    [429, '429_kyc_india_early_scan_retry'],
 ]);
 const ALL_SNAPSHOTS = new Map([...GUARDED_ROLLBACKS, ...CANDIDATE_ROLLBACKS]);
+// The November 2 identity reconciliation preserved historical SQL bytes,
+// including these diagnostics. Pin their original IDs without rewriting SQL.
+const DECLARED_GUARD_IDS = new Map([[420, 416], [425, 421], [426, 422], [428, 424], [429, 425]]);
 
 function psql(sql, targetDatabase = databaseName) {
     return execFileSync(
@@ -191,6 +194,7 @@ test('every candidate restorer refuses an extra overload, changed typed ABI, inp
     let checked = 0;
     for (const [number, name] of CANDIDATE_ROLLBACKS) {
         const db = snapshotFor(number), rollback = transactionBody(rollbackSql(name));
+        const declaredGuardId = DECLARED_GUARD_IDS.get(number) ?? number;
         for (const fn of restoredFunctions(rollback,db)) {
             const before = functionState(db);
             const stub = `CREATE FUNCTION public.${fn.name}(synthetic_argument bytea) RETURNS integer LANGUAGE sql AS $$ SELECT 1 $$;`;
@@ -199,13 +203,13 @@ test('every candidate restorer refuses an extra overload, changed typed ABI, inp
             for (const drift of [stub, `DROP FUNCTION ${fn.signature} CASCADE; ${stub}`,
                 `DROP FUNCTION ${fn.signature} CASCADE; CREATE FUNCTION public.${fn.name}(${fn.arguments ?? ''}) RETURNS ${alternateResult} LANGUAGE sql AS $$ SELECT ${alternateValue} $$;`]) {
                 const error = psqlExpectingFailure(`BEGIN; ${drift}\n${rollback}\nCOMMIT;`,db);
-                assert.match(error ?? '',new RegExp(`rollback ${number} refuses to run`),`${number}/${fn.name}: drift must be refused by the guard`);
+                assert.match(error ?? '',new RegExp(`rollback ${declaredGuardId} refuses to run`),`${number}/${fn.name}: drift must be refused by the guard`);
                 assert.equal(functionState(db),before,`${number}/${fn.name}: refusal preserves all function bodies/owners/ACLs`);
             }
             if (fn.input_names?.length) {
                 const renamed = fn.definition.replace(new RegExp(`\\b${fn.input_names[0]}\\b`,'g'),'synthetic_renamed_input');
                 const error = psqlExpectingFailure(`BEGIN; DROP FUNCTION ${fn.signature} CASCADE; ${renamed};\n${rollback}\nCOMMIT;`,db);
-                assert.match(error ?? '',new RegExp(`rollback ${number} refuses to run: .*input names`));
+                assert.match(error ?? '',new RegExp(`rollback ${declaredGuardId} refuses to run: .*input names`));
                 assert.equal(functionState(db),before);
             }
             // A negative control proves that the historical script itself accepts a

@@ -55,6 +55,40 @@ BEGIN
    RAISE EXCEPTION 'LETBUYY_NATIVE_CATALOG_LOCKS_REQUIRED';END IF;
  END IF;
 END $managed_catalog_fence$;
+-- Bind the complete restoration family before any object can be changed.
+-- Existing birth/profile and retained-data proofs below remain mandatory.
+DO $typed_family_guard$
+DECLARE expected record; live pg_catalog.pg_proc%ROWTYPE;
+BEGIN
+  FOR expected IN SELECT * FROM (VALUES
+    ('public.create_order_with_inventory_reservations(uuid,text,text,text,jsonb,jsonb,text,text,text,uuid,text)',ARRAY['p_store_id','p_customer_name','p_customer_email','p_customer_phone','p_shipping_address','p_items','p_payment_method','p_notes','p_coupon_code','p_actor_id','p_request_id']::text[],'jsonb',true),
+    ('public.commit_inventory_reservation(uuid,uuid,text,uuid,text)',ARRAY['p_store_id','p_reservation_id','p_idempotency_key','p_actor_id','p_request_id']::text[],'jsonb',true),
+    ('public.set_inventory_level_available(uuid,uuid,uuid,integer,uuid,text,text,text)',ARRAY['p_product_id','p_variant_id','p_location_id','p_available','p_actor_id','p_reason','p_notes','p_request_id']::text[],'jsonb',true),
+    ('public.adjust_inventory_level(uuid,uuid,uuid,integer,uuid,text,text,text)',ARRAY['p_product_id','p_variant_id','p_location_id','p_adjustment','p_actor_id','p_reason','p_notes','p_request_id']::text[],'jsonb',true),
+    ('public.receive_inventory_transfer_line(inventory_transfers,inventory_transfer_lines,integer,uuid,text,text)',ARRAY['p_transfer','p_line','p_quantity','p_actor_id','p_request_id','p_idempotency_key']::text[],'void',true),
+    ('public.receive_purchase_order_line(purchase_orders,purchase_order_lines,integer,uuid,text,text)',ARRAY['p_po','p_line','p_quantity','p_actor_id','p_request_id','p_idempotency_key']::text[],'void',true),
+    ('public.release_order_inventory(uuid,uuid,text,text)',ARRAY['p_order_id','p_actor_id','p_request_id','p_release_reason']::text[],'boolean',true),
+    ('public.create_order_return_and_refund(uuid,jsonb,text,text,boolean,uuid,text,text)',ARRAY['p_order_id','p_lines','p_reason','p_refund_method','p_restock','p_actor_id','p_request_id','p_idempotency_key']::text[],'jsonb',true),
+    ('public.reserve_inventory(uuid,uuid,uuid,uuid,integer,integer,text,uuid,text)',ARRAY['p_store_id','p_product_id','p_variant_id','p_location_id','p_quantity','p_ttl_seconds','p_idempotency_key','p_actor_id','p_request_id']::text[],'jsonb',true),
+    ('public.release_inventory_reservation(uuid,uuid,text,text,uuid,text)',ARRAY['p_store_id','p_reservation_id','p_idempotency_key','p_reason','p_actor_id','p_request_id']::text[],'jsonb',true),
+    ('public.expire_inventory_reservations(integer,text)',ARRAY['p_limit','p_request_id']::text[],'integer',true),
+    ('public.create_inventory_transfer_with_lines(uuid,uuid,uuid,jsonb,text,uuid,text,text)',ARRAY['p_site_id','p_source_location_id','p_destination_location_id','p_lines','p_notes','p_actor_id','p_request_id','p_idempotency_key']::text[],'jsonb',true),
+    ('public.ship_inventory_transfer(uuid,uuid,text,text)',ARRAY['p_transfer_id','p_actor_id','p_request_id','p_idempotency_key']::text[],'jsonb',true)
+  ) AS proof(signature,input_names,result_type,definer)
+  LOOP
+    SELECT * INTO live FROM pg_catalog.pg_proc WHERE oid=pg_catalog.to_regprocedure(expected.signature);
+    IF live.oid IS NULL OR live.prokind<>'f'
+      OR live.prosecdef IS DISTINCT FROM expected.definer OR live.proretset
+      OR live.prorettype IS DISTINCT FROM expected.result_type::regtype OR live.provariadic<>0
+      OR coalesce(live.proargnames[1:live.pronargs],ARRAY[]::text[]) IS DISTINCT FROM expected.input_names
+      OR live.proargmodes IS NOT NULL OR live.proallargtypes IS NOT NULL
+      OR (SELECT count(*) FROM pg_catalog.pg_proc other WHERE other.pronamespace=live.pronamespace AND other.proname=live.proname)<>1
+      OR (expected.definer AND (pg_catalog.has_function_privilege('anon',live.oid,'EXECUTE') OR pg_catalog.has_function_privilege('authenticated',live.oid,'EXECUTE'))) THEN
+      RAISE EXCEPTION 'rollback 436 refuses to run: input names or typed ABI changed';
+    END IF;
+  END LOOP;
+END $typed_family_guard$;
+
 DO $quiescent436$ BEGIN
  IF current_setting('transaction_isolation')<>'read committed'
   OR EXISTS(SELECT 1 FROM pg_locks l WHERE l.locktype='transactionid' AND l.mode='ExclusiveLock' AND l.granted

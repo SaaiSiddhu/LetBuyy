@@ -97,7 +97,7 @@ test('435 preserves a populated commerce/auth/book dataset and an original membe
     const independentlyListed = JSON.parse(owned.psql(`SELECT jsonb_agg(table_name ORDER BY table_name)
       FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE'`)) as string[];
     assert.deepEqual(beforeTables, independentlyListed, 'Independent catalog enumeration covers every public base/partition table.');
-    for (const entry of TENANT_TABLES) {
+    for (const entry of TENANT_TABLES.filter(entry => entry.sourceFiles.some(file => parseInt(file, 10) <= 435))) {
         if (entry.table === 'collection_metadata_receipts') assert(!beforeTables.includes(entry.table), 'Only the empty paired435 footprint was retired.');
         else assert(beforeTables.includes(entry.table), entry.table + ': every registered tenant table must remain present.');
     }

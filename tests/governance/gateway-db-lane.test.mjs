@@ -41,9 +41,11 @@ test('profile-pinned console rollback controls use their source schema and curre
 test('historical warehouse DOWN qualification cannot downgrade current warehouse or shipment journeys', () => {
     const historical = `${GATEWAY_DB_SUITE_DIR}/merchant-warehouse-command-rollback.postgres.test.ts`;
     assert.equal(HISTORICAL_GATEWAY_MIGRATION_CEILINGS[historical], 414);
+    assert.equal(HISTORICAL_GATEWAY_MIGRATION_CEILINGS[`${GATEWAY_DB_SUITE_DIR}/merchant-transfer-retained-cutover.postgres.test.ts`], 436);
+    assert.equal(HISTORICAL_GATEWAY_MIGRATION_CEILINGS[`${GATEWAY_DB_SUITE_DIR}/product-variant-retirement.postgres.test.ts`], 440);
     for (const current of [
         `${GATEWAY_DB_SUITE_DIR}/merchant-warehouse-command-recovery.postgres.test.ts`,
-        `${GATEWAY_DB_SUITE_DIR}/merchant-transfer-retained-cutover.postgres.test.ts`,
+        `${GATEWAY_DB_SUITE_DIR}/merchant-current-retained-recovery.postgres.test.ts`,
         `${GATEWAY_DB_SUITE_DIR}/merchant-transfer-ship-commit.postgres.test.ts`,
         'tests/owned-device/merchant-catalog-local-android.postgres.test.ts',
     ]) assert.equal(HISTORICAL_GATEWAY_MIGRATION_CEILINGS[current], undefined);
@@ -130,6 +132,7 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
         "merchant-challenge-rollback.postgres.test.ts",
         "merchant-challenge-source-corruption.postgres.test.ts",
         "merchant-content-sections.postgres.test.ts",
+        "merchant-current-retained-recovery.postgres.test.ts",
         "merchant-customer-segments.postgres.test.ts",
         "merchant-dashboard-honesty.postgres.test.ts",
         "merchant-factor-rollback.postgres.test.ts",

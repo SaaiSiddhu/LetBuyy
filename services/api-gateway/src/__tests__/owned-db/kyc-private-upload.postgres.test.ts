@@ -28,12 +28,12 @@ test('KYC file upload remains private, tenant-owned and pending provider evidenc
     const indiaCleanupRollback = readFileSync(new URL('../../../../../database/supabase/rollback/428_kyc_india_cleanup_due.rollback.sql', import.meta.url), 'utf8');
     const earlyScanMigration = readFileSync(new URL('../../../../../database/supabase/migrations/429_kyc_india_early_scan_retry.sql', import.meta.url), 'utf8');
     const earlyScanRollback = readFileSync(new URL('../../../../../database/supabase/rollback/429_kyc_india_early_scan_retry.rollback.sql', import.meta.url), 'utf8');
-    const laterKycMigrations = [429, 430, 431, 432].map(number => {
+    const laterKycMigrations = [441, 442, 443, 444].map(number => {
         const files = {
-            429: 'kyc_india_pending_retention',
-            430: 'kyc_store_closure_cleanup',
-            431: 'kyc_india_deletion_deadline',
-            432: 'kyc_india_exact_legal_hold',
+            441: 'kyc_india_pending_retention',
+            442: 'kyc_store_closure_cleanup',
+            443: 'kyc_india_deletion_deadline',
+            444: 'kyc_india_exact_legal_hold',
         } as const;
         const filename = `${number}_${files[number as keyof typeof files]}`;
         return {

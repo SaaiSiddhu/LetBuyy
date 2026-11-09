@@ -50,6 +50,17 @@ export const HISTORICAL_GATEWAY_MIGRATION_CEILINGS = Object.freeze({
     // successor migration 432 changes the public catalog pointer to 2.1.0.
     'services/api-gateway/src/__tests__/owned-db/niche-theme-promotion.postgres.test.ts': 431,
     'services/api-gateway/src/__tests__/owned-db/theme-shared-groups.postgres.test.ts': 431,
+    // These prove exact original birth profiles and retained-data cutovers.
+    // The current retained-recovery suite and shipment/browser suites below
+    // continue through every migration, including the later KYC tables.
+    'services/api-gateway/src/__tests__/owned-db/unified-collection-authority.postgres.test.ts': 435,
+    'services/api-gateway/src/__tests__/owned-db/unified-collection-retained-data.postgres.test.ts': 435,
+    'services/api-gateway/src/__tests__/owned-db/merchant-transfer-retained-cutover.postgres.test.ts': 436,
+    // 438's reverse binds the complete public function catalog. This cohort
+    // exercises its supported 438/439/440 reverse/reapply sequence before
+    // later KYC functions change that catalog. Current retirement stays in
+    // merchant-current-retained-recovery and native/browser qualification.
+    'services/api-gateway/src/__tests__/owned-db/product-variant-retirement.postgres.test.ts': 440,
 });
 
 export const ROOT_GATEWAY_DB_SUITE_DIR = 'tests/owned-db';

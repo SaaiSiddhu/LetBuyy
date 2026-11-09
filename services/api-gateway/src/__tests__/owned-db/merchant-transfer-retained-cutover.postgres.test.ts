@@ -41,7 +41,7 @@ let gateway: Gateway | undefined, proxy: Awaited<ReturnType<typeof startOwnedPoo
 after(async () => { await gateway?.settle(); await closePooledSqlClients(); await proxy?.stop(); });
 
 test('older414 DOWN refuses an empty newer436 kernel without replacing its scope guards',()=>{
- const oldDown=readFileSync(new URL('../../../../../database/supabase/rollback/414_atomic_warehouse_commands.rollback.sql',import.meta.url),'utf8');
+ const oldDown=readFileSync(new URL('../../../../../database/supabase/rollback/415_atomic_warehouse_commands.rollback.sql',import.meta.url),'utf8');
  assert.equal(owned.psql('SELECT count(*)FROM warehouse_command_receipts'),'0','Empty current-template positive control');
  const before=logicalProfile(),data=digest(tables()),authority=roles();
  assert.match(owned.psqlScriptExpectError(oldDown),/rollback414 refuses changed raw effect/);
@@ -183,7 +183,7 @@ test('436 reconciles real retained reserved/partial transfers and preserves orig
 
 
 test('older414 DOWN refuses retained receipts without changing current scope guards or business data',()=>{
- const oldDown=readFileSync(new URL('../../../../../database/supabase/rollback/414_atomic_warehouse_commands.rollback.sql',import.meta.url),'utf8');
+ const oldDown=readFileSync(new URL('../../../../../database/supabase/rollback/415_atomic_warehouse_commands.rollback.sql',import.meta.url),'utf8');
  const before=logicalProfile(),data=digest(tables()),authority=roles();
  assert.equal(owned.psql('SELECT count(*)>0 FROM warehouse_command_receipts'),'t','Actual retained receipts must be present');
  assert.match(owned.psqlScriptExpectError(oldDown),/rollback414 refuses retained warehouse command receipts/);

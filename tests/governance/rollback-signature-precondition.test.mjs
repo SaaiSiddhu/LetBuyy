@@ -116,6 +116,37 @@ test('a NEW rollback may not restore a function without either a DROP or a preco
     );
 });
 
+test('integrated rollback families bind all 22 signatures and reject forged prepared, type, argument and control-flow proofs', () => {
+    let signatures = 0;
+    for (const n of [434,435,436,437,438,440]) {
+        const name = rollbackFiles().find(file => number(file) === n);
+        const sql = read(name), expected = [...new Set(createdFunctions(sql))].sort();
+        assert.deepEqual(guardedRestorations(sql).sort(), expected, name);
+        signatures += expected.length;
+        const removed = sql.replace(/DO \$typed_family_guard\$[\s\S]*?\$typed_family_guard\$;/, '');
+        assert.deepEqual(guardedRestorations(removed), [], name + ': receipt metadata alone is not typed ABI proof');
+        for (const changed of [
+            sql.replace("live.prokind<>'f'", 'false'),
+            sql.replace('live.proretset', 'false'),
+            sql.replace('live.provariadic<>0', 'false'),
+            sql.replace('coalesce(live.proargnames[1:live.pronargs],ARRAY[]::text[]) IS DISTINCT FROM expected.input_names', 'false'),
+            sql.replace("'jsonb'", "'boolean'"),
+            sql.replace(/RAISE EXCEPTION ('rollback [^']+')/, 'RAISE EXCEPTION $1,public.synthetic_effect()'),
+        ]) {
+            assert.notEqual(changed, sql, name + ': negative control must mutate the actual guard');
+            assert.deepEqual(guardedRestorations(changed), [], name + ': changed proof refuses recognition');
+        }
+        if (sql.includes('SET LOCAL search_path=pg_catalog,public,pg_temp;')) {
+            assert.deepEqual(guardedRestorations(sql.replace('SET LOCAL search_path=pg_catalog,public,pg_temp;', 'SET LOCAL search_path=pg_catalog,public,synthetic;')), []);
+            const preparedMutation = sql.replace('IF EXISTS(SELECT 1 FROM pg_catalog.pg_prepared_xacts)',
+                'PERFORM public.synthetic_effect(); IF EXISTS(SELECT 1 FROM pg_catalog.pg_prepared_xacts)');
+            assert.notEqual(preparedMutation, sql);
+            assert.deepEqual(guardedRestorations(preparedMutation), [], name + ': a prepared precheck cannot execute a user function');
+        }
+    }
+    assert.equal(signatures, 22);
+});
+
 test('candidate guards bind every restored ABI and precede any schema or function mutation', () => {
     let restorers = 0;
     for (const n of CANDIDATE_GUARDED) {

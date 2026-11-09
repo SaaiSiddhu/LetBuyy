@@ -3147,10 +3147,20 @@ function firstTypedFamilyGuards(sql) {
         let catalogLock=false;
         for(const statement of statements.slice(1)) {
             const text=tokenText(statement);
-            if(statement[0]?.value==='set' && /^set local (?:search_path = pg_catalog , public|(?:lock_timeout|statement_timeout) = '[1-9][0-9]*(?:ms|s)') ;$/.test(text))continue;
+            if(statement[0]?.value==='set' && /^set local (?:search_path = pg_catalog , public(?: , pg_temp)?|(?:lock_timeout|statement_timeout) = '[1-9][0-9]*(?:ms|s)') ;$/.test(text))continue;
             if(statement[0]?.value==='select' && /^select pg_advisory_xact_lock \( hashtextextended \( '[^']+' , 0 \) \) ;$/.test(text))continue;
             if(statement[0]?.value==='lock' && /^lock table pg_catalog \. [a-z_][a-z0-9_]*(?: , pg_catalog \. [a-z_][a-z0-9_]*)* in share row exclusive mode(?: nowait)? ;$/.test(text)) {
                 catalogLock ||= /pg_catalog \. pg_proc(?: |$)/.test(text);continue;
+            }
+            // Before lock acquisition, these migrations refuse an existing
+            // prepared writer. Only this exact read and a literal refusal are
+            // admitted; no assignment, handler, call or extra statement fits.
+            if(statement[0]?.value==='do' && statement.length===3 && statement[1]?.kind==='body') {
+                const prepared=new GuardParser(statement[1].value).parse();
+                if(prepared.declarations.length===0 && prepared.nodes.length===1
+                  && refuses(prepared.nodes[0]) && prepared.nodes[0].branches.length===1
+                  && equalTerms(prepared.nodes[0].branches[0].condition,['EXISTS(SELECT 1 FROM pg_catalog.pg_prepared_xacts)'])
+                  && prepared.nodes[0].branches[0].nodes[0].tokens.length===3)continue;
             }
             if(!catalogLock || statement[0]?.value!=='do' || statement.length!==3 || statement[1]?.kind!=='body')return [];
             const parsed=new GuardParser(statement[1].value).parse();
@@ -3168,12 +3178,24 @@ function firstTypedFamilyGuards(sql) {
               '(SELECT count(*) FROM pg_catalog.pg_proc other WHERE other.pronamespace=live.pronamespace AND other.proname=live.proname)<>1',
               "(expected.definer AND (pg_catalog.has_function_privilege('anon',live.oid,'EXECUTE') OR pg_catalog.has_function_privilege('authenticated',live.oid,'EXECUTE')))"
             ];
-            if(!equalTerms(loop.nodes[1].branches[0].condition,conditions) || definitions.some(fn=>fn.start<=statement[0].start)
+            const zeroArgumentConditions=conditions.map(condition=>condition==='live.proargnames[1:live.pronargs] IS DISTINCT FROM expected.input_names'
+                ? 'coalesce(live.proargnames[1:live.pronargs],ARRAY[]::text[]) IS DISTINCT FROM expected.input_names' : condition);
+            if((!equalTerms(loop.nodes[1].branches[0].condition,conditions)&&!equalTerms(loop.nodes[1].branches[0].condition,zeroArgumentConditions)) || definitions.some(fn=>fn.start<=statement[0].start)
               || table.rows.length!==definitions.length || new Set(table.rows.map(row=>row.signature)).size!==table.rows.length)return [];
             return table.rows.map(row=>{
                 const identity=typeof row.signature==='string' && functionIdentity(row.signature),restored=definitions.find(fn=>fn.identity===identity);
+                const definition=statements.find(statement=>statement[0].start===restored?.start);
+                const returnsAt=definition?.findIndex(token=>token.kind==='word'&&token.value==='returns');
+                const declaredResult=returnsAt>=0?definition[returnsAt+1]:null;
+                // Existing literal EXECUTE restorations are represented at their
+                // enclosing DO offset by functionDefinitions. Keep their prior
+                // jsonb/integer proof grammar; new scalar kinds require a direct
+                // declaration whose return type is bound here.
+                const legacyLiteralResult=definition?.[0]?.value==='do'&&['jsonb','integer'].includes(row.result_type);
                 if(!identity || !restored || !Array.isArray(row.input_names) || JSON.stringify(restored.inputNames)!==JSON.stringify(row.input_names)
-                  || !['jsonb','integer'].includes(row.result_type) || typeof row.definer!=='boolean')throw Error('Unbound typed family');
+                  || !['jsonb','integer','boolean','void','trigger'].includes(row.result_type)
+                  || (!legacyLiteralResult&&(declaredResult?.kind!=='word'||declaredResult.value!==row.result_type))
+                  || typeof row.definer!=='boolean')throw Error('Unbound typed family');
                 return {identity,name:restored.name,input_names:row.input_names,level:'typed-ABI',result_type:row.result_type,
                     returns_set:false,overloads:1,guard_start:statement[0].start,native_catalog_lock:true};
             });

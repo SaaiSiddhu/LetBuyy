@@ -13,6 +13,7 @@ const owned = requireOwnedDatabase();
 const sql = (dir: string, name: string) => readFileSync(new URL(`../../../../../database/supabase/${dir}/${name}`, import.meta.url), 'utf8');
 const up = sql('migrations', '434_saved_trial_launch_entitlements.sql');
 const down = sql('rollback', '434_saved_trial_launch_entitlements.rollback.sql');
+const downBody = down.replace(/^BEGIN;\s*$/m, '').replace(/^COMMIT;\s*$/m, '');
 const profile = () => owned.psql("SELECT jsonb_build_object('definition',pg_get_functiondef(oid),'owner',proowner,'acl',proacl::text)::text FROM pg_proc WHERE oid='public.resolve_site_entitlements(uuid)'::regprocedure;");
 let proxy: OwnedPooledSqlProxy;
 const gateways: Gateway[] = [];
@@ -32,7 +33,8 @@ before(async () => {
         'GRANT EXECUTE ON FUNCTION public.resolve_site_entitlements(uuid) TO authenticated;',
         "UPDATE migration_privilege_journal SET action='revoked' WHERE migration='434' AND privilege='TRIAL CURRENT PROFILE';",
     ]) {
-        assert.match(owned.psqlScriptExpectError('BEGIN;' + drift + down), /rollback434 refuses changed/);
+        assert.match(owned.psqlScriptExpectError('BEGIN;' + drift + downBody + 'COMMIT;'),
+            /rollback434 refuses changed|rollback 434 refuses to run: input names or typed ABI changed/);
         assert.equal(profile(), expected, 'Rejected transactional drift cannot change the current resolver.');
     }
     proxy = await startOwnedPooledSqlProxy(owned);

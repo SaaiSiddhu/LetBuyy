@@ -50,6 +50,30 @@ BEGIN
    RAISE EXCEPTION 'LETBUYY_NATIVE_CATALOG_LOCKS_REQUIRED';END IF;
  END IF;
 END $managed_catalog_fence$;
+-- Bind the complete restoration family before any object can be changed.
+-- Existing birth/profile and retained-data proofs below remain mandatory.
+DO $typed_family_guard$
+DECLARE expected record; live pg_catalog.pg_proc%ROWTYPE;
+BEGIN
+  FOR expected IN SELECT * FROM (VALUES
+    ('public.apply_product_edit_v1(uuid,uuid,uuid,integer,uuid,jsonb)',ARRAY['p_store_id','p_product_id','p_actor_id','p_expected_version','p_idempotency_key','p_mutation']::text[],'jsonb',true),
+    ('public.product_edit_snapshot_v1(uuid)',ARRAY['p_product_id']::text[],'jsonb',false),
+    ('public.create_order_with_inventory_reservations(uuid,text,text,text,jsonb,jsonb,text,text,text,uuid,text)',ARRAY['p_store_id','p_customer_name','p_customer_email','p_customer_phone','p_shipping_address','p_items','p_payment_method','p_notes','p_coupon_code','p_actor_id','p_request_id']::text[],'jsonb',true)
+  ) AS proof(signature,input_names,result_type,definer)
+  LOOP
+    SELECT * INTO live FROM pg_catalog.pg_proc WHERE oid=pg_catalog.to_regprocedure(expected.signature);
+    IF live.oid IS NULL OR live.prokind<>'f'
+      OR live.prosecdef IS DISTINCT FROM expected.definer OR live.proretset
+      OR live.prorettype IS DISTINCT FROM expected.result_type::regtype OR live.provariadic<>0
+      OR coalesce(live.proargnames[1:live.pronargs],ARRAY[]::text[]) IS DISTINCT FROM expected.input_names
+      OR live.proargmodes IS NOT NULL OR live.proallargtypes IS NOT NULL
+      OR (SELECT count(*) FROM pg_catalog.pg_proc other WHERE other.pronamespace=live.pronamespace AND other.proname=live.proname)<>1
+      OR (expected.definer AND (pg_catalog.has_function_privilege('anon',live.oid,'EXECUTE') OR pg_catalog.has_function_privilege('authenticated',live.oid,'EXECUTE'))) THEN
+      RAISE EXCEPTION 'rollback 438 refuses to run: input names or typed ABI changed';
+    END IF;
+  END LOOP;
+END $typed_family_guard$;
+
 DO $quiescent438$BEGIN IF current_setting('transaction_isolation')<>'read committed'
  OR EXISTS(SELECT 1 FROM pg_locks l WHERE l.locktype='transactionid'AND l.mode='ExclusiveLock'AND l.granted
  AND(l.pid IS NULL OR l.pid<>pg_backend_pid()))OR EXISTS(SELECT 1 FROM pg_prepared_xacts)THEN
