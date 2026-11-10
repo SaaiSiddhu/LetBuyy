@@ -408,8 +408,12 @@ test('normal Merchant publication renders the saved Liquid heading on the real p
     // a separate hosted acceptance gate and is not simulated by this DB row.
     owned.psql(`UPDATE sites SET custom_domain='shop.merchant.test', custom_domain_status='active'
         WHERE id='${f.tenant.siteId}';`);
+    const customOrigin = `https://shop.merchant.test:${checkoutTlsPort}`;
+    //Admit only this exact store-bound origin after its owned prerequisite is
+    //saved. DNS still maps to our loopback listener and only its SPKI is trusted.
+    await f.context.route(url => url.origin === customOrigin, route => route.continue());
     const customBuyer = await f.context.newPage();
-    const customResponse = await customBuyer.goto(`https://shop.merchant.test:${checkoutTlsPort}`);
+    const customResponse = await customBuyer.goto(customOrigin);
     if (customResponse?.status() !== 200) console.info('N4_CUSTOM_HOST_DIAGNOSTIC', JSON.stringify({
         status: customResponse?.status(), host: customResponse ? new URL(customResponse.url()).host : null,
         server: customResponse?.headers()['server'] || null,
