@@ -374,4 +374,6 @@ SELECT jsonb_build_object(
  )::text INTO shape FROM pg_class t WHERE t.oid='public.inventory_adjustment_receipts'::regclass;
  INSERT INTO public.migration_privilege_journal(migration,object_signature,grantee,privilege,action,object_oid,object_owner,object_definition_hash)VALUES('437','public.inventory_adjustment_receipts',current_user,'INVENTORY437 CURRENT RECEIPT','granted','public.inventory_adjustment_receipts'::regclass,current_user::regrole,encode(sha256(convert_to(shape,'UTF8')),'hex'));END $save_receipt437$;
 NOTIFY pgrst,'reload schema';
+-- Close replaced canonical functions by name after their latest definitions.
+REVOKE ALL ON FUNCTION public.adjust_inventory_level(uuid,uuid,uuid,integer,uuid,text,text,text) FROM PUBLIC,anon,authenticated;
 COMMIT;

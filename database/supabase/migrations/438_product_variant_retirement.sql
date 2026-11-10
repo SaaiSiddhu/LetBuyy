@@ -934,4 +934,7 @@ DO $save438$DECLARE shape text;BEGIN SELECT jsonb_build_object(
  VALUES('438','public.product_variants',current_user,'VARIANT438 CURRENT CATALOG','granted','public.product_variants'::regclass,current_user::regrole,encode(sha256(convert_to(shape,'UTF8')),'hex'));
  END $save438$;
 NOTIFY pgrst,'reload schema';
+-- Close replaced canonical functions by name after their latest definitions.
+REVOKE ALL ON FUNCTION public.apply_product_edit_v1(uuid,uuid,uuid,integer,uuid,jsonb) FROM PUBLIC,anon,authenticated;
+REVOKE ALL ON FUNCTION public.create_order_with_inventory_reservations(uuid,text,text,text,jsonb,jsonb,text,text,text,uuid,text) FROM PUBLIC,anon,authenticated;
 COMMIT;

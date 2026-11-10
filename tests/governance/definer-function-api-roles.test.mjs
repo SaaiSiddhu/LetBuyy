@@ -266,3 +266,14 @@ test('reviewed warehouse ACL tightening never admits an altered dynamic privileg
   assert.ok(check(changed).includes('257_synthetic.sql: public.mint_things'));
  }
 });
+
+
+test('public composite qualification cannot hide a reopening grant or invalidate unrelated closed functions', () => {
+    const composite = `CREATE FUNCTION public.mint_product(p public.products) RETURNS void LANGUAGE plpgsql SECURITY DEFINER AS $$ BEGIN NULL; END $$;
+      REVOKE ALL ON FUNCTION public.mint_product(products) FROM PUBLIC,anon,authenticated;`;
+    const closed = migration(257, mint + close + composite);
+    assert.deepEqual(currentDefinerClosureOffenders([closed]), []);
+    assert.deepEqual(currentDefinerClosureOffenders([closed,migration(258,'GRANT EXECUTE ON FUNCTION public.mint_product(public.products) TO service_role;')]), []);
+    assert.deepEqual(currentDefinerClosureOffenders([closed,migration(258,'GRANT EXECUTE ON FUNCTION public.mint_product(public.products) TO anon;')]), ['257_synthetic.sql: public.mint_product']);
+    assert.ok(currentDefinerClosureOffenders([closed,migration(258,'GRANT EXECUTE ON FUNCTION public.mint_product(unreviewed.products) TO anon;')]).includes('257_synthetic.sql: public.mint_things'));
+});

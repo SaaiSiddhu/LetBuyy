@@ -174,6 +174,53 @@ for (const number of restorationFamilies) test(`migration ${number}: every resto
     assert.equal(schemaDigest(db), schema, 'complete schema/ACL/RLS profile stays unchanged after every mutant');
 });
 
+test('436 admits equivalent ACL ordering, restores the exact raw preimage, and refuses changed authority', {timeout: 180_000}, () => {
+    const up = read('migrations', 436), down = read('rollback', 436), body = transactionBody(up);
+    const originals = functionDefinitions(down);
+    assert.equal(originals.length, 13, 'all original inventory restoration signatures are covered');
+    for (const cohort of ['legacy', 'appfirst']) {
+        const db = `${database.slice(0, 40)}_acl_${cohort}`;
+        sql(`CREATE DATABASE "${db}" TEMPLATE "${snapshots.get(435)}";`, 'postgres');
+        try {
+            const prior = functionState(db);
+            if (cohort === 'appfirst') {
+                let reordered = 0;
+                for (const fn of originals) {
+                    const both = sql(`SELECT has_function_privilege('service_role','${fn.identity}','EXECUTE')
+                        AND has_function_privilege('app_tenant','${fn.identity}','EXECUTE');`, db);
+                    if (both !== 't') continue;
+                    sql(`REVOKE EXECUTE ON FUNCTION ${fn.identity} FROM service_role,app_tenant;
+                         GRANT EXECUTE ON FUNCTION ${fn.identity} TO app_tenant;
+                         GRANT EXECUTE ON FUNCTION ${fn.identity} TO service_role;`, db);
+                    reordered++;
+                }
+                assert.ok(reordered > 0);
+                assert.notEqual(functionState(db), prior, 'the alternate raw ACL order must actually differ');
+            }
+            const before = functionState(db), schema = schemaDigest(db);
+            sql(up, db); sql(down, db);
+            assert.equal(functionState(db), before, `${cohort}: bodies, owners and raw ACL ordering return exactly`);
+            assert.equal(schemaDigest(db), schema, `${cohort}: the entire schema, policies and grants return exactly`);
+            for (const fn of originals) {
+                refused(`BEGIN;GRANT EXECUTE ON FUNCTION ${fn.identity} TO anon;${body}COMMIT;`, db,
+                    /migration436 refuses changed original function/);
+                assert.equal(functionState(db), before, `${fn.identity}: an extra API grant is refused atomically`);
+            }
+            const signature = 'public.commit_inventory_reservation(uuid,uuid,text,uuid,text)';
+            for (const mutation of [
+                `REVOKE EXECUTE ON FUNCTION ${signature} FROM app_tenant;`,
+                `GRANT EXECUTE ON FUNCTION ${signature} TO service_role WITH GRANT OPTION;`,
+                `ALTER FUNCTION ${signature} OWNER TO authenticated;`,
+            ]) {
+                refused(`BEGIN;${mutation}${body}COMMIT;`, db, /migration436 refuses changed original function/);
+                assert.equal(functionState(db), before, `${cohort}: changed owner, grant option or missing grant cannot be admitted`);
+            }
+        } finally {
+            sql(`DROP DATABASE "${db}" WITH (FORCE);`, 'postgres');
+        }
+    }
+});
+
 const dataDigestSql = `CREATE OR REPLACE FUNCTION pg_temp.recovery_data_digest() RETURNS text
 LANGUAGE plpgsql AS $fn$ DECLARE t record; d text; result text := ''; BEGIN
   FOR t IN SELECT n.nspname, c.relname FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace

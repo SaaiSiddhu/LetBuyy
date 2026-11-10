@@ -639,4 +639,6 @@ DO $audit_profile435$DECLARE name text;t record;shape text;BEGIN FOREACH name IN
  VALUES('435','public.audit_activity_events:'||name,current_user,'COLLECTION AUDIT TRIGGER','granted',t.oid,current_user::regrole::oid,encode(sha256(convert_to(shape,'UTF8')),'hex'));
  END LOOP;END $audit_profile435$;
 NOTIFY pgrst,'reload schema';
+-- Close replaced canonical functions by name after their latest definitions.
+REVOKE ALL ON FUNCTION public.apply_collection_membership_v1(uuid,uuid,uuid,integer,uuid,jsonb) FROM PUBLIC,anon,authenticated;
 COMMIT;

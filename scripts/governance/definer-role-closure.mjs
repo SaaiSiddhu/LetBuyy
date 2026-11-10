@@ -74,7 +74,10 @@ export function splitSqlList(tokens) {
 }
 const typeName = tokens => tokenText(tokens).replaceAll('pg_catalog . ', '').replaceAll(' [ ]', '[]')
     .replace(/^int4$|^int$/, 'integer').replace(/^int8$/, 'bigint').replace(/^bool$/, 'boolean')
-    .replace(/^timestamp with time zone$/, 'timestamptz').replace(/^timestamp without time zone$/, 'timestamp');
+    .replace(/^timestamp with time zone$/, 'timestamptz').replace(/^timestamp without time zone$/, 'timestamp')
+    // These canonical public table composites occur in existing migration ABIs.
+    // Other schema-qualified names stay unknown and retain conservative refusal.
+    .replace(/^public \. (products|inventory_transfers|inventory_transfer_lines|purchase_orders|purchase_order_lines)(\[\])?$/, '$1$2');
 export function functionIdentity(signature) {
     const match = signature.match(/^public\s*\.\s*([a-z_][a-z0-9_]*)\s*\(([^()]*)\)$/i);
     if (!match) return null;
