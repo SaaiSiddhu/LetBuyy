@@ -43,9 +43,11 @@ export function MobileAccountReturn({ siteId }: { siteId?: string }) {
 }
 
 export function MobileAccountApproval({ email }: { email: string }) {
+    const [ready, setReady] = useState(false)
     const [busy, setBusy] = useState(false), [error, setError] = useState<string | null>(null)
+    useEffect(() => { setReady(true) }, [])
     async function approve() {
-        if (busy) return
+        if (!ready || busy) return
         setBusy(true); setError(null)
         try {
             const response = await fetch('/api/auth/mobile/approve', { method: 'POST', headers: await getAuthHeaders(), body: '{}', signal: AbortSignal.timeout(20000) })
@@ -56,7 +58,7 @@ export function MobileAccountApproval({ email }: { email: string }) {
     }
     return <><h1 className="auth-title">Continue to LetBuyy</h1><p>You’re signed in as <strong>{email}</strong>.</p>
         {error && <p role="alert">{error}</p>}
-        <Button unstyled className="auth-btn-primary" disabled={busy} onClick={approve}>{busy ? 'Continuing…' : 'Continue with this account'}</Button>
+        <Button unstyled className="auth-btn-primary" disabled={!ready || busy} onClick={approve}>{busy ? 'Continuing…' : 'Continue with this account'}</Button>
         <p><a href="/login?choose_account=1">Use another account</a></p></>
 }
 
