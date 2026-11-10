@@ -29,7 +29,7 @@ function historicalSource(id:string):Record<string,unknown>{
  return JSON.parse(psql(`SELECT jsonb_build_object('id',p.id,'version',p.version,'metadata',p.metadata,'images',p.images,
   'variants',(SELECT coalesce(jsonb_agg(jsonb_build_object('id',v.id,'product_id',v.product_id,'metadata',v.metadata,
    'options',jsonb_strip_nulls(jsonb_build_object(coalesce(n.names[1],'Option 1'),v.option1,coalesce(n.names[2],'Option 2'),v.option2,coalesce(n.names[3],'Option 3'),v.option3)))),'[]'::jsonb)
-   FROM product_variants v WHERE v.product_id=p.id AND v.deleted_at IS NULL),
+   FROM product_variants v WHERE v.product_id=p.id),
   'inventory',(SELECT coalesce(jsonb_agg(jsonb_build_object('variant_id',i.variant_id,'available',greatest(i.available-i.reserved,0))),'[]'::jsonb)
    FROM inventory_levels i JOIN inventory_locations l ON l.id=i.location_id WHERE i.product_id=p.id AND i.store_id=p.store_id AND i.deleted_at IS NULL AND l.status='active' AND l.deleted_at IS NULL))
  FROM products p LEFT JOIN LATERAL(SELECT array_agg(name ORDER BY position,id)names FROM product_options WHERE product_id=p.id)n ON true
