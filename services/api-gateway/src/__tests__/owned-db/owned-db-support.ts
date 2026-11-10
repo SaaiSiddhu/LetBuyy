@@ -567,8 +567,8 @@ wait "$letbuyy_writer_pid" 2>/dev/null || true`;
  * It has no REST endpoint and cannot be passed to an owned client runtime.
  *315,358 and361 pin schema/physical identities that later DDL cannot recreate.
  */
-export function requireOwnedHistoricalSqlDatabase(through: 309 | 315 | 346 | 356 | 357 | 358 | 361): Pick<OwnedDatabase,'database'|'psql'|'psqlAsync'|'psqlExpectError'|'psqlScriptExpectError'|'exec'|'script'|'scriptLarge'> {
-    if(through!==309&&through!==315&&through!==346&&through!==356&&through!==357&&through!==358&&through!==361)throw new Error('unreviewed historical schema point');
+export function requireOwnedHistoricalSqlDatabase(through: 309 | 315 | 346 | 356 | 357 | 358 | 361 | 385): Pick<OwnedDatabase,'database'|'psql'|'psqlAsync'|'psqlExpectError'|'psqlScriptExpectError'|'exec'|'script'|'scriptLarge'> {
+    if(through!==309&&through!==315&&through!==346&&through!==356&&through!==357&&through!==358&&through!==361&&through!==385)throw new Error('unreviewed historical schema point');
     const verified=requireOwnedDatabase(); // No environment/container fallback.
     const root=fileURLToPath(new URL('../../../../../',import.meta.url));
     const database=`letbuyy_history_${through}_${crypto.randomUUID().replaceAll('-','').slice(0,12)}`;

@@ -49,7 +49,8 @@ export const HISTORICAL_GATEWAY_MIGRATION_CEILINGS = Object.freeze({
     'services/api-gateway/src/__tests__/owned-db/storefront-electronics-search.postgres.test.ts': 391,
     'services/api-gateway/src/__tests__/owned-db/theme-draft-cas.postgres.test.ts': 390,
     'services/api-gateway/src/__tests__/owned-db/theme-editor-template-keys.postgres.test.ts': 390,
-    'services/api-gateway/src/__tests__/owned-db/pantry-variant-facts.postgres.test.ts': 387,
+    // Pantry runtime journeys use the complete chain. Its385 reverse controls
+    // use a separately guarded SQL-only historical database inside the suite.
     // These exercise the admitted 389/391 capture and rollback contract before
     // successor migration 432 changes the public catalog pointer to 2.1.0.
     'services/api-gateway/src/__tests__/owned-db/niche-theme-promotion.postgres.test.ts': 431,
