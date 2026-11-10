@@ -249,18 +249,26 @@ test('D03 real staff product journey: independently authenticated staff, real em
     }
 
     // ============================================================
-    // 4. Staff attempts a forbidden operation -- collection management has no staff path at all
-    //    (verifyStoreOwnership only, routes/products.ts), regardless of products:write.
+    // 4. Canonical collections honor products:write in the staff member's own
+    //    store. That grant never authorizes a foreign store's collections.
     // ============================================================
     {
-        const res = await gateway().request('/products/collections', {
-            method: 'POST',
-            headers: { ...(await identityHeaders(STAFF, staffEmail)), 'Content-Type': 'application/json' },
-            body: JSON.stringify({ store_id: SITE_A, title: 'Should not be allowed' }),
-        }, env());
+        const create = async (store: string, title: string) => {
+            const key = crypto.randomUUID();
+            return gateway().request('/products/collections', {
+                method: 'POST',
+                headers: { ...(await identityHeaders(STAFF, staffEmail)), 'Content-Type': 'application/json', 'X-Idempotency-Key': key },
+                body: JSON.stringify({ store_id: store, title, collection_type: 'manual', idempotency_key: key }),
+            }, env());
+        };
+        const allowed = await create(SITE_A, 'Authorized synthetic staff collection');
+        assert.equal(allowed.status, 201, JSON.stringify(await readJson(allowed)));
+        assert.equal(psql(`SELECT count(*) FROM collections WHERE store_id='${SITE_A}' AND title='Authorized synthetic staff collection';`), '1');
+        const res = await create(SITE_B, 'Should not be allowed');
         const body = await readJson(res);
         assert.equal(res.status, 403, `a forbidden operation must be refused: ${JSON.stringify(body)}`);
         assert.equal((body.error as { code: string }).code, 'FORBIDDEN');
+        assert.equal(psql(`SELECT count(*) FROM collections WHERE store_id='${SITE_B}' AND title='Should not be allowed';`), '0');
     }
 
     // ============================================================
