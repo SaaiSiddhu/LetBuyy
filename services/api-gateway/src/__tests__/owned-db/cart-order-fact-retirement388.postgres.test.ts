@@ -1,54 +1,65 @@
 // Exact migration388 retirement cohort. Current-stack mounted checkout remains in cart-order-fact-snapshots.
 import assert from 'node:assert/strict';
-import test, { before, after, afterEach } from 'node:test';
+import test, { before } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
-import { personalizationReviewFingerprint, readProductFactSnapshot, type ProductFactSnapshot, type PersonalizationCartDraft } from '@letbuyy/commerce-core';
-import { loadCartFactSources } from '../../lib/cart-product-facts';
-import { closePooledSqlClients } from '@letbuyy/infrastructure/pooled-sql-adapter';
-import { canonicalCheckoutCartBinding } from '@letbuyy/checkout-core';
-import { Gateway, gatewayEnv, newIdentityKeys, signedIdentityHeaders } from './gateway-harness';
-import { requireOwnedDatabase, startOwnedPooledSqlProxy, type OwnedPooledSqlProxy } from './owned-db-support';
+import { personalizationReviewFingerprint, readPersonalizationFacts, type ProductFactSnapshot, type PersonalizationCartDraft } from '@letbuyy/commerce-core';
+import { acceptCartProductFacts } from '../../lib/cart-product-facts';
+import { requireOwnedDatabase } from './owned-db-support';
 import { newSyntheticTenant, seedSyntheticTenant, type SyntheticTenant } from './synthetic-tenant';
 
-const owned=requireOwnedDatabase(),{psql,psqlExpectError}=owned;
+const owned=requireOwnedDatabase(),{psql}=owned;
 const site=newSyntheticTenant('snapshot-cart'),other=newSyntheticTenant('snapshot-other');
 const actor=crypto.randomUUID(),email=`syn-snapshot-${actor}@example.invalid`;
-let gateway:Gateway,proxy:OwnedPooledSqlProxy;
 const quote=(value:string)=>`'${value.replaceAll("'","''")}'`;
 const json=(value:unknown)=>`${quote(JSON.stringify(value))}::jsonb`;
 const facts={version:1,revision:1,methods:[{id:'engrave',label:'Front engraving',min_graphemes:1,max_graphemes:18,character_set:'unicode-letters',styles:[{id:'sans',label:'Sans'}],placements:[{id:'front',label:'Front'}]}]};
 type Line={marketplace_listing_id?:string|null;id:string;product_id:string;variant_id:string|null;quantity:number;unit_price:number;line_total:number;product_version:number;configuration_fingerprint:string|null;snapshot_fingerprint:string;niche_snapshot:ProductFactSnapshot;personalization?:PersonalizationCartDraft};
 type Cart={id:string;cart_token:string;store_id:string;updated_at:string;lines:Line[]};
-function data<T>(response:{status:number;text:string;json:unknown}):T { const payload=response.json as {data?:T};assert.ok(payload?.data,response.text);return payload.data; }
 function product(metadata:object={},stock=10,tenant:SyntheticTenant=site,images:string[]=[]){
  const id=crypto.randomUUID();psql(`INSERT INTO products(id,store_id,site_id,name,slug,price,sku,stock,is_active,status,metadata,images)
  VALUES('${id}','${tenant.siteId}','${tenant.siteId}','Synthetic snapshot product','syn-${id}',1290,'SYN-${id}',${stock},true,'active',${json(metadata)},ARRAY[${images.map(quote).join(',')}]::text[]);
  WITH _fixture_inventory_scope436 AS MATERIALIZED (SELECT set_config('app.site_id','${tenant.siteId}',true)) SELECT public.set_inventory_level_available('${id}',NULL,'${tenant.locationId}',${stock},NULL) FROM _fixture_inventory_scope436;`);return id;
 }
-const version=(id:string)=>Number(psql(`SELECT version FROM products WHERE id='${id}';`));
-async function draft(id:string,text='Asha',variant_id:string|null=null):Promise<PersonalizationCartDraft>{
- const response=await gateway.request(`/v1/storefront/${site.subdomain}/products/${id}/personalization-review${variant_id?`?variant_id=${variant_id}`:''}`);
- assert.equal(response.status,200,response.text);
- const context=data<{facts_revision:number;review_fingerprint:string}>(response);
- return {facts_revision:context.facts_revision,review_fingerprint:context.review_fingerprint,method_id:'engrave',style_id:'sans',placement_id:'front',text};
+// SQL-only388 recovery controls cannot mount today's Gateway: its atomic cart
+// transport requires395 and later. Prepare the retained row using the existing
+// canonical fact acceptor, then exercise the real388 order/rollback functions.
+// Full current HTTP/tenant/checkout behavior remains in cart-order-fact-snapshots.
+function historicalSource(id:string):Record<string,unknown>{
+ return JSON.parse(psql(`SELECT jsonb_build_object('id',p.id,'version',p.version,'metadata',p.metadata,'images',p.images,
+  'variants',(SELECT coalesce(jsonb_agg(jsonb_build_object('id',v.id,'product_id',v.product_id,'metadata',v.metadata,
+   'options',jsonb_strip_nulls(jsonb_build_object(coalesce(n.names[1],'Option 1'),v.option1,coalesce(n.names[2],'Option 2'),v.option2,coalesce(n.names[3],'Option 3'),v.option3)))),'[]'::jsonb)
+   FROM product_variants v WHERE v.product_id=p.id AND v.deleted_at IS NULL),
+  'inventory',(SELECT coalesce(jsonb_agg(jsonb_build_object('variant_id',i.variant_id,'available',greatest(i.available-i.reserved,0))),'[]'::jsonb)
+   FROM inventory_levels i JOIN inventory_locations l ON l.id=i.location_id WHERE i.product_id=p.id AND i.store_id=p.store_id AND i.deleted_at IS NULL AND l.status='active' AND l.deleted_at IS NULL))
+ FROM products p LEFT JOIN LATERAL(SELECT array_agg(name ORDER BY position,id)names FROM product_options WHERE product_id=p.id)n ON true
+ WHERE p.id='${id}' AND p.store_id='${site.siteId}';`)) as Record<string,unknown>;
 }
-function input(id:string,personalization?:PersonalizationCartDraft,quantity=1,variant_id?:string){return {product_id:id,variant_id:variant_id??null,quantity,properties:{},...(personalization?{personalization}:{})};}
-async function cart(lines:object[],existing?:Cart,tenant=site){return gateway.request(`/v1/storefront/${tenant.subdomain}/cart${existing?`/${existing.cart_token}`:''}`,{method:existing?'PATCH':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({lines,coupon_codes:[],...(existing?{expected_updated_at:existing.updated_at}:{})})});}
+async function draft(id:string,text='Asha'):Promise<PersonalizationCartDraft>{
+ const source=historicalSource(id),personalization=readPersonalizationFacts(source.metadata);assert.ok(personalization);
+ return {facts_revision:personalization.revision,review_fingerprint:await personalizationReviewFingerprint({product_id:id,variant_id:null,product_version:source.version,facts:personalization}),method_id:'engrave',style_id:'sans',placement_id:'front',text};
+}
+function input(id:string,personalization?:PersonalizationCartDraft,quantity=1,variant_id?:string){return {product_id:id,variant_id:variant_id??null,quantity,...(personalization?{personalization}:{})};}
+async function historicalCart(inputs:ReturnType<typeof input>[]):Promise<Cart>{
+ const lines=[];
+ for(const item of inputs){
+  const accepted=await acceptCartProductFacts(historicalSource(item.product_id),item.variant_id,item.personalization);assert.ok('prepared'in accepted,JSON.stringify(accepted));
+  assert.ok(accepted.available>=item.quantity,'positive historical fixture has real available stock');
+  lines.push({id:crypto.randomUUID(),...item,marketplace_listing_id:null,unit_price:1290,line_total:1290*item.quantity,
+   niche_snapshot:accepted.prepared.snapshot,product_version:accepted.prepared.product_version,
+   configuration_fingerprint:accepted.prepared.configuration_fingerprint,snapshot_fingerprint:accepted.prepared.snapshot_fingerprint,catalog_source:accepted.catalog_source});
+ }
+ const id=crypto.randomUUID(),token=crypto.randomUUID();
+ psql(`INSERT INTO carts(id,store_id,session_id,items,status,fact_acceptance_version)VALUES('${id}','${site.siteId}','${token}',${json(lines)},'active',1);`);
+ const stored=JSON.parse(psql(`SELECT jsonb_build_object('id',id,'store_id',store_id,'cart_token',session_id,'updated_at',updated_at,'lines',items)FROM carts WHERE id='${id}';`)) as Cart;
+ assert.equal(stored.lines.length,inputs.length);assert.equal(stored.store_id,site.siteId);return stored;
+}
 function items(cart:Cart){return cart.lines.map(line=>({product_id:line.product_id,variant_id:line.variant_id,quantity:line.quantity,...(line.marketplace_listing_id?{marketplace_listing_id:line.marketplace_listing_id}:{}),cart_fact_ref:{cart_id:cart.id,cart_token:cart.cart_token,line_id:line.id,product_version:line.product_version,configuration_fingerprint:line.configuration_fingerprint,snapshot_fingerprint:line.snapshot_fingerprint}}));}
 function orderSql(lines:unknown,key=crypto.randomUUID(),tenant=site){return `SELECT public.create_checkout_order(p_store_id=>'${tenant.siteId}'::uuid,p_customer_name=>'Synthetic snapshot buyer',p_customer_email=>'syn-snapshot@example.invalid',p_customer_phone=>'9000000099',p_shipping_address=>'{}'::jsonb,p_items=>${json(lines)},p_payment_method=>'cod',p_idempotency_key=>'${key}',p_request_id=>'snapshot-${key}') ->> 'id';`;}
-async function patch(id:string,metadata:object,expected=version(id),key=crypto.randomUUID()){
- return gateway.request(`/v1/products/${id}`,{method:'PATCH',headers:{...await signedIdentityHeaders(actor,email,site.siteId),'X-Store-ID':site.siteId,'X-Idempotency-Key':key},body:JSON.stringify({metadata,version:expected,idempotency_key:key})});
-}
-function effects(id:string){return psql(`SELECT jsonb_build_object('orders',(SELECT count(*) FROM order_items WHERE product_id='${id}'),'levels',(SELECT jsonb_agg(to_jsonb(il) ORDER BY id) FROM inventory_levels il WHERE product_id='${id}'),'reservations',(SELECT count(*) FROM inventory_reservations WHERE product_id='${id}'));`);}
-before(async()=>{
+before(()=>{
  for(const tenant of[site,other])seedSyntheticTenant(psql,tenant);
  psql(`INSERT INTO users_custom(id,email,email_verified) VALUES('${actor}','${email}',true);UPDATE sites SET custom_user_id='${actor}' WHERE id='${site.siteId}';`);
- proxy=await startOwnedPooledSqlProxy(owned);
- gateway=new Gateway(gatewayEnv(owned,await newIdentityKeys(),{...proxy.env(),CHECKOUT_SIGNING_SECRET:'synthetic-snapshot-fixture-secret'}));
 });
-afterEach(async()=>{await gateway.settle();});
-after(async()=>{await closePooledSqlClients();await proxy?.stop();});
 
 function migration(kind:'migrations'|'rollback'){return readFileSync(new URL(`../../../../../database/supabase/${kind}/388_cart_order_fact_snapshots${kind==='rollback'?'.rollback':''}.sql`,import.meta.url),'utf8');}
 function privilegeProfile(){return psql(`SELECT jsonb_build_object(
@@ -95,14 +106,14 @@ test('388 paired DOWN restores predecessor bodies and ACL deltas, reapply recove
  assert.equal(psql(`SELECT has_any_column_privilege('authenticated','public.carts','UPDATE');`),'f');
 });
 
-async function archiveProduct(id:string){const key=crypto.randomUUID();const response=await gateway.request(`/v1/products/${id}`,{method:'PATCH',headers:{...await signedIdentityHeaders(actor,email,site.siteId),'X-Store-ID':site.siteId,'X-Idempotency-Key':key},body:JSON.stringify({status:'archived',is_active:false,version:version(id),idempotency_key:key})});assert.equal(response.status,200,response.text);}
+function archiveProduct(id:string){psql(`UPDATE products SET status='archived',is_active=false WHERE id='${id}';`);}
 test('DOWN refuses sellable variant-only facts and named options without active carts; supported retirement preserves history',async()=>{
  for(const metadata of[{food:{netQuantity:{value:250,unit:'g'}}},{furniture:{assembled:{width:12,unit:'cm'}}},{books:{kind:'book',language:'English',format:'paperback'}},{}]){
   const id=product({},4),variant=crypto.randomUUID();
   psql(`INSERT INTO product_options(product_id,name,position,values) VALUES('${id}','Pack name',0,'["Single"]');INSERT INTO product_variants(id,product_id,title,price,inventory_qty,option1,metadata) VALUES('${variant}','${id}','Synthetic variant-only capability',1290,4,'Single',${json(metadata)});WITH _fixture_inventory_scope436 AS MATERIALIZED (SELECT set_config('app.site_id','${site.siteId}',true)) SELECT public.set_inventory_level_available('${id}','${variant}','${site.locationId}',4,NULL) FROM _fixture_inventory_scope436;`);
   assert.equal(psql(`SELECT count(*) FROM carts WHERE store_id='${site.siteId}' AND status='active' AND fact_acceptance_version=1;`),'0');
   assert.match(owned.psqlScriptExpectError(migration('rollback')),/388 rollback requires/);
-  const response=await cart([input(id,undefined,1,variant)]);assert.equal(response.status,201,response.text);const accepted=data<Cart>(response);
+  const accepted=await historicalCart([input(id,undefined,1,variant)]);
   const order=psql(orderSql(items(accepted))),history=psql(`SELECT product_snapshot FROM order_items WHERE order_id='${order}';`);
   await archiveProduct(id);owned.script(migration('rollback'));
   assert.equal(psql(`SELECT product_snapshot FROM order_items WHERE order_id='${order}';`),history);
@@ -111,6 +122,6 @@ test('DOWN refuses sellable variant-only facts and named options without active 
 });
 
 test('rollback refuses active accepted capabilities and preserves recorded history instead of silently downgrading',async()=>{
- const id=product({personalization:facts});const accepted=await cart([input(id,await draft(id))]);assert.equal(accepted.status,201,accepted.text);
+ const id=product({personalization:facts});await historicalCart([input(id,await draft(id))]);
  const before=privilegeProfile();assert.match(owned.psqlScriptExpectError(migration('rollback')),/388 rollback requires/);assert.equal(privilegeProfile(),before);
 });
