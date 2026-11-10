@@ -34,7 +34,7 @@ overrides:
 
 patchedDependencies:
   deepmerge@4.3.1:
-    hash: 121864f5ed3c110bf0ff9b96c5a94fe25e7db754cdd58c2ecbd32a8a5a15ca8c
+    hash: cff1abca369bcc45fe5f0f8612de51a8ebcfe7f125de8e8d97d8d1009ee2bdb1
     path: patches/deepmerge@4.3.1.patch
 
 importers:
@@ -67,7 +67,7 @@ importers:
         version: 1.60.0
       deepmerge:
         specifier: 4.3.1
-        version: 4.3.1(patch_hash=121864f5ed3c110bf0ff9b96c5a94fe25e7db754cdd58c2ecbd32a8a5a15ca8c)
+        version: 4.3.1(patch_hash=cff1abca369bcc45fe5f0f8612de51a8ebcfe7f125de8e8d97d8d1009ee2bdb1)
       esbuild:
         specifier: 0.27.3
         version: 0.27.3
@@ -130,7 +130,7 @@ importers:
         version: link:../../../packages/typescript/ui
       '@vercel/speed-insights':
         specifier: ^1.3.1
-        version: 1.3.1(next@16.4.2(@babel/core@7.29.6)(@playwright/test@1.60.0)(@types/node@20.19.33)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)
+        version: 1.3.1(next@16.4.2(@playwright/test@1.60.0)(@types/node@20.19.33)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -8812,7 +8812,7 @@ snapshots:
     dependencies:
       uncrypto: 0.1.3
 
-  '@vercel/speed-insights@1.3.1(next@16.4.2(@babel/core@7.29.6)(@playwright/test@1.60.0)(@types/node@20.19.33)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)':
+  '@vercel/speed-insights@1.3.1(next@16.4.2(@playwright/test@1.60.0)(@types/node@20.19.33)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)':
     optionalDependencies:
       next: 16.4.2(@babel/core@7.29.6)(@playwright/test@1.60.0)(@types/node@20.19.33)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react: 19.2.3
@@ -9287,7 +9287,7 @@ snapshots:
 
   deep-is@0.1.4: {}
 
-  deepmerge@4.3.1(patch_hash=121864f5ed3c110bf0ff9b96c5a94fe25e7db754cdd58c2ecbd32a8a5a15ca8c): {}
+  deepmerge@4.3.1(patch_hash=cff1abca369bcc45fe5f0f8612de51a8ebcfe7f125de8e8d97d8d1009ee2bdb1): {}
 
   default-browser-id@5.0.1: {}
 
@@ -10117,7 +10117,7 @@ snapshots:
   html-to-text@9.0.5:
     dependencies:
       '@selderee/plugin-htmlparser2': 0.11.0
-      deepmerge: 4.3.1(patch_hash=121864f5ed3c110bf0ff9b96c5a94fe25e7db754cdd58c2ecbd32a8a5a15ca8c)
+      deepmerge: 4.3.1(patch_hash=cff1abca369bcc45fe5f0f8612de51a8ebcfe7f125de8e8d97d8d1009ee2bdb1)
       dom-serializer: 2.0.0
       htmlparser2: 8.0.2
       selderee: 0.11.0

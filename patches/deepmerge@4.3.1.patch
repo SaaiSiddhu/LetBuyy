@@ -1,10 +1,7 @@
 diff --git a/index.js b/index.js
 --- a/index.js
 +++ b/index.js
-@@ -51,11 +51,18 @@
- 			&& Object.propertyIsEnumerable.call(target, key)) // and also unsafe if they're nonenumerable.
- }
- 
+@@ -53,0 +54,7 @@
 +function setOwnDataProperty(target, key, value) {
 +	// Own data only: copying a key must never invoke an inherited setter.
 +	Object.defineProperty(target, key, {
@@ -12,34 +9,19 @@ diff --git a/index.js b/index.js
 +	})
 +}
 +
- function mergeObject(target, source, options) {
- 	var destination = {}
- 	if (options.isMergeableObject(target)) {
- 		getKeys(target).forEach(function(key) {
+@@ -58 +65 @@
 -			destination[key] = cloneUnlessOtherwiseSpecified(target[key], options)
 +			setOwnDataProperty(destination, key, cloneUnlessOtherwiseSpecified(target[key], options))
- 		})
- 	}
- 	getKeys(source).forEach(function(key) {
-@@ -64,9 +71,9 @@
- 		}
- 
- 		if (propertyIsOnObject(target, key) && options.isMergeableObject(source[key])) {
+@@ -67 +74 @@
 -			destination[key] = getMergeFunction(key, options)(target[key], source[key], options)
 +			setOwnDataProperty(destination, key, getMergeFunction(key, options)(target[key], source[key], options))
- 		} else {
+@@ -69 +76 @@
 -			destination[key] = cloneUnlessOtherwiseSpecified(source[key], options)
 +			setOwnDataProperty(destination, key, cloneUnlessOtherwiseSpecified(source[key], options))
- 		}
- 	})
- 	return destination
 diff --git a/dist/cjs.js b/dist/cjs.js
 --- a/dist/cjs.js
 +++ b/dist/cjs.js
-@@ -76,11 +76,18 @@
- 			&& Object.propertyIsEnumerable.call(target, key)) // and also unsafe if they're nonenumerable.
- }
- 
+@@ -78,0 +79,7 @@
 +function setOwnDataProperty(target, key, value) {
 +	// Own data only: copying a key must never invoke an inherited setter.
 +	Object.defineProperty(target, key, {
@@ -47,59 +29,32 @@ diff --git a/dist/cjs.js b/dist/cjs.js
 +	})
 +}
 +
- function mergeObject(target, source, options) {
- 	var destination = {};
- 	if (options.isMergeableObject(target)) {
- 		getKeys(target).forEach(function(key) {
+@@ -83 +90 @@
 -			destination[key] = cloneUnlessOtherwiseSpecified(target[key], options);
 +			setOwnDataProperty(destination, key, cloneUnlessOtherwiseSpecified(target[key], options))
- 		});
- 	}
- 	getKeys(source).forEach(function(key) {
-@@ -89,9 +96,9 @@
- 		}
- 
- 		if (propertyIsOnObject(target, key) && options.isMergeableObject(source[key])) {
+@@ -92 +99 @@
 -			destination[key] = getMergeFunction(key, options)(target[key], source[key], options);
 +			setOwnDataProperty(destination, key, getMergeFunction(key, options)(target[key], source[key], options))
- 		} else {
+@@ -94 +101 @@
 -			destination[key] = cloneUnlessOtherwiseSpecified(source[key], options);
 +			setOwnDataProperty(destination, key, cloneUnlessOtherwiseSpecified(source[key], options))
- 		}
- 	});
- 	return destination
 diff --git a/dist/umd.js b/dist/umd.js
 --- a/dist/umd.js
 +++ b/dist/umd.js
-@@ -80,11 +80,18 @@
- 				&& Object.propertyIsEnumerable.call(target, key)) // and also unsafe if they're nonenumerable.
- 	}
- 
+@@ -82,0 +83,7 @@
 +	function setOwnDataProperty(target, key, value) {
 +		// Own data only: copying a key must never invoke an inherited setter.
 +		Object.defineProperty(target, key, {
 +			value: value, enumerable: true, configurable: true, writable: true
 +		})
 +	}
-+	
- 	function mergeObject(target, source, options) {
- 		var destination = {};
- 		if (options.isMergeableObject(target)) {
- 			getKeys(target).forEach(function(key) {
++
+@@ -87 +94 @@
 -				destination[key] = cloneUnlessOtherwiseSpecified(target[key], options);
 +				setOwnDataProperty(destination, key, cloneUnlessOtherwiseSpecified(target[key], options))
- 			});
- 		}
- 		getKeys(source).forEach(function(key) {
-@@ -93,9 +100,9 @@
- 			}
- 
- 			if (propertyIsOnObject(target, key) && options.isMergeableObject(source[key])) {
+@@ -96 +103 @@
 -				destination[key] = getMergeFunction(key, options)(target[key], source[key], options);
 +				setOwnDataProperty(destination, key, getMergeFunction(key, options)(target[key], source[key], options))
- 			} else {
+@@ -98 +105 @@
 -				destination[key] = cloneUnlessOtherwiseSpecified(source[key], options);
 +				setOwnDataProperty(destination, key, cloneUnlessOtherwiseSpecified(source[key], options))
- 			}
- 		});
- 		return destination
