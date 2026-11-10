@@ -3,7 +3,9 @@ import test from 'node:test';
 import {createRequire} from 'node:module';
 
 const require=createRequire(import.meta.url);
-const implementations=[['CommonJS',require('deepmerge')],['UMD',require('deepmerge/dist/umd.js')],['source entry',require('deepmerge/index.js')]];
+// Published runtime distributions. index.js is upstream build input whose
+// is-mergeable-object dependency is development-only, not an installed entry.
+const implementations=[['CommonJS',require('deepmerge')],['UMD',require('deepmerge/dist/umd.js')]];
 for(const [format,merge] of implementations) {
     test(format+': copying an own JSON __proto__ field cannot poison the returned prototype',()=>{
         const target=JSON.parse('{"__proto__":{"syntheticInherited":true},"retained":"target"}');
