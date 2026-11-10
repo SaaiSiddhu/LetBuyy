@@ -1,6 +1,8 @@
 // The normal Identity web wizard persists into the canonical Gateway onboarding aggregate.
 import assert from 'node:assert/strict';
 import test, { afterEach, before } from 'node:test';
+import { createHash } from 'node:crypto';
+import { canonicalizeExecutionPayload } from '@letbuyy/event-core';
 import { Gateway, gatewayEnv, newIdentityKeys, signedIdentityHeaders, type IdentityKeys } from './gateway-harness';
 import { requireOwnedDatabase } from './owned-db-support';
 
@@ -164,7 +166,12 @@ test('GET reconciles a draft after store creation succeeded but finalization res
     assert.equal(unrelated.status, 200, unrelated.text);
     assert.equal(unrelated.json?.data?.attempt?.attempt_id, attemptId);
     assert.equal(unrelated.json?.data?.completed_store, undefined);
-    psql(`UPDATE sites SET store_creation_idempotency_key='accounts-store:${ownerId}:${attemptId}' WHERE id='${recoveredStoreId}';`);
+    const creationHash = createHash('sha256').update(canonicalizeExecutionPayload({
+        name: 'Recovered Store', subdomain, site_type: 'store', tagline: null, locale: 'en-IN',
+        theme_id: psql(`SELECT theme_id FROM sites WHERE id='${recoveredStoreId}';`), template_config: {},
+    })).digest('hex');
+    psql(`UPDATE sites SET store_creation_idempotency_key='accounts-store:${ownerId}:${attemptId}',
+        store_creation_request_hash='${creationHash}' WHERE id='${recoveredStoreId}';`);
 
     const resumed = await gateway.request('/v1/onboarding/web-draft', { headers: await headers(ownerId) });
     assert.equal(resumed.status, 200, resumed.text);
