@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { z } from 'zod';
+import { Button, Input } from '@letbuyy/ui';
 import { ConsoleWorkspace, EmptyDataState, Panel, StatusPill } from '@/components/_local-ui/console-workspace';
 import { ConsoleApiErrorPanel } from '@/components/ConsoleDataTable';
 import { fetchConsoleApi, formatDateTime, readSearchParam, type ConsoleDataResponse } from '@/lib/console-api';
@@ -63,12 +64,12 @@ export default async function MerchantKycReviewPage({ params, searchParams }: Pa
             <form method="GET" className="flex flex-col gap-3 sm:flex-row sm:items-end">
                 <label className="flex flex-1 flex-col gap-2 text-sm font-medium" htmlFor="kyc-review-reason">
                     Reason
-                    <input id="kyc-review-reason" name="reason" defaultValue={reason} required minLength={8} maxLength={1000}
+                    <Input unstyled id="kyc-review-reason" name="reason" defaultValue={reason} required minLength={8} maxLength={1000}
                         autoComplete="off" className="w-full rounded-md border border-[var(--lb-color-border)] bg-transparent p-2" />
                 </label>
-                <button type="submit" className="rounded-md bg-[var(--lb-color-primary)] px-4 py-2 font-medium text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]">
+                <Button unstyled type="submit" className="rounded-md bg-[var(--lb-color-primary)] px-4 py-2 font-medium text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]">
                     Review documents
-                </button>
+                </Button>
             </form>
         </Panel>
         {result?.error ? <><ConsoleApiErrorPanel title="KYC evidence unavailable" message={result.error} />

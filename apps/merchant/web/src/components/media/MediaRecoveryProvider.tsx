@@ -118,6 +118,7 @@ export function useMediaRecovery(store: string) {
 export function useMediaUploadTarget(store: string | undefined, binding: string) {
     const context = useContext(Context)
     const recovery = context?.store === store ? context : null
+    const uploadMedia = recovery?.upload
     const life = useRef({ binding, current: false })
     useLayoutEffect(() => { life.current = { binding, current: true }; return () => { life.current.current = false } }, [binding])
     const capture = useCallback(() => {
@@ -126,11 +127,11 @@ export function useMediaUploadTarget(store: string | undefined, binding: string)
     }, [])
     const upload = useCallback(async (file: File) => {
         const captured = life.current
-        if (!recovery) throw new Error('Reload this store before uploading media.')
-        const result = await recovery.upload(file)
+        if (!uploadMedia) throw new Error('Reload this store before uploading media.')
+        const result = await uploadMedia(file)
         if (!captured.current || life.current !== captured) throw new Error('The media target changed. Select the confirmed file from the library.')
         return result
-    }, [recovery?.upload])
+    }, [uploadMedia])
     return { upload, capture, blocked: !recovery || !recovery.ready || recovery.busy || Boolean(recovery.pending), revision: recovery?.revision ?? 0 }
 }
 export function MediaRecoveryNotice({ store }: { store: string | undefined }) {

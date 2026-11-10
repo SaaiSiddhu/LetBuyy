@@ -1,7 +1,7 @@
 'use client'
 import { useState, useRef, useLayoutEffect, useEffect } from 'react'
 import { useParams } from 'next/navigation'
-import { Page, PageHeader, Card, Section, Button, Banner, Textarea } from '@letbuyy/ui'
+import { Page, PageHeader, Card, Section, Button, Banner, Input, Textarea } from '@letbuyy/ui'
 import { ProductCsvImportSchema, ProductImportCapabilitiesSchema, ProductImportJobSchema, ProductImportRowsPageSchema,
     ProductImportHistoryPageSchema, PRODUCT_IMPORT_MAX_BYTES, type ProductImportJob,
     type ProductImportRowsPage, type ProductImportHistoryPage } from '@letbuyy/shared-types'
@@ -125,7 +125,7 @@ function Workspace({store,actorId,siteId}:{store:string;actorId:string;siteId:st
         {error&&<Banner variant="critical">{error}</Banner>}{supportError&&<Banner variant="warning">{supportError}</Banner>}
         {pending&&<Banner variant="warning">An original registration needs confirmation. Keep its CSV. <Button disabled={busy} onClick={recover}>Recover original registration</Button><Button disabled={busy} onClick={stopRegistration}>Stop original request</Button></Banner>}
         <Section><Card><p>Up to 500 rows and one MiB per request. Large quoted files may need to be split. Creates active products; existing products are not updated. Required: name. Optional: price (rupees), description, category, stock, tags, images. Separate tags and image URLs with semicolons. Unsupported columns are refused.</p>
-            <label>Choose UTF-8 CSV <input aria-label="Choose CSV" type="file" accept=".csv,text/csv" disabled={busy||!supported} onChange={e=>{const file=e.target.files?.[0];e.target.value='';if(!file)return;void run(async()=>{
+            <label>Choose UTF-8 CSV <Input unstyled aria-label="Choose CSV" type="file" accept=".csv,text/csv" disabled={busy||!supported} onChange={e=>{const file=e.target.files?.[0];e.target.value='';if(!file)return;void run(async()=>{
                 if(file.size>PRODUCT_IMPORT_MAX_BYTES||file.size===0)throw new Error('Use a CSV of at most one MiB.')
                 const bytes=await file.arrayBuffer();check();let decoded:string
                 try{decoded=new TextDecoder('utf-8',{fatal:true,ignoreBOM:true}).decode(bytes)}catch{throw new Error('Choose a valid UTF-8 CSV.')}

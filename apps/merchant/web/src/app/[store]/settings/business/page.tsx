@@ -766,7 +766,7 @@ function BusinessSettingsWorkspace({ store, actorId }: { store: string; actorId:
                                             />
                                             <label className="settings-business-kyc-upload">
                                                 <span>Document file</span>
-                                                <input key={`${req.document_type}-${existing?.updated_at || 'new'}`} type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
+                                                <Input unstyled key={`${req.document_type}-${existing?.updated_at || 'new'}`} type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
                                                     disabled={busy || (!kyc?.private_upload_available && !kyc?.india_direct_upload_available)}
                                                     onChange={(event) => setDocFiles((cur) => ({ ...cur, [req.document_type]: event.target.files?.[0] || null }))}
                                                     aria-label={`Upload ${meta.title}`} />

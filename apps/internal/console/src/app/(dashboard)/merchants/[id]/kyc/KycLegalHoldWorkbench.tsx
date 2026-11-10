@@ -2,6 +2,7 @@
 
 import { useRef, useState, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
+import { Button, Input, Select, Textarea } from '@letbuyy/ui';
 import { Panel, StatusPill } from '@/components/_local-ui/console-workspace';
 
 export type HoldReceipt = {
@@ -88,46 +89,43 @@ function CreateHoldForm({ siteId, receipts }: { siteId: string; receipts: HoldRe
             : <form onSubmit={submit} onChange={() => { key.current = null; setError(''); setMessage(''); }}
                 className="grid gap-4" aria-busy={busy}>
                 <label className="grid gap-1 text-sm font-medium">Mumbai receipt
-                    <select name="receiptId" required className="w-full rounded-md border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-2">
-                        <option value="">Select an exact receipt</option>
-                        {eligible.map(row => <option key={row.id} value={row.id}>
-                            {row.document_type.replaceAll('_', ' ')} · {row.purpose.replaceAll('_', ' ')} · {row.id}
-                        </option>)}
-                    </select>
+                    <Select unstyled name="receiptId" required className="w-full rounded-md border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-2"
+                        options={[{ value: '', label: 'Select an exact receipt' }, ...eligible.map(row => ({
+                            value: row.id, label: `${row.document_type.replaceAll('_', ' ')} · ${row.purpose.replaceAll('_', ' ')} · ${row.id}`,
+                        }))]} />
                 </label>
                 <div className="grid gap-4 sm:grid-cols-2">
                     <label className="grid gap-1 text-sm font-medium">Authority type
-                        <select name="authorityType" required className="w-full rounded-md border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-2">
-                            <option value="court_order">Court order</option><option value="statutory">Statutory requirement</option>
-                            <option value="provider_contract">Provider contract</option>
-                        </select>
+                        <Select unstyled name="authorityType" required className="w-full rounded-md border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-2"
+                            options={[{ value: 'court_order', label: 'Court order' }, { value: 'statutory', label: 'Statutory requirement' },
+                                { value: 'provider_contract', label: 'Provider contract' }]} />
                     </label>
                     <label className="grid gap-1 text-sm font-medium">Authority reference
-                        <input name="authorityReference" required minLength={8} maxLength={160} autoComplete="off"
+                        <Input unstyled name="authorityReference" required minLength={8} maxLength={160} autoComplete="off"
                             className="w-full rounded-md border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-2" />
                     </label>
                 </div>
                 <label className="grid gap-1 text-sm font-medium">Reason and exact scope
-                    <textarea name="reason" required minLength={8} maxLength={1000} rows={3}
+                    <Textarea unstyled name="reason" required minLength={8} maxLength={1000} rows={3}
                         className="w-full rounded-md border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-2" />
                 </label>
                 <div className="grid gap-4 sm:grid-cols-2">
                     <label className="grid gap-1 text-sm font-medium">Review by (IST, within 30 days)
-                        <input type="datetime-local" name="reviewAt" required
+                        <Input unstyled type="datetime-local" name="reviewAt" required
                             className="w-full rounded-md border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-2" />
                     </label>
                     <label className="grid gap-1 text-sm font-medium">Authority expiry (IST, within 365 days)
-                        <input type="datetime-local" name="expiresAt" required
+                        <Input unstyled type="datetime-local" name="expiresAt" required
                             className="w-full rounded-md border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-2" />
                     </label>
                 </div>
                 <p className="m-0 text-xs text-[var(--lb-color-text-subdued)]">The expiry date triggers review; it does not automatically release or delete evidence.</p>
                 <div role="status" aria-live="polite" className="text-sm text-[var(--lb-color-text)]">{message}</div>
                 {error ? <p role="alert" className="m-0 text-sm text-[var(--lb-color-danger)]">{error}</p> : null}
-                <button type="submit" disabled={busy}
+                <Button unstyled type="submit" disabled={busy}
                     className="w-fit rounded-md bg-[var(--lb-color-primary)] px-4 py-2 font-medium text-white disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]">
                     {busy ? 'Recording hold…' : 'Record exact hold'}
-                </button>
+                </Button>
             </form>}
     </Panel>;
 }
@@ -158,16 +156,16 @@ function ReleaseHoldForm({ siteId, hold }: { siteId: string; hold: LegalHold }) 
     return <form onSubmit={submit} onChange={() => { key.current = null; setError(''); setMessage(''); }}
         className="mt-3 grid gap-2" aria-busy={busy}>
         <label className="grid gap-1 text-sm font-medium">Release reason
-            <textarea name="reason" required minLength={8} maxLength={1000} rows={2}
+            <Textarea unstyled name="reason" required minLength={8} maxLength={1000} rows={2}
                 className="w-full rounded-md border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-2" />
         </label>
         <p className="m-0 text-xs text-[var(--lb-color-text-subdued)]">Releasing this hold allows the pending exact receipt deletion to resume.</p>
         <div role="status" aria-live="polite" className="text-sm">{message}</div>
         {error ? <p role="alert" className="m-0 text-sm text-[var(--lb-color-danger)]">{error}</p> : null}
-        <button type="submit" disabled={busy}
+        <Button unstyled type="submit" disabled={busy}
             className="w-fit rounded-md border border-[var(--lb-color-border)] px-4 py-2 font-medium disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]">
             {busy ? 'Releasing…' : 'Release exact hold'}
-        </button>
+        </Button>
     </form>;
 }
 
