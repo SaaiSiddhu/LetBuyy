@@ -117,7 +117,7 @@ test('normal Preferences enforces canonical SEO length, persists through General
         await page.getByRole('textbox', { name: 'Store name', exact: true }).fill('Synthetic General write roundtrip');
         const [generalSaved] = await Promise.all([
             page.waitForResponse(response => new URL(response.url()).pathname === settingsPath && response.request().method() === 'PATCH'),
-            page.getByRole('button', { name: 'Save changes', exact: true }).click(),
+            page.getByRole('button', { name: 'Save', exact: true }).click(),
         ]);
         assert.equal(generalSaved.status(), 200, await generalSaved.text());
         await expect(page.getByText('Settings saved', { exact: true })).toBeVisible();

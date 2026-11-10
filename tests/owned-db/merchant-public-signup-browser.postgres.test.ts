@@ -148,7 +148,8 @@ test('public signup creates its account and first store through production apps'
    const [newAccepted]=await Promise.all([loginPage.waitForResponse(r=>new URL(r.url()).pathname==='/api/auth/login'&&r.request().method()==='POST'),loginPage.getByRole('button',{name:'Log in',exact:true}).click()]);assert.equal(newAccepted.status(),200);
    await loginPage.waitForURL(u=>u.origin===merchantOrigin&&u.pathname===`/${subdomain}/dashboard`);
   }finally{await loginContext.close();}
-  // The enabled magic-link flow remains usable for accounts without an enrolled factor.
+  // Existing accounts return from a verified email link to the canonical
+  // password journey; email possession alone never creates their session.
   const magicContext=await browser.newContext();await provider.attachBrowser(magicContext,[identityOrigin,merchantOrigin]);
   try{
    const magicPage=await magicContext.newPage();await magicPage.goto(identityOrigin+'/login');
@@ -156,7 +157,12 @@ test('public signup creates its account and first store through production apps'
    const sent=await magicContext.request.post(identityOrigin+'/api/auth/send-magic',{headers:{Origin:identityOrigin,'X-CSRF-Token':decodeURIComponent(csrf.value)},data:{email,turnstileToken:provider.issue()}});assert.equal(sent.status(),200);
    const message=[...mail].reverse().find(m=>m.subject==='Your secure LetBuyy sign-in link');assert.ok(message);
    const href=message.text.match(/Sign in to LetBuyy: (\S+)/)?.[1];assert.ok(href);assert.equal(new URL(href).origin,identityOrigin);
-   await magicPage.goto(href);await magicPage.waitForURL(u=>u.origin===merchantOrigin&&u.pathname===`/${subdomain}/dashboard`);
+   await magicPage.goto(href);await magicPage.waitForURL(u=>u.origin===identityOrigin&&u.pathname==='/login'&&u.searchParams.get('choose_account')==='1');
+   await expect(magicPage.getByLabel('Email',{exact:true})).toHaveValue(email);
+   await magicPage.getByRole('button',{name:'Continue with email',exact:true}).click();
+   await magicPage.getByLabel('Password',{exact:true}).fill(resetPassword);
+   const [magicLogin]=await Promise.all([magicPage.waitForResponse(r=>new URL(r.url()).pathname==='/api/auth/login'&&r.request().method()==='POST'),magicPage.getByRole('button',{name:'Log in',exact:true}).click()]);assert.equal(magicLogin.status(),200);
+   await magicPage.waitForURL(u=>u.origin===merchantOrigin&&u.pathname===`/${subdomain}/dashboard`);
    const count=owned.psql(`SELECT count(*) FROM sessions WHERE user_id='${owner}';`);
    await magicPage.goto(href);assert.equal(new URL(magicPage.url()).pathname,'/lookup');
    assert.equal(owned.psql(`SELECT count(*) FROM sessions WHERE user_id='${owner}';`),count,'magic-link replay cannot create another session');

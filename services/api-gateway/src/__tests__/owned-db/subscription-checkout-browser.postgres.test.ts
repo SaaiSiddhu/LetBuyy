@@ -145,7 +145,7 @@ const profile={schema_version:1,policy_version:'D-SUB-TAX-INCLUSIVE-V1',profile_
   await page.waitForURL(u=>u.pathname===`/${tenant.subdomain}/access_account/checkout/checkout`&&u.searchParams.get('plan')==='growth');
   await expect(page.getByRole('complementary',{name:'Order summary'})).toContainText('₹699');const subscribe=page.getByRole('button',{name:/Subscribe|Continue saved checkout|Continue to payment/});
   const [lost]=await Promise.all([page.waitForResponse(r=>r.url().endsWith('/api/subscribe')&&r.request().method()==='POST'),subscribe.click()]);assert.equal(lost.status(),503);
-  await expect(page.locator('.checkout-error[role="alert"]')).toContainText('reconciliation');assert.equal(createCount,1);
+  await expect(page.locator('.checkout-notice[role="alert"]')).toContainText('reconciliation');assert.equal(createCount,1);
   await page.reload();
   const [recovered]=await Promise.all([page.waitForResponse(r=>r.url().endsWith('/api/subscribe')&&r.request().method()==='POST'),subscribe.click()]);assert.equal(recovered.status(),200);
   await page.waitForFunction(()=>Boolean((globalThis as unknown as {__syntheticCheckoutOpen?:boolean}).__syntheticCheckoutOpen));
@@ -161,7 +161,7 @@ const profile={schema_version:1,policy_version:'D-SUB-TAX-INCLUSIVE-V1',profile_
   await Promise.all([page.waitForResponse(r=>r.url().endsWith('/api/subscribe')&&r.request().method()==='POST'),subscribe.click()]);
   const failedVerification=page.waitForResponse(r=>r.url().endsWith('/api/subscribe/verify')&&r.request().method()==='POST');
   await page.evaluate(p=>{void (globalThis as unknown as {__syntheticCheckout:{handler:(p:unknown)=>Promise<void>}}).__syntheticCheckout.handler(p);},proof);
-  assert.equal((await failedVerification).status(),503);await expect(page.locator('.checkout-error[role="alert"]')).toContainText('unavailable');
+  assert.equal((await failedVerification).status(),503);await expect(page.locator('.checkout-notice[role="alert"]')).toContainText('unavailable');
   assert.equal(owned.psql(`SELECT count(*) FROM subscriptions WHERE razorpay_payment_id='${proof.razorpay_payment_id}';`),'0');
   owned.psql('DROP TRIGGER syn_checkout_audit_fault ON audit_logs;DROP FUNCTION syn_checkout_audit_fault();');
   await page.reload();await subscribe.click();
