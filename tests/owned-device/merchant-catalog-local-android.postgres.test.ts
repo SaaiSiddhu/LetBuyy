@@ -21,7 +21,7 @@ import {validateOwnedNextDirectoryReceipt} from '../../scripts/governance/owned-
 import {NativeGateway} from '../helpers/native-owned-gateway';
 import {NativeMobileBff} from '../helpers/native-owned-mobile-bff';
 const owned=requireOwnedDatabase();
-const digest=(v:string|Buffer)=>createHash('sha256').update(v).digest('hex');
+const digest=(v:string|Uint8Array)=>createHash('sha256').update(v).digest('hex');
 function sourceSnapshot(){
  const paths=execFileSync('git',['ls-files','--cached','--others','--exclude-standard','-z','--','apps/merchant/mobile','apps/merchant/web','apps/platform/identity','services/api-gateway','services/mobile-bff','packages','database/supabase/migrations','database/supabase/rollback','database/supabase/config.toml','scripts/governance','tests/fixtures','tests/helpers','tests/owned-device/merchant-catalog-local-android.postgres.test.ts','pubspec.yaml','pubspec.lock'],{encoding:'utf8'}).split('\0').filter(Boolean).sort();
  return paths.filter(path=>{
@@ -57,10 +57,10 @@ function ownedNextListener(port:number,runtime:OwnedClientProcess):boolean {
  }
  return pids.length>0;
 }
-test('normal local Merchant Android collection order survives committed reply loss through actual BFF',{timeout:1_800_000},async(context)=>{
+test('normal local Merchant Android journey verifies authoritative results through actual BFF',{timeout:1_800_000},async(context)=>{
  const receiptPath=process.env.LETBUYY_ANDROID_DEVICE_RECEIPT;assert.ok(receiptPath,'explicit task-owned emulator receipt required');
- const receipt=JSON.parse(readFileSync(receiptPath,'utf8'))as {root:string;owner:string;avd_name:string;serial:string;emulator_pid:number;sdk_root:string;adb_port:number;run_root:string;flow?:'membership'|'category'|'settings'|'warehouse';verifyDashboardSettings?:boolean;verifySmart?:boolean;verifyCollectionLifecycle?:boolean;verifyMembershipRetirement?:boolean;verifyStockLifecycle?:boolean;verifyStockAdjustments?:boolean;compiledWorkers?:boolean;diagnosticWarehouseDraft?:boolean;diagnosticReservationView?:boolean;offlineGradle?:boolean};
- const flow=receipt.flow??'membership';assert(['membership','category','settings','warehouse'].includes(flow));const categoryFlow=flow==='category',settingsFlow=flow==='settings',warehouseFlow=flow==='warehouse';
+ const receipt=JSON.parse(readFileSync(receiptPath,'utf8'))as {root:string;owner:string;avd_name:string;serial:string;emulator_pid:number;sdk_root:string;adb_port:number;run_root:string;flow?:'membership'|'category'|'settings'|'warehouse'|'kyc';verifyDashboardSettings?:boolean;verifySmart?:boolean;verifyCollectionLifecycle?:boolean;verifyMembershipRetirement?:boolean;verifyStockLifecycle?:boolean;verifyStockAdjustments?:boolean;compiledWorkers?:boolean;diagnosticWarehouseDraft?:boolean;diagnosticReservationView?:boolean;offlineGradle?:boolean};
+ const flow=receipt.flow??'membership';assert(['membership','category','settings','warehouse','kyc'].includes(flow));const categoryFlow=flow==='category',settingsFlow=flow==='settings',warehouseFlow=flow==='warehouse',kycFlow=flow==='kyc';
  const diagnosticDraft=receipt.diagnosticWarehouseDraft===true;assert(!diagnosticDraft||warehouseFlow,'Draft diagnostic is local warehouse-only');
  const verifyStock=receipt.verifyStockLifecycle===true;assert(!verifyStock||warehouseFlow,'Stock lifecycle extends the existing warehouse journey only');
  const verifyStockAdjustments=receipt.verifyStockAdjustments===true;assert(!verifyStockAdjustments||verifyStock,'Setter synchronization requires the normal warehouse stock lifecycle');
@@ -80,8 +80,9 @@ test('normal local Merchant Android collection order survives committed reply lo
  const adbBinary=join(receipt.sdk_root,'platform-tools/adb');
  const adb=(...args:string[])=>execFileSync(adbBinary,['-P',String(receipt.adb_port),'-s',receipt.serial,...args],{encoding:'utf8',stdio:['ignore','pipe','pipe']});
  assert.equal(adb('emu','avd','name').trim().split(/\r?\n/)[0],receipt.avd_name);
- const root=resolve(receipt.run_root);assert.match(root,/^\/private\/tmp\/letbuyy-merchant-local-[a-z0-9-]+\/native-(?:catalog|category|settings|warehouse)-v\d+$/);assert.equal(root.includes('/native-category-'),categoryFlow);assert.equal(root.includes('/native-settings-'),settingsFlow);assert.equal(root.includes('/native-warehouse-'),warehouseFlow);assert.equal(existsSync(root),false,'fresh owned run directory required');mkdirSync(root,{mode:0o700});
+ const root=resolve(receipt.run_root);assert.match(root,/^\/private\/tmp\/letbuyy-merchant-local-[a-z0-9-]+\/native-(?:catalog|category|settings|warehouse|kyc)-v\d+$/);assert.equal(root.includes('/native-category-'),categoryFlow);assert.equal(root.includes('/native-settings-'),settingsFlow);assert.equal(root.includes('/native-warehouse-'),warehouseFlow);assert.equal(root.includes('/native-kyc-'),kycFlow);assert.equal(existsSync(root),false,'fresh owned run directory required');mkdirSync(root,{mode:0o700});
  const ready=join(root,'journey-ready.json'),done=join(root,'journey-done.json');
+ if(kycFlow)writeFileSync(join(root,'kyc-outage-active.json'),JSON.stringify({run_id:owned.runId,scope:'Owned synthetic KYC read fault only'})+'\n',{mode:0o600,flag:'wx'});
  const checkUi=()=>{context.signal.throwIfAborted();if(existsSync(join(root,'ui-attention.json')))throw new Error('The owned normal UI companion failed; private diagnostics retained.');};
  const apiPort=54352,bffPort=54350,identityPort=54351,merchantPort=54353;
  const apiOrigin=`http://127.0.0.1:${apiPort}`,identityWireOrigin=`http://localhost:${identityPort}`,identityOrigin='http://localhost:9002',merchantOrigin=`http://localhost:${merchantPort}`;
@@ -89,7 +90,14 @@ test('normal local Merchant Android collection order survives committed reply lo
  const originalFetch=globalThis.fetch;
  globalThis.fetch=createOwnedProviderFetch(originalFetch,challenge.profile,[9002]);
  const proxy=await startOwnedPooledSqlProxy(owned),keys=await newIdentityKeys();
- const env=gatewayEnv(owned,keys,{ENVIRONMENT:'development',LETBUYY_IDENTITY_ISSUER:identityOrigin,APP_ENV:'development',...proxy.env()});
+ //Private R2 objects are permitted only by the existing ENVIRONMENT=test
+ //fence, in this proven-owned synthetic database. No hosted intake is enabled.
+ const privateObjects=new Map<string,Uint8Array>();
+ const env=gatewayEnv(owned,keys,{ENVIRONMENT:kycFlow?'test':'development',LETBUYY_IDENTITY_ISSUER:identityOrigin,APP_ENV:'development',...proxy.env(),
+  ...(kycFlow?{KYC_UPLOAD_ENABLED:'true',KYC_PRIVATE_BUCKET:{
+   put:async(key:string,bytes:Uint8Array)=>{privateObjects.set(key,new Uint8Array(bytes));},
+   delete:async(key:string)=>{privateObjects.delete(key);},
+  }}:{})});
  let nativeGateway:NativeGateway|undefined;
  let gateway:Pick<Gateway,'request'|'settle'>|undefined;
  const tenant=newSyntheticTenant('native-catalog'),owner=randomUUID(),email=`syn-native-catalog-${owner}@example.invalid`,password='Synthetic-native-catalog-'+randomUUID(),hash=await hashMerchantPassword(password);
@@ -105,11 +113,21 @@ test('normal local Merchant Android collection order survives committed reply lo
  if(settingsFlow)owned.psql(`UPDATE sites SET business_profile=coalesce(business_profile,'{}'::jsonb)||'{"email":"synthetic-contact@example.invalid","trade_name":"Retained synthetic trade"}'::jsonb,invoice_address=coalesce(invoice_address,'{}'::jsonb)||'{"attention":"Retained synthetic attention"}'::jsonb WHERE id='${tenant.siteId}';`);
  if(categoryFlow)owned.psql(`UPDATE products SET category='Synthetic native cotton'WHERE store_id='${tenant.siteId}';`);
  const category=categoryFlow?owned.psql(`SELECT id FROM product_categories WHERE store_id='${tenant.siteId}'AND name='Synthetic native cotton'AND deleted_at IS NULL`):null;
- type Call={source:string;path:string;method:string;status:number;wire_status:number;key_digest?:string;body_digest?:string};const calls:Call[]=[];let lost=false,lostSmart=false;let lostSettingsKey:string|undefined;
+ type Call={source:string;path:string;method:string;status:number;wire_status:number;key_digest?:string;body_digest?:string};const calls:Call[]=[];let lost=false,lostSmart=false;let lostSettingsKey:string|undefined,restartCallIndex:number|undefined;
  const record=async(request:Request,source:string)=>{
   assert(gateway,'The selected real Gateway runtime must be initialized');
-  const url=new URL(request.url),body=['GET','HEAD'].includes(request.method)?undefined:await request.text();
-  const result=await gateway.request(url.pathname+url.search,{method:request.method,headers:request.headers,...(body?{body}:{})});
+  if(kycFlow&&existsSync(join(root,'native-session-restart-started.json'))){
+   assert.equal(JSON.parse(readFileSync(join(root,'native-session-restart-started.json'),'utf8')).run_id,owned.runId);restartCallIndex??=calls.length;
+  }
+  const url=new URL(request.url),bytes=['GET','HEAD'].includes(request.method)?undefined:new Uint8Array(await request.arrayBuffer());
+  const body=bytes?new TextDecoder().decode(bytes):undefined;
+  if(kycFlow&&source==='actual-mobile-bff'&&request.method==='GET'&&url.pathname==='/v1/kyc'&&existsSync(join(root,'kyc-outage-active.json'))){
+   assert.equal(JSON.parse(readFileSync(join(root,'kyc-outage-active.json'),'utf8')).run_id,owned.runId);
+   calls.push({source,path:url.pathname,method:request.method,status:503,wire_status:503});
+   writeFileSync(join(root,'kyc-outage-served.json'),JSON.stringify({run_id:owned.runId,attempts:calls.filter(call=>call.source===source&&call.path==='/v1/kyc'&&call.status===503).length})+'\n',{mode:0o600});
+   return Response.json({error:{code:'OWNED_KYC_READ_UNAVAILABLE',message:'Synthetic verification status unavailable. Retry loading.'}},{status:503});
+  }
+  const result=await gateway.request(url.pathname+url.search,{method:request.method,headers:request.headers,...(bytes?{body:bytes as BodyInit}:{})});
   const membership=warehouseFlow?request.method==='POST'&&['/v1/inventory/locations','/v1/inventory/suppliers'].includes(url.pathname):settingsFlow?request.method==='PATCH'&&url.pathname===`/v1/stores/${tenant.siteId}`:categoryFlow?request.method==='PATCH'&&url.pathname===`/v1/categories/${category}`:request.method==='PUT'&&url.pathname===`/v1/products/collections/${collection}/products`;
   const released=warehouseFlow&&existsSync(join(root,'release-native-replies.json'));
   if(released)assert.equal(JSON.parse(readFileSync(join(root,'release-native-replies.json'),'utf8')).run_id,owned.runId);
@@ -130,8 +148,8 @@ test('normal local Merchant Android collection order survives committed reply lo
   return new Response(result.text,{status:result.status,headers:result.headers});
  };
  const bridge=(handler:(request:Request)=>Promise<Response>)=>createServer(async(req,res)=>{
-  try{const chunks:Buffer[]=[];for await(const c of req)chunks.push(Buffer.from(c));const body=Buffer.concat(chunks).toString();const headers=new Headers();for(const[k,v]of Object.entries(req.headers))if(typeof v==='string'&&!['host','connection','content-length','transfer-encoding','accept-encoding'].includes(k))headers.set(k,v);
-   const response=await handler(new Request('http://127.0.0.1'+(req.url??'/'),{method:req.method,headers,...(body?{body}:{})}));res.writeHead(response.status,Object.fromEntries(response.headers.entries()));res.end(await response.text());
+  try{const chunks:Buffer[]=[];for await(const c of req)chunks.push(Buffer.from(c));const body=new Uint8Array(Buffer.concat(chunks));const headers=new Headers();for(const[k,v]of Object.entries(req.headers))if(typeof v==='string'&&!['host','connection','content-length','transfer-encoding','accept-encoding'].includes(k))headers.set(k,v);
+   const response=await handler(new Request('http://127.0.0.1'+(req.url??'/'),{method:req.method,headers,...(body.length?{body:body as BodyInit}:{})}));res.writeHead(response.status,Object.fromEntries(response.headers.entries()));res.end(await response.text());
   }catch{res.writeHead(500,{'Content-Type':'application/json'});res.end('{"error":{"code":"OWNED_BRIDGE_UNAVAILABLE"}}');}
  });
  const bffEnv={INTERNAL_API_SECRET:INTERNAL_SECRET,TURNSTILE_SECRET_KEY:LOCAL_TURNSTILE_SECRET,ENVIRONMENT:'development',API_GATEWAY_SERVICE:{fetch:(request:Request)=>record(request,'actual-mobile-bff')}};
@@ -221,6 +239,21 @@ test('normal local Merchant Android collection order survives committed reply lo
   const proof=JSON.parse(readFileSync(done,'utf8'))as {run_id:string;steps:string[];evidence:string[]};assert.equal(proof.run_id,owned.runId);
   checkSource(source,'native journey');
   assert(calls.some(call=>call.source==='actual-identity'&&call.path==='/v1/auth/custom/mobile/exchange'&&call.status===200),'A fresh native PKCE exchange, not a retained token, must be observed');
+  if(kycFlow){
+   for(const step of ['normal-native-browser-accounts-login','normal-native-kyc-navigation','kyc-outage-visible','kyc-explicit-retry','document-picker-selection','background-resume-keeps-document','private-synthetic-kyc-upload','native-secure-session-restart'])assert(proof.steps.includes(step),step);
+   assert(proof.evidence.length>=6);for(const path of proof.evidence)assert(path.startsWith(root+'/')&&existsSync(path));
+   assert(!existsSync(join(root,'kyc-outage-active.json')),'explicit recovery must retire this run-owned outage');
+   assert(calls.filter(call=>call.source==='actual-mobile-bff'&&call.path==='/v1/kyc'&&call.status===503).length>=2,'the visible unavailable state must outlast automatic retries');
+   assert(calls.some(call=>call.source==='actual-mobile-bff'&&call.path==='/v1/kyc'&&call.status===200));
+   assert(restartCallIndex!==undefined,'the real process restart must be marked before relaunch');
+   assert(calls.slice(restartCallIndex).some(call=>call.source==='actual-identity'&&call.path==='/v1/auth/custom/session'&&call.status===200),'relaunch must validate its restored native credential through the actual issuer');
+   assert.equal(calls.filter(call=>call.source==='actual-mobile-bff'&&call.path==='/v1/kyc/documents/upload'&&call.method==='POST'&&call.status===201).length,1);
+   const documents=JSON.parse(owned.psql(`SELECT coalesce(jsonb_agg(jsonb_build_object('id',id,'document_type',document_type,'status',status,'metadata',metadata)ORDER BY id),'[]'::jsonb)FROM merchant_kyc_documents WHERE site_id='${tenant.siteId}'AND deleted_at IS NULL;`));
+   assert.equal(documents.length,1);assert.equal(documents[0].document_type,'business_pan');assert.notEqual(documents[0].status,'approved');assert.equal(privateObjects.size,1);
+   const bytes=privateObjects.get(documents[0].metadata.private_object_key);assert(bytes);assert(bytes.byteLength>0);assert.equal(digest(bytes),documents[0].metadata.sha256,'the real multipart photo bytes must match the durable private document receipt');
+   assert.equal(Number(documents[0].metadata.byte_size),bytes.byteLength);
+   writeFileSync(join(root,'kyc-backend-verified.json'),JSON.stringify({run_id:owned.runId,source_sha256:sourceHash,apk_sha256:apkHash,calls,documents,private_object_count:privateObjects.size,challenge_counts:challenge.counts,scope:'Actual owned Android debug APK, normal Accounts PKCE, KYC unavailable/retry, native photo picker, background/resume and secure-session restart with one synthetic private upload. Local test-only R2 bytes, not AWS Mumbai/Cashfree/provider approval, hosted, camera, iOS or signed release acceptance.'},null,2)+'\n',{mode:0o600,flag:'wx'});return;
+  }
   if(diagnosticReservation){
    for(const step of ['normal-native-browser-accounts-login','normal-native-reservations-read-diagnostic'])assert(proof.steps.includes(step),step);
    assert(proof.evidence.length>=2);for(const path of proof.evidence)assert(path.startsWith(root+'/')&&existsSync(path));
