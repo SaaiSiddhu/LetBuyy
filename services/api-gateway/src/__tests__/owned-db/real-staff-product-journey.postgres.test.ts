@@ -51,6 +51,8 @@ import assert from 'node:assert/strict';
 import {closePooledSqlClients} from '@letbuyy/infrastructure/pooled-sql-adapter';
 import test, {before,after} from 'node:test';
 import { Hono } from 'hono';
+import type { ContentfulStatusCode } from 'hono/utils/http-status';
+import { AppError, formatAppError } from '../../lib/errors';
 import { createLetbuyyInternalIdentityHeaders } from '@letbuyy/auth-core';
 import { authMiddleware } from '../../middleware/auth';
 import employeeRouter from '../../routes/employee';
@@ -98,6 +100,13 @@ async function identityHeaders(userId: string, email: string): Promise<Record<st
 
 function gateway() {
     const api = new Hono<{ Bindings: Env }>();
+    // Match the mounted gateway's known-error contract. Hono's default would
+    // misreport a thrown canonical ForbiddenError as a plain-text500.
+    api.onError((error, context) => {
+        if (!(error instanceof AppError)) throw error;
+        const { body, status } = formatAppError(error);
+        return context.json(body, status as ContentfulStatusCode);
+    });
     api.use('/*', authMiddleware);
     api.route('/employees', employeeRouter);
     api.route('/products', productsRouter);
