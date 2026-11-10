@@ -1,4 +1,4 @@
-// Explicit local-only emulator lane, selected outside normal CI. Normal native
+// Explicit local-only emulator/Simulator lane, selected outside normal CI. Normal native
 // sign-in is required; this fixture never supplies an APK session or JWT.
 import assert from 'node:assert/strict';
 import test from 'node:test';
@@ -57,10 +57,10 @@ function ownedNextListener(port:number,runtime:OwnedClientProcess):boolean {
  }
  return pids.length>0;
 }
-test('normal local Merchant Android journey verifies authoritative results through actual BFF',{timeout:1_800_000},async(context)=>{
- const receiptPath=process.env.LETBUYY_ANDROID_DEVICE_RECEIPT;assert.ok(receiptPath,'explicit task-owned emulator receipt required');
- const receipt=JSON.parse(readFileSync(receiptPath,'utf8'))as {root:string;owner:string;avd_name:string;serial:string;emulator_pid:number;sdk_root:string;adb_port:number;run_root:string;flow?:'membership'|'category'|'settings'|'warehouse'|'kyc'|'camera';verifyDashboardSettings?:boolean;verifySmart?:boolean;verifyCollectionLifecycle?:boolean;verifyMembershipRetirement?:boolean;verifyStockLifecycle?:boolean;verifyStockAdjustments?:boolean;compiledWorkers?:boolean;diagnosticWarehouseDraft?:boolean;diagnosticReservationView?:boolean;offlineGradle?:boolean};
- const flow=receipt.flow??'membership';assert(['membership','category','settings','warehouse','kyc','camera'].includes(flow));const categoryFlow=flow==='category',settingsFlow=flow==='settings',warehouseFlow=flow==='warehouse',kycFlow=flow==='kyc',cameraFlow=flow==='camera';
+test('normal local Merchant owned-device journey verifies authoritative results through actual BFF',{timeout:1_800_000},async(context)=>{
+ const receiptPath=process.env.LETBUYY_IOS_DEVICE_RECEIPT??process.env.LETBUYY_ANDROID_DEVICE_RECEIPT;assert.ok(receiptPath,'explicit task-owned device receipt required');
+ const receipt=JSON.parse(readFileSync(receiptPath,'utf8'))as {root:string;owner:string;avd_name:string;serial:string;emulator_pid:number;sdk_root:string;adb_port:number;run_root:string;platform?:'android'|'ios';simulator_udid?:string;simulator_name?:string;device_receipt?:string;flow?:'membership'|'category'|'settings'|'warehouse'|'kyc'|'camera'|'ios-auth';verifyDashboardSettings?:boolean;verifySmart?:boolean;verifyCollectionLifecycle?:boolean;verifyMembershipRetirement?:boolean;verifyStockLifecycle?:boolean;verifyStockAdjustments?:boolean;compiledWorkers?:boolean;diagnosticWarehouseDraft?:boolean;diagnosticReservationView?:boolean;offlineGradle?:boolean};
+ const flow=receipt.flow??'membership';assert(['membership','category','settings','warehouse','kyc','camera','ios-auth'].includes(flow));const iosFlow=flow==='ios-auth';assert.equal(receipt.platform==='ios',iosFlow,'iOS requires its explicit bounded flow');const categoryFlow=flow==='category',settingsFlow=flow==='settings',warehouseFlow=flow==='warehouse',kycFlow=flow==='kyc',cameraFlow=flow==='camera';
  const diagnosticDraft=receipt.diagnosticWarehouseDraft===true;assert(!diagnosticDraft||warehouseFlow,'Draft diagnostic is local warehouse-only');
  const verifyStock=receipt.verifyStockLifecycle===true;assert(!verifyStock||warehouseFlow,'Stock lifecycle extends the existing warehouse journey only');
  const verifyStockAdjustments=receipt.verifyStockAdjustments===true;assert(!verifyStockAdjustments||verifyStock,'Setter synchronization requires the normal warehouse stock lifecycle');
@@ -69,7 +69,19 @@ test('normal local Merchant Android journey verifies authoritative results throu
  const verifySmart=receipt.verifySmart===true;assert(!verifySmart||flow==='membership','Smart verification extends the membership journey only');
  const verifyLifecycle=receipt.verifyCollectionLifecycle===true;assert(!verifyLifecycle||verifySmart,'Collection lifecycle requires the native/web Smart journey');
  const verifyRetirement=receipt.verifyMembershipRetirement===true;assert(!verifyRetirement||flow==='membership'&&!verifySmart&&!verifyLifecycle,'Retired membership is a distinct bounded membership journey');
- assert.equal(receipt.owner,'merchant-mobile-local-completion');assert.match(receipt.root,/^\/private\/tmp\/letbuyy-merchant-emulator-[a-z0-9]+$/);assert.equal(realpathSync(receipt.root),receipt.root);
+ assert.equal(receipt.owner,'merchant-mobile-local-completion');
+ const sim=(...args:string[])=>execFileSync('xcrun',['simctl',...args],{encoding:'utf8',stdio:['ignore','pipe','pipe']});
+ if(iosFlow){
+  assert.match(receipt.root,/^\/private\/tmp\/letbuyy-merchant-ios-[a-z0-9]+$/);assert.equal(realpathSync(receipt.root),receipt.root);
+  assert(receipt.simulator_udid&&receipt.simulator_name&&receipt.device_receipt,'explicit owned Simulator identity required');
+  const ownerReceipt=JSON.parse(readFileSync(receipt.device_receipt,'utf8'))as {udid:string;name:string;owner:string};
+  const owner=JSON.parse(readFileSync(join(receipt.root,'ownership.json'),'utf8'))as {mission:string;udid:string;name:string};
+  assert.equal(ownerReceipt.owner,'LetBuyy mission-211355');assert.equal(owner.mission,'mission-211355');
+  assert.equal(ownerReceipt.udid,receipt.simulator_udid);assert.equal(owner.udid,receipt.simulator_udid);assert.equal(ownerReceipt.name,receipt.simulator_name);assert.equal(owner.name,receipt.simulator_name);
+  const devices=JSON.parse(sim('list','devices','--json'))as {devices:Record<string,Array<{udid:string;name:string;state:string}>>};
+  const found=Object.values(devices.devices).flat().filter(device=>device.udid===receipt.simulator_udid);assert.equal(found.length,1);assert.equal(found[0].name,receipt.simulator_name);assert.equal(found[0].state,'Booted');
+ }else{
+ assert.match(receipt.root,/^\/private\/tmp\/letbuyy-merchant-emulator-[a-z0-9]+$/);assert.equal(realpathSync(receipt.root),receipt.root);
  const ownership=JSON.parse(readFileSync(join(receipt.root,'ownership.json'),'utf8'))as {owner:string;root:string;name:string};
  assert.equal(ownership.owner,'merchant-mobile-parity');assert.equal(ownership.root,receipt.root);assert.equal(ownership.name,receipt.avd_name);assert.equal(receipt.serial,'emulator-5580');assert.equal(receipt.adb_port,15038);
  assert.equal(receipt.sdk_root,'/Volumes/Developer Tools/SDKs/android-sdk');process.kill(receipt.emulator_pid,0);
@@ -77,15 +89,16 @@ test('normal local Merchant Android journey verifies authoritative results throu
  assert(command.includes('qemu-system-aarch64')&&command.includes('-avd '+receipt.avd_name)&&command.includes('-port 5580'));
  const hardware=readFileSync(join(receipt.root,'avds',receipt.avd_name+'.avd','hardware-qemu.ini'),'utf8');
  for(const part of ['disk.dataPartition.path','disk.cachePartition.path','disk.encryptionKeyPartition.path'])assert(hardware.split('\n').find(l=>l.startsWith(part+' = '))?.split(' = ')[1]?.startsWith(receipt.root+'/avds/'+receipt.avd_name+'.avd/'));
- const adbBinary=join(receipt.sdk_root,'platform-tools/adb');
- const adb=(...args:string[])=>execFileSync(adbBinary,['-P',String(receipt.adb_port),'-s',receipt.serial,...args],{encoding:'utf8',stdio:['ignore','pipe','pipe']});
- assert.equal(adb('emu','avd','name').trim().split(/\r?\n/)[0],receipt.avd_name);
- const root=resolve(receipt.run_root);assert.match(root,/^\/private\/tmp\/letbuyy-merchant-local-[a-z0-9-]+\/native-(?:catalog|category|settings|warehouse|kyc|camera)-v\d+$/);assert.equal(root.includes('/native-category-'),categoryFlow);assert.equal(root.includes('/native-settings-'),settingsFlow);assert.equal(root.includes('/native-warehouse-'),warehouseFlow);assert.equal(root.includes('/native-kyc-'),kycFlow);assert.equal(root.includes('/native-camera-'),cameraFlow);assert.equal(existsSync(root),false,'fresh owned run directory required');mkdirSync(root,{mode:0o700});
+ assert.equal(execFileSync(join(receipt.sdk_root,'platform-tools/adb'),['-P',String(receipt.adb_port),'-s',receipt.serial,'emu','avd','name'],{encoding:'utf8'}).trim().split(/\r?\n/)[0],receipt.avd_name);
+ }
+ const adbBinary=join(receipt.sdk_root??'','platform-tools/adb');
+ const adb=(...args:string[])=>{assert(!iosFlow,'Android operations are forbidden in the iOS lane');return execFileSync(adbBinary,['-P',String(receipt.adb_port),'-s',receipt.serial,...args],{encoding:'utf8',stdio:['ignore','pipe','pipe']});};
+ const root=resolve(receipt.run_root);assert.match(root,/^\/private\/tmp\/letbuyy-merchant-local-[a-z0-9-]+\/native-(?:catalog|category|settings|warehouse|kyc|camera|ios-auth)-v\d+$/);assert.equal(root.includes('/native-category-'),categoryFlow);assert.equal(root.includes('/native-settings-'),settingsFlow);assert.equal(root.includes('/native-warehouse-'),warehouseFlow);assert.equal(root.includes('/native-kyc-'),kycFlow);assert.equal(root.includes('/native-camera-'),cameraFlow);assert.equal(root.includes('/native-ios-auth-'),iosFlow);assert.equal(existsSync(root),false,'fresh owned run directory required');mkdirSync(root,{mode:0o700});
  const ready=join(root,'journey-ready.json'),done=join(root,'journey-done.json');
- if(kycFlow)writeFileSync(join(root,'kyc-outage-active.json'),JSON.stringify({run_id:owned.runId,scope:'Owned synthetic KYC read fault only'})+'\n',{mode:0o600,flag:'wx'});
+ if(kycFlow||iosFlow)writeFileSync(join(root,'kyc-outage-active.json'),JSON.stringify({run_id:owned.runId,scope:'Owned synthetic KYC read fault only'})+'\n',{mode:0o600,flag:'wx'});
  const checkUi=()=>{context.signal.throwIfAborted();if(existsSync(join(root,'ui-attention.json')))throw new Error('The owned normal UI companion failed; private diagnostics retained.');};
  const apiPort=54352,bffPort=54350,identityPort=54351,merchantPort=54353;
- const apiOrigin=`http://127.0.0.1:${apiPort}`,identityWireOrigin=`http://localhost:${identityPort}`,identityOrigin='http://localhost:9002',merchantOrigin=`http://localhost:${merchantPort}`;
+ const apiOrigin=`http://127.0.0.1:${apiPort}`,identityWireOrigin=`http://localhost:${identityPort}`,identityOrigin=iosFlow?identityWireOrigin:'http://localhost:9002',merchantOrigin=`http://localhost:${merchantPort}`;
  const challenge=await createLocalTurnstileProvider(owned);challenge.enableNativeSdk([identityOrigin]);
  const originalFetch=globalThis.fetch;
  globalThis.fetch=createOwnedProviderFetch(originalFetch,challenge.profile,[9002]);
@@ -124,18 +137,18 @@ test('normal local Merchant Android journey verifies authoritative results throu
  INSERT INTO inventory_levels(id,store_id,product_id,location_id,available,reserved,incoming,available_quantity,reserved_quantity,on_hand_quantity)VALUES(gen_random_uuid(),'${tenant.siteId}','${ids[0]}','${tenant.locationId}',3,0,0,3,0,3);
  INSERT INTO inventory_locations(id,store_id,name,status)VALUES(gen_random_uuid(),'${tenant.siteId}','Synthetic diagnostic destination','active');`);
  if(settingsFlow)owned.psql(`UPDATE sites SET business_profile=coalesce(business_profile,'{}'::jsonb)||'{"email":"synthetic-contact@example.invalid","trade_name":"Retained synthetic trade"}'::jsonb,invoice_address=coalesce(invoice_address,'{}'::jsonb)||'{"attention":"Retained synthetic attention"}'::jsonb WHERE id='${tenant.siteId}';`);
- const originalCameraProducts=cameraFlow?owned.psql(`SELECT jsonb_agg(to_jsonb(p)ORDER BY id)::text FROM products p WHERE store_id='${tenant.siteId}'`):null;
+ const originalCameraProducts=cameraFlow||iosFlow?owned.psql(`SELECT jsonb_agg(to_jsonb(p)ORDER BY id)::text FROM products p WHERE store_id='${tenant.siteId}'`):null;
  if(categoryFlow)owned.psql(`UPDATE products SET category='Synthetic native cotton'WHERE store_id='${tenant.siteId}';`);
  const category=categoryFlow?owned.psql(`SELECT id FROM product_categories WHERE store_id='${tenant.siteId}'AND name='Synthetic native cotton'AND deleted_at IS NULL`):null;
  type Call={source:string;path:string;method:string;status:number;wire_status:number;key_digest?:string;body_digest?:string};const calls:Call[]=[];let lost=false,lostSmart=false;let lostSettingsKey:string|undefined,restartCallIndex:number|undefined;
  const record=async(request:Request,source:string)=>{
   assert(gateway,'The selected real Gateway runtime must be initialized');
-  if(kycFlow&&existsSync(join(root,'native-session-restart-started.json'))){
+  if((kycFlow||iosFlow)&&existsSync(join(root,'native-session-restart-started.json'))){
    assert.equal(JSON.parse(readFileSync(join(root,'native-session-restart-started.json'),'utf8')).run_id,owned.runId);restartCallIndex??=calls.length;
   }
   const url=new URL(request.url),bytes=['GET','HEAD'].includes(request.method)?undefined:new Uint8Array(await request.arrayBuffer());
   const body=bytes?new TextDecoder().decode(bytes):undefined;
-  if(kycFlow&&source==='actual-mobile-bff'&&request.method==='GET'&&url.pathname==='/v1/kyc'&&existsSync(join(root,'kyc-outage-active.json'))){
+  if((kycFlow||iosFlow)&&source==='actual-mobile-bff'&&request.method==='GET'&&url.pathname==='/v1/kyc'&&existsSync(join(root,'kyc-outage-active.json'))){
    assert.equal(JSON.parse(readFileSync(join(root,'kyc-outage-active.json'),'utf8')).run_id,owned.runId);
    calls.push({source,path:url.pathname,method:request.method,status:503,wire_status:503});
    writeFileSync(join(root,'kyc-outage-served.json'),JSON.stringify({run_id:owned.runId,attempts:calls.filter(call=>call.source===source&&call.path==='/v1/kyc'&&call.status===503).length})+'\n',{mode:0o600});
@@ -208,13 +221,51 @@ test('normal local Merchant Android journey verifies authoritative results throu
   }
   api=bridge(req=>record(req,'actual-identity'));bff=bridge(async req=>nativeBff?await nativeBff.dispatch(req) as unknown as Response:mobileBff.fetch(req,bffEnv as never));
   for(const [server,port]of [[api,apiPort],[bff,bffPort]]as const)await new Promise<void>((resolve,reject)=>{server.once('error',reject);server.listen(port,'127.0.0.1',resolve);});
-  identity=startOwnedClientRuntime(owned,'identity-next-production',{port:identityPort,providerFixture:challenge.profile,env:{APP_ENV:'development',NEXT_PUBLIC_ENV:'development',LETBUYY_MERCHANT_MOBILE_AUTH_ENABLED:'true',LETBUYY_OWNED_BLOCKED_LOCAL_PORTS:'[9002]',INTERNAL_API_SECRET:INTERNAL_SECRET,LETBUYY_API_URL:apiOrigin+'/v1',LETBUYY_IDENTITY_ISSUER:identityOrigin,NEXT_PUBLIC_ACCOUNTS_URL:identityOrigin,NEXT_PUBLIC_ADMIN_URL:merchantOrigin,
+  identity=startOwnedClientRuntime(owned,'identity-next-production',{port:identityPort,providerFixture:challenge.profile,env:{APP_ENV:'development',NEXT_PUBLIC_ENV:'development',...(iosFlow?{NEXT_PUBLIC_LOCAL_CHALLENGE_SDK_URL:challenge.profile.origin+'/fixtures/turnstile/api.js'}:{}),LETBUYY_MERCHANT_MOBILE_AUTH_ENABLED:'true',LETBUYY_OWNED_BLOCKED_LOCAL_PORTS:'[9002]',INTERNAL_API_SECRET:INTERNAL_SECRET,LETBUYY_API_URL:apiOrigin+'/v1',LETBUYY_IDENTITY_ISSUER:identityOrigin,NEXT_PUBLIC_ACCOUNTS_URL:identityOrigin,NEXT_PUBLIC_ADMIN_URL:merchantOrigin,
    LETBUYY_IDENTITY_PRIVATE_JWK:JSON.stringify({...await exportJWK(keys.privateKey),alg:'ES256',kid:keys.kid}),ACCOUNTS_COOKIE_SECRET:randomUUID()+randomUUID(),COOKIE_DOMAIN:'',NEXT_PUBLIC_TURNSTILE_SITE_KEY:'1x00000000000000000000AA',TURNSTILE_SECRET_KEY:LOCAL_TURNSTILE_SECRET,LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false',NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false',RESEND_API_KEY:'',LETBUYY_EMAIL_API_KEY:''}});
   const deadline=Date.now()+360_000;let live=false;while(Date.now()<deadline){if(identity.exitCode!==null)throw new Error('Owned issuer stopped');try{if(!ownedNextListener(identityPort,identity)){await new Promise(r=>setTimeout(r,250));continue;}if((await fetch(identityWireOrigin+'/api/auth/session',{signal:AbortSignal.timeout(2000)})).status===200){live=true;break;}}catch(error){if(error instanceof Error&&error.message.includes('OWNED_LISTENER_SCOPE_MISMATCH'))throw error;}await new Promise(r=>setTimeout(r,250));}assert(live,'normal issuer readiness');
   const defines={ENVIRONMENT:'local',BFF_BASE_URL:`http://127.0.0.1:${bffPort}/v1`,API_BASE_URL:`http://127.0.0.1:${bffPort}/v1`,IDENTITY_BASE_URL:identityOrigin,ADMIN_BASE_URL:merchantOrigin,STOREFRONT_BASE_URL:'http://localhost:54354',LOCAL_CHALLENGE_SDK_URL:challenge.profile.origin+'/fixtures/turnstile/api.js',TURNSTILE_SITE_KEY:'1x00000000000000000000AA',MOBILE_PUSH_DEVICE_TOKEN:'',SENTRY_DSN:'SKIP_NEEDS_HUMAN_LOCAL_SENTRY_DSN'};
   const definesPath=join(root,'dart-defines.json');writeFileSync(definesPath,JSON.stringify(defines),{mode:0o600,flag:'wx'});
   const source=sourceSnapshot(),sourceBytes=JSON.stringify(source),sourceHash=digest(sourceBytes);
   writeFileSync(join(root,'source-snapshot.json'),sourceBytes+'\n',{mode:0o600,flag:'wx'});
+  if(iosFlow){
+   //Use the existing iOS development client/callback and OS authentication
+   //session. The Simulator talks directly to our owned issuer port; the Mac's
+   //unrelated9002 listener remains blocked. No native session is injected.
+   const udid=receipt.simulator_udid!;
+   const fd=openSync(join(root,'ios-build.log'),'wx',0o600);
+   try{
+    const child=spawn('/Volumes/Developer Tools/SDKs/flutter/bin/flutter',['build','ios','--simulator','--debug','--no-pub','--dart-define-from-file='+definesPath,'-d',udid],{cwd:resolve('apps/merchant/mobile'),env:process.env,stdio:['ignore',fd,fd]});
+    const exit=await new Promise<number|null>((resolve,reject)=>{child.once('error',reject);child.once('close',resolve);context.signal.addEventListener('abort',()=>child.kill('SIGTERM'),{once:true});});
+    assert.equal(exit,0,'owned Simulator build must pass; inspect private build log');
+   }finally{closeSync(fd);}
+   checkSource(source,'iOS Simulator build');
+   const builtApp=resolve('apps/merchant/mobile/build/ios/iphonesimulator/Runner.app');
+   const artifactRoot=join(root,'qualified-artifact');mkdirSync(artifactRoot,{mode:0o700});
+   const app=join(artifactRoot,'Runner.app');assert(!existsSync(app));execFileSync('/bin/cp',['-R',builtApp,app]);
+   const executableHash=digest(readFileSync(join(app,'Runner')));assert.equal(digest(readFileSync(join(builtApp,'Runner'))),executableHash);
+   sim('install',udid,app);const installed=sim('get_app_container',udid,'com.letbuyy.store','app').trim();
+   assert(installed.includes('/'+udid+'/data/Containers/Bundle/Application/'));assert.equal(digest(readFileSync(join(installed,'Runner'))),executableHash);
+   writeFileSync(join(root,'artifact.json'),JSON.stringify({run_id:owned.runId,source_sha256:sourceHash,kind:'ios-simulator-debug-app',app,source_build_path:builtApp,executable_sha256:executableHash,installed_readback:true,defines,scope:'Owned Simulator debug artifact only; no device signing, release or hosted acceptance.'},null,2)+'\n',{mode:0o600,flag:'wx'});
+   writeFileSync(ready,JSON.stringify({run_id:owned.runId,udid,flow,email,password,app_executable_sha256:executableHash,store_id:tenant.siteId,scope:'Synthetic credentials for the actual visible Accounts form only. Native PKCE, UI and data still require proof.'},null,2)+'\n',{mode:0o600,flag:'wx'});
+   console.info('OWNED_LOCAL_IOS_READY '+ready);
+   while(!existsSync(done)){checkUi();if(identity.exitCode!==null)throw new Error('Owned issuer stopped');await new Promise(r=>setTimeout(r,1000));}
+   const proof=JSON.parse(readFileSync(done,'utf8'))as {run_id:string;steps:string[];evidence:string[]};assert.equal(proof.run_id,owned.runId);
+   for(const step of ['normal-native-browser-accounts-login','normal-native-dashboard','normal-native-kyc-navigation','kyc-outage-visible','kyc-explicit-retry','background-resume-session','native-secure-session-restart'])assert(proof.steps.includes(step),step);
+   assert(proof.evidence.length>=7);for(const path of proof.evidence)assert(path.startsWith(root+'/')&&existsSync(path));
+   checkSource(source,'iOS native journey');
+   assert(calls.some(call=>call.source==='actual-identity'&&call.path==='/v1/auth/custom/mobile/exchange'&&call.status===200),'a fresh normal iOS native PKCE exchange is required');
+   assert(calls.filter(call=>call.source==='actual-mobile-bff'&&call.path==='/v1/kyc'&&call.status===503).length>=2,'the actual native KYC read outage and its automatic retry must be observed');
+   assert(calls.some(call=>call.source==='actual-mobile-bff'&&call.path==='/v1/kyc'&&call.status===200),'explicit native retry must read real KYC status');
+   assert(restartCallIndex!==undefined,'actual XCTest app termination/relaunch must be marked');
+   assert(calls.slice(restartCallIndex).some(call=>call.source==='actual-identity'&&call.path==='/v1/auth/custom/session'&&call.status===200),'relaunch must validate its actual restored native credential');
+   assert(calls.slice(restartCallIndex).some(call=>call.source==='actual-mobile-bff'&&call.path==='/v1/kyc'&&call.status===200));
+   const mobile=JSON.parse(owned.psql(`SELECT jsonb_agg(jsonb_build_object('client',client_id,'callback',callback_id,'environment',environment,'redirect',redirect_uri,'consumed',consumed_at IS NOT NULL,'cancelled',cancelled_at IS NOT NULL,'correct_site',site_id='${tenant.siteId}'))FROM merchant_mobile_requests WHERE authorized_user_id='${owner}'`));
+   assert.equal(mobile.length,1);assert.deepEqual(mobile[0],{client:'merchant_ios',callback:'ios_session',environment:'development',redirect:'com.letbuyy.store.accounts.development://auth/callback',consumed:true,cancelled:false,correct_site:true});
+   assert.equal(owned.psql(`SELECT jsonb_agg(to_jsonb(p)ORDER BY id)::text FROM products p WHERE store_id='${tenant.siteId}'`),originalCameraProducts);
+   assert(!calls.some(call=>call.source==='actual-mobile-bff'&&['POST','PATCH','PUT','DELETE'].includes(call.method)),'this bounded iOS journey performs no business mutation');
+   writeFileSync(join(root,'ios-backend-verified.json'),JSON.stringify({run_id:owned.runId,source_sha256:sourceHash,app_executable_sha256:executableHash,calls,mobile,productsUnchanged:true,challenge_counts:challenge.counts,scope:'Actual owned iOS Simulator debug app, normal OS Accounts session and registered merchant_ios PKCE callback, authenticated Dashboard/KYC, unavailable/read retry, background/resume and secure native credential restoration after real app restart. No injected session, public Mac9002 adoption, hosted/provider, camera, physical-device, signed release or full-feature acceptance.'},null,2)+'\n',{mode:0o600,flag:'wx'});return;
+  }
   // The build is source-only and owned; never run this lane concurrently with
   // another heavy qualification. Its resulting APK must be installed read back.
   const buildLog=join(root,'android-build.log'),fd=openSync(buildLog,'wx',0o600);
@@ -670,7 +721,7 @@ test('normal local Merchant Android journey verifies authoritative results throu
   try{writeFileSync(join(root,'observed-calls.json'),JSON.stringify({run_id:owned.runId,calls,challenge_counts:challenge.counts,notice:'Transport observations only. Inspect the runner verdict and UI evidence for acceptance.'},null,2)+'\n',{mode:0o600,flag:'wx'});}catch{}
   if(existsSync(ready))writeFileSync(ready,JSON.stringify({run_id:owned.runId,serial:receipt.serial,credentials_retired:true,scope:'Synthetic login inputs removed after this local run.'})+'\n',{mode:0o600});
   // Stop only our foreground package. Retain emulator and all account namespaces.
-  try{adb('shell','am','force-stop','com.letbuyy.store');}catch{}
+  try{if(iosFlow)sim('terminate',receipt.simulator_udid!,'com.letbuyy.store');else adb('shell','am','force-stop','com.letbuyy.store');}catch{}
   for(const port of reversed)try{adb('reverse','--remove',`tcp:${port}`);}catch{}
   await nativeBrowser?.close();
   if(nativeForward!==undefined)try{adb('forward','--remove',`tcp:${nativeForward}`);}catch{}
