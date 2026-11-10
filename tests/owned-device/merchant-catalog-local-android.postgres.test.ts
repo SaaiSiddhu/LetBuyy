@@ -5,8 +5,8 @@ import test from 'node:test';
 import {createHash,randomUUID} from 'node:crypto';
 import {createServer,type Server} from 'node:http';
 import {execFileSync,spawn} from 'node:child_process';
-import {readFileSync,writeFileSync,existsSync,mkdirSync,realpathSync,openSync,closeSync,copyFileSync,chmodSync,constants} from 'node:fs';
-import {join,resolve} from 'node:path';
+import {readFileSync,writeFileSync,existsSync,mkdirSync,realpathSync,openSync,closeSync,copyFileSync,chmodSync,constants,readdirSync,lstatSync,readlinkSync} from 'node:fs';
+import {join,resolve,dirname,isAbsolute} from 'node:path';
 import {exportJWK} from 'jose';
 import {chromium,expect,type Browser} from '@playwright/test';
 import {closePooledSqlClients} from '@letbuyy/infrastructure/pooled-sql-adapter';
@@ -22,6 +22,18 @@ import {NativeGateway} from '../helpers/native-owned-gateway';
 import {NativeMobileBff} from '../helpers/native-owned-mobile-bff';
 const owned=requireOwnedDatabase();
 const digest=(v:string|Uint8Array)=>createHash('sha256').update(v).digest('hex');
+function nativeBundleSnapshot(root:string){
+ const entries:Array<{path:string;kind:'file';sha256:string}|{path:string;kind:'symlink';target:string}>=[];
+ const visit=(folder:string)=>{for(const name of readdirSync(join(root,folder)).sort()){
+  const path=folder?folder+'/'+name:name,absolute=join(root,path),stat=lstatSync(absolute);
+  if(stat.isSymbolicLink()){
+   const target=readlinkSync(absolute);assert(!isAbsolute(target)&&resolve(dirname(absolute),target).startsWith(root+'/'),'native bundle links must remain inside the delivered app');
+   entries.push({path,kind:'symlink',target});
+  }else if(stat.isDirectory())visit(path);
+  else{assert(stat.isFile(),'the delivered native bundle contains only regular files and internal links');entries.push({path,kind:'file',sha256:digest(readFileSync(absolute))});}
+ }};
+ visit('');return entries.sort((a,b)=>a.path<b.path?-1:a.path>b.path?1:0);
+}
 function sourceSnapshot(){
  const paths=execFileSync('git',['ls-files','--cached','--others','--exclude-standard','-z','--','apps/merchant/mobile','apps/merchant/web','apps/platform/identity','services/api-gateway','services/mobile-bff','packages','database/supabase/migrations','database/supabase/rollback','database/supabase/config.toml','scripts/governance','tests/fixtures','tests/helpers','tests/owned-device/merchant-catalog-local-android.postgres.test.ts','pubspec.yaml','pubspec.lock'],{encoding:'utf8'}).split('\0').filter(Boolean).sort();
  return paths.filter(path=>{
@@ -245,10 +257,12 @@ test('normal local Merchant owned-device journey verifies authoritative results 
    const artifactRoot=join(root,'qualified-artifact');mkdirSync(artifactRoot,{mode:0o700});
    const app=join(artifactRoot,'Runner.app');assert(!existsSync(app));execFileSync('/bin/cp',['-R',builtApp,app]);
    const executableHash=digest(readFileSync(join(app,'Runner')));assert.equal(digest(readFileSync(join(builtApp,'Runner'))),executableHash);
+   const bundle=nativeBundleSnapshot(builtApp),bundleHash=digest(JSON.stringify(bundle));assert.deepEqual(nativeBundleSnapshot(app),bundle,'retained iOS bundle must match all built payload bytes and links');
+   const bundleManifest=join(artifactRoot,'ios-bundle-manifest.json');writeFileSync(bundleManifest,JSON.stringify(bundle,null,2)+'\n',{mode:0o600,flag:'wx'});
    sim('install',udid,app);const installed=sim('get_app_container',udid,'com.letbuyy.store','app').trim();
-   assert(installed.includes('/'+udid+'/data/Containers/Bundle/Application/'));assert.equal(digest(readFileSync(join(installed,'Runner'))),executableHash);
-   writeFileSync(join(root,'artifact.json'),JSON.stringify({run_id:owned.runId,source_sha256:sourceHash,kind:'ios-simulator-debug-app',app,source_build_path:builtApp,executable_sha256:executableHash,installed_readback:true,defines,scope:'Owned Simulator debug artifact only; no device signing, release or hosted acceptance.'},null,2)+'\n',{mode:0o600,flag:'wx'});
-   writeFileSync(ready,JSON.stringify({run_id:owned.runId,udid,flow,email,password,app_executable_sha256:executableHash,store_id:tenant.siteId,scope:'Synthetic credentials for the actual visible Accounts form only. Native PKCE, UI and data still require proof.'},null,2)+'\n',{mode:0o600,flag:'wx'});
+   assert(installed.includes('/'+udid+'/data/Containers/Bundle/Application/'));assert.equal(digest(readFileSync(join(installed,'Runner'))),executableHash);assert.deepEqual(nativeBundleSnapshot(installed),bundle,'installed iOS app must match the complete built bundle, including Dart and frameworks');
+   writeFileSync(join(root,'artifact.json'),JSON.stringify({run_id:owned.runId,source_sha256:sourceHash,kind:'ios-simulator-debug-app',app,source_build_path:builtApp,executable_sha256:executableHash,bundle_sha256:bundleHash,bundle_files:bundle.length,bundle_manifest:bundleManifest,installed_readback:true,defines,scope:'Owned Simulator debug artifact only; no device signing, release or hosted acceptance.'},null,2)+'\n',{mode:0o600,flag:'wx'});
+   writeFileSync(ready,JSON.stringify({run_id:owned.runId,udid,flow,email,password,app_executable_sha256:executableHash,app_bundle_sha256:bundleHash,store_id:tenant.siteId,scope:'Synthetic credentials for the actual visible Accounts form only. Native PKCE, UI and data still require proof.'},null,2)+'\n',{mode:0o600,flag:'wx'});
    console.info('OWNED_LOCAL_IOS_READY '+ready);
    while(!existsSync(done)){checkUi();if(identity.exitCode!==null)throw new Error('Owned issuer stopped');await new Promise(r=>setTimeout(r,1000));}
    const proof=JSON.parse(readFileSync(done,'utf8'))as {run_id:string;steps:string[];evidence:string[]};assert.equal(proof.run_id,owned.runId);
@@ -273,7 +287,7 @@ test('normal local Merchant owned-device journey verifies authoritative results 
     const bytes=privateObjects.get(documents[0].metadata.private_object_key);assert(bytes&&bytes.byteLength>0);assert.equal(digest(bytes),documents[0].metadata.sha256);assert.equal(Number(documents[0].metadata.byte_size),bytes.byteLength);
     writeFileSync(join(root,'ios-private-provider-object.bin'),bytes,{mode:0o600,flag:'wx'});
    }else{assert.equal(nativeWrites.length,0);assert.equal(documents.length,0);assert.equal(privateObjects.size,0);}
-   writeFileSync(join(root,'ios-backend-verified.json'),JSON.stringify({run_id:owned.runId,source_sha256:sourceHash,app_executable_sha256:executableHash,calls,mobile,documents,private_object_count:privateObjects.size,productsUnchanged:true,challenge_counts:challenge.counts,scope:'Actual owned iOS Simulator debug app, normal OS Accounts session and registered merchant_ios PKCE callback, authenticated Dashboard/KYC, unavailable/read retry, background/resume and secure native credential restoration after real app restart.'+(iosKycFlow?' Includes actual native Photo Picker and one byte-matched synthetic private KYC submission, pending review only.':' Read-only auth/status journey.')+' No injected session, public Mac9002 adoption, live AWS/Cashfree, hosted/provider approval, camera, physical-device, signed release or full-feature acceptance.'},null,2)+'\n',{mode:0o600,flag:'wx'});return;
+   writeFileSync(join(root,'ios-backend-verified.json'),JSON.stringify({run_id:owned.runId,source_sha256:sourceHash,app_executable_sha256:executableHash,app_bundle_sha256:bundleHash,calls,mobile,documents,private_object_count:privateObjects.size,productsUnchanged:true,challenge_counts:challenge.counts,scope:'Actual owned iOS Simulator debug app, normal OS Accounts session and registered merchant_ios PKCE callback, authenticated Dashboard/KYC, unavailable/read retry, background/resume and secure native credential restoration after real app restart.'+(iosKycFlow?' Includes actual native Photo Picker and one byte-matched synthetic private KYC submission, pending review only.':' Read-only auth/status journey.')+' No injected session, public Mac9002 adoption, live AWS/Cashfree, hosted/provider approval, camera, physical-device, signed release or full-feature acceptance.'},null,2)+'\n',{mode:0o600,flag:'wx'});return;
   }
   // The build is source-only and owned; never run this lane concurrently with
   // another heavy qualification. Its resulting APK must be installed read back.
