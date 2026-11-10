@@ -20,7 +20,7 @@ async function mount() {
     const { AppRouterContext } = await import('next/dist/shared/lib/app-router-context.shared-runtime.js');
     const { SearchParamsContext } = await import('next/dist/shared/lib/hooks-client-context.shared-runtime.js');
     const pushes:string[]=[]; let mutations=0;
-    const router={ bfcacheId: \'synthetic-router-cache\', back(){},forward(){},refresh(){},hmrRefresh(){},push(value:string){pushes.push(value);},replace(){},prefetch(){}};
+    const router={ bfcacheId: 'synthetic-router-cache', back(){},forward(){},refresh(){},hmrRefresh(){},push(value:string){pushes.push(value);},replace(){},prefetch(){}};
     const root=createRoot(dom.window.document.getElementById('root')!);
     await act(async()=>root.render(<AppRouterContext.Provider value={router}><SearchParamsContext.Provider value={new URLSearchParams()}><Navigation slug="letbuyy-sense" version="2.0.0">
         <Link id="product" href="/store/urban-kicks-demo/product/shirt?variant=medium#fit-guide">Shirt</Link>
