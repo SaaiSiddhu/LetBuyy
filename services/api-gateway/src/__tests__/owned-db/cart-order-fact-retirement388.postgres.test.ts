@@ -37,7 +37,8 @@ function historicalSource(id:string):Record<string,unknown>{
 }
 async function draft(id:string,text='Asha'):Promise<PersonalizationCartDraft>{
  const source=historicalSource(id),personalization=readPersonalizationFacts(source.metadata);assert.ok(personalization);
- return {facts_revision:personalization.revision,review_fingerprint:await personalizationReviewFingerprint({product_id:id,variant_id:null,product_version:source.version,facts:personalization}),method_id:'engrave',style_id:'sans',placement_id:'front',text};
+ const fingerprint=await personalizationReviewFingerprint({product_id:id,variant_id:null,product_version:source.version,facts:personalization});assert.ok(fingerprint,'historical fixture has a valid canonical review fingerprint');
+ return {facts_revision:personalization.revision,review_fingerprint:fingerprint,method_id:'engrave',style_id:'sans',placement_id:'front',text};
 }
 function input(id:string,personalization?:PersonalizationCartDraft,quantity=1,variant_id?:string){return {product_id:id,variant_id:variant_id??null,quantity,...(personalization?{personalization}:{})};}
 async function historicalCart(inputs:ReturnType<typeof input>[]):Promise<Cart>{
