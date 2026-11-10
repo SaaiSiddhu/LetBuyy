@@ -155,7 +155,7 @@ test('operations uses bounded count responses beyond REST row caps with real per
     try {
         const response = await gateway.request(`/v1/commerce-analytics/operations-summary?store_id=${store}`, { headers: await signedIdentityHeaders(owner,ownerEmail) });
         assert.equal(response.status,200,response.text);
-        assert.deepEqual(response.json?.data, { order_count:0,open_order_count:0,po_count:1103,open_po_count:1100,transfer_count:1103,in_transit_transfer_count:1100,low_stock_sku_count:1108,total_sku_count:1108 });
+        assert.deepEqual(response.json?.data, { store_id:store,order_count:0,open_order_count:0,po_count:1103,open_po_count:1100,transfer_count:1103,in_transit_transfer_count:1100,low_stock_sku_count:1108,total_sku_count:1108 });
         const metricCalls = tap.calls.filter(call => counts.has(call.resource));
         assert.equal(metricCalls.length,8);
         assert.ok(metricCalls.every(call => call.method === 'HEAD'),JSON.stringify(metricCalls));
