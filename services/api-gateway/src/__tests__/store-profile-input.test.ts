@@ -34,3 +34,10 @@ test('store profile rejects unsupported currency, country, PIN and mismatched GS
         assert.equal(result.success, false, JSON.stringify(change));
     }
 });
+test('canonical invoice recipient attention is retained and bounded without accepting private identifiers', () => {
+    const accepted = UpdateStoreSchema.safeParse({ version: 1, invoice_address: { country: 'IN', attention: 'Synthetic invoice recipient' } });
+    assert.equal(accepted.success, true);
+    if (accepted.success) assert.equal(accepted.data.invoice_address?.attention, 'Synthetic invoice recipient');
+    assert.equal(UpdateStoreSchema.safeParse({ version: 1, invoice_address: { attention: 'x'.repeat(201) } }).success, false);
+    assert.equal(UpdateStoreSchema.safeParse({ version: 1, invoice_address: { attention: 'Synthetic invoice recipient', full_pan: 'ABCDE1234F' } }).success, false);
+});

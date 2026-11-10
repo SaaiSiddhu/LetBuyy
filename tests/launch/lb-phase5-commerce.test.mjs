@@ -131,7 +131,12 @@ test('5.9 Smart Collections: pure evaluator + 35 unit tests + gateway route regi
   assert.ok(has('services/api-gateway/src/lib/smart-collection-eval.ts'));
   assert.ok(has('services/api-gateway/src/__tests__/smart-collection-eval.test.ts'));
   const route = read('services/api-gateway/src/routes/smart-collections.ts');
-  assert.match(route, /assertStaffPermission\([^)]*'products:write'\)/); // writes guarded
+  assert.equal((route.match(/resolveCollectionStoreScope\(c, selectedStore\(c(?:, body\.store_id)?\), 'products:write'\)/g) || []).length, 3,
+    'create, update and delete must each resolve canonical write authority');
+  const scope = read('services/api-gateway/src/lib/collection-store-scope.ts');
+  assert.match(scope, /evaluateStaffRequest\(c, siteId, customUser\.id, permission, 'enforce'\)/);
+  assert.match(scope, /if \(decision\.block\)/);
+  assert.match(scope, /throw new ForbiddenError/);
   const idx = read('services/api-gateway/src/index.ts');
   assert.match(idx, /smart-collections/); // registered
   const c = read('packages/typescript/api-client/src/index.ts');

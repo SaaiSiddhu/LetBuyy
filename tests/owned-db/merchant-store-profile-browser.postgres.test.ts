@@ -58,7 +58,8 @@ test('normal Preferences enforces canonical SEO length, persists through General
     seedSyntheticTenant(owned.psql, tenant);
     const hash = await hashMerchantPassword(password);
     owned.psql(`INSERT INTO users_custom(id,email,email_verified,full_name,password_hash) VALUES('${actor}','${email}',true,'Synthetic Profile Owner','${hash}');
-        UPDATE sites SET custom_user_id='${actor}',business_profile='{"email":"synthetic-private-contact@example.invalid"}'::jsonb WHERE id='${tenant.siteId}';`);
+        UPDATE sites SET custom_user_id='${actor}',business_profile='{"email":"synthetic-private-contact@example.invalid"}'::jsonb,
+            invoice_address='{"attention":"Retained synthetic invoice attention"}'::jsonb WHERE id='${tenant.siteId}';`);
     const identityOrigin = 'http://localhost:' + await freePort(), merchantOrigin = 'http://localhost:' + await freePort();
     const provider = await createLocalTurnstileProvider(owned), originalFetch = globalThis.fetch;
     globalThis.fetch = createOwnedProviderFetch(originalFetch, provider.profile);
@@ -113,13 +114,24 @@ test('normal Preferences enforces canonical SEO length, persists through General
         await expect(page.getByRole('textbox', { name: 'SEO description', exact: true })).toHaveValue(expectedDescription);
         await page.getByRole('textbox', { name: 'SEO description', exact: true }).scrollIntoViewIfNeeded();
         await page.screenshot({ path: join(root, 'general-canonical-seo-readback.png'), fullPage: true });
+        await page.getByRole('textbox', { name: 'Store name', exact: true }).fill('Synthetic General write roundtrip');
+        const [generalSaved] = await Promise.all([
+            page.waitForResponse(response => new URL(response.url()).pathname === settingsPath && response.request().method() === 'PATCH'),
+            page.getByRole('button', { name: 'Save changes', exact: true }).click(),
+        ]);
+        assert.equal(generalSaved.status(), 200, await generalSaved.text());
+        await expect(page.getByText('Settings saved', { exact: true })).toBeVisible();
+        const generalWrite = JSON.parse(owned.psql(`SELECT json_build_object('version',version,'name',name,'invoice_address',invoice_address) FROM sites WHERE id='${tenant.siteId}'`));
+        assert.equal(generalWrite.version, stored.version + 1);
+        assert.equal(generalWrite.name, 'Synthetic General write roundtrip');
+        assert.equal(generalWrite.invoice_address.attention, 'Retained synthetic invoice attention');
         const publicRead = await gateway.request(`/v1/storefront/${tenant.subdomain}?projection=render-v1`);
         assert.equal(publicRead.status, 200, publicRead.text);
         assert.equal(publicRead.json?.data.meta_title, stored.meta_title); assert.equal(publicRead.json?.data.meta_description, expectedDescription);
         assert(!publicRead.text.includes('synthetic-private-contact@example.invalid'));
         assert.equal(Object.hasOwn(publicRead.json!.data, 'business_profile'), false);
         assert.equal(sha(JSON.stringify(sourceSnapshot())), sourceHash, 'qualified source must remain unchanged');
-        const report = { run_id: owned.runId, source_sha256: sourceHash, root, persisted_synthetic: stored, normal_sign_in: true, browser_textarea_input_bounded: true, forged_overlong_request_denied_without_effect: true, general_readback: true, public_bootstrap_metadata: true, private_contact_absent_from_public: true, provider_counts: provider.counts,
+        const report = { run_id: owned.runId, source_sha256: sourceHash, root, persisted_synthetic: stored, general_write: generalWrite, normal_sign_in: true, browser_textarea_input_bounded: true, forged_overlong_request_denied_without_effect: true, general_readback: true, retained_invoice_attention: true, public_bootstrap_metadata: true, private_contact_absent_from_public: true, provider_counts: provider.counts,
             scope: 'Compiled normal owner Preferences/General and public Gateway metadata; no buyer HTML renderer, native new artifact, hosted/provider/release or full-feature acceptance.' };
         writeFileSync(join(root, 'browser-verified.json'), JSON.stringify(report, null, 2) + '\n', { mode: 0o600, flag: 'wx' });
         console.info('OWNED_PROFILE_BROWSER ' + JSON.stringify(report));

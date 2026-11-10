@@ -245,8 +245,13 @@ test('the fill trigger means no writer has to know about store_id', { skip }, ()
     );
 
     // And the real writer, unmodified by this migration, still produces an attributed row.
-    psql(`SELECT public.adjust_inventory_level(
-            ${sqlString(PRODUCT_A)}::uuid, NULL, ${sqlString(LOCATION_A)}::uuid, 2, NULL, 'recount', 'via rpc');`);
+    // Current inventory writers require the transaction-local tenant GUC.
+    // Keep that fence active while testing the attribution trigger.
+    psql(`BEGIN;
+        SELECT set_config('app.site_id', ${sqlString(SITE_A)}, true);
+        SELECT public.adjust_inventory_level(
+            ${sqlString(PRODUCT_A)}::uuid, NULL, ${sqlString(LOCATION_A)}::uuid, 2, NULL, 'recount', 'via rpc');
+        COMMIT;`);
     assert.equal(
         psql(`SELECT store_id::text FROM public.inventory_adjustments WHERE note = ${sqlString('via rpc')};`),
         SITE_A,

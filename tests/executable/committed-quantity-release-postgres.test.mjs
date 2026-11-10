@@ -85,7 +85,9 @@ function bootstrapDatabase() {
 
 let seq = 0;
 // One product + level + order, reserved for `quantity`. `commit` decides whether the reservation is
-// actually committed (the real RPC) or left merely reserved.
+// actually committed (the real RPC) or left merely reserved. The level must
+// retain the matching reservation quantity; later inventory guards correctly
+// refuse an active reservation that has no reserved stock behind it.
 function seedOrder({ quantity = 4, startingCommitted = 0, available = 50, commit = true }) {
     seq += 1;
     const s = String(seq).padStart(2, '0');
@@ -96,7 +98,7 @@ function seedOrder({ quantity = 4, startingCommitted = 0, available = 50, commit
     INSERT INTO public.products (id, store_id, site_id, name, price, is_active, status)
     VALUES (${sqlString(product)}::uuid, ${sqlString(SITE)}::uuid, ${sqlString(SITE)}::uuid, 'Item ${s}', 100, true, 'active');
     INSERT INTO public.inventory_levels (store_id, product_id, location_id, available, reserved, committed_quantity)
-    VALUES (${sqlString(SITE)}::uuid, ${sqlString(product)}::uuid, ${sqlString(LOCATION)}::uuid, ${available}, 0, ${startingCommitted});
+    VALUES (${sqlString(SITE)}::uuid, ${sqlString(product)}::uuid, ${sqlString(LOCATION)}::uuid, ${available}, ${quantity}, ${startingCommitted});
     INSERT INTO public.orders (id, store_id, site_id, order_number, customer_email, shipping_address, items, subtotal, total, status)
     VALUES (${sqlString(order)}::uuid, ${sqlString(SITE)}::uuid, ${sqlString(SITE)}::uuid, 'CQ-${s}', 'buyer@example.invalid', '{}'::jsonb, '[]'::jsonb, 100, 100, 'pending');
     INSERT INTO public.order_items (order_id, site_id, product_id, name, quantity, price, total)

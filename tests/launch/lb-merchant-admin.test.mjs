@@ -13,12 +13,18 @@ const COLLECTION_PROXY = 'apps/merchant/web/src/app/api/stores/[store]/collectio
 test('Collections: the edit/delete proxy exists and delegates to the api-client (no more 404)', () => {
   assert.ok(existsSync(resolve(ROOT, COLLECTION_PROXY)), 'collections/[collectionId]/route.ts must exist');
   const proxy = read(COLLECTION_PROXY);
-  assert.match(proxy, /export async function PATCH/);
-  assert.match(proxy, /export async function DELETE/);
-  assert.match(proxy, /products\.collections\.update\(/);
-  assert.match(proxy, /products\.collections\.remove\(/);
-  // ownership-checked like the products proxy
-  assert.match(proxy, /resolveOwnedStoreId/);
+  assert.match(proxy, /export const PATCH = [^\n]*collectionMetadataMutation\(request, params, 'manual', 'update', \(await params\)\.collectionId\)/);
+  assert.match(proxy, /export const DELETE = [^\n]*collectionMetadataMutation\(request, params, 'manual', 'delete', \(await params\)\.collectionId\)/);
+  const authority = read('apps/merchant/web/src/lib/products/collection-metadata-proxy.ts');
+  assert.match(authority, /await merchantSecurityScope\(request, params\)/);
+  assert.match(authority, /command\.store_id !== scope\.storeId/);
+  assert.match(authority, /command\.idempotency_key !== request\.headers\.get\('X-Idempotency-Key'\)/);
+  assert.match(authority, /client\.products\.collections\.update\(/);
+  assert.match(authority, /client\.products\.collections\.remove\(/);
+  const scope = read('apps/merchant/web/src/lib/api/merchant-security-scope.ts');
+  assert.match(scope, /validateMerchantMutationRequest\(request\)/);
+  assert.match(scope, /request\.headers\.get\('X-LetBuyy-Merchant-Context'\) !== session\.user\.id/);
+  assert.match(scope, /resolveOwnedStoreId\(decodeURIComponent\(store\)\)/);
 });
 
 test('AISidebar: the appearance todo links to the real /:store/appearance page (not the 404 settings path)', () => {

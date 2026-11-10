@@ -99,6 +99,7 @@ export const HsnCodeSchema = z
 
 export const AddressSchema = z.object({
   name: z.string().max(200).optional(),
+  attention: z.string().max(200).optional(),
   line1: z.string().min(1).max(500),
   line2: z.string().max(500).optional(),
   city: z.string().min(1).max(100),
