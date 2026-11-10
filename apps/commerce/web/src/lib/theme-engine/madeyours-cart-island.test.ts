@@ -69,9 +69,9 @@ function backend(models: Model[]) {
     if ((init?.method || 'GET') === 'GET') { if (heldCommit) readsDuringHeldCommit++; return response(lastReceipt); }
     const body = JSON.parse(String(init?.body)) as { lines: unknown[] };
     const lines = body.lines.map(line => StorefrontCartLineInputSchema.parse(line)); writes.push(lines);
-    if (cartFailure) { const code = cartFailure; cartFailure = null; return response({ code, message: 'Controlled failure' }, code === 'CART_UNAVAILABLE' ? 503 : 409); }
     const barrier = nextCommitBarrier; nextCommitBarrier = undefined;
     if (barrier) { heldCommit = true; await barrier; heldCommit = false; }
+    if (cartFailure) { const code = cartFailure; cartFailure = null; return response({ code, message: 'Controlled failure' }, code === 'CART_UNAVAILABLE' ? 503 : 409); }
     const saved = await Promise.all(lines.map(async line => {
       const item = byId.get(line.product_id); assert.ok(item);
       const variant = item.variants?.find(row => row.id === line.variant_id);
@@ -164,6 +164,33 @@ test('cart remount waits for an in-flight drawer removal before reading its cano
     assert.equal(api.writes.length, 3, 'recovery must not replay the mutation');
     assert.equal(cached()[0].serverLineId, ashaId); assert.match(rehydrated.textContent!, /Asha/);
     assert.doesNotMatch(rehydrated.textContent!, /Kabir/);
+  } finally { release?.(); clear(); globalThis.fetch = original; }
+});
+
+test('cart remount keeps a failed queued drawer removal unconfirmed until explicit saved-cart reload', async () => {
+  await ready(); clear(); const item = model(), api = backend([item]), original = globalThis.fetch;
+  globalThis.fetch = api.fetcher;
+  let release: (() => void) | undefined;
+  try {
+    document.body.innerHTML = (await render(item)).html; const section = root();
+    choose(section, 'Walnut'); await flush(); review(section, 'Asha'); purchase(section).click();
+    await waitForReceipt(() => cached().length === 1 && typeof cached()[0].serverLineId === 'string' && !purchase(section).disabled, 'the saved configuration must be acknowledged');
+    const page = document.createElement('lb-cart'), drawer = document.createElement('lb-cart-drawer'); document.body.append(page, drawer);
+    await waitForReceipt(() => page.querySelector('[data-lb-cart-status]') === null, 'the initial saved-cart read must finish');
+    release = api.holdNextCartCommit(); api.failNextCart('CART_UNAVAILABLE');
+    drawer.querySelector<HTMLButtonElement>('[data-lb-cart-remove]')!.click();
+    await waitForReceipt(() => api.writes.length === 2 && cached().length === 0, 'the removal must reach the held transport outcome');
+    page.remove(); const rehydrated = document.createElement('lb-cart'); document.body.append(rehydrated); await flush();
+    release(); release = undefined;
+    await waitForReceipt(() => cached().length === 1 && Boolean(rehydrated.querySelector('[data-lb-cart-refresh]')), 'an unavailable queued write must leave its recovered receipt explicitly unconfirmed');
+    assert.equal(api.readsDuringHeldCommit, 0); assert.equal(api.writes.length, 2);
+    assert.equal(rehydrated.querySelector('a.lb-cart__checkout'), null);
+    assert.ok(rehydrated.querySelector('.lb-cart__checkout[aria-disabled="true"]'));
+    assert.match(rehydrated.textContent!, /could not confirm/);
+    rehydrated.querySelector<HTMLButtonElement>('[data-lb-cart-refresh]')!.click();
+    await waitForReceipt(() => rehydrated.querySelector('[data-lb-cart-status]') === null && Boolean(rehydrated.querySelector('a.lb-cart__checkout')), 'only an explicit fresh saved-cart read may clear the unavailable state');
+    assert.equal(api.writes.length, 2, 'the explicit read must never replay the removal');
+    assert.match(rehydrated.textContent!, /Asha/);
   } finally { release?.(); clear(); globalThis.fetch = original; }
 });
 
