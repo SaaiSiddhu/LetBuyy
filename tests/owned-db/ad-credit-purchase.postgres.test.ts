@@ -68,7 +68,10 @@ test('ad-credit intent and verification credit once, bind tenant/order/payment a
             const body = JSON.parse(String(init?.body)) as Record<string, unknown>;
             assert.equal(body.amount, amountMinor);
             assert.equal(body.currency, 'INR');
-            return new Response(JSON.stringify({ id: providerOrderId, amount: amountMinor, currency: 'INR', status: 'created' }), {
+            assert.match(String(body.receipt), /^ac_[a-f0-9]{32}$/);
+            assert.ok(String(body.receipt).length <= 40);
+            assert.deepEqual(body.notes, { purpose: 'ad_credits', site_id: tenant.siteId });
+            return new Response(JSON.stringify({ id: providerOrderId, amount: amountMinor, currency: 'INR', receipt: body.receipt, status: 'created' }), {
                 status: 200,
                 headers: { 'Content-Type': 'application/json' },
             });

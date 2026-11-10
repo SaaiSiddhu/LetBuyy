@@ -484,7 +484,7 @@ router.post('/ad-credits/intent', async (c) => {
 
     const providerOrder = await createRazorpayOrder(
         { keyId: c.env.RAZORPAY_KEY_ID, keySecret: c.env.RAZORPAY_KEY_SECRET },
-        { amount: amountMinor, currency: 'INR', receipt: `adcredit-${tenant.siteId}`, notes: { purpose: 'ad_credits', site_id: tenant.siteId } },
+        { amount: amountMinor, currency: 'INR', receipt: `ac_${crypto.randomUUID().replaceAll('-', '')}`, notes: { purpose: 'ad_credits', site_id: tenant.siteId } },
     );
     if (!providerOrder.id) {
         return c.json({ error: { code: 'PAYMENT_ERROR', message: 'Failed to create payment order' } }, 502);
