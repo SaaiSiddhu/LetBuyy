@@ -23,6 +23,7 @@ import { gatewayEnv, newIdentityKeys, nextClientAddress, INTERNAL_SECRET, type G
 import { createSupabaseServiceClient } from '@letbuyy/infrastructure/supabase-adapter';
 import { ReelUploadReadbackSchema } from '@letbuyy/shared-types';
 import { OutboxExecutionAdapter } from '../../services/api-gateway/src/execution/outbox-execution.adapter';
+import {createLocalTurnstileProvider,LOCAL_TURNSTILE_SECRET} from '../fixtures/local-turnstile-provider';
 const owned = requireOwnedDatabase();
 const expect = playwrightExpect.configure({ timeout: 30000 });
 const quote = (value: string) => "'" + value.replace(/'/g, "''") + "'";
@@ -414,6 +415,7 @@ async function withMerchantReelBrowser(run: (fixture: {
   let gateway: NativeGateway | undefined;
   let primaryFailure: { error: unknown } | undefined;
   let bridge: Server | undefined, identity: OwnedClientProcess | undefined, merchant: OwnedClientProcess | undefined, browser: Awaited<ReturnType<typeof chromium.launch>> | undefined;
+  let provider:Awaited<ReturnType<typeof createLocalTurnstileProvider>>|undefined;
   const pages: Page[] = [], errors: string[] = [], calls: { path: string; status: number; key: string | null }[] = [], diagnostics: string[] = [];
   const scriptFailures: unknown[] = [];
   const scriptNetwork: unknown[] = [];
@@ -422,6 +424,7 @@ async function withMerchantReelBrowser(run: (fixture: {
   try {
     proxy = await startOwnedPooledSqlProxy(owned);
     const keys = await newIdentityKeys();
+    const challenge=provider=await createLocalTurnstileProvider(owned);
     gateway = await NativeGateway.create(gatewayEnv(owned, keys, { ENVIRONMENT: 'local', LETBUYY_IDENTITY_ISSUER: identityOrigin, ...proxy.env(), REEL_CUSTODY_PROFILE: JSON.stringify(syntheticProfile) }) as unknown as Record<string,unknown>);
     const activeGateway = gateway;
     bridge = createServer(async (req, res) => {
@@ -442,22 +445,22 @@ async function withMerchantReelBrowser(run: (fixture: {
       } catch { res.writeHead(500); res.end('{}'); }
     });
     await new Promise<void>(resolve => bridge!.listen(0, '127.0.0.1', resolve)); const api = `http://127.0.0.1:${(bridge.address() as { port: number }).port}/v1`;
-    const shared = { INTERNAL_API_SECRET: INTERNAL_SECRET, NEXT_PUBLIC_ACCOUNTS_URL: identityOrigin, NEXT_PUBLIC_ADMIN_URL: origin };
-    identity = startOwnedClientRuntime(owned, 'identity-next', { port: identityPort, env: { ...shared, LETBUYY_API_URL: api, LETBUYY_IDENTITY_ISSUER: identityOrigin,
+    const shared = { APP_ENV:'development',NEXT_PUBLIC_ENV:'development',INTERNAL_API_SECRET: INTERNAL_SECRET, NEXT_PUBLIC_ACCOUNTS_URL: identityOrigin, NEXT_PUBLIC_ADMIN_URL: origin };
+    identity = startOwnedClientRuntime(owned, 'identity-next-production', { port: identityPort,providerFixture:challenge.profile, env: { ...shared, LETBUYY_API_URL: api, LETBUYY_IDENTITY_ISSUER: identityOrigin,
       LETBUYY_IDENTITY_PRIVATE_JWK: JSON.stringify({ ...await exportJWK(keys.privateKey), alg: 'ES256', kid: keys.kid }), ACCOUNTS_COOKIE_SECRET: randomUUID() + randomUUID(), COOKIE_DOMAIN: '',
-      NEXT_PUBLIC_TURNSTILE_SITE_KEY: '1x00000000000000000000AA', TURNSTILE_SECRET_KEY: '1x0000000000000000000000000000000AA', LETBUYY_ENABLE_DEV_AUTH_BYPASS: 'false', NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS: 'false', RESEND_API_KEY: '', LETBUYY_EMAIL_API_KEY: '' } });
-    merchant = startOwnedClientRuntime(owned, 'merchant-next', { port: merchantPort, env: { ...shared, LETBUYY_API_BASE_URL: api } });
+      NEXT_PUBLIC_TURNSTILE_SITE_KEY: '1x00000000000000000000AA', TURNSTILE_SECRET_KEY: LOCAL_TURNSTILE_SECRET, LETBUYY_ENABLE_DEV_AUTH_BYPASS: 'false', NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS: 'false', RESEND_API_KEY: '', LETBUYY_EMAIL_API_KEY: '' } });
+    merchant = startOwnedClientRuntime(owned, 'merchant-next-production', { port: merchantPort, env: { ...shared, LETBUYY_API_BASE_URL: api } });
     for (const app of [identity, merchant]) for (const stream of [app.stdout, app.stderr]) stream.on('data', data => { diagnostics.push(data.toString().replace(/\?[^\s]+/g, '?redacted').slice(0, 700)); if (diagnostics.length > 20) diagnostics.shift(); });
     await Promise.all([ready(identityOrigin + '/login', identity), ready(origin, merchant)]);
     browser = await chromium.launch({ headless: true });
     await run({ origin, evidence, readOutage: value => { outage = value; }, loseReply: () => { lose = true; }, privateOriginalState: async key => { const bucket=await activeGateway.mf.getR2Bucket('REEL_ORIGINALS_BUCKET'), head=await bucket.head(key);return {count:(await bucket.list({prefix:key})).objects.filter(object=>object.key===key).length,version:head?.version ?? null}; }, login: async (email, password, subdomain) => {
-      const context = await browser!.newContext(), page = await context.newPage(); pages.push(page); page.setDefaultTimeout(45000); page.setDefaultNavigationTimeout(90000); page.on('pageerror', error => errors.push((error.stack || error.message).replace(/\?[^\s]+/g, '?redacted').slice(0, 2000)));
+      const context = await browser!.newContext();await challenge.attachBrowser(context,[identityOrigin,origin]);const page = await context.newPage(); pages.push(page); page.setDefaultTimeout(45000); page.setDefaultNavigationTimeout(90000); page.on('pageerror', error => errors.push((error.stack || error.message).replace(/\?[^\s]+/g, '?redacted').slice(0, 2000)));
       const cdp = await context.newCDPSession(page); await cdp.send('Runtime.enable'); await cdp.send('Debugger.enable');
       await cdp.send('Network.enable');
       const layoutRequests = new Map<string, { path: string; decodedBytes: number }>();
       cdp.on('Network.requestWillBeSent', value => {
         const path = new URL(value.request.url).pathname;
-        if (path === '/_next/static/chunks/app/layout.js') { layoutRequests.set(value.requestId, { path, decodedBytes: 0 }); scriptNetwork.push({ kind: 'request', requestId: value.requestId, path, timestamp: value.timestamp }); }
+        if (path.startsWith('/_next/static/chunks/')) { layoutRequests.set(value.requestId, { path, decodedBytes: 0 }); scriptNetwork.push({ kind: 'request', requestId: value.requestId, path, timestamp: value.timestamp }); }
       });
       cdp.on('Network.responseReceived', value => {
         if (!layoutRequests.has(value.requestId)) return;
@@ -475,23 +478,19 @@ async function withMerchantReelBrowser(run: (fixture: {
         scriptFailures.push({ kind: 'script-parse', url: value.url, line: value.startLine, column: value.startColumn, file });
         void cdp.send('Debugger.getScriptSource', { scriptId: value.scriptId }).then(result => writeFileSync(file, result.scriptSource)).catch(() => undefined);
       });
-      await page.goto(identityOrigin + '/login?return_to=' + encodeURIComponent(origin + '/' + subdomain + '/content/reels')); await page.getByLabel('Email', { exact: true }).fill(email); await page.getByRole('button', { name: 'Continue with email', exact: true }).click(); await page.getByLabel('Password', { exact: true }).fill(password);
+      await page.goto(identityOrigin + '/login?return_to=' + encodeURIComponent(origin + '/' + subdomain + '/content/reels'));await expect(page.locator('input[name="cf-turnstile-response"]')).toHaveValue(/.+/); await page.getByLabel('Email', { exact: true }).fill(email); await page.getByRole('button', { name: 'Continue with email', exact: true }).click(); await page.getByLabel('Password', { exact: true }).fill(password);
       const [response] = await Promise.all([page.waitForResponse(reply => reply.url().endsWith('/api/auth/login') && reply.request().method() === 'POST'), page.getByRole('button', { name: 'Log in', exact: true }).click()]); assert.equal(response.status(), 200, 'Actual password/session sign-in must succeed'); await page.waitForURL(url => url.origin === origin);
-      // As in the canonical Console fixture, finish the journey route's dev
-      // compilation before browser navigation. A cold webpack response has
-      // repeatedly ended mid-layout.js (HTTP200/gzip, no canceled request).
-      // These are real authenticated read-only requests, not an auth bypass,
-      // browser reload/retry or a substitute for any mounted workflow assertion.
-      const store = new URL(page.url()).pathname.split('/')[1]; assert.ok(store);
-      const warmPath = '/' + store + '/content/reels';
+      // Verify the actual authenticated production route and its emitted
+      // hashed chunks. Fixed development chunk names are not release inputs.
+      const warmPath = '/' + subdomain + '/content/reels';
       const compiledRoute = await context.request.get(origin + warmPath, { timeout: 120000 }); assert.equal(compiledRoute.status(), 200);
-      const compiledLayout = await context.request.get(origin + '/_next/static/chunks/app/layout.js', { timeout: 120000 }); assert.equal(compiledLayout.status(), 200);
-      const layoutSource = await compiledLayout.text(); new Script(layoutSource);
-      scriptNetwork.push({ kind: 'compiler-readiness', path: warmPath, routeStatus: compiledRoute.status(), layoutStatus: compiledLayout.status(), layoutBytes: Buffer.byteLength(layoutSource), completeOuterParse: true });
+      const html=await compiledRoute.text();const chunks=[...new Set([...html.matchAll(/<script\b[^>]*\bsrc="([^"]+)"/g)].map(match=>new URL(match[1],origin)).filter(url=>url.origin===origin&&url.pathname.startsWith('/_next/static/chunks/')).map(url=>url.href))];assert(chunks.length>0,'real production route must emit its script inputs');
+      for(const url of chunks){const chunk=await context.request.get(url,{timeout:120000});assert.equal(chunk.status(),200);const source=await chunk.text();new Script(source);scriptNetwork.push({kind:'compiler-readiness',path:new URL(url).pathname,routeStatus:compiledRoute.status(),chunkStatus:chunk.status(),decodedBytes:Buffer.byteLength(source),completeOuterParse:true});}
       return { context, page };
     } });
     assert.deepEqual(errors, [], 'no uncaught errors in the mounted merchant workflow');
-    writeFileSync(evidence + '/result.json.tmp', JSON.stringify({ runId: owned.runId, localPasswordSignIns: pages.length, botChallenge: 'official always-pass Turnstile test keys; both development auth bypass flags false; actual widget and server Siteverify transport required; no production antibot proof', clientRuntimeMode: 'owned identity-next and merchant-next development runtimes', providerCustody: false, scriptNetwork, calls: calls.filter(call => call.path.startsWith('/v1/reels')) }, null, 2) + '\n'); renameSync(evidence + '/result.json.tmp', evidence + '/result.json');
+    assert(challenge.counts.verified>=pages.length,'every normal password sign-in must pass one-use server verification');
+    writeFileSync(evidence + '/result.json.tmp', JSON.stringify({ runId: owned.runId, localPasswordSignIns: pages.length, botChallenge: 'owned one-use SDK and server Siteverify transport; both development auth bypass flags false; no live provider antibot proof',challengeCounts:challenge.counts, clientRuntimeMode: 'owned identity-next-production and merchant-next-production over explicit development origins', providerCustody: false, scriptNetwork, calls: calls.filter(call => call.path.startsWith('/v1/reels')) }, null, 2) + '\n'); renameSync(evidence + '/result.json.tmp', evidence + '/result.json');
     console.info('OWNED_N5_MERCHANT_REEL_BROWSER ' + JSON.stringify({ runId: owned.runId, evidence, localPasswordSignIns: pages.length, providerCustody: false }));
   } catch (error) {
     primaryFailure = { error };
@@ -511,6 +510,7 @@ async function withMerchantReelBrowser(run: (fixture: {
       cleanup('merchant Next process',async()=>{await stopOwnedClientRuntime(merchant);}),
       cleanup('Identity Next process',async()=>{await stopOwnedClientRuntime(identity);}),
     ]);
+    await cleanup('owned challenge provider',async()=>{await provider?.close();});
     await cleanup('HTTP bridge',async()=>{
       if(bridge){bridge.closeAllConnections();if(bridge.listening)await new Promise<void>((resolve,reject)=>bridge!.close(error=>error?reject(error):resolve()));}
     });
