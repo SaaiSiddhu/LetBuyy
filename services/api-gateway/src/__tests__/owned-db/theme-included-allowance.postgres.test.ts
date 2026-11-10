@@ -11,11 +11,17 @@ import { firstPartyThemeListings } from '@letbuyy/theme-engine';
 const owned = requireOwnedDatabase();
 let gateway: Gateway;
 after(async () => { await gateway?.settle(); });
-test('Free includes all ten exact first-party packages and preserves custom limits, tenant/version guards and saved design', async t => {
+test('included catalog preserves a persisted custom limit, tenant/version guards and saved design', async t => {
     const a = newSyntheticTenant('included-a'), b = newSyntheticTenant('included-b');
     seedSyntheticTenant(owned.psql, a); seedSyntheticTenant(owned.psql, b);
     const actor = randomUUID(), other = randomUUID(), email = `included-${actor}@example.invalid`, otherEmail = `included-${other}@example.invalid`;
     owned.psql(`INSERT INTO users_custom(id,email,email_verified,full_name) VALUES('${actor}','${email}',true,'Included owner'),('${other}','${otherEmail}',true,'Other owner');UPDATE sites SET custom_user_id='${actor}',theme_id='letbuyy-core' WHERE id='${a.siteId}';UPDATE sites SET custom_user_id='${other}' WHERE id='${b.siteId}';`);
+    // The race needs exactly one slot, independent of the current persisted
+    // plan/trial allowance. Exercise the existing audited override authority;
+    // never rewrite a global plan or substitute the interim TypeScript tiers.
+    owned.psql(`INSERT INTO site_entitlement_overrides(site_id,limits,reason,created_by,updated_by)
+        VALUES('${a.siteId}','{"themes":1}','Synthetic one-slot theme concurrency fixture','${actor}','${actor}');`);
+    assert.equal(owned.psql(`SELECT resolve_site_entitlements('${a.siteId}')->'limits'->>'themes';`), '1');
     gateway = new Gateway(gatewayEnv(owned, await newIdentityKeys()));
     const request = async (path: string, body?: unknown, user = actor, mail = email, site = a.siteId) => gateway.request(path, { method: body ? 'POST' : 'GET', headers: await signedIdentityHeaders(user, mail, site), ...(body ? { body: JSON.stringify(body) } : {}) });
     const install = (slug: string) => request(`/v1/themes/${slug}/install`, { store_id: a.siteId });
@@ -32,7 +38,7 @@ test('Free includes all ten exact first-party packages and preserves custom limi
         assert.equal(library.json!.data.allowance.custom_limit, 1); assert.equal(library.json!.data.allowance.plan_name, 'Free');
         assert.equal(library.json!.data.allowance.included_themes.length, 10);
     });
-    await t.test('two simultaneous copies share one Free custom slot; losing scaffold is removed', async () => {
+    await t.test('two simultaneous copies share one persisted custom slot; losing scaffold is removed', async () => {
         const barrier = newBarrier(2);
         const tap = tapRest(owned.restUrl, async (call, forward) => { if (call.resource === 'rpc/install_owned_theme_v1' && String((call.json as Record<string, unknown>)?.p_slug).startsWith('site-theme-')) await barrier.arrive(); return forward(); });
         let copies: Awaited<ReturnType<typeof request>>[];
