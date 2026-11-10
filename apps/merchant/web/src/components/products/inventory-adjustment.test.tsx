@@ -37,7 +37,7 @@ async function mount(transport: Transport) {
     const container = dom.window.document.getElementById('root')!
     const root = createRoot(container)
     let editorKey = 0
-    const router = { back() {}, forward() {}, refresh() {}, hmrRefresh() {}, push() {}, replace() {}, prefetch() {} }
+    const router = { bfcacheId: \'synthetic-router-cache\',  back() {}, forward() {}, refresh() {}, hmrRefresh() {}, push() {}, replace() {}, prefetch() {} }
     const render = async (store = 'alpha', productId = id, actor = actorId) => { await act(async () => {
         root.render(<AppRouterContext.Provider value={router}><PathParamsContext.Provider value={{ store, productId }}>
             <ToastProvider duration={0}><MerchantSecurityContext.Provider value={{ actorId: actor, store }}><InventoryPage key={editorKey} /></MerchantSecurityContext.Provider></ToastProvider>

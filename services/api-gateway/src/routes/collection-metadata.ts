@@ -35,8 +35,10 @@ export function registerCollectionMetadataRoutes(router: Hono<{ Bindings: Env }>
         const first = c.req.header('X-Idempotency-Key'), second = c.req.header('Idempotency-Key');
         if (first && second && first !== second || (first || second) !== body.idempotency_key) throw new ValidationError('Keep the original collection save key.');
         const scope = await resolveCollectionStoreScope(c, selected(c, body.store_id), 'products:write');
+        const targetId = operation === 'create' ? null : c.req.param('id');
+        if (operation !== 'create' && !targetId) throw new ValidationError('Select the collection to change.');
         return c.json(success(await executeCollectionMetadataCommand(c.env, scope, operation,
-            operation === 'create' ? null : c.req.param('id'), body)), operation === 'create' ? 201 : 200);
+            targetId ?? null, body)), operation === 'create' ? 201 : 200);
     }
     router.post('/collections', validate('json', CreateCollectionMetadataSchema), c => mutate(c, 'create'));
     router.patch('/collections/:id', validate('param', Id), validate('json', UpdateCollectionMetadataSchema), c => mutate(c, 'update'));

@@ -36,7 +36,7 @@ async function mount(transport: Transport) {
     const { MerchantSecurityContext } = await import('../security/MerchantSecurityContext')
     const { default: CollectionsPage } = await import('../../app/[store]/products/collections/page')
     const container = dom.window.document.getElementById('root')!, root = createRoot(container)
-    const router = { back() {}, forward() {}, refresh() {}, hmrRefresh() {}, push() {}, replace() {}, prefetch() {} }
+    const router = { bfcacheId: \'synthetic-router-cache\',  back() {}, forward() {}, refresh() {}, hmrRefresh() {}, push() {}, replace() {}, prefetch() {} }
     let key = 0
     const render = async (store = 'alpha', actor = actorId) => { await act(async () => root.render(
         <AppRouterContext.Provider value={router}><PathParamsContext.Provider value={{ store }}><ToastProvider duration={0}>

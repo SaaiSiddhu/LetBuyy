@@ -191,7 +191,7 @@ async function mount(transport: Transport, initialProductId = id) {
     const root = createRoot(container)
     let editorKey = 0
     const departures: string[] = []
-    const router = { back() {}, forward() {}, refresh() {}, hmrRefresh() {}, push(href: string) { departures.push(href) }, replace() {}, prefetch() {} }
+    const router = { bfcacheId: \'synthetic-router-cache\',  back() {}, forward() {}, refresh() {}, hmrRefresh() {}, push(href: string) { departures.push(href) }, replace() {}, prefetch() {} }
     const render = async (store = 'alpha', productId = id) => { await act(async () => {
         root.render(<AppRouterContext.Provider value={router}><PathParamsContext.Provider value={{ store, productId }}>
             <MerchantNavigationProvider><ToastProvider duration={0}><MerchantSecurityContext.Provider value={{ actorId, store, siteId }}>
