@@ -20,7 +20,7 @@ const proposal: Proposal = { manifest, manifestSha256, artifacts: manifest.artif
 // A security lockfile update changes source provenance, not an admitted theme
 // capture. Keep historical SQL/manifest bytes while requiring current factories
 // to reproduce every exact frozen artifact. A real theme change still fails.
-assert.deepEqual(buildProposal().artifacts, proposal.artifacts);
+assert.equal(canonicalJson(buildProposal().artifacts), canonicalJson(proposal.artifacts));
 const pair = renderPromotionPair(proposal);
 
 const catalogFingerprint = () => owned.psql(`SELECT md5(coalesce(jsonb_agg(jsonb_build_object(
