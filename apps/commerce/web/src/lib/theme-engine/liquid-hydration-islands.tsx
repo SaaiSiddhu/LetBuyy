@@ -1932,7 +1932,7 @@ class LbCartElement extends LiquidIslandBase {
         window.addEventListener(CART_CHANGED_EVENT, this.handleCartChanged);
         window.addEventListener('storage', this.handleCartChanged);
         const items = readCart();
-        if (items.length > 0) {
+        if (items.length > 0 || window.localStorage.getItem(CART_TOKEN_STORAGE_KEY)) {
             if (window.localStorage.getItem(CART_TOKEN_STORAGE_KEY)) void this.recoverCart(items, ++this.attempt, getLiquidStorefrontSubdomain(), window.localStorage.getItem(CART_TOKEN_STORAGE_KEY), 'review');
             else {
                 // A local draft without a receipt may be a lost POST response.
@@ -2079,7 +2079,7 @@ class LbCartElement extends LiquidIslandBase {
             // page mounts. Reading before that command settles can restore the
             // previous server lines and invalidate its pending receipt.
             while (cartSyncQueue) {
-                await cartSyncQueue;
+                if (!await cartSyncQueue) outcome = 'unknown';
                 if (!ownsDraft()) return;
             }
             if (subdomain && token) {
