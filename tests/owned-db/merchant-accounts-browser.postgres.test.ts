@@ -51,6 +51,7 @@ test('shared Accounts login/signup, MFA, SSO consent, outage retry and draft cre
     let lookupUnavailable = false, storesUnavailable = false, loseCreate = false;
     const mail: { to: string; subject: string; text: string }[] = [], paths: string[] = [];
     const completions = new WeakMap<Page, { status: number; callback?: string }[]>();
+    const approvals = new WeakMap<Page, { status: number; redirectTo?: string }[]>();
     const originalFetch = globalThis.fetch;
     globalThis.fetch = (async (input, init) => {
         const url = new URL(typeof input === 'string' ? input : input instanceof URL ? input.href : input.url);
@@ -96,6 +97,13 @@ test('shared Accounts login/signup, MFA, SSO consent, outage retry and draft cre
             const context = await browser!.newContext({ viewport: { width: 390, height: 844 } });
             const page = await context.newPage(); page.setDefaultTimeout(30000); page.setDefaultNavigationTimeout(60000);
             completions.set(page, []);
+            approvals.set(page, []);
+            await page.route('**/api/auth/mobile/approve', async route => {
+                const response = await route.fetch();
+                const payload = await response.json();
+                approvals.get(page)!.push({ status: response.status(), redirectTo: payload.redirectTo });
+                await route.fulfill({ response });
+            });
             await page.route('**/api/auth/mobile/complete', async route => {
                 const response = await route.fetch();
                 const payload = await response.json();
@@ -130,13 +138,15 @@ test('shared Accounts login/signup, MFA, SSO consent, outage retry and draft cre
             return captured!.callback!;
         }
         async function confirmAccount(page: Page, expectedRedirect: '/mobile/return' | '/onboarding') {
+            approvals.set(page, []);
             const [response] = await Promise.all([
                 page.waitForResponse(reply => reply.url().endsWith('/api/auth/mobile/approve') && reply.request().method() === 'POST'),
                 page.getByRole('button', { name: 'Continue with this account', exact: true }).click(),
             ]);
             assert.equal(response.status(), 200, 'explicit account confirmation must approve the current bound flow');
-            const payload = await response.json();
-            assert.equal(payload.redirectTo, expectedRedirect, 'approval must retain the original native purpose');
+            const captured = approvals.get(page)!.at(-1);
+            assert.equal(captured?.status, 200);
+            assert.equal(captured?.redirectTo, expectedRedirect, 'approval must retain the original native purpose');
         }
         async function redeem(flow: Awaited<ReturnType<typeof begin>>, callback: string) {
             const parsed = parseMerchantNativeCallback(callback, { redirectUri: 'http://localhost:9002/merchant/auth/callback', requestId: flow.requestId, state: flow.state });
