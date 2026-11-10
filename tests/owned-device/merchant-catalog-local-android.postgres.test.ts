@@ -59,8 +59,8 @@ function ownedNextListener(port:number,runtime:OwnedClientProcess):boolean {
 }
 test('normal local Merchant Android journey verifies authoritative results through actual BFF',{timeout:1_800_000},async(context)=>{
  const receiptPath=process.env.LETBUYY_ANDROID_DEVICE_RECEIPT;assert.ok(receiptPath,'explicit task-owned emulator receipt required');
- const receipt=JSON.parse(readFileSync(receiptPath,'utf8'))as {root:string;owner:string;avd_name:string;serial:string;emulator_pid:number;sdk_root:string;adb_port:number;run_root:string;flow?:'membership'|'category'|'settings'|'warehouse'|'kyc';verifyDashboardSettings?:boolean;verifySmart?:boolean;verifyCollectionLifecycle?:boolean;verifyMembershipRetirement?:boolean;verifyStockLifecycle?:boolean;verifyStockAdjustments?:boolean;compiledWorkers?:boolean;diagnosticWarehouseDraft?:boolean;diagnosticReservationView?:boolean;offlineGradle?:boolean};
- const flow=receipt.flow??'membership';assert(['membership','category','settings','warehouse','kyc'].includes(flow));const categoryFlow=flow==='category',settingsFlow=flow==='settings',warehouseFlow=flow==='warehouse',kycFlow=flow==='kyc';
+ const receipt=JSON.parse(readFileSync(receiptPath,'utf8'))as {root:string;owner:string;avd_name:string;serial:string;emulator_pid:number;sdk_root:string;adb_port:number;run_root:string;flow?:'membership'|'category'|'settings'|'warehouse'|'kyc'|'camera';verifyDashboardSettings?:boolean;verifySmart?:boolean;verifyCollectionLifecycle?:boolean;verifyMembershipRetirement?:boolean;verifyStockLifecycle?:boolean;verifyStockAdjustments?:boolean;compiledWorkers?:boolean;diagnosticWarehouseDraft?:boolean;diagnosticReservationView?:boolean;offlineGradle?:boolean};
+ const flow=receipt.flow??'membership';assert(['membership','category','settings','warehouse','kyc','camera'].includes(flow));const categoryFlow=flow==='category',settingsFlow=flow==='settings',warehouseFlow=flow==='warehouse',kycFlow=flow==='kyc',cameraFlow=flow==='camera';
  const diagnosticDraft=receipt.diagnosticWarehouseDraft===true;assert(!diagnosticDraft||warehouseFlow,'Draft diagnostic is local warehouse-only');
  const verifyStock=receipt.verifyStockLifecycle===true;assert(!verifyStock||warehouseFlow,'Stock lifecycle extends the existing warehouse journey only');
  const verifyStockAdjustments=receipt.verifyStockAdjustments===true;assert(!verifyStockAdjustments||verifyStock,'Setter synchronization requires the normal warehouse stock lifecycle');
@@ -80,7 +80,7 @@ test('normal local Merchant Android journey verifies authoritative results throu
  const adbBinary=join(receipt.sdk_root,'platform-tools/adb');
  const adb=(...args:string[])=>execFileSync(adbBinary,['-P',String(receipt.adb_port),'-s',receipt.serial,...args],{encoding:'utf8',stdio:['ignore','pipe','pipe']});
  assert.equal(adb('emu','avd','name').trim().split(/\r?\n/)[0],receipt.avd_name);
- const root=resolve(receipt.run_root);assert.match(root,/^\/private\/tmp\/letbuyy-merchant-local-[a-z0-9-]+\/native-(?:catalog|category|settings|warehouse|kyc)-v\d+$/);assert.equal(root.includes('/native-category-'),categoryFlow);assert.equal(root.includes('/native-settings-'),settingsFlow);assert.equal(root.includes('/native-warehouse-'),warehouseFlow);assert.equal(root.includes('/native-kyc-'),kycFlow);assert.equal(existsSync(root),false,'fresh owned run directory required');mkdirSync(root,{mode:0o700});
+ const root=resolve(receipt.run_root);assert.match(root,/^\/private\/tmp\/letbuyy-merchant-local-[a-z0-9-]+\/native-(?:catalog|category|settings|warehouse|kyc|camera)-v\d+$/);assert.equal(root.includes('/native-category-'),categoryFlow);assert.equal(root.includes('/native-settings-'),settingsFlow);assert.equal(root.includes('/native-warehouse-'),warehouseFlow);assert.equal(root.includes('/native-kyc-'),kycFlow);assert.equal(root.includes('/native-camera-'),cameraFlow);assert.equal(existsSync(root),false,'fresh owned run directory required');mkdirSync(root,{mode:0o700});
  const ready=join(root,'journey-ready.json'),done=join(root,'journey-done.json');
  if(kycFlow)writeFileSync(join(root,'kyc-outage-active.json'),JSON.stringify({run_id:owned.runId,scope:'Owned synthetic KYC read fault only'})+'\n',{mode:0o600,flag:'wx'});
  const checkUi=()=>{context.signal.throwIfAborted();if(existsSync(join(root,'ui-attention.json')))throw new Error('The owned normal UI companion failed; private diagnostics retained.');};
@@ -93,7 +93,20 @@ test('normal local Merchant Android journey verifies authoritative results throu
  //Private R2 objects are permitted only by the existing ENVIRONMENT=test
  //fence, in this proven-owned synthetic database. No hosted intake is enabled.
  const privateObjects=new Map<string,Uint8Array>();
- const env=gatewayEnv(owned,keys,{ENVIRONMENT:kycFlow?'test':'development',LETBUYY_IDENTITY_ISSUER:identityOrigin,APP_ENV:'development',...proxy.env(),
+ const publicObjects=new Map<string,{bytes:Uint8Array;options?:R2PutOptions}>();
+ let publicAssetReads=0,publicAssetCredentialAttempts=0;
+ const publicBucket={
+  put:async(key:string,value:ReadableStream<Uint8Array>,options?:R2PutOptions)=>{
+   const bytes=new Uint8Array(await new Response(value).arrayBuffer());
+   if(typeof options?.sha256==='string')assert.equal(digest(bytes),options.sha256);
+   if(options?.onlyIf instanceof Headers&&options.onlyIf.get('if-none-match')==='*'&&publicObjects.has(key))return null;
+   publicObjects.set(key,{bytes,options});return null;
+  },
+  head:async(key:string)=>{const object=publicObjects.get(key);return object?{key,size:object.bytes.length,customMetadata:object.options?.customMetadata,httpMetadata:object.options?.httpMetadata}:null;},
+  delete:async(key:string)=>{publicObjects.delete(key);},
+ };
+ const env=gatewayEnv(owned,keys,{ENVIRONMENT:kycFlow||cameraFlow?'test':'development',LETBUYY_IDENTITY_ISSUER:identityOrigin,APP_ENV:'development',...proxy.env(),
+  ...(cameraFlow?{R2_BUCKET:publicBucket,UPLOAD_PUBLIC_BASE_URL:'http://127.0.0.1:54355/assets'}:{}),
   ...(kycFlow?{KYC_UPLOAD_ENABLED:'true',KYC_PRIVATE_BUCKET:{
    put:async(key:string,bytes:Uint8Array)=>{privateObjects.set(key,new Uint8Array(bytes));},
    delete:async(key:string)=>{privateObjects.delete(key);},
@@ -111,6 +124,7 @@ test('normal local Merchant Android journey verifies authoritative results throu
  INSERT INTO inventory_levels(id,store_id,product_id,location_id,available,reserved,incoming,available_quantity,reserved_quantity,on_hand_quantity)VALUES(gen_random_uuid(),'${tenant.siteId}','${ids[0]}','${tenant.locationId}',3,0,0,3,0,3);
  INSERT INTO inventory_locations(id,store_id,name,status)VALUES(gen_random_uuid(),'${tenant.siteId}','Synthetic diagnostic destination','active');`);
  if(settingsFlow)owned.psql(`UPDATE sites SET business_profile=coalesce(business_profile,'{}'::jsonb)||'{"email":"synthetic-contact@example.invalid","trade_name":"Retained synthetic trade"}'::jsonb,invoice_address=coalesce(invoice_address,'{}'::jsonb)||'{"attention":"Retained synthetic attention"}'::jsonb WHERE id='${tenant.siteId}';`);
+ const originalCameraProducts=cameraFlow?owned.psql(`SELECT jsonb_agg(to_jsonb(p)ORDER BY id)::text FROM products p WHERE store_id='${tenant.siteId}'`):null;
  if(categoryFlow)owned.psql(`UPDATE products SET category='Synthetic native cotton'WHERE store_id='${tenant.siteId}';`);
  const category=categoryFlow?owned.psql(`SELECT id FROM product_categories WHERE store_id='${tenant.siteId}'AND name='Synthetic native cotton'AND deleted_at IS NULL`):null;
  type Call={source:string;path:string;method:string;status:number;wire_status:number;key_digest?:string;body_digest?:string};const calls:Call[]=[];let lost=false,lostSmart=false;let lostSettingsKey:string|undefined,restartCallIndex:number|undefined;
@@ -133,6 +147,7 @@ test('normal local Merchant Android journey verifies authoritative results throu
   if(released)assert.equal(JSON.parse(readFileSync(join(root,'release-native-replies.json'),'utf8')).run_id,owned.runId);
   const smartCreate=verifySmart&&request.method==='POST'&&url.pathname==='/v1/smart-collections';
   const metadataCommand=verifyLifecycle&&['POST','PATCH','DELETE'].includes(request.method)&&(/^\/v1\/products\/collections(?:\/[a-f0-9-]{36})?$/.test(url.pathname)||/^\/v1\/smart-collections(?:\/[a-f0-9-]{36})?$/.test(url.pathname));
+  const cameraCommand=cameraFlow&&request.method==='POST'&&['/v1/upload','/v1/media'].includes(url.pathname);
   const retiredMembershipCommand=verifyRetirement&&request.method==='PUT'&&/^\/v1\/products\/collections\/[a-f0-9-]{36}\/products$/.test(url.pathname);
   const loseMembership=source==='actual-mobile-bff'&&membership&&[200,201].includes(result.status)&&!released&&((settingsFlow||warehouseFlow)?(!lost||digest(request.headers.get('X-Idempotency-Key')||'')===lostSettingsKey):!lost);
   const loseSmart=source==='actual-mobile-bff'&&smartCreate&&result.status===201&&!lostSmart;
@@ -143,7 +158,7 @@ test('normal local Merchant Android journey verifies authoritative results throu
   const lose=loseMembership||loseSmart||loseStock||loseAdjustment;
   if(loseMembership){lost=true;if(settingsFlow||warehouseFlow)lostSettingsKey??=digest(request.headers.get('X-Idempotency-Key')||'');}
   if(loseSmart)lostSmart=true;
-  calls.push({source,path:url.pathname,method:request.method,status:result.status,wire_status:lose?503:result.status,...(membership||smartCreate||metadataCommand||retiredMembershipCommand||stockCommand||setterCommand?{key_digest:digest(request.headers.get('X-Idempotency-Key')||''),body_digest:digest(body||'')}:{})});
+  calls.push({source,path:url.pathname,method:request.method,status:result.status,wire_status:lose?503:result.status,...(membership||smartCreate||metadataCommand||retiredMembershipCommand||stockCommand||setterCommand||cameraCommand?{key_digest:digest(request.headers.get('X-Idempotency-Key')||''),body_digest:digest(cameraCommand&&bytes?bytes:body||'')}:{})});
   if(lose)return Response.json({error:{code:'OWNED_REPLY_LOST',message:'Synthetic committed response lost. Retry the original request.'}},{status:503});
   return new Response(result.text,{status:result.status,headers:result.headers});
  };
@@ -154,13 +169,25 @@ test('normal local Merchant Android journey verifies authoritative results throu
  });
  const bffEnv={INTERNAL_API_SECRET:INTERNAL_SECRET,TURNSTILE_SECRET_KEY:LOCAL_TURNSTILE_SECRET,ENVIRONMENT:'development',API_GATEWAY_SERVICE:{fetch:(request:Request)=>record(request,'actual-mobile-bff')}};
  let nativeBff:NativeMobileBff|undefined;
- let api:Server|undefined,bff:Server|undefined,identity:OwnedClientProcess|undefined,merchant:OwnedClientProcess|undefined,browser:Browser|undefined,nativeBrowser:Browser|undefined;
+ let api:Server|undefined,bff:Server|undefined,assetServer:Server|undefined,identity:OwnedClientProcess|undefined,merchant:OwnedClientProcess|undefined,browser:Browser|undefined,nativeBrowser:Browser|undefined;
  let nativeForward:number|undefined;
  const reversed:number[]=[];
  const initial=JSON.parse(owned.psql(`SELECT json_build_object('site_version',(SELECT version FROM sites WHERE id='${tenant.siteId}'),'version',membership_version,'ids',(SELECT json_agg(product_id ORDER BY position,id)FROM collection_products WHERE collection_id='${collection}'))FROM collections WHERE id='${collection}';`));
  const diagnosticInventoryState=()=>owned.psql(`SELECT jsonb_build_object('levels',(SELECT jsonb_agg(to_jsonb(x)ORDER BY id)FROM inventory_levels x WHERE store_id='${tenant.siteId}'),'reservations',(SELECT jsonb_agg(to_jsonb(x)ORDER BY id)FROM inventory_reservations x WHERE store_id='${tenant.siteId}'),'transfers',(SELECT jsonb_agg(to_jsonb(x)ORDER BY id)FROM inventory_transfers x WHERE site_id='${tenant.siteId}'),'lines',(SELECT jsonb_agg(to_jsonb(x)ORDER BY id)FROM inventory_transfer_lines x WHERE site_id='${tenant.siteId}'),'receipts',(SELECT jsonb_agg(to_jsonb(x)ORDER BY id)FROM warehouse_command_receipts x WHERE site_id='${tenant.siteId}'),'stock',(SELECT stock FROM products WHERE id='${ids[0]}'));`);
  let diagnosticBefore:string|undefined;
  try{
+  if(cameraFlow){
+   //A public provider fixture serves only bytes actually written by the real
+   //upload route. It has no source-filesystem access and never accepts sessions.
+   assetServer=createServer((request,response)=>{
+    if(request.headers.authorization||request.headers.cookie){publicAssetCredentialAttempts++;response.writeHead(403);response.end();return;}
+    const path=new URL(request.url??'/','http://127.0.0.1:54355').pathname;
+    const object=path.startsWith('/assets/')?publicObjects.get(decodeURIComponent(path.slice('/assets/'.length))):undefined;
+    if(request.method!=='GET'||!object){response.writeHead(404);response.end();return;}
+    publicAssetReads++;response.writeHead(200,{'Content-Type':'image/jpeg','Content-Length':object.bytes.length,'Cache-Control':'no-store'});response.end(Buffer.from(object.bytes));
+   });
+   await new Promise<void>((resolve,reject)=>{assetServer!.once('error',reject);assetServer!.listen(54355,'127.0.0.1',resolve);});
+  }
   nativeGateway=compiledWorkers?await NativeGateway.create(env as unknown as Record<string,unknown>,async()=>{throw new Error('No email provider call belongs to this owned warehouse story');}):undefined;
   const currentNative=nativeGateway;
   gateway=currentNative?{
@@ -210,7 +237,7 @@ test('normal local Merchant Android journey verifies authoritative results throu
   const artifactRoot=join(root,'qualified-artifact');mkdirSync(artifactRoot,{mode:0o700});
   const apk=join(artifactRoot,'merchant-local-debug.apk');copyFileSync(builtApk,apk,constants.COPYFILE_EXCL);chmodSync(apk,0o600);
   const apkHash=digest(readFileSync(apk));assert.equal(digest(readFileSync(builtApk)),apkHash,'preserve the original built bytes before installation');
-  for(const port of [apiPort,bffPort,Number(new URL(challenge.profile.origin).port)]){adb('reverse','--no-rebind',`tcp:${port}`,`tcp:${port}`);reversed.push(port);}
+  for(const port of [apiPort,bffPort,Number(new URL(challenge.profile.origin).port),...(cameraFlow?[54355]:[])]){adb('reverse','--no-rebind',`tcp:${port}`,`tcp:${port}`);reversed.push(port);}
   //9002 exists only on this emulator. Never bind, probe or stop the Mac's
   // existing9002 listener; all server-process fetches to it are explicitly denied.
   assert(!adb('reverse','--list').split(/\r?\n/).some(line=>line.split(/\s+/).includes('tcp:9002')),'An unrelated emulator9002 mapping must be preserved');
@@ -239,6 +266,20 @@ test('normal local Merchant Android journey verifies authoritative results throu
   const proof=JSON.parse(readFileSync(done,'utf8'))as {run_id:string;steps:string[];evidence:string[]};assert.equal(proof.run_id,owned.runId);
   checkSource(source,'native journey');
   assert(calls.some(call=>call.source==='actual-identity'&&call.path==='/v1/auth/custom/mobile/exchange'&&call.status===200),'A fresh native PKCE exchange, not a retained token, must be observed');
+  if(cameraFlow){
+   for(const step of ['normal-native-browser-accounts-login','normal-native-product-draft','camera-permission-visible','camera-capture-confirmed','native-photo-upload-and-preview','native-draft-discard'])assert(proof.steps.includes(step),step);
+   assert(proof.evidence.length>=6);for(const path of proof.evidence)assert(path.startsWith(root+'/')&&existsSync(path));
+   for(const path of ['/v1/upload','/v1/media'])assert.equal(calls.filter(call=>call.source==='actual-mobile-bff'&&call.path===path&&call.method==='POST'&&call.status===201).length,1,path);
+   assert.equal(publicObjects.size,1);assert(publicAssetReads>=1,'the native preview must read the actual uploaded bytes');assert.equal(publicAssetCredentialAttempts,0,'public preview must not leak merchant credentials');
+   const[key,object]=[...publicObjects.entries()][0];assert(object.bytes.length>3);assert.deepEqual([...object.bytes.slice(0,3)],[255,216,255],'the camera produces actual JPEG bytes');
+   const metadata=object.options?.customMetadata;assert.equal(metadata?.store_id,tenant.siteId);assert.equal(metadata?.owner_id,owner);assert.equal(metadata?.upload_sha256,digest(object.bytes));
+   const effects=JSON.parse(owned.psql(`SELECT jsonb_build_object('media',(SELECT jsonb_agg(to_jsonb(m)ORDER BY id)FROM media m WHERE store_id='${tenant.siteId}'),'assets',(SELECT jsonb_agg(to_jsonb(a)ORDER BY id)FROM media_assets a WHERE site_id='${tenant.siteId}'),'events',(SELECT count(*)FROM outbox_events WHERE site_id='${tenant.siteId}'AND event_type='media.processed'))`));
+   assert.equal(effects.media.length,1);assert.equal(effects.assets.length,1);assert.equal(effects.events,1);
+   assert.equal(owned.psql(`SELECT jsonb_agg(to_jsonb(p)ORDER BY id)::text FROM products p WHERE store_id='${tenant.siteId}'`),originalCameraProducts,'discarding the draft changes no product');
+   assert(!calls.some(call=>call.source==='actual-mobile-bff'&&['POST','PATCH','DELETE'].includes(call.method)&&/^\/v1\/products(?:\/|$)/.test(call.path)));
+   writeFileSync(join(root,'camera-provider-object.jpg'),object.bytes,{mode:0o600,flag:'wx'});
+   writeFileSync(join(root,'camera-backend-verified.json'),JSON.stringify({run_id:owned.runId,source_sha256:sourceHash,apk_sha256:apkHash,calls,effects,object:{key,bytes:object.bytes.length,sha256:digest(object.bytes),metadata},publicAssetReads,publicAssetCredentialAttempts,productsUnchanged:true,scope:'Actual debug APK and Android camera permission/capture, real public upload and canonical Media/library SQL, actual uploaded JPEG preview without credential forwarding, explicit unsaved product draft discard. Owned storage/CDN fixtures only; no hosted/provider, iOS, signed release or full product-module acceptance.'},null,2)+'\n',{mode:0o600,flag:'wx'});return;
+  }
   if(kycFlow){
    for(const step of ['normal-native-browser-accounts-login','normal-native-kyc-navigation','kyc-outage-visible','kyc-explicit-retry','document-picker-selection','background-resume-keeps-document','private-synthetic-kyc-upload','native-secure-session-restart'])assert(proof.steps.includes(step),step);
    assert(proof.evidence.length>=6);for(const path of proof.evidence)assert(path.startsWith(root+'/')&&existsSync(path));
@@ -635,6 +676,6 @@ test('normal local Merchant Android journey verifies authoritative results throu
   if(nativeForward!==undefined)try{adb('forward','--remove',`tcp:${nativeForward}`);}catch{}
   await browser?.close();await stopOwnedClientRuntime(merchant);await stopOwnedClientRuntime(identity);await nativeBff?.settle();await gateway?.settle();await closePooledSqlClients();await proxy.stop();await challenge.close();
   globalThis.fetch=originalFetch;
-  for(const server of [api,bff])if(server){server.closeAllConnections();await new Promise<void>(r=>server!.close(()=>r()));}
+  for(const server of [api,bff,assetServer])if(server){server.closeAllConnections();await new Promise<void>(r=>server!.close(()=>r()));}
  }
 });
