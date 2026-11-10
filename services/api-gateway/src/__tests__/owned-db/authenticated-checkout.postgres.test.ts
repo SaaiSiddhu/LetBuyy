@@ -247,7 +247,8 @@ test('simultaneous buyers competing for the last variant unit create one order a
 
     assert.equal(psql(`SELECT count(*) FROM orders o JOIN order_items oi ON oi.order_id=o.id WHERE oi.product_id='${productId}' AND oi.variant_id='${variantId}';`), '1');
     assert.equal(psql(`SELECT count(*) FROM buyer_order_links bol JOIN order_items oi ON oi.order_id=bol.order_id WHERE oi.product_id='${productId}' AND oi.variant_id='${variantId}' AND bol.link_basis='authenticated_checkout';`), '1');
-    assert.equal(psql(`SELECT available||'|'||reserved||'|'||committed_quantity||'|'||available_quantity||'|'||reserved_quantity||'|'||on_hand_quantity FROM inventory_levels WHERE product_id='${productId}' AND variant_id='${variantId}';`), '0|0|1|0|0|1');
+    //436 makes on_hand a projection of raw available after the one-unit sale.
+    assert.equal(psql(`SELECT available||'|'||reserved||'|'||committed_quantity||'|'||available_quantity||'|'||reserved_quantity||'|'||on_hand_quantity||'|'||free_quantity FROM inventory_levels WHERE product_id='${productId}' AND variant_id='${variantId}';`), '0|0|1|0|0|0|0');
     assert.equal(psql(`SELECT status||'|'||count(*) FROM inventory_reservations WHERE product_id='${productId}' AND variant_id='${variantId}' GROUP BY status;`), 'committed|1');
     assert.equal(psql(`SELECT count(*) FROM inventory_adjustments WHERE product_id='${productId}' AND variant_id='${variantId}' AND reason='sale' AND quantity_change=-1;`), '1');
     assert.equal(psql(`SELECT inventory_qty FROM product_variants WHERE id='${variantId}';`), '0');

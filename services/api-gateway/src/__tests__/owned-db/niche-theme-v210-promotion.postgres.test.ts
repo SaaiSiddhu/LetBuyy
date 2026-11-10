@@ -3,14 +3,24 @@ import test from 'node:test';
 import { readFileSync } from 'node:fs';
 import { collectThemeTemplateValidationIssues, type ThemeTemplateValidationRuntime } from '@letbuyy/theme-engine';
 import { requireOwnedDatabase } from './owned-db-support';
-import { buildProposal, canonicalJson, readAdmittedV200Artifacts, renderPromotionPair, sha256, SLUGS } from '../../../../../docs/implementation/niche-theme-programme/release-v210/generate-release';
+import { buildProposal, canonicalJson, readAdmittedV200Artifacts, renderPromotionPair, sha256, SLUGS, type Proposal } from '../../../../../docs/implementation/niche-theme-programme/release-v210/generate-release';
 
 const owned = requireOwnedDatabase();
 const root = new URL('../../../../../', import.meta.url);
 const read = (path: string) => readFileSync(new URL(path, root), 'utf8');
 const quote = (value: string) => `'${value.replaceAll("'", "''")}'`;
 const sqlSlugs = SLUGS.map(quote).join(',');
-const proposal = buildProposal();
+const pin = JSON.parse(read('docs/implementation/niche-theme-programme/release-v210/INTEGRATION_RELEASE.json')) as {
+  upSha256: string; downSha256: string; manifestSha256: string; proposalDirectory: string;
+};
+const { manifestSha256, ...manifest } = JSON.parse(read(pin.proposalDirectory + '/manifest.json'));
+assert.equal(manifestSha256, pin.manifestSha256);
+assert.equal(sha256(canonicalJson(manifest)), pin.manifestSha256);
+const proposal: Proposal = { manifest, manifestSha256, artifacts: manifest.artifacts.map((row: { file: string }) => JSON.parse(read(pin.proposalDirectory + '/' + row.file))) };
+// A security lockfile update changes source provenance, not an admitted theme
+// capture. Keep historical SQL/manifest bytes while requiring current factories
+// to reproduce every exact frozen artifact. A real theme change still fails.
+assert.deepEqual(buildProposal().artifacts, proposal.artifacts);
 const pair = renderPromotionPair(proposal);
 
 const catalogFingerprint = () => owned.psql(`SELECT md5(coalesce(jsonb_agg(jsonb_build_object(
@@ -35,7 +45,6 @@ const catalogVersions = () => JSON.parse(owned.psql(`SELECT jsonb_object_agg(slu
 test('432 promotes editor-valid 2.1.0 packages without changing admitted 2.0.0 captures; rollback and replay preserve history', () => {
   assert.equal(read('database/supabase/migrations/432_niche_theme_catalog_v210.sql'), pair.up);
   assert.equal(read('database/supabase/rollback/432_niche_theme_catalog_v210.rollback.sql'), pair.down);
-  const pin = JSON.parse(read('docs/implementation/niche-theme-programme/release-v210/INTEGRATION_RELEASE.json')) as { upSha256: string; downSha256: string; manifestSha256: string };
   assert.equal(proposal.manifestSha256, pin.manifestSha256);
   assert.equal(sha256(pair.up), pin.upSha256);
   assert.equal(sha256(pair.down), pin.downSha256);

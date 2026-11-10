@@ -48,7 +48,9 @@ if (app.kind === 'commerce-next-production' && process.env.CHECKOUT_ORIGIN?.star
     // derived here rather than accepting a caller-supplied configuration.
     process.env.__NEXT_PRIVATE_STANDALONE_CONFIG = JSON.stringify(ingressConfig);
     const framework = createRequire(join(app.root, 'package.json'));
-    if (framework('next/package.json').version !== '16.1.6') throw new Error('owned platform ingress requires review after a Next upgrade');
+    // Reviewed16.4.2 retains getRequestHandlers, built-config transport and
+    // trustHostHeader URL construction. Exact ingress/fixture fences stay above.
+    if (framework('next/package.json').version !== '16.4.2') throw new Error('owned platform ingress requires review after a Next upgrade');
     // Use the same router/render handlers as `next start`, without telling the
     // router that its private HTTP socket is the public storefront/TLS origin.
     const handlers = await framework('next/dist/server/lib/start-server').getRequestHandlers({

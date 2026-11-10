@@ -17,6 +17,10 @@ before(async () => {
         INSERT INTO products(id,store_id,name,price,stock,deleted_at) VALUES
         (gen_random_uuid(),'${site.siteId}','Synthetic removed',129.75,0,now()),
         (gen_random_uuid(),'${foreign.siteId}','Synthetic foreign private',129.75,0,null);`);
+    //439 intentionally treats missing SKU inventory as unknown, never as zero.
+    // Seed real active-location inventory for every advertised quantity.
+    owned.psql(`INSERT INTO inventory_levels(store_id,product_id,location_id,available,reserved)
+        VALUES ${ids.map((id, i) => `('${site.siteId}','${id}','${site.locationId}',${[0, 1, 5, 7][i]},0)`).join(',')};`);
     gateway = new Gateway(gatewayEnv(owned, await newIdentityKeys()));
 });
 after(async () => { await gateway?.settle(); });

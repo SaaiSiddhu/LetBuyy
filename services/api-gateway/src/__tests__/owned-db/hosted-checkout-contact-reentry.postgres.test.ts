@@ -123,7 +123,9 @@ function oneOwnedCodCommit(before:MoneyState, after:MoneyState, flow:Flow, confi
         const now=newLevels.find(row=>row.id===old.id);assert.ok(now);
         if(old.product_id===productId){
             assert.equal(Number(now.available_quantity),Number(old.available_quantity)-1);assert.equal(Number(now.available),Number(old.available)-1);assert.equal(Number(now.committed_quantity),Number(old.committed_quantity)+1);
-            const stable=(row:Row)=>Object.fromEntries(Object.entries(row).filter(([key])=>!['available','available_quantity','committed_quantity','updated_at','version'].includes(key)));
+            assert.equal(Number(now.on_hand_quantity),Number(old.on_hand_quantity)-1);
+            assert.equal(Number(now.free_quantity),Number(old.free_quantity)-1);
+            const stable=(row:Row)=>Object.fromEntries(Object.entries(row).filter(([key])=>!['available','available_quantity','on_hand_quantity','free_quantity','committed_quantity','updated_at','version'].includes(key)));
             //141 reserve +216 commit each update the level;141's version trigger increments twice.
             assert.equal(Number(now.version),Number(old.version)+2,'Exactly reserve+commit inventory versions');
             assert.deepEqual(stable(now),stable(old),'Only one-unit commit fields and exact canonical version metadata may change');

@@ -33,8 +33,12 @@ export const GATEWAY_DB_SUITE_DIR = 'services/api-gateway/src/__tests__/owned-db
 // These suites intentionally qualify an exact predecessor and then apply/retire
 // its next migration. Newer current-stack journeys stay on the full chain.
 export const HISTORICAL_GATEWAY_MIGRATION_CEILINGS = Object.freeze({
-    // SQL-only414 DOWN controls must see414; live warehouse/device suites keep the full chain.
-    'services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-rollback.postgres.test.ts': 414,
+    // Warehouse was reconciled to canonical415;414 now owns gift-card checkout.
+    // Current warehouse/device journeys still keep the complete chain.
+    'services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-rollback.postgres.test.ts': 415,
+    // This suite retires/reapplies the original404 credential-history schema.
+    // Later managed-credential trigger contracts are tested on the full chain.
+    'services/api-gateway/src/__tests__/owned-db/payment-credential-history.postgres.test.ts': 404,
     'services/api-gateway/src/__tests__/owned-db/cart-order-fact-retirement388.postgres.test.ts': 388,
     // These retire/reapply the exact captured schema/role profiles. Current-stack
     // mounted-browser counterparts below retain the complete migration chain.

@@ -37,7 +37,7 @@ test('transfer metric failures stay unavailable and the invoker reader retires w
     } finally { tap.restore(); }
     const empty=await gateway.request(`/v1/commerce-analytics/transfer-metrics?store_id=${store}`,{headers:await signedIdentityHeaders(owner,ownerEmail)});
     assert.equal(empty.status,200,empty.text);
-    assert.deepEqual(empty.json?.data,{by_status:{},in_transit_count:0,total_count:0});
+    assert.deepEqual(empty.json?.data,{store_id:store,by_status:{},in_transit_count:0,total_count:0});
     assert.equal(owned.psql("SELECT prosecdef FROM pg_proc WHERE oid='public.read_merchant_transfer_metrics(uuid)'::regprocedure"),'f');
     for(const role of ['anon','authenticated','app_tenant']) {
         assert.match(owned.psqlExpectError(`SET ROLE ${role}; SELECT public.read_merchant_transfer_metrics('${store}');`),/permission denied/);
@@ -195,7 +195,7 @@ test('operations uses bounded count responses beyond REST row caps with real per
         const detail=await gateway.request(`/v1/commerce-analytics/transfer-metrics?store_id=${store}`,{headers:await signedIdentityHeaders(owner,ownerEmail)});
         console.log('MERCHANT_TRANSFER_READ_EVIDENCE',JSON.stringify({liveTransfers:1103,transferRows,transferBytes,result:detail.json?.data}));
         assert.equal(detail.status,200,detail.text);
-        assert.deepEqual(detail.json?.data,{by_status:{shipped:1100,received:3},in_transit_count:1100,total_count:1103});
+        assert.deepEqual(detail.json?.data,{store_id:store,by_status:{shipped:1100,received:3},in_transit_count:1100,total_count:1103});
         assert.equal(transferRows,1);
         assert.ok(transferBytes<250);
         const beforeDenied=detailTap.calls.length;

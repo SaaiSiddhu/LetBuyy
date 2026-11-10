@@ -458,7 +458,7 @@ test('hosted checkout records a late capture once, refuses fulfillment, and pres
     assert.equal(psql(`SELECT status FROM inventory_reservations WHERE order_id='${orderId}';`), 'released');
     const [availableBefore, reservedBefore, committedBefore, availableQuantityBefore, reservedQuantityBefore] = inventoryBefore.split('|').map(Number);
     assert.equal(psql(`SELECT available || '|' || reserved || '|' || committed_quantity || '|' || available_quantity || '|' || reserved_quantity
-      FROM inventory_levels WHERE store_id='${site.siteId}' AND product_id='${productId}';`), [availableBefore + 1, reservedBefore, committedBefore - 1, availableQuantityBefore, reservedQuantityBefore].join('|'));
+      FROM inventory_levels WHERE store_id='${site.siteId}' AND product_id='${productId}';`), [availableBefore + 1, reservedBefore, committedBefore - 1, availableQuantityBefore + 1, reservedQuantityBefore].join('|'));
 
     psql(`UPDATE sites SET access_mode='offline',published=false WHERE id='${site.siteId}';`);
     const paymentIdempotencyKey = `late-confirm-${cart.id}`;
