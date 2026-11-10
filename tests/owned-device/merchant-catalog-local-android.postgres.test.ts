@@ -105,6 +105,7 @@ test('normal local Merchant owned-device journey verifies authoritative results 
  const proxy=await startOwnedPooledSqlProxy(owned),keys=await newIdentityKeys();
  //Private R2 objects are permitted only by the existing ENVIRONMENT=test
  //fence, in this proven-owned synthetic database. No hosted intake is enabled.
+ type PrivateKycDocument={id:string;document_type:string;status:string;metadata:{private_object_key:string;sha256:string;byte_size:number|string;[key:string]:unknown}};
  const privateObjects=new Map<string,Uint8Array>();
  const publicObjects=new Map<string,{bytes:Uint8Array;options?:R2PutOptions}>();
  let publicAssetReads=0,publicAssetCredentialAttempts=0;
@@ -261,11 +262,11 @@ test('normal local Merchant owned-device journey verifies authoritative results 
    assert(restartCallIndex!==undefined,'actual XCTest app termination/relaunch must be marked');
    assert(calls.slice(restartCallIndex).some(call=>call.source==='actual-identity'&&call.path==='/v1/auth/custom/session'&&call.status===200),'relaunch must validate its actual restored native credential');
    assert(calls.slice(restartCallIndex).some(call=>call.source==='actual-mobile-bff'&&call.path==='/v1/kyc'&&call.status===200));
-   const mobile=JSON.parse(owned.psql(`SELECT jsonb_agg(jsonb_build_object('client',client_id,'callback',callback_id,'environment',environment,'redirect',redirect_uri,'consumed',consumed_at IS NOT NULL,'cancelled',cancelled_at IS NOT NULL,'correct_site',site_id='${tenant.siteId}'))FROM merchant_mobile_requests WHERE authorized_user_id='${owner}'`));
+   const mobile=JSON.parse(owned.psql(`SELECT jsonb_agg(jsonb_build_object('client',client_id,'callback',callback_id,'environment',environment,'redirect',redirect_uri,'consumed',consumed_at IS NOT NULL,'cancelled',cancelled_at IS NOT NULL,'correct_site',site_id='${tenant.siteId}'))FROM merchant_mobile_requests WHERE authorized_user_id='${owner}'`))as Array<{client:string;callback:string;environment:string;redirect:string;consumed:boolean;cancelled:boolean;correct_site:boolean}>;
    assert.equal(mobile.length,1);assert.deepEqual(mobile[0],{client:'merchant_ios',callback:'ios_session',environment:'development',redirect:'com.letbuyy.store.accounts.development://auth/callback',consumed:true,cancelled:false,correct_site:true});
    assert.equal(owned.psql(`SELECT jsonb_agg(to_jsonb(p)ORDER BY id)::text FROM products p WHERE store_id='${tenant.siteId}'`),originalCameraProducts);
    const nativeWrites=calls.filter(call=>call.source==='actual-mobile-bff'&&['POST','PATCH','PUT','DELETE'].includes(call.method));
-   const documents=JSON.parse(owned.psql(`SELECT coalesce(jsonb_agg(jsonb_build_object('id',id,'document_type',document_type,'status',status,'metadata',metadata)ORDER BY id),'[]'::jsonb)FROM merchant_kyc_documents WHERE site_id='${tenant.siteId}'AND deleted_at IS NULL;`));
+   const documents=JSON.parse(owned.psql(`SELECT coalesce(jsonb_agg(jsonb_build_object('id',id,'document_type',document_type,'status',status,'metadata',metadata)ORDER BY id),'[]'::jsonb)FROM merchant_kyc_documents WHERE site_id='${tenant.siteId}'AND deleted_at IS NULL;`))as PrivateKycDocument[];
    if(iosKycFlow){
     assert.equal(nativeWrites.length,1);assert.equal(nativeWrites[0].path,'/v1/kyc/documents/upload');assert.equal(nativeWrites[0].method,'POST');assert.equal(nativeWrites[0].status,201);
     assert.equal(documents.length,1);assert.equal(documents[0].document_type,'business_pan');assert.equal(documents[0].status,'submitted');assert.equal(privateObjects.size,1);
@@ -332,7 +333,7 @@ test('normal local Merchant owned-device journey verifies authoritative results 
    assert.equal(publicObjects.size,1);assert(publicAssetReads>=1,'the native preview must read the actual uploaded bytes');assert.equal(publicAssetCredentialAttempts,0,'public preview must not leak merchant credentials');
    const[key,object]=[...publicObjects.entries()][0];assert(object.bytes.length>3);assert.deepEqual([...object.bytes.slice(0,3)],[255,216,255],'the camera produces actual JPEG bytes');
    const metadata=object.options?.customMetadata;assert.equal(metadata?.store_id,tenant.siteId);assert.equal(metadata?.owner_id,owner);assert.equal(metadata?.upload_sha256,digest(object.bytes));
-   const effects=JSON.parse(owned.psql(`SELECT jsonb_build_object('media',(SELECT jsonb_agg(to_jsonb(m)ORDER BY id)FROM media m WHERE store_id='${tenant.siteId}'),'assets',(SELECT jsonb_agg(to_jsonb(a)ORDER BY id)FROM media_assets a WHERE site_id='${tenant.siteId}'),'events',(SELECT count(*)FROM outbox_events WHERE site_id='${tenant.siteId}'AND event_type='media.processed'))`));
+   const effects=JSON.parse(owned.psql(`SELECT jsonb_build_object('media',(SELECT jsonb_agg(to_jsonb(m)ORDER BY id)FROM media m WHERE store_id='${tenant.siteId}'),'assets',(SELECT jsonb_agg(to_jsonb(a)ORDER BY id)FROM media_assets a WHERE site_id='${tenant.siteId}'),'events',(SELECT count(*)FROM outbox_events WHERE site_id='${tenant.siteId}'AND event_type='media.processed'))`))as {media:Array<Record<string,unknown>>;assets:Array<Record<string,unknown>>;events:number};
    assert.equal(effects.media.length,1);assert.equal(effects.assets.length,1);assert.equal(effects.events,1);
    assert.equal(owned.psql(`SELECT jsonb_agg(to_jsonb(p)ORDER BY id)::text FROM products p WHERE store_id='${tenant.siteId}'`),originalCameraProducts,'discarding the draft changes no product');
    assert(!calls.some(call=>call.source==='actual-mobile-bff'&&['POST','PATCH','DELETE'].includes(call.method)&&/^\/v1\/products(?:\/|$)/.test(call.path)));
@@ -348,7 +349,7 @@ test('normal local Merchant owned-device journey verifies authoritative results 
    assert(restartCallIndex!==undefined,'the real process restart must be marked before relaunch');
    assert(calls.slice(restartCallIndex).some(call=>call.source==='actual-identity'&&call.path==='/v1/auth/custom/session'&&call.status===200),'relaunch must validate its restored native credential through the actual issuer');
    assert.equal(calls.filter(call=>call.source==='actual-mobile-bff'&&call.path==='/v1/kyc/documents/upload'&&call.method==='POST'&&call.status===201).length,1);
-   const documents=JSON.parse(owned.psql(`SELECT coalesce(jsonb_agg(jsonb_build_object('id',id,'document_type',document_type,'status',status,'metadata',metadata)ORDER BY id),'[]'::jsonb)FROM merchant_kyc_documents WHERE site_id='${tenant.siteId}'AND deleted_at IS NULL;`));
+   const documents=JSON.parse(owned.psql(`SELECT coalesce(jsonb_agg(jsonb_build_object('id',id,'document_type',document_type,'status',status,'metadata',metadata)ORDER BY id),'[]'::jsonb)FROM merchant_kyc_documents WHERE site_id='${tenant.siteId}'AND deleted_at IS NULL;`))as PrivateKycDocument[];
    assert.equal(documents.length,1);assert.equal(documents[0].document_type,'business_pan');assert.notEqual(documents[0].status,'approved');assert.equal(privateObjects.size,1);
    const bytes=privateObjects.get(documents[0].metadata.private_object_key);assert(bytes);assert(bytes.byteLength>0);assert.equal(digest(bytes),documents[0].metadata.sha256,'the real multipart photo bytes must match the durable private document receipt');
    assert.equal(Number(documents[0].metadata.byte_size),bytes.byteLength);
