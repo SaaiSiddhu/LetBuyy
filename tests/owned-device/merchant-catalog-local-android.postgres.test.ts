@@ -160,6 +160,7 @@ test('normal local Merchant owned-device journey verifies authoritative results 
    assert.equal(JSON.parse(readFileSync(join(root,'native-session-restart-started.json'),'utf8')).run_id,owned.runId);restartCallIndex??=calls.length;
   }
   const url=new URL(request.url),bytes=['GET','HEAD'].includes(request.method)?undefined:new Uint8Array(await request.arrayBuffer());
+  if(iosFlow&&source==='actual-mobile-bff'&&url.pathname.startsWith('/v1/kyc'))assert.equal(request.headers.get('X-Store-ID'),tenant.siteId,'actual native KYC transport must retain the selected store after account-scoped sign-in');
   const body=bytes?new TextDecoder().decode(bytes):undefined;
   if((kycFlow||iosFlow)&&source==='actual-mobile-bff'&&request.method==='GET'&&url.pathname==='/v1/kyc'&&existsSync(join(root,'kyc-outage-active.json'))){
    assert.equal(JSON.parse(readFileSync(join(root,'kyc-outage-active.json'),'utf8')).run_id,owned.runId);
@@ -276,8 +277,12 @@ test('normal local Merchant owned-device journey verifies authoritative results 
    assert(restartCallIndex!==undefined,'actual XCTest app termination/relaunch must be marked');
    assert(calls.slice(restartCallIndex).some(call=>call.source==='actual-identity'&&call.path==='/v1/auth/custom/session'&&call.status===200),'relaunch must validate its actual restored native credential');
    assert(calls.slice(restartCallIndex).some(call=>call.source==='actual-mobile-bff'&&call.path==='/v1/kyc'&&call.status===200));
-   const mobile=JSON.parse(owned.psql(`SELECT jsonb_agg(jsonb_build_object('client',client_id,'callback',callback_id,'environment',environment,'redirect',redirect_uri,'consumed',consumed_at IS NOT NULL,'cancelled',cancelled_at IS NOT NULL,'correct_site',site_id='${tenant.siteId}'))FROM merchant_mobile_requests WHERE authorized_user_id='${owner}'`))as Array<{client:string;callback:string;environment:string;redirect:string;consumed:boolean;cancelled:boolean;correct_site:boolean}>;
-   assert.equal(mobile.length,1);assert.deepEqual(mobile[0],{client:'merchant_ios',callback:'ios_session',environment:'development',redirect:'com.letbuyy.store.accounts.development://auth/callback',consumed:true,cancelled:false,correct_site:true});
+   // Normal login issues the account session; store selection follows in the
+   // native app. The optional site-bound completion is a different journey.
+   // Check the exact account scope here and the actual selected-store header
+   // on every KYC request above, rather than inventing a bound login site.
+   const mobile=JSON.parse(owned.psql(`SELECT jsonb_agg(jsonb_build_object('client',client_id,'callback',callback_id,'environment',environment,'redirect',redirect_uri,'consumed',consumed_at IS NOT NULL,'cancelled',cancelled_at IS NOT NULL,'account_scope',site_id IS NULL))FROM merchant_mobile_requests WHERE authorized_user_id='${owner}'`))as Array<{client:string;callback:string;environment:string;redirect:string;consumed:boolean;cancelled:boolean;account_scope:boolean}>;
+   assert.equal(mobile.length,1);assert.deepEqual(mobile[0],{client:'merchant_ios',callback:'ios_session',environment:'development',redirect:'com.letbuyy.store.accounts.development://auth/callback',consumed:true,cancelled:false,account_scope:true});
    assert.equal(owned.psql(`SELECT jsonb_agg(to_jsonb(p)ORDER BY id)::text FROM products p WHERE store_id='${tenant.siteId}'`),originalCameraProducts);
    const nativeWrites=calls.filter(call=>call.source==='actual-mobile-bff'&&['POST','PATCH','PUT','DELETE'].includes(call.method));
    const documents=JSON.parse(owned.psql(`SELECT coalesce(jsonb_agg(jsonb_build_object('id',id,'document_type',document_type,'status',status,'metadata',metadata)ORDER BY id),'[]'::jsonb)FROM merchant_kyc_documents WHERE site_id='${tenant.siteId}'AND deleted_at IS NULL;`))as PrivateKycDocument[];
