@@ -161,7 +161,7 @@ test('actual Worker refuses invalid CSV before storing a job or creating any pro
     const beforeRows = owned.psql(`SELECT count(*) FROM products WHERE store_id='${importStore}'`);
     const beforeJobs = owned.psql(`SELECT count(*) FROM product_import_jobs WHERE site_id='${importStore}'`);
     const legacy = await request('/v1/export/import-products', importer, importEmail, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ store_id: importStore, csv: 'name,price\nSynthetic legacy,10' }),
+        method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Idempotency-Key': crypto.randomUUID() }, body: JSON.stringify({ store_id: importStore, csv: 'name,price\nSynthetic legacy,10' }),
     });
     assert.equal(legacy.status, 410, await legacy.text());
     for (const [csv, status] of [
@@ -220,15 +220,19 @@ test('actual Worker legacy/export job status never exposes retained internal dia
  const objects=(await bucket.list({prefix:'exports/jobs/'})).objects;
  let selected:StoredJob|undefined;
  for(const item of objects){const row=JSON.parse(await (await bucket.get(item.key))!.text()) as StoredJob;
-  if(row.actorId===owner && (row.storeIds as string[]).includes(store)){selected=row;break;}}
+  if(row.actorId===stranger && (row.storeIds as string[]).includes(foreign)){selected=row;break;}}
  assert.ok(selected,'a real acknowledged owned job exists');
  try {
   for(const type of ['products','orders','customers','product_import']){
    await bucket.put(`exports/jobs/${selected.id}.json`,JSON.stringify({...selected,type,status:'failed',errorCode:type==='product_import'?'IMPORT_FAILED':'EXPORT_FAILED',errorMessage:'SQLSTATE SYNTHETIC_PRIVATE_DIAGNOSTIC relation detail',expiresAt:'2099-01-01T00:00:00Z'}));
-   const result=await request(`/v1/export/jobs/${selected.id}?store_id=${store}`,owner,email);
+   const result=await request(`/v1/export/jobs/${selected.id}?store_id=${foreign}`,stranger,strangerEmail);
    assert.equal(result.status,200);
    const text=await result.text();assert.doesNotMatch(text,/SQLSTATE|SYNTHETIC_PRIVATE_DIAGNOSTIC|relation detail/);
-   const body=JSON.parse(text);assert.equal(body.data.job.error_message,type==='product_import'?'Import failed. Retry the import.':'Export failed. Retry the export.');
+   const body=JSON.parse(text);assert.equal(body.data.job.error_message,type==='product_import'?'This older import stopped. Review products already created before starting another import.':'Export failed. Retry the export.');
+   if(type==='product_import'){
+    assert.equal(body.data.job.row_count,null);assert.equal(body.data.job.row_count_is_verified,false);
+    assert.equal(body.data.job.download_url,null,'retired imports never advertise an invented result file');
+   }
   }
  } finally {await bucket.put(`exports/jobs/${selected.id}.json`,JSON.stringify(selected));}
 });
