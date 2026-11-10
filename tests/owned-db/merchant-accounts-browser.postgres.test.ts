@@ -115,8 +115,10 @@ test('shared Accounts login/signup, MFA, SSO consent, outage retry and draft cre
         }
         async function completed(page: Page, action: () => Promise<unknown>) {
             completions.set(page, []);
-            const waiting = page.waitForResponse(reply => reply.url().endsWith('/api/auth/mobile/complete') && reply.request().method() === 'POST');
-            await action(); const response = await waiting;
+            const [response] = await Promise.all([
+                page.waitForResponse(reply => reply.url().endsWith('/api/auth/mobile/complete') && reply.request().method() === 'POST'),
+                action(),
+            ]);
             assert.equal(response.status(), 200, 'terminal Accounts journey must invoke automatic native completion');
             const captured = completions.get(page)!.at(-1);
             assert.equal(captured?.status, 200); assert.equal(typeof captured?.callback, 'string');
@@ -126,6 +128,15 @@ test('shared Accounts login/signup, MFA, SSO consent, outage retry and draft cre
             try { await page.waitForURL(url => url.href === captured!.callback, { timeout: 60000 }); }
             catch { throw new Error('The successful native completion did not reach its registered synthetic OS callback.'); }
             return captured!.callback!;
+        }
+        async function confirmAccount(page: Page, expectedRedirect: '/mobile/return' | '/onboarding') {
+            const [response] = await Promise.all([
+                page.waitForResponse(reply => reply.url().endsWith('/api/auth/mobile/approve') && reply.request().method() === 'POST'),
+                page.getByRole('button', { name: 'Continue with this account', exact: true }).click(),
+            ]);
+            assert.equal(response.status(), 200, 'explicit account confirmation must approve the current bound flow');
+            const payload = await response.json();
+            assert.equal(payload.redirectTo, expectedRedirect, 'approval must retain the original native purpose');
         }
         async function redeem(flow: Awaited<ReturnType<typeof begin>>, callback: string) {
             const parsed = parseMerchantNativeCallback(callback, { redirectUri: 'http://localhost:9002/merchant/auth/callback', requestId: flow.requestId, state: flow.state });
@@ -197,7 +208,7 @@ test('shared Accounts login/signup, MFA, SSO consent, outage retry and draft cre
         await second.page.goto(origin + '/mobile/return'); assert.equal((await denial).status(), 400);
         assert.equal(owned.psql(`SELECT code_hash IS NULL FROM merchant_mobile_requests WHERE id='${sso.requestId}';`), 't');
         await second.page.goto(origin + '/mobile');
-        await redeem(sso, await completed(second.page, () => second.page.getByRole('button', { name: 'Continue with this account', exact: true }).click()));
+        await redeem(sso, await completed(second.page, () => confirmAccount(second.page, '/mobile/return')));
 
         // Web sign-in keeps a verified identity when discovery fails; zero stores is a distinct result.
         const web = await contextPage(); storesUnavailable = true;
@@ -210,12 +221,9 @@ test('shared Accounts login/signup, MFA, SSO consent, outage retry and draft cre
 
         // Hosted native creation uses the SAME web draft. A lost commit reply recovers one draft site.
         const normal = await begin(); await web.page.goto(normal.authorizationUrl);
-        const plainNative = await redeem(normal, await completed(web.page, () => web.page.getByRole('button', { name: 'Continue with this account', exact: true }).click()));
+        const plainNative = await redeem(normal, await completed(web.page, () => confirmAccount(web.page, '/mobile/return')));
         const creation = await begin('create_store', plainNative.token); await web.page.goto(creation.authorizationUrl);
-        const approval = web.page.waitForResponse(response => response.url().endsWith('/api/auth/mobile/approve') && response.request().method() === 'POST');
-        await web.page.getByRole('button', { name: 'Continue with this account', exact: true }).click();
-        const approved = await approval; assert.equal(approved.status(), 200, 'explicit account confirmation must approve the current creation flow');
-        assert.equal((await approved.json()).redirectTo, '/onboarding', 'the saved native purpose must remain create_store');
+        await confirmAccount(web.page, '/onboarding');
         await web.page.waitForURL(url => url.pathname === '/onboarding');
         await web.page.getByRole('button', { name: /Online Store/ }).click();
         const slug = 'syn-accounts-' + crypto.randomUUID().slice(0, 8);
