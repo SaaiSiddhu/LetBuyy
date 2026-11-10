@@ -8,6 +8,7 @@ import { requireOwnedDatabase } from './owned-db-support';
 import { Gateway, gatewayEnv, newIdentityKeys, signedIdentityHeaders, newBarrier, tapRest } from './gateway-harness';
 import { newSyntheticTenant, seedSyntheticTenant } from './synthetic-tenant';
 import { firstPartyThemeListings } from '@letbuyy/theme-engine';
+import { getStoreBillingTierDefinition } from '@letbuyy/billing-core';
 const owned = requireOwnedDatabase();
 let gateway: Gateway;
 after(async () => { await gateway?.settle(); });
@@ -22,6 +23,8 @@ test('included catalog preserves a persisted custom limit, tenant/version guards
     owned.psql(`INSERT INTO site_entitlement_overrides(site_id,limits,reason,created_by,updated_by)
         VALUES('${a.siteId}','{"themes":1}','Synthetic one-slot theme concurrency fixture','${actor}','${actor}');`);
     assert.equal(owned.psql(`SELECT resolve_site_entitlements('${a.siteId}')->'limits'->>'themes';`), '1');
+    const persistedPlan = owned.psql(`SELECT resolve_site_entitlements('${a.siteId}')->>'plan';`);
+    const tier = getStoreBillingTierDefinition(persistedPlan); assert.ok(tier, 'owned fixture has a named canonical billing tier');
     gateway = new Gateway(gatewayEnv(owned, await newIdentityKeys()));
     const request = async (path: string, body?: unknown, user = actor, mail = email, site = a.siteId) => gateway.request(path, { method: body ? 'POST' : 'GET', headers: await signedIdentityHeaders(user, mail, site), ...(body ? { body: JSON.stringify(body) } : {}) });
     const install = (slug: string) => request(`/v1/themes/${slug}/install`, { store_id: a.siteId });
@@ -35,7 +38,7 @@ test('included catalog preserves a persisted custom limit, tenant/version guards
         for (const theme of firstPartyThemeListings()) { const added = await install(theme.slug); assert.equal(added.status, 201, added.text); assert.equal(liveState(), initial); }
         const library = await request(`/v1/themes/library?store_id=${a.siteId}`); assert.equal(library.status, 200, library.text);
         assert.equal(library.json!.data.themes.length, 10); assert.equal(library.json!.data.allowance.custom_used, 0);
-        assert.equal(library.json!.data.allowance.custom_limit, 1); assert.equal(library.json!.data.allowance.plan_name, 'Free');
+        assert.equal(library.json!.data.allowance.custom_limit, 1); assert.equal(library.json!.data.allowance.plan_name, tier.name);
         assert.equal(library.json!.data.allowance.included_themes.length, 10);
     });
     await t.test('two simultaneous copies share one persisted custom slot; losing scaffold is removed', async () => {
