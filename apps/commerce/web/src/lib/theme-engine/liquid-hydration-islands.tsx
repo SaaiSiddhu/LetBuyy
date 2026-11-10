@@ -2075,6 +2075,13 @@ class LbCartElement extends LiquidIslandBase {
         this.message = 'Checking your saved cart…';
         this.renderCart();
         try {
+            // A drawer command can still own the optimistic draft when this
+            // page mounts. Reading before that command settles can restore the
+            // previous server lines and invalidate its pending receipt.
+            while (cartSyncQueue) {
+                await cartSyncQueue;
+                if (!ownsDraft()) return;
+            }
             if (subdomain && token) {
                 // A cached receipt may predate another queued write. Read the
                 // capability-bound canonical cart; never retry the mutation.
