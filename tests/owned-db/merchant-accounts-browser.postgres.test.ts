@@ -120,6 +120,11 @@ test('shared Accounts login/signup, MFA, SSO consent, outage retry and draft cre
             assert.equal(response.status(), 200, 'terminal Accounts journey must invoke automatic native completion');
             const captured = completions.get(page)!.at(-1);
             assert.equal(captured?.status, 200); assert.equal(typeof captured?.callback, 'string');
+            //The API response precedes the browser's automatic OS navigation.
+            //Observe that completed navigation before starting another flow on
+            //the same page, so a previous return cannot preempt the next bind.
+            try { await page.waitForURL(url => url.href === captured!.callback, { timeout: 60000 }); }
+            catch { throw new Error('The successful native completion did not reach its registered synthetic OS callback.'); }
             return captured!.callback!;
         }
         async function redeem(flow: Awaited<ReturnType<typeof begin>>, callback: string) {
@@ -207,7 +212,11 @@ test('shared Accounts login/signup, MFA, SSO consent, outage retry and draft cre
         const normal = await begin(); await web.page.goto(normal.authorizationUrl);
         const plainNative = await redeem(normal, await completed(web.page, () => web.page.getByRole('button', { name: 'Continue with this account', exact: true }).click()));
         const creation = await begin('create_store', plainNative.token); await web.page.goto(creation.authorizationUrl);
-        await web.page.getByRole('button', { name: 'Continue with this account', exact: true }).click(); await web.page.waitForURL(url => url.pathname === '/onboarding');
+        const approval = web.page.waitForResponse(response => response.url().endsWith('/api/auth/mobile/approve') && response.request().method() === 'POST');
+        await web.page.getByRole('button', { name: 'Continue with this account', exact: true }).click();
+        const approved = await approval; assert.equal(approved.status(), 200, 'explicit account confirmation must approve the current creation flow');
+        assert.equal((await approved.json()).redirectTo, '/onboarding', 'the saved native purpose must remain create_store');
+        await web.page.waitForURL(url => url.pathname === '/onboarding');
         await web.page.getByRole('button', { name: /Online Store/ }).click();
         const slug = 'syn-accounts-' + crypto.randomUUID().slice(0, 8);
         await web.page.getByLabel('Display Name', { exact: true }).fill('Synthetic Accounts Store');
