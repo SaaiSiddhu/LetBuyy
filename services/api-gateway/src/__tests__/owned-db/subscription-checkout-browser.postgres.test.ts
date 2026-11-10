@@ -143,10 +143,11 @@ const profile={schema_version:1,policy_version:'D-SUB-TAX-INCLUSIVE-V1',profile_
   const growthCard=page.locator('article').filter({has:page.getByRole('heading',{name:'Growth',exact:true})});
   await growthCard.getByRole('button',{name:'Choose plan',exact:true}).click();
   await page.waitForURL(u=>u.pathname===`/${tenant.subdomain}/access_account/checkout/checkout`&&u.searchParams.get('plan')==='growth');
-  await expect(page.getByRole('complementary',{name:'Order summary'})).toContainText('₹699');const subscribe=page.getByRole('button',{name:/Subscribe|Continue saved checkout|Continue to payment/});
+  await expect(page.getByRole('complementary',{name:'Order summary'})).toContainText('₹699');const subscribe=page.getByRole('button',{name:/Subscribe|Continue saved checkout|Continue to payment|^Resume payment$/});
   const [lost]=await Promise.all([page.waitForResponse(r=>r.url().endsWith('/api/subscribe')&&r.request().method()==='POST'),subscribe.click()]);assert.equal(lost.status(),503);
   await expect(page.locator('.checkout-notice[role="alert"]')).toContainText('reconciliation');assert.equal(createCount,1);
   await page.reload();
+  await expect(page.getByRole('button',{name:'Resume payment',exact:true})).toBeEnabled();
   const [recovered]=await Promise.all([page.waitForResponse(r=>r.url().endsWith('/api/subscribe')&&r.request().method()==='POST'),subscribe.click()]);assert.equal(recovered.status(),200);
   await page.waitForFunction(()=>Boolean((globalThis as unknown as {__syntheticCheckoutOpen?:boolean}).__syntheticCheckoutOpen));
   await expect(page.getByText('Test payment only. No real money will be charged.',{exact:true})).toBeVisible();
