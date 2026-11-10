@@ -159,6 +159,13 @@ test('GET reconciles a draft after store creation succeeded but finalization res
     psql(`INSERT INTO sites (id,custom_user_id,name,store_name,site_type,subdomain,status,published,currency,locale,created_at,updated_at)
       VALUES ('${recoveredStoreId}','${ownerId}','Recovered Store','${subdomain}','store','${subdomain}','draft',false,'INR','en-IN',now(),now());`);
 
+    // A same-owner/handle coincidence is insufficient to claim this attempt.
+    const unrelated = await gateway.request('/v1/onboarding/web-draft', { headers: await headers(ownerId) });
+    assert.equal(unrelated.status, 200, unrelated.text);
+    assert.equal(unrelated.json?.data?.attempt?.attempt_id, attemptId);
+    assert.equal(unrelated.json?.data?.completed_store, undefined);
+    psql(`UPDATE sites SET store_creation_idempotency_key='accounts-store:${ownerId}:${attemptId}' WHERE id='${recoveredStoreId}';`);
+
     const resumed = await gateway.request('/v1/onboarding/web-draft', { headers: await headers(ownerId) });
     assert.equal(resumed.status, 200, resumed.text);
     assert.equal(resumed.json?.data?.attempt, null);
