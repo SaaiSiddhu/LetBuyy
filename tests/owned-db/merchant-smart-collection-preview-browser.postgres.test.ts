@@ -117,7 +117,7 @@ async function savedCollection(){
     //435 seals smart_collections. The authenticated BFF creates the canonical
     // document and its receipt; the browser previews that actual saved version.
     const key=crypto.randomUUID();
-    const created=await owner.request.post(merchantOrigin+bffListPath,{headers:{Origin:merchantOrigin,'X-Idempotency-Key':key},data:{
+    const created=await owner.request.post(merchantOrigin+bffListPath,{headers:{Origin:merchantOrigin,'X-Idempotency-Key':key,'X-LetBuyy-Merchant-Context':ownerId},data:{
         store_id:site.siteId,idempotency_key:key,collection_type:'smart',title:name,slug:'syn-sc-'+fixtureId,
         conditions:[{field:'title',op:'contains',value:'SYN-MATCH '+fixtureId},{field:'inventory_quantity',op:'gt',value:'0'}],match_type:'all',
     }});
@@ -154,16 +154,15 @@ async function openSaved(saved:Saved){
         const[listed]=await Promise.all([page.waitForResponse(response=>new URL(response.url()).pathname===bffListPath&&response.request().method()==='GET',{timeout:90000}),
             page.goto(merchantOrigin+'/'+site.subdomain+'/products/smart-collections')]);
         assert.equal(listed.status(),200);
-        const row=page.getByRole('row').filter({has:page.getByText(saved.name,{exact:true})});
-        await expect(row).toBeVisible();await row.getByRole('button',{name:'Edit',exact:true}).click();
-        const dialog=page.getByRole('dialog',{name:'Edit smart collection',exact:true});await expect(dialog).toBeVisible();
-        await expect(dialog.getByLabel('Collection name',{exact:true})).toHaveValue(saved.name);
+        await page.getByRole('button',{name:'Edit '+saved.name,exact:true}).click();
+        await expect(page.getByRole('heading',{name:'Edit smart collection',exact:true})).toBeVisible();
+        await expect(page.getByLabel('Collection name',{exact:true})).toHaveValue(saved.name);
         return page;
     }catch(error){await page.close();throw error;}
 }
 async function preview(page:Page,saved:Saved){
     const[reply]=await Promise.all([page.waitForResponse(response=>new URL(response.url()).pathname===bffListPath+'/'+saved.id+'/preview'&&response.request().method()==='GET'),
-        page.getByRole('dialog').getByRole('button',{name:/Preview (?:matching products|saved rules)/}).click()]);
+        page.getByRole('button',{name:'Preview saved rules',exact:true}).click()]);
     return reply;
 }
 
@@ -176,7 +175,7 @@ test('a normally signed-in owner previews saved rules through the maintained pag
         assert.equal(data.match_type,'all');assert.deepEqual(data.sample_product_ids,[saved.match]);
         assert.equal(data.evaluated_of,Number(owned.psql('SELECT count(*)FROM products WHERE store_id='+quote(site.siteId)+' AND is_active AND deleted_at IS NULL;')));
         assert.equal(data.capped_at,500);
-        await expect(page.getByRole('dialog')).toContainText('1 product match');
+        await expect(page.getByRole('status').filter({hasText:'Preview uses saved rules.'})).toContainText('1 matching products');
         assert.deepEqual(state(),before);
         assert.ok(calls.slice(beforeCalls).filter(call=>call.path.startsWith('/v1/smart-collections')).every(call=>call.method==='GET'));
         checkpoints.push('normal_owner_saved_rules_real_name_stock_preview_no_effects');
@@ -192,16 +191,16 @@ test('a real canonical preview SQL fault is visible and an explicit restored ret
             const actualFailures=calls.slice(beforeCalls).filter(call=>call.path===`/v1/smart-collections/${saved.id}/preview`&&call.status===503);
             assert.equal(actualFailures.length,1);failedPreviewReads+=actualFailures.length;
             const errorBody=await failed.text();assert.doesNotMatch(errorBody,/syn_private_preview_fault|preview_collection_rules_v1|42703|42883/);
-            await expect(page.getByText('Unable to load preview. Please try again.',{exact:true})).toBeVisible();
-            await expect(page.getByRole('dialog')).not.toContainText('0 products match');
+            await expect(page.getByRole('alert').filter({hasText:'Collection unavailable'})).toContainText('Collections are temporarily unavailable.');
+            await expect(page.getByRole('status').filter({hasText:'Preview uses saved rules.'})).toHaveCount(0);
             assert.deepEqual(state(),before);
         }finally{setPreviewFault(false);assert.equal(previewFunction(),functionBefore,'read RPC identity, body, owner and ACL are restored exactly');}
         const restored=await preview(page,saved);assert.equal(restored.status(),200);
         const data=(await restored.json()).data;
         assert.equal(data.count,1);assert.equal(data.evaluated_of,Number(owned.psql('SELECT count(*)FROM products WHERE store_id='+quote(site.siteId)+' AND is_active AND deleted_at IS NULL;')));
         assert.equal(data.capped_at,500);assert.deepEqual(data.sample_product_ids,[saved.match]);
-        await expect(page.getByRole('dialog')).toContainText('1 product match');
-        await expect(page.getByText('Unable to load preview. Please try again.',{exact:true})).toHaveCount(0);
+        await expect(page.getByRole('status').filter({hasText:'Preview uses saved rules.'})).toContainText('1 matching products');
+        await expect(page.getByRole('alert').filter({hasText:'Collection unavailable'})).toHaveCount(0);
         assert.deepEqual(state(),before);
         assert.ok(calls.slice(beforeCalls).filter(call=>call.path.startsWith('/v1/smart-collections')).every(call=>call.method==='GET'));
         checkpoints.push('negative_only_real_pooled_SQL_fault_visible_then_explicit_successful_read_retry_no_effects');
