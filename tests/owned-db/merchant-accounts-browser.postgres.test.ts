@@ -139,9 +139,16 @@ test('shared Accounts login/signup, MFA, SSO consent, outage retry and draft cre
         }
         async function confirmAccount(page: Page, expectedRedirect: '/mobile/return' | '/onboarding') {
             approvals.set(page, []);
+            const button = page.getByRole('button', { name: 'Continue with this account', exact: true });
+            const interactivity = await button.evaluate(element => {
+                const properties = Object.entries(element as unknown as Record<string, unknown>);
+                const props = properties.find(([key]) => key.startsWith('__reactProps$'))?.[1] as { onClick?: unknown } | undefined;
+                return { handlerAttached: typeof props?.onClick === 'function', disabled: element.hasAttribute('disabled') };
+            });
+            console.info('OWNED_ACCOUNTS_APPROVAL_CONTROL ' + JSON.stringify({ expectedRedirect, ...interactivity }));
             const [response] = await Promise.all([
-                page.waitForResponse(reply => reply.url().endsWith('/api/auth/mobile/approve') && reply.request().method() === 'POST'),
-                page.getByRole('button', { name: 'Continue with this account', exact: true }).click(),
+                page.waitForResponse(reply => reply.url().endsWith('/api/auth/mobile/approve') && reply.request().method() === 'POST', { timeout: 15000 }),
+                button.click(),
             ]);
             assert.equal(response.status(), 200, 'explicit account confirmation must approve the current bound flow');
             const captured = approvals.get(page)!.at(-1);
