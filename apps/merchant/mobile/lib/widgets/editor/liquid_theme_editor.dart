@@ -352,6 +352,10 @@ class _LiquidThemeEditorState extends State<LiquidThemeEditor> {
       final token = session['preview_token'];
       if (token is! String || token.isEmpty)
         throw const FormatException('Preview unavailable');
+      if (session['template_key'] != _template ||
+          session['draft_version'] != _version) {
+        throw const ThemeDraftConflictException();
+      }
       if (!mounted || !_owns) return;
       final url = ThemeService.buildStorefrontPreviewUrl(
         subdomain: widget.store.subdomain,

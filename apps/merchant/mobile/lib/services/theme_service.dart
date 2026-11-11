@@ -794,6 +794,11 @@ class ThemeService extends ChangeNotifier {
       final payload = ThemeEditorPayload.fromJson({
         'data': Map<String, dynamic>.from(res),
       });
+      if (payload.templateKey != templateKey) {
+        throw const FormatException(
+          'The requested theme page was not confirmed.',
+        );
+      }
       final actor = _captureJournalActor();
       await _restorePublication(
         storeId,
