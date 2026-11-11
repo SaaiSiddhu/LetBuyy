@@ -10,6 +10,7 @@ import {join,resolve,dirname,isAbsolute} from 'node:path';
 import {exportJWK} from 'jose';
 import {chromium,expect,type Browser} from '@playwright/test';
 import {closePooledSqlClients} from '@letbuyy/infrastructure/pooled-sql-adapter';
+import {merchantNativeCallback} from '@letbuyy/auth-core';
 import mobileBff from '../../services/mobile-bff/src/index';
 import {hashMerchantPassword} from '../../services/api-gateway/src/lib/merchant-password';
 import {Gateway,gatewayEnv,newIdentityKeys,signedIdentityHeaders,INTERNAL_SECRET} from '../../services/api-gateway/src/__tests__/owned-db/gateway-harness';
@@ -282,7 +283,7 @@ test('normal local Merchant owned-device journey verifies authoritative results 
    // Check the exact account scope here and the actual selected-store header
    // on every KYC request above, rather than inventing a bound login site.
    const mobile=JSON.parse(owned.psql(`SELECT jsonb_agg(jsonb_build_object('client',client_id,'callback',callback_id,'environment',environment,'redirect',redirect_uri,'consumed',consumed_at IS NOT NULL,'cancelled',cancelled_at IS NOT NULL,'account_scope',site_id IS NULL))FROM merchant_mobile_requests WHERE authorized_user_id='${owner}'`))as Array<{client:string;callback:string;environment:string;redirect:string;consumed:boolean;cancelled:boolean;account_scope:boolean}>;
-   assert.equal(mobile.length,1);assert.deepEqual(mobile[0],{client:'merchant_ios',callback:'ios_session',environment:'development',redirect:'com.letbuyy.store.accounts.development://auth/callback',consumed:true,cancelled:false,account_scope:true});
+   assert.equal(mobile.length,1);assert.deepEqual(mobile[0],{client:'merchant_ios',callback:'ios_session',environment:'development',redirect:merchantNativeCallback('merchant_ios','ios_session','development'),consumed:true,cancelled:false,account_scope:true});
    assert.equal(owned.psql(`SELECT jsonb_agg(to_jsonb(p)ORDER BY id)::text FROM products p WHERE store_id='${tenant.siteId}'`),originalCameraProducts);
    const nativeWrites=calls.filter(call=>call.source==='actual-mobile-bff'&&['POST','PATCH','PUT','DELETE'].includes(call.method));
    const documents=JSON.parse(owned.psql(`SELECT coalesce(jsonb_agg(jsonb_build_object('id',id,'document_type',document_type,'status',status,'metadata',metadata)ORDER BY id),'[]'::jsonb)FROM merchant_kyc_documents WHERE site_id='${tenant.siteId}'AND deleted_at IS NULL;`))as PrivateKycDocument[];
