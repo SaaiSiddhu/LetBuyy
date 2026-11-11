@@ -372,8 +372,10 @@ test('normal local Merchant owned-device journey verifies authoritative results 
    assert(proof.evidence.length>=12);for(const path of proof.evidence)assert(path.startsWith(root+'/')&&existsSync(path));
    const catalog=JSON.parse(readFileSync(join(root,'theme-catalog.json'),'utf8'))as Array<{slug:string;name:string;version:string}>;
    assert.equal(catalog.length,10);
-   const headers=await signedIdentityHeaders(owner,email,tenant.siteId);
-   const library=await gateway.request('/v1/themes/library?store_id='+tenant.siteId,{headers});assert.equal(library.status,200,library.text);
+   // Internal identity assertions are single-use. Every independent read must
+   // carry its own signed JTI; replay protection must stay enabled here.
+   const headers=()=>signedIdentityHeaders(owner,email,tenant.siteId);
+   const library=await gateway.request('/v1/themes/library?store_id='+tenant.siteId,{headers:await headers()});assert.equal(library.status,200,library.text);
    const rows=(library.json?.data as {themes:Array<{slug:string;instance_id:string;version:string}>}).themes;
    for(const theme of catalog){
     assert(rows.some(row=>row.slug===theme.slug&&row.version===theme.version),'the exact selected package must be present in the real owned library: '+theme.slug);
@@ -382,7 +384,7 @@ test('normal local Merchant owned-device journey verifies authoritative results 
    }
    for(const [suffix,method,status] of [['/editor/draft','PUT',200],['/preview-session','POST',201],['/publish','POST',200]]as const)assert(calls.some(call=>call.source==='actual-mobile-bff'&&call.path.startsWith('/v1/themes/')&&call.path.endsWith(suffix)&&call.method===method&&call.status===status),'the native saved-design journey must complete: '+suffix);
    const before=nativeThemeBaselines.get('letbuyy-summit');assert(before,'actual pre-edit native payload required');
-   const reopened=await gateway.request('/v1/themes/letbuyy-summit/editor?store_id='+tenant.siteId,{headers});assert.equal(reopened.status,200);
+   const reopened=await gateway.request('/v1/themes/letbuyy-summit/editor?store_id='+tenant.siteId,{headers:await headers()});assert.equal(reopened.status,200,reopened.text);
    const current=(reopened.json?.data as {template_config:Record<string,unknown>}).template_config;
    const stable=(value:unknown):string=>JSON.stringify(value&&typeof value==='object'&&!Array.isArray(value)?Object.fromEntries(Object.entries(value as Record<string,unknown>).sort(([a],[b])=>a.localeCompare(b)).map(([k,v])=>[k,JSON.parse(stable(v))])):Array.isArray(value)?value.map(v=>JSON.parse(stable(v))):value);
    assert.equal(digest(stable(current.liquidBundle)),digest(stable(before.liquidBundle)),'the installed immutable Liquid source must survive native editing and publication');
