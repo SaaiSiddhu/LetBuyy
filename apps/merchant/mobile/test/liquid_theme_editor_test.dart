@@ -351,7 +351,7 @@ void main() {
       await mount(tester, api);
       await tester.tap(find.byType(DropdownButtonFormField<String>));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('product').last);
+      await tester.tap(find.text('Product').last);
       await tester.pumpAndSettle();
       expect(api.queries.last['template_key'], 'product');
       expect(find.text('Product information'), findsOneWidget);

@@ -429,6 +429,7 @@ class _ThemeScreenState extends State<ThemeScreen> {
   Widget _buildHeader() {
     return Row(
       children: [
+        if (Navigator.canPop(context)) BackButton(color: colors.textPrimary),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

@@ -70,7 +70,9 @@ function ownedNextListener(port:number,runtime:OwnedClientProcess):boolean {
  }
  return pids.length>0;
 }
-test('normal local Merchant owned-device journey verifies authoritative results through actual BFF',{timeout:1_800_000},async(context)=>{
+// The ten-theme native lane includes ten real demo/editor journeys plus the
+// saved-design release journey. Keep that interactive gate bounded at one hour.
+test('normal local Merchant owned-device journey verifies authoritative results through actual BFF',{timeout:3_600_000},async(context)=>{
  const receiptPath=process.env.LETBUYY_IOS_DEVICE_RECEIPT??process.env.LETBUYY_ANDROID_DEVICE_RECEIPT;assert.ok(receiptPath,'explicit task-owned device receipt required');
  const receipt=JSON.parse(readFileSync(receiptPath,'utf8'))as {root:string;owner:string;avd_name:string;serial:string;emulator_pid:number;sdk_root:string;adb_port:number;run_root:string;platform?:'android'|'ios';simulator_udid?:string;simulator_name?:string;device_receipt?:string;flow?:'membership'|'category'|'settings'|'warehouse'|'kyc'|'camera'|'themes'|'ios-auth'|'ios-kyc';verifyDashboardSettings?:boolean;verifySmart?:boolean;verifyCollectionLifecycle?:boolean;verifyMembershipRetirement?:boolean;verifyStockLifecycle?:boolean;verifyStockAdjustments?:boolean;compiledWorkers?:boolean;diagnosticWarehouseDraft?:boolean;diagnosticReservationView?:boolean;offlineGradle?:boolean};
  const flow=receipt.flow??'membership';assert(['membership','category','settings','warehouse','kyc','camera','themes','ios-auth','ios-kyc'].includes(flow));const iosKycFlow=flow==='ios-kyc',iosFlow=flow==='ios-auth'||iosKycFlow;assert.equal(receipt.platform==='ios',iosFlow,'iOS requires its explicit bounded flow');const themeFlow=flow==='themes',categoryFlow=flow==='category',settingsFlow=flow==='settings',warehouseFlow=flow==='warehouse',kycFlow=flow==='kyc',cameraFlow=flow==='camera',privateKycFlow=kycFlow||iosKycFlow;

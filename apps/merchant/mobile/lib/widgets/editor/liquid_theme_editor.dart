@@ -612,6 +612,34 @@ class _LiquidThemeEditorState extends State<LiquidThemeEditor> {
     }
   }
 
+  String _templateLabel(String key) {
+    for (final option in _payload.templates) {
+      final label = option['label'] ?? option['name'];
+      if (option['key'] == key && label is String && label.trim().isNotEmpty)
+        return label;
+    }
+    final name = _record(
+      _record(_payload.templateConfig['templates'])[key],
+    )['name'];
+    if (name is String && name.trim().isNotEmpty) return name;
+    final parts = key.split('.');
+    final label = switch (parts.first) {
+      'index' || 'home' => 'Home',
+      'product' => 'Product',
+      'collection' => 'Collection',
+      'list-collections' => 'Collections',
+      'page' => 'Page',
+      'blog' => 'Blog',
+      'article' => 'Blog post',
+      'search' => 'Search',
+      'cart' => 'Cart',
+      'contact' => 'Contact',
+      '404' => 'Page not found',
+      _ => parts.first.replaceAll('_', ' '),
+    };
+    return parts.length > 1 ? '$label · ${parts.skip(1).join(' ')}' : label;
+  }
+
   @override
   Widget build(BuildContext context) {
     context.watch<StoreContext>();
@@ -679,8 +707,10 @@ class _LiquidThemeEditorState extends State<LiquidThemeEditor> {
                     decoration: const InputDecoration(labelText: 'Store page'),
                     items: _document.templateKeys
                         .map(
-                          (key) =>
-                              DropdownMenuItem(value: key, child: Text(key)),
+                          (key) => DropdownMenuItem(
+                            value: key,
+                            child: Text(_templateLabel(key)),
+                          ),
                         )
                         .toList(),
                     onChanged:
