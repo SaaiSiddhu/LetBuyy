@@ -1350,7 +1350,7 @@ class ThemeService extends ChangeNotifier {
     String? version,
   }) {
     // Mirror the existing Merchant web presentation adapter. These are the
-    // actual authored 2.0 captures, not an alternate catalog or new theme data.
+    // actual version-bound captures, not an alternate catalog or new theme data.
     // Other versions/custom artwork retain the API-provided URL unchanged.
     const captures = <String, String>{
       'letbuyy-sense': 'threadline',
@@ -1367,8 +1367,9 @@ class ThemeService extends ChangeNotifier {
     final capture = captures[themeSlug];
     final placeholder =
         '/theme-previews/${themeSlug?.replaceFirst(RegExp(r'^letbuyy-'), '')}.svg';
+    final currentCapture = version == '2.1.0' && themeSlug != 'letbuyy-sense';
     if (capture != null &&
-        version == '2.0.0' &&
+        (version == '2.0.0' || currentCapture) &&
         (value == null ||
             value.isEmpty ||
             value == placeholder ||
@@ -1376,9 +1377,11 @@ class ThemeService extends ChangeNotifier {
                 value == '/theme-previews/threadline-2.0.0.webp'))) {
       // The captured artwork is hosted by Merchant, as on Merchant web. The
       // Commerce origin hosts the live storefront and signed draft previews.
-      return Uri.parse(
-        AppConfig.adminBaseUrl,
-      ).resolve('/theme-previews/catalog-v2/$capture.webp').toString();
+      return Uri.parse(AppConfig.adminBaseUrl)
+          .resolve(
+            '/theme-previews/${currentCapture ? 'catalog-v2-1' : 'catalog-v2'}/$capture.webp',
+          )
+          .toString();
     }
     if (value == null || value.trim().isEmpty) return null;
     final candidate = Uri.tryParse(value.trim());

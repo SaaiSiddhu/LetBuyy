@@ -13,6 +13,8 @@ const library = { data: { themes: [{ instance_id: instanceId, slug: 'letbuyy-sen
 test('captured artwork replaces only its exact first-party version and keeps custom or historical previews', () => {
     const theme = { slug: 'letbuyy-forge', version: '2.0.0', thumbnail_url: '/theme-previews/forge.svg' };
     assert.equal(catalogArtworkUrl(theme), '/theme-previews/catalog-v2/circuit.webp');
+    assert.equal(catalogArtworkUrl({ ...theme, version: '2.1.0' }), '/theme-previews/catalog-v2-1/circuit.webp');
+    assert.equal(catalogArtworkUrl({ ...theme, version: '2.1.0', thumbnail_url: 'https://merchant.example/custom.webp' }), 'https://merchant.example/custom.webp');
     assert.equal(catalogArtworkUrl({ ...theme, version: '1.0.0' }), theme.thumbnail_url);
     assert.equal(catalogArtworkUrl({ ...theme, version: '3.0.0' }), theme.thumbnail_url);
     assert.equal(catalogArtworkUrl({ ...theme, thumbnail_url: 'https://merchant.example/custom.webp' }), 'https://merchant.example/custom.webp');

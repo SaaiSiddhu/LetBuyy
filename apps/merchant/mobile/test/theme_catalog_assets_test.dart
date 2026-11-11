@@ -62,7 +62,24 @@ void main() {
               .resolve('/theme-previews/catalog-v2/${entry.value}.webp')
               .toString(),
         );
-        for (final version in ['1.0.0', '2.1.0', '3.0.0']) {
+        if (entry.key != 'sense') {
+          expect(
+            ThemeService.resolveCatalogThumbnail(
+              placeholder,
+              themeSlug: slug,
+              version: '2.1.0',
+            ),
+            Uri.parse(AppConfig.adminBaseUrl)
+                .resolve('/theme-previews/catalog-v2-1/${entry.value}.webp')
+                .toString(),
+          );
+        }
+        for (final version in [
+          '1.0.0',
+          '2.0.1',
+          '3.0.0',
+          if (entry.key == 'sense') '2.1.0',
+        ]) {
           expect(
             ThemeService.resolveCatalogThumbnail(
               placeholder,

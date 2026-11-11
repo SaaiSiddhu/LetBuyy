@@ -158,6 +158,7 @@ for (const visibility of [
 
 for (const artwork of [
  {version:'2.0.0',original:'/theme-previews/forge.svg',expected:'/theme-previews/catalog-v2/circuit.webp'},
+ {version:'2.1.0',original:'/theme-previews/forge.svg',expected:'/theme-previews/catalog-v2-1/circuit.webp'},
  {version:'1.0.0',original:'/theme-previews/forge.svg',expected:'/theme-previews/forge.svg'},
  {version:undefined,original:'/theme-previews/forge.svg',expected:'/theme-previews/forge.svg'},
  {version:'2.0.0',original:'https://custom.example.invalid/captured-design.webp',expected:'https://custom.example.invalid/captured-design.webp'},
