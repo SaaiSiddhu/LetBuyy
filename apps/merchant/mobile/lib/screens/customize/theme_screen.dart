@@ -132,6 +132,7 @@ class _ThemeScreenState extends State<ThemeScreen> {
       await context.read<ThemeService>().installTheme(
         storeId: _store!.id,
         themeSlug: theme.slug,
+        expectedVersion: theme.version,
       );
       _showMessage('${theme.name} installed', isSuccess: true);
     });
@@ -607,7 +608,11 @@ class _ThemeScreenState extends State<ThemeScreen> {
   }
 
   Widget _buildThemeThumbnail(ThemeCatalogItem theme) {
-    final thumbnail = ThemeService.resolveCatalogThumbnail(theme.thumbnailUrl);
+    final thumbnail = ThemeService.resolveCatalogThumbnail(
+      theme.thumbnailUrl,
+      themeSlug: theme.slug,
+      version: theme.version,
+    );
     return Container(
       width: 72,
       height: 86,
@@ -618,10 +623,7 @@ class _ThemeScreenState extends State<ThemeScreen> {
       ),
       clipBehavior: Clip.antiAlias,
       child: thumbnail != null
-          ? CachedMerchantImage(
-              imageUrl: thumbnail,
-              fit: BoxFit.cover,
-            )
+          ? CachedMerchantImage(imageUrl: thumbnail, fit: BoxFit.cover)
           : Icon(Icons.web_rounded, color: colors.textSecondary),
     );
   }

@@ -2357,6 +2357,13 @@ class ThemesApi {
     return asJsonMap(body);
   }
 
+  /// The owned installed library, independent of catalog filters and pagination.
+  Future<JsonMap> library(String storeId, {ApiRequestOptions? options}) =>
+      _client.requestJson(
+        '/themes/library',
+        options: _mergeOptions(options, query: {'store_id': storeId}),
+      );
+
   Future<JsonMap> get(String slug, {ApiRequestOptions? options}) => _client
       .requestJson('/themes/${_encodePathSegment(slug)}', options: options);
 

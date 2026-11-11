@@ -575,16 +575,49 @@ class ThemeService extends ChangeNotifier {
     }
   }
 
-  Future<void> installTheme({
+  Future<List<ThemeLibraryItem>> fetchLibrary(String storeId) async {
+    final captured = captureContext();
+    final payload = await _api.themes.library(
+      storeId,
+      options: ApiRequestOptions(expectedContextVersion: captured),
+    );
+    _requireContext(captured);
+    final rows = payload['themes'];
+    if (rows is! List) {
+      throw const FormatException(
+        'The installed theme library is unavailable. Retry loading it.',
+      );
+    }
+    return rows
+        .map(
+          (row) =>
+              ThemeLibraryItem.fromJson(Map<String, dynamic>.from(row as Map)),
+        )
+        .toList(growable: false);
+  }
+
+  Future<ThemeInstallReceipt> installTheme({
     required String storeId,
     required String themeSlug,
+    String? expectedVersion,
     Map<String, dynamic> configOverrides = const {},
   }) async {
-    await _api.themes.install(themeSlug, {
+    final captured = captureContext();
+    final response = await _api.themes.install(themeSlug, {
       'store_id': storeId,
       'config_overrides': configOverrides,
-    });
-    await fetchThemes(storeId);
+      if (expectedVersion != null) 'expected_version': expectedVersion,
+    }, options: ApiRequestOptions(expectedContextVersion: captured));
+    _requireContext(captured);
+    final receipt = ThemeInstallReceipt.fromJson(
+      response,
+      expectedSlug: themeSlug,
+      expectedVersion: expectedVersion,
+    );
+    final library = await fetchLibrary(storeId);
+    _requireContext(captured);
+    receipt.confirmLibrary(library);
+    return receipt;
   }
 
   Future<ThemeEditorPayload> loadEditor({
@@ -1109,16 +1142,55 @@ class ThemeService extends ChangeNotifier {
 
   /// Catalog assets are hosted by Commerce; native image loaders have no
   /// document origin with which to resolve a root-relative first-party asset.
-  static String? resolveCatalogThumbnail(String? value) {
+  static String? resolveCatalogThumbnail(
+    String? value, {
+    String? themeSlug,
+    String? version,
+  }) {
+    // Mirror the existing Merchant web presentation adapter. These are the
+    // actual authored 2.0 captures, not an alternate catalog or new theme data.
+    // Other versions/custom artwork retain the API-provided URL unchanged.
+    const captures = <String, String>{
+      'letbuyy-sense': 'threadline',
+      'letbuyy-forge': 'circuit',
+      'letbuyy-bloom': 'playfield',
+      'letbuyy-refresh': 'pantry',
+      'letbuyy-craft': 'habitat',
+      'letbuyy-summit': 'kindred',
+      'letbuyy-nova': 'madeyours',
+      'letbuyy-aura': 'dewdrop',
+      'letbuyy-ride': 'trailmark',
+      'letbuyy-dawn': 'marginalia',
+    };
+    final capture = captures[themeSlug];
+    final placeholder =
+        '/theme-previews/${themeSlug?.replaceFirst(RegExp(r'^letbuyy-'), '')}.svg';
+    if (capture != null &&
+        version == '2.0.0' &&
+        (value == null ||
+            value.isEmpty ||
+            value == placeholder ||
+            (themeSlug == 'letbuyy-sense' &&
+                value == '/theme-previews/threadline-2.0.0.webp'))) {
+      // The captured artwork is hosted by Merchant, as on Merchant web. The
+      // Commerce origin hosts the live storefront and signed draft previews.
+      return Uri.parse(
+        AppConfig.adminBaseUrl,
+      ).resolve('/theme-previews/catalog-v2/$capture.webp').toString();
+    }
     if (value == null || value.trim().isEmpty) return null;
     final candidate = Uri.tryParse(value.trim());
     if (candidate == null || candidate.userInfo.isNotEmpty) return null;
     if (candidate.hasScheme) {
-      return ['http', 'https'].contains(candidate.scheme) && candidate.host.isNotEmpty
-          ? candidate.toString() : null;
+      return ['http', 'https'].contains(candidate.scheme) &&
+              candidate.host.isNotEmpty
+          ? candidate.toString()
+          : null;
     }
     if (!value.startsWith('/') || value.startsWith('//')) return null;
-    return Uri.parse(AppConfig.storefrontBaseUrl).resolveUri(candidate).toString();
+    return Uri.parse(
+      AppConfig.storefrontBaseUrl,
+    ).resolveUri(candidate).toString();
   }
 
   static String buildStorefrontPreviewUrl({
