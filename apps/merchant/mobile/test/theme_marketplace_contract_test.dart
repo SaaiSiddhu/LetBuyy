@@ -82,7 +82,106 @@ class _Api extends ApiClient {
   }
 }
 
+class _PreviewApi extends _Api {
+  JsonMap response = {
+    'preview_token': 'synthetic-preview',
+    'draft_version': 7,
+    'template_key': 'product',
+  };
+  bool retireContext = false;
+  @override
+  Future<JsonMap> requestJson(String path, {ApiRequestOptions? options}) async {
+    if (!path.endsWith('/preview-session'))
+      return super.requestJson(path, options: options);
+    calls.add((path: path, options: options));
+    if (retireContext) identity = ('actor-b', 'store-b');
+    return response;
+  }
+}
+
 void main() {
+  test(
+    'saved preview confirms its exact page and revision without submitting legacy settings',
+    () async {
+      final api = _PreviewApi();
+      final session = await ThemeService(api: api).createPreviewSession(
+        storeId: store,
+        themeSlug: 'letbuyy-summit',
+        templateKey: 'product',
+        expectedDraftVersion: 7,
+      );
+      expect(session['draft_version'], 7);
+      expect(api.calls.single.options?.body, {
+        'store_id': store,
+        'ttl_seconds': 900,
+        'template_key': 'product',
+      });
+    },
+  );
+  test(
+    'saved preview rejects another page, revision, missing token or retired actor',
+    () async {
+      for (final invalid in [
+        {
+          'preview_token': 'synthetic-preview',
+          'draft_version': 8,
+          'template_key': 'product',
+        },
+        {
+          'preview_token': 'synthetic-preview',
+          'draft_version': 7,
+          'template_key': 'index',
+        },
+      ]) {
+        final api = _PreviewApi()..response = invalid;
+        await expectLater(
+          ThemeService(api: api).createPreviewSession(
+            storeId: store,
+            themeSlug: 'letbuyy-summit',
+            templateKey: 'product',
+            expectedDraftVersion: 7,
+          ),
+          throwsA(isA<ThemeDraftConflictException>()),
+        );
+      }
+      final missing = _PreviewApi()
+        ..response = {'draft_version': 7, 'template_key': 'product'};
+      await expectLater(
+        ThemeService(api: missing).createPreviewSession(
+          storeId: store,
+          themeSlug: 'letbuyy-summit',
+          templateKey: 'product',
+          expectedDraftVersion: 7,
+        ),
+        throwsA(isA<FormatException>()),
+      );
+      final retired = _PreviewApi()..retireContext = true;
+      await expectLater(
+        ThemeService(api: retired).createPreviewSession(
+          storeId: store,
+          themeSlug: 'letbuyy-summit',
+          templateKey: 'product',
+          expectedDraftVersion: 7,
+        ),
+        throwsA(isA<StateError>()),
+      );
+    },
+  );
+  test(
+    'an unsaved revision cannot create a saved-design preview session',
+    () async {
+      final api = _PreviewApi();
+      await expectLater(
+        ThemeService(api: api).createPreviewSession(
+          storeId: store,
+          themeSlug: 'letbuyy-summit',
+          expectedDraftVersion: 0,
+        ),
+        throwsA(isA<StateError>()),
+      );
+      expect(api.calls, isEmpty);
+    },
+  );
   test(
     'catalog search, category, sort and pagination reach the server; metadata is retained',
     () async {

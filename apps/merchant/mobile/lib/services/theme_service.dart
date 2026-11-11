@@ -960,7 +960,11 @@ class ThemeService extends ChangeNotifier {
     required String themeSlug,
     int ttlSeconds = 900,
     String templateKey = 'index',
+    int? expectedDraftVersion,
   }) async {
+    if (expectedDraftVersion != null && expectedDraftVersion < 1) {
+      throw StateError('Save a draft before previewing this design.');
+    }
     final captured = captureContext();
     final result = await _api.themes.previewSession(themeSlug, {
       'store_id': storeId,
@@ -968,6 +972,16 @@ class ThemeService extends ChangeNotifier {
       if (templateKey != 'index') 'template_key': templateKey,
     }, options: ApiRequestOptions(expectedContextVersion: captured));
     _requireContext(captured);
+    if (expectedDraftVersion != null) {
+      if (result['template_key'] != templateKey ||
+          result['draft_version'] != expectedDraftVersion) {
+        throw const ThemeDraftConflictException();
+      }
+      if (result['preview_token'] is! String ||
+          (result['preview_token'] as String).isEmpty) {
+        throw const FormatException('The saved design preview is unavailable.');
+      }
+    }
     return result;
   }
 

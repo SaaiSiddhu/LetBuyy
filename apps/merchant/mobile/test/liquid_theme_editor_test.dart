@@ -5,6 +5,8 @@ import 'package:provider/provider.dart';
 import 'package:letbuyy_store/app/store_context.dart';
 import 'package:letbuyy_store/models/store_model.dart';
 import 'package:letbuyy_store/screens/editor/section_editor_screen.dart';
+import 'package:letbuyy_store/screens/customize/theme_screen.dart';
+import 'package:letbuyy_store/screens/preview/live_preview_screen.dart';
 import 'package:letbuyy_store/services/api_client.dart';
 import 'package:letbuyy_store/services/store_service.dart';
 import 'package:letbuyy_store/services/theme_service.dart';
@@ -190,7 +192,7 @@ class _Api extends ApiClient {
 
 class _Stores extends StoreContext {
   _Stores(_Api api) : super(storeService: StoreService(api: api));
-  final store = StoreModel(
+  StoreModel store = StoreModel(
     id: 'store-a',
     sellerId: 'actor-a',
     name: 'Synthetic gifts',
@@ -210,12 +212,18 @@ Future<_Stores> mount(
   WidgetTester tester,
   _Api api, {
   GlobalKey<SectionEditorScreenState>? key,
+  Widget? home,
+  Size size = const Size(430, 1600),
+  double textScale = 1,
+  String subdomain = '',
 }) async {
-  tester.view.physicalSize = const Size(430, 1600);
+  tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.resetPhysicalSize);
   addTearDown(tester.view.resetDevicePixelRatio);
   final stores = _Stores(api);
+  if (subdomain.isNotEmpty)
+    stores.store = stores.store.copyWith(subdomain: subdomain);
   await tester.pumpWidget(
     MultiProvider(
       providers: [
@@ -223,16 +231,58 @@ Future<_Stores> mount(
         ChangeNotifierProvider(create: (_) => ThemeService(api: api)),
       ],
       child: MaterialApp(
-        home: SectionEditorScreen(
-          key: key,
-          themeSlug: api.slug,
-          expectedStoreId: 'store-a',
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.linear(textScale)),
+          child: child!,
         ),
+        home:
+            home ??
+            SectionEditorScreen(
+              key: key,
+              themeSlug: api.slug,
+              expectedStoreId: 'store-a',
+            ),
       ),
     ),
   );
   await tester.pumpAndSettle();
   return stores;
+}
+
+class _LibraryApi extends _Api {
+  int previewAttempts = 0;
+  @override
+  Future<dynamic> request(String path, {ApiRequestOptions? options}) async {
+    if (path == '/themes')
+      return {
+        'data': <dynamic>[],
+        'current_theme': slug,
+        'current_theme_record': {
+          'id': 'theme-a',
+          'slug': slug,
+          'name': 'Kindred',
+        },
+        'store_status': 'draft',
+      };
+    if (path.endsWith('/releases')) return {'data': <dynamic>[]};
+    throw StateError('Unexpected controlled library read');
+  }
+
+  @override
+  Future<JsonMap> requestJson(String path, {ApiRequestOptions? options}) async {
+    if (path == '/themes/library') return {'themes': <dynamic>[]};
+    if (path.endsWith('/preview-session')) {
+      previewAttempts++;
+      throw const ApiException(
+        message: 'Synthetic preview unavailable',
+        statusCode: 503,
+        code: 'SYNTHETIC',
+      );
+    }
+    return super.requestJson(path, options: options);
+  }
 }
 
 Future<void> editHeading(WidgetTester tester, String value) async {
@@ -246,6 +296,63 @@ Future<void> editHeading(WidgetTester tester, String value) async {
 }
 
 void main() {
+  testWidgets(
+    'library creates an editable draft without claiming a second theme copy',
+    (tester) async {
+      final api = _LibraryApi();
+      await mount(
+        tester,
+        api,
+        home: const ThemeScreen(),
+        subdomain: 'synthetic',
+      );
+      expect(find.text('Duplicate'), findsNothing);
+      await tester.tap(find.text('Create draft'));
+      await tester.pumpAndSettle();
+      expect(api.saves, hasLength(1));
+      final saved = api.saves.single['template_config'] as Map;
+      expect(saved['liquidBundle'], document(api.slug)['liquidBundle']);
+      expect(saved.containsKey('duplicatedAt'), false);
+      expect(find.text('Draft created'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
+  testWidgets(
+    'library preview failure stays unavailable instead of opening an unsigned or legacy preview',
+    (tester) async {
+      final api = _LibraryApi()..version = 1;
+      await mount(
+        tester,
+        api,
+        home: const ThemeScreen(),
+        subdomain: 'synthetic',
+      );
+      await tester.tap(find.text('Preview'));
+      await tester.pumpAndSettle();
+      expect(api.previewAttempts, 1);
+      expect(find.byType(LivePreviewScreen), findsNothing);
+      expect(
+        find.textContaining('saved design preview could not load'),
+        findsOneWidget,
+      );
+      expect(tester.takeException(), isNull);
+    },
+  );
+  testWidgets(
+    'publication confirmation remains usable at 320dp and 2.4 text scale without sending a mutation on cancel',
+    (tester) async {
+      final api = _Api()..version = 1;
+      await mount(tester, api, size: const Size(320, 700), textScale: 2.4);
+      await tester.tap(find.text('Publish'));
+      await tester.pumpAndSettle();
+      expect(find.text('Publish saved design?'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      expect(api.saves, isEmpty);
+      expect(tester.takeException(), isNull);
+    },
+  );
   testWidgets(
     'niche Liquid edit keeps groups, blocks, other pages and source on save',
     (tester) async {

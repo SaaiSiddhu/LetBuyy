@@ -57,6 +57,8 @@ class ThemeSchemaFields extends StatefulWidget {
 class _ThemeSchemaFieldsState extends State<ThemeSchemaFields> {
   final _form = GlobalKey<FormState>();
   final _changes = <String, dynamic>{};
+  final _selectedTitles = <String, String>{};
+  ({String id, String type, String title})? _resourceField;
   late final Object? _ownedContext;
   @override
   void initState() {
@@ -90,6 +92,33 @@ class _ThemeSchemaFieldsState extends State<ThemeSchemaFields> {
   Widget build(BuildContext context) {
     context.watch<StoreContext>();
     final colors = AppThemeColors.of(context);
+    final picker = _resourceField;
+    if (picker != null) {
+      void closePicker() => setState(() => _resourceField = null);
+      final selected = _value(picker.id, _record(widget.fields[picker.id]));
+      return PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) {
+          if (!didPop) closePicker();
+        },
+        child: ThemeResourcePicker(
+          key: ValueKey('theme-picker:${picker.id}'),
+          storeId: widget.storeId,
+          type: picker.type,
+          title: picker.title,
+          selectedId: selected is String ? selected : null,
+          onClose: closePicker,
+          onSelected: (id, title) {
+            if (!_owns) return;
+            setState(() {
+              _changes[picker.id] = id;
+              _selectedTitles[picker.id] = title;
+              _resourceField = null;
+            });
+          },
+        ),
+      );
+    }
     return Scaffold(
       backgroundColor: colors.bgStart,
       appBar: AppBar(
@@ -202,7 +231,7 @@ class _ThemeSchemaFieldsState extends State<ThemeSchemaFields> {
           const SizedBox(height: 8),
           Text(
             value is String && value.isNotEmpty
-                ? 'Current selection: $value'
+                ? (_selectedTitles[id] ?? 'Saved resource selected')
                 : 'No resource selected',
             style: TextStyle(color: colors.textSecondary),
           ),
@@ -211,22 +240,9 @@ class _ThemeSchemaFieldsState extends State<ThemeSchemaFields> {
             spacing: 12,
             children: [
               OutlinedButton.icon(
-                onPressed: () async {
-                  final selected = await showModalBottomSheet<String>(
-                    context: context,
-                    isScrollControlled: true,
-                    useSafeArea: true,
-                    builder: (_) => FractionallySizedBox(
-                      heightFactor: .85,
-                      child: ThemeResourcePicker(
-                        storeId: widget.storeId,
-                        type: type,
-                        title: label,
-                      ),
-                    ),
-                  );
-                  if (mounted && selected != null) _change(id, selected);
-                },
+                onPressed: () => setState(
+                  () => _resourceField = (id: id, type: type, title: label),
+                ),
                 icon: const Icon(Icons.search),
                 label: const Text('Choose'),
               ),
@@ -411,8 +427,14 @@ class ThemeResourcePicker extends StatefulWidget {
     required this.storeId,
     required this.type,
     required this.title,
+    this.selectedId,
+    this.onSelected,
+    this.onClose,
   });
   final String storeId, type, title;
+  final String? selectedId;
+  final void Function(String id, String title)? onSelected;
+  final VoidCallback? onClose;
   @override
   State<ThemeResourcePicker> createState() => _ThemeResourcePickerState();
 }
@@ -427,6 +449,7 @@ class _ThemeResourcePickerState extends State<ThemeResourcePicker> {
   @override
   void initState() {
     super.initState();
+    _ownedContext = context.read<ThemeService>().captureContext();
     _load();
   }
 
@@ -440,6 +463,7 @@ class _ThemeResourcePickerState extends State<ThemeResourcePicker> {
   Future<void> _load() async {
     final service = context.read<ThemeService>(),
         captured = service.captureContext();
+    if (_ownedContext != captured) return;
     final generation = ++_generation;
     setState(() {
       _loading = true;
@@ -489,12 +513,18 @@ class _ThemeResourcePickerState extends State<ThemeResourcePicker> {
         _ownedContext != null &&
         _ownedContext != context.read<ThemeService>().captureContext();
     return Scaffold(
-      appBar: AppBar(title: Text(widget.title)),
+      appBar: AppBar(
+        title: Text(widget.title),
+        leading: widget.onClose == null
+            ? null
+            : BackButton(onPressed: widget.onClose),
+      ),
       body: Column(
         children: [
           Padding(
             padding: const EdgeInsets.all(16),
             child: TextField(
+              enabled: !retired && !_loading,
               controller: _query,
               maxLength: 200,
               decoration: const InputDecoration(
@@ -545,6 +575,7 @@ class _ThemeResourcePickerState extends State<ThemeResourcePicker> {
                       itemBuilder: (context, index) {
                         final item = _items[index];
                         return ListTile(
+                          selected: item['id'] == widget.selectedId,
                           title: Text(item['title'] as String),
                           subtitle: item['handle'] == null
                               ? null
@@ -552,7 +583,14 @@ class _ThemeResourcePickerState extends State<ThemeResourcePicker> {
                           onTap: () {
                             if (_ownedContext ==
                                 context.read<ThemeService>().captureContext())
-                              Navigator.pop(context, item['id'] as String);
+                              if (widget.onSelected != null) {
+                                widget.onSelected!(
+                                  item['id'] as String,
+                                  item['title'] as String,
+                                );
+                              } else {
+                                Navigator.pop(context, item['id'] as String);
+                              }
                           },
                         );
                       },

@@ -94,6 +94,7 @@ class _LiquidThemeEditorState extends State<LiquidThemeEditor> {
       await showDialog<bool>(
         context: context,
         builder: (dialog) => AlertDialog(
+          scrollable: true,
           title: Text(title),
           content: Text(message),
           actions: [
@@ -214,6 +215,7 @@ class _LiquidThemeEditorState extends State<LiquidThemeEditor> {
         context: context,
         builder: (dialog) => StatefulBuilder(
           builder: (dialog, update) => AlertDialog(
+            scrollable: true,
             title: const Text('Publish saved design?'),
             content: Column(
               mainAxisSize: MainAxisSize.min,
@@ -348,14 +350,11 @@ class _LiquidThemeEditorState extends State<LiquidThemeEditor> {
         storeId: widget.store.id,
         themeSlug: widget.slug,
         templateKey: _template,
+        expectedDraftVersion: _version,
       );
       final token = session['preview_token'];
       if (token is! String || token.isEmpty)
         throw const FormatException('Preview unavailable');
-      if (session['template_key'] != _template ||
-          session['draft_version'] != _version) {
-        throw const ThemeDraftConflictException();
-      }
       if (!mounted || !_owns) return;
       final url = ThemeService.buildStorefrontPreviewUrl(
         subdomain: widget.store.subdomain,

@@ -199,6 +199,7 @@ class _ThemeScreenState extends State<ThemeScreen> {
           storeId: store.id,
           themeSlug: slug,
           baseVersion: editor.version,
+          makeStoreLive: false,
         );
       }
       if (!mounted ||
@@ -258,57 +259,83 @@ class _ThemeScreenState extends State<ThemeScreen> {
     });
   }
 
-  Future<void> _duplicateDraft() {
-    return _runThemeAction(() async {
-      final editor =
-          _editorPayload ??
-          await context.read<ThemeService>().loadEditor(
-            storeId: _store!.id,
-            themeSlug: _activeThemeSlug,
-          );
-      await context.read<ThemeService>().duplicateDraft(
+  Future<void> _createDraft() async {
+    final editor = _editorPayload;
+    if (editor == null || editor.hasDraft) return;
+    await _runThemeAction(() async {
+      if (editor.store['id'] != _store!.id ||
+          editor.theme['slug'] != _activeThemeSlug)
+        return;
+      await context.read<ThemeService>().saveDraft(
         storeId: _store!.id,
         themeSlug: _activeThemeSlug,
         templateConfig: editor.templateConfig,
         baseVersion: editor.version,
+        templateKey: editor.templateKey,
       );
-      _showMessage('Draft duplicated', isSuccess: true);
+      _showMessage('Draft created', isSuccess: true);
     });
   }
 
   Future<void> _previewTheme() async {
-    if (_store == null) return;
-
+    final store = _store,
+        editor = _editorPayload,
+        service = context.read<ThemeService>();
+    final captured = _ownedContext, slug = _activeThemeSlug;
+    if (store == null ||
+        editor == null ||
+        !editor.hasDraft ||
+        _isBusy ||
+        captured != service.captureContext() ||
+        editor.store['id'] != store.id ||
+        editor.theme['slug'] != slug ||
+        store.subdomain.isEmpty)
+      return;
     setState(() => _isBusy = true);
-    String? previewToken;
     try {
-      if (_editorPayload?.hasDraft == true) {
-        final preview = await context.read<ThemeService>().createPreviewSession(
-          storeId: _store!.id,
-          themeSlug: _activeThemeSlug,
+      final preview = await service.createPreviewSession(
+        storeId: store.id,
+        themeSlug: slug,
+        templateKey: editor.templateKey,
+        expectedDraftVersion: editor.version,
+      );
+      if (!mounted ||
+          captured != service.captureContext() ||
+          _store?.id != store.id ||
+          _activeThemeSlug != slug)
+        return;
+      final url = ThemeService.buildStorefrontPreviewUrl(
+        subdomain: store.subdomain,
+        previewToken: preview['preview_token'] as String,
+        templateKey: editor.templateKey,
+      );
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => LivePreviewScreen(
+            storeUrl: url,
+            storeName: '$slug · Preview',
+            expectedThemeContext: captured,
+            notice:
+                'Private preview of your saved design. This does not publish the theme.',
+          ),
+        ),
+      );
+    } on ThemeDraftConflictException {
+      if (mounted && captured == service.captureContext())
+        _showMessage(
+          'This saved design changed. Reload it before previewing.',
+          isError: true,
         );
-        previewToken = preview['preview_token']?.toString();
-      }
     } catch (_) {
-      previewToken = null;
+      if (mounted && captured == service.captureContext())
+        _showMessage(
+          'The saved design preview could not load. Retry after reloading the draft.',
+          isError: true,
+        );
     } finally {
       if (mounted) setState(() => _isBusy = false);
     }
-
-    final url = ThemeService.buildStorefrontPreviewUrl(
-      subdomain: _store!.subdomain,
-      previewToken: previewToken,
-      viewport: 'phone',
-      settingsData: _store!.templateConfig?.themeSettings.toMap(),
-    );
-    if (!mounted) return;
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) =>
-            LivePreviewScreen(storeUrl: url, storeName: _store!.name),
-      ),
-    );
   }
 
   Future<void> _openVersions() async {
@@ -568,7 +595,7 @@ class _ThemeScreenState extends State<ThemeScreen> {
                 label: 'Preview',
                 icon: Icons.visibility_outlined,
                 onTap: _previewTheme,
-                enabled: !_isBusy,
+                enabled: !_isBusy && hasDraft,
               ),
               _ActionChipButton(
                 label: 'Versions',
@@ -577,10 +604,10 @@ class _ThemeScreenState extends State<ThemeScreen> {
                 enabled: !_isBusy,
               ),
               _ActionChipButton(
-                label: 'Duplicate',
-                icon: Icons.copy_rounded,
-                onTap: _duplicateDraft,
-                enabled: !_isBusy,
+                label: 'Create draft',
+                icon: Icons.edit_note_rounded,
+                onTap: _createDraft,
+                enabled: !_isBusy && _editorPayload != null && !hasDraft,
               ),
               _ActionChipButton(
                 label: recoverPublish ? 'Recover publish' : 'Publish',

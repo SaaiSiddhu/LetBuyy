@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
+import '../../theme/app_theme_colors.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:provider/provider.dart';
 import '../../app/store_context.dart';
@@ -32,7 +32,8 @@ class _LivePreviewScreenState extends State<LivePreviewScreen> {
     final uri = Uri.tryParse(widget.storeUrl);
     return uri != null &&
             (uri.scheme == 'https' || uri.scheme == 'http') &&
-            uri.host.isNotEmpty
+            uri.host.isNotEmpty &&
+            uri.userInfo.isEmpty
         ? uri
         : null;
   }
@@ -41,14 +42,6 @@ class _LivePreviewScreenState extends State<LivePreviewScreen> {
   bool _failed = false;
   bool _retired = false;
   Uri? _documentUri;
-  String _currentDevice = 'mobile';
-
-  final Map<String, double> _deviceWidths = {
-    'mobile': 375,
-    'tablet': 768,
-    'desktop': 1200,
-  };
-
   @override
   void initState() {
     super.initState();
@@ -104,6 +97,7 @@ class _LivePreviewScreenState extends State<LivePreviewScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppThemeColors.of(context);
     if (widget.expectedThemeContext != null) {
       context.watch<StoreContext>();
       if (context.read<ThemeService>().captureContext() !=
@@ -126,37 +120,13 @@ class _LivePreviewScreenState extends State<LivePreviewScreen> {
       }
     }
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: colors.bgStart,
       appBar: AppBar(
         title: Text(widget.storeName),
-        backgroundColor: Colors.white,
-        surfaceTintColor: Colors.white,
+        backgroundColor: colors.card,
+        surfaceTintColor: colors.card,
+        foregroundColor: colors.textPrimary,
         actions: [
-          // Device switcher
-          PopupMenuButton<String>(
-            icon: Icon(_getDeviceIcon()),
-            tooltip: 'Switch device',
-            onSelected: (device) {
-              setState(() => _currentDevice = device);
-            },
-            itemBuilder: (context) => [
-              _buildDeviceMenuItem(
-                'mobile',
-                Icons.phone_iphone_rounded,
-                'Mobile',
-              ),
-              _buildDeviceMenuItem(
-                'tablet',
-                Icons.tablet_mac_rounded,
-                'Tablet',
-              ),
-              _buildDeviceMenuItem(
-                'desktop',
-                Icons.computer_rounded,
-                'Desktop',
-              ),
-            ],
-          ),
           // Refresh
           IconButton(
             icon: const Icon(Icons.refresh_rounded),
@@ -186,14 +156,16 @@ class _LivePreviewScreenState extends State<LivePreviewScreen> {
               children: [
                 Center(
                   child: Container(
-                    width: _deviceWidths[_currentDevice],
+                    width: double.infinity,
                     margin: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: colors.card,
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.1),
+                          color: Theme.of(
+                            context,
+                          ).shadowColor.withValues(alpha: 0.1),
                           blurRadius: 20,
                           offset: const Offset(0, 10),
                         ),
@@ -207,10 +179,10 @@ class _LivePreviewScreenState extends State<LivePreviewScreen> {
                 ),
                 if (_isLoading)
                   Container(
-                    color: Colors.white.withValues(alpha: 0.8),
+                    color: colors.card.withValues(alpha: 0.9),
                     child: Center(
                       child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation(AppColors.primary),
+                        valueColor: AlwaysStoppedAnimation(colors.accent),
                       ),
                     ),
                   ),
@@ -248,52 +220,23 @@ class _LivePreviewScreenState extends State<LivePreviewScreen> {
     );
   }
 
-  IconData _getDeviceIcon() {
-    switch (_currentDevice) {
-      case 'tablet':
-        return Icons.tablet_mac_rounded;
-      case 'desktop':
-        return Icons.computer_rounded;
-      default:
-        return Icons.phone_iphone_rounded;
-    }
-  }
-
-  PopupMenuItem<String> _buildDeviceMenuItem(
-    String value,
-    IconData icon,
-    String label,
-  ) {
-    return PopupMenuItem(
-      value: value,
-      child: Row(
-        children: [
-          Icon(
-            icon,
-            size: 20,
-            color: _currentDevice == value ? AppColors.primary : null,
-          ),
-          const SizedBox(width: 12),
-          Text(
-            label,
-            style: TextStyle(
-              fontWeight: _currentDevice == value ? FontWeight.w600 : null,
-              color: _currentDevice == value ? AppColors.primary : null,
-            ),
-          ),
-          if (_currentDevice == value) ...[
-            const Spacer(),
-            Icon(Icons.check_rounded, size: 18, color: AppColors.primary),
-          ],
-        ],
-      ),
-    );
-  }
-
   Future<void> _openInBrowser() async {
     final uri = _previewUri;
-    if (uri != null && await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (uri == null) return;
+    try {
+      if (await canLaunchUrl(uri) &&
+          await launchUrl(uri, mode: LaunchMode.externalApplication))
+        return;
+    } catch (_) {
+      /* Show the same actionable unavailable state below. */
     }
+    if (mounted)
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'The preview could not open in your browser. Retry from this screen.',
+          ),
+        ),
+      );
   }
 }

@@ -3,7 +3,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:letbuyy_store/screens/preview/live_preview_screen.dart';
 
 void main() {
-  for (final url in ['', 'missing-scheme', 'javascript:alert(1)']) {
+  for (final url in [
+    '',
+    'missing-scheme',
+    'javascript:alert(1)',
+    'https://user:password@example.invalid/private',
+  ]) {
     testWidgets('invalid preview URL renders an unavailable state: $url', (
       tester,
     ) async {
