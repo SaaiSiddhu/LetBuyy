@@ -2,16 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:provider/provider.dart';
+import '../../app/store_context.dart';
+import '../../services/theme_service.dart';
 
 /// Live preview screen with WebView
 class LivePreviewScreen extends StatefulWidget {
   final String storeUrl;
   final String storeName;
+  final String? notice;
+  final Object? expectedThemeContext;
 
   const LivePreviewScreen({
     super.key,
     required this.storeUrl,
     required this.storeName,
+    this.notice,
+    this.expectedThemeContext,
   });
 
   @override
@@ -31,6 +38,9 @@ class _LivePreviewScreenState extends State<LivePreviewScreen> {
   }
 
   bool _isLoading = true;
+  bool _failed = false;
+  bool _retired = false;
+  Uri? _documentUri;
   String _currentDevice = 'mobile';
 
   final Map<String, double> _deviceWidths = {
@@ -51,19 +61,42 @@ class _LivePreviewScreenState extends State<LivePreviewScreen> {
       _isLoading = false;
       return;
     }
+    _documentUri = uri;
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
         NavigationDelegate(
           onPageStarted: (url) {
-            if (mounted) setState(() => _isLoading = true);
+            _documentUri = Uri.tryParse(url);
+            if (mounted && !_retired)
+              setState(() {
+                _isLoading = true;
+                _failed = false;
+              });
           },
           onPageFinished: (url) {
-            if (mounted) setState(() => _isLoading = false);
+            if (mounted && !_retired) setState(() => _isLoading = false);
           },
           onWebResourceError: (error) {
-            if (mounted) setState(() => _isLoading = false);
+            if (mounted && !_retired && error.isForMainFrame != false) {
+              setState(() {
+                _isLoading = false;
+                _failed = true;
+              });
+            }
           },
+          onHttpError: (error) {
+            if (mounted && !_retired && error.request?.uri == _documentUri) {
+              setState(() {
+                _isLoading = false;
+                _failed = true;
+              });
+            }
+          },
+          onNavigationRequest: (request) =>
+              _retired && request.url != 'about:blank'
+              ? NavigationDecision.prevent
+              : NavigationDecision.navigate,
         ),
       )
       ..loadRequest(uri);
@@ -71,6 +104,27 @@ class _LivePreviewScreenState extends State<LivePreviewScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.expectedThemeContext != null) {
+      context.watch<StoreContext>();
+      if (context.read<ThemeService>().captureContext() !=
+          widget.expectedThemeContext) {
+        if (!_retired) {
+          _retired = true;
+          _controller?.loadRequest(Uri.parse('about:blank'));
+        }
+        return Scaffold(
+          appBar: AppBar(title: const Text('Theme preview')),
+          body: const Center(
+            child: Padding(
+              padding: EdgeInsets.all(24),
+              child: Text(
+                'The active account or store changed. Close this preview and reopen it from the theme library.',
+              ),
+            ),
+          ),
+        );
+      }
+    }
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
@@ -117,38 +171,78 @@ class _LivePreviewScreenState extends State<LivePreviewScreen> {
           ),
         ],
       ),
-      body: Stack(
+      body: Column(
         children: [
-          Center(
-            child: Container(
-              width: _deviceWidths[_currentDevice],
-              margin: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
-                    blurRadius: 20,
-                    offset: const Offset(0, 10),
-                  ),
-                ],
+          if (widget.notice != null)
+            Material(
+              color: Theme.of(context).colorScheme.surface,
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Text(widget.notice!, textAlign: TextAlign.center),
               ),
-              clipBehavior: Clip.antiAlias,
-              child: _controller != null
-                  ? WebViewWidget(controller: _controller!)
-                  : const Center(child: Text('Store URL not available')),
+            ),
+          Expanded(
+            child: Stack(
+              children: [
+                Center(
+                  child: Container(
+                    width: _deviceWidths[_currentDevice],
+                    margin: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.1),
+                          blurRadius: 20,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: _controller != null
+                        ? WebViewWidget(controller: _controller!)
+                        : const Center(child: Text('Store URL not available')),
+                  ),
+                ),
+                if (_isLoading)
+                  Container(
+                    color: Colors.white.withValues(alpha: 0.8),
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation(AppColors.primary),
+                      ),
+                    ),
+                  ),
+                if (_failed)
+                  Positioned.fill(
+                    child: ColoredBox(
+                      color: Theme.of(context).colorScheme.surface,
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Text(
+                                'This preview could not load. Your published store has not changed.',
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 16),
+                              OutlinedButton(
+                                onPressed: () =>
+                                    _controller?.loadRequest(_previewUri!),
+                                child: const Text('Retry preview'),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
             ),
           ),
-          if (_isLoading)
-            Container(
-              color: Colors.white.withValues(alpha: 0.8),
-              child: Center(
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation(AppColors.primary),
-                ),
-              ),
-            ),
         ],
       ),
     );

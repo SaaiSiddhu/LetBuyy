@@ -2373,6 +2373,30 @@ class ThemesApi {
         options: options,
       );
 
+  Future<JsonMap> resourceSearchPayload({
+    required String storeId,
+    required String type,
+    String query = '',
+    int page = 1,
+    int limit = 20,
+    ApiRequestOptions? options,
+  }) async {
+    final body = await _client.request(
+      '/themes/resource-search',
+      options: _mergeOptions(
+        options,
+        query: {
+          'store_id': storeId,
+          'type': type,
+          'q': query,
+          'page': page,
+          'limit': limit,
+        },
+      ),
+    );
+    return asJsonMap(body);
+  }
+
   Future<List<String>> categories({ApiRequestOptions? options}) =>
       _client.requestData(
         '/themes/categories',
@@ -2416,9 +2440,16 @@ class ThemesApi {
     String slug,
     String storeId, {
     ApiRequestOptions? options,
+    String templateKey = 'index',
   }) => _client.requestJson(
     '/themes/${_encodePathSegment(slug)}/editor',
-    options: _mergeOptions(options, query: {'store_id': storeId}),
+    options: _mergeOptions(
+      options,
+      query: {
+        'store_id': storeId,
+        if (templateKey != 'index') 'template_key': templateKey,
+      },
+    ),
   );
 
   Future<JsonMap> saveDraft(

@@ -43,11 +43,13 @@ class _PendingThemePublish {
     this.config,
     this.makeStoreLive, {
     this.journalActor,
+    this.templateKey = 'index',
   });
   final Object? context;
   final String key, signature;
   final String? journalActor;
   final int initialVersion;
+  final String templateKey;
   final bool makeStoreLive;
   final Map<String, dynamic>? config;
   int? savedVersion;
@@ -135,8 +137,15 @@ class ThemeService extends ChangeNotifier {
     }
   }
 
-  String _journalKey(String kind, String actor, String store, String slug) =>
-      'letbuyy:theme-intent:v1:${Uri.encodeComponent(actor)}:${Uri.encodeComponent(store)}:${Uri.encodeComponent(slug)}:$kind';
+  String _journalKey(
+    String kind,
+    String actor,
+    String store,
+    String slug,
+    String templateKey,
+  ) =>
+      'letbuyy:theme-intent:v1:${Uri.encodeComponent(actor)}:${Uri.encodeComponent(store)}:${Uri.encodeComponent(slug)}:$kind'
+      '${templateKey == 'index' ? '' : ':template:${Uri.encodeComponent(templateKey)}'}';
 
   bool _journalIdentifier(Object? value) =>
       value is String &&
@@ -152,6 +161,7 @@ class ThemeService extends ChangeNotifier {
     String actor,
     String store,
     String slug,
+    String templateKey,
   ) {
     final raw = preferences.getString(key);
     if (raw == null) return null;
@@ -171,6 +181,7 @@ class ThemeService extends ChangeNotifier {
       'themeSlug',
       'key',
       'makeStoreLive',
+      if (templateKey != 'index') 'templateKey',
       if (kind == 'publish')
         'baseVersion'
       else ...[
@@ -182,7 +193,8 @@ class ThemeService extends ChangeNotifier {
     if (decoded is! Map<String, dynamic> ||
         decoded.length != fields.length ||
         !fields.every(decoded.containsKey) ||
-        decoded['version'] != 1 ||
+        decoded['version'] != (templateKey == 'index' ? 1 : 2) ||
+        (templateKey != 'index' && decoded['templateKey'] != templateKey) ||
         decoded['kind'] != kind ||
         decoded['actorId'] != actor ||
         decoded['storeId'] != store ||
@@ -215,6 +227,7 @@ class ThemeService extends ChangeNotifier {
     required String store,
     required String slug,
     required Object? context,
+    String templateKey = 'index',
     required Future<T> Function(
       SharedPreferences,
       String,
@@ -222,12 +235,20 @@ class ThemeService extends ChangeNotifier {
     )
     action,
   }) {
-    final key = _journalKey(kind, actor, store, slug);
+    final key = _journalKey(kind, actor, store, slug, templateKey);
     return _serializeJournal(key, () async {
       _requireJournalBinding(context, actor);
       final preferences = await _recoveryPreferences();
       _requireJournalBinding(context, actor);
-      final metadata = _readJournal(preferences, key, kind, actor, store, slug);
+      final metadata = _readJournal(
+        preferences,
+        key,
+        kind,
+        actor,
+        store,
+        slug,
+        templateKey,
+      );
       final result = await action(preferences, key, metadata);
       _requireJournalBinding(context, actor);
       return result;
@@ -240,15 +261,22 @@ class ThemeService extends ChangeNotifier {
     String actor,
   ) {
     final version = value['baseVersion'] as int,
-        live = value['makeStoreLive'] as bool;
+        live = value['makeStoreLive'] as bool,
+        templateKey = value['templateKey'] as String? ?? 'index';
     return _PendingThemePublish(
       context,
       value['key'] as String,
-      jsonEncode({'version': version, 'config': null, 'make_store_live': live}),
+      jsonEncode({
+        'version': version,
+        'config': null,
+        'make_store_live': live,
+        if (templateKey != 'index') 'template_key': templateKey,
+      }),
       version,
       null,
       live,
       journalActor: actor,
+      templateKey: templateKey,
     )..savedVersion = version;
   }
 
@@ -282,8 +310,9 @@ class ThemeService extends ChangeNotifier {
     String store,
     String slug,
     Object? context,
-    String? actor,
-  ) async {
+    String? actor, {
+    String templateKey = 'index',
+  }) async {
     if (actor == null) return;
     await _withJournal<void>(
       kind: 'publish',
@@ -291,10 +320,11 @@ class ThemeService extends ChangeNotifier {
       store: store,
       slug: slug,
       context: context,
+      templateKey: templateKey,
       action: (_, __, value) async {
         if (value == null) return;
-        final scope = _scope(store, slug),
-            pending = _pendingPublishes[_scope(store, slug)];
+        final scope = _scope(store, slug, templateKey),
+            pending = _pendingPublishes[_scope(store, slug, templateKey)];
         if (pending?.context == context && pending?.key == value['key']) return;
         _pendingPublishes[scope] = _publicationFromJournal(
           value,
@@ -340,7 +370,7 @@ class ThemeService extends ChangeNotifier {
     final actor = pending.journalActor;
     if (actor == null) return;
     final metadata = <String, dynamic>{
-      'version': 1,
+      'version': pending.templateKey == 'index' ? 1 : 2,
       'kind': 'publish',
       'actorId': actor,
       'storeId': store,
@@ -348,6 +378,7 @@ class ThemeService extends ChangeNotifier {
       'key': pending.key,
       'baseVersion': pending.savedVersion,
       'makeStoreLive': pending.makeStoreLive,
+      if (pending.templateKey != 'index') 'templateKey': pending.templateKey,
     };
     if (pending.savedVersion == null || pending.savedVersion! < 1)
       throw StateError('Save a draft before publishing.');
@@ -357,14 +388,12 @@ class ThemeService extends ChangeNotifier {
       store: store,
       slug: slug,
       context: pending.context,
+      templateKey: pending.templateKey,
       action: (preferences, key, value) async {
         if (value != null) {
           if (value['key'] != pending.key) {
-            _pendingPublishes[_scope(store, slug)] = _publicationFromJournal(
-              value,
-              pending.context,
-              actor,
-            );
+            _pendingPublishes[_scope(store, slug, pending.templateKey)] =
+                _publicationFromJournal(value, pending.context, actor);
             throw const ThemeDraftRetryRequiredException();
           }
           if (!_sameJournal(value, metadata))
@@ -437,8 +466,9 @@ class ThemeService extends ChangeNotifier {
     String slug,
     Object? context,
     String? actor,
-    String intentKey,
-  ) async {
+    String intentKey, {
+    String templateKey = 'index',
+  }) async {
     if (actor == null) return true;
     try {
       return await _withJournal<bool>(
@@ -447,6 +477,7 @@ class ThemeService extends ChangeNotifier {
         store: store,
         slug: slug,
         context: context,
+        templateKey: templateKey,
         action: (preferences, key, value) async {
           // Another completed request may already have retired this key. Never
           // remove a newer intent captured by a different service instance.
@@ -460,7 +491,10 @@ class ThemeService extends ChangeNotifier {
     }
   }
 
-  String _scope(String store, String slug) => '$store:$slug';
+  String _scope(String store, String slug, [String templateKey = 'index']) =>
+      templateKey == 'index'
+      ? '$store:$slug'
+      : '$store:$slug:template:$templateKey';
   String _signature(Map<String, dynamic> body) {
     final copy = Map<String, dynamic>.from(body);
     final config = copy['template_config'];
@@ -471,20 +505,29 @@ class ThemeService extends ChangeNotifier {
     return jsonEncode(copy);
   }
 
-  bool hasPendingSave(String store, String slug) {
-    final pending = _pendingSaves[_scope(store, slug)];
+  bool hasPendingSave(
+    String store,
+    String slug, {
+    String templateKey = 'index',
+  }) {
+    final pending = _pendingSaves[_scope(store, slug, templateKey)];
     return pending != null && pending.context == captureContext();
   }
 
   Future<ThemeDraftSaveResult> retryPendingSave({
     required String storeId,
     required String themeSlug,
+    String templateKey = 'index',
   }) {
-    final pending = _pendingSaves[_scope(storeId, themeSlug)];
+    final pending = _pendingSaves[_scope(storeId, themeSlug, templateKey)];
     if (pending == null)
       throw StateError('No previous theme save needs recovery.');
     _requireContext(pending.context);
-    return _sendPendingSave(_scope(storeId, themeSlug), themeSlug, pending);
+    return _sendPendingSave(
+      _scope(storeId, themeSlug, templateKey),
+      themeSlug,
+      pending,
+    );
   }
 
   Future<ThemeDraftSaveResult> _sendPendingSave(
@@ -556,14 +599,38 @@ class ThemeService extends ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
-  Future<ThemeCatalogResponse> fetchThemes(String storeId) async {
+  Future<ThemeCatalogResponse> fetchThemes(
+    String storeId, {
+    String? search,
+    String? category,
+    String sort = 'portfolio',
+    int page = 1,
+    int limit = 50,
+  }) async {
+    if ((search?.length ?? 0) > 120 ||
+        (category?.length ?? 0) > 80 ||
+        !const ['portfolio', 'name', 'new'].contains(sort) ||
+        page < 1 ||
+        page > 500 ||
+        limit < 1 ||
+        limit > 50) {
+      throw const FormatException('Choose supported theme catalog filters.');
+    }
     final captured = captureContext();
     _isLoading = true;
     notifyListeners();
 
     try {
       final res = await _api.themes.catalogPayload(
-        query: {'store_id': storeId, 'limit': 50},
+        query: {
+          'store_id': storeId,
+          'limit': limit,
+          'page': page,
+          'sort': sort,
+          if (search != null && search.trim().isNotEmpty)
+            'search': search.trim(),
+          if (category != null && category.isNotEmpty) 'category': category,
+        },
         options: ApiRequestOptions(expectedContextVersion: captured),
       );
       _requireContext(captured);
@@ -596,10 +663,66 @@ class ThemeService extends ChangeNotifier {
         .toList(growable: false);
   }
 
+  Future<List<String>> fetchCatalogCategories() async {
+    final captured = captureContext();
+    final categories = await _api.themes.categories(
+      options: ApiRequestOptions(expectedContextVersion: captured),
+    );
+    _requireContext(captured);
+    return categories;
+  }
+
+  Future<Map<String, dynamic>> searchThemeResources({
+    required String storeId,
+    required String type,
+    String query = '',
+    int page = 1,
+  }) async {
+    if (!const [
+          'product',
+          'collection',
+          'page',
+          'blog',
+          'menu',
+        ].contains(type) ||
+        query.length > 200 ||
+        page < 1 ||
+        page > 1000) {
+      throw const FormatException(
+        'Choose supported theme resource search options.',
+      );
+    }
+    final captured = captureContext();
+    final result = await _api.themes.resourceSearchPayload(
+      storeId: storeId,
+      type: type,
+      query: query,
+      page: page,
+      options: ApiRequestOptions(expectedContextVersion: captured),
+    );
+    _requireContext(captured);
+    if (result['data'] is! List || result['meta'] is! Map) {
+      throw const FormatException(
+        'The resource search response was not confirmed.',
+      );
+    }
+    final meta = result['meta'] as Map;
+    if (meta['type'] != type ||
+        meta['page'] != page ||
+        meta['has_more'] is! bool) {
+      throw const FormatException(
+        'The resource search scope was not confirmed.',
+      );
+    }
+    return result;
+  }
+
   Future<ThemeInstallReceipt> installTheme({
     required String storeId,
     required String themeSlug,
     String? expectedVersion,
+    String? expectedPackageId,
+    String? expectedPackageVersionId,
     Map<String, dynamic> configOverrides = const {},
   }) async {
     final captured = captureContext();
@@ -607,12 +730,17 @@ class ThemeService extends ChangeNotifier {
       'store_id': storeId,
       'config_overrides': configOverrides,
       if (expectedVersion != null) 'expected_version': expectedVersion,
+      if (expectedPackageId != null) 'expected_package_id': expectedPackageId,
+      if (expectedPackageVersionId != null)
+        'expected_package_version_id': expectedPackageVersionId,
     }, options: ApiRequestOptions(expectedContextVersion: captured));
     _requireContext(captured);
     final receipt = ThemeInstallReceipt.fromJson(
       response,
       expectedSlug: themeSlug,
       expectedVersion: expectedVersion,
+      expectedPackageId: expectedPackageId,
+      expectedPackageVersionId: expectedPackageVersionId,
     );
     final library = await fetchLibrary(storeId);
     _requireContext(captured);
@@ -620,9 +748,34 @@ class ThemeService extends ChangeNotifier {
     return receipt;
   }
 
+  Future<Map<String, dynamic>> loadCatalogPackage(String slug) async {
+    final captured = captureContext();
+    final result = await _api.themes.schema(
+      slug,
+      options: ApiRequestOptions(expectedContextVersion: captured),
+    );
+    _requireContext(captured);
+    final theme = result['theme'];
+    final uuid = RegExp(
+      r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
+    );
+    if (theme is! Map ||
+        theme['slug'] != slug ||
+        theme['theme_package_id'] is! String ||
+        !uuid.hasMatch(theme['theme_package_id'] as String) ||
+        theme['theme_package_version_id'] is! String ||
+        !uuid.hasMatch(theme['theme_package_version_id'] as String)) {
+      throw const FormatException(
+        'The exact theme package could not be confirmed. Retry package details.',
+      );
+    }
+    return Map<String, dynamic>.from(theme);
+  }
+
   Future<ThemeEditorPayload> loadEditor({
     required String storeId,
     required String themeSlug,
+    String templateKey = 'index',
   }) async {
     final context = captureContext();
     _isLoading = true;
@@ -633,6 +786,7 @@ class ThemeService extends ChangeNotifier {
         themeSlug,
         storeId,
         options: ApiRequestOptions(expectedContextVersion: context),
+        templateKey: templateKey,
       );
       _requireContext(context);
       if (res['version'] is! int || (res['version'] as int) < 0)
@@ -641,7 +795,13 @@ class ThemeService extends ChangeNotifier {
         'data': Map<String, dynamic>.from(res),
       });
       final actor = _captureJournalActor();
-      await _restorePublication(storeId, themeSlug, context, actor);
+      await _restorePublication(
+        storeId,
+        themeSlug,
+        context,
+        actor,
+        templateKey: templateKey,
+      );
       _requireJournalBinding(context, actor);
       _editorPayload = payload;
       return payload;
@@ -657,13 +817,15 @@ class ThemeService extends ChangeNotifier {
     required Map<String, dynamic> templateConfig,
     int? baseVersion,
     String? idempotencyKey,
+    String templateKey = 'index',
   }) async {
     if (baseVersion == null || baseVersion < 0)
       throw ArgumentError('Load the current owned draft before saving.');
-    final context = captureContext(), scope = _scope(storeId, themeSlug);
+    final context = captureContext(),
+        scope = _scope(storeId, themeSlug, templateKey);
     final body = <String, dynamic>{
       'store_id': storeId,
-      'template_key': 'index',
+      'template_key': templateKey,
       'template_config': jsonDecode(jsonEncode(templateConfig)),
       'base_version': baseVersion,
       'client': 'flutter-builder',
@@ -730,17 +892,19 @@ class ThemeService extends ChangeNotifier {
     required String storeId,
     required String themeSlug,
     int? baseVersion,
+    String templateKey = 'index',
   }) async {
     final editor = _editorPayload;
     if (editor == null ||
         editor.store['id'] != storeId ||
-        editor.theme['slug'] != themeSlug) {
+        editor.theme['slug'] != themeSlug ||
+        editor.templateKey != templateKey) {
       throw StateError('Load this theme before discarding its draft.');
     }
     final version = baseVersion ?? editor.version;
     if (version < 0) throw ArgumentError('Load the current theme version.');
     final context = captureContext();
-    final scope = (context, storeId, themeSlug, version);
+    final scope = (context, storeId, themeSlug, templateKey, version);
     final key = _discardKeys.putIfAbsent(scope, () => const Uuid().v4());
     final discarded = await _api.themes.deleteDraft(
       themeSlug,
@@ -748,7 +912,11 @@ class ThemeService extends ChangeNotifier {
       options: ApiRequestOptions(
         expectedContextVersion: context,
         idempotencyKey: key,
-        query: {'base_version': version, 'idempotency_key': key},
+        query: {
+          'base_version': version,
+          'idempotency_key': key,
+          if (templateKey != 'index') 'template_key': templateKey,
+        },
       ),
     );
     _requireContext(context);
@@ -786,11 +954,16 @@ class ThemeService extends ChangeNotifier {
     required String storeId,
     required String themeSlug,
     int ttlSeconds = 900,
+    String templateKey = 'index',
   }) async {
-    return _api.themes.previewSession(themeSlug, {
+    final captured = captureContext();
+    final result = await _api.themes.previewSession(themeSlug, {
       'store_id': storeId,
       'ttl_seconds': ttlSeconds,
-    });
+      if (templateKey != 'index') 'template_key': templateKey,
+    }, options: ApiRequestOptions(expectedContextVersion: captured));
+    _requireContext(captured);
+    return result;
   }
 
   String? pendingRollbackTarget(String storeId, String themeSlug) {
@@ -956,8 +1129,12 @@ class ThemeService extends ChangeNotifier {
     }
   }
 
-  bool hasPendingPublication(String storeId, String themeSlug) {
-    final pending = _pendingPublishes[_scope(storeId, themeSlug)];
+  bool hasPendingPublication(
+    String storeId,
+    String themeSlug, {
+    String templateKey = 'index',
+  }) {
+    final pending = _pendingPublishes[_scope(storeId, themeSlug, templateKey)];
     return pending != null &&
         pending.context == captureContext() &&
         (_actorIdProvider == null ||
@@ -967,11 +1144,18 @@ class ThemeService extends ChangeNotifier {
   Future<Map<String, dynamic>> recoverPublication({
     required String storeId,
     required String themeSlug,
+    String templateKey = 'index',
   }) async {
     final captured = captureContext(), actor = _captureJournalActor();
-    await _restorePublication(storeId, themeSlug, captured, actor);
+    await _restorePublication(
+      storeId,
+      themeSlug,
+      captured,
+      actor,
+      templateKey: templateKey,
+    );
     _requireJournalBinding(captured, actor);
-    final pending = _pendingPublishes[_scope(storeId, themeSlug)];
+    final pending = _pendingPublishes[_scope(storeId, themeSlug, templateKey)];
     if (pending == null ||
         (_actorIdProvider != null && pending.journalActor != actor))
       throw StateError(
@@ -984,6 +1168,7 @@ class ThemeService extends ChangeNotifier {
       templateConfig: pending.config,
       baseVersion: pending.initialVersion,
       makeStoreLive: pending.makeStoreLive,
+      templateKey: pending.templateKey,
     );
   }
 
@@ -995,11 +1180,12 @@ class ThemeService extends ChangeNotifier {
     bool? liquidRenderingCanary,
     int? baseVersion,
     bool makeStoreLive = true,
+    String templateKey = 'index',
   }) async {
     if (baseVersion == null || baseVersion < 0)
       throw ArgumentError('Load the current owned draft before publishing.');
     final context = captureContext(),
-        scope = _scope(storeId, themeSlug),
+        scope = _scope(storeId, themeSlug, templateKey),
         actor = _captureJournalActor();
     final config = templateConfig == null
         ? null
@@ -1018,8 +1204,15 @@ class ThemeService extends ChangeNotifier {
       'version': baseVersion,
       'config': config,
       'make_store_live': makeStoreLive,
+      if (templateKey != 'index') 'template_key': templateKey,
     });
-    await _restorePublication(storeId, themeSlug, context, actor);
+    await _restorePublication(
+      storeId,
+      themeSlug,
+      context,
+      actor,
+      templateKey: templateKey,
+    );
     _requireJournalBinding(context, actor);
     var pending = _pendingPublishes[scope];
     if (pending != null &&
@@ -1040,6 +1233,7 @@ class ThemeService extends ChangeNotifier {
           : Map<String, dynamic>.from(jsonDecode(jsonEncode(config)) as Map),
       makeStoreLive,
       journalActor: actor,
+      templateKey: templateKey,
     );
     _pendingPublishes[scope] = pending;
     if (pending.inFlight != null) return pending.inFlight!;
@@ -1055,6 +1249,7 @@ class ThemeService extends ChangeNotifier {
                 themeSlug: themeSlug,
                 templateConfig: pending.config!,
                 baseVersion: pending.initialVersion,
+                templateKey: pending.templateKey,
               )).version;
         _requireJournalBinding(context, actor);
         await _persistPublication(storeId, themeSlug, pending);
@@ -1063,7 +1258,7 @@ class ThemeService extends ChangeNotifier {
           themeSlug,
           {
             'store_id': storeId,
-            'template_key': 'index',
+            'template_key': pending.templateKey,
             'base_version': pending.savedVersion,
             'idempotency_key': pending.key,
             'make_store_live': pending.makeStoreLive,
@@ -1104,6 +1299,7 @@ class ThemeService extends ChangeNotifier {
           context,
           actor,
           pending.key,
+          templateKey: pending.templateKey,
         );
         if (retired && identical(_pendingPublishes[scope], pending))
           _pendingPublishes.remove(scope);
@@ -1117,6 +1313,7 @@ class ThemeService extends ChangeNotifier {
             context,
             actor,
             pending.key,
+            templateKey: pending.templateKey,
           );
           if (retired && identical(_pendingPublishes[scope], pending))
             _pendingPublishes.remove(scope);
@@ -1193,11 +1390,35 @@ class ThemeService extends ChangeNotifier {
     ).resolveUri(candidate).toString();
   }
 
+  /// Same public, version-bound sample workspace as Merchant web. No store
+  /// inventory or private draft token is sent into a catalog demo.
+  static String buildCatalogDemoUrl({
+    required String slug,
+    required String version,
+  }) {
+    if (!RegExp(r'^[a-z0-9][a-z0-9_-]{0,119}$').hasMatch(slug) ||
+        version.isEmpty ||
+        version.trim() != version ||
+        RegExp(r'[\x00-\x1f\x7f]').hasMatch(version)) {
+      throw const FormatException('The selected theme version is unavailable.');
+    }
+    final base = Uri.parse(AppConfig.storefrontBaseUrl);
+    final prefix = base.path.replaceFirst(RegExp(r'/$'), '');
+    return base
+        .replace(
+          path: '$prefix/theme-preview/$slug',
+          queryParameters: {'version': version, 'marketplace': '1'},
+        )
+        .toString();
+  }
+
   static String buildStorefrontPreviewUrl({
     required String subdomain,
     String? previewToken,
     String viewport = 'phone',
     Map<String, dynamic>? settingsData,
+    String templateKey = 'index',
+    String? resourceId,
   }) {
     final base = Uri.parse(AppConfig.storefrontBaseUrl);
     final basePath = base.path.endsWith('/')
@@ -1207,6 +1428,9 @@ class ThemeService extends ChangeNotifier {
       'subdomain': subdomain,
       'viewport': _normalizeViewport(viewport),
       'editor': '1',
+      if (templateKey != 'index') 'template': templateKey,
+      if (resourceId != null && resourceId.isNotEmpty)
+        'resource_id': resourceId,
       if (previewToken != null && previewToken.isNotEmpty)
         'theme_preview_token': previewToken,
       if (settingsData != null && settingsData.isNotEmpty)

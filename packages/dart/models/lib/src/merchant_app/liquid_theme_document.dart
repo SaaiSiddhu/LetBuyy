@@ -176,16 +176,21 @@ class LiquidThemeDocument {
   Map<String, dynamic> toConfig(String templateKey) {
     final result = snapshot();
     Map<String, dynamic> project(Map<String, dynamic> section, int order) => {
-      ...section,
+      'id': section['id'],
+      'type': section['type'],
       'order': order,
       'visible': section['visible'] != false && section['disabled'] != true,
+      'settings': _copy(_record(section['settings'])),
       'blocks': _projectBlocks(section),
     };
     final header = sections(templateKey, 'header'),
         footer = sections(templateKey, 'footer');
     final page = sections(templateKey, 'template');
+    final compatibility = _record(result['sections'])
+      ..remove('header')
+      ..remove('footer');
     result['sections'] = {
-      ..._record(result['sections']),
+      ...compatibility,
       'template': [
         for (var i = 0; i < page.length; i++) project(page[i], i + 1),
       ],
@@ -210,10 +215,11 @@ class LiquidThemeDocument {
           if (id is! String || block.isEmpty)
             throw const FormatException('An installed block is unavailable.');
           return {
-            ..._copy(block),
             'id': id,
+            'type': block['type'],
             'order': i,
             'visible': block['visible'] != false && block['disabled'] != true,
+            'settings': _copy(_record(block['settings'])),
             'children': _projectBlocks(block),
           };
         })(),

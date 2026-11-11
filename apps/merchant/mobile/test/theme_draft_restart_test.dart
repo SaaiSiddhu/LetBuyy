@@ -117,6 +117,94 @@ JsonMap editor(int version) => {
   'draft': {'exists': true},
 };
 void main() {
+  test(
+    'product publication survives restart without recovering the index request',
+    () async {
+      final preferences = _Preferences(), old = _Api();
+      old.respond = (_, __) async => throw lost;
+      await expectLater(
+        service(old, preferences).publish(
+          storeId: store,
+          themeSlug: 'modern',
+          templateKey: 'product',
+          baseVersion: 7,
+          makeStoreLive: false,
+        ),
+        throwsA(isA<ApiException>()),
+      );
+      final first = old.calls.single;
+      expect((first['body'] as Map)['template_key'], 'product');
+      final journalKey = preferences.values.keys.single;
+      final metadata = jsonDecode(preferences.values[journalKey]!) as Map;
+      expect(metadata['version'], 2);
+      expect(metadata['templateKey'], 'product');
+      expect(metadata.containsKey('config'), false);
+      expect(journalKey.endsWith(':template:product'), true);
+      final api = _Api(epoch: 'restarted-process');
+      api.respond = (_, __) async => publication(8, replayed: true);
+      final next = service(api, preferences);
+      await expectLater(
+        next.recoverPublication(storeId: store, themeSlug: 'modern'),
+        throwsA(isA<StateError>()),
+      );
+      expect(api.calls, isEmpty);
+      await next.recoverPublication(
+        storeId: store,
+        themeSlug: 'modern',
+        templateKey: 'product',
+      );
+      expect(api.calls.single['body'], first['body']);
+      expect(api.calls.single['key'], first['key']);
+      expect(preferences.values, isEmpty);
+    },
+  );
+
+  test(
+    'product publication rejects another actor and corrupt page metadata',
+    () async {
+      final preferences = _Preferences(), old = _Api();
+      old.respond = (_, __) async => throw lost;
+      await expectLater(
+        service(old, preferences).publish(
+          storeId: store,
+          themeSlug: 'modern',
+          templateKey: 'product',
+          baseVersion: 7,
+        ),
+        throwsA(isA<ApiException>()),
+      );
+      final key = preferences.values.keys.single,
+          raw = preferences.values.values.single;
+      final wrongActor = _Api(actor: 'actor-b');
+      wrongActor.respond = (_, __) async => publication(8);
+      await expectLater(
+        service(wrongActor, preferences).recoverPublication(
+          storeId: store,
+          themeSlug: 'modern',
+          templateKey: 'product',
+        ),
+        throwsA(isA<StateError>()),
+      );
+      expect(wrongActor.calls, isEmpty);
+      expect(preferences.values[key], raw);
+      final metadata = Map<String, dynamic>.from(jsonDecode(raw) as Map)
+        ..['templateKey'] = 'index';
+      preferences.values[key] = jsonEncode(metadata);
+      final api = _Api();
+      api.respond = (_, __) async => publication(8);
+      await expectLater(
+        service(api, preferences).recoverPublication(
+          storeId: store,
+          themeSlug: 'modern',
+          templateKey: 'product',
+        ),
+        throwsA(isA<FormatException>()),
+      );
+      expect(api.calls, isEmpty);
+      expect(preferences.values.containsKey(key), true);
+    },
+  );
+
   setUp(() => SharedPreferences.setMockInitialValues({}));
   test(
     'publication metadata survives service recreation and recovers the exact key/base without storing theme content or old request context',

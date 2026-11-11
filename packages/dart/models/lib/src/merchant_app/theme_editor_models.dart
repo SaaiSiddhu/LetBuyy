@@ -15,6 +15,7 @@ class ThemeCatalogItem {
   final bool installed;
   final bool active;
   final bool isPremium;
+  final bool catalogActive;
 
   const ThemeCatalogItem({
     required this.id,
@@ -31,6 +32,7 @@ class ThemeCatalogItem {
     this.installed = false,
     this.active = false,
     this.isPremium = false,
+    this.catalogActive = false,
   });
 
   factory ThemeCatalogItem.fromJson(Map<String, dynamic> json) {
@@ -57,6 +59,7 @@ class ThemeCatalogItem {
       installed: json['installed'] == true,
       active: json['active'] == true,
       isPremium: json['is_premium'] == true,
+      catalogActive: json['is_active'] == true,
     );
   }
 }
@@ -66,16 +69,30 @@ class ThemeCatalogResponse {
   final String? currentTheme;
   final String? storeStatus;
   final ThemeCatalogItem? currentThemeRecord;
+  final int? total;
+  final int page;
+  final bool hasMore;
 
   const ThemeCatalogResponse({
     required this.themes,
     this.currentTheme,
     this.storeStatus,
     this.currentThemeRecord,
+    this.total,
+    this.page = 1,
+    this.hasMore = false,
   });
 
   factory ThemeCatalogResponse.fromJson(Map<String, dynamic> json) {
-    final rawThemes = json['data'] as List? ?? const [];
+    final rawThemes = json['data'];
+    final meta = json['meta'] is Map
+        ? Map<String, dynamic>.from(json['meta'] as Map)
+        : const <String, dynamic>{};
+    if (rawThemes is! List) {
+      throw const FormatException(
+        'The theme catalog is unavailable. Retry loading it.',
+      );
+    }
     return ThemeCatalogResponse(
       themes: rawThemes
           .map(
@@ -86,6 +103,13 @@ class ThemeCatalogResponse {
           .toList(),
       currentTheme: json['current_theme']?.toString(),
       storeStatus: json['store_status']?.toString(),
+      total: (meta['total'] ?? json['total']) is int
+          ? (meta['total'] ?? json['total']) as int
+          : null,
+      page: (meta['page'] ?? json['page']) is int
+          ? (meta['page'] ?? json['page']) as int
+          : 1,
+      hasMore: (meta['has_next'] ?? json['has_more']) == true,
       currentThemeRecord: json['current_theme_record'] is Map
           ? ThemeCatalogItem.fromJson(
               Map<String, dynamic>.from(json['current_theme_record'] as Map),
@@ -145,6 +169,8 @@ class ThemeInstallReceipt {
     Map<String, dynamic> value, {
     required String expectedSlug,
     String? expectedVersion,
+    String? expectedPackageId,
+    String? expectedPackageVersionId,
   }) {
     final theme = value['theme'] is Map
         ? Map<String, dynamic>.from(value['theme'] as Map)
@@ -170,7 +196,12 @@ class ThemeInstallReceipt {
         theme['name'] is! String ||
         (theme['name'] as String).isEmpty ||
         theme['version'] != version ||
-        (expectedVersion != null && expectedVersion != version)) {
+        (expectedVersion != null && expectedVersion != version) ||
+        (expectedPackageId != null &&
+            expectedPackageId.toLowerCase() != package.toLowerCase()) ||
+        (expectedPackageVersionId != null &&
+            expectedPackageVersionId.toLowerCase() !=
+                packageVersion.toLowerCase())) {
       throw const FormatException(
         'The selected theme instance and package version were not confirmed. Check your library and retry.',
       );
@@ -206,6 +237,9 @@ class ThemeEditorPayload {
   final Map<String, dynamic> templateConfig;
   final Map<String, dynamic> sectionSchemas;
   final Map<String, dynamic> settingsSchema;
+  final Map<String, dynamic> blockSchemas;
+  final String templateKey;
+  final List<Map<String, dynamic>> templates;
   final ThemeReleaseSummary? release;
   final bool hasDraft;
   final int version;
@@ -217,6 +251,9 @@ class ThemeEditorPayload {
     required this.templateConfig,
     required this.sectionSchemas,
     required this.settingsSchema,
+    this.blockSchemas = const {},
+    this.templateKey = 'index',
+    this.templates = const [],
     this.release,
     required this.hasDraft,
     required this.version,
@@ -251,6 +288,14 @@ class ThemeEditorPayload {
       settingsSchema: Map<String, dynamic>.from(
         schemas['settings'] as Map? ?? const {},
       ),
+      blockSchemas: Map<String, dynamic>.from(
+        schemas['blocks'] as Map? ?? const {},
+      ),
+      templateKey: data['template_key']?.toString() ?? 'index',
+      templates: (data['templates'] as List? ?? const [])
+          .whereType<Map>()
+          .map((item) => Map<String, dynamic>.from(item))
+          .toList(growable: false),
       release: release,
       hasDraft: draft['exists'] == true,
       version: revision,
