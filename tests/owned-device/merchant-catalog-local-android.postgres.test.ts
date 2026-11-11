@@ -74,8 +74,8 @@ function ownedNextListener(port:number,runtime:OwnedClientProcess):boolean {
 // saved-design release journey. Keep that interactive gate bounded at one hour.
 test('normal local Merchant owned-device journey verifies authoritative results through actual BFF',{timeout:3_600_000},async(context)=>{
  const receiptPath=process.env.LETBUYY_IOS_DEVICE_RECEIPT??process.env.LETBUYY_ANDROID_DEVICE_RECEIPT;assert.ok(receiptPath,'explicit task-owned device receipt required');
- const receipt=JSON.parse(readFileSync(receiptPath,'utf8'))as {root:string;owner:string;avd_name:string;serial:string;emulator_pid:number;sdk_root:string;adb_port:number;run_root:string;platform?:'android'|'ios';simulator_udid?:string;simulator_name?:string;device_receipt?:string;flow?:'membership'|'category'|'settings'|'warehouse'|'kyc'|'camera'|'themes'|'ios-auth'|'ios-kyc';verifyDashboardSettings?:boolean;verifySmart?:boolean;verifyCollectionLifecycle?:boolean;verifyMembershipRetirement?:boolean;verifyStockLifecycle?:boolean;verifyStockAdjustments?:boolean;compiledWorkers?:boolean;diagnosticWarehouseDraft?:boolean;diagnosticReservationView?:boolean;offlineGradle?:boolean};
- const flow=receipt.flow??'membership';assert(['membership','category','settings','warehouse','kyc','camera','themes','ios-auth','ios-kyc'].includes(flow));const iosKycFlow=flow==='ios-kyc',iosFlow=flow==='ios-auth'||iosKycFlow;assert.equal(receipt.platform==='ios',iosFlow,'iOS requires its explicit bounded flow');const themeFlow=flow==='themes',categoryFlow=flow==='category',settingsFlow=flow==='settings',warehouseFlow=flow==='warehouse',kycFlow=flow==='kyc',cameraFlow=flow==='camera',privateKycFlow=kycFlow||iosKycFlow;
+ const receipt=JSON.parse(readFileSync(receiptPath,'utf8'))as {root:string;owner:string;avd_name:string;serial:string;emulator_pid:number;sdk_root:string;adb_port:number;run_root:string;platform?:'android'|'ios';simulator_udid?:string;simulator_name?:string;device_receipt?:string;flow?:'membership'|'category'|'settings'|'warehouse'|'kyc'|'camera'|'themes'|'ios-auth'|'ios-kyc'|'ios-themes';verifyDashboardSettings?:boolean;verifySmart?:boolean;verifyCollectionLifecycle?:boolean;verifyMembershipRetirement?:boolean;verifyStockLifecycle?:boolean;verifyStockAdjustments?:boolean;compiledWorkers?:boolean;diagnosticWarehouseDraft?:boolean;diagnosticReservationView?:boolean;offlineGradle?:boolean};
+ const flow=receipt.flow??'membership';assert(['membership','category','settings','warehouse','kyc','camera','themes','ios-auth','ios-kyc','ios-themes'].includes(flow));const iosThemesFlow=flow==='ios-themes',iosKycFlow=flow==='ios-kyc',iosFlow=flow==='ios-auth'||iosKycFlow||iosThemesFlow;assert.equal(receipt.platform==='ios',iosFlow,'iOS requires its explicit bounded flow');const themeFlow=flow==='themes'||iosThemesFlow,categoryFlow=flow==='category',settingsFlow=flow==='settings',warehouseFlow=flow==='warehouse',kycFlow=flow==='kyc',cameraFlow=flow==='camera',privateKycFlow=kycFlow||iosKycFlow;
  const diagnosticDraft=receipt.diagnosticWarehouseDraft===true;assert(!diagnosticDraft||warehouseFlow,'Draft diagnostic is local warehouse-only');
  const verifyStock=receipt.verifyStockLifecycle===true;assert(!verifyStock||warehouseFlow,'Stock lifecycle extends the existing warehouse journey only');
  const verifyStockAdjustments=receipt.verifyStockAdjustments===true;assert(!verifyStockAdjustments||verifyStock,'Setter synchronization requires the normal warehouse stock lifecycle');
@@ -108,9 +108,9 @@ test('normal local Merchant owned-device journey verifies authoritative results 
  }
  const adbBinary=join(receipt.sdk_root??'','platform-tools/adb');
  const adb=(...args:string[])=>{assert(!iosFlow,'Android operations are forbidden in the iOS lane');return execFileSync(adbBinary,['-P',String(receipt.adb_port),'-s',receipt.serial,...args],{encoding:'utf8',stdio:['ignore','pipe','pipe']});};
- const root=resolve(receipt.run_root);assert.match(root,/^\/private\/tmp\/letbuyy-merchant-local-[a-z0-9-]+\/native-(?:catalog|category|settings|warehouse|kyc|camera|themes|ios-auth|ios-kyc)-v\d+$/);assert.equal(root.includes('/native-category-'),categoryFlow);assert.equal(root.includes('/native-settings-'),settingsFlow);assert.equal(root.includes('/native-warehouse-'),warehouseFlow);assert.equal(root.includes('/native-kyc-'),kycFlow);assert.equal(root.includes('/native-camera-'),cameraFlow);assert.equal(root.includes('/native-themes-'),themeFlow);assert.equal(root.includes('/native-ios-auth-'),iosFlow&&!iosKycFlow);assert.equal(root.includes('/native-ios-kyc-'),iosKycFlow);assert.equal(existsSync(root),false,'fresh owned run directory required');mkdirSync(root,{mode:0o700});
+ const root=resolve(receipt.run_root);assert.match(root,/^\/private\/tmp\/letbuyy-merchant-local-[a-z0-9-]+\/native-(?:catalog|category|settings|warehouse|kyc|camera|themes|ios-auth|ios-kyc|ios-themes)-v\d+$/);assert.equal(root.includes('/native-category-'),categoryFlow);assert.equal(root.includes('/native-settings-'),settingsFlow);assert.equal(root.includes('/native-warehouse-'),warehouseFlow);assert.equal(root.includes('/native-kyc-'),kycFlow);assert.equal(root.includes('/native-camera-'),cameraFlow);assert.equal(root.includes('/native-themes-')||root.includes('/native-ios-themes-'),themeFlow);assert.equal(root.includes('/native-ios-auth-'),iosFlow&&!iosKycFlow&&!iosThemesFlow);assert.equal(root.includes('/native-ios-kyc-'),iosKycFlow);assert.equal(existsSync(root),false,'fresh owned run directory required');mkdirSync(root,{mode:0o700});
  const ready=join(root,'journey-ready.json'),done=join(root,'journey-done.json');
- if(kycFlow||iosFlow)writeFileSync(join(root,'kyc-outage-active.json'),JSON.stringify({run_id:owned.runId,scope:'Owned synthetic KYC read fault only'})+'\n',{mode:0o600,flag:'wx'});
+ if(kycFlow||(iosFlow&&!iosThemesFlow))writeFileSync(join(root,'kyc-outage-active.json'),JSON.stringify({run_id:owned.runId,scope:'Owned synthetic KYC read fault only'})+'\n',{mode:0o600,flag:'wx'});
  const checkUi=()=>{context.signal.throwIfAborted();if(existsSync(join(root,'ui-attention.json')))throw new Error('The owned normal UI companion failed; private diagnostics retained.');};
  const apiPort=54352,bffPort=54350,identityPort=54351,merchantPort=54353;
  const apiOrigin=`http://127.0.0.1:${apiPort}`,identityWireOrigin=`http://localhost:${identityPort}`,identityOrigin=iosFlow?identityWireOrigin:'http://localhost:9002',merchantOrigin=`http://localhost:${merchantPort}`;
@@ -264,6 +264,50 @@ test('normal local Merchant owned-device journey verifies authoritative results 
   }
   const source=sourceSnapshot(),sourceBytes=JSON.stringify(source),sourceHash=digest(sourceBytes);
   writeFileSync(join(root,'source-snapshot.json'),sourceBytes+'\n',{mode:0o600,flag:'wx'});
+  type ThemeNativeArtifact={platform:'android';apk_sha256:string}|{platform:'ios';app_executable_sha256:string;app_bundle_sha256:string};
+  const verifyNativeThemes=async(proof:{run_id:string;steps:string[];evidence:string[]},artifact:ThemeNativeArtifact)=>{
+   checkSource(source,'native theme journey');
+   assert(calls.some(call=>call.source==='actual-identity'&&call.path==='/v1/auth/custom/mobile/exchange'&&call.status===200),'a fresh normal native PKCE exchange is required');
+   if(artifact.platform==='ios'){
+    const mobile=JSON.parse(owned.psql(`SELECT jsonb_agg(jsonb_build_object('client',client_id,'callback',callback_id,'environment',environment,'redirect',redirect_uri,'consumed',consumed_at IS NOT NULL,'cancelled',cancelled_at IS NOT NULL,'account_scope',site_id IS NULL))FROM merchant_mobile_requests WHERE authorized_user_id='${owner}'`))as Array<{client:string;callback:string;environment:string;redirect:string;consumed:boolean;cancelled:boolean;account_scope:boolean}>;
+    assert.equal(mobile.length,1);assert.deepEqual(mobile[0],{client:'merchant_ios',callback:'ios_session',environment:'development',redirect:merchantNativeCallback('merchant_ios','ios_session','development'),consumed:true,cancelled:false,account_scope:true});
+   }
+   for(const step of ['normal-native-browser-accounts-login','native-theme-library','native-ten-theme-marketplace','native-ten-theme-demos','native-ten-theme-installed-editors','native-liquid-save-preview-publish-reopen','native-real-collection-selection','native-library-draft-preview-publish-discard'])assert(proof.steps.includes(step),step);
+   assert(proof.evidence.length>=12);for(const path of proof.evidence)assert(path.startsWith(root+'/')&&existsSync(path));
+   const catalog=JSON.parse(readFileSync(join(root,'theme-catalog.json'),'utf8'))as Array<{slug:string;name:string;version:string}>;
+   assert.equal(catalog.length,10);
+   // Internal identity assertions are single-use. Every independent read must
+   // carry its own signed JTI; replay protection must stay enabled here.
+   const headers=()=>signedIdentityHeaders(owner,email,tenant.siteId);
+   const library=await gateway.request('/v1/themes/library?store_id='+tenant.siteId,{headers:await headers()});assert.equal(library.status,200,library.text);
+   const rows=(library.json?.data as {themes:Array<{slug:string;instance_id:string;version:string}>}).themes;
+   for(const theme of catalog){
+    assert(rows.some(row=>row.slug===theme.slug&&row.version===theme.version),'the exact selected package must be present in the real owned library: '+theme.slug);
+    assert(calls.some(call=>call.source==='actual-mobile-bff'&&call.path===`/v1/themes/${theme.slug}/install`&&call.method==='POST'&&call.status===201),'native install must reach the canonical route: '+theme.slug);
+    assert(calls.some(call=>call.source==='actual-mobile-bff'&&call.path===`/v1/themes/${theme.slug}/editor`&&call.method==='GET'&&call.status===200),'the actual installed native editor must load: '+theme.slug);
+   }
+   for(const [suffix,method,status] of [['/editor/draft','PUT',200],['/preview-session','POST',201],['/publish','POST',200]]as const)assert(calls.some(call=>call.source==='actual-mobile-bff'&&call.path.startsWith('/v1/themes/')&&call.path.endsWith(suffix)&&call.method===method&&call.status===status),'the native saved-design journey must complete: '+suffix);
+   const before=nativeThemeBaselines.get('letbuyy-summit');assert(before,'actual pre-edit native payload required');
+   const reopened=await gateway.request('/v1/themes/letbuyy-summit/editor?store_id='+tenant.siteId,{headers:await headers()});assert.equal(reopened.status,200,reopened.text);
+   const current=(reopened.json?.data as {template_config:Record<string,unknown>}).template_config;
+   const stable=(value:unknown):string=>JSON.stringify(value&&typeof value==='object'&&!Array.isArray(value)?Object.fromEntries(Object.entries(value as Record<string,unknown>).sort(([a],[b])=>a.localeCompare(b)).map(([k,v])=>[k,JSON.parse(stable(v))])):Array.isArray(value)?value.map(v=>JSON.parse(stable(v))):value);
+   assert.equal(digest(stable(current.liquidBundle)),digest(stable(before.liquidBundle)),'the installed immutable Liquid source must survive native editing and publication');
+   const expected=structuredClone(before.templates??(before.liquidBundle as Record<string,unknown>).templates)as Record<string,{sections:Record<string,{type:string;settings:Record<string,unknown>}>}>;
+   const hero=Object.values(expected.index.sections).filter(section=>section.type==='hero-banner');assert.equal(hero.length,1);hero[0].settings.heading='Native Kindred journey verified';const occasions=Object.values(expected.index.sections).filter(section=>section.type==='category-grid');assert.equal(occasions.length,1);occasions[0].settings.collection1=collection;
+   const conserved=(actual:unknown,wanted:unknown,path:string)=>{
+    if(wanted&&typeof wanted==='object'&&!Array.isArray(wanted)){
+     assert(actual&&typeof actual==='object'&&!Array.isArray(actual),'portable document unavailable: '+path);
+     for(const [key,value]of Object.entries(wanted))conserved((actual as Record<string,unknown>)[key],value,path+'.'+key);
+    }else assert.deepEqual(actual,wanted,'existing portable value changed: '+path);
+   };
+   conserved(current.templates,expected,'templates');if(before.themeSettings!==undefined)conserved(current.themeSettings,before.themeSettings,'themeSettings');
+   assert(calls.some(call=>call.source==='actual-mobile-bff'&&call.path==='/v1/themes/resource-search'&&call.method==='GET'&&call.status===200),'the native resource picker must read the actual owned collection');
+   assert(calls.filter(call=>call.source==='actual-mobile-bff'&&call.path.endsWith('/preview-session')&&call.method==='POST'&&call.status===201).length>=2,'editor and library previews must both obtain signed saved-design sessions');
+   assert(calls.some(call=>call.source==='actual-mobile-bff'&&call.path==='/v1/themes/letbuyy-summit/editor/draft'&&call.method==='DELETE'&&call.status===200),'the library discard must receive a canonical receipt');
+   assert.equal(owned.psql(`SELECT published::text||'|'||status FROM sites WHERE id='${tenant.siteId}'`),'false|draft','publishing a design must not silently open a closed store');
+   assert.equal(owned.psql(`SELECT jsonb_agg(to_jsonb(p)ORDER BY id)::text FROM products p WHERE store_id='${tenant.siteId}'`),originalCameraProducts,'theme installation must not import demo products or alter inventory');
+   writeFileSync(join(root,'themes-backend-verified.json'),JSON.stringify({run_id:owned.runId,source_sha256:sourceHash,...artifact,catalog,library:rows,calls,productsUnchanged:true,closedStoreRetained:true,portableConservation:true,immutableBundleSha256:digest(stable(current.liquidBundle)),reopenedHeading:'Native Kindred journey verified',scope:(artifact.platform==='ios'?'Owned iOS Simulator debug app':'Owned Android debug APK')+', normal Accounts PKCE, ten actual installed catalog versions and native editors; actual saved-draft, Commerce preview and publication routes. Requires reviewed native screenshots for visual acceptance. No hosted/provider, physical-device or signed-release acceptance.'},null,2)+'\n',{mode:0o600,flag:'wx'});
+  };
   if(iosFlow){
    //Use the existing iOS development client/callback and OS authentication
    //session. The Simulator talks directly to our owned issuer port; the Mac's
@@ -289,6 +333,7 @@ test('normal local Merchant owned-device journey verifies authoritative results 
    console.info('OWNED_LOCAL_IOS_READY '+ready);
    while(!existsSync(done)){checkUi();if(identity.exitCode!==null)throw new Error('Owned issuer stopped');await new Promise(r=>setTimeout(r,1000));}
    const proof=JSON.parse(readFileSync(done,'utf8'))as {run_id:string;steps:string[];evidence:string[]};assert.equal(proof.run_id,owned.runId);
+   if(iosThemesFlow){await verifyNativeThemes(proof,{platform:'ios',app_executable_sha256:executableHash,app_bundle_sha256:bundleHash});return;}
    for(const step of ['normal-native-browser-accounts-login','normal-native-dashboard','normal-native-kyc-navigation','kyc-outage-visible','kyc-explicit-retry','background-resume-session','native-secure-session-restart'])assert(proof.steps.includes(step),step);
    if(iosKycFlow)for(const step of ['document-picker-selection','background-resume-keeps-document','private-synthetic-kyc-upload'])assert(proof.steps.includes(step),step);
    assert(proof.evidence.length>=(iosKycFlow?10:7));for(const path of proof.evidence)assert(path.startsWith(root+'/')&&existsSync(path));
@@ -367,43 +412,7 @@ test('normal local Merchant owned-device journey verifies authoritative results 
   const proof=JSON.parse(readFileSync(done,'utf8'))as {run_id:string;steps:string[];evidence:string[]};assert.equal(proof.run_id,owned.runId);
   checkSource(source,'native journey');
   assert(calls.some(call=>call.source==='actual-identity'&&call.path==='/v1/auth/custom/mobile/exchange'&&call.status===200),'A fresh native PKCE exchange, not a retained token, must be observed');
-  if(themeFlow){
-   for(const step of ['normal-native-browser-accounts-login','native-theme-library','native-ten-theme-marketplace','native-ten-theme-demos','native-ten-theme-installed-editors','native-liquid-save-preview-publish-reopen','native-real-collection-selection','native-library-draft-preview-publish-discard'])assert(proof.steps.includes(step),step);
-   assert(proof.evidence.length>=12);for(const path of proof.evidence)assert(path.startsWith(root+'/')&&existsSync(path));
-   const catalog=JSON.parse(readFileSync(join(root,'theme-catalog.json'),'utf8'))as Array<{slug:string;name:string;version:string}>;
-   assert.equal(catalog.length,10);
-   // Internal identity assertions are single-use. Every independent read must
-   // carry its own signed JTI; replay protection must stay enabled here.
-   const headers=()=>signedIdentityHeaders(owner,email,tenant.siteId);
-   const library=await gateway.request('/v1/themes/library?store_id='+tenant.siteId,{headers:await headers()});assert.equal(library.status,200,library.text);
-   const rows=(library.json?.data as {themes:Array<{slug:string;instance_id:string;version:string}>}).themes;
-   for(const theme of catalog){
-    assert(rows.some(row=>row.slug===theme.slug&&row.version===theme.version),'the exact selected package must be present in the real owned library: '+theme.slug);
-    assert(calls.some(call=>call.source==='actual-mobile-bff'&&call.path===`/v1/themes/${theme.slug}/install`&&call.method==='POST'&&call.status===201),'native install must reach the canonical route: '+theme.slug);
-    assert(calls.some(call=>call.source==='actual-mobile-bff'&&call.path===`/v1/themes/${theme.slug}/editor`&&call.method==='GET'&&call.status===200),'the actual installed native editor must load: '+theme.slug);
-   }
-   for(const [suffix,method,status] of [['/editor/draft','PUT',200],['/preview-session','POST',201],['/publish','POST',200]]as const)assert(calls.some(call=>call.source==='actual-mobile-bff'&&call.path.startsWith('/v1/themes/')&&call.path.endsWith(suffix)&&call.method===method&&call.status===status),'the native saved-design journey must complete: '+suffix);
-   const before=nativeThemeBaselines.get('letbuyy-summit');assert(before,'actual pre-edit native payload required');
-   const reopened=await gateway.request('/v1/themes/letbuyy-summit/editor?store_id='+tenant.siteId,{headers:await headers()});assert.equal(reopened.status,200,reopened.text);
-   const current=(reopened.json?.data as {template_config:Record<string,unknown>}).template_config;
-   const stable=(value:unknown):string=>JSON.stringify(value&&typeof value==='object'&&!Array.isArray(value)?Object.fromEntries(Object.entries(value as Record<string,unknown>).sort(([a],[b])=>a.localeCompare(b)).map(([k,v])=>[k,JSON.parse(stable(v))])):Array.isArray(value)?value.map(v=>JSON.parse(stable(v))):value);
-   assert.equal(digest(stable(current.liquidBundle)),digest(stable(before.liquidBundle)),'the installed immutable Liquid source must survive native editing and publication');
-   const expected=structuredClone(before.templates??(before.liquidBundle as Record<string,unknown>).templates)as Record<string,{sections:Record<string,{type:string;settings:Record<string,unknown>}>}>;
-   const hero=Object.values(expected.index.sections).filter(section=>section.type==='hero-banner');assert.equal(hero.length,1);hero[0].settings.heading='Native Kindred journey verified';const occasions=Object.values(expected.index.sections).filter(section=>section.type==='category-grid');assert.equal(occasions.length,1);occasions[0].settings.collection1=collection;
-   const conserved=(actual:unknown,wanted:unknown,path:string)=>{
-    if(wanted&&typeof wanted==='object'&&!Array.isArray(wanted)){
-     assert(actual&&typeof actual==='object'&&!Array.isArray(actual),'portable document unavailable: '+path);
-     for(const [key,value]of Object.entries(wanted))conserved((actual as Record<string,unknown>)[key],value,path+'.'+key);
-    }else assert.deepEqual(actual,wanted,'existing portable value changed: '+path);
-   };
-   conserved(current.templates,expected,'templates');if(before.themeSettings!==undefined)conserved(current.themeSettings,before.themeSettings,'themeSettings');
-   assert(calls.some(call=>call.source==='actual-mobile-bff'&&call.path==='/v1/themes/resource-search'&&call.method==='GET'&&call.status===200),'the native resource picker must read the actual owned collection');
-   assert(calls.filter(call=>call.source==='actual-mobile-bff'&&call.path.endsWith('/preview-session')&&call.method==='POST'&&call.status===201).length>=2,'editor and library previews must both obtain signed saved-design sessions');
-   assert(calls.some(call=>call.source==='actual-mobile-bff'&&call.path==='/v1/themes/letbuyy-summit/editor/draft'&&call.method==='DELETE'&&call.status===200),'the library discard must receive a canonical receipt');
-   assert.equal(owned.psql(`SELECT published::text||'|'||status FROM sites WHERE id='${tenant.siteId}'`),'false|draft','publishing a design must not silently open a closed store');
-   assert.equal(owned.psql(`SELECT jsonb_agg(to_jsonb(p)ORDER BY id)::text FROM products p WHERE store_id='${tenant.siteId}'`),originalCameraProducts,'theme installation must not import demo products or alter inventory');
-   writeFileSync(join(root,'themes-backend-verified.json'),JSON.stringify({run_id:owned.runId,source_sha256:sourceHash,apk_sha256:apkHash,catalog,library:rows,calls,productsUnchanged:true,closedStoreRetained:true,portableConservation:true,immutableBundleSha256:digest(stable(current.liquidBundle)),reopenedHeading:'Native Kindred journey verified',scope:'Owned Android debug APK, normal Accounts PKCE, ten actual installed catalog versions and native editors; actual saved-draft, Commerce preview and publication routes. Requires reviewed native screenshots for visual acceptance. No hosted/provider, iOS, physical-device or signed-release acceptance.'},null,2)+'\n',{mode:0o600,flag:'wx'});return;
-  }
+  if(themeFlow){await verifyNativeThemes(proof,{platform:'android',apk_sha256:apkHash});return;}
   if(cameraFlow){
    for(const step of ['normal-native-browser-accounts-login','normal-native-product-draft','camera-permission-visible','camera-capture-confirmed','native-photo-upload-and-preview','native-draft-discard'])assert(proof.steps.includes(step),step);
    assert(proof.evidence.length>=6);for(const path of proof.evidence)assert(path.startsWith(root+'/')&&existsSync(path));
