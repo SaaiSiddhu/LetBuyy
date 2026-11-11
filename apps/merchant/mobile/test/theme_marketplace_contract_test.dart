@@ -131,6 +131,7 @@ void main() {
       ]);
       expect(api.calls.first.options?.body, {
         'store_id': store,
+        'config_overrides': <String, dynamic>{},
         'expected_version': '2.0.0',
         'expected_package_id': package,
         'expected_package_version_id': versionId,

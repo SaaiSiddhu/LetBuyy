@@ -36,9 +36,9 @@ function nativeBundleSnapshot(root:string){
  visit('');return entries.sort((a,b)=>a.path<b.path?-1:a.path>b.path?1:0);
 }
 function sourceSnapshot(){
- const paths=execFileSync('git',['ls-files','--cached','--others','--exclude-standard','-z','--','apps/merchant/mobile','apps/merchant/web','apps/platform/identity','services/api-gateway','services/mobile-bff','packages','database/supabase/migrations','database/supabase/rollback','database/supabase/config.toml','scripts/governance','tests/fixtures','tests/helpers','tests/owned-device/merchant-catalog-local-android.postgres.test.ts','pubspec.yaml','pubspec.lock'],{encoding:'utf8'}).split('\0').filter(Boolean).sort();
+ const paths=execFileSync('git',['ls-files','--cached','--others','--exclude-standard','-z','--','apps/merchant/mobile','apps/commerce/web','apps/merchant/web','apps/platform/identity','services/api-gateway','services/mobile-bff','packages','database/supabase/migrations','database/supabase/rollback','database/supabase/config.toml','scripts/governance','tests/fixtures','tests/helpers','tests/owned-device/merchant-catalog-local-android.postgres.test.ts','pubspec.yaml','pubspec.lock'],{encoding:'utf8'}).split('\0').filter(Boolean).sort();
  return paths.filter(path=>{
-  const marker=/^apps\/(?:merchant\/web|platform\/identity)\/\.next-session-runtime-(\d+)-((?:identity|merchant)-next-production)\.owner\.json$/.exec(path);
+  const marker=/^apps\/(?:commerce\/web|merchant\/web|platform\/identity)\/\.next-session-runtime-(\d+)-((?:identity|merchant|commerce)-next-production)\.owner\.json$/.exec(path);
   if(!marker)return true;
   // This is the canonical supervisor's private generated marker, never source.
   // Validate the exact current run, parent, PID, root and on-disk receipt before
@@ -72,8 +72,8 @@ function ownedNextListener(port:number,runtime:OwnedClientProcess):boolean {
 }
 test('normal local Merchant owned-device journey verifies authoritative results through actual BFF',{timeout:1_800_000},async(context)=>{
  const receiptPath=process.env.LETBUYY_IOS_DEVICE_RECEIPT??process.env.LETBUYY_ANDROID_DEVICE_RECEIPT;assert.ok(receiptPath,'explicit task-owned device receipt required');
- const receipt=JSON.parse(readFileSync(receiptPath,'utf8'))as {root:string;owner:string;avd_name:string;serial:string;emulator_pid:number;sdk_root:string;adb_port:number;run_root:string;platform?:'android'|'ios';simulator_udid?:string;simulator_name?:string;device_receipt?:string;flow?:'membership'|'category'|'settings'|'warehouse'|'kyc'|'camera'|'ios-auth'|'ios-kyc';verifyDashboardSettings?:boolean;verifySmart?:boolean;verifyCollectionLifecycle?:boolean;verifyMembershipRetirement?:boolean;verifyStockLifecycle?:boolean;verifyStockAdjustments?:boolean;compiledWorkers?:boolean;diagnosticWarehouseDraft?:boolean;diagnosticReservationView?:boolean;offlineGradle?:boolean};
- const flow=receipt.flow??'membership';assert(['membership','category','settings','warehouse','kyc','camera','ios-auth','ios-kyc'].includes(flow));const iosKycFlow=flow==='ios-kyc',iosFlow=flow==='ios-auth'||iosKycFlow;assert.equal(receipt.platform==='ios',iosFlow,'iOS requires its explicit bounded flow');const categoryFlow=flow==='category',settingsFlow=flow==='settings',warehouseFlow=flow==='warehouse',kycFlow=flow==='kyc',cameraFlow=flow==='camera',privateKycFlow=kycFlow||iosKycFlow;
+ const receipt=JSON.parse(readFileSync(receiptPath,'utf8'))as {root:string;owner:string;avd_name:string;serial:string;emulator_pid:number;sdk_root:string;adb_port:number;run_root:string;platform?:'android'|'ios';simulator_udid?:string;simulator_name?:string;device_receipt?:string;flow?:'membership'|'category'|'settings'|'warehouse'|'kyc'|'camera'|'themes'|'ios-auth'|'ios-kyc';verifyDashboardSettings?:boolean;verifySmart?:boolean;verifyCollectionLifecycle?:boolean;verifyMembershipRetirement?:boolean;verifyStockLifecycle?:boolean;verifyStockAdjustments?:boolean;compiledWorkers?:boolean;diagnosticWarehouseDraft?:boolean;diagnosticReservationView?:boolean;offlineGradle?:boolean};
+ const flow=receipt.flow??'membership';assert(['membership','category','settings','warehouse','kyc','camera','themes','ios-auth','ios-kyc'].includes(flow));const iosKycFlow=flow==='ios-kyc',iosFlow=flow==='ios-auth'||iosKycFlow;assert.equal(receipt.platform==='ios',iosFlow,'iOS requires its explicit bounded flow');const themeFlow=flow==='themes',categoryFlow=flow==='category',settingsFlow=flow==='settings',warehouseFlow=flow==='warehouse',kycFlow=flow==='kyc',cameraFlow=flow==='camera',privateKycFlow=kycFlow||iosKycFlow;
  const diagnosticDraft=receipt.diagnosticWarehouseDraft===true;assert(!diagnosticDraft||warehouseFlow,'Draft diagnostic is local warehouse-only');
  const verifyStock=receipt.verifyStockLifecycle===true;assert(!verifyStock||warehouseFlow,'Stock lifecycle extends the existing warehouse journey only');
  const verifyStockAdjustments=receipt.verifyStockAdjustments===true;assert(!verifyStockAdjustments||verifyStock,'Setter synchronization requires the normal warehouse stock lifecycle');
@@ -106,7 +106,7 @@ test('normal local Merchant owned-device journey verifies authoritative results 
  }
  const adbBinary=join(receipt.sdk_root??'','platform-tools/adb');
  const adb=(...args:string[])=>{assert(!iosFlow,'Android operations are forbidden in the iOS lane');return execFileSync(adbBinary,['-P',String(receipt.adb_port),'-s',receipt.serial,...args],{encoding:'utf8',stdio:['ignore','pipe','pipe']});};
- const root=resolve(receipt.run_root);assert.match(root,/^\/private\/tmp\/letbuyy-merchant-local-[a-z0-9-]+\/native-(?:catalog|category|settings|warehouse|kyc|camera|ios-auth|ios-kyc)-v\d+$/);assert.equal(root.includes('/native-category-'),categoryFlow);assert.equal(root.includes('/native-settings-'),settingsFlow);assert.equal(root.includes('/native-warehouse-'),warehouseFlow);assert.equal(root.includes('/native-kyc-'),kycFlow);assert.equal(root.includes('/native-camera-'),cameraFlow);assert.equal(root.includes('/native-ios-auth-'),iosFlow&&!iosKycFlow);assert.equal(root.includes('/native-ios-kyc-'),iosKycFlow);assert.equal(existsSync(root),false,'fresh owned run directory required');mkdirSync(root,{mode:0o700});
+ const root=resolve(receipt.run_root);assert.match(root,/^\/private\/tmp\/letbuyy-merchant-local-[a-z0-9-]+\/native-(?:catalog|category|settings|warehouse|kyc|camera|themes|ios-auth|ios-kyc)-v\d+$/);assert.equal(root.includes('/native-category-'),categoryFlow);assert.equal(root.includes('/native-settings-'),settingsFlow);assert.equal(root.includes('/native-warehouse-'),warehouseFlow);assert.equal(root.includes('/native-kyc-'),kycFlow);assert.equal(root.includes('/native-camera-'),cameraFlow);assert.equal(root.includes('/native-themes-'),themeFlow);assert.equal(root.includes('/native-ios-auth-'),iosFlow&&!iosKycFlow);assert.equal(root.includes('/native-ios-kyc-'),iosKycFlow);assert.equal(existsSync(root),false,'fresh owned run directory required');mkdirSync(root,{mode:0o700});
  const ready=join(root,'journey-ready.json'),done=join(root,'journey-done.json');
  if(kycFlow||iosFlow)writeFileSync(join(root,'kyc-outage-active.json'),JSON.stringify({run_id:owned.runId,scope:'Owned synthetic KYC read fault only'})+'\n',{mode:0o600,flag:'wx'});
  const checkUi=()=>{context.signal.throwIfAborted();if(existsSync(join(root,'ui-attention.json')))throw new Error('The owned normal UI companion failed; private diagnostics retained.');};
@@ -151,7 +151,7 @@ test('normal local Merchant owned-device journey verifies authoritative results 
  INSERT INTO inventory_levels(id,store_id,product_id,location_id,available,reserved,incoming,available_quantity,reserved_quantity,on_hand_quantity)VALUES(gen_random_uuid(),'${tenant.siteId}','${ids[0]}','${tenant.locationId}',3,0,0,3,0,3);
  INSERT INTO inventory_locations(id,store_id,name,status)VALUES(gen_random_uuid(),'${tenant.siteId}','Synthetic diagnostic destination','active');`);
  if(settingsFlow)owned.psql(`UPDATE sites SET business_profile=coalesce(business_profile,'{}'::jsonb)||'{"email":"synthetic-contact@example.invalid","trade_name":"Retained synthetic trade"}'::jsonb,invoice_address=coalesce(invoice_address,'{}'::jsonb)||'{"attention":"Retained synthetic attention"}'::jsonb WHERE id='${tenant.siteId}';`);
- const originalCameraProducts=cameraFlow||iosFlow?owned.psql(`SELECT jsonb_agg(to_jsonb(p)ORDER BY id)::text FROM products p WHERE store_id='${tenant.siteId}'`):null;
+ const originalCameraProducts=cameraFlow||iosFlow||themeFlow?owned.psql(`SELECT jsonb_agg(to_jsonb(p)ORDER BY id)::text FROM products p WHERE store_id='${tenant.siteId}'`):null;
  if(categoryFlow)owned.psql(`UPDATE products SET category='Synthetic native cotton'WHERE store_id='${tenant.siteId}';`);
  const category=categoryFlow?owned.psql(`SELECT id FROM product_categories WHERE store_id='${tenant.siteId}'AND name='Synthetic native cotton'AND deleted_at IS NULL`):null;
  type Call={source:string;path:string;method:string;status:number;wire_status:number;key_digest?:string;body_digest?:string};const calls:Call[]=[];let lost=false,lostSmart=false;let lostSettingsKey:string|undefined,restartCallIndex:number|undefined;
@@ -175,6 +175,7 @@ test('normal local Merchant owned-device journey verifies authoritative results 
   if(released)assert.equal(JSON.parse(readFileSync(join(root,'release-native-replies.json'),'utf8')).run_id,owned.runId);
   const smartCreate=verifySmart&&request.method==='POST'&&url.pathname==='/v1/smart-collections';
   const metadataCommand=verifyLifecycle&&['POST','PATCH','DELETE'].includes(request.method)&&(/^\/v1\/products\/collections(?:\/[a-f0-9-]{36})?$/.test(url.pathname)||/^\/v1\/smart-collections(?:\/[a-f0-9-]{36})?$/.test(url.pathname));
+  const themeCommand=themeFlow&&['POST','PATCH','DELETE'].includes(request.method)&&url.pathname.startsWith('/v1/themes/');
   const cameraCommand=cameraFlow&&request.method==='POST'&&['/v1/upload','/v1/media'].includes(url.pathname);
   const retiredMembershipCommand=verifyRetirement&&request.method==='PUT'&&/^\/v1\/products\/collections\/[a-f0-9-]{36}\/products$/.test(url.pathname);
   const loseMembership=source==='actual-mobile-bff'&&membership&&[200,201].includes(result.status)&&!released&&((settingsFlow||warehouseFlow)?(!lost||digest(request.headers.get('X-Idempotency-Key')||'')===lostSettingsKey):!lost);
@@ -186,7 +187,7 @@ test('normal local Merchant owned-device journey verifies authoritative results 
   const lose=loseMembership||loseSmart||loseStock||loseAdjustment;
   if(loseMembership){lost=true;if(settingsFlow||warehouseFlow)lostSettingsKey??=digest(request.headers.get('X-Idempotency-Key')||'');}
   if(loseSmart)lostSmart=true;
-  calls.push({source,path:url.pathname,method:request.method,status:result.status,wire_status:lose?503:result.status,...(membership||smartCreate||metadataCommand||retiredMembershipCommand||stockCommand||setterCommand||cameraCommand?{key_digest:digest(request.headers.get('X-Idempotency-Key')||''),body_digest:digest(cameraCommand&&bytes?bytes:body||'')}:{})});
+  calls.push({source,path:url.pathname,method:request.method,status:result.status,wire_status:lose?503:result.status,...(membership||smartCreate||metadataCommand||retiredMembershipCommand||stockCommand||setterCommand||cameraCommand||themeCommand?{key_digest:digest(request.headers.get('X-Idempotency-Key')||''),body_digest:digest(cameraCommand&&bytes?bytes:body||'')}:{})});
   if(lose)return Response.json({error:{code:'OWNED_REPLY_LOST',message:'Synthetic committed response lost. Retry the original request.'}},{status:503});
   return new Response(result.text,{status:result.status,headers:result.headers});
  };
@@ -197,7 +198,7 @@ test('normal local Merchant owned-device journey verifies authoritative results 
  });
  const bffEnv={INTERNAL_API_SECRET:INTERNAL_SECRET,TURNSTILE_SECRET_KEY:LOCAL_TURNSTILE_SECRET,ENVIRONMENT:'development',API_GATEWAY_SERVICE:{fetch:(request:Request)=>record(request,'actual-mobile-bff')}};
  let nativeBff:NativeMobileBff|undefined;
- let api:Server|undefined,bff:Server|undefined,assetServer:Server|undefined,identity:OwnedClientProcess|undefined,merchant:OwnedClientProcess|undefined,browser:Browser|undefined,nativeBrowser:Browser|undefined;
+ let api:Server|undefined,bff:Server|undefined,assetServer:Server|undefined,identity:OwnedClientProcess|undefined,merchant:OwnedClientProcess|undefined,commerce:OwnedClientProcess|undefined,browser:Browser|undefined,nativeBrowser:Browser|undefined;
  let nativeForward:number|undefined;
  const reversed:number[]=[];
  const initial=JSON.parse(owned.psql(`SELECT json_build_object('site_version',(SELECT version FROM sites WHERE id='${tenant.siteId}'),'version',membership_version,'ids',(SELECT json_agg(product_id ORDER BY position,id)FROM collection_products WHERE collection_id='${collection}'))FROM collections WHERE id='${collection}';`));
@@ -241,6 +242,14 @@ test('normal local Merchant owned-device journey verifies authoritative results 
   const deadline=Date.now()+360_000;let live=false;while(Date.now()<deadline){if(identity.exitCode!==null)throw new Error('Owned issuer stopped');try{if(!ownedNextListener(identityPort,identity)){await new Promise(r=>setTimeout(r,250));continue;}if((await fetch(identityWireOrigin+'/api/auth/session',{signal:AbortSignal.timeout(2000)})).status===200){live=true;break;}}catch(error){if(error instanceof Error&&error.message.includes('OWNED_LISTENER_SCOPE_MISMATCH'))throw error;}await new Promise(r=>setTimeout(r,250));}assert(live,'normal issuer readiness');
   const defines={ENVIRONMENT:'local',BFF_BASE_URL:`http://127.0.0.1:${bffPort}/v1`,API_BASE_URL:`http://127.0.0.1:${bffPort}/v1`,IDENTITY_BASE_URL:identityOrigin,ADMIN_BASE_URL:merchantOrigin,STOREFRONT_BASE_URL:'http://localhost:54354',LOCAL_CHALLENGE_SDK_URL:challenge.profile.origin+'/fixtures/turnstile/api.js',TURNSTILE_SITE_KEY:'1x00000000000000000000AA',MOBILE_PUSH_DEVICE_TOKEN:'',SENTRY_DSN:'SKIP_NEEDS_HUMAN_LOCAL_SENTRY_DSN'};
   const definesPath=join(root,'dart-defines.json');writeFileSync(definesPath,JSON.stringify(defines),{mode:0o600,flag:'wx'});
+  if(themeFlow){
+   // Use the same actual Merchant artwork host and Commerce Liquid renderer as
+   // web. No renderer substitution, injected session or hosted mutation.
+   merchant=startOwnedClientRuntime(owned,'merchant-next-production',{port:merchantPort,providerFixture:challenge.profile,env:{LETBUYY_API_BASE_URL:apiOrigin+'/v1',INTERNAL_API_SECRET:INTERNAL_SECRET,NEXT_PUBLIC_ACCOUNTS_URL:identityOrigin,NEXT_PUBLIC_ADMIN_URL:merchantOrigin,NEXT_PUBLIC_STOREFRONT_URL:'http://localhost:54354',LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false',NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false',NEXT_PUBLIC_TURNSTILE_SITE_KEY:'1x00000000000000000000AA'}});
+   commerce=startOwnedClientRuntime(owned,'commerce-next-production',{port:54354,env:{INTERNAL_API_SECRET:INTERNAL_SECRET,LETBUYY_INTERNAL_API_SECRET:INTERNAL_SECRET,LETBUYY_API_BASE_URL:apiOrigin+'/v1',LETBUYY_API_URL:apiOrigin+'/v1',NEXT_PUBLIC_API_BASE_URL:apiOrigin+'/v1',NEXT_PUBLIC_API_URL:apiOrigin+'/v1',NEXT_PUBLIC_STORE_ROOT_DOMAIN:'localhost',NEXT_PUBLIC_ACCOUNTS_URL:identityOrigin,NEXT_PUBLIC_ADMIN_URL:merchantOrigin,LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false',NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false'}});
+   for(const child of [merchant,commerce]){child.stdout.resume();child.stderr.resume();}
+   writeFileSync(join(root,'theme-catalog.json'),owned.psql("SELECT jsonb_agg(jsonb_build_object('slug',slug,'name',name,'version',version)ORDER BY sort_order,slug)FROM themes WHERE slug IN('letbuyy-forge','letbuyy-sense','letbuyy-aura','letbuyy-craft','letbuyy-refresh','letbuyy-ride','letbuyy-bloom','letbuyy-nova','letbuyy-dawn','letbuyy-summit')AND is_active=true")+'\n',{mode:0o600,flag:'wx'});
+  }
   const source=sourceSnapshot(),sourceBytes=JSON.stringify(source),sourceHash=digest(sourceBytes);
   writeFileSync(join(root,'source-snapshot.json'),sourceBytes+'\n',{mode:0o600,flag:'wx'});
   if(iosFlow){
@@ -317,7 +326,7 @@ test('normal local Merchant owned-device journey verifies authoritative results 
   const artifactRoot=join(root,'qualified-artifact');mkdirSync(artifactRoot,{mode:0o700});
   const apk=join(artifactRoot,'merchant-local-debug.apk');copyFileSync(builtApk,apk,constants.COPYFILE_EXCL);chmodSync(apk,0o600);
   const apkHash=digest(readFileSync(apk));assert.equal(digest(readFileSync(builtApk)),apkHash,'preserve the original built bytes before installation');
-  for(const port of [apiPort,bffPort,Number(new URL(challenge.profile.origin).port),...(cameraFlow?[54355]:[])]){adb('reverse','--no-rebind',`tcp:${port}`,`tcp:${port}`);reversed.push(port);}
+  for(const port of [apiPort,bffPort,Number(new URL(challenge.profile.origin).port),...(cameraFlow?[54355]:[]),...(themeFlow?[merchantPort,54354]:[])]){adb('reverse','--no-rebind',`tcp:${port}`,`tcp:${port}`);reversed.push(port);}
   //9002 exists only on this emulator. Never bind, probe or stop the Mac's
   // existing9002 listener; all server-process fetches to it are explicitly denied.
   assert(!adb('reverse','--list').split(/\r?\n/).some(line=>line.split(/\s+/).includes('tcp:9002')),'An unrelated emulator9002 mapping must be preserved');
@@ -346,6 +355,23 @@ test('normal local Merchant owned-device journey verifies authoritative results 
   const proof=JSON.parse(readFileSync(done,'utf8'))as {run_id:string;steps:string[];evidence:string[]};assert.equal(proof.run_id,owned.runId);
   checkSource(source,'native journey');
   assert(calls.some(call=>call.source==='actual-identity'&&call.path==='/v1/auth/custom/mobile/exchange'&&call.status===200),'A fresh native PKCE exchange, not a retained token, must be observed');
+  if(themeFlow){
+   for(const step of ['normal-native-browser-accounts-login','native-theme-library','native-ten-theme-marketplace','native-ten-theme-demos','native-ten-theme-installed-editors','native-liquid-save-preview-publish-reopen'])assert(proof.steps.includes(step),step);
+   assert(proof.evidence.length>=12);for(const path of proof.evidence)assert(path.startsWith(root+'/')&&existsSync(path));
+   const catalog=JSON.parse(readFileSync(join(root,'theme-catalog.json'),'utf8'))as Array<{slug:string;name:string;version:string}>;
+   assert.equal(catalog.length,10);
+   const headers=await signedIdentityHeaders(owner,email,tenant.siteId);
+   const library=await gateway.request('/v1/themes/library?store_id='+tenant.siteId,{headers});assert.equal(library.status,200,library.text);
+   const rows=(library.json?.data as {themes:Array<{slug:string;instance_id:string;version:string}>}).themes;
+   for(const theme of catalog){
+    assert(rows.some(row=>row.slug===theme.slug&&row.version===theme.version),'the exact selected package must be present in the real owned library: '+theme.slug);
+    assert(calls.some(call=>call.source==='actual-mobile-bff'&&call.path===`/v1/themes/${theme.slug}/install`&&call.method==='POST'&&call.status===201),'native install must reach the canonical route: '+theme.slug);
+    assert(calls.some(call=>call.source==='actual-mobile-bff'&&call.path===`/v1/themes/${theme.slug}/editor`&&call.method==='GET'&&call.status===200),'the actual installed native editor must load: '+theme.slug);
+   }
+   for(const suffix of ['/editor/draft','/preview-session','/publish'])assert(calls.some(call=>call.source==='actual-mobile-bff'&&call.path.startsWith('/v1/themes/')&&call.path.endsWith(suffix)&&call.method==='POST'&&call.status===200),'the native saved-design journey must complete: '+suffix);
+   assert.equal(owned.psql(`SELECT jsonb_agg(to_jsonb(p)ORDER BY id)::text FROM products p WHERE store_id='${tenant.siteId}'`),originalCameraProducts,'theme installation must not import demo products or alter inventory');
+   writeFileSync(join(root,'themes-backend-verified.json'),JSON.stringify({run_id:owned.runId,source_sha256:sourceHash,apk_sha256:apkHash,catalog,library:rows,calls,productsUnchanged:true,scope:'Owned Android debug APK, normal Accounts PKCE, ten actual installed catalog versions and native editors; actual saved-draft, Commerce preview and publication routes. Requires reviewed native screenshots for visual acceptance. No hosted/provider, iOS, physical-device or signed-release acceptance.'},null,2)+'\n',{mode:0o600,flag:'wx'});return;
+  }
   if(cameraFlow){
    for(const step of ['normal-native-browser-accounts-login','normal-native-product-draft','camera-permission-visible','camera-capture-confirmed','native-photo-upload-and-preview','native-draft-discard'])assert(proof.steps.includes(step),step);
    assert(proof.evidence.length>=6);for(const path of proof.evidence)assert(path.startsWith(root+'/')&&existsSync(path));
@@ -754,7 +780,7 @@ test('normal local Merchant owned-device journey verifies authoritative results 
   for(const port of reversed)try{adb('reverse','--remove',`tcp:${port}`);}catch{}
   await nativeBrowser?.close();
   if(nativeForward!==undefined)try{adb('forward','--remove',`tcp:${nativeForward}`);}catch{}
-  await browser?.close();await stopOwnedClientRuntime(merchant);await stopOwnedClientRuntime(identity);await nativeBff?.settle();await gateway?.settle();await closePooledSqlClients();await proxy.stop();await challenge.close();
+  await browser?.close();await stopOwnedClientRuntime(commerce);await stopOwnedClientRuntime(merchant);await stopOwnedClientRuntime(identity);await nativeBff?.settle();await gateway?.settle();await closePooledSqlClients();await proxy.stop();await challenge.close();
   globalThis.fetch=originalFetch;
   for(const server of [api,bff,assetServer])if(server){server.closeAllConnections();await new Promise<void>(r=>server!.close(()=>r()));}
  }
