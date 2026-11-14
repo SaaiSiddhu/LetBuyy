@@ -48,7 +48,7 @@
   "imports": {
     "#store-access-hashing": {
       "workerd": "./src/lib/store-access-wasm/runtime.mjs",
-      "default": "hash-wasm"
+      "default": "./src/lib/store-access-hashing.node.ts"
     }
   }
 }
